@@ -1,0 +1,252 @@
+{
+	"type": "FeatureCollection",
+	"name": "oficinas_provinciales",
+	"crs": {
+		"type": "name",
+		"properties": {
+			"name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+		}
+	},
+	"features": [
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Catamarca",
+				"description": "Vicario Segura 835<br>(Administración General de Catastro)<br> San Fernando del Valle de Catamarca<br>Catamarca (CP 4700)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Catamarca\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-65.77396088907149,
+					-28.47107868229075,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Chaco",
+				"description": "Marcelo T. de Alvear 145<br>9º Piso, Oficina 4<br>\nResistencia (CP 3500)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Chaco\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-58.986874,
+					-27.449253,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Chubut",
+				"description": "Sarmiento 668<br>Rawson (CP 9103)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Chubut\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-65.1029142938974,
+					-43.30176481444948,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Entre Ríos",
+				"description": "Arturo Illia 265<br>Paraná\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/EntreRios\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-60.52650526721074,
+					-31.73761002058241,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Formosa",
+				"description": "Ayacucho 810<br>Formosa (CP 3600)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/formosa\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-58.17070277640112,
+					-26.19128787989715,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Jujuy",
+				"description": "Av. 19 de Abril y Otero<br>San Salvador de Jujuy (CP 4600)<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/OficinaJujuy\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-65.30148225439387,
+					-24.18866256617502,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "La Pampa",
+				"description": "Centro Cívico<br>Dirección General de Catastro<br>Santa Rosa (CP 6300)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/LaPampa\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-64.2800962275973,
+					-36.62148178350267,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Mendoza",
+				"description": "Av. Peltier 411<br>4° piso - Ala Oeste<br>Dirección General de Catastro - ATM<br>Casa de Gobierno de Mendoza (CP 5500)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Mendoza\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-68.84708279343631,
+					-32.89871800177181,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Neuquén",
+				"description": "Alcorta y Misiones<br>4° piso<br>Neuquén (CP 8300)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Neuquen\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-68.06329448595332,
+					-38.9581300529818,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Río Negro",
+				"description": "Moreno 173<br>Viedma (CP 8500)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/RioNegro\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-62.99256592758429,
+					-40.80531073971879,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Salta",
+				"description": "Rivadavia 640<br>Salta (CP 4400)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Salta\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-65.4110628079947,
+					-24.7820598384216,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "San Juan",
+				"description": "Centro Cívico<br>4to. piso<br>Ciudad de San Juan\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/SanJuan\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-68.53750175873965,
+					-31.53681847544483,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Santa Cruz",
+				"description": "Perito Moreno 76<br>Río Gallegos (CP 9400)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/SantaCruz\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-69.22880277777777,
+					-51.61628750747885,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Santa Fe",
+				"description": "Saavedra 2260<br>1er Piso<br>Servicio de Catastro e Información Territorial<br>Ciudad de Santa Fe (CP 3000)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/SantaFe\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-60.71656,
+					-31.647457,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Tierra del Fuego",
+				"description": "San Martín 788<br>1º Piso<br>Ushuaia\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/TierradelFuego\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-68.30861456008476,
+					-54.80746024071021,
+					0
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"Name": "Tucumán",
+				"description": "Av. Benjamín Aráoz 96<br>1er Piso<br>San Miguel de Tucumán (CP 4000)\n<br><br>\n<a href=\"http://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/Tucuman\">Más información</a>"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					-65.1957055021018,
+					-26.83279633034885,
+					0
+				]
+			}
+		}
+	]
+}
