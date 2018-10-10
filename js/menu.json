@@ -13,7 +13,7 @@
          "class":"menu2",
          "seccion":"ign-wms",
          "capas":[
-            {"titulo":"ign-wms", "nombre":"IGN WMS","servicio":"wms", "host":"https://wms.ign.gob.ar"}
+            {"titulo":"ign-wms", "nombre":"IGN WMS","servicio":"wms", "host":"http://wms.ign.gob.ar"}
          ]
       }
    ]
