@@ -97,7 +97,7 @@
       </nav>
       <div class="container-fluid">
          <div class="row">
-            <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse _sidebar _panel-group" aria-expanded="false">
+            <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group" aria-expanded="false" style="padding:0 10px">
                <div id="sidebar" class="nav nav-sidebar panel panel-default">
                <style>
                   .nav-sidebar > .active > a {background-color:   inherit !important}
@@ -110,7 +110,7 @@
                         	data.items.forEach(imprimirItem,data.items);
                         });
                      });
-                     $(function(){getGeoserver('https://wms.ign.gob.ar','wms','rios','WMS IGN');});
+                     $(function(){getGeoserver('http://wms.ign.gob.ar','wms','rios','WMS IGN');});
                   </script>
                </div>
             </nav>
