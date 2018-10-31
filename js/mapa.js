@@ -44,6 +44,10 @@ function onEachFeature(feature, layer) {
 var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign });
 var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright' }).addTo(mapa);
 
+// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
+var measureControl = new L.Control.Measure({ position: 'bottomleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
+measureControl.addTo(mapa);
+
 function style(geoJsonFeature) {
     return [
         {'color': 'red'}
