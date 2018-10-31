@@ -40,6 +40,10 @@ function onEachFeature(feature, layer) {
     }
 }
 
+// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
+var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign });
+var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright' }).addTo(mapa);
+
 function style(geoJsonFeature) {
     return [
         {'color': 'red'}
