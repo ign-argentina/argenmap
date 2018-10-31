@@ -44,7 +44,7 @@ function onEachFeature(feature, layer) {
 L.control.mousePosition( { position: 'bottomright',  } ).addTo(mapa);
 
 // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign });
+var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
 var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
 
 // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
