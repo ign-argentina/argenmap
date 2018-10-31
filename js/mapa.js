@@ -40,6 +40,9 @@ function onEachFeature(feature, layer) {
     }
 }
 
+// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
+L.control.mousePosition( { position: 'bottomright',  } ).addTo(mapa);
+
 // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
 var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign });
 var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
