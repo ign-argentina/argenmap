@@ -48,6 +48,38 @@ var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimiz
 var measureControl = new L.Control.Measure({ position: 'bottomleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
 measureControl.addTo(mapa);
 
+// Leaflet-Location plugin https://github.com/herrhelms/meteor-leaflet-locatecontrol
+var locateControl = L.control.locate({
+  position: "bottomright",
+  drawCircle: true,
+  follow: true,
+  setView: true,
+  keepCurrentZoomLevel: true,
+  markerStyle: {
+    weight: 1,
+    opacity: 0.8,
+    fillOpacity: 0.8
+  },
+  circleStyle: {
+    weight: 1,
+    clickable: false
+  },
+  icon: "fa fa-location-arrow",
+  metric: true,
+  strings: {
+    title: "Mi posición",
+    popup: "Ustes se encuentra a {distance} {unit} desde este punto",
+    outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
+  },
+  locateOptions: {
+    maxZoom: 18,
+    watch: true,
+    enableHighAccuracy: true,
+    maximumAge: 10000,
+    timeout: 10000
+  }
+}).addTo(mapa);
+
 function style(geoJsonFeature) {
     return [
         {'color': 'red'}
