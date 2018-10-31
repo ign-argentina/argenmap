@@ -5,13 +5,13 @@ var atrib_ign = "<a href='http://www.ign.gob.ar/argenmap/argenmap.jquery/docs/da
     layerData;
 
 // Mapa base actual de ArgenMap (Geoserver)
-var argenmap_old = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
+var argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
     tms: true,
     maxZoom: 15,
     attribution: atrib_ign
 });
 
-var argenmap = L.tileLayer('https://ide.ign.gob.ar/geoservicios/rest/services/Mapas_IGN/mapa_topografico/MapServer/tile/{z}/{y}/{x}', {
+var argenmap_old = L.tileLayer('https://ide.ign.gob.ar/geoservicios/rest/services/Mapas_IGN/mapa_topografico/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 15,
     attribution: atrib_ign
 });
