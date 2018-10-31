@@ -42,7 +42,7 @@ function onEachFeature(feature, layer) {
 
 // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
 var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign });
-var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright' }).addTo(mapa);
+var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
 
 // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
 var measureControl = new L.Control.Measure({ position: 'bottomleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
