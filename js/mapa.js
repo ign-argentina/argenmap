@@ -5,13 +5,13 @@ var atrib_ign = "<a href='http://www.ign.gob.ar/argenmap/argenmap.jquery/docs/da
     layerData;
 
 // Mapa base actual de ArgenMap (Geoserver)
-var argenmap_old = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
+var argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
     tms: true,
     maxZoom: 15,
     attribution: atrib_ign
 });
 
-var argenmap = L.tileLayer('https://ide.ign.gob.ar/geoservicios/rest/services/Mapas_IGN/mapa_topografico/MapServer/tile/{z}/{y}/{x}', {
+var argenmap_old = L.tileLayer('https://ide.ign.gob.ar/geoservicios/rest/services/Mapas_IGN/mapa_topografico/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 15,
     attribution: atrib_ign
 });
@@ -39,6 +39,49 @@ function onEachFeature(feature, layer) {
         layer.bindPopup(datos.toString().replace(",",""));
     }
 }
+
+// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
+L.control.mousePosition( { position: 'bottomright',  } ).addTo(mapa);
+
+// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
+var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
+var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
+
+// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
+var measureControl = new L.Control.Measure({ position: 'bottomleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
+measureControl.addTo(mapa);
+
+// Leaflet-Location plugin https://github.com/herrhelms/meteor-leaflet-locatecontrol
+var locateControl = L.control.locate({
+  position: "bottomright",
+  drawCircle: true,
+  follow: true,
+  setView: true,
+  keepCurrentZoomLevel: true,
+  markerStyle: {
+    weight: 1,
+    opacity: 0.8,
+    fillOpacity: 0.8
+  },
+  circleStyle: {
+    weight: 1,
+    clickable: false
+  },
+  icon: "fa fa-location-arrow",
+  metric: true,
+  strings: {
+    title: "Mi posición",
+    popup: "Ustes se encuentra a {distance} {unit} desde este punto",
+    outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
+  },
+  locateOptions: {
+    maxZoom: 18,
+    watch: true,
+    enableHighAccuracy: true,
+    maximumAge: 10000,
+    timeout: 10000
+  }
+}).addTo(mapa);
 
 function style(geoJsonFeature) {
     return [

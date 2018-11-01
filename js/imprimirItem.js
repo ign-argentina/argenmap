@@ -26,14 +26,15 @@ function imprimirItem(item, callback) {
 		// if no nombre suplied ask for one
 		childId = "child-" + item.seccion + "-" + key;
 		$("#" + item.seccion).children().append(
-			"<li id='" + childId + "' class='capa list-group-item'><a nombre=" + item.capas[key].titulo + 
-			" href='#'>" + (item.capas[key].nombre ? item.capas[key].nombre.replace(/_/g, " ") : "por favor ingrese un nombre" ) + "</a></li>"); // Replace all "_" with a " "
+			"<li id='" + childId + "' class='capa list-group-item'><a nombre=" + item.capas[key].nombre + 
+			" href='#'>" + (item.capas[key].titulo ? item.capas[key].titulo.replace(/_/g, " ") : "por favor ingrese un nombre" ) + "</a></li>"); // Replace all "_" with a " "
 
 		// Bind actions to subItem if Callback is a valid function and if it is loaded
 		if(typeof callback === "function") {
 			// Bind events to items of seccion
 			$("#" + childId).on('click tap',function(){
 				$(this).toggleClass('active').children().attr("nombre", function( i, nombre ) {
+					console.log(nombre);
 					callback(item.capas[key].host, nombre);
 				});
 			});
