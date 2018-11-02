@@ -124,7 +124,7 @@ function loadGeojson(url, layer) {
 function getGeoserver(host, servicio, seccion, nombre, version){
     if(!$('#temp-menu').hasClass('temp')){ $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>');}
     // Load geoserver Capabilities, if success Create menu and append to DOM
-    $('#temp-menu').load(host + '/geoserver/ows?service=' + servicio + '&version=1.1.1&request=GetCapabilities', function(){
+    $('#temp-menu').load(host + '/ows?service=' + servicio + '&version=' + version + '&request=GetCapabilities', function(){
         var capability = $('#temp-menu').find("capability");
         var capas_layer = $('layer', capability);
         var capas_info = $('layer', capas_layer);        
