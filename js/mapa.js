@@ -121,10 +121,10 @@ function loadGeojson(url, layer) {
 
 }
 
-function getGeoserver(host, servicio, seccion, nombre){
+function getGeoserver(host, servicio, seccion, nombre, version){
     if(!$('#temp-menu').hasClass('temp')){ $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>');}
     // Load geoserver Capabilities, if success Create menu and append to DOM
-    $('#temp-menu').load(host + '/geoserver/ows?service=' + servicio + '&version=1.1.1&request=GetCapabilities', function(){
+    $('#temp-menu').load(host + '/ows?service=' + servicio + '&version=' + version + '&request=GetCapabilities', function(){
         var capability = $('#temp-menu').find("capability");
         var capas_layer = $('layer', capability);
         var capas_info = $('layer', capas_layer);        
@@ -133,7 +133,15 @@ function getGeoserver(host, servicio, seccion, nombre){
         // create an object with all layer info for each layer
         capas_info.each(function(index, b){
             var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i); 
-            var iSrs=iBoundingBox[0].attributes.srs; var iMaxY=iBoundingBox[0].attributes.maxy; var iMinY=iBoundingBox[0].attributes.miny; var iMinX=iBoundingBox[0].attributes.minx; var iMaxX=iBoundingBox[0].attributes.maxx;
+            if (iBoundingBox[0].attributes.srs) {
+                var iSrs=iBoundingBox[0].attributes.srs;   
+            } else {
+                var iSrs=iBoundingBox[0].attributes.crs;                
+            }
+            var iMaxY=iBoundingBox[0].attributes.maxy;
+            var iMinY=iBoundingBox[0].attributes.miny;
+            var iMinX=iBoundingBox[0].attributes.minx;
+            var iMaxX=iBoundingBox[0].attributes.maxx;
             var obj={};
             obj.nombre = iName; obj.titulo = iTitle; obj.srs = iSrs.nodeValue; obj.host = host; obj.servicio = servicio; obj.minx = iMinX.nodeValue; obj.maxx = iMaxX.nodeValue; obj.miny = iMinY.nodeValue; obj.maxy = iMaxY.nodeValue;
             capas.push(obj);
