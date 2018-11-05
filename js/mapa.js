@@ -168,7 +168,7 @@ function loadWms(wmsUrl, layer){
     }
 
     function createWmsLayer(wmsUrl, layer) {
-        overlayMaps[layer] = new L.tileLayer.wms(wmsUrl + "/geoserver/wms?", {
+        overlayMaps[layer] = new L.tileLayer.wms(wmsUrl + "/wms?", {
             layers: layer,
             tiled: true,
             format: 'image/png',
