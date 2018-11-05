@@ -8,7 +8,7 @@
       <meta name="description" content="">
       <meta name="author" content="">
       <link rel="shortcut icon" href="http://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />
-      <title>Argenmap</title>
+      <title>IGN - Argenmap</title>
       <!-- Bootstrap core CSS -->
       <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -75,7 +75,8 @@
         .menu2 {background-color: #0695d6 !important; color: white !important;}
         .menu3 {background-color: #2aaad1 !important; color: white !important;}
         .menu4 {background-color: #5bc0de !important; color: white !important;}
-        .menu5 {background-color: #74c2da !important; color: white !important;}
+        /* .menu5 {background-color: #74c2da !important; color: white !important;} */
+		.menu5 {background-color: #008dc9 !important; color: white !important;}
         #sidebar-container{z-index: 1500;} 
         #sidebar .nav {border: 1px;}
         .nav-sidebar { /*ancho de selector de capas */
@@ -94,6 +95,12 @@
         @media (max-width: 390px) {
           .xxsmall-hide {display: none};
         }
+		.navbar {
+		  background-color: #008dc9;
+		}
+		.navbar-brand {
+		  padding-top: 7px;
+		}
       </style>
    </head>
    <body>
@@ -106,9 +113,16 @@
                <span class="icon-bar"></span>
                <span class="icon-bar"></span>
                </button>
-               <a class="navbar-brand navbar-right" href="#"><span class="xxsmall-hide">IGN - </span>Argenmap</a>
+               <a class="navbar-brand navbar-right" href="#">
+			      <span class="xxsmall-hide">
+				      <img src="img/logo.png" style="width:50px">
+				  </span>
+			    </a>
             </div>
             <div id="navbar" class="navbar-collapse collapse"></div>
+			  <span class="xxsmall-hide">
+				  <img src="img/logoMinDef.png" style="top:11px;position:absolute;right:10px;width:144px;float:right">
+			  </span>
          </div>
       </nav>
       <div class="container-fluid">
