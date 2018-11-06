@@ -1,5 +1,5 @@
 var atrib_ign = "<a href='http://www.ign.gob.ar/argenmap/argenmap.jquery/docs/datosdelmapa.html' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
-    baseMaps = {"Argenmap": argenmap},
+    baseMaps = {},
     overlayMaps = new Object(),
     layerName,
     layerData;
@@ -174,6 +174,22 @@ function loadWms(wmsUrl, layer){
             format: 'image/png',
             // attribution: "Weather data © 2012 IEM Nexrad",
             transparent: true
+        });
+    }
+}
+
+function loadMapaBase(tmsUrl, layer){
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createTmsLayer(tmsUrl, layer);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createTmsLayer(tmsUrl, layer) {
+        baseMaps[layer] = new L.tileLayer(tmsUrl, {
+            //attribution: "Weather data © 2012 IEM Nexrad",
         });
     }
 }

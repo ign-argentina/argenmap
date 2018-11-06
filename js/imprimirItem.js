@@ -34,17 +34,26 @@ function imprimirItem(item, callback) {
 			// Bind events to items of seccion
 			$("#" + childId).on('click tap',function(){
 				$(this).toggleClass('active').children().attr("nombre", function( i, nombre ) {
-					console.log(nombre);
 					callback(item.capas[key].host, nombre);
 				});
 			});
-		} else { // Bind without callback
-			// Bind events to items of seccion
-			$("#" + childId).on('click tap',function(){
-				$(this).toggleClass('active').children().attr("nombre", function( i, nombre ) {
-					loadGeojson(item.capas[key].host, nombre);
+		} else { 
+			if (item.capas[key].servicio === "tms") {
+				$("#" + childId).on('click tap',function(){
+					//$(this).parent().children().removeClass('active');
+					$(this).toggleClass('active').children().attr("nombre", function( i, nombre ) {
+						loadMapaBase(item.capas[key].host, item.capas[key].nombre);
+					});
 				});
-			});
+			} else {	
+				// Bind without callback
+				// Bind events to items of seccion
+				$("#" + childId).on('click tap',function(){
+					$(this).toggleClass('active').children().attr("nombre", function( i, nombre ) {
+						loadGeojson(item.capas[key].host, nombre);
+					});
+				});
+			}
 		}
 	}
 }

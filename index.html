@@ -135,25 +135,22 @@
                   .list-group-item.active {border-color: white;}
                </style>
                   <script>
-                    /*
                      $.getJSON("./js/menu.json", function( data ) {
                         $.each( data, function( key, val ) {
                         	data.items.forEach(imprimirItem,data.items);
                         });
                      });
-                     */
-                    //$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/idemindef','wms','mindef','Ministerio de Defensa', '1.3.0');});
-                    //$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/idera','wms','ign','Instituto Geográfico Nacional', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/industria-servicios','wms','industria-servicios','Industria y servicios', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/habitat-infraestructura-social','wms','habitat-infraestructura-social','Hábitat e infraestructura social', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/transporte','wms','transporte','Transporte', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/hidrografia-oceanografia','wms','hidrografia-oceanografia','Hidrografía y oceanografía', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/relieve-suelo','wms','relieve-suelo','Relieve y suelo', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/geodesia-demarcacion','wms','geodesia-demarcacion','Redes geodésicas y demarcación', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/defensa-seguridad','wms','defensa-seguridad','Defensa y seguridad', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/fotogrametria','wms','fotogrametria','Fotogrametría', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/cartografia','wms','cartografia','Cartografía', '1.3.0');});
-					$(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/idemindef','wms','ministerio-defensa','Ministerio de Defensa', '1.3.0');});
+                     var wmsIgn = 'https://wms.ign.gob.ar/geoserver/';
+                      $(function(){getGeoserver(wmsIgn + 'industria-servicios','wms','industria-servicios','Industria y servicios', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'habitat-infraestructura-social','wms','habitat-infraestructura-social','Hábitat e infraestructura social', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'transporte','wms','transporte','Transporte', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'hidrografia-oceanografia','wms','hidrografia-oceanografia','Hidrografía y oceanografía', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'relieve-suelo','wms','relieve-suelo','Relieve y suelo', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'geodesia-demarcacion','wms','geodesia-demarcacion','Redes geodésicas y demarcación', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'defensa-seguridad','wms','defensa-seguridad','Defensa y seguridad', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'fotogrametria','wms','fotogrametria','Fotogrametría', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'cartografia','wms','cartografia','Cartografía', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'idemindef','wms','ministerio-defensa','Ministerio de Defensa', '1.3.0');});
                   </script>
                </div>
             </nav>
