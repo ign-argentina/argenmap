@@ -64,7 +64,10 @@
 	  
 	  <!-- Leaflet Measure plugin -->
 	  <link rel="stylesheet" href="js/leaflet-measure/leadflet-measure.css">
-	  <script src="js/leaflet-measure/leaflet-measure.js"></script>
+    <script src="js/leaflet-measure/leaflet-measure.js"></script>
+    
+    <!-- Leaflet BetterWMS -->
+    <script src="js/leaflet-wms/L.TileLayer.BetterWMS.js"></script>
 	  
       <style> 
       	.navbar-fixed-bottom, .navbar-fixed-top {
@@ -115,13 +118,18 @@
                </button>
                <a class="navbar-brand navbar-right" href="#">
 			      <span class="xxsmall-hide">
-				      <img src="img/logo.png" style="width:50px">
+              <a href="http://www.ign.gob.ar/" target="_blank">
+                <img src="img/logo.png" alt="Logo IGN" title="Instituto Geográfico Nacional" style="width:50px;top:7px;position:absolute">
+              </a>
+              <!--<div style="font-family: 'Roboto', sans-serif; color: #ffffff">Argenmap</div>-->
 				  </span>
 			    </a>
             </div>
             <div id="navbar" class="navbar-collapse collapse"></div>
 			  <span class="xxsmall-hide">
-				  <img src="img/logoMinDef.png" style="top:11px;position:absolute;right:10px;width:144px;float:right">
+          <a href="https://www.argentina.gob.ar/defensa" target="_blank">
+            <img src="img/logoMinDef.png" alt="Logo Ministerio de Defensa" title="Ministerio de Defensa" style="top:11px;position:absolute;right:10px;width:144px;float:right">
+          </a>
 			  </span>
          </div>
       </nav>

@@ -42,7 +42,8 @@ function imprimirItem(item, callback) {
 				$("#" + childId).on('click tap',function(){
 					//$(this).parent().children().removeClass('active');
 					$(this).toggleClass('active').children().attr("nombre", function( i, nombre ) {
-						loadMapaBase(item.capas[key].host, item.capas[key].nombre);
+						var attrib = item.capas[key].attribution;
+						loadMapaBase(item.capas[key].host, item.capas[key].nombre, attrib);
 					});
 				});
 			} else {	

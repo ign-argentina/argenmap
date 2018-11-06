@@ -178,18 +178,18 @@ function loadWms(wmsUrl, layer){
     }
 }
 
-function loadMapaBase(tmsUrl, layer){
+function loadMapaBase(tmsUrl, layer, attribution){
     if (baseMaps.hasOwnProperty(layer)) {
         baseMaps[layer].removeFrom(mapa);
         delete baseMaps[layer];
     } else {
-        createTmsLayer(tmsUrl, layer);
+        createTmsLayer(tmsUrl, layer, attribution);
         baseMaps[layer].addTo(mapa);
     }
 
-    function createTmsLayer(tmsUrl, layer) {
+    function createTmsLayer(tmsUrl, layer, attribution) {
         baseMaps[layer] = new L.tileLayer(tmsUrl, {
-            //attribution: "Weather data © 2012 IEM Nexrad",
+            attribution: attribution,
         });
     }
 }
