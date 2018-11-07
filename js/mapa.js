@@ -168,6 +168,15 @@ function loadWms(wmsUrl, layer){
     }
 
     function createWmsLayer(wmsUrl, layer) {
+        var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+            transparent: true,
+            tiled: true,
+            format: 'image/png',
+            INFO_FORMAT: 'text/html'
+        });
+        overlayMaps[layer] = wmsSource.getLayer(layer);
+
+        /*
         overlayMaps[layer] = new L.tileLayer.wms(wmsUrl + "/wms?", {
             layers: layer,
             tiled: true,
@@ -175,6 +184,7 @@ function loadWms(wmsUrl, layer){
             // attribution: "Weather data © 2012 IEM Nexrad",
             transparent: true
         });
+        */
     }
 }
 
