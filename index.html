@@ -149,6 +149,8 @@
                         });
                      });
                      var wmsIgn = 'https://wms.ign.gob.ar/geoserver/';
+                     var wmsRasterIgn = 'https://wms.ign.gob.ar/raster/';
+                      $(function(){getGeoserver(wmsRasterIgn + 'ign','wms','raster','Imágenes', '1.3.0');});
                       $(function(){getGeoserver(wmsIgn + 'industria-servicios','wms','industria-servicios','Industria y servicios', '1.3.0');});
                       $(function(){getGeoserver(wmsIgn + 'habitat-infraestructura-social','wms','habitat-infraestructura-social','Hábitat e infraestructura social', '1.3.0');});
                       $(function(){getGeoserver(wmsIgn + 'transporte','wms','transporte','Transporte', '1.3.0');});
