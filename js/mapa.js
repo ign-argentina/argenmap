@@ -126,6 +126,10 @@ function getGeoserver(host, servicio, seccion, nombre, version){
     // Load geoserver Capabilities, if success Create menu and append to DOM
     $('#temp-menu').load(host + '/ows?service=' + servicio + '&version=' + version + '&request=GetCapabilities', function(){
         var capability = $('#temp-menu').find("capability");
+        var keywordHtml = $('#temp-menu').find("Keyword");
+        var abstractHtml = $('#temp-menu').find("Abstract");
+        var keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+        var abstract = abstractHtml[0].innerText; // reads wms 1st abstract
         var capas_layer = $('layer', capability);
         var capas_info = $('layer', capas_layer);        
         var capas = [];
