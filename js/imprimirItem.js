@@ -4,6 +4,11 @@ var oMenu = new Object();
 
 function imprimirItem(item, callback) {
 	var listaId = "lista-" + item.seccion;
+	var abstractText = '';
+	if (item.keyword === keywordFilter) { 
+		// adds to section an abstract by a given keyword in WMS Capabilities
+		abstractText = item.abstract;
+	}
 	if(!item.class) {item.class="menu5";}
 	// refresh or create item whith this seccion 
 	if($('#' + item.seccion).length != 0){
@@ -11,7 +16,7 @@ function imprimirItem(item, callback) {
 		$('#' + listaId).first().children().first().children().first().html(item.nombre);
 	} else {
 		$(".nav.nav-sidebar").append(
-		"<div id='" + listaId + "' class='" + item.class + " panel-heading' ' >" + 
+		"<div id='" + listaId + "' class='" + item.class + " panel-heading' title='" + abstractText + "' >" + 
 		"<div class='panel-title'>" + 
 		"<a data-toggle='collapse' href='#" + item.seccion + "'>" + item.nombre + "</a></div>" + 
 		"<div id='" + item.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'></ul></div></div>");
@@ -59,8 +64,8 @@ function imprimirItem(item, callback) {
 	}
 }
 
-function nuevoItem(nombre, seccion, capas, callback) {
-	obj = new Object({nombre: nombre, seccion: seccion});
+function nuevoItem(nombre, seccion, capas, keyword, abstract, callback) {
+	obj = new Object({nombre: nombre, seccion: seccion, keyword: keyword, abstract: abstract});
 	obj.capas = capas;
 	return obj;
 }

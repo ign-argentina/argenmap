@@ -131,7 +131,7 @@ function getGeoserver(host, servicio, seccion, nombre, version){
         var keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
         var abstract = abstractHtml[0].innerText; // reads wms 1st abstract
         var capas_layer = $('layer', capability);
-        var capas_info = $('layer', capas_layer);        
+        var capas_info = $('layer', capas_layer);
         var capas = [];
 
         // create an object with all layer info for each layer
@@ -151,9 +151,10 @@ function getGeoserver(host, servicio, seccion, nombre, version){
             capas.push(obj);
         });
 
+        
         // Add layers DOM
         try {
-            imprimirItem(nuevoItem(nombre, seccion, capas), loadWms);
+            imprimirItem(nuevoItem(nombre, seccion, capas, keyword, abstract), loadWms);
         }
         catch(err) {
             if(err.name == "ReferenceError"){
