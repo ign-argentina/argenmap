@@ -1,76 +1,78 @@
 <!DOCTYPE html>
 <html lang="es">
-   <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-      <meta name="description" content="">
-      <meta name="author" content="">
-      <link rel="shortcut icon" href="http://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />
-      <title>IGN - Argenmap</title>
-      <!-- Bootstrap core CSS -->
-      <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-      <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-      <link href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-      <!-- Custom styles for this template -->
-      <link href="https://getbootstrap.com/docs/3.3/examples/dashboard/dashboard.css" rel="stylesheet">
-      <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-      <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-      <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js"></script>
-      <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-      <!--[if lt IE 9]>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="http://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />
+  <title>IGN - Argenmap</title>
+  <!-- Bootstrap core CSS -->
+  <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <link href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="https://getbootstrap.com/docs/3.3/examples/dashboard/dashboard.css" rel="stylesheet">
+  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+  <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+  <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js"></script>
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
       <![endif]-->
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <!-- Bootstrap core JavaScript
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bootstrap core JavaScript
          ================================================== -->
-      <!-- Placed at the end of the document so the pages load faster -->
-      <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
-      <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js"></script>
-      <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-      <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js"></script>
-      <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-      <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
-      <script src="./js/imprimirItem.js"></script>
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
+  <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js"></script>
+  <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+  <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
+  <script src="./js/imprimirItem.js"></script>
 
-      <!-- Librerias del mapa -->
-      <link rel='stylesheet' href='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css' />
-      <script src='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.js'></script>
-      <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js'></script>
-      <script src='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js'></script>
-      <link rel='stylesheet' href='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css' />
+  <!-- Librerias del mapa -->
+  <link rel='stylesheet' href='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css' />
+  <script src='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js'></script>
+  <script src='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js'></script>
+  <link rel='stylesheet' href='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css' />
 
-      <!-- Font Awesome -->
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+    crossorigin="anonymous">
 
-      <!-- Awesome Markers -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css">
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js"></script>
+  <!-- Awesome Markers -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js"></script>
 
-	  <!-- Leaflet Minimap plugin -->
-	  <link rel="stylesheet" href="js/leaflet-minimap/Control.MiniMap.css">
-	  <script src="js/leaflet-minimap/Control.MiniMap.js"></script>
-	  
-	  <!-- Leaflet Locate plugin -->
-	  <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css">
-	  <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
-	  
-	  <!-- Leaflet Mouse Position plugin -->
-	  <link rel="stylesheet" href="js/leaflet-mouseposition/src/L.Control.MousePosition.css">
-	  <script src="js/leaflet-mouseposition/src/L.Control.MousePosition.js"></script>
-	  
-	  <!-- Leaflet Measure plugin -->
-	  <link rel="stylesheet" href="js/leaflet-measure/leadflet-measure.css">
-    <script src="js/leaflet-measure/leaflet-measure.js"></script>
-    
-    <!-- Leaflet BetterWMS -->
-    <script src="js/leaflet-wms/leaflet.wms.js"></script>
-	  
-      <style> 
-      	.navbar-fixed-bottom, .navbar-fixed-top {
+  <!-- Leaflet Minimap plugin -->
+  <link rel="stylesheet" href="js/leaflet-minimap/Control.MiniMap.css">
+  <script src="js/leaflet-minimap/Control.MiniMap.js"></script>
+
+  <!-- Leaflet Locate plugin -->
+  <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css">
+  <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
+
+  <!-- Leaflet Mouse Position plugin -->
+  <link rel="stylesheet" href="js/leaflet-mouseposition/src/L.Control.MousePosition.css">
+  <script src="js/leaflet-mouseposition/src/L.Control.MousePosition.js"></script>
+
+  <!-- Leaflet Measure plugin -->
+  <link rel="stylesheet" href="js/leaflet-measure/leadflet-measure.css">
+  <script src="js/leaflet-measure/leaflet-measure.js"></script>
+
+  <!-- Leaflet BetterWMS -->
+  <script src="js/leaflet-wms/leaflet.wms.js"></script>
+
+  <style>
+    .navbar-fixed-bottom, .navbar-fixed-top {
       		z-index: 2000;
       		background-color: white;
       	}
@@ -105,70 +107,74 @@
 		  padding-top: 7px;
 		}
       </style>
-   </head>
-   <body>
-      <nav class="navbar _navbar-inverse navbar-fixed-top">
-         <div class="container-fluid col-12 col-xs-12 col-sm-12 col-md-12">
-            <div class="navbar-header">
-               <button type="button" class="hidden-lg hidden-md navbar-toggle collapsed pull-left" data-toggle="collapse" data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
-               <span class="sr-only">Toggle navigation</span>
-               <span class="icon-bar"></span>
-               <span class="icon-bar"></span>
-               <span class="icon-bar"></span>
-               </button>
-               <a class="navbar-brand navbar-right" href="#">
-			      <span class="xxsmall-hide">
-              <a href="http://www.ign.gob.ar/" target="_blank">
-                <img src="img/logo.png" alt="Logo IGN" title="Instituto Geográfico Nacional" style="left:50px;width:50px;top:7px;position:absolute">
-              </a>
-              <!--<div style="font-family: 'Roboto', sans-serif; color: #ffffff">Argenmap</div>-->
-				  </span>
-			    </a>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse"></div>
-			  <span class="xxsmall-hide">
-          <a href="https://www.argentina.gob.ar/defensa" target="_blank">
-            <img src="img/logoMinDef.png" alt="Logo Ministerio de Defensa" title="Ministerio de Defensa" style="top:11px;position:absolute;right:10px;width:144px;float:right">
-          </a>
-			  </span>
-         </div>
-      </nav>
-      <div class="container-fluid">
-         <div class="row">
-            <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group" aria-expanded="false" style="padding:0 10px">
-               <div id="sidebar" class="nav nav-sidebar panel panel-default">
-               <style>
-                  .nav-sidebar > .active > a {background-color:   inherit !important}
+</head>
+
+<body>
+  <nav class="navbar _navbar-inverse navbar-fixed-top">
+    <div class="container-fluid col-12 col-xs-12 col-sm-12 col-md-12">
+      <div class="navbar-header">
+        <button type="button" class="hidden-lg hidden-md navbar-toggle collapsed pull-left" data-toggle="collapse"
+          data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand navbar-right" href="#">
+          <span class="xxsmall-hide">
+            <a href="http://www.ign.gob.ar/" target="_blank">
+              <img src="img/logo.png" alt="Logo IGN" title="Instituto Geográfico Nacional" style="left:50px;width:50px;top:7px;position:absolute">
+            </a>
+            <!--<div style="font-family: 'Roboto', sans-serif; color: #ffffff">Argenmap</div>-->
+          </span>
+        </a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse"></div>
+      <span class="xxsmall-hide">
+        <a href="https://www.argentina.gob.ar/defensa" target="_blank">
+          <img src="img/logoMinDef.png" alt="Logo Ministerio de Defensa" title="Ministerio de Defensa" style="top:11px;position:absolute;right:10px;width:144px;float:right">
+        </a>
+      </span>
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
+        aria-expanded="false" style="padding:0 10px">
+        <div id="sidebar" class="nav nav-sidebar panel panel-default">
+          <style>
+            .nav-sidebar > .active > a {background-color:   inherit !important}
                   .active {background-color: #33b560 !important;}
                   .list-group-item.active {border-color: white;}
                </style>
-                  <script>
-                     $.getJSON("./js/menu.json", function( data ) {
-                        $.each( data, function( key, val ) {
-                        	data.items.forEach(imprimirItem,data.items);
-                        });
-                     });
-                     var keywordFilter = 'dato-basico-y-fundamental';
-                     var wmsIgn = 'https://wms.ign.gob.ar/geoserver/';
-                     var wmsRasterIgn = 'https://wms.ign.gob.ar/raster/';
-                      $(function(){getGeoserver(wmsRasterIgn + 'ign','wms','raster','Imágenes', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'industria-servicios','wms','industria-servicios','Industria y servicios', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'habitat-infraestructura-social','wms','habitat-infraestructura-social','Hábitat e infraestructura social', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'transporte','wms','transporte','Transporte', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'hidrografia-oceanografia','wms','hidrografia-oceanografia','Hidrografía y oceanografía', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'relieve-suelo','wms','relieve-suelo','Relieve y suelo', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'geodesia-demarcacion','wms','geodesia-demarcacion','Redes geodésicas y demarcación', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'defensa-seguridad','wms','defensa-seguridad','Defensa y seguridad', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'fotogrametria','wms','fotogrametria','Fotogrametría', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'cartografia','wms','cartografia','Cartografía', '1.3.0');});
-                      $(function(){getGeoserver(wmsIgn + 'idemindef','wms','ministerio-defensa','Ministerio de Defensa', '1.3.0');});
-                  </script>
-               </div>
-            </nav>
-            <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main" style="position: absolute; bottom:0; top: 51px; background-color: white">
-               <script type="text/javascript" src="./js/mapa.js"></script>
-            </div>
-         </div>
+          <script>
+            $.getJSON("./js/menu.json", function (data) {
+              $.each(data, function (key, val) {
+                data.items.forEach(imprimirItem, data.items);
+              });
+            });
+            var keywordFilter = 'dato-basico-y-fundamental';
+            var wmsIgn = 'https://wms.ign.gob.ar/geoserver/';
+            var wmsRasterIgn = 'https://wms.ign.gob.ar/raster/';
+            $(function () { getGeoserver(wmsRasterIgn + 'ign', 'wms', 'raster', 'Imágenes', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'industria-servicios', 'wms', 'industria-servicios', 'Industria y servicios', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'habitat-infraestructura-social', 'wms', 'habitat-infraestructura-social', 'Hábitat e infraestructura social', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'transporte', 'wms', 'transporte', 'Transporte', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'hidrografia-oceanografia', 'wms', 'hidrografia-oceanografia', 'Hidrografía y oceanografía', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'relieve-suelo', 'wms', 'relieve-suelo', 'Relieve y suelo', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'geodesia-demarcacion', 'wms', 'geodesia-demarcacion', 'Redes geodésicas y demarcación', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'defensa-seguridad', 'wms', 'defensa-seguridad', 'Defensa y seguridad', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'fotogrametria', 'wms', 'fotogrametria', 'Fotogrametría', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'cartografia', 'wms', 'cartografia', 'Cartografía', '1.3.0'); });
+            $(function () { getGeoserver(wmsIgn + 'idemindef', 'wms', 'ministerio-defensa', 'Ministerio de Defensa', '1.3.0'); });
+          </script>
+        </div>
+      </nav>
+      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main" style="position: absolute; bottom:0; top: 51px; background-color: white">
+        <script type="text/javascript" src="./js/mapa.js"></script>
       </div>
-   </body>
+    </div>
+  </div>
+</body>
+
 </html>

@@ -20,10 +20,10 @@ var argenmap_old = L.tileLayer('https://ide.ign.gob.ar/geoservicios/rest/service
 var mapa = L.map('mapa', {
     center: [-40, -59],
     zoom: 4,
-    layers:[argenmap]
+    layers: [argenmap]
 });
 
-L.control.betterscale({metric:true,imperial:false}).addTo(mapa);
+L.control.betterscale({ metric: true, imperial: false }).addTo(mapa);
 
 // -- Plugins Control
 var plugins = new Array("loadGeojson", "loadWms");
@@ -36,15 +36,15 @@ function onEachFeature(feature, layer) {
                 datos.push(index + ": " + value + "<br>");
             }
         });
-        layer.bindPopup(datos.toString().replace(",",""));
+        layer.bindPopup(datos.toString().replace(",", ""));
     }
 }
 
 // Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
-L.control.mousePosition( { position: 'bottomright',  } ).addTo(mapa);
+L.control.mousePosition({ position: 'bottomright', }).addTo(mapa);
 
 // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-var miniArgenmap = new L.TileLayer(argenmap._url, {minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
+var miniArgenmap = new L.TileLayer(argenmap._url, { minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
 var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
 
 // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
@@ -53,39 +53,39 @@ measureControl.addTo(mapa);
 
 // Leaflet-Location plugin https://github.com/herrhelms/meteor-leaflet-locatecontrol
 var locateControl = L.control.locate({
-  position: "bottomright",
-  drawCircle: true,
-  follow: true,
-  setView: true,
-  keepCurrentZoomLevel: true,
-  markerStyle: {
-    weight: 1,
-    opacity: 0.8,
-    fillOpacity: 0.8
-  },
-  circleStyle: {
-    weight: 1,
-    clickable: false
-  },
-  icon: "fa fa-location-arrow",
-  metric: true,
-  strings: {
-    title: "Mi posición",
-    popup: "Ustes se encuentra a {distance} {unit} desde este punto",
-    outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
-  },
-  locateOptions: {
-    maxZoom: 18,
-    watch: true,
-    enableHighAccuracy: true,
-    maximumAge: 10000,
-    timeout: 10000
-  }
+    position: "bottomright",
+    drawCircle: true,
+    follow: true,
+    setView: true,
+    keepCurrentZoomLevel: true,
+    markerStyle: {
+        weight: 1,
+        opacity: 0.8,
+        fillOpacity: 0.8
+    },
+    circleStyle: {
+        weight: 1,
+        clickable: false
+    },
+    icon: "fa fa-location-arrow",
+    metric: true,
+    strings: {
+        title: "Mi posición",
+        popup: "Ustes se encuentra a {distance} {unit} desde este punto",
+        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
+    },
+    locateOptions: {
+        maxZoom: 18,
+        watch: true,
+        enableHighAccuracy: true,
+        maximumAge: 10000,
+        timeout: 10000
+    }
 }).addTo(mapa);
 
 function style(geoJsonFeature) {
     return [
-        {'color': 'red'}
+        { 'color': 'red' }
     ]
 }
 
@@ -103,15 +103,15 @@ function pointToLayer(feature, latlng) {
 }
 
 function loadGeojson(url, layer) {
-    
+
     if (overlayMaps.hasOwnProperty(layer)) {
-        
+
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
 
     } else {
 
-        overlayMaps[layer] = new L.GeoJSON.AJAX( url, {
+        overlayMaps[layer] = new L.GeoJSON.AJAX(url, {
             onEachFeature: onEachFeature,
             pointToLayer: pointToLayer,
         });
@@ -121,10 +121,10 @@ function loadGeojson(url, layer) {
 
 }
 
-function getGeoserver(host, servicio, seccion, nombre, version){
-    if(!$('#temp-menu').hasClass('temp')){ $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>');}
+function getGeoserver(host, servicio, seccion, nombre, version) {
+    if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
     // Load geoserver Capabilities, if success Create menu and append to DOM
-    $('#temp-menu').load(host + '/ows?service=' + servicio + '&version=' + version + '&request=GetCapabilities', function(){
+    $('#temp-menu').load(host + '/ows?service=' + servicio + '&version=' + version + '&request=GetCapabilities', function () {
         var capability = $('#temp-menu').find("capability");
         var keywordHtml = $('#temp-menu').find("Keyword");
         var abstractHtml = $('#temp-menu').find("Abstract");
@@ -135,35 +135,34 @@ function getGeoserver(host, servicio, seccion, nombre, version){
         var capas = [];
 
         // create an object with all layer info for each layer
-        capas_info.each(function(index, b){
-            var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i); 
+        capas_info.each(function (index, b) {
+            var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i);
             if (iBoundingBox[0].attributes.srs) {
-                var iSrs=iBoundingBox[0].attributes.srs;   
+                var iSrs = iBoundingBox[0].attributes.srs;
             } else {
-                var iSrs=iBoundingBox[0].attributes.crs;                
+                var iSrs = iBoundingBox[0].attributes.crs;
             }
-            var iMaxY=iBoundingBox[0].attributes.maxy;
-            var iMinY=iBoundingBox[0].attributes.miny;
-            var iMinX=iBoundingBox[0].attributes.minx;
-            var iMaxX=iBoundingBox[0].attributes.maxx;
-            var obj={};
+            var iMaxY = iBoundingBox[0].attributes.maxy;
+            var iMinY = iBoundingBox[0].attributes.miny;
+            var iMinX = iBoundingBox[0].attributes.minx;
+            var iMaxX = iBoundingBox[0].attributes.maxx;
+            var obj = {};
             obj.nombre = iName; obj.titulo = iTitle; obj.srs = iSrs.nodeValue; obj.host = host; obj.servicio = servicio; obj.minx = iMinX.nodeValue; obj.maxx = iMaxX.nodeValue; obj.miny = iMinY.nodeValue; obj.maxy = iMaxY.nodeValue;
             capas.push(obj);
         });
 
-        
         // Add layers DOM
         try {
             imprimirItem(nuevoItem(nombre, seccion, capas, keyword, abstract), loadWms);
         }
-        catch(err) {
-            if(err.name == "ReferenceError"){
-                imprimirItem(nuevoItem(nombre, seccion, capas),null);
+        catch (err) {
+            if (err.name == "ReferenceError") {
+                imprimirItem(nuevoItem(nombre, seccion, capas), null);
             }
         }
     });
 }
-function loadWms(wmsUrl, layer){
+function loadWms(wmsUrl, layer) {
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
@@ -180,20 +179,10 @@ function loadWms(wmsUrl, layer){
             INFO_FORMAT: 'text/html'
         });
         overlayMaps[layer] = wmsSource.getLayer(layer);
-
-        /*
-        overlayMaps[layer] = new L.tileLayer.wms(wmsUrl + "/wms?", {
-            layers: layer,
-            tiled: true,
-            format: 'image/png',
-            // attribution: "Weather data © 2012 IEM Nexrad",
-            transparent: true
-        });
-        */
     }
 }
 
-function loadMapaBase(tmsUrl, layer, attribution){
+function loadMapaBase(tmsUrl, layer, attribution) {
     if (baseMaps.hasOwnProperty(layer)) {
         baseMaps[layer].removeFrom(mapa);
         delete baseMaps[layer];
