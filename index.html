@@ -8,7 +8,7 @@
       <meta name="description" content="">
       <meta name="author" content="">
       <link rel="shortcut icon" href="http://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />
-      <title>Argenmap</title>
+      <title>IGN - Argenmap</title>
       <!-- Bootstrap core CSS -->
       <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -64,7 +64,10 @@
 	  
 	  <!-- Leaflet Measure plugin -->
 	  <link rel="stylesheet" href="js/leaflet-measure/leadflet-measure.css">
-	  <script src="js/leaflet-measure/leaflet-measure.js"></script>
+    <script src="js/leaflet-measure/leaflet-measure.js"></script>
+    
+    <!-- Leaflet BetterWMS -->
+    <script src="js/leaflet-wms/leaflet.wms.js"></script>
 	  
       <style> 
       	.navbar-fixed-bottom, .navbar-fixed-top {
@@ -75,7 +78,8 @@
         .menu2 {background-color: #0695d6 !important; color: white !important;}
         .menu3 {background-color: #2aaad1 !important; color: white !important;}
         .menu4 {background-color: #5bc0de !important; color: white !important;}
-        .menu5 {background-color: #74c2da !important; color: white !important;}
+        /* .menu5 {background-color: #74c2da !important; color: white !important;} */
+		.menu5 {background-color: #008dc9 !important; color: white !important;}
         #sidebar-container{z-index: 1500;} 
         #sidebar .nav {border: 1px;}
         .nav-sidebar { /*ancho de selector de capas */
@@ -94,6 +98,12 @@
         @media (max-width: 390px) {
           .xxsmall-hide {display: none};
         }
+		.navbar {
+		  background-color: #008dc9;
+		}
+		.navbar-brand {
+		  padding-top: 7px;
+		}
       </style>
    </head>
    <body>
@@ -106,9 +116,21 @@
                <span class="icon-bar"></span>
                <span class="icon-bar"></span>
                </button>
-               <a class="navbar-brand navbar-right" href="#"><span class="xxsmall-hide">IGN - </span>Argenmap</a>
+               <a class="navbar-brand navbar-right" href="#">
+			      <span class="xxsmall-hide">
+              <a href="http://www.ign.gob.ar/" target="_blank">
+                <img src="img/logo.png" alt="Logo IGN" title="Instituto Geográfico Nacional" style="left:50px;width:50px;top:7px;position:absolute">
+              </a>
+              <!--<div style="font-family: 'Roboto', sans-serif; color: #ffffff">Argenmap</div>-->
+				  </span>
+			    </a>
             </div>
             <div id="navbar" class="navbar-collapse collapse"></div>
+			  <span class="xxsmall-hide">
+          <a href="https://www.argentina.gob.ar/defensa" target="_blank">
+            <img src="img/logoMinDef.png" alt="Logo Ministerio de Defensa" title="Ministerio de Defensa" style="top:11px;position:absolute;right:10px;width:144px;float:right">
+          </a>
+			  </span>
          </div>
       </nav>
       <div class="container-fluid">
@@ -121,15 +143,25 @@
                   .list-group-item.active {border-color: white;}
                </style>
                   <script>
-                    /*
                      $.getJSON("./js/menu.json", function( data ) {
                         $.each( data, function( key, val ) {
                         	data.items.forEach(imprimirItem,data.items);
                         });
                      });
-                     */
-                    $(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/idemindef','wms','mindef','Ministerio de Defensa', '1.3.0');});
-                    $(function(){getGeoserver('https://wms.ign.gob.ar/geoserver/idera','wms','ign','Instituto Geográfico Nacional', '1.3.0');});
+                     var keywordFilter = 'dato-basico-y-fundamental';
+                     var wmsIgn = 'https://wms.ign.gob.ar/geoserver/';
+                     var wmsRasterIgn = 'https://wms.ign.gob.ar/raster/';
+                      $(function(){getGeoserver(wmsRasterIgn + 'ign','wms','raster','Imágenes', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'industria-servicios','wms','industria-servicios','Industria y servicios', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'habitat-infraestructura-social','wms','habitat-infraestructura-social','Hábitat e infraestructura social', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'transporte','wms','transporte','Transporte', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'hidrografia-oceanografia','wms','hidrografia-oceanografia','Hidrografía y oceanografía', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'relieve-suelo','wms','relieve-suelo','Relieve y suelo', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'geodesia-demarcacion','wms','geodesia-demarcacion','Redes geodésicas y demarcación', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'defensa-seguridad','wms','defensa-seguridad','Defensa y seguridad', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'fotogrametria','wms','fotogrametria','Fotogrametría', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'cartografia','wms','cartografia','Cartografía', '1.3.0');});
+                      $(function(){getGeoserver(wmsIgn + 'idemindef','wms','ministerio-defensa','Ministerio de Defensa', '1.3.0');});
                   </script>
                </div>
             </nav>

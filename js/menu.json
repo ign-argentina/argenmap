@@ -1,20 +1,18 @@
 {
-   "items": [
-      {
-         "nombre":"Instituto Geografico Nacional GeoJSON",
-         "class":"menu1",
-         "seccion":"ign",
-         "capas":[
-            {"titulo":"oficinas_ign", "nombre":"Oficinas IGN","servicio":"geojson", "host":"./dist/layers/geojson/oficinas_provinciales.geojson"}
-         ]
-      },
-      {
-         "nombre":"Instituto Geografico Nacional WMS",
-         "class":"menu2",
-         "seccion":"ign-wms",
-         "capas":[
-            {"titulo":"ign-wms", "nombre":"IGN WMS","servicio":"wms", "host":"http://wms.ign.gob.ar"}
-         ]
-      }
-   ]
+	"items": [
+        {
+            "nombre": "Mapas base",
+            "class": "",
+            "seccion": "mapasbase",
+            "capas": [
+                {
+                    "titulo": "Imágenes satelitales",
+                    "nombre": "esri_imagery",
+                    "servicio": "tms",
+                    "attribution": "Imágenes satelitales © Esri",
+                    "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                }
+            ]
+        }
+    ]
 }

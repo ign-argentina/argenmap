@@ -1,5 +1,5 @@
 var atrib_ign = "<a href='http://www.ign.gob.ar/argenmap/argenmap.jquery/docs/datosdelmapa.html' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
-    baseMaps = {"Argenmap": argenmap},
+    baseMaps = {},
     overlayMaps = new Object(),
     layerName,
     layerData;
@@ -126,8 +126,12 @@ function getGeoserver(host, servicio, seccion, nombre, version){
     // Load geoserver Capabilities, if success Create menu and append to DOM
     $('#temp-menu').load(host + '/ows?service=' + servicio + '&version=' + version + '&request=GetCapabilities', function(){
         var capability = $('#temp-menu').find("capability");
+        var keywordHtml = $('#temp-menu').find("Keyword");
+        var abstractHtml = $('#temp-menu').find("Abstract");
+        var keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+        var abstract = abstractHtml[0].innerText; // reads wms 1st abstract
         var capas_layer = $('layer', capability);
-        var capas_info = $('layer', capas_layer);        
+        var capas_info = $('layer', capas_layer);
         var capas = [];
 
         // create an object with all layer info for each layer
@@ -147,9 +151,10 @@ function getGeoserver(host, servicio, seccion, nombre, version){
             capas.push(obj);
         });
 
+        
         // Add layers DOM
         try {
-            imprimirItem(nuevoItem(nombre, seccion, capas), loadWms);
+            imprimirItem(nuevoItem(nombre, seccion, capas, keyword, abstract), loadWms);
         }
         catch(err) {
             if(err.name == "ReferenceError"){
@@ -168,12 +173,38 @@ function loadWms(wmsUrl, layer){
     }
 
     function createWmsLayer(wmsUrl, layer) {
-        overlayMaps[layer] = new L.tileLayer.wms(wmsUrl + "/geoserver/wms?", {
+        var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+            transparent: true,
+            tiled: true,
+            format: 'image/png',
+            INFO_FORMAT: 'text/html'
+        });
+        overlayMaps[layer] = wmsSource.getLayer(layer);
+
+        /*
+        overlayMaps[layer] = new L.tileLayer.wms(wmsUrl + "/wms?", {
             layers: layer,
             tiled: true,
             format: 'image/png',
             // attribution: "Weather data © 2012 IEM Nexrad",
             transparent: true
+        });
+        */
+    }
+}
+
+function loadMapaBase(tmsUrl, layer, attribution){
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createTmsLayer(tmsUrl, layer, attribution);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createTmsLayer(tmsUrl, layer, attribution) {
+        baseMaps[layer] = new L.tileLayer(tmsUrl, {
+            attribution: attribution,
         });
     }
 }
