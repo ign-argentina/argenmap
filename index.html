@@ -35,7 +35,6 @@
   <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js"></script>
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
-  <!-- <script src="./js/imprimirItem.js"></script> -->
 
   <!-- Librerias del mapa -->
   <link rel='stylesheet' href='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css' />
@@ -73,42 +72,8 @@
   
   <script type="text/javascript" src="./js/entities.js"></script>
 
-  <style>
-    .navbar-fixed-bottom, .navbar-fixed-top {
-      		z-index: 2000;
-      		background-color: white;
-      	}
-        .menu1 {background-color: #1174a1  !important; color: white !important;}
-        .menu2 {background-color: #0695d6 !important; color: white !important;}
-        .menu3 {background-color: #2aaad1 !important; color: white !important;}
-        .menu4 {background-color: #5bc0de !important; color: white !important;}
-        /* .menu5 {background-color: #74c2da !important; color: white !important;} */
-		.menu5 {background-color: #008dc9 !important; color: white !important;}
-        #sidebar-container{z-index: 1500;} 
-        #sidebar .nav {border: 1px;}
-        .nav-sidebar { /*ancho de selector de capas */
-          margin-right: -10px;
-          margin-bottom: 20px;
-          margin-left: -10px;
-        }
-        .navbar-toggle .icon-bar{border: 1px solid #337ab7;} 
-        .navbar-header > button {display: block;}
-        @media (min-width: 992px) {
-          #sidebar-container.collapse {display: inherit !important};
-        }
-        @media (max-width: 768px) {
-          .navbar-header a{font-size: 13px; font-weight: bold;}
-        }
-        @media (max-width: 390px) {
-          .xxsmall-hide {display: none};
-        }
-		.navbar {
-		  background-color: #008dc9;
-		}
-		.navbar-brand {
-		  padding-top: 7px;
-		}
-      </style>
+  <link rel="stylesheet" href="css/main.css">
+  
 </head>
 
 <body>
@@ -144,51 +109,14 @@
       <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
         aria-expanded="false" style="padding:0 10px">
 		<style>
-			.nav-sidebar > .active > a {background-color:   inherit !important}
-			.active {background-color: #33b560 !important;}
-			.list-group-item.active {border-color: white;}
+			
 		</style>
         <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
       </nav>
-      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main" style="position: absolute; bottom:0; top: 51px; background-color: white">
-        <script type="text/javascript" src="./js/mapa.js"></script>
-      </div>
+      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main" style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
     </div>
   </div>
 </body>
-<script>		  
-var gestorMenu = new GestorMenu();
-
-const impresorItem = new ImpresorItemHTML();
-
-var getGeoserverCounter = 11;
-var keywordFilter = 'dato-basico-y-fundamental';
-
-$.getJSON("./js/menu.json", function (data) {
-  $.each(data, function (key, val) {
-	//data.items.forEach(imprimirItem, data.items);
-	for (var key in data.items) {
-	
-	  if (data.items[key].type == "basemap") {
-	
-		  groupAux = new ItemGroup(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", null);
-		  for (var key2 in data.items[key].capas) {
-			var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, null, null, null, null, data.items[key].capas[key2].attribution);
-			var item = new Item(capa.nombre, data.items[key].seccion+key2, "", "", capa.titulo, capa);
-			item.setImpresor(impresorItem);
-			groupAux.setItem(item);
-		  }
-		  gestorMenu.add(groupAux);
-	  
-	  } else if (data.items[key].type == "wmslayer") {
-		
-		var itemData = data.items[key];
-		getGeoserver(itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version);
-		  
-	  }
-	  
-	}
-  });
-});	
-</script>
+<script type="text/javascript" src="./js/mapa.js"></script>
+<script type="text/javascript" src="./js/main.js"></script>
 </html>
