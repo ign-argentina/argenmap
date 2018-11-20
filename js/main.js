@@ -2,7 +2,7 @@ var gestorMenu = new GestorMenu();
 
 const impresorItem = new ImpresorItemHTML();
 
-var getGeoserverCounter = 11;
+var getGeoserverCounter = 0;
 var keywordFilter = 'dato-basico-y-fundamental';
 
 $.getJSON("./js/menu.json", function (data) {
@@ -23,6 +23,7 @@ $.getJSON("./js/menu.json", function (data) {
 	  
 	  } else if (data.items[key].type == "wmslayer") {
 		
+		getGeoserverCounter++;
 		var itemData = data.items[key];
 		getGeoserver(itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version);
 		  
