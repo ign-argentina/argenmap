@@ -176,6 +176,8 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version) {
 		
 		getGeoserverCounter--;
 		if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
+			//Ocultar loading
+			$(".loading").hide();
 			//Imprimir menú
 			gestorMenu.imprimir($(".nav.nav-sidebar"));
 			//Agregar tooltip resumen

@@ -1,6 +1,15 @@
 .tooltip {
     z-index: 2000; /* A value higher than 1010 that solves the problem */
 }
+.loading {
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.loading > img {
+	width: 70px;
+}
 .menu1 {background-color: #1174a1  !important; color: white !important;}
 .menu2 {background-color: #0695d6 !important; color: white !important;}
 .menu3 {background-color: #2aaad1 !important; color: white !important;}
