@@ -33,7 +33,7 @@ class ImpresorItemHTML extends Impresor {
 		var childId = itemComposite.getId();
 		
 		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre +
-			" href='#'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</a></li>"; // Replace all "_" with a " "
+						" href='#' data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</a></li>";
 			
 	}
 }
@@ -44,9 +44,9 @@ class ImpresorGrupoHTML extends Impresor {
 		var listaId = itemComposite.getId();
 		var itemClass = 'menu5';
 		
-		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' title='" + itemComposite.descripcion + "' >" +
+		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' >" +
 			"<div class='panel-title'>" +
-			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "'>" + itemComposite.nombre + "</a></div>" +
+			"<a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' id='" + listaId + "-a' href='#" + itemComposite.seccion + "'>" + itemComposite.nombre + "</a></div>" +
 			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
 		
 	}

@@ -139,7 +139,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version) {
 		
         // create an object with all layer info for each layer
         capas_info.each(function (index, b) {
-            var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i);
+            var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i);  var iAbstract = $('abstract', i).html();
             if (iBoundingBox[0].attributes.srs) {
                 var iSrs = iBoundingBox[0].attributes.srs;
             } else {
@@ -151,7 +151,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version) {
             var iMaxX = iBoundingBox[0].attributes.maxx;
             
 			var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
-			var item = new Item(capa.nombre, seccion+index, "", "", capa.titulo, capa);
+			var item = new Item(capa.nombre, seccion+index, "", iAbstract, capa.titulo, capa);
 			item.setImpresor(impresorItem);
 			items.push(item);
         });
@@ -177,6 +177,11 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version) {
 		getGeoserverCounter--;
 		if (getGeoserverCounter == 0) {
 			gestorMenu.imprimir($(".nav.nav-sidebar"));
+			$("[data-toggle2='tooltip']").tooltip({
+				placement: "right",
+				trigger: "hover",
+				container: "body"
+			});
 		}
 		
 		return;
