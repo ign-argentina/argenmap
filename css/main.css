@@ -21,9 +21,6 @@
 @media (max-width: 768px) {
   .navbar-header a{font-size: 13px; font-weight: bold;}
 }
-@media (max-width: 390px) {
-  .xxsmall-hide {display: none};
-}
 .navbar {
   background-color: #008dc9;
 }
@@ -33,6 +30,16 @@
 
 .nav-sidebar > .active > a {
 	background-color:   inherit !important
+}
+.navbar-header > a > img {
+	width:50px;
+	top:7px;
+	position:absolute;
+}
+@media (max-width: 390px) {
+	.navbar-header > a > img {
+		left: 50px;
+	}
 }
 .active {
 	background-color: #33b560 !important;
