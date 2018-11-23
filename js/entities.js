@@ -4,12 +4,13 @@
 Class Capa
 ******************************************/
 class Capa {
-	constructor(nombre, titulo, srs, host, servicio, minx, maxx, miny, maxy, attribution) {
+	constructor(nombre, titulo, srs, host, servicio, version, minx, maxx, miny, maxy, attribution) {
 		this.nombre = nombre
 		this.titulo = titulo
 		this.srs = srs
 		this.host = host
 		this.servicio = servicio
+		this.version = version
 		this.minx = minx
 		this.maxx = maxx
 		this.miny = miny

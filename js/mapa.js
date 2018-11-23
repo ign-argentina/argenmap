@@ -150,7 +150,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version) {
             var iMinX = iBoundingBox[0].attributes.minx;
             var iMaxX = iBoundingBox[0].attributes.maxx;
             
-			var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
+			var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
 			var item = new Item(capa.nombre, seccion+index, "", iAbstract, capa.titulo, capa);
 			item.setImpresor(impresorItem);
 			items.push(item);
@@ -175,8 +175,10 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version) {
 		gestorMenu.add(groupAux);
 		
 		getGeoserverCounter--;
-		if (getGeoserverCounter == 0) {
+		if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
+			//Imprimir menú
 			gestorMenu.imprimir($(".nav.nav-sidebar"));
+			//Agregar tooltip resumen
 			$("[data-toggle2='tooltip']").tooltip({
 				placement: "right",
 				trigger: "hover",

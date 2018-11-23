@@ -11,6 +11,7 @@
                     "titulo": "Imágenes satelitales",
                     "nombre": "esri_imagery",
                     "servicio": "tms",
+					"version": "1.0.0",
                     "attribution": "Imágenes satelitales © Esri",
                     "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                 }
