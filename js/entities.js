@@ -30,7 +30,7 @@ class Impresor {
 class ImpresorItemHTML extends Impresor {
 	imprimir(itemComposite) {
 		
-		var childId = itemComposite.getChildId();
+		var childId = itemComposite.getId();
 		
 		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre +
 			" href='#'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</a></li>"; // Replace all "_" with a " "
@@ -41,12 +41,12 @@ class ImpresorItemHTML extends Impresor {
 class ImpresorGrupoHTML extends Impresor {
 	imprimir(itemComposite) {
 		
-		var listaId = "lista-" + itemComposite.seccion;
+		var listaId = itemComposite.getId();
 		var itemClass = 'menu5';
 		
 		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' title='" + itemComposite.descripcion + "' >" +
 			"<div class='panel-title'>" +
-			"<a data-toggle='collapse' href='#" + itemComposite.seccion + "'>" + itemComposite.nombre + "</a></div>" +
+			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "'>" + itemComposite.nombre + "</a></div>" +
 			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
 		
 	}
@@ -82,8 +82,11 @@ class ItemGroup extends ItemComposite {
 	}
 	
 	setItem(itemComposite) {
-		//this.itemsComposite.push(itemComposite);
 		this.itemsComposite[itemComposite.seccion] = itemComposite;
+	}
+	
+	getId() {
+		return "lista-" + this.seccion;
 	}
 	
 	ordenaPorTitulo(a, b){
@@ -107,6 +110,27 @@ class ItemGroup extends ItemComposite {
 		}
 		return this.impresor.imprimir(this);
 	}
+	
+	getCantidadCapasVisibles() {
+		var iCapasVisibles = 0;
+		for (var key in this.itemsComposite) {
+			if (this.itemsComposite[key].getVisible() == true) {
+				iCapasVisibles++;
+			}
+		}
+		return iCapasVisibles;
+	}
+	
+	muestraCantidadCapasVisibles() {
+		var iCapasVisibles = this.getCantidadCapasVisibles();
+		if (iCapasVisibles > 0) {
+			$("#" + this.getId() + "-a").html(this.nombre + " <span class='active-layers-counter'>" + iCapasVisibles + "</span>")
+		} else {
+			$("#" + this.getId() + "-a").html(this.nombre)
+		}
+		console.log($("#" + this.getId() + "-a").html());
+	}
+	
 }
 
 class Item extends ItemComposite {
@@ -116,12 +140,18 @@ class Item extends ItemComposite {
 		this.capa = capa;
 		this.visible = false;
 	}
-	getChildId() {
+	
+	getId() {
 		var childId = "child-" + this.seccion;
 		return childId;
 	}
+	
+	getVisible() {
+		return this.visible;
+	}
+	
 	showHide(callback) {
-		$('#' + this.getChildId()).toggleClass('active');
+		$('#' + this.getId()).toggleClass('active');
 		if (typeof callback === "function") {
 			callback(this.capa.host, this.nombre);
 		} else if (this.capa.servicio === "tms") {
@@ -191,8 +221,9 @@ class GestorMenu {
 			var itemComposite = this.items[key];
 			for (var key2 in itemComposite.itemsComposite) {
 				var item = itemComposite.itemsComposite[key2];
-				if (item.getChildId() == itemSeccion) {
+				if (item.getId() == itemSeccion) {
 					item.showHide(itemComposite.callback);
+					itemComposite.muestraCantidadCapasVisibles();
 					break;
 					break;
 				}
@@ -201,14 +232,3 @@ class GestorMenu {
 	}
 	
 }
-
-/*
-const impresorGrupoHTML = new ImpresorGrupoHTML();
-const impresorItemHTML = new ImpresorItemHTML();
-var grupo = new ItemGroup('aaa', 'bbb', 'ccc', 'ddd');
-grupo.setImpresor(impresorGrupoHTML);
-var item = new Item('xxx', 'yyy', 'zzz', 'abc', 'ASDASD', 'bbb');
-item.setImpresor(impresorItemHTML);
-grupo.setItem(item);
-//alert(grupo.imprimir());
-*/
