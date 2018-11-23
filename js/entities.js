@@ -17,6 +17,12 @@ class Capa {
 		this.maxy = maxy
 		this.attribution = attribution
 	}
+	
+	getLegendURL() {
+		return this.host + 
+			   '/ows?service=' + this.servicio + '&version=' + this.version + '&request=GetLegendGraphic&' +
+			   'format=image/png&layer=' + this.nombre;
+	}
 }
 
 /******************************************
@@ -71,6 +77,10 @@ class ItemComposite {
 
 	imprimir() {
 		return this.impresor.imprimir(this);
+	}
+	
+	getLegendURL() {
+		return '';
 	}
 }
 
@@ -160,6 +170,10 @@ class Item extends ItemComposite {
 			loadGeojson(this.capa.host, this.nombre);
 		}
 		this.visible = !this.visible;
+	}
+	
+	getLegendURL() {
+		return this.capa.getLegendURL();
 	}
 }
 
