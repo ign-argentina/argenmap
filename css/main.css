@@ -3,7 +3,7 @@
 .menu3 {background-color: #2aaad1 !important; color: white !important;}
 .menu4 {background-color: #5bc0de !important; color: white !important;}
 .menu5 {background-color: #008dc9 !important; color: white !important;}
-#sidebar-container{z-index: 1500;} 
+#sidebar-container{z-index: 1500; background-color: #008dc9 }
 #sidebar .nav {border: 1px;}
 .nav-sidebar { /*ancho de selector de capas */
   margin-right: -10px;
@@ -13,7 +13,7 @@
 .navbar-toggle .icon-bar{border: 1px solid #337ab7;} 
 .navbar-header > button {display: block;}
 @media (min-width: 992px) {
-  #sidebar-container.collapse {display: inherit !important; height: 100% !important};
+  #sidebar-container.collapse {height: 100% !important};
 }
 @media (max-width: 768px) {
   .navbar-header a{font-size: 13px; font-weight: bold;}
