@@ -58,3 +58,8 @@
   border-radius: 50%;
   background: #33b560;
 }
+@media (max-width: 390px) {
+	.tooltip {
+		display: none !important;
+	}
+}
