@@ -11,11 +11,6 @@ var argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.
     attribution: atrib_ign
 });
 
-var argenmap_old = L.tileLayer('https://ide.ign.gob.ar/geoservicios/rest/services/Mapas_IGN/mapa_topografico/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 15,
-    attribution: atrib_ign
-});
-
 //Construye el mapa
 var mapa = L.map('mapa', {
     center: [-40, -59],
