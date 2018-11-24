@@ -15,8 +15,13 @@ var argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.
 var mapa = L.map('mapa', {
     center: [-40, -59],
     zoom: 4,
-    layers: [argenmap]
+    layers: [argenmap],
+	zoomControl: false
 });
+
+// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
+var zoomHome = L.Control.zoomHome();
+zoomHome.addTo(mapa);
 
 L.control.betterscale({ metric: true, imperial: false }).addTo(mapa);
 
