@@ -78,6 +78,16 @@ var locateControl = L.control.locate({
     }
 }).addTo(mapa);
 
+// Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
+var printerPlugin = L.easyPrint({
+	title: 'Descargado desde IGN',
+	position: 'bottomleft',
+	sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+	filename: 'myMap',
+	exportOnly: true,
+	hideControlContainer: true
+}).addTo(mapa);
+
 function style(geoJsonFeature) {
     return [
         { 'color': 'red' }
