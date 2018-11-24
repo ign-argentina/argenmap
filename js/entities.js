@@ -145,6 +145,17 @@ class ItemGroup extends ItemComposite {
 		}
 	}
 	
+	hideAllLayers() {}
+}
+
+class ItemGroupBaseMap extends ItemGroup {
+	hideAllLayers() {
+		for (var key in this.itemsComposite) {
+			if (this.itemsComposite[key].getVisible() == true) {
+				this.itemsComposite[key].showHide();
+			}
+		}
+	}
 }
 
 class Item extends ItemComposite {
@@ -242,6 +253,7 @@ class GestorMenu {
 			for (var key2 in itemComposite.itemsComposite) {
 				var item = itemComposite.itemsComposite[key2];
 				if (item.getId() == itemSeccion) {
+					itemComposite.hideAllLayers();
 					item.showHide(itemComposite.callback);
 					itemComposite.muestraCantidadCapasVisibles();
 					break;
