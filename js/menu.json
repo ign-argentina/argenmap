@@ -8,12 +8,20 @@
             "seccion": "mapasbase",
             "capas": [
                 {
-                    "titulo": "Imágenes satelitales",
+                    "titulo": "Imágenes satelitales Esri",
                     "nombre": "esri_imagery",
                     "servicio": "tms",
 					"version": "1.0.0",
                     "attribution": "Imágenes satelitales © Esri",
                     "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                },
+				{
+                    "titulo": "Imágenes satelitales Bing",
+                    "nombre": "bing_imagery",
+                    "servicio": "bing",
+					"version": "1.0.0",
+                    "attribution": "Imágenes satelitales © Bing",
+                    "key": "AuhiCJHlGzhg93IqUH_oCpl_-ZUrIE6SPftlyGYUvr9Amx5nzA-WqGcPquyFZl4L"
                 }
             ]
         },

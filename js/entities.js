@@ -4,13 +4,14 @@
 Class Capa
 ******************************************/
 class Capa {
-	constructor(nombre, titulo, srs, host, servicio, version, minx, maxx, miny, maxy, attribution) {
+	constructor(nombre, titulo, srs, host, servicio, version, key, minx, maxx, miny, maxy, attribution) {
 		this.nombre = nombre
 		this.titulo = titulo
 		this.srs = srs
 		this.host = host
 		this.servicio = servicio
 		this.version = version
+		this.key = key
 		this.minx = minx
 		this.maxx = maxx
 		this.miny = miny
@@ -19,6 +20,9 @@ class Capa {
 	}
 	
 	getLegendURL() {
+		if (this.host == null) {
+			return '';
+		}
 		return this.host + 
 			   '/ows?service=' + this.servicio + '&version=' + this.version + '&request=GetLegendGraphic&' +
 			   'format=image/png&layer=' + this.nombre;
@@ -100,7 +104,7 @@ class ItemGroup extends ItemComposite {
 		return "lista-" + this.seccion;
 	}
 	
-	ordenaPorTitulo(a, b){
+	ordenaPorTitulo(a, b) {
 		var aName = a.titulo.toLowerCase();
 		var bName = b.titulo.toLowerCase(); 
 		return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
@@ -166,6 +170,8 @@ class Item extends ItemComposite {
 			callback(this.capa.host, this.nombre);
 		} else if (this.capa.servicio === "tms") {
 			loadMapaBase(this.capa.host, this.capa.nombre, this.capa.attribution);
+		} else if (this.capa.servicio === "bing") {
+			loadMapaBaseBing(this.capa.key, this.capa.nombre, this.capa.attribution);
 		} else {
 			loadGeojson(this.capa.host, this.nombre);
 		}

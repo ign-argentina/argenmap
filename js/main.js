@@ -14,7 +14,7 @@ $.getJSON("./js/menu.json", function (data) {
 	
 		  groupAux = new ItemGroup(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", null);
 		  for (var key2 in data.items[key].capas) {
-			var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, null, null, null, null, data.items[key].capas[key2].attribution);
+			var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, data.items[key].capas[key2].key, null, null, null, null, data.items[key].capas[key2].attribution);
 			var item = new Item(capa.nombre, data.items[key].seccion+key2, "", data.items[key].capas[key2].attribution, capa.titulo, capa);
 			item.setImpresor(impresorItem);
 			groupAux.setItem(item);

@@ -247,3 +247,18 @@ function loadMapaBase(tmsUrl, layer, attribution) {
         });
     }
 }
+
+
+function loadMapaBaseBing(bingKey, layer, attribution) {
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createBingLayer(bingKey, layer, attribution);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createBingLayer(bingKey, layer, attribution) {
+		baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
+    }
+}
