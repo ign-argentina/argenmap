@@ -145,13 +145,13 @@ class ItemGroup extends ItemComposite {
 		}
 	}
 	
-	hideAllLayers() {}
+	hideAllLayersExceptOne(item) {}
 }
 
 class ItemGroupBaseMap extends ItemGroup {
-	hideAllLayers() {
+	hideAllLayersExceptOne(item) {
 		for (var key in this.itemsComposite) {
-			if (this.itemsComposite[key].getVisible() == true) {
+			if (this.itemsComposite[key].getVisible() == true && item !== this.itemsComposite[key]) {
 				this.itemsComposite[key].showHide();
 			}
 		}
@@ -253,7 +253,7 @@ class GestorMenu {
 			for (var key2 in itemComposite.itemsComposite) {
 				var item = itemComposite.itemsComposite[key2];
 				if (item.getId() == itemSeccion) {
-					itemComposite.hideAllLayers();
+					itemComposite.hideAllLayersExceptOne(item);
 					item.showHide(itemComposite.callback);
 					itemComposite.muestraCantidadCapasVisibles();
 					break;
