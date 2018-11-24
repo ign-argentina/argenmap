@@ -16,6 +16,14 @@
                     "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                 },
 				{
+                    "titulo": "Imágenes satelitales here",
+                    "nombre": "here_imagery",
+                    "servicio": "tms",
+					"version": "1.0.0",
+                    "attribution": "Imágenes satelitales © here",
+                    "host": "https://1.base.maps.api.here.com/maptile/2.1/maptile/newest/normal.day/{z}/{x}/{y}/256/png8?app_id=XiMlA4JwMurUFFYUWYe3&app_code=oTsmqovbl2YudG3E0UlxDA"
+                },
+				{
                     "titulo": "Imágenes satelitales Bing",
                     "nombre": "bing_imagery",
                     "servicio": "bing",
