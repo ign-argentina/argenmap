@@ -63,7 +63,7 @@ var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimiz
 var measureControl = new L.Control.Measure({ position: 'bottomleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
 measureControl.addTo(mapa);
 
-// Leaflet-Location plugin https://github.com/herrhelms/meteor-leaflet-locatecontrol
+// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 var locateControl = L.control.locate({
     position: "bottomright",
     drawCircle: true,
@@ -79,7 +79,7 @@ var locateControl = L.control.locate({
         weight: 1,
         clickable: false
     },
-    icon: "fa fa-location-arrow",
+    icon: "fa fa-crosshairs",
     metric: true,
     strings: {
         title: "Mi posición",
