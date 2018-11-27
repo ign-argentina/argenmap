@@ -149,6 +149,11 @@ var printerPlugin = L.easyPrint({
 	title: 'Descargado desde IGN',
 	position: 'topleft',
 	sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+	defaultSizeTitles: {
+							Current: 'Tamaño actual',
+							A4Landscape: 'A4 Horizontal',
+							A4Portrait: 'A4 Vertical'
+						},
 	filename: 'myMap',
 	exportOnly: true,
 	hideControlContainer: true
