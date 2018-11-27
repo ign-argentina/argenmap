@@ -20,6 +20,16 @@ Leaflet
 .individualFeature h4 {
 	text-decoration: none !important;
 }
+.leaflet-control-easyPrint {
+	height: 33px !important;
+}
+.leaflet-control-minimap {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	box-shadow: none;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
 
 /*******************************
 Menu principal
@@ -109,7 +119,4 @@ Menu principal
 .item-group-title {
 	font-weight: bold;
 	font-size: 15px;
-}
-.leaflet-control-easyPrint {
-	height: 33px !important;
 }

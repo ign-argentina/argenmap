@@ -32,8 +32,8 @@ var miniMap = new L.Control.MiniMap(miniArgenmap, {
 	toggleDisplay: true,
 	minimized: true,
 	position: 'topleft',
-	collapsedWidth: 30,
-	collapsedHeight: 30,
+	collapsedWidth: 32,
+	collapsedHeight: 32,
 	strings: {
 		hideText: 'Ocultar minimapa',
 		showText: 'Mostrar minimapa'
