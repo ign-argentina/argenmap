@@ -35,7 +35,6 @@
   <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js"></script>
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
-  <script src="./js/imprimirItem.js"></script>
 
   <!-- Librerias del mapa -->
   <link rel='stylesheet' href='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css' />
@@ -51,14 +50,21 @@
   <!-- Awesome Markers -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js"></script>
-
+  
+  <!-- Leaflet Zoomhome plugin -->
+  <link rel="stylesheet" href="js/leaflet-zoomhome/dist/leaflet.zoomhome.css"/>
+  <script src="js/leaflet-zoomhome/dist/leaflet.zoomhome.min.js"></script>
+  
+  <!-- Leaflet Zoomhome plugin -->
+  <script src="js/leaflet-bing-layer-gh-pages/leaflet-bing-layer.js"></script>
+  
   <!-- Leaflet Minimap plugin -->
   <link rel="stylesheet" href="js/leaflet-minimap/Control.MiniMap.css">
   <script src="js/leaflet-minimap/Control.MiniMap.js"></script>
 
   <!-- Leaflet Locate plugin -->
-  <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css">
-  <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js"></script>
+  <link rel="stylesheet" href="js/leaflet-locate/L.Control.Locate.css">
+  <script src="js/leaflet-locate/L.Control.Locate.min.js"></script>
 
   <!-- Leaflet Mouse Position plugin -->
   <link rel="stylesheet" href="js/leaflet-mouseposition/src/L.Control.MousePosition.css">
@@ -67,46 +73,22 @@
   <!-- Leaflet Measure plugin -->
   <link rel="stylesheet" href="js/leaflet-measure/leadflet-measure.css">
   <script src="js/leaflet-measure/leaflet-measure.js"></script>
+  
+  <!-- Leaflet EasyPrint plugin -->
+  <script src="js/leaflet-easyPrint/bundle.js"></script>
+  
+  <!-- Leaflet Control.FullScreen plugin -->
+  <link rel="stylesheet" href="js/leaflet-fullscreen/Control.FullScreen.css" />
+  <script src="js/leaflet-fullscreen/Control.FullScreen.js"></script>
 
   <!-- Leaflet BetterWMS -->
   <script src="js/leaflet-wms/leaflet.wms.js"></script>
+  
+  <script type="text/javascript" src="./js/functions.js"></script>
+  <script type="text/javascript" src="./js/entities.js"></script>
 
-  <style>
-    .navbar-fixed-bottom, .navbar-fixed-top {
-      		z-index: 2000;
-      		background-color: white;
-      	}
-        .menu1 {background-color: #1174a1  !important; color: white !important;}
-        .menu2 {background-color: #0695d6 !important; color: white !important;}
-        .menu3 {background-color: #2aaad1 !important; color: white !important;}
-        .menu4 {background-color: #5bc0de !important; color: white !important;}
-        /* .menu5 {background-color: #74c2da !important; color: white !important;} */
-		.menu5 {background-color: #008dc9 !important; color: white !important;}
-        #sidebar-container{z-index: 1500;} 
-        #sidebar .nav {border: 1px;}
-        .nav-sidebar { /*ancho de selector de capas */
-          margin-right: -10px;
-          margin-bottom: 20px;
-          margin-left: -10px;
-        }
-        .navbar-toggle .icon-bar{border: 1px solid #337ab7;} 
-        .navbar-header > button {display: block;}
-        @media (min-width: 992px) {
-          #sidebar-container.collapse {display: inherit !important};
-        }
-        @media (max-width: 768px) {
-          .navbar-header a{font-size: 13px; font-weight: bold;}
-        }
-        @media (max-width: 390px) {
-          .xxsmall-hide {display: none};
-        }
-		.navbar {
-		  background-color: #008dc9;
-		}
-		.navbar-brand {
-		  padding-top: 7px;
-		}
-      </style>
+  <link rel="stylesheet" href="css/main.css">
+  
 </head>
 
 <body>
@@ -120,12 +102,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand navbar-right" href="#">
+        <a class="navbar-brand navbar-right">
           <span class="xxsmall-hide">
             <a href="http://www.ign.gob.ar/" target="_blank">
-              <img src="img/logo.png" alt="Logo IGN" title="Instituto Geográfico Nacional" style="left:50px;width:50px;top:7px;position:absolute">
-            </a>
-            <!--<div style="font-family: 'Roboto', sans-serif; color: #ffffff">Argenmap</div>-->
+			  <img src="img/logo.png" alt="Logo IGN" title="Instituto Geográfico Nacional">
+			</a>
           </span>
         </a>
       </div>
@@ -140,41 +121,14 @@
   <div class="container-fluid">
     <div class="row">
       <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
-        aria-expanded="false" style="padding:0 10px">
-        <div id="sidebar" class="nav nav-sidebar panel panel-default">
-          <style>
-            .nav-sidebar > .active > a {background-color:   inherit !important}
-                  .active {background-color: #33b560 !important;}
-                  .list-group-item.active {border-color: white;}
-               </style>
-          <script>
-            $.getJSON("./js/menu.json", function (data) {
-              $.each(data, function (key, val) {
-                data.items.forEach(imprimirItem, data.items);
-              });
-            });
-            var keywordFilter = 'dato-basico-y-fundamental';
-            var wmsIgn = 'https://wms.ign.gob.ar/geoserver/';
-            var wmsRasterIgn = 'https://wms.ign.gob.ar/raster/';
-            $(function () { getGeoserver(wmsRasterIgn + 'ign', 'wms', 'raster', 'Imágenes', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'industria-servicios', 'wms', 'industria-servicios', 'Industria y servicios', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'habitat-infraestructura-social', 'wms', 'habitat-infraestructura-social', 'Hábitat e infraestructura social', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'transporte', 'wms', 'transporte', 'Transporte', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'hidrografia-oceanografia', 'wms', 'hidrografia-oceanografia', 'Hidrografía y oceanografía', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'relieve-suelo', 'wms', 'relieve-suelo', 'Relieve y suelo', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'geodesia-demarcacion', 'wms', 'geodesia-demarcacion', 'Redes geodésicas y demarcación', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'defensa-seguridad', 'wms', 'defensa-seguridad', 'Defensa y seguridad', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'fotogrametria', 'wms', 'fotogrametria', 'Fotogrametría', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'cartografia', 'wms', 'cartografia', 'Cartografía', '1.3.0'); });
-            $(function () { getGeoserver(wmsIgn + 'idemindef', 'wms', 'ministerio-defensa', 'Ministerio de Defensa', '1.3.0'); });
-          </script>
-        </div>
+        aria-expanded="false" style="padding:0 10px; height:100%">
+		<div class="loading"><img src="img/loading.gif"></div>
+        <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
       </nav>
-      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main" style="position: absolute; bottom:0; top: 51px; background-color: white">
-        <script type="text/javascript" src="./js/mapa.js"></script>
-      </div>
+      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main" style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
     </div>
   </div>
 </body>
-
+<script type="text/javascript" src="./js/mapa.js"></script>
+<script type="text/javascript" src="./js/main.js"></script>
 </html>

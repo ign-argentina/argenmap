@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>leaflet.zoomhome demo</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@0.7.7/dist/leaflet.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="dist/leaflet.zoomhome.css"/>
+        <style>
+            html, body, #map {
+                height: 100%;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            #legend {
+                position: absolute;
+                right: 20px;
+                bottom: 40px;
+                font-family: sans-serif;
+                font-size: 13px;
+                border: 1px solid #555;
+                background-color: #fafafa;
+                padding: 1em;
+                border-radius: 6px;
+                color: #555;
+                width: 22em;
+            }
+
+            #legend p {
+                margin: 0;
+            }
+
+            #legend h1 {
+                margin-top: 0;
+                font-size: 120%;
+            }
+        </style>
+        <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
+        <script src="dist/leaflet.zoomhome.min.js"></script>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div id="legend">
+            <h1>leaflet.zoomhome demo</h1>
+            <p><a href="https://github.com/torfsen/leaflet.zoomhome">leaflet.zoomhome</a> is a small
+            <a href="http://www.leafletjs.com">Leaflet</a>-plugin for a zoom control that includes a
+            home button to reset the view.</p>
+        </div>
+        <script>
+            var TILES_URL = 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+                INITIAL_LOCATION = [49.0140679, 8.4044366],
+                INITIAL_ZOOM = 13,
+                ATTRIBUTION = 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> ' +
+                              'contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">' +
+                              'CC-BY-SA</a>. Tiles &copy; <a href="https://carto.com/attributions">' +
+                              'Carto</a>';
+
+            var map;
+
+            $(document).ready(function() {
+                var tiles = L.tileLayer(TILES_URL, {attribution: ATTRIBUTION});
+                map = L.map('map', {zoomControl: false}).addLayer(tiles).setView(INITIAL_LOCATION, INITIAL_ZOOM);
+                var zoomHome = L.Control.zoomHome();
+                zoomHome.addTo(map);
+            });
+        </script>
+    </body>
+</html>

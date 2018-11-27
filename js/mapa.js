@@ -11,17 +11,17 @@ var argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.
     attribution: atrib_ign
 });
 
-var argenmap_old = L.tileLayer('https://ide.ign.gob.ar/geoservicios/rest/services/Mapas_IGN/mapa_topografico/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 15,
-    attribution: atrib_ign
-});
-
 //Construye el mapa
 var mapa = L.map('mapa', {
     center: [-40, -59],
     zoom: 4,
-    layers: [argenmap]
+    layers: [argenmap],
+	zoomControl: false
 });
+
+// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
+var zoomHome = L.Control.zoomHome();
+zoomHome.addTo(mapa);
 
 L.control.betterscale({ metric: true, imperial: false }).addTo(mapa);
 
@@ -41,7 +41,19 @@ function onEachFeature(feature, layer) {
 }
 
 // Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
-L.control.mousePosition({ position: 'bottomright', }).addTo(mapa);
+L.control.mousePosition({
+	position: 'bottomright', 
+	lngFormatter: function(num) {
+		var direction = (num < 0) ? 'O' : 'E';
+		return deg_to_dms(Math.abs(num)) + direction; 
+	},
+	latFormatter: function(num) {
+		var direction = (num < 0) ? 'S' : 'N';
+		return deg_to_dms(Math.abs(num)) + direction; 
+	},
+	separator: '  ',
+	emptyString: '&nbsp;'
+}).addTo(mapa);
 
 // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
 var miniArgenmap = new L.TileLayer(argenmap._url, { minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
@@ -51,7 +63,7 @@ var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimiz
 var measureControl = new L.Control.Measure({ position: 'bottomleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
 measureControl.addTo(mapa);
 
-// Leaflet-Location plugin https://github.com/herrhelms/meteor-leaflet-locatecontrol
+// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 var locateControl = L.control.locate({
     position: "bottomright",
     drawCircle: true,
@@ -67,7 +79,7 @@ var locateControl = L.control.locate({
         weight: 1,
         clickable: false
     },
-    icon: "fa fa-location-arrow",
+    icon: "fa fa-crosshairs",
     metric: true,
     strings: {
         title: "Mi posición",
@@ -82,6 +94,45 @@ var locateControl = L.control.locate({
         timeout: 10000
     }
 }).addTo(mapa);
+
+// Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
+var printerPlugin = L.easyPrint({
+	title: 'Descargado desde IGN',
+	position: 'bottomleft',
+	sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+	filename: 'myMap',
+	exportOnly: true,
+	hideControlContainer: true
+}).addTo(mapa);
+
+// Leaflet-Control.FullScreen plugin https://github.com/brunob/leaflet.fullscreen
+L.control.fullscreen({
+  position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
+  title: 'Show me the fullscreen !', // change the title of the button, default Full Screen
+  titleCancel: 'Exit fullscreen mode', // change the title of the button when fullscreen is on, default Exit Full Screen
+  content: null, // change the content of the button, can be HTML, default null
+  forceSeparateButton: true, // force seperate button to detach from zoom buttons, default false
+  forcePseudoFullscreen: false, // force use of pseudo full screen even if full screen API is available, default false
+  fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
+}).addTo(mapa);
+
+mapa.on('enterFullscreen', function(){
+  if (miniMap._minimized) {
+    miniMap._restore();
+    window.setTimeout( miniMap_Minimize, 2000 );
+  }
+});
+
+mapa.on('exitFullscreen', function(){
+  if (miniMap._minimized) {
+	miniMap._restore();
+	window.setTimeout( miniMap_Minimize, 2000 );
+  }
+});
+
+function miniMap_Minimize() {
+  miniMap._minimize();
+}
 
 function style(geoJsonFeature) {
     return [
@@ -121,7 +172,9 @@ function loadGeojson(url, layer) {
 
 }
 
-function getGeoserver(host, servicio, seccion, nombre, version) {
+function getGeoserver(host, servicio, seccion, peso, nombre, version) {
+	const impresorItem = new ImpresorItemHTML();
+	
     if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
     // Load geoserver Capabilities, if success Create menu and append to DOM
     $('#temp-menu').load(host + '/ows?service=' + servicio + '&version=' + version + '&request=GetCapabilities', function () {
@@ -132,11 +185,12 @@ function getGeoserver(host, servicio, seccion, nombre, version) {
         var abstract = abstractHtml[0].innerText; // reads wms 1st abstract
         var capas_layer = $('layer', capability);
         var capas_info = $('layer', capas_layer);
-        var capas = [];
-
+		
+		var items = new Array();
+		
         // create an object with all layer info for each layer
         capas_info.each(function (index, b) {
-            var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i);
+            var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i);  var iAbstract = $('abstract', i).html();
             if (iBoundingBox[0].attributes.srs) {
                 var iSrs = iBoundingBox[0].attributes.srs;
             } else {
@@ -146,20 +200,46 @@ function getGeoserver(host, servicio, seccion, nombre, version) {
             var iMinY = iBoundingBox[0].attributes.miny;
             var iMinX = iBoundingBox[0].attributes.minx;
             var iMaxX = iBoundingBox[0].attributes.maxx;
-            var obj = {};
-            obj.nombre = iName; obj.titulo = iTitle; obj.srs = iSrs.nodeValue; obj.host = host; obj.servicio = servicio; obj.minx = iMinX.nodeValue; obj.maxx = iMaxX.nodeValue; obj.miny = iMinY.nodeValue; obj.maxy = iMaxY.nodeValue;
-            capas.push(obj);
+            
+			var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
+			var item = new Item(capa.nombre, seccion+index, "", iAbstract, capa.titulo, capa);
+			item.setImpresor(impresorItem);
+			items.push(item);
         });
+		
+		var groupAux;
+		try {
+			var groupAux = new ItemGroup(nombre, seccion, peso, keyword, abstract, loadWms);
+			for (var i = 0; i < items.length; i++) {
+				groupAux.setItem(items[i]);
+			}
+		}
+		catch (err) {
+			if (err.name == "ReferenceError") {
+				var groupAux = new ItemGroup(nombre, seccion, peso, "", "", null);
+				for (var i = 0; i < items.length; i++) {
+					groupAux.setItem(items[i]);
+				}
+			}
+		}
 
-        // Add layers DOM
-        try {
-            imprimirItem(nuevoItem(nombre, seccion, capas, keyword, abstract), loadWms);
-        }
-        catch (err) {
-            if (err.name == "ReferenceError") {
-                imprimirItem(nuevoItem(nombre, seccion, capas), null);
-            }
-        }
+		gestorMenu.add(groupAux);
+		
+		getGeoserverCounter--;
+		if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
+			//Ocultar loading
+			$(".loading").hide();
+			//Imprimir menú
+			gestorMenu.imprimir($(".nav.nav-sidebar"));
+			//Agregar tooltip resumen
+			$("[data-toggle2='tooltip']").tooltip({
+				placement: "right",
+				trigger: "hover",
+				container: "body"
+			});
+		}
+		
+		return;
     });
 }
 function loadWms(wmsUrl, layer) {
@@ -195,5 +275,20 @@ function loadMapaBase(tmsUrl, layer, attribution) {
         baseMaps[layer] = new L.tileLayer(tmsUrl, {
             attribution: attribution,
         });
+    }
+}
+
+
+function loadMapaBaseBing(bingKey, layer, attribution) {
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createBingLayer(bingKey, layer, attribution);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createBingLayer(bingKey, layer, attribution) {
+		baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
     }
 }
