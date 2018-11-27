@@ -57,7 +57,9 @@ class ImpresorGrupoHTML extends Impresor {
 		
 		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' >" +
 			"<div class='panel-title'>" +
-			"<a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' id='" + listaId + "-a' href='#" + itemComposite.seccion + "'>" + itemComposite.nombre + "</a></div>" +
+			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "'>" + itemComposite.nombre + "</a>" +
+			"<br><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "' class='item-group-short-desc'>" + itemComposite.shortDesc + "</a>" +
+			"</div>" +
 			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
 		
 	}
@@ -89,8 +91,9 @@ class ItemComposite {
 }
 
 class ItemGroup extends ItemComposite {
-	constructor(nombre, seccion, peso, palabrasClave, descripcion, callback) {
+	constructor(nombre, seccion, peso, palabrasClave, descripcion, shortDesc, callback) {
 		super(nombre, seccion, palabrasClave, descripcion);
+		this.shortDesc = shortDesc;
 		this.peso = peso;
 		this.itemsComposite = {};
 		this.callback = callback;

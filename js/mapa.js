@@ -172,7 +172,7 @@ function loadGeojson(url, layer) {
 
 }
 
-function getGeoserver(host, servicio, seccion, peso, nombre, version) {
+function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abstract) {
 	const impresorItem = new ImpresorItemHTML();
 	
     if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
@@ -209,14 +209,14 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version) {
 		
 		var groupAux;
 		try {
-			var groupAux = new ItemGroup(nombre, seccion, peso, keyword, abstract, loadWms);
+			var groupAux = new ItemGroup(nombre, seccion, peso, keyword, abstract, short_abstract, loadWms);
 			for (var i = 0; i < items.length; i++) {
 				groupAux.setItem(items[i]);
 			}
 		}
 		catch (err) {
 			if (err.name == "ReferenceError") {
-				var groupAux = new ItemGroup(nombre, seccion, peso, "", "", null);
+				var groupAux = new ItemGroup(nombre, seccion, peso, "", "", short_abstract, null);
 				for (var i = 0; i < items.length; i++) {
 					groupAux.setItem(items[i]);
 				}

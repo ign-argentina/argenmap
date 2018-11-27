@@ -12,7 +12,7 @@ $.getJSON("./js/menu.json", function (data) {
 	
 	  if (data.items[key].type == "basemap") {
 	
-		  groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", null);
+		  groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
 		  for (var key2 in data.items[key].capas) {
 			var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, data.items[key].capas[key2].key, null, null, null, null, data.items[key].capas[key2].attribution);
 			var item = new Item(capa.nombre, data.items[key].seccion+key2, "", data.items[key].capas[key2].attribution, capa.titulo, capa);
@@ -25,7 +25,7 @@ $.getJSON("./js/menu.json", function (data) {
 		
 		getGeoserverCounter++;
 		var itemData = data.items[key];
-		getGeoserver(itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version);
+		getGeoserver(itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version, data.items[key].short_abstract);
 		  
 	  }
 	  
