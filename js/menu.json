@@ -132,17 +132,6 @@
 			"servicio": "wms",
 			"version": "1.3.0",
 			"host": "https://wms.ign.gob.ar/geoserver/cartografia"
-        },
-		{
-            "type": "wmslayer",
-			"peso": 110,
-			"nombre": "Ministerio de Defensa",
-			"short_abstract": "Ministerio de Defensa...",
-            "class": "",
-            "seccion": "idemindef",
-			"servicio": "wms",
-			"version": "1.3.0",
-			"host": "https://wms.ign.gob.ar/geoserver/idemindef"
         }
     ]
 }
