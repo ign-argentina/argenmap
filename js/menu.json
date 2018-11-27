@@ -35,16 +35,6 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 10,
-			"nombre": "Imágenes",
-            "class": "",
-            "seccion": "raster",
-			"servicio": "wms",
-			"version": "1.3.0",
-			"host": "https://wms.ign.gob.ar/raster/ign"
-        },
-		{
-            "type": "wmslayer",
 			"peso": 20,
 			"nombre": "Industria y servicios",
             "class": "",
