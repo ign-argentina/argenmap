@@ -7,7 +7,7 @@ var atrib_ign = "<a href='http://www.ign.gob.ar/argenmap/argenmap.jquery/docs/da
 // Mapa base actual de ArgenMap (Geoserver)
 var argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
     tms: true,
-    maxZoom: 15,
+    maxZoom: 17,
     attribution: atrib_ign
 });
 
@@ -16,8 +16,14 @@ var mapa = L.map('mapa', {
     center: [-40, -59],
     zoom: 4,
     layers: [argenmap],
-	zoomControl: false
+	zoomControl: false,
+	minZoom: 2,
+    maxZoom: 17
 });
+
+// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
+var miniArgenmap = new L.TileLayer(argenmap._url, { minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
+var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'topleft', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
 
 // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
 var zoomHome = L.Control.zoomHome();
@@ -55,17 +61,9 @@ L.control.mousePosition({
 	emptyString: '&nbsp;'
 }).addTo(mapa);
 
-// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-var miniArgenmap = new L.TileLayer(argenmap._url, { minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
-var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'bottomright', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
-
-// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-var measureControl = new L.Control.Measure({ position: 'bottomleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
-measureControl.addTo(mapa);
-
 // Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 var locateControl = L.control.locate({
-    position: "bottomright",
+    position: "topleft",
     drawCircle: true,
     follow: true,
     setView: true,
@@ -93,16 +91,6 @@ var locateControl = L.control.locate({
         maximumAge: 10000,
         timeout: 10000
     }
-}).addTo(mapa);
-
-// Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
-var printerPlugin = L.easyPrint({
-	title: 'Descargado desde IGN',
-	position: 'bottomleft',
-	sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
-	filename: 'myMap',
-	exportOnly: true,
-	hideControlContainer: true
 }).addTo(mapa);
 
 // Leaflet-Control.FullScreen plugin https://github.com/brunob/leaflet.fullscreen
@@ -133,6 +121,20 @@ mapa.on('exitFullscreen', function(){
 function miniMap_Minimize() {
   miniMap._minimize();
 }
+
+// Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
+var printerPlugin = L.easyPrint({
+	title: 'Descargado desde IGN',
+	position: 'topleft',
+	sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+	filename: 'myMap',
+	exportOnly: true,
+	hideControlContainer: true
+}).addTo(mapa);
+
+// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
+var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
+measureControl.addTo(mapa);
 
 function style(geoJsonFeature) {
     return [
