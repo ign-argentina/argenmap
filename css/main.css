@@ -110,3 +110,6 @@ Menu principal
 	font-weight: bold;
 	font-size: 15px;
 }
+.leaflet-control-easyPrint {
+	height: 33px !important;
+}
