@@ -101,3 +101,6 @@ Menu principal
 .item-group-short-desc {
 	font-size: 11px;
 }
+.panel-title a:first-child {
+	font-weight: bold;
+}
