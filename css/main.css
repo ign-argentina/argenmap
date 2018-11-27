@@ -1,3 +1,29 @@
+/*******************************
+General
+*******************************/
+body {
+	font-family: Roboto,sans-serif;
+}
+
+/*******************************
+Leaflet
+*******************************/
+.leaflet-container {
+	font: 12px/1.5 Roboto, sans-serif !important;
+}
+.leaflet-control-measure-interaction h3 {
+	font-size: 17px !important;
+}
+.leaflet-popup-content h3 {
+	font-size: 17px !important;
+}
+.individualFeature h4 {
+	text-decoration: none !important;
+}
+
+/*******************************
+Menu principal
+*******************************/
 .tooltip {
     z-index: 2000; /* A value higher than 1010 that solves the problem */
 }
