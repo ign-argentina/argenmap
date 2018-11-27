@@ -57,8 +57,8 @@ class ImpresorGrupoHTML extends Impresor {
 		
 		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' >" +
 			"<div class='panel-title'>" +
-			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "'>" + itemComposite.nombre + "</a>" +
-			"<br><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "' class='item-group-short-desc'>" + itemComposite.shortDesc + "</a>" +
+			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "' class='item-group-title'>" + itemComposite.nombre + "</a>" +
+			"<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "'>" + itemComposite.shortDesc + "</a></div>" +
 			"</div>" +
 			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
 		

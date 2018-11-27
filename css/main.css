@@ -100,11 +100,12 @@ Menu principal
 }
 .item-group-short-desc {
 	font-size: 11px;
+	line-height: 11px;
 }
-.panel-title a {
+.item-group-short-desc a {
+	font-size: 11px;
 	color: #dddddd;
 }
-.panel-title a:first-child {
+.item-group-title {
 	font-weight: bold;
-	color: #ffffff;
 }
