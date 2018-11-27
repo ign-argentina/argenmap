@@ -41,7 +41,11 @@ var miniMap = new L.Control.MiniMap(miniArgenmap, {
 }).addTo(mapa);
 
 // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
-var zoomHome = L.Control.zoomHome();
+var zoomHome = L.Control.zoomHome({
+	zoomHomeTitle: 'Inicio',
+	zoomInTitle: 'Acercarse',
+	zoomOutTitle: 'Alejarse'
+});
 zoomHome.addTo(mapa);
 
 L.control.betterscale({
