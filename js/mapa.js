@@ -22,14 +22,32 @@ var mapa = L.map('mapa', {
 });
 
 // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-var miniArgenmap = new L.TileLayer(argenmap._url, { minZoom: 0, maxZoom: 13, attribution: atrib_ign, tms: true });
-var miniMap = new L.Control.MiniMap(miniArgenmap, { toggleDisplay: true, minimized: true, position: 'topleft', collapsedWidth: 30, collapsedHeight: 30 }).addTo(mapa);
+var miniArgenmap = new L.TileLayer(argenmap._url, {
+	minZoom: 0,
+	maxZoom: 17,
+	attribution: atrib_ign,
+	tms: true
+});
+var miniMap = new L.Control.MiniMap(miniArgenmap, {
+	toggleDisplay: true,
+	minimized: true,
+	position: 'topleft',
+	collapsedWidth: 30,
+	collapsedHeight: 30,
+	strings: {
+		hideText: 'Ocultar minimapa',
+		showText: 'Mostrar minimapa'
+	}
+}).addTo(mapa);
 
 // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
 var zoomHome = L.Control.zoomHome();
 zoomHome.addTo(mapa);
 
-L.control.betterscale({ metric: true, imperial: false }).addTo(mapa);
+L.control.betterscale({
+	metric: true,
+	imperial: false
+}).addTo(mapa);
 
 // -- Plugins Control
 var plugins = new Array("loadGeojson", "loadWms");
