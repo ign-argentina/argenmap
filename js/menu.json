@@ -92,7 +92,18 @@
 		{
             "type": "wmslayer",
 			"peso": 70,
-			"nombre": "Redes geodésicas y demarcación",
+			"nombre": "Límites y unidades territoriales",
+			"short_abstract": "Provincias, departamentos, municipios, áreas protegidas, etc.",
+            "class": "",
+            "seccion": "limites",
+			"servicio": "wms",
+			"version": "1.3.0",
+			"host": "https://wms.ign.gob.ar/geoserver/limites"
+        },
+		{
+            "type": "wmslayer",
+			"peso": 75,
+			"nombre": "Redes geodésicas",
 			"short_abstract": "Redes RAMSAC, POSGAR, altimétrica y gravimétrica.",
             "class": "",
             "seccion": "geodesia-demarcacion",
