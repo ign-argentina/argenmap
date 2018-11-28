@@ -146,7 +146,7 @@ function miniMap_Minimize() {
 
 // Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
 var printerPlugin = L.easyPrint({
-	title: 'Descargado desde IGN',
+	title: 'Descargar mapa',
 	position: 'topleft',
 	sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
 	defaultSizeTitles: {

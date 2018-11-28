@@ -17,7 +17,7 @@
                     "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
                 },
 				{
-                    "titulo": "Imágenes satelitales here",
+                    "titulo": "Imágenes satelitales Here",
                     "nombre": "here_imagery",
                     "servicio": "tms",
 					"version": "1.0.0",
