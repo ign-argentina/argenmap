@@ -43,8 +43,14 @@ class ImpresorItemHTML extends Impresor {
 		
 		var childId = itemComposite.getId();
 		
-		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre +
-						" href='#' data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</a></li>";
+		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
+					"<div style='vertical-align:top'>" +
+						"<a nombre=" + itemComposite.nombre + " href='#'>" +
+							"<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" + 
+							"<div class='legend-layer'><img src='" + itemComposite.legendImg + "' onerror='showImageOnError(this);'></div>" +
+						"</a>" +						
+					"</div>" +
+				"</li>";
 			
 	}
 }
@@ -194,6 +200,7 @@ class Item extends ItemComposite {
 		this.titulo = titulo;
 		this.capa = capa;
 		this.visible = false;
+		this.legendImg = "img/legends/" + this.titulo + ".svg";
 	}
 	
 	getId() {

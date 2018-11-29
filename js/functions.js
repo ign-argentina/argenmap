@@ -23,3 +23,9 @@ function deg_to_dms (deg) {
    s = s.padStart(2, '0');
    return ("" + d + "° " + m + "' " + s + "''");
 }
+
+function showImageOnError(image) {
+	image.onerror = "";
+    image.src = "img/noimage.gif";
+    return true;
+}
