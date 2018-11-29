@@ -219,7 +219,16 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
 		
         // create an object with all layer info for each layer
         capas_info.each(function (index, b) {
-            var i = $(this); var iName = $('name', i).html(); var iTitle = $('title', i).html(); var iBoundingBox = $('boundingbox', i);  var iAbstract = $('abstract', i).html();
+            var i = $(this);
+			var iName = $('name', i).html();
+			var iTitle = $('title', i).html();
+			var iBoundingBox = $('boundingbox', i);
+			var iAbstract = $('abstract', i).html();
+			var keywordsHTMLList = $('keywordlist', i).find("keyword");
+			var keywords = [];
+			$.each( keywordsHTMLList, function( i, el ) {
+				keywords.push(el.innerText);
+			});
             if (iBoundingBox[0].attributes.srs) {
                 var iSrs = iBoundingBox[0].attributes.srs;
             } else {
@@ -231,7 +240,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
             var iMaxX = iBoundingBox[0].attributes.maxx;
             
 			var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
-			var item = new Item(capa.nombre, seccion+index, "", iAbstract, capa.titulo, capa);
+			var item = new Item(capa.nombre, seccion+index, keywords, iAbstract, capa.titulo, capa);
 			item.setImpresor(impresorItem);
 			items.push(item);
         });

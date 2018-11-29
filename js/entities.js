@@ -72,9 +72,24 @@ class ItemComposite {
 	constructor(nombre, seccion, palabrasClave, descripcion) {
 		this.nombre = nombre
 		this.seccion = seccion
+		this.peso = null;
 		this.palabrasClave = palabrasClave
 		this.descripcion = descripcion
 		this.impresor = null
+		
+		this.searchOrderIntoKeywords();
+	}
+	
+	searchOrderIntoKeywords() {
+		//Recorrer palabrasClave para ver si viene el orden
+		if (this.palabrasClave != undefined && this.palabrasClave != "") {
+			for (var key in this.palabrasClave) {
+				if (this.palabrasClave[key].indexOf("orden:") == 0) {
+					this.peso = (this.palabrasClave[key].replace("orden:", "").trim() * 1);
+					this.palabrasClave.splice(key, 1);
+				}
+			}
+		}
 	}
 
 	setImpresor(impresor) {
@@ -107,10 +122,22 @@ class ItemGroup extends ItemComposite {
 		return "lista-" + this.seccion;
 	}
 	
-	ordenaPorTitulo(a, b) {
-		var aName = a.titulo.toLowerCase();
-		var bName = b.titulo.toLowerCase(); 
-		return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+	ordenaItems(a, b) {
+		var aOrden1 = a.peso;
+		var bOrden1 = b.peso;
+		var aOrden2 = a.titulo.toLowerCase();
+		var bOrden2 = b.titulo.toLowerCase(); 
+		if (aOrden1 < bOrden1) {
+			return -1
+		} else if (aOrden1 > bOrden1) {
+			return 1;
+		} else if (aOrden2 < bOrden2) {
+			return -1;
+		} else if (aOrden2 > bOrden2) {
+			return 1;
+		}
+		
+		return 0;
 	}
 	
 	imprimir() {
@@ -121,7 +148,7 @@ class ItemGroup extends ItemComposite {
 			itemsAux.push(this.itemsComposite[key]);
 		}
 		
-		itemsAux.sort(this.ordenaPorTitulo);
+		itemsAux.sort(this.ordenaItems);
 		
 		for (var key in itemsAux) {
 			this.itemsStr += itemsAux[key].imprimir();
