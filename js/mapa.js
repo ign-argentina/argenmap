@@ -145,6 +145,7 @@ function miniMap_Minimize() {
 }
 
 // Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
+
 var printerPlugin = L.easyPrint({
 	title: 'Descargar mapa',
 	position: 'topleft',
@@ -155,7 +156,7 @@ var printerPlugin = L.easyPrint({
 							A4Portrait: 'A4 Vertical'
 						},
 	filename: 'myMap',
-	exportOnly: true,
+	exportOnly: false,
 	hideControlContainer: true
 }).addTo(mapa);
 
