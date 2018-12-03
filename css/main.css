@@ -30,6 +30,11 @@ Leaflet
 	border-radius: 4px;
 	box-sizing: border-box;
 }
+@media (max-width: 390px) {
+	.leaflet-control-minimap {
+		display: none;
+	}
+}
 
 /*******************************
 Menu principal

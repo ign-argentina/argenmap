@@ -21,25 +21,6 @@ var mapa = L.map('mapa', {
     maxZoom: 17
 });
 
-// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-var miniArgenmap = new L.TileLayer(argenmap._url, {
-	minZoom: 0,
-	maxZoom: 17,
-	attribution: atrib_ign,
-	tms: true
-});
-var miniMap = new L.Control.MiniMap(miniArgenmap, {
-	toggleDisplay: true,
-	minimized: true,
-	position: 'topleft',
-	collapsedWidth: 32,
-	collapsedHeight: 32,
-	strings: {
-		hideText: 'Ocultar minimapa',
-		showText: 'Mostrar minimapa'
-	}
-}).addTo(mapa);
-
 // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
 var zoomHome = L.Control.zoomHome({
 	zoomHomeTitle: 'Inicio',
@@ -51,6 +32,27 @@ zoomHome.addTo(mapa);
 L.control.betterscale({
 	metric: true,
 	imperial: false
+}).addTo(mapa);
+
+// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
+var miniArgenmap = new L.TileLayer(argenmap._url, {
+	minZoom: 0,
+	maxZoom: 17,
+	attribution: atrib_ign,
+	tms: true
+});
+var miniMap = new L.Control.MiniMap(miniArgenmap, {
+	toggleDisplay: false,
+	minimized: false,
+	position: 'bottomleft',
+	//collapsedWidth: 32,
+	//collapsedHeight: 32,
+	width: 100,
+	height: 100,
+	strings: {
+		hideText: 'Ocultar minimapa',
+		showText: 'Mostrar minimapa'
+	}
 }).addTo(mapa);
 
 // -- Plugins Control
