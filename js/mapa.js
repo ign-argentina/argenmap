@@ -147,7 +147,7 @@ function miniMap_Minimize() {
 }
 
 // Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
-
+/*
 var printerPlugin = L.easyPrint({
 	title: 'Descargar mapa',
 	position: 'topleft',
@@ -161,6 +161,7 @@ var printerPlugin = L.easyPrint({
 	exportOnly: false,
 	hideControlContainer: true
 }).addTo(mapa);
+*/
 
 // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
 var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
