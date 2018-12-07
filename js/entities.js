@@ -71,6 +71,23 @@ class ImpresorGrupoHTML extends Impresor {
 	}
 }
 
+
+class ImpresorCapasBaseHTML extends Impresor {
+	imprimir(itemComposite) {
+		
+		var listaId = itemComposite.getId();
+		var itemClass = 'menu5';
+		
+		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' >" +
+			"<div class='panel-title'>" +
+			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "' class='item-group-title'>" + itemComposite.nombre + "</a>" +
+			"<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "'>" + itemComposite.shortDesc + "</a></div>" +
+			"</div>" +
+			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
+		
+	}
+}
+
 /******************************************
 Composite para menu
 ******************************************/
@@ -261,6 +278,7 @@ class GestorMenu {
 	imprimir(objDOM) {
 		
 		const impresorGroup = new ImpresorGrupoHTML();
+		const impresorBaseMap = new ImpresorCapasBaseHTML();
 		
 		$(".nav.nav-sidebar").html("");
 		
@@ -274,7 +292,11 @@ class GestorMenu {
 			
 			var itemComposite = itemsAux[key];
 			
-			itemComposite.setImpresor(impresorGroup);
+			if (itemComposite.type == 'basemap') {
+				itemComposite.setImpresor(impresorBaseMap);
+			} else {
+				itemComposite.setImpresor(impresorGroup);
+			}
 			if ($('#' + itemComposite.seccion).length != 0) {
 				eliminarSubItem(itemComposite.seccion);
 			}
