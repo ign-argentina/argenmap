@@ -47,7 +47,25 @@ class ImpresorItemHTML extends Impresor {
 					"<div style='vertical-align:top'>" +
 						"<a nombre=" + itemComposite.nombre + " href='#'>" +
 							"<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" + 
-							"<div class='legend-layer'><img src='" + itemComposite.legendImg + "' onerror='showImageOnError(this);'></div>" +
+							"<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>" +
+						"</a>" +						
+					"</div>" +
+				"</li>";
+			
+	}
+}
+
+class ImpresorItemCapaBaseHTML extends Impresor {
+	imprimir(itemComposite) {
+		
+		var childId = itemComposite.getId();
+		var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
+		
+		return "<li id='" + childId + "' class='list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
+					"<div style='vertical-align:top'>" +
+						"<a nombre=" + itemComposite.nombre + " href='#'>" +
+							"<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' style='width:100px; margin-right:10px' class='img-rounded'>" +
+							"<span>" + titulo + "</span>" + 
 						"</a>" +						
 					"</div>" +
 				"</li>";
@@ -78,12 +96,10 @@ class ImpresorCapasBaseHTML extends Impresor {
 		var listaId = itemComposite.getId();
 		var itemClass = 'menu5';
 		
-		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' >" +
-			"<div class='panel-title'>" +
-			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "' class='item-group-title'>" + itemComposite.nombre + "</a>" +
-			"<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "'>" + itemComposite.shortDesc + "</a></div>" +
-			"</div>" +
-			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
+		return '<a style="position:absolute; right:0px;" class="leaflet-control-layers-toggle" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample" title="Mapas base"></a>' +
+	'<div class="collapse" id="collapseExample" style="position:relative; top:35px; z-index:1100">' +
+	  	'<ul class="list-group">' + itemComposite.itemsStr + '</ul>' +
+	'</div>';
 		
 	}
 }
@@ -99,6 +115,7 @@ class ItemComposite {
 		this.palabrasClave = palabrasClave
 		this.descripcion = descripcion
 		this.impresor = null
+		this.objDOM = null
 		
 		this.searchOrderIntoKeywords();
 	}
@@ -125,6 +142,14 @@ class ItemComposite {
 	
 	getLegendURL() {
 		return '';
+	}
+	
+	setObjDom(dom) {
+		this.objDOM = dom;
+	}
+	
+	getObjDom() {
+		return this.objDOM;
 	}
 }
 
@@ -229,6 +254,14 @@ class Item extends ItemComposite {
 		return this.visible;
 	}
 	
+	setLegendImg(img) {
+		this.legendImg = img;
+	}
+	
+	getLegendImg() {
+		return this.legendImg;
+	}
+	
 	showHide(callback) {
 		$('#' + this.getId()).toggleClass('active');
 		if (typeof callback === "function") {
@@ -275,12 +308,9 @@ class GestorMenu {
 		return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
 	}
 	
-	imprimir(objDOM) {
+	imprimir(objDOMMenu) {
 		
-		const impresorGroup = new ImpresorGrupoHTML();
-		const impresorBaseMap = new ImpresorCapasBaseHTML();
-		
-		$(".nav.nav-sidebar").html("");
+		objDOMMenu.html("");
 		
 		var itemsAux = new Array();
 		for (var key in this.items) {
@@ -292,15 +322,10 @@ class GestorMenu {
 			
 			var itemComposite = itemsAux[key];
 			
-			if (itemComposite.type == 'basemap') {
-				itemComposite.setImpresor(impresorBaseMap);
-			} else {
-				itemComposite.setImpresor(impresorGroup);
-			}
 			if ($('#' + itemComposite.seccion).length != 0) {
 				eliminarSubItem(itemComposite.seccion);
 			}
-			$(".nav.nav-sidebar").append(itemComposite.imprimir());
+			itemComposite.getObjDom().append(itemComposite.imprimir());
 			
 		}
 		
