@@ -37,6 +37,29 @@ Leaflet
 }
 
 /*******************************
+Control mapa base
+*******************************/
+#basemap-selector {
+	position:absolute;
+	top:50px;
+	right:10px;
+	z-index:1000;
+}
+#collapseBaseMapLayers {
+	position:relative;
+	top:35px;
+	z-index:1100;
+}
+#collapseBaseMapLayers .list-group-item {
+	padding: 5px;
+	background:rgba(255,255,255,0.9);
+}
+#collapseBaseMapLayers .img-rounded {
+	width:50px;
+	margin-right:5px;
+}
+
+/*******************************
 Menu principal
 *******************************/
 .tooltip {
@@ -93,6 +116,9 @@ Menu principal
 }
 .active {
 	background-color: #33b560 !important;
+}
+.active a {
+	color: white !important;
 }
 .list-group-item.active {
 	border-color: white;

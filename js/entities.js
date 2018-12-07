@@ -64,7 +64,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 		return "<li id='" + childId + "' class='list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
 					"<div style='vertical-align:top'>" +
 						"<a nombre=" + itemComposite.nombre + " href='#'>" +
-							"<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' style='width:100px; margin-right:10px' class='img-rounded'>" +
+							"<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
 							"<span>" + titulo + "</span>" + 
 						"</a>" +						
 					"</div>" +
@@ -89,17 +89,16 @@ class ImpresorGrupoHTML extends Impresor {
 	}
 }
 
-
 class ImpresorCapasBaseHTML extends Impresor {
 	imprimir(itemComposite) {
 		
 		var listaId = itemComposite.getId();
 		var itemClass = 'menu5';
 		
-		return '<a style="position:absolute; right:0px;" class="leaflet-control-layers-toggle" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample" title="Mapas base"></a>' +
-	'<div class="collapse" id="collapseExample" style="position:relative; top:35px; z-index:1100">' +
-	  	'<ul class="list-group">' + itemComposite.itemsStr + '</ul>' +
-	'</div>';
+		return '<a style="position:absolute; right:0px;" class="leaflet-control-layers-toggle" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
+			'<div class="collapse" id="collapseBaseMapLayers">' +
+				'<ul class="list-group">' + itemComposite.itemsStr + '</ul>' +
+			'</div>';
 		
 	}
 }
