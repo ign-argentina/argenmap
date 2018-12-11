@@ -41,9 +41,24 @@ Control mapa base
 *******************************/
 #basemap-selector {
 	position:absolute;
-	top:50px;
+	top:60px;
 	right:10px;
 	z-index:1000;
+}
+#basemap-selector .leaflet-control-layers-toggle {
+	width: 34px;
+	height: 34px;
+	line-height: 30px;
+	border-radius: 4px;
+	color: black;
+	border: 2px solid rgba(0, 0, 0, 0.2);
+	background-clip: padding-box;
+	background-color: white;
+	background-image: none;
+	text-align: center;
+}
+#basemap-selector .leaflet-control-layers-toggle:hover {
+	background-color: #f4f4f4;
 }
 #collapseBaseMapLayers {
 	position:relative;
