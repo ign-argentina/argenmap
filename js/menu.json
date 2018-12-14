@@ -15,7 +15,7 @@
 					"version": "1.0.0",
                     "attribution": "Imágenes satelitales © Esri",
                     "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-					"legendImg": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/%7Bz%7D/%7By%7D/%7Bx%7D"
+					"legendImg": "img/esri.png"
                 },
 				{
                     "titulo": "Imágenes satelitales Here",
@@ -24,7 +24,7 @@
 					"version": "1.0.0",
                     "attribution": "Imágenes satelitales © here",
                     "host": "https://2.aerial.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=XiMlA4JwMurUFFYUWYe3&app_code=oTsmqovbl2YudG3E0UlxDA",
-					"legendImg": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/%7Bz%7D/%7By%7D/%7Bx%7D"
+					"legendImg": "img/here.png"
                 },
 				{
                     "titulo": "Imágenes satelitales Bing",
@@ -33,7 +33,7 @@
 					"version": "1.0.0",
                     "attribution": "Imágenes satelitales © Bing",
                     "key": "AuhiCJHlGzhg93IqUH_oCpl_-ZUrIE6SPftlyGYUvr9Amx5nzA-WqGcPquyFZl4L",
-					"legendImg": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/%7Bz%7D/%7By%7D/%7Bx%7D"
+					"legendImg": "img/bing.png"
                 }
             ]
         },
