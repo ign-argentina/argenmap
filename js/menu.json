@@ -39,7 +39,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 20,
+			"peso": 70,
 			"nombre": "Industria y servicios",
 			"short_abstract": "Industrias, producción agropecuaria, minería, energía, comunicaciones, etc.",
             "class": "",
@@ -50,7 +50,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 30,
+			"peso": 60,
 			"nombre": "Hábitat e infraestructura social",
 			"short_abstract": "Asentamientos humanos, edificaciones, etc.",
             "class": "",
@@ -61,7 +61,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 40,
+			"peso": 50,
 			"nombre": "Transporte",
 			"short_abstract": "Aeropuertos, aeródromos, red vial, red ferroviaria, etc.",
             "class": "",
@@ -72,7 +72,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 50,
+			"peso": 40,
 			"nombre": "Hidrografía y oceanografía",
 			"short_abstract": "Ríos, lagos, humedales, embalses, islas, etc.",
             "class": "",
@@ -83,7 +83,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 60,
+			"peso": 90,
 			"nombre": "Relieve y suelo",
 			"short_abstract": "Cerros, volcanes, glaciares, etc.",
             "class": "",
@@ -94,7 +94,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 70,
+			"peso": 20,
 			"nombre": "Límites y unidades territoriales",
 			"short_abstract": "Provincias, departamentos, municipios, áreas protegidas, etc.",
             "class": "",
@@ -105,7 +105,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 75,
+			"peso": 30,
 			"nombre": "Redes geodésicas",
 			"short_abstract": "Redes RAMSAC, POSGAR, altimétrica y gravimétrica.",
             "class": "",
@@ -127,7 +127,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 90,
+			"peso": 110,
 			"nombre": "Fotogrametría",
 			"short_abstract": "Vuelos fotogramétricos",
             "class": "",
@@ -146,6 +146,17 @@
 			"servicio": "wms",
 			"version": "1.3.0",
 			"host": "https://wms.ign.gob.ar/geoserver/cartografia"
+        },
+		{
+            "type": "wmslayer",
+			"peso": 120,
+			"nombre": "Modelos digitales de elevaciones",
+			"short_abstract": "Modelos digitales de elevaciones",
+            "class": "",
+            "seccion": "mde",
+			"servicio": "wms",
+			"version": "1.3.0",
+			"host": "https://wms.ign.gob.ar/geoserver/modelos-digitales-elevaciones"
         }
     ]
 }
