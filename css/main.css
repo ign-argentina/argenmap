@@ -60,11 +60,13 @@ Control mapa base
 #basemap-selector .leaflet-control-layers-toggle:hover {
 	background-color: #f4f4f4;
 }
+/*
 #collapseBaseMapLayers {
 	position:relative;
 	top:35px;
 	z-index:1100;
 }
+*/
 #collapseBaseMapLayers .list-group-item {
 	padding: 5px;
 	background:rgba(255,255,255,0.9);
@@ -72,6 +74,30 @@ Control mapa base
 #collapseBaseMapLayers .img-rounded {
 	width:50px;
 	margin-right:5px;
+}
+
+.basemap-selector .leaflet-control-layers-toggle {
+	width: 34px;
+	height: 34px;
+	line-height: 30px;
+	border-radius: 4px;
+	color: black;
+	border: 2px solid rgba(0, 0, 0, 0.2);
+	background-clip: padding-box;
+	background-color: white;
+	background-image: none;
+	text-align: center;
+	background-image: url(../img/capas.png);
+	background-size: 60% 50%;
+}
+.basemap-selector .leaflet-control-layers-toggle:hover {
+	background-color: #f4f4f4;
+}
+.list-inline {
+	margin-bottom: 0px;
+}
+.list-inline li {
+	width: 215px;
 }
 
 /*******************************

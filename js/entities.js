@@ -95,9 +95,9 @@ class ImpresorCapasBaseHTML extends Impresor {
 		var listaId = itemComposite.getId();
 		var itemClass = 'menu5';
 		
-		return '<a style="position:absolute; right:0px;" class="leaflet-control-layers-toggle" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"><i class="far fa-map"></i></a>' +
+		return '<a class="leaflet-control-layers-toggle" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
 			'<div class="collapse" id="collapseBaseMapLayers">' +
-				'<ul class="list-group">' + itemComposite.itemsStr + '</ul>' +
+				'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
 			'</div>';
 		
 	}

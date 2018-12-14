@@ -21,6 +21,19 @@ var mapa = L.map('mapa', {
     maxZoom: 17
 });
 
+// Base Map Control
+L.Control.Watermark = L.Control.extend({
+
+  onAdd: function (map) {
+	var container = L.DomUtil.create('div', 'leaflet-control basemap-selector');
+	return container;
+  }
+});
+L.control.watermark = function(opts) {
+    return new L.Control.Watermark(opts);
+}
+L.control.watermark({ position: 'topleft' }).addTo(mapa);
+
 // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
 var zoomHome = L.Control.zoomHome({
 	zoomHomeTitle: 'Inicio',
