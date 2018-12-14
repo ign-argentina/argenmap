@@ -42,7 +42,14 @@ var zoomHome = L.Control.zoomHome({
 });
 zoomHome.addTo(mapa);
 
+// Leaflet BetterScale plugin
+/*
 L.control.betterscale({
+	metric: true,
+	imperial: false
+}).addTo(mapa);
+*/
+L.control.scale({
 	metric: true,
 	imperial: false
 }).addTo(mapa);
