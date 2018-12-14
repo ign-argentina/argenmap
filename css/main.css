@@ -85,10 +85,9 @@ Control mapa base
 	border: 2px solid rgba(0, 0, 0, 0.2);
 	background-clip: padding-box;
 	background-color: white;
-	background-image: none;
 	text-align: center;
 	background-image: url(../img/capas.png);
-	background-size: 60% 50%;
+	background-size: 80% 70%;
 }
 .basemap-selector .leaflet-control-layers-toggle:hover {
 	background-color: #f4f4f4;
@@ -98,6 +97,30 @@ Control mapa base
 }
 .list-inline li {
 	width: 215px;
+}
+
+/*******************************
+Control graticula
+*******************************/
+.leaflet-control-customgraticule {
+	width: 34px;
+	height: 34px;
+	line-height: 30px;
+	border-radius: 4px;
+	color: black;
+	border: 2px solid rgba(0, 0, 0, 0.2);
+	background-clip: padding-box;
+	background-color: white;
+	background-image: none;
+	text-align: center;
+	background-image: url(../img/grid.png);
+	background-size: 70% 70%;
+	background-repeat: no-repeat;
+	background-position: center; 
+}
+.leaflet-control-customgraticule:hover {
+	background-color: #f4f4f4;
+	cursor: pointer;
 }
 
 /*******************************

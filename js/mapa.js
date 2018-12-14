@@ -183,6 +183,35 @@ var printerPlugin = L.easyPrint({
 }).addTo(mapa);
 */
 
+// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
+var customGraticule = null;
+L.Control.CustomGraticule = L.Control.extend({
+
+  onAdd: function (map) {
+	var container = L.DomUtil.create('div', 'leaflet-control leaflet-control-customgraticule');
+
+	container.onclick = function() {
+		if (customGraticule == null) {
+			var options = {
+				interval: 5,
+				showshowOriginLabel: true,
+				redraw: 'move'
+			};
+			customGraticule = L.simpleGraticule(options).addTo(mapa);
+		} else {
+			mapa.removeControl(customGraticule);
+			customGraticule = null;
+		}
+	}
+
+	return container;
+  }
+});
+L.control.customgraticule = function(opts) {
+    return new L.Control.CustomGraticule(opts);
+}
+L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
+
 // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
 var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
 measureControl.addTo(mapa);

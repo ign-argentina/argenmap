@@ -21,7 +21,7 @@ $.getJSON("./js/menu.json", function (data) {
 			var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, data.items[key].capas[key2].key, null, null, null, null, data.items[key].capas[key2].attribution);
 			var item = new Item(capa.nombre, data.items[key].seccion+key2, "", data.items[key].capas[key2].attribution, capa.titulo, capa);
 			item.setImpresor(impresorItemCapaBase);
-			console.log(data.items[key].capas.legendImg);
+			//console.log(data.items[key].capas.legendImg);
 			item.setLegendImg(data.items[key].capas[key2].legendImg);
 			groupAux.setItem(item);
 		  }
