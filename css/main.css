@@ -217,7 +217,7 @@ Menu principal
 }
 .legend-layer {
 	height: 20px;
-	width: 20px;
+	width: 0px;
 	display: table-cell;
 	font-size: 10px;
 	font-weight: bolder;
@@ -225,4 +225,9 @@ Menu principal
 	vertical-align: middle;
 	float: right;
 	padding-top: 2px;
+	padding-right: 2px;
+}
+.capa-title {
+	vertical-align:top;
+	width:96%;
 }

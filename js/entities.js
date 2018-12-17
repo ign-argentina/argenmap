@@ -44,7 +44,7 @@ class ImpresorItemHTML extends Impresor {
 		var childId = itemComposite.getId();
 		
 		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
-					"<div style='vertical-align:top'>" +
+					"<div class='capa-title'>" +
 						"<a nombre=" + itemComposite.nombre + " href='#'>" +
 							"<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" + 
 							"<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>" +
