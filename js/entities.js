@@ -240,7 +240,7 @@ class Item extends ItemComposite {
 		this.titulo = titulo;
 		this.capa = capa;
 		this.visible = false;
-		this.legendImg = "img/legends/" + this.titulo + ".svg";
+		this.legendImg = "img/legends/" + this.titulo.replace(':', '') + ".svg";
 	}
 	
 	getId() {
