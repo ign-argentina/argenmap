@@ -17,7 +17,7 @@ var mapa = L.map('mapa', {
     zoom: 4,
     layers: [argenmap],
 	zoomControl: false,
-	minZoom: 2,
+	minZoom: 3,
     maxZoom: 17
 });
 
@@ -201,7 +201,8 @@ L.Control.CustomGraticule = L.Control.extend({
 				zoomIntervals: [
 					{start: 2, end: 3, interval: 20},
 					{start: 4, end: 5, interval: 10},
-					{start: 6, end: 8, interval: 1},
+					{start: 6, end: 6, interval: 5},
+					{start: 7, end: 8, interval: 1},
 					{start: 9, end: 9, interval: 0.8},
 					{start: 10, end: 10, interval: 0.5},
 					{start: 11, end: 12, interval: 0.08},
