@@ -70,6 +70,11 @@ Control mapa base
 	z-index:1100;
 }
 */
+#collapseBaseMapLayers {
+	position: absolute;
+	top:0px;
+	left:41px;
+}
 #collapseBaseMapLayers .list-group-item {
 	padding: 5px;
 	background:rgba(255,255,255,0.9);
