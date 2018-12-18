@@ -78,6 +78,7 @@ Control mapa base
 #collapseBaseMapLayers .list-group-item {
 	padding: 5px;
 	background:rgba(255,255,255,0.9);
+	font-size: 14px;
 }
 #collapseBaseMapLayers .img-rounded {
 	width:50px;
@@ -104,7 +105,7 @@ Control mapa base
 	margin-bottom: 0px;
 }
 .list-inline li {
-	width: 215px;
+	width: 230px;
 }
 
 /*******************************
