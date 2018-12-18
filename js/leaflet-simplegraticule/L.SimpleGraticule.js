@@ -9,7 +9,7 @@ L.SimpleGraticule = L.LayerGroup.extend({
         showOriginLabel: true,
         redraw: 'move',
         hidden: false,
-		fixedTo: false,
+		labelsFormat: 'decimal',
         zoomIntervals : []
     },
 
@@ -141,6 +141,36 @@ L.SimpleGraticule = L.LayerGroup.extend({
 		   // Adjust for scientific notation.
 		   - (match[2] ? +match[2] : 0));
 	},
+	
+	degToDms: function (deg) {
+	   var vecAux = new Array();
+	   var d = Math.floor (deg);
+	   var minfloat = (deg-d)*60;
+	   var m = Math.floor(minfloat);
+	   var secfloat = (minfloat-m)*60;
+	   var s = Math.round(secfloat);
+	   // After rounding, the seconds might become 60. These two
+	   // if-tests are not necessary if no rounding is done.
+	   if (s==60) {
+		 m++;
+		 s=0;
+	   }
+	   if (m==60) {
+		 d++;
+		 m=0;
+	   }
+	   
+	   vecAux[0] = d + "°";
+	   vecAux[1] = m + "'";
+	   if (m < 10) {
+		vecAux[1] = "0" + m + "'";
+	   }
+	   vecAux[2] = s + "''";
+	   if (s < 10) {
+		vecAux[2] = "0" + s + "'";
+	   }
+	   return vecAux.join('');
+	},
 
     buildLabel: function(axis, val) {
         var bounds = this._map.getBounds().pad(-0.003);
@@ -151,8 +181,8 @@ L.SimpleGraticule = L.LayerGroup.extend({
             latLng = new L.LatLng(val, bounds.getWest());
         }
 		
-		if (this.options.fixedTo != false && this.decimalPlaces(val) > this.options.fixedTo) {
-			val = val.toFixed(this.options.fixedTo);
+		if (this.options.labelsFormat == 'dms') {
+			val = this.degToDms(val);
 		}
 
         return L.marker(latLng, {

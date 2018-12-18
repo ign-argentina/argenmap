@@ -197,7 +197,7 @@ L.Control.CustomGraticule = L.Control.extend({
 			var options = {
 				interval: 10,
 				showshowOriginLabel: true,
-				fixedTo: 3,
+				labelsFormat: 'dms',
 				zoomIntervals: [
 					{start: 2, end: 3, interval: 20},
 					{start: 4, end: 5, interval: 10},
