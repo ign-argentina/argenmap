@@ -103,22 +103,14 @@ L.SimpleGraticule = L.LayerGroup.extend({
         for (var i = 0; i <= counts.x; i++) {
             var x = mins.x + i * this.options.interval;
             lines[i] = this.buildXLine(x);
-			if (this.options.fixedTo != false) {
-				labels[i] = this.buildLabel('gridlabel-horiz', x.toFixed(this.options.fixedTo));
-			} else {
-				labels[i] = this.buildLabel('gridlabel-horiz', x);
-			}			
+            labels[i] = this.buildLabel('gridlabel-horiz', x);
         }
 
         //for vertical lines
         for (var j = 0; j <= counts.y; j++) {
             var y = mins.y + j * this.options.interval;
             lines[j + i] = this.buildYLine(y);
-			if (this.options.fixedTo != false) {
-				labels[j + i] = this.buildLabel('gridlabel-vert', y.toFixed(this.options.fixedTo));
-			} else {
-				labels[j + i] = this.buildLabel('gridlabel-vert', y);
-			}
+            labels[j + i] = this.buildLabel('gridlabel-vert', y);
         }
 
         lines.forEach(this.addLayer, this);
@@ -138,6 +130,17 @@ L.SimpleGraticule = L.LayerGroup.extend({
 
         return new L.Polyline([leftLL, rightLL], this.lineStyle);
     },
+	
+	decimalPlaces: function(num) {
+	  var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+	  if (!match) { return 0; }
+	  return Math.max(
+		   0,
+		   // Number of digits right of decimal point.
+		   (match[1] ? match[1].length : 0)
+		   // Adjust for scientific notation.
+		   - (match[2] ? +match[2] : 0));
+	},
 
     buildLabel: function(axis, val) {
         var bounds = this._map.getBounds().pad(-0.003);
@@ -147,6 +150,10 @@ L.SimpleGraticule = L.LayerGroup.extend({
         } else {
             latLng = new L.LatLng(val, bounds.getWest());
         }
+		
+		if (this.options.fixedTo != false && this.decimalPlaces(val) > this.options.fixedTo) {
+			val = val.toFixed(this.options.fixedTo);
+		}
 
         return L.marker(latLng, {
             interactive: false,
