@@ -9,6 +9,7 @@ L.SimpleGraticule = L.LayerGroup.extend({
         showOriginLabel: true,
         redraw: 'move',
         hidden: false,
+		fixedTo: false,
         zoomIntervals : []
     },
 
@@ -102,14 +103,22 @@ L.SimpleGraticule = L.LayerGroup.extend({
         for (var i = 0; i <= counts.x; i++) {
             var x = mins.x + i * this.options.interval;
             lines[i] = this.buildXLine(x);
-            labels[i] = this.buildLabel('gridlabel-horiz', x);
+			if (this.options.fixedTo != false) {
+				labels[i] = this.buildLabel('gridlabel-horiz', x.toFixed(this.options.fixedTo));
+			} else {
+				labels[i] = this.buildLabel('gridlabel-horiz', x);
+			}			
         }
 
         //for vertical lines
         for (var j = 0; j <= counts.y; j++) {
             var y = mins.y + j * this.options.interval;
             lines[j + i] = this.buildYLine(y);
-            labels[j + i] = this.buildLabel('gridlabel-vert', y);
+			if (this.options.fixedTo != false) {
+				labels[j + i] = this.buildLabel('gridlabel-vert', y.toFixed(this.options.fixedTo));
+			} else {
+				labels[j + i] = this.buildLabel('gridlabel-vert', y);
+			}
         }
 
         lines.forEach(this.addLayer, this);

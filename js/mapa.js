@@ -185,19 +185,66 @@ var printerPlugin = L.easyPrint({
 
 // Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
 var customGraticule = null;
+function drawGrid(_zoom) {
+	_fixedTo = false;
+	if (_zoom <= 3) {
+		_interval = 20;
+	} else if (_zoom <= 5) {
+		_interval = 10;
+	} else if (_zoom <= 6) {
+		_fixedTo = 1;
+		_interval = 5;
+	} else if (_zoom <= 8) {
+		_fixedTo = 1;
+		_interval = 1;
+	} else if (_zoom <= 9) {
+		_fixedTo = 2;
+		_interval = 0.8;
+	} else if (_zoom <= 10) {
+		_fixedTo = 2;
+		_interval = 0.5;
+	} else if (_zoom <= 12) {
+		_fixedTo = 2;
+		_interval = 0.08;
+	} else if (_zoom == 13) {
+		_fixedTo = 2;
+		_interval = 0.02;
+	} else if (_zoom == 14) {
+		_fixedTo = 2;
+		_interval = 0.01;
+	} else if (_zoom == 15) {
+		_fixedTo = 3;
+		_interval = 0.008;
+	} else if (_zoom == 16) {
+		_fixedTo = 3;
+		_interval = 0.004;
+	} else {
+		_fixedTo = 3;
+		_interval = 0.001;
+	}
+
+	if (customGraticule == null) {
+		var options = {
+			interval: _interval,
+			showshowOriginLabel: true,
+			fixedTo: _fixedTo,
+			redraw: 'move'
+		};
+		customGraticule = L.simpleGraticule(options).addTo(mapa);
+	} else {
+		customGraticule.options.interval = _interval;
+		customGraticule.redraw();
+	}
+}
 L.Control.CustomGraticule = L.Control.extend({
 
   onAdd: function (map) {
 	var container = L.DomUtil.create('div', 'leaflet-control leaflet-control-customgraticule');
-
+	container.title = 'Cuadrícula';
+	
 	container.onclick = function() {
 		if (customGraticule == null) {
-			var options = {
-				interval: 5,
-				showshowOriginLabel: true,
-				redraw: 'move'
-			};
-			customGraticule = L.simpleGraticule(options).addTo(mapa);
+			drawGrid(mapa.getZoom());
 		} else {
 			mapa.removeControl(customGraticule);
 			customGraticule = null;
@@ -211,6 +258,12 @@ L.control.customgraticule = function(opts) {
     return new L.Control.CustomGraticule(opts);
 }
 L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
+//Detectar cambio de zoom para modificar cuadrícula
+mapa.on('zoomend', function(e) {
+	if (customGraticule != null) {
+		drawGrid(mapa.getZoom());
+	}
+});
 
 // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
 var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
