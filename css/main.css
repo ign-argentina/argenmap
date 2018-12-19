@@ -156,9 +156,6 @@ Menu principal
 @media (min-width: 992px) {
   #sidebar-container.collapse {height: 90% !important};
 }
-@media (max-width: 768px) {
-  .navbar-header a{font-size: 13px; font-weight: bold;}
-}
 .navbar {
   background-color: #008dc9;
 }
@@ -207,6 +204,9 @@ Menu principal
 	.navbar-header > a > img {
 		left: 50px;
 	}
+}
+@media (max-width: 768px) {
+  .navbar-header a{font-size: 13px; font-weight: bold;}
 }
 .item-group-short-desc {
 	font-size: 11px;
