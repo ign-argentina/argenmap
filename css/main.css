@@ -30,14 +30,6 @@ Leaflet
 	border-radius: 4px;
 	box-sizing: border-box;
 }
-@media (max-width: 390px) {
-	.leaflet-control-minimap {
-		display: none;
-	}
-	.leaflet-top.leaflet-right {
-		display: none;
-	}
-}
 
 /*******************************
 Control mapa base
@@ -182,11 +174,6 @@ Menu principal
 	top:7px;
 	position:absolute;
 }
-@media (max-width: 390px) {
-	.navbar-header > a > img {
-		left: 50px;
-	}
-}
 .active {
 	background-color: #33b560 !important;
 }
@@ -210,6 +197,15 @@ Menu principal
 @media (max-width: 390px) {
 	.tooltip {
 		display: none !important;
+	}
+	.leaflet-control-minimap {
+		display: none;
+	}
+	.leaflet-top.leaflet-right {
+		display: none;
+	}
+	.navbar-header > a > img {
+		left: 50px;
 	}
 }
 .item-group-short-desc {
