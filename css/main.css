@@ -144,7 +144,7 @@ Menu principal
 .menu3 {background-color: #2aaad1 !important; color: white !important;}
 .menu4 {background-color: #5bc0de !important; color: white !important;}
 .menu5 {background-color: #008dc9 !important; color: white !important;}
-#sidebar-container{z-index: 1500; background-color: #008dc9 }
+#sidebar-container{z-index: 1500; background-color: #008dc9;padding:0 10px; height:100%;}
 #sidebar .nav {border: 1px;}
 .nav-sidebar { /*ancho de selector de capas */
   margin-right: -10px;
