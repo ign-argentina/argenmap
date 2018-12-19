@@ -188,26 +188,6 @@ Menu principal
   border-radius: 50%;
   background: #33b560;
 }
-@media (max-width: 390px) {
-	.tooltip {
-		display: none !important;
-	}
-	.leaflet-control-minimap {
-		display: none;
-	}
-	.leaflet-top.leaflet-right {
-		display: none;
-	}
-	.navbar-header > a > img {
-		left: 50px;
-	}
-}
-@media (max-width: 768px) {
-  .navbar-header a{font-size: 13px; font-weight: bold;}
-}
-@media (min-width: 992px) {
-  #sidebar-container.collapse {height: 90% !important};
-}
 .item-group-short-desc {
 	font-size: 11px;
 	line-height: 11px;
@@ -235,4 +215,24 @@ Menu principal
 .capa-title {
 	vertical-align:top;
 	width:96%;
+}
+@media (max-width: 390px) {
+	.tooltip {
+		display: none !important;
+	}
+	.leaflet-control-minimap {
+		display: none;
+	}
+	.leaflet-top.leaflet-right {
+		display: none;
+	}
+	.navbar-header > a > img {
+		left: 50px;
+	}
+}
+@media (max-width: 768px) {
+  .navbar-header a{font-size: 13px; font-weight: bold;}
+}
+@media (min-width: 992px) {
+  #sidebar-container.collapse {height: 90% !important};
 }
