@@ -153,9 +153,6 @@ Menu principal
 }
 .navbar-toggle .icon-bar{border: 1px solid #337ab7;} 
 .navbar-header > button {display: block;}
-@media (min-width: 992px) {
-  #sidebar-container.collapse {height: 90% !important};
-}
 .navbar {
   background-color: #008dc9;
 }
@@ -207,6 +204,9 @@ Menu principal
 }
 @media (max-width: 768px) {
   .navbar-header a{font-size: 13px; font-weight: bold;}
+}
+@media (min-width: 992px) {
+  #sidebar-container.collapse {height: 90% !important};
 }
 .item-group-short-desc {
 	font-size: 11px;
