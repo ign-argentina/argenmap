@@ -18,6 +18,15 @@
 					"legendImg": "img/esri.png"
                 },
 				{
+                    "titulo": "Mapa topográfico Esri",
+                    "nombre": "esri_imagery_t",
+                    "servicio": "tms",
+					"version": "1.0.0",
+                    "attribution": "Mapa topográfico © Esri",
+                    "host": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
+					"legendImg": "img/esrit.png"
+                },
+				{
                     "titulo": "Imágenes satelitales Here",
                     "nombre": "here_imagery",
                     "servicio": "tms",
