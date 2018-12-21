@@ -1,0 +1,234 @@
+/*******************************
+General
+*******************************/
+body {
+	font-family: Roboto,sans-serif;
+}
+
+/*******************************
+Leaflet
+*******************************/
+.leaflet-container {
+	font: 12px/1.5 Roboto, sans-serif !important;
+}
+.leaflet-control-measure-interaction h3 {
+	font-size: 17px !important;
+}
+.leaflet-popup-content h3 {
+	font-size: 17px !important;
+}
+.individualFeature h4 {
+	text-decoration: none !important;
+}
+.leaflet-control-easyPrint {
+	height: 33px !important;
+}
+.leaflet-control-minimap {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	box-shadow: none;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+/*******************************
+Control mapa base
+*******************************/
+#basemap-selector {
+	position:absolute;
+	top:60px;
+	right:10px;
+	z-index:1000;
+}
+#basemap-selector .leaflet-control-layers-toggle {
+	width: 34px;
+	height: 34px;
+	line-height: 30px;
+	border-radius: 4px;
+	color: black;
+	border: 2px solid rgba(0, 0, 0, 0.2);
+	background-clip: padding-box;
+	background-color: white;
+	background-image: none;
+	text-align: center;
+}
+#basemap-selector .leaflet-control-layers-toggle:hover {
+	background-color: #f4f4f4;
+}
+/*
+#collapseBaseMapLayers {
+	position:relative;
+	top:35px;
+	z-index:1100;
+}
+*/
+#collapseBaseMapLayers {
+	position: absolute;
+	top:1px;
+	left:41px;
+}
+#collapseBaseMapLayers .list-group-item {
+	padding: 5px;
+	background:rgba(255,255,255,0.9);
+	font-size: 14px;
+}
+#collapseBaseMapLayers .img-rounded {
+	width:50px;
+	margin-right:5px;
+}
+
+.basemap-selector .leaflet-control-layers-toggle {
+	width: 34px;
+	height: 34px;
+	line-height: 30px;
+	border-radius: 4px;
+	color: black;
+	border: 2px solid rgba(0, 0, 0, 0.2);
+	background-clip: padding-box;
+	background-color: white;
+	text-align: center;
+	background-image: url(../img/capas.png);
+	background-size: 80% 70%;
+}
+.basemap-selector .leaflet-control-layers-toggle:hover {
+	background-color: #f4f4f4;
+}
+.list-inline {
+	margin-bottom: 0px;
+}
+.list-inline li {
+	width: 230px;
+}
+
+/*******************************
+Control graticula
+*******************************/
+.leaflet-control-customgraticule {
+	width: 34px;
+	height: 34px;
+	line-height: 30px;
+	border-radius: 4px;
+	color: black;
+	border: 2px solid rgba(0, 0, 0, 0.2);
+	background-clip: padding-box;
+	background-color: white;
+	background-image: none;
+	text-align: center;
+	background-image: url(../img/grid.png);
+	background-size: 70% 70%;
+	background-repeat: no-repeat;
+	background-position: center; 
+}
+.leaflet-control-customgraticule:hover {
+	background-color: #f4f4f4;
+	cursor: pointer;
+}
+
+/*******************************
+Menu principal
+*******************************/
+.tooltip {
+    z-index: 2000; /* A value higher than 1010 that solves the problem */
+}
+.loading {
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.loading > img {
+	width: 70px;
+}
+.menu1 {background-color: #1174a1  !important; color: white !important;}
+.menu2 {background-color: #0695d6 !important; color: white !important;}
+.menu3 {background-color: #2aaad1 !important; color: white !important;}
+.menu4 {background-color: #5bc0de !important; color: white !important;}
+.menu5 {background-color: #008dc9 !important; color: white !important;}
+#sidebar-container{z-index: 1500; background-color: #008dc9 }
+#sidebar .nav {border: 1px;}
+
+.navbar-toggle .icon-bar{border: 1px solid #337ab7;} 
+.navbar-header > button {display: block;}
+.navbar {
+  background-color: #008dc9;
+}
+.navbar-brand {
+  padding-top: 7px;
+}
+
+.nav-sidebar > .active > a {
+	background-color:   inherit !important
+}
+.navbar-header > a > img {
+	width:50px;
+	top:7px;
+	position:absolute;
+}
+.active {
+	background-color: #33b560 !important;
+}
+.active a {
+	color: white !important;
+}
+.list-group-item.active {
+	border-color: white;
+}
+.active-layers-counter {
+  height: 20px;
+  width: 20px;
+  display: table-cell;
+  font-size: 10px;
+  font-weight: bolder;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 50%;
+  background: #33b560;
+}
+.item-group-short-desc {
+	font-size: 11px;
+	line-height: 11px;
+}
+.item-group-short-desc a {
+	font-size: 11px;
+	color: #dddddd;
+}
+.item-group-title {
+	font-weight: bold;
+	font-size: 15px;
+}
+.legend-layer {
+	height: 20px;
+	width: 0px;
+	display: table-cell;
+	font-size: 10px;
+	font-weight: bolder;
+	text-align: center;
+	vertical-align: middle;
+	float: right;
+	padding-top: 2px;
+	padding-right: 2px;
+}
+.capa-title {
+	vertical-align:top;
+	width:96%;
+}
+@media (max-width: 390px) {
+	.tooltip {
+		display: none !important;
+	}
+	.leaflet-control-minimap {
+		display: none;
+	}
+	.leaflet-top.leaflet-right {
+		display: none;
+	}
+	.navbar-header > a > img {
+		left: 50px;
+	}
+}
+@media (max-width: 768px) {
+  .navbar-header a{font-size: 13px; font-weight: bold;}
+}
+@media (min-width: 992px) {
+  #sidebar-container.collapse {__height: 100% !important};
+}
