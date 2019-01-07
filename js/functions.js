@@ -1,3 +1,6 @@
+// -- Plugins Control
+var plugins = new Array("loadGeojson", "loadWms");
+
 function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abstract) {
   const impresorGroup = new ImpresorGrupoHTML();
   const impresorItem = new ImpresorItemHTML();

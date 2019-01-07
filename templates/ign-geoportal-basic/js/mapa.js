@@ -75,8 +75,6 @@ var miniMap = new L.Control.MiniMap(miniArgenmap, {
 	}
 }).addTo(mapa);
 
-// -- Plugins Control
-var plugins = new Array("loadGeojson", "loadWms");
 // -- Plugins
 function onEachFeature(feature, layer) {
     if (feature.properties) {
