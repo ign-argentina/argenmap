@@ -167,5 +167,6 @@
 			"version": "1.3.0",
 			"host": "https://wms.ign.gob.ar/geoserver/modelos-digitales-elevaciones"
         }
-    ]
+    ],
+    "template": "ign-geoportal-basic"
 }
