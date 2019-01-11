@@ -280,11 +280,45 @@ class Item extends ItemComposite {
 }
 
 /******************************************
+Clase plugin
+******************************************/
+class Plugin {
+	constructor(name, url, callback) {
+		this.name = name;
+		this.url = url;
+		this.status = 'loading';
+		this.callback = callback;
+	}
+
+	getStatus(){
+		return this.status;
+	}
+
+	setStatus(status){
+		switch (status){
+			case "loading":
+				this.status = status;
+				break;
+			case "ready":
+				this.status = status;
+				break;
+			case "fail":
+				this.status = status;
+				break;
+			default:
+				return false;
+		}
+	}
+}
+
+/******************************************
 Gestor de menu
 ******************************************/
 class GestorMenu {
 	constructor() {
 		this.items = {};
+		this.plugins = {};
+		this.pluginsCount = 0;
 	}
 	
 	add(itemGroup) {
@@ -298,6 +332,56 @@ class GestorMenu {
 			itemAux.setItem(itemGroup.itemsComposite[key]);
 		}
 		this.items[itemGroup.seccion] = itemAux;
+	}
+		
+	addPlugin(pluginName, url, callback) {
+		var pluginAux;
+		if (!this.pluginExists(pluginName)) {
+			if(typeof callback === 'function'){
+			// Create plugin with callback if need to
+				pluginAux = new Plugin(pluginName, url, callback);
+				this.plugins[pluginAux.name] = pluginAux;
+				$.getScript(url, function( data, textStatus, jqxhr ) {
+					if(textStatus == "success") {
+						pluginAux.setStatus("ready");
+						pluginAux.callback();
+					}
+				}).fail(function( jqxhr, settings, exception ) {
+					pluginAux.setStatus("fail");
+					console.log("Error: " + jqxhr.status);
+				});
+			}
+			else {
+			// Create a plugin with no callback
+				pluginAux = new Plugin(pluginName, url, null);
+				this.plugins[pluginAux.name] = pluginAux;
+				$.getScript(url, function( data, textStatus, jqxhr ) {
+					if(textStatus == "success") {
+						pluginAux.setStatus("ready");
+					}
+				}).fail(function( jqxhr, settings, exception ) {
+					pluginAux.setStatus("fail");
+					console.log("Error: " + jqxhr.status);
+				});
+			}
+		} else {
+			return false;
+		}
+	}	
+
+	deletePlugin(pluginName) {
+		if (this.pluginExists(pluginName)) {
+			delete this.plugins[pluginName];
+			return true;
+		} else { return false; }
+	}	
+
+	pluginExists(pluginName) {
+		if (this.plugins[pluginName]) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	ordenaPorPeso(a, b){
