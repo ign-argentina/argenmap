@@ -309,6 +309,10 @@ class Plugin {
 				return false;
 		}
 	}
+	triggerLoad(){
+		$("body").trigger("pluginLoad", { pluginName: this.name });
+		console.log(this.name);
+	}
 }
 
 /******************************************
@@ -319,6 +323,7 @@ class GestorMenu {
 		this.items = {};
 		this.plugins = {};
 		this.pluginsCount = 0;
+		this.pluginsLoading = 0;
 	}
 	
 	add(itemGroup) {
@@ -341,27 +346,39 @@ class GestorMenu {
 			// Create plugin with callback if need to
 				pluginAux = new Plugin(pluginName, url, callback);
 				this.plugins[pluginAux.name] = pluginAux;
+				this.pluginsCount ++;
+				this.pluginsLoading ++;
 				$.getScript(url, function( data, textStatus, jqxhr ) {
 					if(textStatus == "success") {
 						pluginAux.setStatus("ready");
+						gestorMenu.pluginsLoading --;
+						pluginAux.triggerLoad();
 						pluginAux.callback();
 					}
 				}).fail(function( jqxhr, settings, exception ) {
 					pluginAux.setStatus("fail");
 					console.log("Error: " + jqxhr.status);
+					gestorMenu.pluginsCount --;
+					gestorMenu.pluginsLoading --;
 				});
 			}
 			else {
 			// Create a plugin with no callback
 				pluginAux = new Plugin(pluginName, url, null);
 				this.plugins[pluginAux.name] = pluginAux;
+				this.pluginsCount ++;
+				this.pluginsLoading ++;
 				$.getScript(url, function( data, textStatus, jqxhr ) {
 					if(textStatus == "success") {
 						pluginAux.setStatus("ready");
+						gestorMenu.pluginsLoading --;
+						pluginAux.triggerLoad();
 					}
 				}).fail(function( jqxhr, settings, exception ) {
 					pluginAux.setStatus("fail");
 					console.log("Error: " + jqxhr.status);
+					gestorMenu.pluginsCount --;
+					gestorMenu.pluginsLoading --;
 				});
 			}
 		} else {
