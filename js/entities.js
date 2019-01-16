@@ -311,7 +311,6 @@ class Plugin {
 	}
 	triggerLoad(){
 		$("body").trigger("pluginLoad", { pluginName: this.name });
-		console.log(this.name);
 	}
 }
 
