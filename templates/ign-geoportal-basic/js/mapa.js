@@ -104,6 +104,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				minZoom: 3,
 			    maxZoom: 17
 			});
+			gestorMenu.plugins['leaflet'].setStatus('visible');
 			break;
 		case 'ZoomHome':
 			// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
@@ -113,6 +114,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				zoomOutTitle: 'Alejarse'
 			});
 			zoomHome.addTo(mapa);
+			gestorMenu.plugins['ZoomHome'].setStatus('visible');
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
@@ -129,6 +131,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				separator: '  ',
 				emptyString: '&nbsp;'
 			}).addTo(mapa);
+			gestorMenu.plugins['MousePosition'].setStatus('visible');
 			break;
 		case 'locate':
 			// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
@@ -161,7 +164,8 @@ $("body").on("pluginLoad", function(event, plugin){
 			        maximumAge: 10000,
 			        timeout: 10000
 			    }
-			}).addTo(mapa);	
+			}).addTo(mapa);
+			gestorMenu.plugins['locate'].setStatus('visible');
 			break;
 		case 'FullScreen':
 			// Leaflet-Control.FullScreen plugin https://github.com/brunob/leaflet.fullscreen
@@ -187,7 +191,8 @@ $("body").on("pluginLoad", function(event, plugin){
 				miniMap._restore();
 				window.setTimeout( miniMap_Minimize, 2000 );
 			  }
-			});	
+			});
+			gestorMenu.plugins['FullScreen'].setStatus('visible');
 			break;
 		case 'graticula':
 			// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
@@ -233,11 +238,13 @@ $("body").on("pluginLoad", function(event, plugin){
 			    return new L.Control.CustomGraticule(opts);
 			}
 			L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
+			gestorMenu.plugins['graticula'].setStatus('visible');
 			break;	
 		case 'Measure':
 			// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
 			var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
 			measureControl.addTo(mapa);
+			gestorMenu.plugins['Measure'].setStatus('visible');
 			break;
 		case 'Draw':
 			// Leaflet-Draw plugin https://github.com/Leaflet/Leaflet.draw
@@ -303,6 +310,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 				drawnItems.addLayer(layer);
 			});
+			gestorMenu.plugins['Draw'].setStatus('visible');
 			break;
 		case 'minimap':
 		// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
@@ -325,6 +333,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					showText: 'Mostrar minimapa'
 				}
 			}).addTo(mapa);
+			gestorMenu.plugins['minimap'].setStatus('minimap');
 			break;
 		case 'betterScale':
 			// Leaflet BetterScale plugin
@@ -338,6 +347,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				metric: true,
 				imperial: false
 			}).addTo(mapa);
+			gestorMenu.plugins['leaflet'].setStatus('betterScale');
 			break;
 	}
 
