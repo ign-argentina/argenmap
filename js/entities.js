@@ -305,6 +305,9 @@ class Plugin {
 			case "fail":
 				this.status = status;
 				break;
+			case "visible":
+				this.status = status;
+				break;
 			default:
 				return false;
 		}
