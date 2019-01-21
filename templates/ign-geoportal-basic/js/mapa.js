@@ -86,8 +86,254 @@ gestorMenu.addPlugin("leaflet","https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leafl
 
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
+var unordered = '';
+var ordered = ['','','','','','','','',''];
+var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8;
+var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
+	unordered = '';
+	visiblesActivar = true;
 	switch(plugin.pluginName) {
+		// Add ordered plugins in order
+		case 'leaflet':
+			unordered = plugin.pluginName;
+			break;
+		case 'ZoomHome':
+			ordered.splice(ordenZoomHome, 1, plugin.pluginName);
+			break;
+		case 'Measure':
+			ordered.splice(5, 1, plugin.pluginName);
+			break;
+		case 'graticula':
+			ordered.splice(4, 1, plugin.pluginName);
+			break;
+		case 'minimap':
+			ordered.splice(8, 1, plugin.pluginName);
+			break;
+		case 'betterScale':
+			ordered.splice(7, 1, plugin.pluginName);
+			break;
+		case 'Draw':
+			ordered.splice(6, 1, plugin.pluginName);
+			break;
+		case 'locate':
+			ordered.splice(2, 1, plugin.pluginName);
+			break;
+		case 'FullScreen':
+			ordered.splice(3, 1, plugin.pluginName);
+			break;
+		default :
+			// Add unordered plugins
+			unordered = plugin.pluginName;
+			break;
+	}
+	// oredered plugins status chek
+	if(visiblesActivar && gestorMenu.pluginExists('leaflet')) {
+		if(gestorMenu.plugins['leaflet'].getStatus() != 'visible') {
+			visiblesActivar = false;
+		}
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('ZoomHome')) {
+		if(gestorMenu.plugins['ZoomHome'].getStatus() == 'ready' || gestorMenu.plugins['ZoomHome'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('locate')){
+		if(gestorMenu.plugins['locate'].getStatus() == 'ready' || gestorMenu.plugins['locate'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('FullScreen')) {
+		if(gestorMenu.plugins['FullScreen'].getStatus() == 'ready' || gestorMenu.plugins['FullScreen'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('graticula')) {
+		if(gestorMenu.plugins['graticula'].getStatus() == 'ready' || gestorMenu.plugins['graticula'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('Measure')) {
+		if(gestorMenu.plugins['Measure'].getStatus() == 'ready' || gestorMenu.plugins['Measure'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
+		if(gestorMenu.plugins['Draw'].getStatus() == 'ready' || gestorMenu.plugins['Draw'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('betterScale')) {
+		if(gestorMenu.plugins['betterScale'].getStatus() == 'ready' || gestorMenu.plugins['betterScale'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('minimap')) {
+		if(gestorMenu.plugins['minimap'].getStatus() == 'ready' || gestorMenu.plugins['minimap'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar){
+		ordered.forEach(function(e){
+			switch (e) {
+				case 'ZoomHome':
+					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
+					var zoomHome = L.Control.zoomHome({
+						zoomHomeTitle: 'Inicio',
+						zoomInTitle: 'Acercarse',
+						zoomOutTitle: 'Alejarse'
+					});
+					zoomHome.addTo(mapa);
+					gestorMenu.plugins['ZoomHome'].setStatus('visible');
+					break;
+				case 'betterScale':
+					// Leaflet BetterScale plugin
+					/*
+					L.control.betterscale({
+						metric: true,
+						imperial: false
+					}).addTo(mapa);
+					*/ 
+					L.control.scale({
+						metric: true,
+						imperial: false
+					}).addTo(mapa);
+					gestorMenu.plugins['betterScale'].setStatus('visible');
+					break;
+				case 'minimap':
+					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
+					var miniArgenmap = new L.TileLayer(argenmap._url, {
+						minZoom: 0,
+						maxZoom: 17,
+						attribution: atrib_ign,
+						tms: true
+					});
+					var miniMap = new L.Control.MiniMap(miniArgenmap, {
+						toggleDisplay: false,
+						minimized: false,
+						position: 'bottomleft',
+						//collapsedWidth: 32,
+						//collapsedHeight: 32,
+						width: 100,
+						height: 100,
+						strings: {
+							hideText: 'Ocultar minimapa',
+							showText: 'Mostrar minimapa'
+						}
+					}).addTo(mapa);
+					gestorMenu.plugins['minimap'].setStatus('visible');
+					break;
+				case 'locate':
+					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
+					var locateControl = L.control.locate({
+					    position: "topleft",
+					    drawCircle: true,
+					    follow: true,
+					    setView: true,
+					    keepCurrentZoomLevel: true,
+					    markerStyle: {
+					        weight: 1,
+					        opacity: 0.8,
+					        fillOpacity: 0.8
+					    },
+					    circleStyle: {
+					        weight: 1,
+					        clickable: false
+					    },
+					    icon: "fa fa-crosshairs",
+					    metric: true,
+					    strings: {
+					        title: "Mi posición",
+					        popup: "Ustes se encuentra a {distance} {unit} desde este punto",
+					        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
+					    },
+					    locateOptions: {
+					        maxZoom: 18,
+					        watch: true,
+					        enableHighAccuracy: true,
+					        maximumAge: 10000,
+					        timeout: 10000
+					    }
+					}).addTo(mapa);
+					gestorMenu.plugins['locate'].setStatus('visible');
+					break;
+				case 'FullScreen':
+					// Leaflet-Control.FullScreen plugin https://github.com/brunob/leaflet.fullscreen
+					L.control.fullscreen({
+					  position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
+					  title: 'Ver en pantalla completa', // change the title of the button, default Full Screen
+					  titleCancel: 'Salir de pantalla completa', // change the title of the button when fullscreen is on, default Exit Full Screen
+					  content: null, // change the content of the button, can be HTML, default null
+					  forceSeparateButton: true, // force seperate button to detach from zoom buttons, default false
+					  forcePseudoFullscreen: false, // force use of pseudo full screen even if full screen API is available, default false
+					  fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
+					}).addTo(mapa);	
+
+					mapa.on('enterFullscreen', function(){
+					  if (miniMap._minimized) {
+					    miniMap._restore();
+					    window.setTimeout( miniMap_Minimize, 2000 );
+					  }
+					});
+
+					mapa.on('exitFullscreen', function(){
+					  if (miniMap._minimized) {
+						miniMap._restore();
+						window.setTimeout( miniMap_Minimize, 2000 );
+					  }
+					});
+					gestorMenu.plugins['FullScreen'].setStatus('visible');
+					break;
+				case 'graticula':
+					// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
+					var customGraticule = null;
+					L.Control.CustomGraticule = L.Control.extend({
+					  onAdd: function (map) {
+						var container = L.DomUtil.create('div', 'leaflet-control leaflet-control-customgraticule');
+						container.title = 'Cuadrícula';
+						
+						container.onclick = function() {
+							if (customGraticule == null) {
+								//drawGrid(mapa.getZoom());
+								var options = {
+									interval: 10,
+									showshowOriginLabel: true,
+									labelsFormat: 'dms',
+									zoomIntervals: [
+										{start: 2, end: 3, interval: 20},
+										{start: 4, end: 5, interval: 5},
+										{start: 6, end: 6, interval: 3},
+										{start: 7, end: 8, interval: 0.8},
+										{start: 9, end: 9, interval: 0.5},
+										{start: 10, end: 10, interval: 0.2},
+										{start: 11, end: 12, interval: 0.08},
+										{start: 13, end: 13, interval: 0.02},
+										{start: 14, end: 14, interval: 0.01},
+										{start: 15, end: 15, interval: 0.008},
+										{start: 16, end: 16, interval: 0.004},
+										{start: 17, end: 20, interval: 0.001}
+									],
+									redraw: 'move'
+								};
+								customGraticule = L.simpleGraticule(options).addTo(mapa);
+							} else {
+								mapa.removeControl(customGraticule);
+								customGraticule = null;
+							}
+						}
+						return container;
+					  }
+					});
+					L.control.customgraticule = function(opts) {
+					    return new L.Control.CustomGraticule(opts);
+					}
+					L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
+					gestorMenu.plugins['graticula'].setStatus('visible');
+					break;
+				case 'Measure':
+					// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
+					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
+					measureControl.addTo(mapa);
+					gestorMenu.plugins['Measure'].setStatus('visible');
+					break;
+				case 'Draw':
+					break;
+			}
+		});
+	}
+	switch(unordered) {
 		case 'leaflet':
 			argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
 		    tms: true,
@@ -105,16 +351,48 @@ $("body").on("pluginLoad", function(event, plugin){
 			    maxZoom: 17
 			});
 			gestorMenu.plugins['leaflet'].setStatus('visible');
-			break;
-		case 'ZoomHome':
-			// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
-			var zoomHome = L.Control.zoomHome({
-				zoomHomeTitle: 'Inicio',
-				zoomInTitle: 'Acercarse',
-				zoomOutTitle: 'Alejarse'
+
+			// Base Map Control
+			L.Control.Watermark = L.Control.extend({
+
+			  onAdd: function (map) {
+				var container = L.DomUtil.create('div', 'leaflet-control basemap-selector');
+				return container;
+			  }
 			});
-			zoomHome.addTo(mapa);
-			gestorMenu.plugins['ZoomHome'].setStatus('visible');
+			L.control.watermark = function(opts) {
+			    return new L.Control.Watermark(opts);
+			}
+			L.control.watermark({ position: 'topleft' }).addTo(mapa);
+
+			// Complete the basemap selector
+			$.getJSON("http://172.20.204.216:8085/js/menu.json", function (data) {
+			    $.each(data, function (key, val) {
+			        if(key != 'template') {
+			            for (var key in data.items) {
+			                if (data.items[key].type == "basemap") {
+			                    groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
+			                    groupAux.setImpresor(impresorBaseMap);
+			                    groupAux.setObjDom($(".basemap-selector"));
+			                    for (var key2 in data.items[key].capas) {
+			                        var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, data.items[key].capas[key2].key, null, null, null, null, data.items[key].capas[key2].attribution);
+			                        var item = new Item(capa.nombre, data.items[key].seccion+key2, "", data.items[key].capas[key2].attribution, capa.titulo, capa);
+			                        item.setImpresor(impresorItemCapaBase);
+			                        //console.log(data.items[key].capas.legendImg);
+			                        item.setLegendImg(data.items[key].capas[key2].legendImg);
+			                        groupAux.setItem(item);
+			                    }
+			                    gestorMenu.items.mapasbase.setImpresor(impresorBaseMap);
+			                    gestorMenu.items.mapasbase.setObjDom($(".basemap-selector"));
+			                    gestorMenu.add(groupAux);
+			                    gestorMenu.imprimir($(".basemap-selector"));
+			                }
+			            }
+			        }
+			    });
+			});
+
+
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
@@ -132,119 +410,6 @@ $("body").on("pluginLoad", function(event, plugin){
 				emptyString: '&nbsp;'
 			}).addTo(mapa);
 			gestorMenu.plugins['MousePosition'].setStatus('visible');
-			break;
-		case 'locate':
-			// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
-			var locateControl = L.control.locate({
-			    position: "topleft",
-			    drawCircle: true,
-			    follow: true,
-			    setView: true,
-			    keepCurrentZoomLevel: true,
-			    markerStyle: {
-			        weight: 1,
-			        opacity: 0.8,
-			        fillOpacity: 0.8
-			    },
-			    circleStyle: {
-			        weight: 1,
-			        clickable: false
-			    },
-			    icon: "fa fa-crosshairs",
-			    metric: true,
-			    strings: {
-			        title: "Mi posición",
-			        popup: "Ustes se encuentra a {distance} {unit} desde este punto",
-			        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
-			    },
-			    locateOptions: {
-			        maxZoom: 18,
-			        watch: true,
-			        enableHighAccuracy: true,
-			        maximumAge: 10000,
-			        timeout: 10000
-			    }
-			}).addTo(mapa);
-			gestorMenu.plugins['locate'].setStatus('visible');
-			break;
-		case 'FullScreen':
-			// Leaflet-Control.FullScreen plugin https://github.com/brunob/leaflet.fullscreen
-			L.control.fullscreen({
-			  position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
-			  title: 'Ver en pantalla completa', // change the title of the button, default Full Screen
-			  titleCancel: 'Salir de pantalla completa', // change the title of the button when fullscreen is on, default Exit Full Screen
-			  content: null, // change the content of the button, can be HTML, default null
-			  forceSeparateButton: true, // force seperate button to detach from zoom buttons, default false
-			  forcePseudoFullscreen: false, // force use of pseudo full screen even if full screen API is available, default false
-			  fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
-			}).addTo(mapa);	
-
-			mapa.on('enterFullscreen', function(){
-			  if (miniMap._minimized) {
-			    miniMap._restore();
-			    window.setTimeout( miniMap_Minimize, 2000 );
-			  }
-			});
-
-			mapa.on('exitFullscreen', function(){
-			  if (miniMap._minimized) {
-				miniMap._restore();
-				window.setTimeout( miniMap_Minimize, 2000 );
-			  }
-			});
-			gestorMenu.plugins['FullScreen'].setStatus('visible');
-			break;
-		case 'graticula':
-			// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
-			var customGraticule = null;
-			L.Control.CustomGraticule = L.Control.extend({
-			  onAdd: function (map) {
-				var container = L.DomUtil.create('div', 'leaflet-control leaflet-control-customgraticule');
-				container.title = 'Cuadrícula';
-				
-				container.onclick = function() {
-					if (customGraticule == null) {
-						//drawGrid(mapa.getZoom());
-						var options = {
-							interval: 10,
-							showshowOriginLabel: true,
-							labelsFormat: 'dms',
-							zoomIntervals: [
-								{start: 2, end: 3, interval: 20},
-								{start: 4, end: 5, interval: 5},
-								{start: 6, end: 6, interval: 3},
-								{start: 7, end: 8, interval: 0.8},
-								{start: 9, end: 9, interval: 0.5},
-								{start: 10, end: 10, interval: 0.2},
-								{start: 11, end: 12, interval: 0.08},
-								{start: 13, end: 13, interval: 0.02},
-								{start: 14, end: 14, interval: 0.01},
-								{start: 15, end: 15, interval: 0.008},
-								{start: 16, end: 16, interval: 0.004},
-								{start: 17, end: 20, interval: 0.001}
-							],
-							redraw: 'move'
-						};
-						customGraticule = L.simpleGraticule(options).addTo(mapa);
-					} else {
-						mapa.removeControl(customGraticule);
-						customGraticule = null;
-					}
-				}
-				return container;
-			  }
-			});
-			L.control.customgraticule = function(opts) {
-			    return new L.Control.CustomGraticule(opts);
-			}
-			L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
-			gestorMenu.plugins['graticula'].setStatus('visible');
-			break;	
-		case 'Measure':
-			// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-			var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
-			measureControl.addTo(mapa);
-			gestorMenu.plugins['Measure'].setStatus('visible');
 			break;
 		case 'Draw':
 			// Leaflet-Draw plugin https://github.com/Leaflet/Leaflet.draw
@@ -312,78 +477,15 @@ $("body").on("pluginLoad", function(event, plugin){
 			});
 			gestorMenu.plugins['Draw'].setStatus('visible');
 			break;
-		case 'minimap':
-		// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-			var miniArgenmap = new L.TileLayer(argenmap._url, {
-				minZoom: 0,
-				maxZoom: 17,
-				attribution: atrib_ign,
-				tms: true
-			});
-			var miniMap = new L.Control.MiniMap(miniArgenmap, {
-				toggleDisplay: false,
-				minimized: false,
-				position: 'bottomleft',
-				//collapsedWidth: 32,
-				//collapsedHeight: 32,
-				width: 100,
-				height: 100,
-				strings: {
-					hideText: 'Ocultar minimapa',
-					showText: 'Mostrar minimapa'
-				}
-			}).addTo(mapa);
-			gestorMenu.plugins['minimap'].setStatus('minimap');
-			break;
-		case 'betterScale':
-			// Leaflet BetterScale plugin
-			/*
-			L.control.betterscale({
-				metric: true,
-				imperial: false
-			}).addTo(mapa);
-			*/
-			L.control.scale({
-				metric: true,
-				imperial: false
-			}).addTo(mapa);
-			gestorMenu.plugins['leaflet'].setStatus('betterScale');
+		case 'BingLayer':
+			if(gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready' ){	
+				
+		        gestorMenu.plugins['BingLayer'].setStatus('visible');
+			}
+		default:
 			break;
 	}
-
 });
-function buildMap(){
-	// Base Map Control
-	L.Control.Watermark = L.Control.extend({
-
-	  onAdd: function (map) {
-		var container = L.DomUtil.create('div', 'leaflet-control basemap-selector');
-		return container;
-	  }
-	});
-	L.control.watermark = function(opts) {
-	    return new L.Control.Watermark(opts);
-	}
-	L.control.watermark({ position: 'topleft' }).addTo(mapa);
-
-
-	// Leaflet-easyPrint plugin https://github.com/rowanwins/leaflet-easyPrint
-	/*
-	var printerPlugin = L.easyPrint({
-		title: 'Descargar mapa',
-		position: 'topleft',
-		sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
-		defaultSizeTitles: {
-								Current: 'Tamaño actual',
-								A4Landscape: 'A4 Horizontal',
-								A4Portrait: 'A4 Vertical'
-							},
-		filename: 'myMap',
-		exportOnly: false,
-		hideControlContainer: true
-	}).addTo(mapa);
-	*/
-}
 
 // -- Plugins
 function onEachFeature(feature, layer) {
