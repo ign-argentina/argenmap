@@ -282,25 +282,67 @@ $("body").on("pluginLoad", function(event, plugin){
 					break;
 				case 'Draw':    
 				    var drawnItems = L.featureGroup().addTo(mapa);
-				    mapa.addControl(new L.Control.Draw({
-				        edit: {
-				            featureGroup: drawnItems,
-				            poly: {
-				                allowIntersection: false
-				            }
-				        },
-				        draw: {
-				            polygon: {
-				                allowIntersection: false
-				            }
-				        }
-				    }));
+					var drawControl = new L.Control.Draw({
+						edit: {
+							featureGroup: drawnItems,
+							poly: {
+								allowIntersection: false
+							}
+						},
+						draw: {
+							polygon: {
+								allowIntersection: false,
+								showArea: true
+							}
+						},
+						position: 'topright'
+					});
+					//Customizing language and text in Leaflet.draw
+					L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
+					L.drawLocal.draw.toolbar.finish.text = 'Finalizar';
+					L.drawLocal.draw.toolbar.actions.title = 'Cancelar dibujo';
+					L.drawLocal.draw.toolbar.actions.text = 'Cancelar';
+					L.drawLocal.draw.toolbar.undo.title = 'Eliminar el último punto dibujado';
+					L.drawLocal.draw.toolbar.undo.text = 'Eliminar el último punto';
+					L.drawLocal.draw.toolbar.buttons.polyline = 'Dibujar una línea';
+					L.drawLocal.draw.toolbar.buttons.polygon = 'Dibujar un polígono';
+					L.drawLocal.draw.toolbar.buttons.rectangle = 'Dibujar un rectángulo';
+					L.drawLocal.draw.toolbar.buttons.circle = 'Dibujar un círculo';
+					L.drawLocal.draw.toolbar.buttons.marker = 'Dibujar un marcador';
+					L.drawLocal.draw.toolbar.buttons.circlemarker = 'Dibujar un marcador circular';
+					L.drawLocal.draw.handlers.circle.tooltip.start = 'Click y arrastra para dibujar un círculo';
+					L.drawLocal.draw.handlers.circle.radius = 'Radio';
+					L.drawLocal.draw.handlers.circlemarker.tooltip.start = 'Click sobre el mapa para posicionar el marcador circular';
+					L.drawLocal.draw.handlers.marker.tooltip.start = 'Click sobre el mapa para posicionar el marcador';
+					L.drawLocal.draw.handlers.polygon.tooltip.start = 'Click para comenzar a dibujar la forma';
+					L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Click para continuar dibujando la forma';
+					L.drawLocal.draw.handlers.polygon.tooltip.end = 'Click en el primer punto para cerrar la forma';
+					L.drawLocal.draw.handlers.polyline.error = '<strong>Error:</strong> los border de la forma no deben cruzarse';
+					L.drawLocal.draw.handlers.polyline.tooltip.start = 'Click para comenzar a dibujar la línea';
+					L.drawLocal.draw.handlers.polyline.tooltip.cont = 'Click para continuar dibujando la línea';
+					L.drawLocal.draw.handlers.polyline.tooltip.start = 'Click en el último punto para finalizar la línea';
+					L.drawLocal.draw.handlers.rectangle.tooltip.start = 'Click y arrastra para dibujar un rectángulo';
+					L.drawLocal.draw.handlers.simpleshape.tooltip.end = 'Soltar el mouse para finalizar el dibujo';
+					L.drawLocal.edit.toolbar.actions.save.title = 'Guardar cambios';
+					L.drawLocal.edit.toolbar.actions.save.text = 'Guardar';
+					L.drawLocal.edit.toolbar.actions.cancel.title = 'Cacelar edición, descartar todos los cambios';
+					L.drawLocal.edit.toolbar.actions.cancel.text = 'Cancelar';
+					L.drawLocal.edit.toolbar.actions.clearAll.title = 'Limpiar todas las capas';
+					L.drawLocal.edit.toolbar.actions.clearAll.text = 'Limpiar todo';
+					L.drawLocal.edit.toolbar.buttons.edit = 'Editar capas';
+					L.drawLocal.edit.toolbar.buttons.editDisabled = 'No hay capas para editar';
+					L.drawLocal.edit.toolbar.buttons.remove = 'Eliminar capas';
+					L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No hay capas para eliminar';
+					L.drawLocal.edit.handlers.edit.tooltip.text = 'Arrastrar polígonos o marcadores para editar sus características';
+					L.drawLocal.edit.handlers.edit.tooltip.subtext = 'Click en cancelar para deshacer los cambios';
+					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
+					mapa.addControl(drawControl);
+					mapa.on(L.Draw.Event.CREATED, function (event) {
+						var layer = event.layer;
 
-				    mapa.on(L.Draw.Event.CREATED, function (event) {
-				        var layer = event.layer;
-
-				        drawnItems.addLayer(layer);
-				    });
+						drawnItems.addLayer(layer);
+					});
+					gestorMenu.plugins['Draw'].setStatus('visible');
 					break;
 				default:
 					break;
@@ -382,72 +424,6 @@ $("body").on("pluginLoad", function(event, plugin){
 				emptyString: '&nbsp;'
 			}).addTo(mapa);
 			gestorMenu.plugins['MousePosition'].setStatus('visible');
-			break;
-		case 'Draw':
-			// Leaflet-Draw plugin https://github.com/Leaflet/Leaflet.draw
-			var drawnItems = new L.FeatureGroup();
-			mapa.addLayer(drawnItems);
-			var drawControl = new L.Control.Draw({
-				edit: {
-					featureGroup: drawnItems,
-					poly: {
-						allowIntersection: false
-					}
-				},
-				draw: {
-					polygon: {
-						allowIntersection: false,
-						showArea: true
-					}
-				},
-				position: 'topright'
-			});
-			//Customizing language and text in Leaflet.draw
-			L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
-			L.drawLocal.draw.toolbar.finish.text = 'Finalizar';
-			L.drawLocal.draw.toolbar.actions.title = 'Cancelar dibujo';
-			L.drawLocal.draw.toolbar.actions.text = 'Cancelar';
-			L.drawLocal.draw.toolbar.undo.title = 'Eliminar el último punto dibujado';
-			L.drawLocal.draw.toolbar.undo.text = 'Eliminar el último punto';
-			L.drawLocal.draw.toolbar.buttons.polyline = 'Dibujar una línea';
-			L.drawLocal.draw.toolbar.buttons.polygon = 'Dibujar un polígono';
-			L.drawLocal.draw.toolbar.buttons.rectangle = 'Dibujar un rectángulo';
-			L.drawLocal.draw.toolbar.buttons.circle = 'Dibujar un círculo';
-			L.drawLocal.draw.toolbar.buttons.marker = 'Dibujar un marcador';
-			L.drawLocal.draw.toolbar.buttons.circlemarker = 'Dibujar un marcador circular';
-			L.drawLocal.draw.handlers.circle.tooltip.start = 'Click y arrastra para dibujar un círculo';
-			L.drawLocal.draw.handlers.circle.radius = 'Radio';
-			L.drawLocal.draw.handlers.circlemarker.tooltip.start = 'Click sobre el mapa para posicionar el marcador circular';
-			L.drawLocal.draw.handlers.marker.tooltip.start = 'Click sobre el mapa para posicionar el marcador';
-			L.drawLocal.draw.handlers.polygon.tooltip.start = 'Click para comenzar a dibujar la forma';
-			L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Click para continuar dibujando la forma';
-			L.drawLocal.draw.handlers.polygon.tooltip.end = 'Click en el primer punto para cerrar la forma';
-			L.drawLocal.draw.handlers.polyline.error = '<strong>Error:</strong> los border de la forma no deben cruzarse';
-			L.drawLocal.draw.handlers.polyline.tooltip.start = 'Click para comenzar a dibujar la línea';
-			L.drawLocal.draw.handlers.polyline.tooltip.cont = 'Click para continuar dibujando la línea';
-			L.drawLocal.draw.handlers.polyline.tooltip.start = 'Click en el último punto para finalizar la línea';
-			L.drawLocal.draw.handlers.rectangle.tooltip.start = 'Click y arrastra para dibujar un rectángulo';
-			L.drawLocal.draw.handlers.simpleshape.tooltip.end = 'Soltar el mouse para finalizar el dibujo';
-			L.drawLocal.edit.toolbar.actions.save.title = 'Guardar cambios';
-			L.drawLocal.edit.toolbar.actions.save.text = 'Guardar';
-			L.drawLocal.edit.toolbar.actions.cancel.title = 'Cacelar edición, descartar todos los cambios';
-			L.drawLocal.edit.toolbar.actions.cancel.text = 'Cancelar';
-			L.drawLocal.edit.toolbar.actions.clearAll.title = 'Limpiar todas las capas';
-			L.drawLocal.edit.toolbar.actions.clearAll.text = 'Limpiar todo';
-			L.drawLocal.edit.toolbar.buttons.edit = 'Editar capas';
-			L.drawLocal.edit.toolbar.buttons.editDisabled = 'No hay capas para editar';
-			L.drawLocal.edit.toolbar.buttons.remove = 'Eliminar capas';
-			L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No hay capas para eliminar';
-			L.drawLocal.edit.handlers.edit.tooltip.text = 'Arrastrar polígonos o marcadores para editar sus características';
-			L.drawLocal.edit.handlers.edit.tooltip.subtext = 'Click en cancelar para deshacer los cambios';
-			L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
-			mapa.addControl(drawControl);
-			mapa.on(L.Draw.Event.CREATED, function (event) {
-				var layer = event.layer;
-
-				drawnItems.addLayer(layer);
-			});
-			gestorMenu.plugins['Draw'].setStatus('visible');
 			break;
 		case 'BingLayer':
 			if(gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready' ){	
