@@ -31,7 +31,7 @@ gestorMenu.addPlugin("leaflet","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1
 	// <!-- Leaflet BetterWMS -->
 	gestorMenu.addPlugin("betterWMS","templates/ign-geoportal-basic/js/leaflet-wms/leaflet.wms.js");
 	// <!-- Leaflet Draw -->  
-	gestorMenu.addPlugin("Draw","https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css")
+	gestorMenu.addPlugin("Draw","https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js")
 	// <!-- Leaflet SimpleGraticule -->
 	gestorMenu.addPlugin("graticula","templates/ign-geoportal-basic/js/leaflet-simplegraticule/L.SimpleGraticule.js");
 });
