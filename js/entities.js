@@ -93,11 +93,13 @@ class ImpresorCapasBaseHTML extends Impresor {
 	imprimir(itemComposite) {
 		
 		var listaId = itemComposite.getId();
-		
-		return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-			'<div class="collapse pull-right" id="collapseBaseMapLayers">' +
-				'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-			'</div>';
+		// Only one basemap-selector
+		if($( ".basemap-selector a[data-toggle='collapse']" ).length == 0) {
+			return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
+				'<div class="collapse pull-right" id="collapseBaseMapLayers">' +
+					'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
+				'</div>';
+		}
 		
 	}
 }

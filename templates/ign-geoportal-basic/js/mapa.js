@@ -391,8 +391,6 @@ $("body").on("pluginLoad", function(event, plugin){
 			        }
 			    });
 			});
-
-
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
