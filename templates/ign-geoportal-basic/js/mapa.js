@@ -102,25 +102,25 @@ $("body").on("pluginLoad", function(event, plugin){
 			ordered.splice(ordenZoomHome, 1, plugin.pluginName);
 			break;
 		case 'Measure':
-			ordered.splice(5, 1, plugin.pluginName);
+			ordered.splice(ordenMeasure, 1, plugin.pluginName);
 			break;
 		case 'graticula':
-			ordered.splice(4, 1, plugin.pluginName);
+			ordered.splice(ordenGraticula, 1, plugin.pluginName);
 			break;
 		case 'minimap':
-			ordered.splice(8, 1, plugin.pluginName);
+			ordered.splice(ordenMinimap, 1, plugin.pluginName);
 			break;
 		case 'betterScale':
-			ordered.splice(7, 1, plugin.pluginName);
+			ordered.splice(ordenBetterScale, 1, plugin.pluginName);
 			break;
 		case 'Draw':
-			ordered.splice(6, 1, plugin.pluginName);
+			ordered.splice(ordenDraw, 1, plugin.pluginName);
 			break;
 		case 'locate':
-			ordered.splice(2, 1, plugin.pluginName);
+			ordered.splice(ordenLocate, 1, plugin.pluginName);
 			break;
 		case 'FullScreen':
-			ordered.splice(3, 1, plugin.pluginName);
+			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
 			break;
 		default :
 			// Add unordered plugins
