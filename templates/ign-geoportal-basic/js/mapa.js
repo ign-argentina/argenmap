@@ -7,7 +7,7 @@ var argenmap = "";
 var mapa = "";
 
 // get all lybraries
-gestorMenu.addPlugin("leaflet","https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.js", function() {
+gestorMenu.addPlugin("leaflet","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js", function() {
 	gestorMenu.addPlugin("leafletAjax",'https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js');
 	gestorMenu.addPlugin("betterScale",'https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js');
 	// Awesome Markers
@@ -31,55 +31,7 @@ gestorMenu.addPlugin("leaflet","https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leafl
 	// <!-- Leaflet BetterWMS -->
 	gestorMenu.addPlugin("betterWMS","templates/ign-geoportal-basic/js/leaflet-wms/leaflet.wms.js");
 	// <!-- Leaflet Draw -->  
-	//gestorMenu.addPlugin("Draw","templates/ign-geoportal-basic/js/leaflet-draw/src/Leaflet.draw.js", function(){
-		//console.log("puedo cargar GeometryUtil, LatLngUtil, LineUtil, polygon.intersect, lineutil.intersect, Polyline.intersect, touchevents, draw.events");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/ext/GeometryUtil.js");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/ext/LatLngUtil.js");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/ext/LineUtil.Intersect.js");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/ext/Polygon.Intersect.js");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/ext/Polyline.Intersect.js");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/ext/TouchEvents.js");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/Leaflet.Draw.Event.js");
-		//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/Control.Draw.js", function(){
-		  //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/DrawToolbar.js");        
-		  //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/EditToolbar.js", function(){
-		    //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/EditToolbar.Edit.js");
-		    //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/EditToolbar.Delete.js");
-		    //});
-		  //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/Toolbar.js", function(){
-		  //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/Tooltip.js");
-		  //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.Feature.js",function(){
-		    //console.log("puedo cargar draw.marker");
-		    //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.Marker.js", function(){
-		      /*
-		      console.log("puedo cargar draw.circlemarker, draw.Polyline, draw.polygon");
-		      $.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.CircleMarker.js");
-		      $.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.Polyline.js",function(){
-		        $.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.Polygon.js");
-		      });
-		      */
-		    //});
-		//});
-	//}); 
-	//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.SimpleShape.js", function(){
-	  //console.log("puedo cargar Draw rectangle y draw.circle");
-	  //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.Rectangle.js");
-	  //$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/draw/handler/Draw.Circle.js");
-	//});
-	//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/Edit.Poly.js");
-	/*
-	$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/Edit.SimpleShape.js", function(){
-	  console.log("puedo cargar Edit.rectangle y edit.circlemarker");
-	  $.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/Edit.Rectangle.js");
-	  $.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/Edit.CircleMarker.js",function(){
-	    console.log("puedo cargar edit.circle");
-	    $.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/Edit.Circle.js");
-	  });
-	});
-	*/
-	//$.getScript("templates/ign-geoportal-basic/js/leaflet-draw/src/edit/handler/Edit.Marker.js");
-	//});
-
+	gestorMenu.addPlugin("Draw","https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css")
 	// <!-- Leaflet SimpleGraticule -->
 	gestorMenu.addPlugin("graticula","templates/ign-geoportal-basic/js/leaflet-simplegraticule/L.SimpleGraticule.js");
 });
@@ -328,7 +280,29 @@ $("body").on("pluginLoad", function(event, plugin){
 					measureControl.addTo(mapa);
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
-				case 'Draw':
+				case 'Draw':    
+				    var drawnItems = L.featureGroup().addTo(mapa);
+				    mapa.addControl(new L.Control.Draw({
+				        edit: {
+				            featureGroup: drawnItems,
+				            poly: {
+				                allowIntersection: false
+				            }
+				        },
+				        draw: {
+				            polygon: {
+				                allowIntersection: false
+				            }
+				        }
+				    }));
+
+				    mapa.on(L.Draw.Event.CREATED, function (event) {
+				        var layer = event.layer;
+
+				        drawnItems.addLayer(layer);
+				    });
+					break;
+				default:
 					break;
 			}
 		});
