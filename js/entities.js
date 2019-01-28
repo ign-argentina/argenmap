@@ -426,7 +426,8 @@ class GestorMenu {
 			var itemComposite = itemsAux[key];
 			
 			if ($('#' + itemComposite.seccion).length != 0) {
-				eliminarSubItem(itemComposite.seccion);
+				//eliminarSubItem(itemComposite.seccion);
+                itemComposite.getObjDom().html('');
 			}
 			itemComposite.getObjDom().append(itemComposite.imprimir());
 			
