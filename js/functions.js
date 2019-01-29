@@ -105,6 +105,9 @@ function loadGeojson(url, layer) {
 
 }
 
+var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
+var popupInfoToPaginate = new Array();
+var popupInfoPage = 0;
 function loadWms(wmsUrl, layer) {
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
@@ -113,9 +116,64 @@ function loadWms(wmsUrl, layer) {
         createWmsLayer(wmsUrl, layer);
         overlayMaps[layer].addTo(mapa);
     }
+    
+    function ucwords (str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
 
+    //Parse FeatureInfo to display into popup
+    function parseFeatureInfo(info, idTxt) {
+        $(info).find('li').each(function( index ) {
+            //console.log( index + ": " + $( this ).text() );
+            var aux = $( this ).text().split(':');
+            info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
+        });
+        
+        info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+        
+        return info;
+    }
+    
+    //Paginate FeatureInfo into popup
+    function paginateFeatureInfo(infoArray) {
+        var infoStr = infoArray.join('');
+        //console.log(infoStr);
+        if (infoArray.length > 1) {
+            infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup0">', '<div id="popupPageSeeker"><a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a></div><div class="featureInfo" id="featureInfoPopup0">');
+            for (var i = 1; i < infoArray.length; i++) {
+                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div class="featureInfo" style="display:none" id="featureInfoPopup' + i + '">');
+            }
+        }
+        return infoStr;
+    }
+    
     function createWmsLayer(wmsUrl, layer) {
-        var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+        //Extends WMS.Source to customize popup behavior
+        var MySource = L.WMS.Source.extend({
+            'showFeatureInfo': function(latlng, info) {
+                if (!this._map) {
+                    return;
+                }
+                //console.log(info);
+                infoAux = info.search("<ul>"); // search if info has a list
+                if (infoAux > 0) { // check if info has any content, if so shows popup
+                    var popupContent = $('.leaflet-popup').html();
+                    if (popupContent == undefined || popupContent == '' || popupInfo == '') {
+                        popupInfo.push(parseFeatureInfo(info, popupInfo.length)); //First info for popup
+                    } else {
+                        popupInfo.push(parseFeatureInfo(info, popupInfo.length)); //More info for popup
+                    }
+                }
+                if (popupInfo.length > 0) {
+                    popupInfoToPaginate = popupInfo.slice();
+                    this._map.openPopup(paginateFeatureInfo(popupInfo), latlng); //Show all info
+                    popupInfoPage = 0;
+                }
+                return;
+            }
+        });
+        //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+        var wmsSource = new MySource(wmsUrl + "/wms?", {
             transparent: true,
             tiled: true,
             format: 'image/png',
@@ -123,6 +181,29 @@ function loadWms(wmsUrl, layer) {
         });
         overlayMaps[layer] = wmsSource.getLayer(layer);
     }
+}
+
+function changePopupPage(changeType) {
+    $('#featureInfoPopup' + popupInfoPage).hide();
+    if (changeType == 'next') {
+        if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
+            popupInfoPage = popupInfoPage + 1;
+        }
+        $('#featureInfoPopup' + popupInfoPage).show();
+    } else {
+        if ((popupInfoPage - 1) >= 0) {
+            popupInfoPage = popupInfoPage - 1;
+        }
+        $('#featureInfoPopup' + popupInfoPage).show();
+    }
+    var sAux = '';
+    if ((popupInfoPage - 1) >= 0) {
+        sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i></a>';
+    }
+    if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
+        sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a>';
+    }
+    $('#popupPageSeeker').html(sAux);
 }
 
 function loadMapaBase(tmsUrl, layer, attribution) {

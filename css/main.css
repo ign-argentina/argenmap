@@ -30,6 +30,28 @@ Leaflet
 	border-radius: 4px;
 	box-sizing: border-box;
 }
+.individualFeature h4 {
+    margin: 9px 0px !important;
+}
+.individualFeature ul {
+    list-style-type: none;
+    padding-left: 0px;
+}
+.leaflet-popup-content {
+    max-width: 250px;
+}
+#popupPageSeeker {
+    float: left;
+    width: 100%;
+}
+#popupPageSeekerNext {
+    float: right;
+    padding-right: 10px;
+}
+#popupPageSeekerPrev {
+    float: left;
+    padding-left: 10px;
+}
 
 /*******************************
 Control mapa base

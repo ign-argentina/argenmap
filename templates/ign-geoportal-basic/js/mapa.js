@@ -382,7 +382,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			L.control.watermark({ position: 'topleft' }).addTo(mapa);
 
 			// Complete the basemap selector
-			$.getJSON("http://172.20.204.216:8085/js/menu.json", function (data) {
+            $.getJSON("./js/menu.json", function (data) {
 			    $.each(data, function (key, val) {
 			        if(key != 'template') {
 			            for (var key in data.items) {
@@ -407,6 +407,18 @@ $("body").on("pluginLoad", function(event, plugin){
 			        }
 			    });
 			});
+            
+            mapa.on('click', function(e) {
+                setTimeout(function(){
+                    popupInfo = new Array();
+                }, 2000);
+            });
+            /*
+            mapa.on('popupclose', function(e) {
+                popupInfo = new Array();
+            });
+            */
+
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
