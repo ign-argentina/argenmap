@@ -105,9 +105,33 @@ function loadGeojson(url, layer) {
 
 }
 
+//Paginate FeatureInfo into popup
+function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
+    var infoStr = infoArray.join('');
+    //console.log(infoStr);
+    if (infoArray.length > 1) {
+        for (var i = 0; i < infoArray.length; i++) {
+            if (i == actualPage) {
+                var sAux = '';
+                if (hasPrev == true) {
+                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i></a>';
+                }
+                if (hasNext == true) {
+                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a>';
+                }
+                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div id="popupPageSeeker">' + sAux + '</div><div class="featureInfo" id="featureInfoPopup' + i + '">');
+            } else {
+                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div class="featureInfo" style="display:none" id="featureInfoPopup' + i + '">');
+            }
+        }
+    }
+    return infoStr;
+}
+    
 var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
 var popupInfoToPaginate = new Array();
 var popupInfoPage = 0;
+var latlngTmp = '';
 function loadWms(wmsUrl, layer) {
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
@@ -134,19 +158,6 @@ function loadWms(wmsUrl, layer) {
         return info;
     }
     
-    //Paginate FeatureInfo into popup
-    function paginateFeatureInfo(infoArray) {
-        var infoStr = infoArray.join('');
-        //console.log(infoStr);
-        if (infoArray.length > 1) {
-            infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup0">', '<div id="popupPageSeeker"><a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a></div><div class="featureInfo" id="featureInfoPopup0">');
-            for (var i = 1; i < infoArray.length; i++) {
-                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div class="featureInfo" style="display:none" id="featureInfoPopup' + i + '">');
-            }
-        }
-        return infoStr;
-    }
-    
     function createWmsLayer(wmsUrl, layer) {
         //Extends WMS.Source to customize popup behavior
         var MySource = L.WMS.Source.extend({
@@ -166,7 +177,8 @@ function loadWms(wmsUrl, layer) {
                 }
                 if (popupInfo.length > 0) {
                     popupInfoToPaginate = popupInfo.slice();
-                    this._map.openPopup(paginateFeatureInfo(popupInfo), latlng); //Show all info
+                    latlngTmp = latlng;
+                    this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
                     popupInfoPage = 0;
                 }
                 return;
@@ -184,26 +196,33 @@ function loadWms(wmsUrl, layer) {
 }
 
 function changePopupPage(changeType) {
-    $('#featureInfoPopup' + popupInfoPage).hide();
+    
+    //$('#featureInfoPopup' + popupInfoPage).hide();
+    var hasNext = false;
+    var hasPrev = false;
     if (changeType == 'next') {
         if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
             popupInfoPage = popupInfoPage + 1;
         }
-        $('#featureInfoPopup' + popupInfoPage).show();
     } else {
         if ((popupInfoPage - 1) >= 0) {
             popupInfoPage = popupInfoPage - 1;
         }
-        $('#featureInfoPopup' + popupInfoPage).show();
     }
-    var sAux = '';
+    //$('#featureInfoPopup' + popupInfoPage).show();
+    
+    //var sAux = '';
     if ((popupInfoPage - 1) >= 0) {
-        sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i></a>';
+        //sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i></a>';
+        hasPrev = true;
     }
     if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
-        sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a>';
+        //sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a>';
+        hasNext = true;
     }
-    $('#popupPageSeeker').html(sAux);
+    //$('#popupPageSeeker').html(sAux);
+    
+    mapa.openPopup(paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext), latlngTmp); //Show all info
 }
 
 function loadMapaBase(tmsUrl, layer, attribution) {
