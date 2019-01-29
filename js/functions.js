@@ -16,20 +16,20 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
         var capas_layer = $('layer', capability);
         var capas_info = $('layer', capas_layer);
     
-    var items = new Array();
+        var items = new Array();
     
         // create an object with all layer info for each layer
         capas_info.each(function (index, b) {
             var i = $(this);
-      var iName = $('name', i).html();
-      var iTitle = $('title', i).html();
-      var iBoundingBox = $('boundingbox', i);
-      var iAbstract = $('abstract', i).html();
-      var keywordsHTMLList = $('keywordlist', i).find("keyword");
-      var keywords = [];
-      $.each( keywordsHTMLList, function( i, el ) {
-        keywords.push(el.innerText);
-      });
+            var iName = $('name', i).html();
+            var iTitle = $('title', i).html();
+            var iBoundingBox = $('boundingbox', i);
+            var iAbstract = $('abstract', i).html();
+            var keywordsHTMLList = $('keywordlist', i).find("keyword");
+            var keywords = [];
+            $.each( keywordsHTMLList, function( i, el ) {
+                keywords.push(el.innerText);
+            });
             if (iBoundingBox[0].attributes.srs) {
                 var iSrs = iBoundingBox[0].attributes.srs;
             } else {
@@ -39,50 +39,50 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
             var iMinY = iBoundingBox[0].attributes.miny;
             var iMinX = iBoundingBox[0].attributes.minx;
             var iMaxX = iBoundingBox[0].attributes.maxx;
-            
-      var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
-      var item = new Item(capa.nombre, seccion+index, keywords, iAbstract, capa.titulo, capa);
-      item.setImpresor(impresorItem);
-      items.push(item);
+                
+            var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
+            var item = new Item(capa.nombre, seccion+index, keywords, iAbstract, capa.titulo, capa);
+            item.setImpresor(impresorItem);
+            items.push(item);
         });
     
-    var groupAux;
-    try {
-      var groupAux = new ItemGroup(nombre, seccion, peso, keyword, abstract, short_abstract, loadWms);
-      groupAux.setImpresor(impresorGroup);
-      groupAux.setObjDom($(".nav.nav-sidebar"));
-      for (var i = 0; i < items.length; i++) {
-        groupAux.setItem(items[i]);
-      }
-    }
-    catch (err) {
-      if (err.name == "ReferenceError") {
-        var groupAux = new ItemGroup(nombre, seccion, peso, "", "", short_abstract, null);
-        groupAux.setImpresor(impresorGroup);
-        groupAux.setObjDom($(".nav.nav-sidebar"));
-        for (var i = 0; i < items.length; i++) {
-          groupAux.setItem(items[i]);
+        var groupAux;
+        try {
+            var groupAux = new ItemGroup(nombre, seccion, peso, keyword, abstract, short_abstract, loadWms);
+            groupAux.setImpresor(impresorGroup);
+            groupAux.setObjDom($(".nav.nav-sidebar"));
+            for (var i = 0; i < items.length; i++) {
+                groupAux.setItem(items[i]);
+            }
         }
-      }
-    }
+        catch (err) {
+                if (err.name == "ReferenceError") {
+                    var groupAux = new ItemGroup(nombre, seccion, peso, "", "", short_abstract, null);
+                    groupAux.setImpresor(impresorGroup);
+                    groupAux.setObjDom($(".nav.nav-sidebar"));
+                    for (var i = 0; i < items.length; i++) {
+                    groupAux.setItem(items[i]);
+                }
+            }
+        }
 
-    gestorMenu.add(groupAux);
-    
-    getGeoserverCounter--;
-    if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
-      //Ocultar loading
-      $(".loading").hide();
-      //Imprimir menú
-      gestorMenu.imprimir($(".nav.nav-sidebar"));
-      //Agregar tooltip resumen
-      $("[data-toggle2='tooltip']").tooltip({
-        placement: "right",
-        trigger: "hover",
-        container: "body"
-      });
-    }
-    
-    return;
+        gestorMenu.add(groupAux);
+        
+        getGeoserverCounter--;
+        if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
+            //Ocultar loading
+            $(".loading").hide();
+            //Imprimir menú
+            gestorMenu.imprimir($(".nav.nav-sidebar"));
+            //Agregar tooltip resumen
+            $("[data-toggle2='tooltip']").tooltip({
+                placement: "right",
+                trigger: "hover",
+                container: "body"
+            });
+        }
+        
+        return;
     });
 }
 

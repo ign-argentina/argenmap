@@ -332,12 +332,17 @@ class GestorMenu {
 	
 	add(itemGroup) {
 		var itemAux;
+        var existsIndex = 0; //Si ya existía la sección y se desea adicionar capas
 		if (!this.items[itemGroup.seccion]) {
 			itemAux = itemGroup;
 		} else {
 			itemAux = this.items[itemGroup.seccion];
+            existsIndex += 10000;
 		}
 		for (var key in itemGroup.itemsComposite) {
+            if (existsIndex > 0) { //Para modificar item.seccion para no duplicar el contenido
+                itemGroup.itemsComposite[key].seccion += existsIndex;
+            }
 			itemAux.setItem(itemGroup.itemsComposite[key]);
 		}
 		this.items[itemGroup.seccion] = itemAux;
