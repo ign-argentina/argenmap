@@ -151,6 +151,10 @@ class ItemComposite {
 	getObjDom() {
 		return this.objDOM;
 	}
+    
+    isBaseLayer() {
+        return false;
+    }
 }
 
 class ItemGroup extends ItemComposite {
@@ -227,6 +231,11 @@ class ItemGroup extends ItemComposite {
 }
 
 class ItemGroupBaseMap extends ItemGroup {
+    
+    isBaseLayer() {
+        return true;
+    }
+    
 	hideAllLayersExceptOne(item) {
 		for (var key in this.itemsComposite) {
 			if (this.itemsComposite[key].getVisible() == true && item !== this.itemsComposite[key]) {
@@ -333,7 +342,7 @@ class GestorMenu {
 	add(itemGroup) {
 		var itemAux;
         var existsIndex = 0; //Si ya existía la sección y se desea adicionar capas
-		if (!this.items[itemGroup.seccion]) {
+		if (!this.items[itemGroup.seccion] || itemGroup.isBaseLayer()) { //itemGroup.isBaseLayer() avoid to repeat base layer into selector
 			itemAux = itemGroup;
 		} else {
 			itemAux = this.items[itemGroup.seccion];

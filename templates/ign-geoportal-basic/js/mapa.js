@@ -387,6 +387,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			        if(key != 'template') {
 			            for (var key in data.items) {
 			                if (data.items[key].type == "basemap") {
+                                
 			                    groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
 			                    groupAux.setImpresor(impresorBaseMap);
 			                    groupAux.setObjDom($(".basemap-selector"));
@@ -401,9 +402,10 @@ $("body").on("pluginLoad", function(event, plugin){
 			                    gestorMenu.items.mapasbase.setImpresor(impresorBaseMap);
 			                    gestorMenu.items.mapasbase.setObjDom($(".basemap-selector"));
 			                    gestorMenu.add(groupAux);
-			                    gestorMenu.imprimir($(".basemap-selector"));
+                                
 			                }
 			            }
+                        gestorMenu.imprimir($(".basemap-selector"));
 			        }
 			    });
 			});
