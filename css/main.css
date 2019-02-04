@@ -32,6 +32,58 @@ Leaflet
 }
 
 /*******************************
+Leaflet popup featureInfo
+*******************************/
+.featureInfo {
+	font-family: Tahoma;
+	font-size:10px;
+	width:100%;
+}
+.featureInfo img {
+	display:block;
+	float:none;
+}
+
+.featureInfo h3{
+	margin-bottom:1em;
+}
+
+.featureInfo h4{
+	border-bottom:3px solid #085183;
+	margin:2em;
+}
+
+.featuresGroup {
+	border-bottom: 2px solid #085183;
+}
+
+.individualFeature {
+	border-bottom: 1px dashed #085183;
+}
+.individualFeature h4 {
+    margin: 9px 0px !important;
+}
+.individualFeature ul {
+    list-style-type: none;
+    padding-left: 0px;
+}
+.leaflet-popup-content {
+    max-width: 250px;
+}
+#popupPageSeeker {
+    float: left;
+    width: 100%;
+}
+#popupPageSeekerNext {
+    float: right;
+    padding-right: 10px;
+}
+#popupPageSeekerPrev {
+    float: left;
+    padding-left: 10px;
+}
+
+/*******************************
 Control mapa base
 *******************************/
 #basemap-selector {

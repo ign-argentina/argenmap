@@ -148,7 +148,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
 					var miniArgenmap = new L.TileLayer(argenmap._url, {
 						minZoom: 0,
-						maxZoom: 17,
+						maxZoom: 20,
 						attribution: atrib_ign,
 						tms: true
 					});
@@ -192,7 +192,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
 					    },
 					    locateOptions: {
-					        maxZoom: 18,
+					        maxZoom: 20,
 					        watch: true,
 					        enableHighAccuracy: true,
 					        maximumAge: 10000,
@@ -353,7 +353,7 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'leaflet':
 			argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
 		    tms: true,
-		    maxZoom: 17,
+		    maxZoom: 20,
 		    attribution: atrib_ign
 			});
 
@@ -364,7 +364,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			    layers: [argenmap],
 				zoomControl: false,
 				minZoom: 3,
-			    maxZoom: 17
+			    maxZoom: 20
 			});
 			gestorMenu.plugins['leaflet'].setStatus('visible');
 
@@ -382,11 +382,12 @@ $("body").on("pluginLoad", function(event, plugin){
 			L.control.watermark({ position: 'topleft' }).addTo(mapa);
 
 			// Complete the basemap selector
-			$.getJSON("http://172.20.204.216:8085/js/menu.json", function (data) {
+            $.getJSON("./js/menu.json", function (data) {
 			    $.each(data, function (key, val) {
 			        if(key != 'template') {
 			            for (var key in data.items) {
 			                if (data.items[key].type == "basemap") {
+                                
 			                    groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
 			                    groupAux.setImpresor(impresorBaseMap);
 			                    groupAux.setObjDom($(".basemap-selector"));
@@ -401,12 +402,20 @@ $("body").on("pluginLoad", function(event, plugin){
 			                    gestorMenu.items.mapasbase.setImpresor(impresorBaseMap);
 			                    gestorMenu.items.mapasbase.setObjDom($(".basemap-selector"));
 			                    gestorMenu.add(groupAux);
-			                    gestorMenu.imprimir($(".basemap-selector"));
+                                
 			                }
 			            }
+                        gestorMenu.imprimir($(".basemap-selector"));
 			        }
 			    });
 			});
+            
+            mapa.on('click', function(e) {
+                setTimeout(function(){
+                    popupInfo = new Array();
+                }, 2000);
+            });
+
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
