@@ -148,8 +148,8 @@
         {
             "type": "wmslayer",
 			"peso": 100,
-			"nombre": "Mosaicos de cartas topográficas",
-			"short_abstract": "Mosaicos de cartas topográficas",
+			"nombre": "Cartografía",
+			"short_abstract": "Cartas topográficas",
             "class": "",
             "seccion": "cartografia",
 			"servicio": "wms",

@@ -1,6 +1,7 @@
 // -- Plugins Control
 var plugins = new Array("loadGeojson", "loadWms");
 
+var allLayers = new Array();
 function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abstract) {
   const impresorGroup = new ImpresorGrupoHTML();
   const impresorItem = new ImpresorItemHTML();
@@ -114,10 +115,10 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
             if (i == actualPage) {
                 var sAux = '';
                 if (hasPrev == true) {
-                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i></a>';
+                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i> capa ant.</a>';
                 }
                 if (hasNext == true) {
-                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a>';
+                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext">capa sig.<i class="fas fa-arrow-right"></i></a>';
                 }
                 infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div id="popupPageSeeker">' + sAux + '</div><div class="featureInfo" id="featureInfoPopup' + i + '">');
             } else {
@@ -145,17 +146,57 @@ function loadWms(wmsUrl, layer) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    //Parse FeatureInfo to display into popup
-    function parseFeatureInfo(info, idTxt) {
-        $(info).find('li').each(function( index ) {
-            //console.log( index + ": " + $( this ).text() );
-            var aux = $( this ).text().split(':');
-            info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
-        });
+    //Parse FeatureInfo to display into popup (if info is text/html)
+    function parseFeatureInfoHTML(info, idTxt) {
+        infoAux = info.search("<ul>"); // search if info has a list
+        if (infoAux > 0) { // check if info has any content, if so shows popup
+            $(info).find('li').each(function( index ) {
+                //console.log( index + ": " + $( this ).text() );
+                var aux = $( this ).text().split(':');
+                info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
+            });
+            
+            info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+            
+            return info;
+        }
         
-        info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+        return '';
+    }
+    
+    //Parse FeatureInfo to display into popup (if info is application/json)
+    function parseFeatureInfoJSON(info, idTxt) {
+        info = JSON.parse(info);
+        console.log(info);
+        if (info.features.length > 0) { // check if info has any content, if so shows popup
+            
+            var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
+            infoAux += '<div class="featureGroup">';
+            infoAux += '<div style="padding:1em" class="individualFeature">';
+            infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">Aeropuerto</h4>';
+            infoAux += '<ul>';
+            
+            for (i in info.features) {
+                //console.log(info.features[i].properties);
+                Object.keys(info.features[i].properties).forEach(function(k){
+                    //console.log(k + ' - ' + info.features[i].properties[k]);
+                    if (k != 'bbox') { //Do not show bbox property
+                        infoAux += '<li>';
+                        infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
+                        infoAux += ' ' + info.features[i].properties[k];
+                        infoAux += '<li>';
+                    }
+                });
+            }
+            
+            infoAux += '</ul>';
+            infoAux += '<img style="height:40px" src="http://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
+            infoAux += '</div></div></div>';
+            
+            return infoAux;
+        }
         
-        return info;
+        return '';
     }
     
     function createWmsLayer(wmsUrl, layer) {
@@ -165,15 +206,14 @@ function loadWms(wmsUrl, layer) {
                 if (!this._map) {
                     return;
                 }
-                //console.log(info);
-                infoAux = info.search("<ul>"); // search if info has a list
-                if (infoAux > 0) { // check if info has any content, if so shows popup
+                if (this.options.INFO_FORMAT == 'text/html') {
+                    var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+                } else {
+                    var infoParsed = parseFeatureInfoJSON(info, popupInfo.length);
+                }
+                if (infoParsed != '') { // check if info has any content, if so shows popup
                     var popupContent = $('.leaflet-popup').html();
-                    if (popupContent == undefined || popupContent == '' || popupInfo == '') {
-                        popupInfo.push(parseFeatureInfo(info, popupInfo.length)); //First info for popup
-                    } else {
-                        popupInfo.push(parseFeatureInfo(info, popupInfo.length)); //More info for popup
-                    }
+                    popupInfo.push(infoParsed); //First info for popup
                 }
                 if (popupInfo.length > 0) {
                     popupInfoToPaginate = popupInfo.slice();
@@ -190,6 +230,7 @@ function loadWms(wmsUrl, layer) {
             tiled: true,
             format: 'image/png',
             INFO_FORMAT: 'text/html'
+            //INFO_FORMAT: 'application/json'
         });
         overlayMaps[layer] = wmsSource.getLayer(layer);
     }
@@ -197,7 +238,6 @@ function loadWms(wmsUrl, layer) {
 
 function changePopupPage(changeType) {
     
-    //$('#featureInfoPopup' + popupInfoPage).hide();
     var hasNext = false;
     var hasPrev = false;
     if (changeType == 'next') {
@@ -209,18 +249,13 @@ function changePopupPage(changeType) {
             popupInfoPage = popupInfoPage - 1;
         }
     }
-    //$('#featureInfoPopup' + popupInfoPage).show();
     
-    //var sAux = '';
     if ((popupInfoPage - 1) >= 0) {
-        //sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i></a>';
         hasPrev = true;
     }
     if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
-        //sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext"><i class="fas fa-arrow-right"></i></a>';
         hasNext = true;
     }
-    //$('#popupPageSeeker').html(sAux);
     
     mapa.openPopup(paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext), latlngTmp); //Show all info
 }
