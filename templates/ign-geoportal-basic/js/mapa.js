@@ -148,7 +148,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
 					var miniArgenmap = new L.TileLayer(argenmap._url, {
 						minZoom: 0,
-						maxZoom: 20,
+						maxZoom: 21,
 						attribution: atrib_ign,
 						tms: true
 					});
@@ -192,7 +192,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
 					    },
 					    locateOptions: {
-					        maxZoom: 20,
+					        maxZoom: 21,
 					        watch: true,
 					        enableHighAccuracy: true,
 					        maximumAge: 10000,
@@ -353,7 +353,7 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'leaflet':
 			argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
 		    tms: true,
-		    maxZoom: 20,
+		    maxZoom: 21,
 		    attribution: atrib_ign
 			});
 
@@ -364,7 +364,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			    layers: [argenmap],
 				zoomControl: false,
 				minZoom: 3,
-			    maxZoom: 20
+			    maxZoom: 21
 			});
 			gestorMenu.plugins['leaflet'].setStatus('visible');
 

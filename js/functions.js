@@ -228,6 +228,7 @@ function loadWms(wmsUrl, layer) {
         var wmsSource = new MySource(wmsUrl + "/wms?", {
             transparent: true,
             tiled: true,
+            maxZoom: 21,
             format: 'image/png',
             INFO_FORMAT: 'text/html'
             //INFO_FORMAT: 'application/json'
