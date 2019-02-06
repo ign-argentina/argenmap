@@ -188,6 +188,17 @@
 			"servicio": "wms",
 			"version": "1.3.0",
 			"host": "https://wms.ign.gob.ar/geoserver/modelos-digitales-elevaciones"
+        },
+		{
+            "type": "wmslayer",
+			"peso": 37,
+			"nombre": "Modelos digitales de elevaciones",
+			"short_abstract": "Modelos digitales de elevaciones",
+            "class": "",
+            "seccion": "mde",
+			"servicio": "wms",
+			"version": "1.3.0",
+			"host": "http://imagenes.ign.gob.ar:8080/geoserver/mosaico_mde_vant"
         }
     ],
     "template": "ign-geoportal-basic"
