@@ -136,8 +136,8 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 110,
-			"nombre": "Fotogrametría",
+			"peso": 33,
+			"nombre": "Fotografías aéreas",
 			"short_abstract": "Relevamientos fotogramétricos, ortomosaicos, etc.",
             "class": "",
             "seccion": "fotogrametria",
@@ -147,8 +147,8 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 110,
-			"nombre": "Fotogrametría",
+			"peso": 35,
+			"nombre": "Fotografías aéreas",
 			"short_abstract": "Relevamientos fotogramétricos, ortomosaicos, etc.",
             "class": "",
             "seccion": "fotogrametria",
@@ -180,7 +180,7 @@
         },
 		{
             "type": "wmslayer",
-			"peso": 120,
+			"peso": 37,
 			"nombre": "Modelos digitales de elevaciones",
 			"short_abstract": "Modelos digitales de elevaciones",
             "class": "",
