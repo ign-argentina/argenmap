@@ -337,21 +337,20 @@ class GestorMenu {
 		this.plugins = {};
 		this.pluginsCount = 0;
 		this.pluginsLoading = 0;
-        
-		this._existsIndex = 0; //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
 	}
 	
 	add(itemGroup) {
 		var itemAux;
+        var existsIndex = 0; //Si ya existía la sección y se desea adicionar capas
 		if (!this.items[itemGroup.seccion] || itemGroup.isBaseLayer()) { //itemGroup.isBaseLayer() avoid to repeat base layer into selector
 			itemAux = itemGroup;
 		} else {
 			itemAux = this.items[itemGroup.seccion];
-            this._existsIndex = Object.keys(itemAux.itemsComposite).length + 1; //Si ya existe el itemGroup pero se agregan datos de otras fuentes, esto evita que se repitan los ID
+            existsIndex += 10000;
 		}
 		for (var key in itemGroup.itemsComposite) {
-            if (this._existsIndex > 0) { //Para modificar item.seccion para no duplicar el contenido
-                itemGroup.itemsComposite[key].seccion += this._existsIndex;
+            if (existsIndex > 0) { //Para modificar item.seccion para no duplicar el contenido
+                itemGroup.itemsComposite[key].seccion += existsIndex;
             }
 			itemAux.setItem(itemGroup.itemsComposite[key]);
 		}
