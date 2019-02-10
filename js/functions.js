@@ -51,7 +51,8 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
         try {
             var groupAux = new ItemGroup(nombre, seccion, peso, keyword, abstract, short_abstract, loadWms);
             groupAux.setImpresor(impresorGroup);
-            groupAux.setObjDom($(".nav.nav-sidebar"));
+            //groupAux.setObjDom($(".nav.nav-sidebar"));
+            groupAux.setObjDom(".nav.nav-sidebar");
             for (var i = 0; i < items.length; i++) {
                 groupAux.setItem(items[i]);
             }
@@ -60,7 +61,8 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
                 if (err.name == "ReferenceError") {
                     var groupAux = new ItemGroup(nombre, seccion, peso, "", "", short_abstract, null);
                     groupAux.setImpresor(impresorGroup);
-                    groupAux.setObjDom($(".nav.nav-sidebar"));
+                    //groupAux.setObjDom($(".nav.nav-sidebar"));
+                    groupAux.setObjDom(".nav.nav-sidebar");
                     for (var i = 0; i < items.length; i++) {
                     groupAux.setItem(items[i]);
                 }
@@ -70,6 +72,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
         gestorMenu.add(groupAux);
         
         getGeoserverCounter--;
+        /*
         if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
             //Ocultar loading
             $(".loading").hide();
@@ -82,6 +85,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
                 container: "body"
             });
         }
+        */
         
         return;
     });
@@ -128,11 +132,49 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
     }
     return infoStr;
 }
-    
+
+
+
+function deg_to_dms (deg) {
+   var d = Math.floor (deg);
+   var minfloat = (deg-d)*60;
+   var m = Math.floor(minfloat);
+   var secfloat = (minfloat-m)*60;
+   var s = Math.round(secfloat);
+   // After rounding, the seconds might become 60. These two
+   // if-tests are not necessary if no rounding is done.
+   if (s==60) {
+     m++;
+     s=0;
+   }
+   if (m==60) {
+     d++;
+     m=0;
+   }
+   
+   d += "";
+   d = d.padStart(2, '0');
+   m += "";
+   m = m.padStart(2, '0');
+   s += "";
+   s = s.padStart(2, '0');
+   return ("" + d + "° " + m + "' " + s + "''");
+}
+
+function showImageOnError(image) {
+	image.onerror = "";
+    image.src = "img/noimage.gif";
+    return true;
+}
+
+
+//Popup Temp variables
 var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
 var popupInfoToPaginate = new Array();
 var popupInfoPage = 0;
 var latlngTmp = '';
+
+//Envelopes functions
 function loadWms(wmsUrl, layer) {
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
@@ -290,36 +332,4 @@ function loadMapaBaseBing(bingKey, layer, attribution) {
     function createBingLayer(bingKey, layer, attribution) {
     baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
     }
-}
-
-function deg_to_dms (deg) {
-   var d = Math.floor (deg);
-   var minfloat = (deg-d)*60;
-   var m = Math.floor(minfloat);
-   var secfloat = (minfloat-m)*60;
-   var s = Math.round(secfloat);
-   // After rounding, the seconds might become 60. These two
-   // if-tests are not necessary if no rounding is done.
-   if (s==60) {
-     m++;
-     s=0;
-   }
-   if (m==60) {
-     d++;
-     m=0;
-   }
-   
-   d += "";
-   d = d.padStart(2, '0');
-   m += "";
-   m = m.padStart(2, '0');
-   s += "";
-   s = s.padStart(2, '0');
-   return ("" + d + "° " + m + "' " + s + "''");
-}
-
-function showImageOnError(image) {
-	image.onerror = "";
-    image.src = "img/noimage.gif";
-    return true;
 }
