@@ -147,6 +147,17 @@
         },
 		{
             "type": "wmslayer",
+			"peso": 33,
+			"nombre": "Fotografías aéreas",
+			"short_abstract": "Relevamientos fotogramétricos, ortomosaicos, etc.",
+            "class": "",
+            "seccion": "fotogrametria",
+			"servicio": "wms",
+			"version": "1.3.0",
+			"host": "http://imagenes.ign.gob.ar:8080/geoserver/mosaicos_vuelos"
+        },
+		{
+            "type": "wmslayer",
 			"peso": 35,
 			"nombre": "Fotografías aéreas",
 			"short_abstract": "Relevamientos fotogramétricos, ortomosaicos, etc.",
