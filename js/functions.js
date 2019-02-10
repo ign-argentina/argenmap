@@ -70,6 +70,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
         gestorMenu.add(groupAux);
         
         getGeoserverCounter--;
+        /*
         if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
             //Ocultar loading
             $(".loading").hide();
@@ -82,6 +83,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
                 container: "body"
             });
         }
+        */
         
         return;
     });
