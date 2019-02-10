@@ -149,7 +149,7 @@ class ItemComposite {
 	}
 	
 	getObjDom() {
-		return this.objDOM;
+		return $(this.objDOM);
 	}
     
     isBaseLayer() {

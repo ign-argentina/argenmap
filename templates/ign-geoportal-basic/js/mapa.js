@@ -390,7 +390,7 @@ $("body").on("pluginLoad", function(event, plugin){
                                 
 			                    groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
 			                    groupAux.setImpresor(impresorBaseMap);
-			                    groupAux.setObjDom($(".basemap-selector"));
+			                    groupAux.setObjDom(".basemap-selector");
 			                    for (var key2 in data.items[key].capas) {
 			                        var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, data.items[key].capas[key2].key, null, null, null, null, data.items[key].capas[key2].attribution);
 			                        var item = new Item(capa.nombre, data.items[key].seccion+key2, "", data.items[key].capas[key2].attribution, capa.titulo, capa);
@@ -400,7 +400,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			                        groupAux.setItem(item);
 			                    }
 			                    gestorMenu.items.mapasbase.setImpresor(impresorBaseMap);
-			                    gestorMenu.items.mapasbase.setObjDom($(".basemap-selector"));
+			                    gestorMenu.items.mapasbase.setObjDom(".basemap-selector");
 			                    gestorMenu.add(groupAux);
                                 
 			                }

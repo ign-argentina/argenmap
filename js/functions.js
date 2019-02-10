@@ -51,7 +51,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
         try {
             var groupAux = new ItemGroup(nombre, seccion, peso, keyword, abstract, short_abstract, loadWms);
             groupAux.setImpresor(impresorGroup);
-            groupAux.setObjDom($(".nav.nav-sidebar"));
+            groupAux.setObjDom(".nav.nav-sidebar");
             for (var i = 0; i < items.length; i++) {
                 groupAux.setItem(items[i]);
             }
@@ -60,7 +60,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
                 if (err.name == "ReferenceError") {
                     var groupAux = new ItemGroup(nombre, seccion, peso, "", "", short_abstract, null);
                     groupAux.setImpresor(impresorGroup);
-                    groupAux.setObjDom($(".nav.nav-sidebar"));
+                    groupAux.setObjDom(".nav.nav-sidebar");
                     for (var i = 0; i < items.length; i++) {
                     groupAux.setItem(items[i]);
                 }
