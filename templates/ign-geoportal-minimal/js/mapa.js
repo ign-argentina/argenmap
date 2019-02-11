@@ -31,21 +31,13 @@ var mapa = L.map('mapa', {
     maxZoom: 17
 });
 
+//Imprimir menú
+gestorMenu.setMenuDOM(".nav.nav-sidebar");
+gestorMenu.setLoadingDOM(".loading");
+gestorMenu.print();
+    
 
 /****** Enveloped functions ******/
-function showMainMenuTpl() {
-    //Ocultar loading
-    $(".loading").hide();
-    //Imprimir menú
-    gestorMenu.imprimir($(".nav.nav-sidebar"));
-    //Agregar tooltip resumen
-    $("[data-toggle2='tooltip']").tooltip({
-        placement: "right",
-        trigger: "hover",
-        container: "body"
-    });
-}
-
 function loadGeojsonTpl (url, layer) {
 
     if (overlayMaps.hasOwnProperty(layer)) {

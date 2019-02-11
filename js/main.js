@@ -1,7 +1,9 @@
 var gestorMenu = new GestorMenu();
+gestorMenu.setItemsGroupDOM(".nav.nav-sidebar");
 
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML();
 const impresorBaseMap = new ImpresorCapasBaseHTML();
+const impresorGroup = new ImpresorGrupoHTML();
 
 var getGeoserverCounter = 0;
 var keywordFilter = 'dato-basico-y-fundamental';
@@ -9,6 +11,7 @@ var template = "";
 
 $.getJSON("./js/menu.json", function (data) {
   template = data.template; // define wich template to use
+  gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
   delete data['template']; // delete template item from data
   $.each(data, function (key, val) {
 	//data.items.forEach(imprimirItem, data.items);
@@ -33,7 +36,9 @@ $.getJSON("./js/menu.json", function (data) {
         
           getGeoserverCounter++;
           var itemData = data.items[key];
-          getGeoserver(template, itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version, data.items[key].short_abstract);
+          //getGeoserver(template, itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version, data.items[key].short_abstract);
+          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, loadWms);
+          gestorMenu.addLayersInfo(wmsLayerInfo);
           
       }
     }
