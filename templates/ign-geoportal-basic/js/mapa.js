@@ -396,6 +396,9 @@ $("body").on("pluginLoad", function(event, plugin){
                     popupInfo = new Array();
                 }, 2000);
             });
+            
+            showMainMenuTpl();
+            
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
@@ -473,7 +476,6 @@ function showMainMenuTpl() {
         container: "body"
     });
 }
-showMainMenuTpl();
 
 var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
 var popupInfoToPaginate = new Array();
