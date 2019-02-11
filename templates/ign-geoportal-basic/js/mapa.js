@@ -148,7 +148,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
 					var miniArgenmap = new L.TileLayer(argenmap._url, {
 						minZoom: 0,
-						maxZoom: 20,
+						maxZoom: 21,
 						attribution: atrib_ign,
 						tms: true
 					});
@@ -192,7 +192,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
 					    },
 					    locateOptions: {
-					        maxZoom: 20,
+					        maxZoom: 21,
 					        watch: true,
 					        enableHighAccuracy: true,
 					        maximumAge: 10000,
@@ -353,7 +353,7 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'leaflet':
 			argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
 		    tms: true,
-		    maxZoom: 20,
+		    maxZoom: 21,
 		    attribution: atrib_ign
 			});
 
@@ -364,7 +364,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			    layers: [argenmap],
 				zoomControl: false,
 				minZoom: 3,
-			    maxZoom: 20
+			    maxZoom: 21
 			});
 			gestorMenu.plugins['leaflet'].setStatus('visible');
 
@@ -381,34 +381,16 @@ $("body").on("pluginLoad", function(event, plugin){
 			}
 			L.control.watermark({ position: 'topleft' }).addTo(mapa);
 
-			// Complete the basemap selector
-            $.getJSON("./js/menu.json", function (data) {
-			    $.each(data, function (key, val) {
-			        if(key != 'template') {
-			            for (var key in data.items) {
-			                if (data.items[key].type == "basemap") {
-                                
-			                    groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
-			                    groupAux.setImpresor(impresorBaseMap);
-			                    groupAux.setObjDom($(".basemap-selector"));
-			                    for (var key2 in data.items[key].capas) {
-			                        var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, data.items[key].capas[key2].key, null, null, null, null, data.items[key].capas[key2].attribution);
-			                        var item = new Item(capa.nombre, data.items[key].seccion+key2, "", data.items[key].capas[key2].attribution, capa.titulo, capa);
-			                        item.setImpresor(impresorItemCapaBase);
-			                        //console.log(data.items[key].capas.legendImg);
-			                        item.setLegendImg(data.items[key].capas[key2].legendImg);
-			                        groupAux.setItem(item);
-			                    }
-			                    gestorMenu.items.mapasbase.setImpresor(impresorBaseMap);
-			                    gestorMenu.items.mapasbase.setObjDom($(".basemap-selector"));
-			                    gestorMenu.add(groupAux);
-                                
-			                }
-			            }
-                        gestorMenu.imprimir($(".basemap-selector"));
-			        }
-			    });
-			});
+			//Ocultar loading
+            $(".loading").hide();
+            //Imprimir menú
+            gestorMenu.imprimir($(".nav.nav-sidebar"));
+            //Agregar tooltip resumen
+            $("[data-toggle2='tooltip']").tooltip({
+                placement: "right",
+                trigger: "hover",
+                container: "body"
+            });
             
             mapa.on('click', function(e) {
                 setTimeout(function(){
@@ -478,4 +460,210 @@ function pointToLayer(feature, latlng) {
     return L.marker(latlng, {
         icon: markerIcon
     })
+}
+
+/****** Enveloped functions ******/
+var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
+var popupInfoToPaginate = new Array();
+var popupInfoPage = 0;
+var latlngTmp = '';
+
+function loadGeojsonTpl (url, layer) {
+
+    if (overlayMaps.hasOwnProperty(layer)) {
+
+        overlayMaps[layer].removeFrom(mapa);
+        delete overlayMaps[layer];
+
+    } else {
+
+        overlayMaps[layer] = new L.GeoJSON.AJAX(url, {
+            onEachFeature: onEachFeature,
+            pointToLayer: pointToLayer,
+        });
+        overlayMaps[layer].addTo(mapa);
+
+    }
+
+}
+
+function loadWmsTpl (wmsUrl, layer) {
+    if (overlayMaps.hasOwnProperty(layer)) {
+        overlayMaps[layer].removeFrom(mapa);
+        delete overlayMaps[layer];
+    } else {
+        createWmsLayer(wmsUrl, layer);
+        overlayMaps[layer].addTo(mapa);
+    }
+    
+    function ucwords (str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    //Parse FeatureInfo to display into popup (if info is text/html)
+    function parseFeatureInfoHTML(info, idTxt) {
+        infoAux = info.search("<ul>"); // search if info has a list
+        if (infoAux > 0) { // check if info has any content, if so shows popup
+            $(info).find('li').each(function( index ) {
+                //console.log( index + ": " + $( this ).text() );
+                var aux = $( this ).text().split(':');
+                info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
+            });
+            
+            info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+            
+            return info;
+        }
+        
+        return '';
+    }
+    
+    //Parse FeatureInfo to display into popup (if info is application/json)
+    function parseFeatureInfoJSON(info, idTxt) {
+        info = JSON.parse(info);
+        console.log(info);
+        if (info.features.length > 0) { // check if info has any content, if so shows popup
+            
+            var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
+            infoAux += '<div class="featureGroup">';
+            infoAux += '<div style="padding:1em" class="individualFeature">';
+            infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">Aeropuerto</h4>';
+            infoAux += '<ul>';
+            
+            for (i in info.features) {
+                //console.log(info.features[i].properties);
+                Object.keys(info.features[i].properties).forEach(function(k){
+                    //console.log(k + ' - ' + info.features[i].properties[k]);
+                    if (k != 'bbox') { //Do not show bbox property
+                        infoAux += '<li>';
+                        infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
+                        infoAux += ' ' + info.features[i].properties[k];
+                        infoAux += '<li>';
+                    }
+                });
+            }
+            
+            infoAux += '</ul>';
+            infoAux += '<img style="height:40px" src="http://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
+            infoAux += '</div></div></div>';
+            
+            return infoAux;
+        }
+        
+        return '';
+    }
+    
+    function createWmsLayer(wmsUrl, layer) {
+        //Extends WMS.Source to customize popup behavior
+        var MySource = L.WMS.Source.extend({
+            'showFeatureInfo': function(latlng, info) {
+                if (!this._map) {
+                    return;
+                }
+                if (this.options.INFO_FORMAT == 'text/html') {
+                    var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+                } else {
+                    var infoParsed = parseFeatureInfoJSON(info, popupInfo.length);
+                }
+                if (infoParsed != '') { // check if info has any content, if so shows popup
+                    var popupContent = $('.leaflet-popup').html();
+                    popupInfo.push(infoParsed); //First info for popup
+                }
+                if (popupInfo.length > 0) {
+                    popupInfoToPaginate = popupInfo.slice();
+                    latlngTmp = latlng;
+                    this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
+                    popupInfoPage = 0;
+                }
+                return;
+            }
+        });
+        //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+        var wmsSource = new MySource(wmsUrl + "/wms?", {
+            transparent: true,
+            tiled: true,
+            maxZoom: 21,
+            format: 'image/png',
+            INFO_FORMAT: 'text/html'
+            //INFO_FORMAT: 'application/json'
+        });
+        overlayMaps[layer] = wmsSource.getLayer(layer);
+    }
+}
+
+function loadMapaBaseTpl (tmsUrl, layer, attribution) {
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createTmsLayer(tmsUrl, layer, attribution);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createTmsLayer(tmsUrl, layer, attribution) {
+        baseMaps[layer] = new L.tileLayer(tmsUrl, {
+            attribution: attribution,
+        });
+    }
+}
+
+function loadMapaBaseBingTpl (bingKey, layer, attribution) {
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createBingLayer(bingKey, layer, attribution);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createBingLayer(bingKey, layer, attribution) {
+    baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
+    }
+}
+
+//Paginate FeatureInfo into popup
+function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
+    var infoStr = infoArray.join('');
+    //console.log(infoStr);
+    if (infoArray.length > 1) {
+        for (var i = 0; i < infoArray.length; i++) {
+            if (i == actualPage) {
+                var sAux = '';
+                if (hasPrev == true) {
+                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i> capa ant.</a>';
+                }
+                if (hasNext == true) {
+                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext">capa sig.<i class="fas fa-arrow-right"></i></a>';
+                }
+                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div id="popupPageSeeker">' + sAux + '</div><div class="featureInfo" id="featureInfoPopup' + i + '">');
+            } else {
+                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div class="featureInfo" style="display:none" id="featureInfoPopup' + i + '">');
+            }
+        }
+    }
+    return infoStr;
+}
+    
+function changePopupPage(changeType) {
+    
+    var hasNext = false;
+    var hasPrev = false;
+    if (changeType == 'next') {
+        if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
+            popupInfoPage = popupInfoPage + 1;
+        }
+    } else {
+        if ((popupInfoPage - 1) >= 0) {
+            popupInfoPage = popupInfoPage - 1;
+        }
+    }
+    
+    if ((popupInfoPage - 1) >= 0) {
+        hasPrev = true;
+    }
+    if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
+        hasNext = true;
+    }
+    
+    mapa.openPopup(paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext), latlngTmp); //Show all info
 }
