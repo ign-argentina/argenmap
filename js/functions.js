@@ -71,20 +71,9 @@ function getGeoserver(template, host, servicio, seccion, peso, nombre, version, 
         gestorMenu.add(groupAux);
         
         getGeoserverCounter--;
-        /*
         if (getGeoserverCounter == 0) { //Si ya cargó todas las capas solicitadas
-            //Ocultar loading
-            $(".loading").hide();
-            //Imprimir menú
-            gestorMenu.imprimir($(".nav.nav-sidebar"));
-            //Agregar tooltip resumen
-            $("[data-toggle2='tooltip']").tooltip({
-                placement: "right",
-                trigger: "hover",
-                container: "body"
-            });
+            showMainMenu();
         }
-        */
         
         return;
     });
@@ -125,18 +114,41 @@ function showImageOnError(image) {
 
 
 /****** Enveloped functions ******/
+function showMainMenu() {
+    if (typeof showMainMenuTpl === 'function') {
+        return showMainMenuTpl();
+    } else {
+        console.warn("Function showMainMenuTpl() do not exists. Please, define it.");
+    }
+}
 function loadGeojson (url, layer) {
-    return loadGeojsonTpl(wmsUrl, layer);
+    if (typeof loadGeojsonTpl === 'function') {
+        return loadGeojsonTpl(wmsUrl, layer);
+    } else {
+        console.warn("Function loadGeojsonTpl() do not exists. Please, define it.");
+    }
 }
 
 function loadWms (wmsUrl, layer) {
-    return loadWmsTpl(wmsUrl, layer);
+    if (typeof loadGeojsonTpl === 'function') {
+        return loadWmsTpl(wmsUrl, layer);
+    } else {
+        console.warn("Function loadWmsTpl() do not exists. Please, define it.");
+    }
 }
 
 function loadMapaBase (tmsUrl, layer, attribution) {
-    return loadMapaBaseTpl(tmsUrl, layer, attribution);
+    if (typeof loadGeojsonTpl === 'function') {
+        return loadMapaBaseTpl(tmsUrl, layer, attribution);
+    } else {
+        console.warn("Function loadMapaBaseTpl() do not exists. Please, define it.");
+    }
 }
 
 function loadMapaBaseBing (bingKey, layer, attribution) {
-    return loadMapaBaseBingTpl(tmsUrl, layer, attribution);
+    if (typeof loadGeojsonTpl === 'function') {
+        return loadMapaBaseBingTpl(tmsUrl, layer, attribution);
+    } else {
+        console.warn("Function loadMapaBaseBingTpl() do not exists. Please, define it.");
+    }
 }

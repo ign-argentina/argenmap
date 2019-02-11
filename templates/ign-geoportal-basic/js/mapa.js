@@ -20,7 +20,7 @@ $('#top-right-logo').attr("title","Ministerio de Defensa");
 gestorMenu.addPlugin("leaflet","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js", function() {
 	gestorMenu.addPlugin("leafletAjax",'https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js');
 	gestorMenu.addPlugin("betterScale",'https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js');
-	// Awesome Markers
+    // Awesome Markers
 	gestorMenu.addPlugin("AwesomeMarkers","https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js");
 	// Leaflet Zoomhome plugin
 	gestorMenu.addPlugin("ZoomHome","templates/ign-geoportal-basic/js/leaflet-zoomhome/dist/leaflet.zoomhome.min.js");
@@ -59,6 +59,9 @@ $("body").on("pluginLoad", function(event, plugin){
 		// Add ordered plugins in order
 		case 'leaflet':
 			unordered = plugin.pluginName;
+			break;
+        case 'menuPrinter':
+			showMainMenu();
 			break;
 		case 'ZoomHome':
 			ordered.splice(ordenZoomHome, 1, plugin.pluginName);
@@ -390,19 +393,8 @@ $("body").on("pluginLoad", function(event, plugin){
 			    return new L.Control.Watermark(opts);
 			}
 			L.control.watermark({ position: 'topleft' }).addTo(mapa);
-
-			//Ocultar loading
-            $(".loading").hide();
-            //Imprimir menú
-            gestorMenu.imprimir($(".nav.nav-sidebar"));
-            //Agregar tooltip resumen
-            $("[data-toggle2='tooltip']").tooltip({
-                placement: "right",
-                trigger: "hover",
-                container: "body"
-            });
             
-            mapa.on('click', function(e) {
+			mapa.on('click', function(e) {
                 setTimeout(function(){
                     popupInfo = new Array();
                 }, 2000);
@@ -472,6 +464,19 @@ function pointToLayer(feature, latlng) {
 }
 
 /****** Enveloped functions ******/
+function showMainMenuTpl() {
+    //Ocultar loading
+    $(".loading").hide();
+    //Imprimir menú
+    gestorMenu.imprimir($(".nav.nav-sidebar"));
+    //Agregar tooltip resumen
+    $("[data-toggle2='tooltip']").tooltip({
+        placement: "right",
+        trigger: "hover",
+        container: "body"
+    });
+}
+
 var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
 var popupInfoToPaginate = new Array();
 var popupInfoPage = 0;
