@@ -60,9 +60,6 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'leaflet':
 			unordered = plugin.pluginName;
 			break;
-        case 'menuPrinter':
-			showMainMenu();
-			break;
 		case 'ZoomHome':
 			ordered.splice(ordenZoomHome, 1, plugin.pluginName);
 			break;
@@ -476,6 +473,7 @@ function showMainMenuTpl() {
         container: "body"
     });
 }
+showMainMenuTpl();
 
 var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
 var popupInfoToPaginate = new Array();
