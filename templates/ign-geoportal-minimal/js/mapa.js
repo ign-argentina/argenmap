@@ -20,3 +20,87 @@ var mapa = L.map('mapa', {
 	minZoom: 3,
     maxZoom: 17
 });
+
+//Ocultar loading
+$(".loading").hide();
+//Imprimir menú
+gestorMenu.imprimir($(".nav.nav-sidebar"));
+//Agregar tooltip resumen
+$("[data-toggle2='tooltip']").tooltip({
+    placement: "right",
+    trigger: "hover",
+    container: "body"
+});
+
+
+/****** Enveloped functions ******/
+function loadGeojsonTpl (url, layer) {
+
+    if (overlayMaps.hasOwnProperty(layer)) {
+
+        overlayMaps[layer].removeFrom(mapa);
+        delete overlayMaps[layer];
+
+    } else {
+
+        overlayMaps[layer] = new L.GeoJSON.AJAX(url, {
+            onEachFeature: onEachFeature,
+            pointToLayer: pointToLayer,
+        });
+        overlayMaps[layer].addTo(mapa);
+
+    }
+
+}
+
+function loadWmsTpl (wmsUrl, layer) {
+    if (overlayMaps.hasOwnProperty(layer)) {
+        overlayMaps[layer].removeFrom(mapa);
+        delete overlayMaps[layer];
+    } else {
+        createWmsLayer(wmsUrl, layer);
+        overlayMaps[layer].addTo(mapa);
+    }
+    
+    function createWmsLayer(wmsUrl, layer) {
+        var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+            transparent: true,
+            tiled: true,
+            maxZoom: 21,
+            format: 'image/png',
+            INFO_FORMAT: 'text/html'
+            //INFO_FORMAT: 'application/json'
+        });
+        overlayMaps[layer] = wmsSource.getLayer(layer);
+    }
+}
+
+function loadMapaBaseTpl (tmsUrl, layer, attribution) {
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createTmsLayer(tmsUrl, layer, attribution);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createTmsLayer(tmsUrl, layer, attribution) {
+        baseMaps[layer] = new L.tileLayer(tmsUrl, {
+            attribution: attribution,
+        });
+    }
+}
+
+function loadMapaBaseBingTpl (bingKey, layer, attribution) {
+    if (baseMaps.hasOwnProperty(layer)) {
+        baseMaps[layer].removeFrom(mapa);
+        delete baseMaps[layer];
+    } else {
+        createBingLayer(bingKey, layer, attribution);
+        baseMaps[layer].addTo(mapa);
+    }
+
+    function createBingLayer(bingKey, layer, attribution) {
+    baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
+    }
+}
