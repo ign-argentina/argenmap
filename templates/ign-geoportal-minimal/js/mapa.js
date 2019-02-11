@@ -3,6 +3,16 @@ var atrib_ign = "<a href='http://www.ign.gob.ar/argenmap/argenmap.jquery/docs/da
     overlayMaps = new Object(),
     layerName,
     layerData;
+    
+//Change logotype
+$('#top-left-logo-link').attr("href","http://www.ign.gob.ar/");
+$('#top-left-logo').attr("src","templates/ign-geoportal-basic/img/logo.png");
+$('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
+$('#top-left-logo').attr("title","Instituto Geográfico Nacional");
+$('#top-right-logo-link').attr("href","https://www.argentina.gob.ar/defensa");
+$('#top-right-logo').attr("src","templates/ign-geoportal-basic/img/logoMinDef.png");
+$('#top-right-logo').attr("alt","Logo Ministerio de Defensa");
+$('#top-right-logo').attr("title","Ministerio de Defensa");
 
 // Mapa base actual de ArgenMap (Geoserver)
 var argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {

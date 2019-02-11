@@ -43,11 +43,13 @@ class ImpresorItemHTML extends Impresor {
 		
 		var childId = itemComposite.getId();
 		
+        var legendImg = (itemComposite.getLegendImg() == null)? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        
 		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
 					"<div class='capa-title'>" +
 						"<a nombre=" + itemComposite.nombre + " href='#'>" +
 							"<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" + 
-							"<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>" +
+							 legendImg +
 						"</a>" +						
 					"</div>" +
 				"</li>";
@@ -251,7 +253,8 @@ class Item extends ItemComposite {
 		this.titulo = titulo;
 		this.capa = capa;
 		this.visible = false;
-		this.legendImg = "img/legends/" + this.titulo.replace(':', '').replace('/', '') + ".svg";
+		//this.legendImg = "templates/" + template + "/img/legends/" + this.titulo.replace(':', '').replace('/', '') + ".svg";
+        this.legendImg = null;
 	}
 	
 	getId() {
@@ -259,8 +262,16 @@ class Item extends ItemComposite {
 		return childId;
 	}
 	
+	getSVGFilenameForLegendImg() {
+		return this.titulo.replace(':', '').replace('/', '') + ".svg";
+	}
+    
 	getVisible() {
 		return this.visible;
+	}
+    
+    setLegendImgPreformatted(dir) {
+		this.legendImg = dir + this.getSVGFilenameForLegendImg();
 	}
 	
 	setLegendImg(img) {

@@ -6,6 +6,16 @@ var atrib_ign = "<a href='http://www.ign.gob.ar/argenmap/argenmap.jquery/docs/da
 var argenmap = "";
 var mapa = "";
 
+//Change logotype
+$('#top-left-logo-link').attr("href","http://www.ign.gob.ar/");
+$('#top-left-logo').attr("src","templates/ign-geoportal-basic/img/logo.png");
+$('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
+$('#top-left-logo').attr("title","Instituto Geográfico Nacional");
+$('#top-right-logo-link').attr("href","https://www.argentina.gob.ar/defensa");
+$('#top-right-logo').attr("src","templates/ign-geoportal-basic/img/logoMinDef.png");
+$('#top-right-logo').attr("alt","Logo Ministerio de Defensa");
+$('#top-right-logo').attr("title","Ministerio de Defensa");
+
 // get all lybraries
 gestorMenu.addPlugin("leaflet","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js", function() {
 	gestorMenu.addPlugin("leafletAjax",'https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js');
@@ -397,7 +407,6 @@ $("body").on("pluginLoad", function(event, plugin){
                     popupInfo = new Array();
                 }, 2000);
             });
-
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition

@@ -2,7 +2,7 @@
 var plugins = new Array("loadGeojson", "loadWms");
 
 var allLayers = new Array();
-function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abstract) {
+function getGeoserver(template, host, servicio, seccion, peso, nombre, version, short_abstract) {
   const impresorGroup = new ImpresorGrupoHTML();
   const impresorItem = new ImpresorItemHTML();
   
@@ -43,6 +43,7 @@ function getGeoserver(host, servicio, seccion, peso, nombre, version, short_abst
                 
             var capa = new Capa(iName, iTitle, iSrs.nodeValue, host, servicio, version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
             var item = new Item(capa.nombre, seccion+index, keywords, iAbstract, capa.titulo, capa);
+            item.setLegendImgPreformatted('templates/' + template + '/img/legends/');
             item.setImpresor(impresorItem);
             items.push(item);
         });
@@ -118,7 +119,7 @@ function deg_to_dms (deg) {
 
 function showImageOnError(image) {
 	image.onerror = "";
-    image.src = "img/noimage.gif";
+    image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
     return true;
 }
 
