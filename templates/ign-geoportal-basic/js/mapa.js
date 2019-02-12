@@ -463,12 +463,11 @@ function pointToLayer(feature, latlng) {
     })
 }
 
-/****** Enveloped functions ******/
 function showMainMenuTpl() {
-    //Ocultar loading
-    $(".loading").hide();
     //Imprimir menú
-    gestorMenu.imprimir($(".nav.nav-sidebar"));
+    gestorMenu.setMenuDOM(".nav.nav-sidebar");
+    gestorMenu.setLoadingDOM(".loading");
+    gestorMenu.print();
     //Agregar tooltip resumen
     $("[data-toggle2='tooltip']").tooltip({
         placement: "right",
@@ -477,6 +476,7 @@ function showMainMenuTpl() {
     });
 }
 
+/****** Enveloped functions ******/
 var popupInfo = new Array(); //Declare popupInfo (this initialize in mapa.js)
 var popupInfoToPaginate = new Array();
 var popupInfoPage = 0;

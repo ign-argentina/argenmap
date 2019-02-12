@@ -107,6 +107,109 @@ class ImpresorCapasBaseHTML extends Impresor {
 }
 
 /******************************************
+Strategy for get layers info
+******************************************/
+class LayersInfo {
+	get(gestorMenu) {
+		return null;
+	}
+}
+
+class LayersInfoWMS extends LayersInfo {
+    
+    constructor(host, service, version, section, weight, name, short_abstract, loadWms) {
+        super();
+        this.host = host;
+        this.service = service;
+        this.version = version;
+        this.section = section;
+        this.weight = weight;
+        this.name = name;
+        this.short_abstract = short_abstract;
+        this.loadWms = loadWms;
+    }
+    
+	get(gestorMenu) {
+        const impresorGroup = new ImpresorGrupoHTML();
+        const impresorItem = new ImpresorItemHTML();
+        
+        var thisObj = this;
+        
+        if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
+        // Load geoserver Capabilities, if success Create menu and append to DOM
+        $('#temp-menu').load(thisObj.host + '/ows?service=' + thisObj.service + '&version=' + thisObj.version + '&request=GetCapabilities', function () {
+            var capability = $('#temp-menu').find("capability");
+            var keywordHtml = $('#temp-menu').find("Keyword");
+            var abstractHtml = $('#temp-menu').find("Abstract");
+            var keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+            var abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+            var capas_layer = $('layer', capability);
+            var capas_info = $('layer', capas_layer);
+        
+            var items = new Array();
+        
+            // create an object with all layer info for each layer
+            capas_info.each(function (index, b) {
+                var i = $(this);
+                var iName = $('name', i).html();
+                var iTitle = $('title', i).html();
+                var iBoundingBox = $('boundingbox', i);
+                var iAbstract = $('abstract', i).html();
+                var keywordsHTMLList = $('keywordlist', i).find("keyword");
+                var keywords = [];
+                $.each( keywordsHTMLList, function( i, el ) {
+                    keywords.push(el.innerText);
+                });
+                if (iBoundingBox[0].attributes.srs) {
+                    var iSrs = iBoundingBox[0].attributes.srs;
+                } else {
+                    var iSrs = iBoundingBox[0].attributes.crs;
+                }
+                var iMaxY = iBoundingBox[0].attributes.maxy;
+                var iMinY = iBoundingBox[0].attributes.miny;
+                var iMinX = iBoundingBox[0].attributes.minx;
+                var iMaxX = iBoundingBox[0].attributes.maxx;
+                    
+                var capa = new Capa(iName, iTitle, iSrs.nodeValue, thisObj.host, thisObj.service, thisObj.version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
+                var item = new Item(capa.nombre, thisObj.section+index, keywords, iAbstract, capa.titulo, capa);
+                item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
+                item.setImpresor(impresorItem);
+                items.push(item);
+            });
+        
+            var groupAux;
+            try {
+                var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract, thisObj.loadWms);
+                groupAux.setImpresor(impresorGroup);
+                groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+                for (var i = 0; i < items.length; i++) {
+                    groupAux.setItem(items[i]);
+                }
+            }
+            catch (err) {
+                    if (err.name == "ReferenceError") {
+                        var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract, null);
+                        groupAux.setImpresor(impresorGroup);
+                        groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+                        for (var i = 0; i < items.length; i++) {
+                        groupAux.setItem(items[i]);
+                    }
+                }
+            }
+            
+            gestorMenu.add(groupAux);
+            
+            gestorMenu.addLayerInfoCounter();
+            if (gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
+                gestorMenu._print();
+            }
+            
+            return;
+        });
+	}
+}
+
+/******************************************
 Composite para menu
 ******************************************/
 class ItemComposite {
@@ -132,6 +235,14 @@ class ItemComposite {
 				}
 			}
 		}
+	}
+    
+	setPalabrasClave(palabrasClave) {
+		this.palabrasClave = palabrasClave
+	}
+
+	setDescripcion(descripcion) {
+		this.descripcion = descripcion
 	}
 
 	setImpresor(impresor) {
@@ -167,7 +278,7 @@ class ItemGroup extends ItemComposite {
 		this.itemsComposite = {};
 		this.callback = callback;
 	}
-	
+    
 	setItem(itemComposite) {
 		this.itemsComposite[itemComposite.seccion] = itemComposite;
 	}
@@ -348,9 +459,59 @@ class GestorMenu {
 		this.plugins = {};
 		this.pluginsCount = 0;
 		this.pluginsLoading = 0;
+        this.menuDOM = '';
+        this.loadingDOM = '';
+		this.layersInfo = new Array();
+        this.legendImgPath = '';
+        this.itemsGroupDOM = '';
         
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
+        this._getLayersInfoCounter = 0;
 	}
+    
+    setMenuDOM(menuDOM) {
+        this.menuDOM = menuDOM;
+    }
+    
+    getMenuDOM() {
+        return $(this.menuDOM);
+    }
+    
+    setLoadingDOM(loadingDOM) {
+        this.loadingDOM = loadingDOM;
+    }
+    
+    getLoadingDOM() {
+        return $(this.loadingDOM);
+    }
+    
+    setLegendImgPath(legendImgPath) {
+        this.legendImgPath = legendImgPath;
+    }
+    
+    getLegendImgPath() {
+        return this.legendImgPath;
+    }
+    
+    setItemsGroupDOM(itemsGroupDOM) {
+        this.itemsGroupDOM = itemsGroupDOM;
+    }
+    
+    getItemsGroupDOM() {
+        return this.itemsGroupDOM;
+    }
+    
+    addLayerInfoCounter() {
+        this._getLayersInfoCounter++;
+    }
+    
+    finishLayerInfo() {
+        return (this._getLayersInfoCounter == this.layersInfo.length);
+    }
+    
+    addLayersInfo(layersInfo) {
+        this.layersInfo.push(layersInfo);
+    }
 	
 	add(itemGroup) {
 		var itemAux;
@@ -437,10 +598,20 @@ class GestorMenu {
 		var bName = b.peso; 
 		return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
 	}
+    
+    executeLayersInfo() {
+        for (var key in this.layersInfo) {
+            this.layersInfo[key].get(this);
+        }
+    }
 	
-	imprimir(objDOMMenu) {
+    print() {
+        this.executeLayersInfo();
+    }
+    
+	_print() {
 		
-		objDOMMenu.html("");
+		this.getMenuDOM().html("");
 		
 		var itemsAux = new Array();
 		for (var key in this.items) {
@@ -459,6 +630,8 @@ class GestorMenu {
 			itemComposite.getObjDom().append(itemComposite.imprimir());
 			
 		}
+        
+        this.getLoadingDOM().hide();
 		
 	}
 	
