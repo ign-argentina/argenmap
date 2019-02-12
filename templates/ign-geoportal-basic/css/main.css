@@ -168,3 +168,12 @@ Control graticula
 	background-color: #f4f4f4;
 	cursor: pointer;
 }
+
+
+/*******************************
+Personalizado
+*******************************/
+.basemap-selector > a {
+    width: 34px !important;
+    height: 34px !important;
+}
