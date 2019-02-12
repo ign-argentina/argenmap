@@ -44,7 +44,7 @@ function loadGeojson (url, layer) {
 }
 
 function loadWms (wmsUrl, layer) {
-    if (typeof loadGeojsonTpl === 'function') {
+    if (typeof loadWmsTpl === 'function') {
         return loadWmsTpl(wmsUrl, layer);
     } else {
         console.warn("Function loadWmsTpl() do not exists. Please, define it.");
@@ -52,7 +52,7 @@ function loadWms (wmsUrl, layer) {
 }
 
 function loadMapaBase (tmsUrl, layer, attribution) {
-    if (typeof loadGeojsonTpl === 'function') {
+    if (typeof loadMapaBaseTpl === 'function') {
         return loadMapaBaseTpl(tmsUrl, layer, attribution);
     } else {
         console.warn("Function loadMapaBaseTpl() do not exists. Please, define it.");
@@ -60,8 +60,8 @@ function loadMapaBase (tmsUrl, layer, attribution) {
 }
 
 function loadMapaBaseBing (bingKey, layer, attribution) {
-    if (typeof loadGeojsonTpl === 'function') {
-        return loadMapaBaseBingTpl(tmsUrl, layer, attribution);
+    if (typeof loadMapaBaseBingTpl === 'function') {
+        return loadMapaBaseBingTpl(bingKey, layer, attribution);
     } else {
         console.warn("Function loadMapaBaseBingTpl() do not exists. Please, define it.");
     }
