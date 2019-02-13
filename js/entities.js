@@ -4,13 +4,14 @@
 Class Capa
 ******************************************/
 class Capa {
-	constructor(nombre, titulo, srs, host, servicio, version, key, minx, maxx, miny, maxy, attribution) {
+	constructor(nombre, titulo, srs, host, servicio, version, featureInfoFormat, key, minx, maxx, miny, maxy, attribution) {
 		this.nombre = nombre
 		this.titulo = titulo
 		this.srs = srs
 		this.host = host
 		this.servicio = servicio
 		this.version = version
+		this.featureInfoFormat = featureInfoFormat
 		this.key = key
 		this.minx = minx
 		this.maxx = maxx
@@ -26,6 +27,22 @@ class Capa {
 		return this.host + 
 			   '/ows?service=' + this.servicio + '&version=' + this.version + '&request=GetLegendGraphic&' +
 			   'format=image/png&layer=' + this.nombre;
+	}
+    
+	getHostWMS() {
+		if (this.host == null) {
+			return '';
+		}
+		return this.host + "/wms?";
+	}
+}
+
+class CapaMapserver extends Capa {
+    getHostWMS() {
+		if (this.host == null) {
+			return '';
+		}
+		return this.host + "?";
 	}
 }
 
@@ -117,7 +134,7 @@ class LayersInfo {
 
 class LayersInfoWMS extends LayersInfo {
     
-    constructor(host, service, version, section, weight, name, short_abstract, loadWms) {
+    constructor(host, service, version, section, weight, name, short_abstract, feature_info_format, type) {
         super();
         this.host = host;
         this.service = service;
@@ -126,23 +143,41 @@ class LayersInfoWMS extends LayersInfo {
         this.weight = weight;
         this.name = name;
         this.short_abstract = short_abstract;
-        this.loadWms = loadWms;
+        this.feature_info_format = feature_info_format;
+        this.type = type;
     }
     
 	get(gestorMenu) {
+        
+        //Define GetCapabilities parser
+        if (this.type == 'wmslayer_mapserver') {
+            this._parseRequest();
+        } else {
+            this._parseRequest();
+        }
+	}
+    
+    _parseRequest() {
         const impresorGroup = new ImpresorGrupoHTML();
         const impresorItem = new ImpresorItemHTML();
         
         var thisObj = this;
         
         if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
+        
         // Load geoserver Capabilities, if success Create menu and append to DOM
-        $('#temp-menu').load(thisObj.host + '/ows?service=' + thisObj.service + '&version=' + thisObj.version + '&request=GetCapabilities', function () {
+        $('#temp-menu').load(thisObj.getHostOWS() + '?service=' + thisObj.service + '&version=' + thisObj.version + '&request=GetCapabilities', function () {
             var capability = $('#temp-menu').find("capability");
             var keywordHtml = $('#temp-menu').find("Keyword");
+            var keyword = '';
+            if (keywordHtml.length > 0) {
+                keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+            }
             var abstractHtml = $('#temp-menu').find("Abstract");
-            var keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
-            var abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+            var abstract = '';
+            if (keywordHtml.length > 0) {
+                abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+            }
             var capas_layer = $('layer', capability);
             var capas_info = $('layer', capas_layer);
         
@@ -153,25 +188,36 @@ class LayersInfoWMS extends LayersInfo {
                 var i = $(this);
                 var iName = $('name', i).html();
                 var iTitle = $('title', i).html();
-                var iBoundingBox = $('boundingbox', i);
                 var iAbstract = $('abstract', i).html();
                 var keywordsHTMLList = $('keywordlist', i).find("keyword");
                 var keywords = [];
                 $.each( keywordsHTMLList, function( i, el ) {
                     keywords.push(el.innerText);
                 });
-                if (iBoundingBox[0].attributes.srs) {
-                    var iSrs = iBoundingBox[0].attributes.srs;
-                } else {
-                    var iSrs = iBoundingBox[0].attributes.crs;
+                var iBoundingBox = $('boundingbox', i);
+                var iSrs = null;
+                var iMaxY = null;
+                var iMinY = null;
+                var iMinX = null;
+                var iMaxX = null;
+                if (iBoundingBox.length > 0) {
+                    if (iBoundingBox[0].attributes.srs) {
+                        var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
+                    } else {
+                        var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
+                    }
+                    var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
+                    var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
+                    var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
+                    var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
                 }
-                var iMaxY = iBoundingBox[0].attributes.maxy;
-                var iMinY = iBoundingBox[0].attributes.miny;
-                var iMinX = iBoundingBox[0].attributes.minx;
-                var iMaxX = iBoundingBox[0].attributes.maxx;
-                    
-                var capa = new Capa(iName, iTitle, iSrs.nodeValue, thisObj.host, thisObj.service, thisObj.version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
-                var item = new Item(capa.nombre, thisObj.section+index, keywords, iAbstract, capa.titulo, capa);
+                
+                if (thisObj.type == 'wmslayer_mapserver') {
+                    var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                } else {
+                    var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                }
+                var item = new Item(capa.nombre, thisObj.section+index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
                 item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
                 item.setImpresor(impresorItem);
                 items.push(item);
@@ -179,7 +225,7 @@ class LayersInfoWMS extends LayersInfo {
         
             var groupAux;
             try {
-                var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract, thisObj.loadWms);
+                var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
                 groupAux.setImpresor(impresorGroup);
                 groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
                 for (var i = 0; i < items.length; i++) {
@@ -188,7 +234,7 @@ class LayersInfoWMS extends LayersInfo {
             }
             catch (err) {
                     if (err.name == "ReferenceError") {
-                        var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract, null);
+                        var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
                         groupAux.setImpresor(impresorGroup);
                         groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
                         for (var i = 0; i < items.length; i++) {
@@ -206,8 +252,29 @@ class LayersInfoWMS extends LayersInfo {
             
             return;
         });
-	}
+    }
+    
+    getHostOWS() {
+        //Define GetCapabilities host endpoint
+        var host = this.host + '/ows';
+        if (this.type == 'wmslayer_mapserver') {
+            host = this.host;
+        }
+        return host;
+    }
+    
+    getCallback() {
+        //Define wich function handle onClick event
+        var onClickHandler = 'loadWmsTpl';
+        /*
+        if (this.type == 'wmslayer_mapserver') {
+            onClickHandler = 'loadWmsMapServer';
+        }
+        */
+        return onClickHandler;
+    }
 }
+
 
 /******************************************
 Composite para menu
@@ -271,12 +338,11 @@ class ItemComposite {
 }
 
 class ItemGroup extends ItemComposite {
-	constructor(nombre, seccion, peso, palabrasClave, descripcion, shortDesc, callback) {
+	constructor(nombre, seccion, peso, palabrasClave, descripcion, shortDesc) {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.shortDesc = shortDesc;
 		this.peso = peso;
 		this.itemsComposite = {};
-		this.callback = callback;
 	}
     
 	setItem(itemComposite) {
@@ -359,13 +425,14 @@ class ItemGroupBaseMap extends ItemGroup {
 }
 
 class Item extends ItemComposite {
-	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa) {
+	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback) {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.titulo = titulo;
 		this.capa = capa;
 		this.visible = false;
 		//this.legendImg = "templates/" + template + "/img/legends/" + this.titulo.replace(':', '').replace('/', '') + ".svg";
         this.legendImg = null;
+        this.callback = callback;
 	}
 	
 	getId() {
@@ -393,10 +460,16 @@ class Item extends ItemComposite {
 		return this.legendImg;
 	}
 	
-	showHide(callback) {
+	showHide() {
 		$('#' + this.getId()).toggleClass('active');
-		if (typeof callback === "function") {
-			callback(this.capa.host, this.nombre);
+        
+        if (typeof this.callback == 'string') {
+            this.callback = eval(this.callback);
+        }
+        
+		if (typeof this.callback === "function") {
+			//loadWms(this.callback, this.capa.host, this.nombre);
+            loadWms(this.callback, this);
 		} else if (this.capa.servicio === "tms") {
 			loadMapaBase(this.capa.host, this.capa.nombre, this.capa.attribution);
 		} else if (this.capa.servicio === "bing") {
@@ -642,7 +715,7 @@ class GestorMenu {
 				var item = itemComposite.itemsComposite[key2];
 				if (item.getId() == itemSeccion) {
 					itemComposite.hideAllLayersExceptOne(item);
-					item.showHide(itemComposite.callback);
+					item.showHide();
 					itemComposite.muestraCantidadCapasVisibles();
 					break;
 					break;

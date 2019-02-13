@@ -501,12 +501,16 @@ function loadGeojsonTpl (url, layer) {
 
 }
 
-function loadWmsTpl (wmsUrl, layer) {
+//function loadWmsTpl (wmsUrl, layer) {
+function loadWmsTpl (objLayer) {
+    wmsUrl = objLayer.capa.host;
+    layer = objLayer.nombre;
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
     } else {
-        createWmsLayer(wmsUrl, layer);
+        //createWmsLayer(wmsUrl, layer);
+        createWmsLayer(objLayer);
         overlayMaps[layer].addTo(mapa);
     }
     
@@ -527,13 +531,19 @@ function loadWmsTpl (wmsUrl, layer) {
             info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
             
             return info;
+        } else {
+            infoAux = info.search("<table>"); // search if info has a table
+            if (infoAux > 0) { // check if info has any content, if so shows popup
+                info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+                return info;
+            }
         }
         
         return '';
     }
     
     //Parse FeatureInfo to display into popup (if info is application/json)
-    function parseFeatureInfoJSON(info, idTxt) {
+    function parseFeatureInfoJSON(info, idTxt, title) {
         info = JSON.parse(info);
         console.log(info);
         if (info.features.length > 0) { // check if info has any content, if so shows popup
@@ -541,7 +551,7 @@ function loadWmsTpl (wmsUrl, layer) {
             var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
             infoAux += '<div class="featureGroup">';
             infoAux += '<div style="padding:1em" class="individualFeature">';
-            infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">Aeropuerto</h4>';
+            infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
             infoAux += '<ul>';
             
             for (i in info.features) {
@@ -567,7 +577,8 @@ function loadWmsTpl (wmsUrl, layer) {
         return '';
     }
     
-    function createWmsLayer(wmsUrl, layer) {
+    //function createWmsLayer(wmsUrl, layer) {
+    function createWmsLayer(objLayer) {
         //Extends WMS.Source to customize popup behavior
         var MySource = L.WMS.Source.extend({
             'showFeatureInfo': function(latlng, info) {
@@ -577,7 +588,7 @@ function loadWmsTpl (wmsUrl, layer) {
                 if (this.options.INFO_FORMAT == 'text/html') {
                     var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
                 } else {
-                    var infoParsed = parseFeatureInfoJSON(info, popupInfo.length);
+                    var infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
                 }
                 if (infoParsed != '') { // check if info has any content, if so shows popup
                     var popupContent = $('.leaflet-popup').html();
@@ -593,15 +604,15 @@ function loadWmsTpl (wmsUrl, layer) {
             }
         });
         //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
-        var wmsSource = new MySource(wmsUrl + "/wms?", {
+        var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
             transparent: true,
             tiled: true,
             maxZoom: 21,
+            'title': objLayer.titulo,
             format: 'image/png',
-            INFO_FORMAT: 'text/html'
-            //INFO_FORMAT: 'application/json'
+            INFO_FORMAT: objLayer.capa.featureInfoFormat
         });
-        overlayMaps[layer] = wmsSource.getLayer(layer);
+        overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.nombre);
     }
 }
 

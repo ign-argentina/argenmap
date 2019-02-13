@@ -43,11 +43,13 @@ function loadGeojson (url, layer) {
     }
 }
 
-function loadWms (wmsUrl, layer) {
-    if (typeof loadWmsTpl === 'function') {
-        return loadWmsTpl(wmsUrl, layer);
+//function loadWms (callbackFunction, wmsUrl, layer) {
+function loadWms (callbackFunction, objLayer) {
+    if (typeof callbackFunction === 'function') {
+        //return callbackFunction(wmsUrl, layer);
+        return callbackFunction(objLayer);
     } else {
-        console.warn("Function loadWmsTpl() do not exists. Please, define it.");
+        console.warn("Function " + callbackFunction + "() do not exists. Please, define it.");
     }
 }
 

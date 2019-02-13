@@ -17,7 +17,7 @@ $.getJSON("./js/menu.json", function (data) {
 	//data.items.forEach(imprimirItem, data.items);
     for (var key in data.items) {
     
-      if (data.items[key].type == "basemap") {
+      if (data.items[key].type == "basemap") { //If layers is basemap
     
           groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
           groupAux.setImpresor(impresorBaseMap);
@@ -32,12 +32,11 @@ $.getJSON("./js/menu.json", function (data) {
           }
           gestorMenu.add(groupAux);
       
-      } else if (data.items[key].type == "wmslayer") {
+      } else { //If layers is not basemap (wmslayer for example)
         
           getGeoserverCounter++;
           var itemData = data.items[key];
-          //getGeoserver(template, itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version, data.items[key].short_abstract);
-          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, loadWms);
+          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, data.items[key].feature_info_format, data.items[key].type);
           gestorMenu.addLayersInfo(wmsLayerInfo);
           
       }
