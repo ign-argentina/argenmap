@@ -590,6 +590,7 @@ class GestorMenu {
 		this.layersInfo = new Array();
         this.legendImgPath = '';
         this.itemsGroupDOM = '';
+        this.printCallback = null;
         
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
@@ -625,6 +626,10 @@ class GestorMenu {
     
     getItemsGroupDOM() {
         return this.itemsGroupDOM;
+    }
+    
+    setPrintCallback(printCallback) {
+        this.printCallback = printCallback;
     }
     
     addLayerInfoCounter() {
@@ -759,6 +764,9 @@ class GestorMenu {
         
         this.getLoadingDOM().hide();
 		
+        if (this.printCallback != null) {
+            this.printCallback();
+        }
 	}
 	
 	muestraCapa(itemSeccion) {

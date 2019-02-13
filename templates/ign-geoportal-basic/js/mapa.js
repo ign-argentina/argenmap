@@ -463,17 +463,21 @@ function pointToLayer(feature, latlng) {
     })
 }
 
-function showMainMenuTpl() {
-    //Imprimir menú
-    gestorMenu.setMenuDOM(".nav.nav-sidebar");
-    gestorMenu.setLoadingDOM(".loading");
-    gestorMenu.print();
+function printFinished() {
     //Agregar tooltip resumen
     $("[data-toggle2='tooltip']").tooltip({
         placement: "right",
         trigger: "hover",
         container: "body"
     });
+}
+
+function showMainMenuTpl() {
+    //Imprimir menú
+    gestorMenu.setMenuDOM(".nav.nav-sidebar");
+    gestorMenu.setLoadingDOM(".loading");
+    gestorMenu.setPrintCallback(printFinished);
+    gestorMenu.print();
 }
 
 /****** Enveloped functions ******/
