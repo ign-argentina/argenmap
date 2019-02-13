@@ -127,9 +127,54 @@ class ImpresorCapasBaseHTML extends Impresor {
 Strategy for get layers info
 ******************************************/
 class LayersInfo {
+    
+    constructor() {
+        this.allowed_layers = null;
+        this.customized_layers = null;
+    }
+    
+    setAllowebLayers(allowed) {
+        this.allowed_layers = allowed;
+    }
+    
+    setCustomizedLayers(customized_layers) {
+        this.customized_layers = customized_layers;
+    }
+    
+    isAllowebLayer(layer_name) {
+        if (this.allowed_layers == null) {
+            return true;
+        }
+        
+        for (var i = 0; i < this.allowed_layers.length; i++) {
+            if (this.allowed_layers[i] == layer_name) return true;
+        }
+        return false;
+    }
+    
 	get(gestorMenu) {
 		return null;
 	}
+    
+    formatLayerTitle(layer_name, layer_title) {
+        if (this.customized_layers == null) {
+            return layer_title;
+        }
+        if (this.customized_layers[layer_name] && this.customized_layers[layer_name]["new_title"]) {
+            return this.customized_layers[layer_name]["new_title"];
+        }
+        return layer_title;
+    }
+    
+    formatLayerAbstract(layer_name, layer_abstract) {
+        if (this.customized_layers == null) {
+            return layer_abstract;
+        }
+        if (this.customized_layers[layer_name] && this.customized_layers[layer_name]["new_abstract"]) {
+            return this.customized_layers[layer_name]["new_abstract"];
+        }
+        return layer_abstract;
+    }
 }
 
 class LayersInfoWMS extends LayersInfo {
@@ -186,41 +231,49 @@ class LayersInfoWMS extends LayersInfo {
             // create an object with all layer info for each layer
             capas_info.each(function (index, b) {
                 var i = $(this);
+                
                 var iName = $('name', i).html();
-                var iTitle = $('title', i).html();
-                var iAbstract = $('abstract', i).html();
-                var keywordsHTMLList = $('keywordlist', i).find("keyword");
-                var keywords = [];
-                $.each( keywordsHTMLList, function( i, el ) {
-                    keywords.push(el.innerText);
-                });
-                var iBoundingBox = $('boundingbox', i);
-                var iSrs = null;
-                var iMaxY = null;
-                var iMinY = null;
-                var iMinX = null;
-                var iMaxX = null;
-                if (iBoundingBox.length > 0) {
-                    if (iBoundingBox[0].attributes.srs) {
-                        var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
-                    } else {
-                        var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
+                if (thisObj.isAllowebLayer(iName)) {
+                    
+                    var iTitle = $('title', i).html();
+                    iTitle = thisObj.formatLayerTitle(iName, iTitle);
+                    var iAbstract = $('abstract', i).html();
+                    iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
+                    var keywordsHTMLList = $('keywordlist', i).find("keyword");
+                    var keywords = [];
+                    $.each( keywordsHTMLList, function( i, el ) {
+                        keywords.push(el.innerText);
+                    });
+                    var iBoundingBox = $('boundingbox', i);
+                    var iSrs = null;
+                    var iMaxY = null;
+                    var iMinY = null;
+                    var iMinX = null;
+                    var iMaxX = null;
+                    if (iBoundingBox.length > 0) {
+                        if (iBoundingBox[0].attributes.srs) {
+                            var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
+                        } else {
+                            var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
+                        }
+                        var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
+                        var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
+                        var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
+                        var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
                     }
-                    var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
-                    var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
-                    var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
-                    var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
+                    
+                    if (thisObj.type == 'wmslayer_mapserver') {
+                        var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                    } else {
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                    }
+                    var item = new Item(capa.nombre, thisObj.section+index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
+                    item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
+                    item.setImpresor(impresorItem);
+                    items.push(item);
+                    
                 }
                 
-                if (thisObj.type == 'wmslayer_mapserver') {
-                    var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
-                } else {
-                    var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
-                }
-                var item = new Item(capa.nombre, thisObj.section+index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
-                item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
-                item.setImpresor(impresorItem);
-                items.push(item);
             });
         
             var groupAux;
