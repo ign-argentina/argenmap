@@ -572,7 +572,7 @@ function loadWmsTpl (objLayer) {
             }
             
             infoAux += '</ul>';
-            infoAux += '<img style="height:40px" src="http://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
+            //infoAux += '<img style="height:40px" src="http://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
             infoAux += '</div></div></div>';
             
             return infoAux;
