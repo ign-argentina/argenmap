@@ -153,6 +153,7 @@ class LayersInfo {
     }
     
 	get(gestorMenu) {
+        //You must redefine this method to get layers from other sources
 		return null;
 	}
     
@@ -193,13 +194,7 @@ class LayersInfoWMS extends LayersInfo {
     }
     
 	get(gestorMenu) {
-        
-        //Define GetCapabilities parser
-        if (this.type == 'wmslayer_mapserver') {
-            this._parseRequest();
-        } else {
-            this._parseRequest();
-        }
+       this._parseRequest();
 	}
     
     _parseRequest() {
@@ -220,7 +215,7 @@ class LayersInfoWMS extends LayersInfo {
             }
             var abstractHtml = $('#temp-menu').find("Abstract");
             var abstract = '';
-            if (keywordHtml.length > 0) {
+            if (abstractHtml.length > 0) {
                 abstract = abstractHtml[0].innerText; // reads wms 1st abstract
             }
             var capas_layer = $('layer', capability);
