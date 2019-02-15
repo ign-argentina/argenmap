@@ -565,7 +565,9 @@ function loadWmsTpl (objLayer) {
                     if (k != 'bbox') { //Do not show bbox property
                         infoAux += '<li>';
                         infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
-                        infoAux += ' ' + info.features[i].properties[k];
+                        if (info.features[i].properties[k] != null) {
+                            infoAux += ' ' + info.features[i].properties[k];
+                        }
                         infoAux += '<li>';
                     }
                 });
