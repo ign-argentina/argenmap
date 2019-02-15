@@ -527,7 +527,6 @@ function loadWmsTpl (objLayer) {
         infoAux = info.search("<ul>"); // search if info has a list
         if (infoAux > 0) { // check if info has any content, if so shows popup
             $(info).find('li').each(function( index ) {
-                //console.log( index + ": " + $( this ).text() );
                 var aux = $( this ).text().split(':');
                 info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
             });
@@ -549,7 +548,6 @@ function loadWmsTpl (objLayer) {
     //Parse FeatureInfo to display into popup (if info is application/json)
     function parseFeatureInfoJSON(info, idTxt, title) {
         info = JSON.parse(info);
-        console.log(info);
         if (info.features.length > 0) { // check if info has any content, if so shows popup
             
             var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
@@ -559,9 +557,7 @@ function loadWmsTpl (objLayer) {
             infoAux += '<ul>';
             
             for (i in info.features) {
-                //console.log(info.features[i].properties);
                 Object.keys(info.features[i].properties).forEach(function(k){
-                    //console.log(k + ' - ' + info.features[i].properties[k]);
                     if (k != 'bbox') { //Do not show bbox property
                         infoAux += '<li>';
                         infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
@@ -655,7 +651,6 @@ function loadMapaBaseBingTpl (bingKey, layer, attribution) {
 //Paginate FeatureInfo into popup
 function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
     var infoStr = infoArray.join('');
-    //console.log(infoStr);
     if (infoArray.length > 1) {
         for (var i = 0; i < infoArray.length; i++) {
             if (i == actualPage) {
