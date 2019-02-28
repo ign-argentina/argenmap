@@ -143,6 +143,8 @@ L.SimpleGraticule = L.LayerGroup.extend({
 	},
 	
 	degToDms: function (deg) {
+       var multiplier = (deg < 0)?-1:1;
+       deg = Math.abs(deg);
 	   var vecAux = new Array();
 	   var d = Math.floor (deg);
 	   var minfloat = (deg-d)*60;
@@ -160,7 +162,7 @@ L.SimpleGraticule = L.LayerGroup.extend({
 		 m=0;
 	   }
 	   
-	   vecAux[0] = d + "°";
+	   vecAux[0] = (d * multiplier) + "°";
 	   vecAux[1] = m + "'";
 	   if (m < 10) {
 		vecAux[1] = "0" + m + "'";
@@ -169,6 +171,7 @@ L.SimpleGraticule = L.LayerGroup.extend({
 	   if (s < 10) {
 		vecAux[2] = "0" + s + "'";
 	   }
+
 	   return vecAux.join('');
 	},
 
