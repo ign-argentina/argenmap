@@ -1,7 +1,14 @@
 # argenmap
 Visualizador de mapas. Consulta uno o varios Geoserver y genera un menú con todas las capas publicadas para consumirlas en un visualizador Leaflet.js
 
-# Instalacíon
+# Requisitos
+El visualizador se debe instalar en un directorio accesible por un servidor web
+
+Los datos deben estar consultar desde uno o mas Geoserver y debe tener habilitado el encabezado http Access-Control-Allow-Origin (ya sea para todos los dominios o para el dominio donde se publica el visualizador)
+
+```De ser imposible la habilitación del encabezado Access-Control-Allow-Origin se puede instalar el visualizador en el directorio www de Geoserver```
+
+# Instalación
 Clonar el repositorio, o descargarlo en formato ZIP y descomprimirlo
 
 Ejecutar el script de setup
