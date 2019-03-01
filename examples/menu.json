@@ -1,0 +1,55 @@
+{
+    "items": [
+        {
+            "type": "basemap",
+			"peso": 1,
+			"nombre": "Mapas base",
+			"short_abstract": "",
+            "class": "",
+            "seccion": "mapasbase",
+            "capas": [
+                {
+                    "titulo": "Imágenes satelitales Here",
+                    "nombre": "here_imagery",
+                    "servicio": "tms",
+					"version": "1.0.0",
+                    "attribution": "Imágenes satelitales © here",
+                    "host": "https://2.aerial.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=XiMlA4JwMurUFFYUWYe3&app_code=oTsmqovbl2YudG3E0UlxDA",
+					"legendImg": "img/here.png"
+                },
+				{
+                    "titulo": "Imágenes satelitales Bing",
+                    "nombre": "bing_imagery",
+                    "servicio": "bing",
+					"version": "1.0.0",
+                    "attribution": "Imágenes satelitales © Bing",
+                    "key": "AuhiCJHlGzhg93IqUH_oCpl_-ZUrIE6SPftlyGYUvr9Amx5nzA-WqGcPquyFZl4L",
+					"legendImg": "img/bing.png"
+                }
+            ]
+        },
+		{
+            "type": "wmslayer",
+			"peso": 70,
+			"nombre": "Industria y servicios",
+			"short_abstract": "Industrias, producción agropecuaria, minería, energía, comunicaciones, etc.",
+            "class": "",
+            "seccion": "industria-servicios",
+			"servicio": "wms",
+			"version": "1.3.0",
+			"host": "https://wms.ign.gob.ar/geoserver/industria-servicios"
+        },
+		{
+            "type": "wmslayer",
+			"peso": 120,
+			"nombre": "Modelos digitales de elevaciones",
+			"short_abstract": "Modelos digitales de elevaciones",
+            "class": "",
+            "seccion": "mde",
+			"servicio": "wms",
+			"version": "1.3.0",
+			"host": "https://wms.ign.gob.ar/geoserver/modelos-digitales-elevaciones"
+        }
+    ],
+    "template": "argenmap-leaflet-idera-tpl"
+}

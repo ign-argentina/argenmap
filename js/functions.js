@@ -1,3 +1,6 @@
+// -- Plugins Control
+var plugins = new Array("loadGeojson", "loadWms");
+
 function deg_to_dms (deg) {
    var d = Math.floor (deg);
    var minfloat = (deg-d)*60;
@@ -26,6 +29,40 @@ function deg_to_dms (deg) {
 
 function showImageOnError(image) {
 	image.onerror = "";
-    image.src = "img/noimage.gif";
+    image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
     return true;
+}
+
+
+/****** Enveloped functions ******/
+function loadGeojson (url, layer) {
+    if (typeof loadGeojsonTpl === 'function') {
+        return loadGeojsonTpl(wmsUrl, layer);
+    } else {
+        console.warn("Function loadGeojsonTpl() do not exists. Please, define it.");
+    }
+}
+
+function loadWms (wmsUrl, layer) {
+    if (typeof loadWmsTpl === 'function') {
+        return loadWmsTpl(wmsUrl, layer);
+    } else {
+        console.warn("Function loadWmsTpl() do not exists. Please, define it.");
+    }
+}
+
+function loadMapaBase (tmsUrl, layer, attribution) {
+    if (typeof loadMapaBaseTpl === 'function') {
+        return loadMapaBaseTpl(tmsUrl, layer, attribution);
+    } else {
+        console.warn("Function loadMapaBaseTpl() do not exists. Please, define it.");
+    }
+}
+
+function loadMapaBaseBing (bingKey, layer, attribution) {
+    if (typeof loadMapaBaseBingTpl === 'function') {
+        return loadMapaBaseBingTpl(bingKey, layer, attribution);
+    } else {
+        console.warn("Function loadMapaBaseBingTpl() do not exists. Please, define it.");
+    }
 }

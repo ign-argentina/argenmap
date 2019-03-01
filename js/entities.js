@@ -43,11 +43,13 @@ class ImpresorItemHTML extends Impresor {
 		
 		var childId = itemComposite.getId();
 		
+        var legendImg = (itemComposite.getLegendImg() == null)? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        
 		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
 					"<div class='capa-title'>" +
 						"<a nombre=" + itemComposite.nombre + " href='#'>" +
 							"<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" + 
-							"<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>" +
+							 legendImg +
 						"</a>" +						
 					"</div>" +
 				"</li>";
@@ -93,12 +95,117 @@ class ImpresorCapasBaseHTML extends Impresor {
 	imprimir(itemComposite) {
 		
 		var listaId = itemComposite.getId();
+		// Only one basemap-selector
+		if($( ".basemap-selector a[data-toggle='collapse']" ).length == 0) {
+			return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
+				'<div class="collapse pull-right" id="collapseBaseMapLayers">' +
+					'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
+				'</div>';
+		}
 		
-		return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-			'<div class="collapse pull-right" id="collapseBaseMapLayers">' +
-				'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-			'</div>';
-		
+	}
+}
+
+/******************************************
+Strategy for get layers info
+******************************************/
+class LayersInfo {
+	get(gestorMenu) {
+		return null;
+	}
+}
+
+class LayersInfoWMS extends LayersInfo {
+    
+    constructor(host, service, version, section, weight, name, short_abstract, loadWms) {
+        super();
+        this.host = host;
+        this.service = service;
+        this.version = version;
+        this.section = section;
+        this.weight = weight;
+        this.name = name;
+        this.short_abstract = short_abstract;
+        this.loadWms = loadWms;
+    }
+    
+	get(gestorMenu) {
+        const impresorGroup = new ImpresorGrupoHTML();
+        const impresorItem = new ImpresorItemHTML();
+        
+        var thisObj = this;
+        
+        if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
+        // Load geoserver Capabilities, if success Create menu and append to DOM
+        $('#temp-menu').load(thisObj.host + '/ows?service=' + thisObj.service + '&version=' + thisObj.version + '&request=GetCapabilities', function () {
+            var capability = $('#temp-menu').find("capability");
+            var keywordHtml = $('#temp-menu').find("Keyword");
+            var abstractHtml = $('#temp-menu').find("Abstract");
+            var keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+            var abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+            var capas_layer = $('layer', capability);
+            var capas_info = $('layer', capas_layer);
+        
+            var items = new Array();
+        
+            // create an object with all layer info for each layer
+            capas_info.each(function (index, b) {
+                var i = $(this);
+                var iName = $('name', i).html();
+                var iTitle = $('title', i).html();
+                var iBoundingBox = $('boundingbox', i);
+                var iAbstract = $('abstract', i).html();
+                var keywordsHTMLList = $('keywordlist', i).find("keyword");
+                var keywords = [];
+                $.each( keywordsHTMLList, function( i, el ) {
+                    keywords.push(el.innerText);
+                });
+                if (iBoundingBox[0].attributes.srs) {
+                    var iSrs = iBoundingBox[0].attributes.srs;
+                } else {
+                    var iSrs = iBoundingBox[0].attributes.crs;
+                }
+                var iMaxY = iBoundingBox[0].attributes.maxy;
+                var iMinY = iBoundingBox[0].attributes.miny;
+                var iMinX = iBoundingBox[0].attributes.minx;
+                var iMaxX = iBoundingBox[0].attributes.maxx;
+                    
+                var capa = new Capa(iName, iTitle, iSrs.nodeValue, thisObj.host, thisObj.service, thisObj.version, iMinX.nodeValue, iMaxX.nodeValue, iMinY.nodeValue, iMaxY.nodeValue);
+                var item = new Item(capa.nombre, thisObj.section+index, keywords, iAbstract, capa.titulo, capa);
+                item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
+                item.setImpresor(impresorItem);
+                items.push(item);
+            });
+        
+            var groupAux;
+            try {
+                var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract, thisObj.loadWms);
+                groupAux.setImpresor(impresorGroup);
+                groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+                for (var i = 0; i < items.length; i++) {
+                    groupAux.setItem(items[i]);
+                }
+            }
+            catch (err) {
+                    if (err.name == "ReferenceError") {
+                        var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract, null);
+                        groupAux.setImpresor(impresorGroup);
+                        groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+                        for (var i = 0; i < items.length; i++) {
+                        groupAux.setItem(items[i]);
+                    }
+                }
+            }
+            
+            gestorMenu.add(groupAux);
+            
+            gestorMenu.addLayerInfoCounter();
+            if (gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
+                gestorMenu._print();
+            }
+            
+            return;
+        });
 	}
 }
 
@@ -129,6 +236,14 @@ class ItemComposite {
 			}
 		}
 	}
+    
+	setPalabrasClave(palabrasClave) {
+		this.palabrasClave = palabrasClave
+	}
+
+	setDescripcion(descripcion) {
+		this.descripcion = descripcion
+	}
 
 	setImpresor(impresor) {
 		this.impresor = impresor
@@ -147,8 +262,12 @@ class ItemComposite {
 	}
 	
 	getObjDom() {
-		return this.objDOM;
+		return $(this.objDOM);
 	}
+    
+    isBaseLayer() {
+        return false;
+    }
 }
 
 class ItemGroup extends ItemComposite {
@@ -159,7 +278,7 @@ class ItemGroup extends ItemComposite {
 		this.itemsComposite = {};
 		this.callback = callback;
 	}
-	
+    
 	setItem(itemComposite) {
 		this.itemsComposite[itemComposite.seccion] = itemComposite;
 	}
@@ -225,6 +344,11 @@ class ItemGroup extends ItemComposite {
 }
 
 class ItemGroupBaseMap extends ItemGroup {
+    
+    isBaseLayer() {
+        return true;
+    }
+    
 	hideAllLayersExceptOne(item) {
 		for (var key in this.itemsComposite) {
 			if (this.itemsComposite[key].getVisible() == true && item !== this.itemsComposite[key]) {
@@ -240,7 +364,8 @@ class Item extends ItemComposite {
 		this.titulo = titulo;
 		this.capa = capa;
 		this.visible = false;
-		this.legendImg = "img/legends/" + this.titulo.replace(':', '').replace('/', '') + ".svg";
+		//this.legendImg = "templates/" + template + "/img/legends/" + this.titulo.replace(':', '').replace('/', '') + ".svg";
+        this.legendImg = null;
 	}
 	
 	getId() {
@@ -248,8 +373,16 @@ class Item extends ItemComposite {
 		return childId;
 	}
 	
+	getSVGFilenameForLegendImg() {
+		return this.titulo.replace(':', '').replace('/', '') + ".svg";
+	}
+    
 	getVisible() {
 		return this.visible;
+	}
+    
+    setLegendImgPreformatted(dir) {
+		this.legendImg = dir + this.getSVGFilenameForLegendImg();
 	}
 	
 	setLegendImg(img) {
@@ -280,24 +413,184 @@ class Item extends ItemComposite {
 }
 
 /******************************************
+Clase plugin
+******************************************/
+class Plugin {
+	constructor(name, url, callback) {
+		this.name = name;
+		this.url = url;
+		this.status = 'loading';
+		this.callback = callback;
+	}
+
+	getStatus(){
+		return this.status;
+	}
+
+	setStatus(status){
+		switch (status){
+			case "loading":
+				this.status = status;
+				break;
+			case "ready":
+				this.status = status;
+				break;
+			case "fail":
+				this.status = status;
+				break;
+			case "visible":
+				this.status = status;
+				break;
+			default:
+				return false;
+		}
+	}
+	triggerLoad(){
+		$("body").trigger("pluginLoad", { pluginName: this.name });
+	}
+}
+
+/******************************************
 Gestor de menu
 ******************************************/
 class GestorMenu {
 	constructor() {
 		this.items = {};
+		this.plugins = {};
+		this.pluginsCount = 0;
+		this.pluginsLoading = 0;
+        this.menuDOM = '';
+        this.loadingDOM = '';
+		this.layersInfo = new Array();
+        this.legendImgPath = '';
+        this.itemsGroupDOM = '';
+        
+        this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
+        this._getLayersInfoCounter = 0;
 	}
+    
+    setMenuDOM(menuDOM) {
+        this.menuDOM = menuDOM;
+    }
+    
+    getMenuDOM() {
+        return $(this.menuDOM);
+    }
+    
+    setLoadingDOM(loadingDOM) {
+        this.loadingDOM = loadingDOM;
+    }
+    
+    getLoadingDOM() {
+        return $(this.loadingDOM);
+    }
+    
+    setLegendImgPath(legendImgPath) {
+        this.legendImgPath = legendImgPath;
+    }
+    
+    getLegendImgPath() {
+        return this.legendImgPath;
+    }
+    
+    setItemsGroupDOM(itemsGroupDOM) {
+        this.itemsGroupDOM = itemsGroupDOM;
+    }
+    
+    getItemsGroupDOM() {
+        return this.itemsGroupDOM;
+    }
+    
+    addLayerInfoCounter() {
+        this._getLayersInfoCounter++;
+    }
+    
+    finishLayerInfo() {
+        return (this._getLayersInfoCounter == this.layersInfo.length);
+    }
+    
+    addLayersInfo(layersInfo) {
+        this.layersInfo.push(layersInfo);
+    }
 	
 	add(itemGroup) {
 		var itemAux;
-		if (!this.items[itemGroup.seccion]) {
+		if (!this.items[itemGroup.seccion] || itemGroup.isBaseLayer()) { //itemGroup.isBaseLayer() avoid to repeat base layer into selector
 			itemAux = itemGroup;
+            this._existsIndexes[itemGroup.seccion] = 0;
 		} else {
 			itemAux = this.items[itemGroup.seccion];
+            this._existsIndexes[itemGroup.seccion] = Object.keys(itemAux.itemsComposite).length + 1; //Si ya existe el itemGroup pero se agregan datos de otras fuentes, esto evita que se repitan los ID
 		}
 		for (var key in itemGroup.itemsComposite) {
+            if (this._existsIndexes[itemGroup.seccion] > 0) { //Para modificar item.seccion para no duplicar el contenido
+                itemGroup.itemsComposite[key].seccion += this._existsIndexes[itemGroup.seccion];
+            }
 			itemAux.setItem(itemGroup.itemsComposite[key]);
 		}
 		this.items[itemGroup.seccion] = itemAux;
+	}
+		
+	addPlugin(pluginName, url, callback) {
+		var pluginAux;
+		if (!this.pluginExists(pluginName)) {
+			if(typeof callback === 'function'){
+			// Create plugin with callback if need to
+				pluginAux = new Plugin(pluginName, url, callback);
+				this.plugins[pluginAux.name] = pluginAux;
+				this.pluginsCount ++;
+				this.pluginsLoading ++;
+				$.getScript(url, function( data, textStatus, jqxhr ) {
+					if(textStatus == "success") {
+						pluginAux.setStatus("ready");
+						gestorMenu.pluginsLoading --;
+						pluginAux.triggerLoad();
+						pluginAux.callback();
+					}
+				}).fail(function( jqxhr, settings, exception ) {
+					pluginAux.setStatus("fail");
+					console.log("Error: " + jqxhr.status);
+					gestorMenu.pluginsCount --;
+					gestorMenu.pluginsLoading --;
+				});
+			}
+			else {
+			// Create a plugin with no callback
+				pluginAux = new Plugin(pluginName, url, null);
+				this.plugins[pluginAux.name] = pluginAux;
+				this.pluginsCount ++;
+				this.pluginsLoading ++;
+				$.getScript(url, function( data, textStatus, jqxhr ) {
+					if(textStatus == "success") {
+						pluginAux.setStatus("ready");
+						gestorMenu.pluginsLoading --;
+						pluginAux.triggerLoad();
+					}
+				}).fail(function( jqxhr, settings, exception ) {
+					pluginAux.setStatus("fail");
+					console.log("Error: " + jqxhr.status);
+					gestorMenu.pluginsCount --;
+					gestorMenu.pluginsLoading --;
+				});
+			}
+		} else {
+			return false;
+		}
+	}	
+
+	deletePlugin(pluginName) {
+		if (this.pluginExists(pluginName)) {
+			delete this.plugins[pluginName];
+			return true;
+		} else { return false; }
+	}	
+
+	pluginExists(pluginName) {
+		if (this.plugins[pluginName]) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	ordenaPorPeso(a, b){
@@ -305,10 +598,20 @@ class GestorMenu {
 		var bName = b.peso; 
 		return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
 	}
+    
+    executeLayersInfo() {
+        for (var key in this.layersInfo) {
+            this.layersInfo[key].get(this);
+        }
+    }
 	
-	imprimir(objDOMMenu) {
+    print() {
+        this.executeLayersInfo();
+    }
+    
+	_print() {
 		
-		objDOMMenu.html("");
+		this.getMenuDOM().html("");
 		
 		var itemsAux = new Array();
 		for (var key in this.items) {
@@ -321,11 +624,14 @@ class GestorMenu {
 			var itemComposite = itemsAux[key];
 			
 			if ($('#' + itemComposite.seccion).length != 0) {
-				eliminarSubItem(itemComposite.seccion);
+				//eliminarSubItem(itemComposite.seccion);
+                itemComposite.getObjDom().html('');
 			}
 			itemComposite.getObjDom().append(itemComposite.imprimir());
 			
 		}
+        
+        this.getLoadingDOM().hide();
 		
 	}
 	

@@ -8,8 +8,7 @@
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description" content="">
   <meta name="author" content="">
-  <link rel="shortcut icon" href="http://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />
-  <title>IGN - Argenmap</title>
+   <title>IGN - Argenmap</title>
   <!-- Bootstrap core CSS -->
   <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -38,97 +37,21 @@
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
 
-  <!-- Librerias del mapa -->
-  <link rel='stylesheet' href='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.css' />
-  <script src='https://npmcdn.com/leaflet@1.0.0-rc.2/dist/leaflet.js'></script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js'></script>
-  <script src='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js'></script>
-  <link rel='stylesheet' href='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css' />
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
-    crossorigin="anonymous">
-
-  <!-- Awesome Markers -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js"></script>
-  
-  <!-- Leaflet Zoomhome plugin -->
-  <link rel="stylesheet" href="js/leaflet-zoomhome/dist/leaflet.zoomhome.css"/>
-  <script src="js/leaflet-zoomhome/dist/leaflet.zoomhome.min.js"></script>
-  
-  <!-- Leaflet Zoomhome plugin -->
-  <script src="js/leaflet-bing-layer-gh-pages/leaflet-bing-layer.js"></script>
-  
-  <!-- Leaflet Minimap plugin -->
-  <link rel="stylesheet" href="js/leaflet-minimap/Control.MiniMap.css">
-  <script src="js/leaflet-minimap/Control.MiniMap.js"></script>
-
-  <!-- Leaflet Locate plugin -->
-  <link rel="stylesheet" href="js/leaflet-locate/L.Control.Locate.css">
-  <script src="js/leaflet-locate/L.Control.Locate.min.js"></script>
-
-  <!-- Leaflet Mouse Position plugin -->
-  <link rel="stylesheet" href="js/leaflet-mouseposition/src/L.Control.MousePosition.css">
-  <script src="js/leaflet-mouseposition/src/L.Control.MousePosition.js"></script>
-
-  <!-- Leaflet Measure plugin -->
-  <link rel="stylesheet" href="js/leaflet-measure/leadflet-measure.css">
-  <script src="js/leaflet-measure/leaflet-measure.js"></script>
-  
-  <!-- Leaflet EasyPrint plugin -->
-  <script src="js/leaflet-easyPrint/bundle.js"></script>
-  
-  <!-- Leaflet Control.FullScreen plugin -->
-  <link rel="stylesheet" href="js/leaflet-fullscreen/Control.FullScreen.css" />
-  <script src="js/leaflet-fullscreen/Control.FullScreen.js"></script>
-
-  <!-- Leaflet BetterWMS -->
-  <script src="js/leaflet-wms/leaflet.wms.js"></script>
-
-  <!-- Leaflet Draw -->
-  <script src="js/leaflet-draw/src/Leaflet.draw.js"></script>
-  <script src="js/leaflet-draw/src/Leaflet.Draw.Event.js"></script>
-  <link rel="stylesheet" href="js/leaflet-draw/src/leaflet.draw.css"/>
-  <script src="js/leaflet-draw/src/Toolbar.js"></script>
-  <script src="js/leaflet-draw/src/Tooltip.js"></script>
-  <script src="js/leaflet-draw/src/ext/GeometryUtil.js"></script>
-  <script src="js/leaflet-draw/src/ext/LatLngUtil.js"></script>
-  <script src="js/leaflet-draw/src/ext/LineUtil.Intersect.js"></script>
-  <script src="js/leaflet-draw/src/ext/Polygon.Intersect.js"></script>
-  <script src="js/leaflet-draw/src/ext/Polyline.Intersect.js"></script>
-  <script src="js/leaflet-draw/src/ext/TouchEvents.js"></script>
-  <script src="js/leaflet-draw/src/draw/DrawToolbar.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.Feature.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.SimpleShape.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.Polyline.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.Marker.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.Circle.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.CircleMarker.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.Polygon.js"></script>
-  <script src="js/leaflet-draw/src/draw/handler/Draw.Rectangle.js"></script>
-  <script src="js/leaflet-draw/src/edit/EditToolbar.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/EditToolbar.Edit.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/EditToolbar.Delete.js"></script>
-  <script src="js/leaflet-draw/src/Control.Draw.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/Edit.Poly.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/Edit.SimpleShape.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/Edit.Rectangle.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/Edit.Marker.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/Edit.CircleMarker.js"></script>
-  <script src="js/leaflet-draw/src/edit/handler/Edit.Circle.js"></script>
-  
-  <!-- Leaflet SimpleGraticule -->
-  <link rel="stylesheet" href="js/leaflet-simplegraticule/L.SimpleGraticule.css"/>
-  <script src="js/leaflet-simplegraticule/L.SimpleGraticule.js"></script>
-  
-  <script type="text/javascript" src="./js/functions.js"></script>
-  <script type="text/javascript" src="./js/entities.js"></script>
-
+  <!-- Argenmap basic libraries  -->
+  <script src="./js/entities.js"></script>
+  <script src='./js/functions.js'></script>
+  <script src="./js/main.js"></script>
+  <script>
+    /*
+    $.getScript("./js/entities.js");
+    $.getScript('./js/functions.js', function(){
+      $.getScript("./js/main.js"); // main.js must run after all functions are available
+    });
+    */
+  </script>
   <!-- Main Styles -->
   <link rel="stylesheet" href="css/main.css">
   <link href="css/dashboard.css" rel="stylesheet">
-  
 </head>
 
 <body>
@@ -144,16 +67,16 @@
         </button>
         <a class="navbar-brand navbar-right">
           <span class="xxsmall-hide">
-            <a href="http://www.ign.gob.ar/" target="_blank">
-			  <img src="img/logo.png" alt="Logo IGN" title="Instituto Geográfico Nacional">
+            <a id="top-left-logo-link" href="#" target="_blank">
+			  <img id="top-left-logo" src="img/noimage.gif" alt="" title="">
 			</a>
           </span>
         </a>
       </div>
       <div id="navbar" class="navbar-collapse collapse"></div>
       <span class="xxsmall-hide">
-        <a href="https://www.argentina.gob.ar/defensa" target="_blank">
-          <img src="img/logoMinDef.png" alt="Logo Ministerio de Defensa" title="Ministerio de Defensa" style="top:11px;position:absolute;right:10px;width:144px;float:right">
+        <a id="top-right-logo-link" href="#" target="_blank">
+          <img id="top-right-logo" src="img/noimage.gif" alt="" title="" style="top:11px;position:absolute;right:10px;width:144px;float:right">
         </a>
       </span>
     </div>
@@ -169,7 +92,6 @@
     </div>
   </div>
   <div id="basemap-selector"></div>
+  <div id="template"></div>
 </body>
-<script type="text/javascript" src="./js/mapa.js"></script>
-<script type="text/javascript" src="./js/main.js"></script>
 </html>
