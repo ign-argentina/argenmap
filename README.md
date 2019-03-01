@@ -15,4 +15,7 @@ En Windows:
 
 Editar el archivo js/menu.json agregando o quitando la dirección donde consultar los capabilities de cada servidor Geoserver a visualizar.
 
+En la primer sección del archivo menu.json se agregan todas capabase que se quiera
 
+En la segunda sección se agregan todas las capas de datos
+![imagen explicativa del archivo menu.json](doc/img/menu-json-detalle.png)
