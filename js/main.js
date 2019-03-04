@@ -16,10 +16,14 @@ $.getJSON("./js/menu.json", function (data) {
   $.each(data, function (key, val) {
 	//data.items.forEach(imprimirItem, data.items);
     for (var key in data.items) {
-    
+      
+      if (data.items[key].tab == undefined) {
+          data.items[key].tab = "";
+      }
+      
       if (data.items[key].type == "basemap") { //If layers is basemap
     
-          groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
+          groupAux = new ItemGroupBaseMap(data.items[key].tab, data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
           groupAux.setImpresor(impresorBaseMap);
           //groupAux.setObjDom($("#basemap-selector"));
           groupAux.setObjDom(".basemap-selector");
@@ -36,7 +40,7 @@ $.getJSON("./js/menu.json", function (data) {
         
           getGeoserverCounter++;
           var itemData = data.items[key];
-          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, data.items[key].feature_info_format, data.items[key].type);
+          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, itemData.tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, data.items[key].feature_info_format, data.items[key].type);
           if (itemData.allowed_layers) {
               wmsLayerInfo.setAllowebLayers(itemData.allowed_layers);
           }

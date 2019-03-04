@@ -1,5 +1,7 @@
 'use strict';
 
+const EmptyTab = 'main-menu-tab-'; 
+
 /******************************************
 Class Capa
 ******************************************/
@@ -180,11 +182,12 @@ class LayersInfo {
 
 class LayersInfoWMS extends LayersInfo {
     
-    constructor(host, service, version, section, weight, name, short_abstract, feature_info_format, type) {
+    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type) {
         super();
         this.host = host;
         this.service = service;
         this.version = version;
+        this.tab = tab;
         this.section = section;
         this.weight = weight;
         this.name = name;
@@ -273,7 +276,7 @@ class LayersInfoWMS extends LayersInfo {
         
             var groupAux;
             try {
-                var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
+                var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
                 groupAux.setImpresor(impresorGroup);
                 groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
                 for (var i = 0; i < items.length; i++) {
@@ -282,7 +285,7 @@ class LayersInfoWMS extends LayersInfo {
             }
             catch (err) {
                     if (err.name == "ReferenceError") {
-                        var groupAux = new ItemGroup(thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
+                        var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
                         groupAux.setImpresor(impresorGroup);
                         groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
                         for (var i = 0; i < items.length; i++) {
@@ -386,11 +389,12 @@ class ItemComposite {
 }
 
 class ItemGroup extends ItemComposite {
-	constructor(nombre, seccion, peso, palabrasClave, descripcion, shortDesc) {
+	constructor(tab, nombre, seccion, peso, palabrasClave, descripcion, shortDesc) {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.shortDesc = shortDesc;
 		this.peso = peso;
 		this.itemsComposite = {};
+		this.tab = tab;
 	}
     
 	setItem(itemComposite) {
@@ -400,6 +404,10 @@ class ItemGroup extends ItemComposite {
 	getId() {
 		return "lista-" + this.seccion;
 	}
+    
+    getTab() {
+        return EmptyTab + this.tab;
+    }
 	
 	ordenaItems(a, b) {
 		var aOrden1 = a.peso;
@@ -589,6 +597,7 @@ class GestorMenu {
         
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
+        this._tabs = new Array();        
 	}
     
     setMenuDOM(menuDOM) {
@@ -638,6 +647,10 @@ class GestorMenu {
     addLayersInfo(layersInfo) {
         this.layersInfo.push(layersInfo);
     }
+    
+    addTab(tab) {
+        if (tab != EmptyTab && this._tabs.includes(tab) === false) this._tabs.push(tab);
+    }
 	
 	add(itemGroup) {
 		var itemAux;
@@ -655,6 +668,7 @@ class GestorMenu {
 			itemAux.setItem(itemGroup.itemsComposite[key]);
 		}
 		this.items[itemGroup.seccion] = itemAux;
+        this.addTab(itemAux.getTab());
 	}
 		
 	addPlugin(pluginName, url, callback) {
@@ -730,32 +744,103 @@ class GestorMenu {
             this.layersInfo[key].get(this);
         }
     }
+    
+    _countTabs() {
+        return this._tabs.length;
+    }
+    
+    _hasMoreTabsThanOne() {
+        return (this._countTabs() > 1);
+    }
+    
+    _formatTabName(tab) {
+        return (tab.replace(EmptyTab, ''));
+    }
 	
     print() {
         this.executeLayersInfo();
     }
     
-	_print() {
-		
-		this.getMenuDOM().html("");
+    _printWithTabs() {
+        
+        var aSections = {};
+        
+        var sClassAux = 'active';
+        for (var ii=0; ii<this._tabs.length; ii++) {
+            aSections[this._tabs[ii]] = [];
+            aSections[this._tabs[ii]].push("<div role='tabpanel' class='tab-pane " + sClassAux + "' id='" + this._tabs[ii] + "'>");
+            sClassAux = '';
+        }
+        
+        //this.getMenuDOM().html("");
+        this.getMenuDOM().html(sInitialHTML);
 		
 		var itemsAux = new Array();
 		for (var key in this.items) {
 			itemsAux.push(this.items[key]);
 		}
 		itemsAux.sort(this.ordenaPorPeso);
-		
+
 		for (var key in itemsAux) {
-			
 			var itemComposite = itemsAux[key];
-			
-			if ($('#' + itemComposite.seccion).length != 0) {
-				//eliminarSubItem(itemComposite.seccion);
-                itemComposite.getObjDom().html('');
-			}
-			itemComposite.getObjDom().append(itemComposite.imprimir());
-			
+            if (itemComposite.getTab() != EmptyTab) {
+                aSections[itemComposite.getTab()].push(itemComposite.imprimir());
+            } else {
+                if ($('#' + itemComposite.seccion).length != 0) {
+                    itemComposite.getObjDom().html('');
+                }
+                itemComposite.getObjDom().append(itemComposite.imprimir());
+            }
 		}
+
+        var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
+        var sClassAux = 'active';
+        for (var ii=0; ii<this._tabs.length; ii++) {
+            sInitialHTML += "<li role='presentation' class='" + sClassAux + "'><a href='#" + this._tabs[ii] + "' aria-controls='" + this._tabs[ii] + "' role='tab' data-toggle='tab'>" + this._formatTabName(this._tabs[ii]) + "</a></li>";
+            sClassAux = '';
+        }
+        sInitialHTML += "</ul>";
+        
+        sInitialHTML += "<div class='tab-content'>";
+
+        for (var key in aSections) {
+            sInitialHTML += aSections[key].join('') + "</div>";
+        }
+        
+        sInitialHTML += "</div>";
+        
+        this.getMenuDOM().html(sInitialHTML);
+        
+    }
+    
+	_print() {
+		
+        if (this._hasMoreTabsThanOne()) {
+            
+            this._printWithTabs();
+            
+        } else {
+            
+            this.getMenuDOM().html("");
+		
+            var itemsAux = new Array();
+            for (var key in this.items) {
+                itemsAux.push(this.items[key]);
+            }
+            itemsAux.sort(this.ordenaPorPeso);
+            
+            for (var key in itemsAux) {
+                
+                var itemComposite = itemsAux[key];
+                
+                if ($('#' + itemComposite.seccion).length != 0) {
+                    itemComposite.getObjDom().html('');
+                }
+                itemComposite.getObjDom().append(itemComposite.imprimir());
+                
+            }
+            
+        }
         
         this.getLoadingDOM().hide();
 		
