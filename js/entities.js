@@ -154,7 +154,7 @@ class LayersInfo {
         return false;
     }
     
-	get(gestorMenu) {
+	get(_gestorMenu) {
         //You must redefine this method to get layers from other sources
 		return null;
 	}
@@ -194,13 +194,31 @@ class LayersInfoWMS extends LayersInfo {
         this.short_abstract = short_abstract;
         this.feature_info_format = feature_info_format;
         this.type = type;
+        
+        this._executed = false;
     }
     
-	get(gestorMenu) {
-       this._parseRequest();
+	get(_gestorMenu) {
+        if (this._executed == false) {
+           this._executed = true;
+           this._parseRequest(_gestorMenu);
+        }
 	}
     
-    _parseRequest() {
+    generateGroups(_gestorMenu) {
+        const impresorGroup = new ImpresorGrupoHTML();
+        const impresorItem = new ImpresorItemHTML();
+        
+        var thisObj = this;
+        
+        //Instance an empty ItemGroup (without items)
+        var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
+        groupAux.setImpresor(impresorGroup);
+        groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+        _gestorMenu.addItemGroup(groupAux);
+    }
+    
+    _parseRequest(_gestorMenu) {
         const impresorGroup = new ImpresorGrupoHTML();
         const impresorItem = new ImpresorItemHTML();
         
@@ -266,7 +284,7 @@ class LayersInfoWMS extends LayersInfo {
                         var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
                     }
                     var item = new Item(capa.nombre, thisObj.section+index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
-                    item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
+                    item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
                     item.setImpresor(impresorItem);
                     items.push(item);
                     
@@ -278,7 +296,7 @@ class LayersInfoWMS extends LayersInfo {
             try {
                 var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
                 groupAux.setImpresor(impresorGroup);
-                groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+                groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
                 for (var i = 0; i < items.length; i++) {
                     groupAux.setItem(items[i]);
                 }
@@ -287,18 +305,25 @@ class LayersInfoWMS extends LayersInfo {
                     if (err.name == "ReferenceError") {
                         var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
                         groupAux.setImpresor(impresorGroup);
-                        groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+                        groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
                         for (var i = 0; i < items.length; i++) {
                         groupAux.setItem(items[i]);
                     }
                 }
             }
             
-            gestorMenu.add(groupAux);
+            _gestorMenu.addItemGroup(groupAux);
             
-            gestorMenu.addLayerInfoCounter();
-            if (gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
-                gestorMenu._print();
+            if (_gestorMenu.getLazyInitialization() == true) {
+                _gestorMenu.removeLazyInitLayerInfoCounter(thisObj.section);
+                if (_gestorMenu.finishLazyInitLayerInfo(thisObj.section)) { //Si ya cargó todas las capas solicitadas
+                    _gestorMenu.printOnlySection(thisObj.section);
+                }
+            } else {
+                _gestorMenu.addLayerInfoCounter();
+                if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
+                    _gestorMenu._print();
+                }
             }
             
             return;
@@ -597,7 +622,9 @@ class GestorMenu {
         
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
-        this._tabs = new Array();        
+        this._getLazyInitLayersInfoCounter = {};
+        this._tabs = new Array();
+        this._lazyInitialization = false;
 	}
     
     setMenuDOM(menuDOM) {
@@ -639,12 +666,36 @@ class GestorMenu {
         this.printCallback = printCallback;
     }
     
+    getLazyInitialization() {
+        return this._lazyInitialization;
+    }
+    
+    setLazyInitialization(lazyInit) {
+        this._lazyInitialization = lazyInit;
+    }
+    
     addLayerInfoCounter() {
         this._getLayersInfoCounter++;
     }
     
+    addLazyInitLayerInfoCounter(sectionId) {
+        if (this._getLazyInitLayersInfoCounter[sectionId] == undefined) {
+            this._getLazyInitLayersInfoCounter[sectionId] = 1;
+        } else {
+            this._getLazyInitLayersInfoCounter[sectionId]++;
+        }
+    }
+    
+    removeLazyInitLayerInfoCounter(sectionId) {
+        this._getLazyInitLayersInfoCounter[sectionId]--;
+    }
+    
     finishLayerInfo() {
         return (this._getLayersInfoCounter == this.layersInfo.length);
+    }
+    
+    finishLazyInitLayerInfo(sectionId) {
+        return (this._getLazyInitLayersInfoCounter[sectionId] == 0);
     }
     
     addLayersInfo(layersInfo) {
@@ -656,7 +707,7 @@ class GestorMenu {
         if (tab != EmptyTab && this._tabs.includes(tab) === false) this._tabs.push(tab);
     }
 	
-	add(itemGroup) {
+	addItemGroup(itemGroup) {
 		var itemAux;
 		if (!this.items[itemGroup.seccion] || itemGroup.isBaseLayer()) { //itemGroup.isBaseLayer() avoid to repeat base layer into selector
 			itemAux = itemGroup;
@@ -743,8 +794,36 @@ class GestorMenu {
 	}
     
     executeLayersInfo() {
-        for (var key in this.layersInfo) {
-            this.layersInfo[key].get(this);
+        if (this.getLazyInitialization() == true) {
+            for (var key in this.layersInfo) {
+                this.layersInfo[key].generateGroups(this);
+            }
+            this._print();
+            
+            var thisObj = this;
+            
+            //Capture show.bs.collapse menu event
+            $(function() {
+                $(".collapse").on('show.bs.collapse', function(e) {
+                    if ($(this).is(e.target)) {
+                        var showingId = this.id;
+                        if ($('#' + showingId + ' > ul').html() == '') {
+                            $('#' + showingId + ' > ul').html('<div class="loading"><img src="img/loading.gif" style="width:35px"></div>');
+                        }
+                        for (var key in thisObj.layersInfo) {
+                            if (thisObj.layersInfo[key].section == showingId) {
+                                thisObj.addLazyInitLayerInfoCounter(showingId);
+                                thisObj.layersInfo[key].get(thisObj);
+                            }
+                        }
+                    }
+                })
+            });
+            
+        } else {
+            for (var key in this.layersInfo) {
+                this.layersInfo[key].get(this);
+            }
         }
     }
     
@@ -851,6 +930,13 @@ class GestorMenu {
             this.printCallback();
         }
 	}
+    
+    //Prints only one section (works on lazy initialization only)
+    printOnlySection(sectionId) {
+        var itemGroup = this.items[sectionId];
+        itemGroup.imprimir();
+        $('#' + sectionId + ' > ul').html(itemGroup.itemsStr);
+    }
 	
 	muestraCapa(itemSeccion) {
 		for (var key in this.items) {

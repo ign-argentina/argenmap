@@ -35,7 +35,7 @@ $.getJSON("./js/menu.json", function (data) {
             groupAux.setItem(item);
           }
           gestorMenu.addTab(data.items[key].tab);
-          gestorMenu.add(groupAux);
+          gestorMenu.addItemGroup(groupAux);
       
       } else { //If layers is not basemap (wmslayer for example)
         
