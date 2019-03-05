@@ -624,12 +624,15 @@ class GestorMenu {
         return this.legendImgPath;
     }
     
+    /*
     setItemsGroupDOM(itemsGroupDOM) {
         this.itemsGroupDOM = itemsGroupDOM;
     }
+    */
     
     getItemsGroupDOM() {
-        return this.itemsGroupDOM;
+        //return this.itemsGroupDOM;
+        return this.menuDOM;
     }
     
     setPrintCallback(printCallback) {
@@ -649,6 +652,7 @@ class GestorMenu {
     }
     
     addTab(tab) {
+        tab = EmptyTab + tab;
         if (tab != EmptyTab && this._tabs.includes(tab) === false) this._tabs.push(tab);
     }
 	
@@ -668,7 +672,6 @@ class GestorMenu {
 			itemAux.setItem(itemGroup.itemsComposite[key]);
 		}
 		this.items[itemGroup.seccion] = itemAux;
-        this.addTab(itemAux.getTab());
 	}
 		
 	addPlugin(pluginName, url, callback) {

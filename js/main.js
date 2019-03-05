@@ -1,5 +1,5 @@
 var gestorMenu = new GestorMenu();
-gestorMenu.setItemsGroupDOM(".nav.nav-sidebar");
+//gestorMenu.setItemsGroupDOM(".nav.nav-sidebar");
 
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML();
 const impresorBaseMap = new ImpresorCapasBaseHTML();
@@ -34,6 +34,7 @@ $.getJSON("./js/menu.json", function (data) {
             item.setImpresor(impresorItemCapaBase);
             groupAux.setItem(item);
           }
+          gestorMenu.addTab(data.items[key].tab);
           gestorMenu.add(groupAux);
       
       } else { //If layers is not basemap (wmslayer for example)
@@ -47,6 +48,7 @@ $.getJSON("./js/menu.json", function (data) {
           if (itemData.customize_layers) {
               wmsLayerInfo.setCustomizedLayers(itemData.customize_layers);
           }
+          gestorMenu.addTab(itemData.tab);
           gestorMenu.addLayersInfo(wmsLayerInfo);
           
       }
