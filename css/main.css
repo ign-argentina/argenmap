@@ -57,6 +57,9 @@ Menu principal
     border: 1px solid #ddd;
     padding: 5px 15px;
 }
+.nav-tabs > li > a:hover {
+    color: #444444;    
+}
 .nav-tabs > li.active > a {
     background-color: #33b560 !important;
     color: white !important;
