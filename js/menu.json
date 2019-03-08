@@ -48,7 +48,7 @@
             ]
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 70,
 			"nombre": "Industria y servicios",
@@ -61,7 +61,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 60,
 			"nombre": "Hábitat e infraestructura social",
@@ -74,7 +74,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 50,
 			"nombre": "Transporte",
@@ -87,7 +87,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 40,
 			"nombre": "Hidrografía y oceanografía",
@@ -100,7 +100,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 90,
 			"nombre": "Relieve y suelo",
@@ -113,7 +113,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 20,
 			"nombre": "Límites y unidades territoriales",
@@ -126,7 +126,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 30,
 			"nombre": "Redes geodésicas",
@@ -139,7 +139,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 80,
 			"nombre": "Defensa y seguridad",
@@ -152,7 +152,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 33,
 			"nombre": "Fotografías aéreas",
@@ -165,7 +165,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 33,
 			"nombre": "Fotografías aéreas",
@@ -178,7 +178,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 35,
 			"nombre": "Fotografías aéreas",
@@ -191,7 +191,7 @@
             "feature_info_format": "application/json"
         },
         {
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 100,
 			"nombre": "Cartografía",
@@ -204,7 +204,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "IGN",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 100,
 			"nombre": "Cartografía",
@@ -217,7 +217,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "Externos",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 37,
 			"nombre": "Modelos digitales de elevaciones",
@@ -230,7 +230,7 @@
             "feature_info_format": "application/json"
         },
 		{
-            "tab": "Externos",
+            "tab": "",
             "type": "wmslayer",
 			"peso": 37,
 			"nombre": "Modelos digitales de elevaciones",
