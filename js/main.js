@@ -22,8 +22,9 @@ $.getJSON("./js/menu.json", function (data) {
       }
       
       if (data.items[key].type == "basemap") { //If layers is basemap
-    
-          groupAux = new ItemGroupBaseMap(data.items[key].tab, data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
+          
+          var tab = new Tab(data.items[key].tab);
+          groupAux = new ItemGroupBaseMap(tab, data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
           groupAux.setImpresor(impresorBaseMap);
           //groupAux.setObjDom($("#basemap-selector"));
           groupAux.setObjDom(".basemap-selector");
@@ -34,21 +35,22 @@ $.getJSON("./js/menu.json", function (data) {
             item.setImpresor(impresorItemCapaBase);
             groupAux.setItem(item);
           }
-          gestorMenu.addTab(data.items[key].tab);
+          gestorMenu.addTab(tab);
           gestorMenu.addItemGroup(groupAux);
       
       } else { //If layers is not basemap (wmslayer for example)
         
           getGeoserverCounter++;
           var itemData = data.items[key];
-          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, itemData.tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, data.items[key].feature_info_format, data.items[key].type);
+          var tab = new Tab(itemData.tab);
+          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, data.items[key].feature_info_format, data.items[key].type);
           if (itemData.allowed_layers) {
               wmsLayerInfo.setAllowebLayers(itemData.allowed_layers);
           }
           if (itemData.customize_layers) {
               wmsLayerInfo.setCustomizedLayers(itemData.customize_layers);
           }
-          gestorMenu.addTab(itemData.tab);
+          gestorMenu.addTab(tab);
           gestorMenu.addLayersInfo(wmsLayerInfo);
           
       }

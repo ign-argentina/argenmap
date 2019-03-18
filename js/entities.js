@@ -431,7 +431,7 @@ class ItemGroup extends ItemComposite {
 	}
     
     getTab() {
-        return EmptyTab + this.tab;
+        return this.tab;
     }
 	
 	ordenaItems(a, b) {
@@ -623,7 +623,7 @@ class GestorMenu {
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
         this._getLazyInitLayersInfoCounter = {};
-        this._tabs = new Array();
+        this._tabs = {};
         this._lazyInitialization = false;
 	}
     
@@ -703,8 +703,8 @@ class GestorMenu {
     }
     
     addTab(tab) {
-        tab = EmptyTab + tab;
-        if (tab != EmptyTab && this._tabs.includes(tab) === false) this._tabs.push(tab);
+        //if (tab.getExtendedId() != EmptyTab && this._tabs.includes(tab.getExtendedId()) === false) this._tabs.push(tab.getExtendedId());
+        if (tab.getExtendedId() != EmptyTab) this._tabs[tab.getId()] = tab;
     }
 	
 	addItemGroup(itemGroup) {
@@ -828,7 +828,8 @@ class GestorMenu {
     }
     
     _countTabs() {
-        return this._tabs.length;
+        //return this._tabs.length;
+        return Object.keys(this._tabs).length;
     }
     
     _hasMoreTabsThanOne() {
@@ -848,9 +849,9 @@ class GestorMenu {
         var aSections = {};
         
         var sClassAux = 'active';
-        for (var ii=0; ii<this._tabs.length; ii++) {
-            aSections[this._tabs[ii]] = [];
-            aSections[this._tabs[ii]].push("<div role='tabpanel' class='tab-pane " + sClassAux + "' id='" + this._tabs[ii] + "'>");
+        for (var key in this._tabs) {
+            aSections[this._tabs[key].getExtendedId()] = [];
+            aSections[this._tabs[key].getExtendedId()].push("<div role='tabpanel' class='tab-pane " + sClassAux + "' id='" + this._tabs[key].getExtendedId() + "'>");
             sClassAux = '';
         }
         
@@ -865,8 +866,8 @@ class GestorMenu {
 
 		for (var key in itemsAux) {
 			var itemComposite = itemsAux[key];
-            if (itemComposite.getTab() != EmptyTab) {
-                aSections[itemComposite.getTab()].push(itemComposite.imprimir());
+            if (itemComposite.getTab().getExtendedId() != EmptyTab) {
+                aSections[itemComposite.getTab().getExtendedId()].push(itemComposite.imprimir());
             } else {
                 if ($('#' + itemComposite.seccion).length != 0) {
                     itemComposite.getObjDom().html('');
@@ -877,8 +878,8 @@ class GestorMenu {
 
         var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
         var sClassAux = 'active';
-        for (var ii=0; ii<this._tabs.length; ii++) {
-            sInitialHTML += "<li role='presentation' class='" + sClassAux + "'><a href='#" + this._tabs[ii] + "' aria-controls='" + this._tabs[ii] + "' role='tab' data-toggle='tab'>" + this._formatTabName(this._tabs[ii]) + "</a></li>";
+        for (var key in this._tabs) {
+            sInitialHTML += "<li role='presentation' class='" + sClassAux + "'><a href='#" + this._tabs[key].getExtendedId() + "' aria-controls='" + this._tabs[key].getExtendedId() + "' role='tab' data-toggle='tab'>" + this._tabs[key].getContent() + "</a></li>";
             sClassAux = '';
         }
         sInitialHTML += "</ul>";
@@ -954,4 +955,32 @@ class GestorMenu {
 		}
 	}
 	
+}
+
+/******************************************
+Tabs menu class
+******************************************/
+class Tab {
+    constructor(tab) {
+        this.id = "";
+        this.content = "";
+        if (tab != undefined && tab != "") {
+            this.id = tab.id;
+            if (this.content != undefined) {
+                this.content = tab.content;
+            }
+        }		
+	}
+    
+    getId() {
+        return this.id;
+    }
+    
+    getExtendedId() {
+        return EmptyTab + this.id;
+    }
+    
+    getContent() {
+        return (this.content != undefined && this.content != "") ? this.content : this.getId();
+    }
 }
