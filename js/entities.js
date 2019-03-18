@@ -322,7 +322,7 @@ class LayersInfoWMS extends LayersInfo {
             } else {
                 _gestorMenu.addLayerInfoCounter();
                 if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
-                    _gestorMenu._print();
+                    _gestorMenu.printMenu();
                 }
             }
             
@@ -364,9 +364,18 @@ class ItemComposite {
 		this.descripcion = descripcion
 		this.impresor = null
 		this.objDOM = null
+		this.querySearch = ''
 		
 		this.searchOrderIntoKeywords();
 	}
+        
+    getQuerySearch() {
+        return this.querySearch;
+    }
+    
+    setQuerySearch(q) {
+        this.querySearch = q;
+    }
 	
 	searchOrderIntoKeywords() {
 		//Recorrer palabrasClave para ver si viene el orden
@@ -410,6 +419,20 @@ class ItemComposite {
     
     isBaseLayer() {
         return false;
+    }
+    
+    match() {
+        if (this.querySearch == "" || this.capa == undefined) {
+            return true;
+        }
+        if (this.capa.titulo.toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    getAvailableTags() {
+        return [];
     }
 }
 
@@ -457,15 +480,22 @@ class ItemGroup extends ItemComposite {
 		
 		var itemsAux = new Array();
 		for (var key in this.itemsComposite) {
-			itemsAux.push(this.itemsComposite[key]);
+            this.itemsComposite[key].setQuerySearch(this.querySearch);
+            if (this.itemsComposite[key].match() == true) { //Returns true on item match with querySearch string
+                itemsAux.push(this.itemsComposite[key]);
+            }
 		}
 		
-		itemsAux.sort(this.ordenaItems);
-		
-		for (var key in itemsAux) {
-			this.itemsStr += itemsAux[key].imprimir();
-		}
-		return this.impresor.imprimir(this);
+        if (itemsAux.length > 0) {
+            itemsAux.sort(this.ordenaItems);
+            
+            for (var key in itemsAux) {
+                this.itemsStr += itemsAux[key].imprimir();
+            }
+            return this.impresor.imprimir(this);
+        }
+        
+        return '';
 	}
 	
 	getCantidadCapasVisibles() {
@@ -488,6 +518,14 @@ class ItemGroup extends ItemComposite {
 	}
 	
 	hideAllLayersExceptOne(item) {}
+    
+    getAvailableTags() {
+        var availableTags = [];
+        for (var key in this.itemsComposite) {
+            availableTags = availableTags.concat(this.itemsComposite[key].getAvailableTags());
+        }
+        return availableTags;
+    }
 }
 
 class ItemGroupBaseMap extends ItemGroup {
@@ -503,6 +541,10 @@ class ItemGroupBaseMap extends ItemGroup {
 			}
 		}
 	}
+    
+    getAvailableTags() {
+        return [];
+    }
 }
 
 class Item extends ItemComposite {
@@ -564,6 +606,10 @@ class Item extends ItemComposite {
 	getLegendURL() {
 		return this.capa.getLegendURL();
 	}
+    
+    getAvailableTags() {
+        return [this.capa.titulo];
+    }
 }
 
 /******************************************
@@ -619,6 +665,7 @@ class GestorMenu {
         this.legendImgPath = '';
         this.itemsGroupDOM = '';
         this.printCallback = null;
+        this.querySearch = '';
         
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
@@ -676,6 +723,14 @@ class GestorMenu {
     
     addLayerInfoCounter() {
         this._getLayersInfoCounter++;
+    }
+    
+    getQuerySearch() {
+        return this.querySearch;
+    }
+    
+    setQuerySearch(q) {
+        this.querySearch = q;
     }
     
     addLazyInitLayerInfoCounter(sectionId) {
@@ -798,7 +853,7 @@ class GestorMenu {
             for (var key in this.layersInfo) {
                 this.layersInfo[key].generateGroups(this);
             }
-            this._print();
+            this.printMenu();
             
             var thisObj = this;
             
@@ -844,6 +899,19 @@ class GestorMenu {
         this.executeLayersInfo();
     }
     
+    _printSearcher() {
+        return "<div style='text-align:center; background-color:#008dc9'><form class='form-inline' id='searchForm' onSubmit='mainMenuSearch(event)'><div class='form-group ui-widget'><input type='text' class='form-control input-sm' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'></div><button class='btn btn-default input-sm' type='submit'><i class='fas fa-search'></i></button></form></div>";
+    }
+    
+    getAvailableTags() {
+        var availableTags = [];
+        for (var key in this.items) {
+            var itemComposite = this.items[key];
+            availableTags = availableTags.concat(itemComposite.getAvailableTags());
+        }
+        return availableTags;
+    }
+    
     _printWithTabs() {
         
         var aSections = {};
@@ -866,6 +934,7 @@ class GestorMenu {
 
 		for (var key in itemsAux) {
 			var itemComposite = itemsAux[key];
+            itemComposite.setQuerySearch(this.getQuerySearch()); //Set query search for filtering items
             if (itemComposite.getTab().getExtendedId() != EmptyTab) {
                 aSections[itemComposite.getTab().getExtendedId()].push(itemComposite.imprimir());
             } else {
@@ -876,7 +945,8 @@ class GestorMenu {
             }
 		}
 
-        var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
+        var sInitialHTML = this._printSearcher();
+        sInitialHTML += "<ul class='nav nav-tabs' role='tablist'>";
         var sClassAux = 'active';
         for (var key in this._tabs) {
             sInitialHTML += "<li role='presentation' class='" + sClassAux + "'><a href='#" + this._tabs[key].getExtendedId() + "' aria-controls='" + this._tabs[key].getExtendedId() + "' role='tab' data-toggle='tab'>" + this._tabs[key].getContent() + "</a></li>";
@@ -896,7 +966,7 @@ class GestorMenu {
         
     }
     
-	_print() {
+	printMenu() {
 		
         if (this._hasMoreTabsThanOne()) {
             
@@ -904,7 +974,7 @@ class GestorMenu {
             
         } else {
             
-            this.getMenuDOM().html("");
+            this.getMenuDOM().html(this._printSearcher());
 		
             var itemsAux = new Array();
             for (var key in this.items) {
@@ -915,6 +985,7 @@ class GestorMenu {
             for (var key in itemsAux) {
                 
                 var itemComposite = itemsAux[key];
+                itemComposite.setQuerySearch(this.getQuerySearch()); //Set query search for filtering items
                 
                 if ($('#' + itemComposite.seccion).length != 0) {
                     itemComposite.getObjDom().html('');
@@ -930,6 +1001,39 @@ class GestorMenu {
         if (this.printCallback != null) {
             this.printCallback();
         }
+        
+        //Jquery autocomplete
+        var accentMap = {
+          "á": "a",
+          "é": "e",
+          "í": "i",
+          "ó": "o",
+          "ú": "u",
+          "ñ": "n",
+        };
+        var normalize = function( term ) {
+          var ret = "";
+          for ( var i = 0; i < term.length; i++ ) {
+            ret += accentMap[ term.charAt(i) ] || term.charAt(i);
+          }
+          return ret;
+        };
+     
+        
+        $( "#q" ).autocomplete({
+          //source: this._getAvailableTags()
+          source: function( request, response ) {
+            var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+            response( $.grep( gestorMenu.getAvailableTags(), function( value ) {
+              value = value.label || value.value || value;
+              return matcher.test( value ) || matcher.test( normalize( value ) );
+            }) );
+          },
+          select: function(event, ui) { 
+            $("#searchForm").submit(); 
+          }
+        });
+         
 	}
     
     //Prints only one section (works on lazy initialization only)

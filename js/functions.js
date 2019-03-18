@@ -33,6 +33,13 @@ function showImageOnError(image) {
     return true;
 }
 
+function mainMenuSearch(e) {
+    e.preventDefault();
+    //gestorMenu.setQuerySearch("hola");
+    gestorMenu.setQuerySearch($("#q").val());
+    gestorMenu.printMenu();
+}
+
 
 /****** Enveloped functions ******/
 function loadGeojson (url, layer) {

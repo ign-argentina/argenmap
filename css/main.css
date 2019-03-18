@@ -138,3 +138,10 @@ li.active > div > a {
 @media (min-width: 992px) {
   #sidebar-container.collapse {__height: 100% !important};
 }
+
+/*******************************
+JQuery Autocomplete
+*******************************/
+.ui-widget.ui-widget-content {
+    z-index: 3000;
+}
