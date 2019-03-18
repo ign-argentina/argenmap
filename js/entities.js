@@ -480,7 +480,7 @@ class ItemGroup extends ItemComposite {
 		
 		var itemsAux = new Array();
 		for (var key in this.itemsComposite) {
-            this.itemsComposite[key].setQuerySearch(this.querySearch);
+            this.itemsComposite[key].setQuerySearch((this.tab.getId() == "") ? this.querySearch : this.tab.getSearchQuery());
             if (this.itemsComposite[key].match() == true) { //Returns true on item match with querySearch string
                 itemsAux.push(this.itemsComposite[key]);
             }
@@ -671,6 +671,7 @@ class GestorMenu {
         this._getLayersInfoCounter = 0;
         this._getLazyInitLayersInfoCounter = {};
         this._tabs = {};
+        this._selectedTab = null;
         this._lazyInitialization = false;
 	}
     
@@ -731,6 +732,7 @@ class GestorMenu {
     
     setQuerySearch(q) {
         this.querySearch = q;
+        this.setSelectedTabSearchQuery(q);
     }
     
     addLazyInitLayerInfoCounter(sectionId) {
@@ -760,6 +762,16 @@ class GestorMenu {
     addTab(tab) {
         //if (tab.getExtendedId() != EmptyTab && this._tabs.includes(tab.getExtendedId()) === false) this._tabs.push(tab.getExtendedId());
         if (tab.getExtendedId() != EmptyTab) this._tabs[tab.getId()] = tab;
+    }
+    
+    setSelectedTab(tabId) {
+        this._selectedTab = this._tabs[tabId];
+    }
+    
+    setSelectedTabSearchQuery(q) {
+        if (this._selectedTab != null) {
+            this._selectedTab.setSearchQuery(q);
+        }
     }
 	
 	addItemGroup(itemGroup) {
@@ -900,7 +912,7 @@ class GestorMenu {
     }
     
     _printSearcher() {
-        return "<div style='text-align:center; background-color:#008dc9'><form class='form-inline' id='searchForm' onSubmit='mainMenuSearch(event)'><div class='form-group ui-widget'><input type='text' class='form-control input-sm' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'></div><button class='btn btn-default input-sm' type='submit'><i class='fas fa-search'></i></button></form></div>";
+        return "<div style='background-color:#008dc9'><form class='form-inline' id='searchForm' onSubmit='mainMenuSearch(event)'><div class='form-group ui-widget'><input type='text' class='form-control input-sm' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'></div><button class='btn btn-default input-sm' type='submit'><i class='fas fa-search'></i></button></form></div>";
     }
     
     getAvailableTags() {
@@ -916,8 +928,13 @@ class GestorMenu {
         
         var aSections = {};
         
-        var sClassAux = 'active';
         for (var key in this._tabs) {
+            if (this._selectedTab == null) {
+                this.setSelectedTab(this._tabs[key].id);
+                var sClassAux = 'active';
+            } else if (this._selectedTab.getId() == this._tabs[key].id) {
+                var sClassAux = 'active';
+            }
             aSections[this._tabs[key].getExtendedId()] = [];
             aSections[this._tabs[key].getExtendedId()].push("<div role='tabpanel' class='tab-pane " + sClassAux + "' id='" + this._tabs[key].getExtendedId() + "'>");
             sClassAux = '';
@@ -934,25 +951,32 @@ class GestorMenu {
 
 		for (var key in itemsAux) {
 			var itemComposite = itemsAux[key];
-            itemComposite.setQuerySearch(this.getQuerySearch()); //Set query search for filtering items
             if (itemComposite.getTab().getExtendedId() != EmptyTab) {
+                itemComposite.getTab().setSearchQuery(this._tabs[itemComposite.getTab().getId()].getSearchQuery()); //Set query search for filtering items
                 aSections[itemComposite.getTab().getExtendedId()].push(itemComposite.imprimir());
             } else {
                 if ($('#' + itemComposite.seccion).length != 0) {
                     itemComposite.getObjDom().html('');
                 }
+                itemComposite.setQuerySearch(this.getQuerySearch()); //Set query search for filtering items
                 itemComposite.getObjDom().append(itemComposite.imprimir());
             }
 		}
 
-        var sInitialHTML = this._printSearcher();
-        sInitialHTML += "<ul class='nav nav-tabs' role='tablist'>";
-        var sClassAux = 'active';
+        var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
         for (var key in this._tabs) {
+            if (this._selectedTab == null) {
+                this.setSelectedTab(this._tabs[key].id);
+                var sClassAux = 'active';
+            } else if (this._selectedTab.getId() == this._tabs[key].id) {
+                var sClassAux = 'active';
+            }
             sInitialHTML += "<li role='presentation' class='" + sClassAux + "'><a href='#" + this._tabs[key].getExtendedId() + "' aria-controls='" + this._tabs[key].getExtendedId() + "' role='tab' data-toggle='tab'>" + this._tabs[key].getContent() + "</a></li>";
             sClassAux = '';
         }
         sInitialHTML += "</ul>";
+        
+        sInitialHTML += this._printSearcher();
         
         sInitialHTML += "<div class='tab-content'>";
 
@@ -1002,6 +1026,13 @@ class GestorMenu {
             this.printCallback();
         }
         
+        //Tabs
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+          var target = $(e.target).attr("href") // activated tab
+          gestorMenu.setSelectedTab(target.replace('#main-menu-tab-', ''));
+          $('#q').val(gestorMenu._selectedTab.getSearchQuery());
+        });
+        
         //Jquery autocomplete
         var accentMap = {
           "á": "a",
@@ -1029,7 +1060,8 @@ class GestorMenu {
               return matcher.test( value ) || matcher.test( normalize( value ) );
             }) );
           },
-          select: function(event, ui) { 
+          select: function(event, ui) {
+            $("#q").val(ui.item.label);
             $("#searchForm").submit(); 
           }
         });
@@ -1068,8 +1100,13 @@ class Tab {
     constructor(tab) {
         this.id = "";
         this.content = "";
+        this.isSearcheable = false;
+        this.searchQuery = "";
         if (tab != undefined && tab != "") {
             this.id = tab.id;
+            if (this.isSearcheable != undefined) {
+                this.isSearcheable = tab.searcheable;
+            }
             if (this.content != undefined) {
                 this.content = tab.content;
             }
@@ -1086,5 +1123,13 @@ class Tab {
     
     getContent() {
         return (this.content != undefined && this.content != "") ? this.content : this.getId();
+    }
+    
+    getSearchQuery() {
+        return this.searchQuery;
+    }
+    
+    setSearchQuery(q) {
+        this.searchQuery = q;
     }
 }

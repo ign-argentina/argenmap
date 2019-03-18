@@ -35,7 +35,6 @@ function showImageOnError(image) {
 
 function mainMenuSearch(e) {
     e.preventDefault();
-    //gestorMenu.setQuerySearch("hola");
     gestorMenu.setQuerySearch($("#q").val());
     gestorMenu.printMenu();
 }
