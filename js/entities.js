@@ -919,7 +919,9 @@ class GestorMenu {
         var availableTags = [];
         for (var key in this.items) {
             var itemComposite = this.items[key];
-            availableTags = availableTags.concat(itemComposite.getAvailableTags());
+            if (this._hasMoreTabsThanOne() == false || itemComposite.getTab().getId() == this._selectedTab.getId()) { //If not use tabs get all tags or just get available tags from item in selected tab
+                availableTags = availableTags.concat(itemComposite.getAvailableTags());
+            }
         }
         return availableTags;
     }
@@ -1033,7 +1035,8 @@ class GestorMenu {
           $('#q').val(gestorMenu._selectedTab.getSearchQuery());
         });
         
-        //Jquery autocomplete
+        
+        //Jquery autocomplete (begin)
         var accentMap = {
           "á": "a",
           "é": "e",
@@ -1049,10 +1052,8 @@ class GestorMenu {
           }
           return ret;
         };
-     
         
         $( "#q" ).autocomplete({
-          //source: this._getAvailableTags()
           source: function( request, response ) {
             var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
             response( $.grep( gestorMenu.getAvailableTags(), function( value ) {
@@ -1065,6 +1066,7 @@ class GestorMenu {
             $("#searchForm").submit(); 
           }
         });
+        //Jquery autocomplete (end)
          
 	}
     
