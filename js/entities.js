@@ -681,27 +681,74 @@ class ItemsGetterSearcher extends ItemsGetter {
         
         const impresorGroup = new ImpresorGrupoHTML();
         const impresorItem = new ImpresorItemHTML();
-                
-        //Instance an empty ItemGroup (without items)
-        var groupAux = new ItemGroup(gestorMenu._selectedTab, 'Resultado búsqueda', 'searcher', 0, "", "", gestorMenu.getQuerySearch());
+        
+        //Instance an empty ItemGroup for no-tabs classes
+        var groupAux = new ItemGroup(new Tab(''), 'Resultado búsqueda', 'searcher-', 0, "", "", gestorMenu.getQuerySearch());
         groupAux.setImpresor(impresorGroup);
         groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
         groupAux.setActive(true);
         
-        var itemsToShow = {};
+        //Iterate all items in gestorMenu
+        var itemsToReturn = {};
         for (var key in gestorMenu.items) {
-            
             var itemComposite = gestorMenu.items[key];
-            itemComposite.setQuerySearch(gestorMenu.getQuerySearch()); //Set query search for filtering items
-            var itemsAux = itemComposite.getItemsSearched();
-            for (var key2 in itemsAux) {
-                groupAux.setItem(itemsAux[key2]);
+            if (gestorMenu.getQuerySearch() != "") {
+                itemComposite.setQuerySearch(gestorMenu.getQuerySearch()); //Set query search for filtering items
+                var itemsAux = itemComposite.getItemsSearched();
+                for (var key2 in itemsAux) {
+                    groupAux.setItem(itemsAux[key2]);
+                }
+                itemsToReturn[groupAux.seccion] = groupAux;                
+            } else {
+                itemsToReturn[itemComposite.seccion] = itemComposite;
             }
-            
         }
         
+        return itemsToReturn;
+    }
+}
+
+
+class ItemsGetterSearcherWithTabs extends ItemsGetter {
+    get (gestorMenu) {
+        
+        const impresorGroup = new ImpresorGrupoHTML();
+        const impresorItem = new ImpresorItemHTML();
+        
+        //Instance an empty ItemGroup per tab (without items)
+        var itemsGroups = {};
+        for (var key in gestorMenu._tabs) {
+            var groupAux = new ItemGroup(gestorMenu._tabs[key], 'Resultado búsqueda', 'searcher-'+gestorMenu._tabs[key].getId(), 0, "", "", gestorMenu._tabs[key].getSearchQuery());
+            groupAux.setImpresor(impresorGroup);
+            groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+            groupAux.setActive(true);
+            itemsGroups[groupAux.seccion] = groupAux;
+        }
+        
+        //Instance an empty ItemGroup for no-tabs classes
+        var groupAux = new ItemGroup(new Tab(''), 'Resultado búsqueda', 'searcher-', 0, "", "", gestorMenu.getQuerySearch());
+        groupAux.setImpresor(impresorGroup);
+        groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+        groupAux.setActive(true);
+        itemsGroups[groupAux.seccion] = groupAux;
+        
+        //Iterate all items in gestorMenu
         var itemsToReturn = {};
-        itemsToReturn[groupAux.seccion] = groupAux;
+        for (var key in gestorMenu.items) {
+            var itemComposite = gestorMenu.items[key];
+            var tabAux = gestorMenu._tabs[itemComposite.getTab().getId()];
+            if (tabAux != undefined && tabAux.getSearchQuery() != "") {
+                itemComposite.setQuerySearch(tabAux.getSearchQuery()); //Set query search for filtering items
+                var itemsAux = itemComposite.getItemsSearched();
+                for (var key2 in itemsAux) {
+                    itemsGroups['searcher-'+tabAux.getId()].setItem(itemsAux[key2]);
+                }
+                itemsToReturn[itemsGroups['searcher-'+tabAux.getId()].seccion] = itemsGroups['searcher-'+tabAux.getId()];
+            } else {
+                itemsToReturn[itemComposite.seccion] = itemComposite;
+            }
+        }
+        
         return itemsToReturn;
     }
 }
@@ -792,8 +839,10 @@ class GestorMenu {
         this.setSelectedTabSearchQuery(q);
         
         //Select wich ItemsGetter strategy need
-        if (this.querySearch == "") {
+        if (q == "") {
             this._itemsGetter = new ItemsGetter();
+        } else if (this._hasMoreTabsThanOne() == true) {
+            this._itemsGetter = new ItemsGetterSearcherWithTabs();
         } else {
             this._itemsGetter = new ItemsGetterSearcher();
         }
@@ -835,6 +884,7 @@ class GestorMenu {
     setSelectedTabSearchQuery(q) {
         if (this._selectedTab != null) {
             this._selectedTab.setSearchQuery(q);
+            this._selectedTab.itemsGetter = this._itemsGetter;
         }
     }
 	
@@ -1175,6 +1225,7 @@ class Tab {
         this.content = "";
         this.isSearcheable = false;
         this.searchQuery = "";
+        this.itemsGetter = new ItemsGetter();
         if (tab != undefined && tab != "") {
             this.id = tab.id;
             if (this.isSearcheable != undefined) {
