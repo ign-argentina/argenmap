@@ -99,13 +99,15 @@ class ImpresorGrupoHTML extends Impresor {
 		
 		var listaId = itemComposite.getId();
 		var itemClass = 'menu5';
+        
+        var active = (itemComposite.getActive() == true) ? ' in ' : '';
 		
 		return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' >" +
 			"<div class='panel-title'>" +
 			"<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "' class='item-group-title'>" + itemComposite.nombre + "</a>" +
 			"<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "'>" + itemComposite.shortDesc + "</a></div>" +
 			"</div>" +
-			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
+			"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse" + active + "'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
 		
 	}
 }
@@ -365,6 +367,8 @@ class ItemComposite {
 		this.impresor = null
 		this.objDOM = null
 		this.querySearch = ''
+        
+        this._active = false;
 		
 		this.searchOrderIntoKeywords();
 	}
@@ -375,6 +379,14 @@ class ItemComposite {
     
     setQuerySearch(q) {
         this.querySearch = q;
+    }
+    
+    getActive() {
+        return this._active;
+    }
+    
+    setActive(active) {
+        this._active = active;
     }
 	
 	searchOrderIntoKeywords() {
@@ -674,6 +686,7 @@ class ItemsGetterSearcher extends ItemsGetter {
         var groupAux = new ItemGroup(gestorMenu._selectedTab, 'Resultado búsqueda', 'searcher', 0, "", "", gestorMenu.getQuerySearch());
         groupAux.setImpresor(impresorGroup);
         groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+        groupAux.setActive(true);
         
         var itemsToShow = {};
         for (var key in gestorMenu.items) {
