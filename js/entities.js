@@ -1,6 +1,6 @@
 'use strict';
 
-const EmptyTab = 'main-menu-tab-'; 
+const EmptyTab = 'main-menu-tab-';
 
 /******************************************
 Class Capa
@@ -475,18 +475,23 @@ class ItemGroup extends ItemComposite {
 		return 0;
 	}
 	
-	imprimir() {
-		this.itemsStr = '';
-		
-		var itemsAux = new Array();
+    getItemsSearched() {
+        var itemsAux = new Array();
 		for (var key in this.itemsComposite) {
             this.itemsComposite[key].setQuerySearch((this.tab.getId() == "") ? this.querySearch : this.tab.getSearchQuery());
             if (this.itemsComposite[key].match() == true) { //Returns true on item match with querySearch string
                 itemsAux.push(this.itemsComposite[key]);
             }
 		}
+        
+        return itemsAux;
+    }
+    
+	imprimir() {
+		this.itemsStr = '';
 		
-        if (itemsAux.length > 0) {
+        var itemsAux = this.getItemsSearched();
+		if (itemsAux.length > 0) {
             itemsAux.sort(this.ordenaItems);
             
             for (var key in itemsAux) {
@@ -651,6 +656,44 @@ class Plugin {
 }
 
 /******************************************
+ItemsGetter
+******************************************/
+class ItemsGetter {
+    get (gestorMenu) {
+        return gestorMenu.items;
+    }
+}
+
+class ItemsGetterSearcher extends ItemsGetter {
+    get (gestorMenu) {
+        
+        const impresorGroup = new ImpresorGrupoHTML();
+        const impresorItem = new ImpresorItemHTML();
+                
+        //Instance an empty ItemGroup (without items)
+        var groupAux = new ItemGroup(gestorMenu._selectedTab, 'Resultado búsqueda', 'searcher', 0, "", "", gestorMenu.getQuerySearch());
+        groupAux.setImpresor(impresorGroup);
+        groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+        
+        var itemsToShow = {};
+        for (var key in gestorMenu.items) {
+            
+            var itemComposite = gestorMenu.items[key];
+            itemComposite.setQuerySearch(gestorMenu.getQuerySearch()); //Set query search for filtering items
+            var itemsAux = itemComposite.getItemsSearched();
+            for (var key2 in itemsAux) {
+                groupAux.setItem(itemsAux[key2]);
+            }
+            
+        }
+        
+        var itemsToReturn = {};
+        itemsToReturn[groupAux.seccion] = groupAux;
+        return itemsToReturn;
+    }
+}
+
+/******************************************
 Gestor de menu
 ******************************************/
 class GestorMenu {
@@ -673,6 +716,7 @@ class GestorMenu {
         this._tabs = {};
         this._selectedTab = null;
         this._lazyInitialization = false;
+        this._itemsGetter = new ItemsGetter();
 	}
     
     setMenuDOM(menuDOM) {
@@ -733,6 +777,13 @@ class GestorMenu {
     setQuerySearch(q) {
         this.querySearch = q;
         this.setSelectedTabSearchQuery(q);
+        
+        //Select wich ItemsGetter strategy need
+        if (this.querySearch == "") {
+            this._itemsGetter = new ItemsGetter();
+        } else {
+            this._itemsGetter = new ItemsGetterSearcher();
+        }
     }
     
     addLazyInitLayerInfoCounter(sectionId) {
@@ -946,8 +997,9 @@ class GestorMenu {
         this.getMenuDOM().html(sInitialHTML);
 		
 		var itemsAux = new Array();
-		for (var key in this.items) {
-			itemsAux.push(this.items[key]);
+        var itemsIterator = this._itemsGetter.get(this);
+		for (var key in itemsIterator) {
+			itemsAux.push(itemsIterator[key]);
 		}
 		itemsAux.sort(this.ordenaPorPeso);
 
@@ -1003,8 +1055,9 @@ class GestorMenu {
             this.getMenuDOM().html(this._printSearcher());
 		
             var itemsAux = new Array();
-            for (var key in this.items) {
-                itemsAux.push(this.items[key]);
+            var itemsIterator = this._itemsGetter.get(this);
+            for (var key in itemsIterator) {
+                itemsAux.push(itemsIterator[key]);
             }
             itemsAux.sort(this.ordenaPorPeso);
             
