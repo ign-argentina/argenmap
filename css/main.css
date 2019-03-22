@@ -140,6 +140,18 @@ li.active > div > a {
 }
 
 /*******************************
+Searcher
+*******************************/
+::-ms-clear {
+  display: none;
+}
+.form-control-clear {
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/*******************************
 JQuery Autocomplete
 *******************************/
 .ui-widget.ui-widget-content {

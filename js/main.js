@@ -20,7 +20,6 @@ $.getJSON("./js/menu.json", function (data) {
       if (data.items[key].tab == undefined) {
           data.items[key].tab = "";
       }
-          data.items[key].tab = "";
       
       if (data.items[key].type == "basemap") { //If layers is basemap
           

@@ -63,8 +63,9 @@ class ImpresorItemHTML extends Impresor {
 		var childId = itemComposite.getId();
 		
         var legendImg = (itemComposite.getLegendImg() == null)? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        var activated = (itemComposite.visible == true)? " active " : "";
         
-		return "<li id='" + childId + "' class='capa list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
+		return "<li id='" + childId + "' class='capa list-group-item" + activated + "' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" + 
 					"<div class='capa-title'>" +
 						"<a nombre=" + itemComposite.nombre + " href='#'>" +
 							"<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" + 
@@ -599,7 +600,7 @@ class Item extends ItemComposite {
 	getLegendImg() {
 		return this.legendImg;
 	}
-	
+    
 	showHide() {
 		$('#' + this.getId()).toggleClass('active');
         
@@ -1026,7 +1027,17 @@ class GestorMenu {
     }
     
     _printSearcher() {
-        return "<div style='background-color:#008dc9'><form class='form-inline' id='searchForm' onSubmit='mainMenuSearch(event)'><div class='form-group ui-widget'><input type='search' class='form-control input-sm' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'></div><button class='btn btn-default input-sm' type='submit'><i class='fas fa-search'></i></button></form></div>";
+        return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" + 
+                "<div class='input-group'>" +
+                    "<div class='form-group has-feedback has-clear'>" +
+                        "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'>" +
+                        "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>" +
+                    "</div>" +
+                    "<span class='input-group-btn'>" +
+                        "<button class='btn btn-default' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>" +
+                    "</span>" +
+                "</div>" +
+                "</form>";
     }
     
     getAvailableTags() {
@@ -1144,14 +1155,33 @@ class GestorMenu {
             this.printCallback();
         }
         
+        //Show visible layers count in class (to save state after refresh menu)
+        for (var key in this.items) {
+            this.items[key].muestraCantidadCapasVisibles();
+        }
+        
         //Tabs
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
           var target = $(e.target).attr("href") // activated tab
           gestorMenu.setSelectedTab(target.replace('#main-menu-tab-', ''));
           $('#q').val(gestorMenu._selectedTab.getSearchQuery());
+          if (gestorMenu._selectedTab.getSearchQuery() == "") {
+            $('#q').trigger('propertychange');
+          }
+          $('#q').trigger('propertychange');
         });
         
         //Searcher
+        $('.has-clear input[type="text"]').on('input propertychange', function() {
+          var $this = $(this);
+          var visible = Boolean($this.val());
+          $this.siblings('.form-control-clear').toggleClass('hidden', !visible);
+        }).trigger('propertychange');
+        $('.form-control-clear').click(function() {
+          $(this).siblings('input[type="text"]').val('')
+            .trigger('propertychange').focus();
+          $("#searchForm").submit();
+        });
         $("#searchclear").click(function(){
             $("#q").val('');
             $("#searchForm").submit();
