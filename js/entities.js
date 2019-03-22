@@ -912,7 +912,7 @@ class GestorMenu {
     }
     
     _printSearcher() {
-        return "<div style='background-color:#008dc9'><form class='form-inline' id='searchForm' onSubmit='mainMenuSearch(event)'><div class='form-group ui-widget'><input type='text' class='form-control input-sm' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'></div><button class='btn btn-default input-sm' type='submit'><i class='fas fa-search'></i></button></form></div>";
+        return "<div style='background-color:#008dc9'><form class='form-inline' id='searchForm' onSubmit='mainMenuSearch(event)'><div class='form-group ui-widget'><input type='search' class='form-control input-sm' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'></div><button class='btn btn-default input-sm' type='submit'><i class='fas fa-search'></i></button></form></div>";
     }
     
     getAvailableTags() {
@@ -1035,6 +1035,11 @@ class GestorMenu {
           $('#q').val(gestorMenu._selectedTab.getSearchQuery());
         });
         
+        //Searcher
+        $("#searchclear").click(function(){
+            $("#q").val('');
+            $("#searchForm").submit();
+        });
         
         //Jquery autocomplete (begin)
         var accentMap = {
@@ -1063,7 +1068,7 @@ class GestorMenu {
           },
           select: function(event, ui) {
             $("#q").val(ui.item.label);
-            $("#searchForm").submit(); 
+            $("#searchForm").submit();
           }
         });
         //Jquery autocomplete (end)
