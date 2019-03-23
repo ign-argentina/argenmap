@@ -1162,14 +1162,23 @@ class GestorMenu {
         
         //Tabs
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-          var target = $(e.target).attr("href") // activated tab
-          gestorMenu.setSelectedTab(target.replace('#main-menu-tab-', ''));
-          $('#q').val(gestorMenu._selectedTab.getSearchQuery());
-          if (gestorMenu._selectedTab.getSearchQuery() == "") {
-            $('#q').trigger('propertychange');
+          var target = $(e.target).attr("href") // activated tab object
+          var activeTabId = target.replace('#main-menu-tab-', ''); // activated tab id
+          gestorMenu.setSelectedTab(activeTabId);
+          if (gestorMenu._selectedTab.isSearcheable == true) {
+              $('#searchForm').show();
+              $('#q').val(gestorMenu._selectedTab.getSearchQuery());
+              if (gestorMenu._selectedTab.getSearchQuery() == "") {
+                $('#q').trigger('propertychange');
+              }
+              $('#q').trigger('propertychange');
+          } else {
+              $('#searchForm').hide();
           }
-          $('#q').trigger('propertychange');
         });
+        if (this._selectedTab.isSearcheable == false) { //Check if first active tab is searcheable
+            $('#searchForm').hide();
+        }
         
         //Searcher
         $('.has-clear input[type="text"]').on('input propertychange', function() {
