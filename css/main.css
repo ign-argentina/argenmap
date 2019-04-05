@@ -45,10 +45,35 @@ Menu principal
 	top:7px;
 	position:absolute;
 }
+.nav-tabs {
+    background-color: #008dc9;
+    border-bottom: 1px solid #ddd;
+}
+.nav-tabs > .active {
+    background-color: transparent !important;
+}
+.nav-tabs > li > a {
+    color: white;
+    border: 1px solid #ddd;
+    padding: 5px 15px;
+}
+.nav-tabs > li > a:hover {
+    color: #444444;    
+}
+.nav-tabs > li.active > a {
+    background-color: #33b560 !important;
+    color: white !important;
+}
+.tab-content {
+    border: 1px solid #ddd;
+}
+.panel-heading {
+    border-bottom: 1px solid white;
+}
 .active {
 	background-color: #33b560 !important;
 }
-.active a {
+li.active > div > a {
 	color: white !important;
 }
 .list-group-item.active {
@@ -112,4 +137,23 @@ Menu principal
 }
 @media (min-width: 992px) {
   #sidebar-container.collapse {__height: 100% !important};
+}
+
+/*******************************
+Searcher
+*******************************/
+::-ms-clear {
+  display: none;
+}
+.form-control-clear {
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/*******************************
+JQuery Autocomplete
+*******************************/
+.ui-widget.ui-widget-content {
+    z-index: 3000;
 }

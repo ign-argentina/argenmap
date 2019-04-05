@@ -1,5 +1,5 @@
 var gestorMenu = new GestorMenu();
-gestorMenu.setItemsGroupDOM(".nav.nav-sidebar");
+//gestorMenu.setItemsGroupDOM(".nav.nav-sidebar");
 
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML();
 const impresorBaseMap = new ImpresorCapasBaseHTML();
@@ -16,10 +16,15 @@ $.getJSON("./js/menu.json", function (data) {
   $.each(data, function (key, val) {
 	//data.items.forEach(imprimirItem, data.items);
     for (var key in data.items) {
-    
-      if (data.items[key].type == "basemap") {
-    
-          groupAux = new ItemGroupBaseMap(data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
+      
+      if (data.items[key].tab == undefined) {
+          data.items[key].tab = "";
+      }
+      
+      if (data.items[key].type == "basemap") { //If layers is basemap
+          
+          var tab = new Tab(data.items[key].tab);
+          groupAux = new ItemGroupBaseMap(tab, data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
           groupAux.setImpresor(impresorBaseMap);
           //groupAux.setObjDom($("#basemap-selector"));
           groupAux.setObjDom(".basemap-selector");
@@ -30,14 +35,22 @@ $.getJSON("./js/menu.json", function (data) {
             item.setImpresor(impresorItemCapaBase);
             groupAux.setItem(item);
           }
-          gestorMenu.add(groupAux);
+          gestorMenu.addTab(tab);
+          gestorMenu.addItemGroup(groupAux);
       
-      } else if (data.items[key].type == "wmslayer") {
+      } else { //If layers is not basemap (wmslayer for example)
         
           getGeoserverCounter++;
           var itemData = data.items[key];
-          //getGeoserver(template, itemData.host, itemData.servicio, itemData.seccion, data.items[key].peso, itemData.nombre, itemData.version, data.items[key].short_abstract);
-          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, loadWms);
+          var tab = new Tab(itemData.tab);
+          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, data.items[key].feature_info_format, data.items[key].type);
+          if (itemData.allowed_layers) {
+              wmsLayerInfo.setAllowebLayers(itemData.allowed_layers);
+          }
+          if (itemData.customize_layers) {
+              wmsLayerInfo.setCustomizedLayers(itemData.customize_layers);
+          }
+          gestorMenu.addTab(tab);
           gestorMenu.addLayersInfo(wmsLayerInfo);
           
       }
