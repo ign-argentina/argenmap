@@ -1,6 +1,7 @@
 'use strict';
 
 const EmptyTab = 'main-menu-tab-';
+const ItemGroupPrefix = 'lista-';
 
 /******************************************
 Class Capa
@@ -203,7 +204,6 @@ class LayersInfoWMS extends LayersInfo {
     
 	get(_gestorMenu) {
         if (this._executed == false) {
-           this._executed = true;
            this._parseRequest(_gestorMenu);
         }
 	}
@@ -318,11 +318,13 @@ class LayersInfoWMS extends LayersInfo {
             _gestorMenu.addItemGroup(groupAux);
             
             if (_gestorMenu.getLazyInitialization() == true) {
-                _gestorMenu.removeLazyInitLayerInfoCounter(thisObj.section);
-                if (_gestorMenu.finishLazyInitLayerInfo(thisObj.section)) { //Si ya cargó todas las capas solicitadas
+                _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
+                if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) { //Si ya cargó todas las capas solicitadas
+				    thisObj._executed = true; //Indicates that getCapabilities executed
                     _gestorMenu.printOnlySection(thisObj.section);
                 }
             } else {
+				thisObj._executed = true; //Indicates that getCapabilities executed
                 _gestorMenu.addLayerInfoCounter();
                 if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printMenu();
@@ -463,7 +465,7 @@ class ItemGroup extends ItemComposite {
 	}
 	
 	getId() {
-		return "lista-" + this.seccion;
+		return ItemGroupPrefix + this.seccion;
 	}
     
     getTab() {
@@ -504,16 +506,13 @@ class ItemGroup extends ItemComposite {
 		this.itemsStr = '';
 		
         var itemsAux = this.getItemsSearched();
-		if (itemsAux.length > 0) {
-            itemsAux.sort(this.ordenaItems);
-            
-            for (var key in itemsAux) {
-                this.itemsStr += itemsAux[key].imprimir();
-            }
-            return this.impresor.imprimir(this);
-        }
+        itemsAux.sort(this.ordenaItems);
         
-        return '';
+        for (var key in itemsAux) {
+            this.itemsStr += itemsAux[key].imprimir();
+        }
+        return this.impresor.imprimir(this);
+        
 	}
 	
 	getCantidadCapasVisibles() {
@@ -1120,7 +1119,7 @@ class GestorMenu {
     
 	printMenu() {
 		
-        if (this._hasMoreTabsThanOne()) {
+		if (this._hasMoreTabsThanOne()) {
             
             this._printWithTabs();
             
@@ -1151,11 +1150,18 @@ class GestorMenu {
         
         this.getLoadingDOM().hide();
 		
+		
+		for (var key in this.layersInfo) {
+			this.addLazyInitLayerInfoCounter(ItemGroupPrefix + this.layersInfo[key].section);
+			this.layersInfo[key].get(this);
+		}
+		
+		
         if (this.printCallback != null) {
             this.printCallback();
         }
-        
-        //Show visible layers count in class (to save state after refresh menu)
+		
+		//Show visible layers count in class (to save state after refresh menu)
         for (var key in this.items) {
             this.items[key].muestraCantidadCapasVisibles();
         }
@@ -1176,7 +1182,7 @@ class GestorMenu {
               $('#searchForm').hide();
           }
         });
-        if (this._selectedTab.isSearcheable == false) { //Check if first active tab is searcheable
+        if (this._hasMoreTabsThanOne() == true && this._selectedTab.isSearcheable == false) { //Check if first active tab is searcheable
             $('#searchForm').hide();
         }
         
