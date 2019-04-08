@@ -57,23 +57,26 @@ function loadGeojsonTpl (url, layer) {
 
 }
 
-function loadWmsTpl (wmsUrl, layer) {
+function loadWmsTpl (objLayer) {
+    wmsUrl = objLayer.capa.host;
+    layer = objLayer.nombre;
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
     } else {
-        createWmsLayer(wmsUrl, layer);
+        //createWmsLayer(wmsUrl, layer);
+        createWmsLayer(objLayer);
         overlayMaps[layer].addTo(mapa);
     }
     
-    function createWmsLayer(wmsUrl, layer) {
-        var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+    function createWmsLayer(objLayer) {
+        var wmsSource = new L.WMS.source(objLayer.capa.getHostWMS(), {
             transparent: true,
             tiled: true,
             maxZoom: 21,
+            'title': objLayer.titulo,
             format: 'image/png',
-            INFO_FORMAT: 'text/html'
-            //INFO_FORMAT: 'application/json'
+            INFO_FORMAT: objLayer.capa.featureInfoFormat
         });
         overlayMaps[layer] = wmsSource.getLayer(layer);
     }
