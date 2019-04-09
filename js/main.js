@@ -43,7 +43,9 @@ $.getJSON("./js/menu.json", function (data) {
           getGeoserverCounter++;
           var itemData = data.items[key];
           var tab = new Tab(itemData.tab);
-          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, data.items[key].feature_info_format, data.items[key].type);
+		  var customizedLayers = (itemData.customize_layers == undefined) ? "" : itemData.customize_layers;
+          var featureInfoFormat = (itemData.feature_info_format == undefined) ? "application/json" : itemData.feature_info_format;
+          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, featureInfoFormat, data.items[key].type, customizedLayers);
           if (itemData.allowed_layers) {
               wmsLayerInfo.setAllowebLayers(itemData.allowed_layers);
           }
