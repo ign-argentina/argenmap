@@ -806,6 +806,7 @@ class GestorMenu {
         this.itemsGroupDOM = '';
         this.printCallback = null;
         this.querySearch = '';
+        this.showSearcher = false;
         
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
@@ -865,6 +866,14 @@ class GestorMenu {
     
     addLayerInfoCounter() {
         this._getLayersInfoCounter++;
+    }
+    
+    setShowSearcher(show_searcher) {
+        this.showSearcher = show_searcher;
+    }
+    
+    getShowSearcher() {
+        return this.showSearcher;
     }
     
     getQuerySearch() {
@@ -1073,17 +1082,21 @@ class GestorMenu {
     }
     
     _printSearcher() {
-        return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" + 
-                "<div class='input-group'>" +
-                    "<div class='form-group has-feedback has-clear'>" +
-                        "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'>" +
-                        "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>" +
+        if (this.getShowSearcher() == true) {
+            return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" + 
+                    "<div class='input-group'>" +
+                        "<div class='form-group has-feedback has-clear'>" +
+                            "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'>" +
+                            "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>" +
+                        "</div>" +
+                        "<span class='input-group-btn'>" +
+                            "<button class='btn btn-default' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>" +
+                        "</span>" +
                     "</div>" +
-                    "<span class='input-group-btn'>" +
-                        "<button class='btn btn-default' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>" +
-                    "</span>" +
-                "</div>" +
-                "</form>";
+                    "</form>";
+        }
+        
+        return '';
     }
     
     getAvailableTags() {
