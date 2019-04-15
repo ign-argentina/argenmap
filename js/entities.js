@@ -218,7 +218,7 @@ class LayersInfoWMS extends LayersInfo {
 						} else {
 							var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
 						}
-						var item = new Item(capa.nombre, this.section+capa.nombre, "", this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+						var item = new Item(capa.nombre, this.section+clearString(capa.nombre), "", this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
 						item.setImpresor(impresorItem);
 						if (itemGroup.getItemByName(this.section+capa.nombre) == null) {
 							itemGroup.setItem(item);
