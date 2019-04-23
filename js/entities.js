@@ -78,6 +78,18 @@ class ImpresorItemHTML extends Impresor {
 	}
 }
 
+class ImpresorItemWMSSelector extends Impresor {
+	imprimir(itemComposite) {
+		
+		var childId = itemComposite.getId();
+		
+		return "<option value='" + childId + "'>" + 
+				(itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + 
+				"</option>";
+			
+	}
+}
+
 class ImpresorItemCapaBaseHTML extends Impresor {
 	imprimir(itemComposite) {
 		
@@ -114,6 +126,15 @@ class ImpresorGrupoHTML extends Impresor {
 	}
 }
 
+class ImpresorGroupWMSSelector extends Impresor {
+	imprimir(itemComposite) {
+		
+		var listaId = itemComposite.getId();
+        
+		return "<option value='" + listaId + "'>" + itemComposite.nombre + "</option>";		
+	}
+}
+
 class ImpresorCapasBaseHTML extends Impresor {
 	imprimir(itemComposite) {
 		
@@ -128,6 +149,7 @@ class ImpresorCapasBaseHTML extends Impresor {
 		
 	}
 }
+
 
 /******************************************
 Strategy for get layers info
@@ -186,7 +208,7 @@ class LayersInfo {
 
 class LayersInfoWMS extends LayersInfo {
     
-    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type, customizedLayers) {
+    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type, customizedLayers, itemGroupPrinter) {
         super();
         this.host = host;
         this.service = service;
@@ -199,6 +221,7 @@ class LayersInfoWMS extends LayersInfo {
         this.feature_info_format = feature_info_format;
         this.type = type;
         this.customizedLayers = (customizedLayers == "") ? null : customizedLayers;
+        this.itemGroupPrinter = (itemGroupPrinter == "") ? new ImpresorGrupoHTML : itemGroupPrinter;
         
         this._executed = false;
     }
@@ -206,7 +229,7 @@ class LayersInfoWMS extends LayersInfo {
 	get(_gestorMenu) {
         if (this._executed == false) {
 		   this._executed = true; //Indicates that getCapabilities executed
-			
+		   
 		   //If lazyInit and have custimized layers, print layer after wms loaded (for searcher)
 		   if (_gestorMenu.getLazyInitialization() == true && this.customizedLayers != null) {
 			    const impresorItem = new ImpresorItemHTML();
@@ -229,7 +252,7 @@ class LayersInfoWMS extends LayersInfo {
 				_gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + this.section);
                 if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + this.section)) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printOnlySection(this.section);
-                }                
+                }
             } else {
 				this._parseRequest(_gestorMenu);
 			}
@@ -238,7 +261,8 @@ class LayersInfoWMS extends LayersInfo {
 	}
     
     generateGroups(_gestorMenu) {
-        const impresorGroup = new ImpresorGrupoHTML();
+        //const impresorGroup = new ImpresorGrupoHTML();
+		const impresorGroup = this.itemGroupPrinter;
         const impresorItem = new ImpresorItemHTML();
         
         var thisObj = this;
@@ -251,7 +275,8 @@ class LayersInfoWMS extends LayersInfo {
     }
     
     _parseRequest(_gestorMenu) {
-        const impresorGroup = new ImpresorGrupoHTML();
+        //const impresorGroup = new ImpresorGrupoHTML();
+		const impresorGroup = this.itemGroupPrinter;
         const impresorItem = new ImpresorItemHTML();
         
         var thisObj = this;
@@ -599,6 +624,39 @@ class ItemGroupBaseMap extends ItemGroup {
     getAvailableTags() {
         return [];
     }
+}
+
+//Auxilary class for ItemGroupWMSSelector
+class wmsSelector {
+	constructor(id, name, title, source, service, version, featureInfoFormat, type) {
+		if (type == 'wmslayer_mapserver') {
+			this.capa = new CapaMapserver(name, title, null, source, service, version, null, null, null, null, null, null);
+		} else {
+			this.capa = new Capa(name, title, null, source, service, version, null, null, null, null, null, null);
+		}
+		this.id = id;
+		this.featureInfoFormat = featureInfoFormat;
+		this.type = type;
+	}
+	
+	getId() {
+		return this.id;
+	}
+	
+	getTitle() {
+		return this.capa.titulo;
+	}
+}
+
+class ItemGroupWMSSelector extends ItemGroup {
+	constructor(tab, name, section, keyWords, description) {
+		super(tab, name, section, 0, keyWords, description, '');
+		this.wmsSelectorList = {};
+	}
+	
+	addWMS(id, title, source, service, version, featureInfoFormat, type) {
+		this.wmsSelectorList[id] = new wmsSelector(id, title, source, service, version, featureInfoFormat, type);
+	}
 }
 
 class Item extends ItemComposite {
@@ -1114,6 +1172,7 @@ class GestorMenu {
         
         var aSections = {};
         
+		//Set initial html printing for all tabs
         for (var key in this._tabs) {
             if (this._selectedTab == null) {
                 this.setSelectedTab(this._tabs[key].id);
@@ -1123,6 +1182,7 @@ class GestorMenu {
             }
             aSections[this._tabs[key].getExtendedId()] = [];
             aSections[this._tabs[key].getExtendedId()].push("<div role='tabpanel' class='tab-pane " + sClassAux + "' id='" + this._tabs[key].getExtendedId() + "'>");
+			aSections[this._tabs[key].getExtendedId()].push(this._tabs[key].getInitialPrint());
             sClassAux = '';
         }
         
@@ -1136,6 +1196,7 @@ class GestorMenu {
 		}
 		itemsAux.sort(this.ordenaPorPeso);
 
+		//Set items html printing for all tabs
 		for (var key in itemsAux) {
 			var itemComposite = itemsAux[key];
             if (itemComposite.getTab().getExtendedId() != EmptyTab) {
@@ -1149,6 +1210,11 @@ class GestorMenu {
                 itemComposite.getObjDom().append(itemComposite.imprimir());
             }
 		}
+		
+		//Set end html printing for all tabs
+        for (var key in this._tabs) {
+			aSections[this._tabs[key].getExtendedId()].push(this._tabs[key].getEndPrint());
+        }
 
         var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
         for (var key in this._tabs) {
@@ -1319,6 +1385,16 @@ class GestorMenu {
 		}
 	}
 	
+	showWMSLayerCombobox(itemSeccion) {
+		for (var key in this.items) {
+			var itemComposite = this.items[key];
+			if (itemComposite.getId() == itemSeccion) {
+				itemComposite.imprimir();
+				$('#wms-combo-list').html(itemComposite.itemsStr);
+			}
+		}
+	}
+	
 }
 
 /******************************************
@@ -1330,14 +1406,18 @@ class Tab {
         this.content = "";
         this.isSearcheable = false;
         this.searchQuery = "";
+        this.listType = "accordion";
         this.itemsGetter = new ItemsGetter();
         if (tab != undefined && tab != "") {
             this.id = tab.id;
-            if (this.isSearcheable != undefined) {
+            if (tab.searcheable != undefined) {
                 this.isSearcheable = tab.searcheable;
             }
-            if (this.content != undefined) {
+            if (tab.content != undefined) {
                 this.content = tab.content;
+            }
+			if (tab.list_type != undefined) {
+                this.listType = tab.list_type;
             }
         }		
 	}
@@ -1361,4 +1441,18 @@ class Tab {
     setSearchQuery(q) {
         this.searchQuery = q;
     }
+	
+	getInitialPrint() {
+		if (this.listType == "combobox") {
+			return '<select onChange="gestorMenu.showWMSLayerCombobox(this.value)" class="wms-combobox-selector">';
+		}
+		return '';
+	}
+	
+	getEndPrint() {
+		if (this.listType == "combobox") {
+			return '</select><div id="wms-combo-list"></div>';
+		}
+		return '';
+	}
 }

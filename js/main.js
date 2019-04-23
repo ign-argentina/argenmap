@@ -4,6 +4,7 @@ var gestorMenu = new GestorMenu();
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML();
 const impresorBaseMap = new ImpresorCapasBaseHTML();
 const impresorGroup = new ImpresorGrupoHTML();
+const impresorGroupWMSSelector = new ImpresorGroupWMSSelector();
 
 var getGeoserverCounter = 0;
 var keywordFilter = 'dato-basico-y-fundamental';
@@ -45,7 +46,11 @@ $.getJSON("./js/menu.json", function (data) {
           var tab = new Tab(itemData.tab);
 		  var customizedLayers = (itemData.customize_layers == undefined) ? "" : itemData.customize_layers;
           var featureInfoFormat = (itemData.feature_info_format == undefined) ? "application/json" : itemData.feature_info_format;
-          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, featureInfoFormat, data.items[key].type, customizedLayers);
+		  var impresorGroupTemp = impresorGroup;
+		  if (tab.listType == "combobox") {
+			  impresorGroupTemp = impresorGroupWMSSelector;
+		  }
+          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, featureInfoFormat, data.items[key].type, customizedLayers, impresorGroupTemp);
           if (itemData.allowed_layers) {
               wmsLayerInfo.setAllowebLayers(itemData.allowed_layers);
           }
@@ -60,4 +65,22 @@ $.getJSON("./js/menu.json", function (data) {
   });
   template = 'templates/' + template + '/main.html';
   $('#template').load(template);
+  
+  //const impresorWMSSelectorList = new ImpresorWMSSelectorList();
+  /*
+  var tab = new Tab({ "id":"tabbb", "searcheable":false, "content":"Tabbb" });
+  var wmsLayerInfo = new LayersInfoWMS('http://ramsac.ign.gob.ar/resource-proxy-1.1.2/PHP/proxy.php?https://sig.se.gob.ar/wmspubmap', 'wms', '1.3.0', tab, 'aaaaaaaa', 1, 'Secretaría de Energía', '', 'text/html', 'wmslayer_mapserver', '', impresorGroupWMSSelector);
+  wmsLayerInfo.setCustomizedLayers(itemData.customize_layers);
+  gestorMenu.addTab(tab);
+  gestorMenu.addLayersInfo(wmsLayerInfo);
+  */
+  /*
+  groupAux = new ItemGroupWMSSelector(tab, 'Industria y servicios', 'aaaaaaaa', '', '');
+  groupAux.setImpresor(impresorWMSSelectorList);
+  groupAux.addWMS('1', 'http://ramsac.ign.gob.ar/resource-proxy-1.1.2/PHP/proxy.php?https://sig.se.gob.ar/wmspubmap', 'Secretaría de Energía', 'wms', '1.3.0', 'text/html', 'wmslayer_mapserver');
+  //console.log(groupAux.wmsSelectorList);
+  gestorMenu.addTab(tab);
+  gestorMenu.addItemGroup(groupAux);
+  */
+
 });
