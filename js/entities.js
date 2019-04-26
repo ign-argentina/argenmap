@@ -1444,7 +1444,7 @@ class Tab {
 	
 	getInitialPrint() {
 		if (this.listType == "combobox") {
-			return '<select onChange="gestorMenu.showWMSLayerCombobox(this.value)" class="wms-combobox-selector">';
+			return '<select onChange="gestorMenu.showWMSLayerCombobox(this.value)" class="wms-combobox-selector"><option value="">Seleccione un servicio</option>';
 		}
 		return '';
 	}
