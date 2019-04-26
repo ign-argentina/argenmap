@@ -143,7 +143,8 @@ class ImpresorCapasBaseHTML extends Impresor {
 		if($( ".basemap-selector a[data-toggle='collapse']" ).length == 0) {
 			return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
 				'<div class="collapse pull-right" id="collapseBaseMapLayers">' +
-					'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
+					//'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
+					'<div class="loading"><img src="img/loading.gif"></div>' +
 				'</div>';
 		}
 		
@@ -1386,6 +1387,7 @@ class GestorMenu {
 	}
 	
 	showWMSLayerCombobox(itemSeccion) {
+		$('#wms-combo-list').html("");
 		for (var key in this.items) {
 			var itemComposite = this.items[key];
 			if (itemComposite.getId() == itemSeccion) {
@@ -1444,7 +1446,7 @@ class Tab {
 	
 	getInitialPrint() {
 		if (this.listType == "combobox") {
-			return '<select onChange="gestorMenu.showWMSLayerCombobox(this.value)" class="wms-combobox-selector"><option value="">Seleccione un servicio</option>';
+			return '<select id="wms-combobox-selector-' + this.id + '" onChange="gestorMenu.showWMSLayerCombobox(this.value)" class="wms-combobox-selector"><option value="">Seleccione un servicio</option>';
 		}
 		return '';
 	}
