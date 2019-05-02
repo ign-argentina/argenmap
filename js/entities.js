@@ -242,7 +242,17 @@ class LayersInfoWMS extends LayersInfo {
 						} else {
 							var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
 						}
-						var item = new Item(capa.nombre, this.section+clearString(capa.nombre), this.customizedLayers[key]["new_keywords"], this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+                        
+                        //Generate keyword array
+                        var keywordsAux = [];
+                        if (this.customizedLayers[key]["new_keywords"] != null && this.customizedLayers[key]["new_keywords"] != '') {
+                            keywordsAux = this.customizedLayers[key]["new_keywords"].split(',');
+                            for (var keykeywordsAux in keywordsAux) {
+                                keywordsAux[keykeywordsAux]  = keywordsAux[keykeywordsAux].trim();
+                            }
+                        }
+                        
+						var item = new Item(capa.nombre, this.section+clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
 						item.setImpresor(impresorItem);
 						if (itemGroup.getItemByName(this.section+capa.nombre) == null) {
 							itemGroup.setItem(item);
@@ -418,7 +428,7 @@ class ItemComposite {
 		this.nombre = nombre
 		this.seccion = seccion
 		this.peso = null;
-		this.palabrasClave = palabrasClave
+		this.palabrasClave = (palabrasClave == null || palabrasClave == '') ? [] : palabrasClave
 		this.descripcion = descripcion
 		this.impresor = null
 		this.objDOM = null
@@ -427,14 +437,6 @@ class ItemComposite {
         this._active = false;
 		
 		this.searchOrderIntoKeywords();
-        
-        this.keywords = [];
-        if (palabrasClave != null && palabrasClave != '') {
-            var keywordsAux = this.palabrasClave.split(',');
-            for (var key in keywordsAux) {
-                this.keywords.push(keywordsAux[key].trim());
-            }
-        }
 	}
         
     getQuerySearch() {
@@ -504,8 +506,8 @@ class ItemComposite {
         if (this.capa.titulo.toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
             return true;
         }        
-        for (var key in this.keywords) {
-            if (this.keywords[key].toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
+        for (var key in this.palabrasClave) {
+            if (this.palabrasClave[key].toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
                 return true;
             }
         }
@@ -735,7 +737,7 @@ class Item extends ItemComposite {
     
     getAvailableTags() {
         var tagsAux = [this.capa.titulo];
-        return tagsAux.concat(this.keywords);
+        return tagsAux.concat(this.palabrasClave);
     }
 }
 
