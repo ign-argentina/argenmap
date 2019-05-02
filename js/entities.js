@@ -242,7 +242,7 @@ class LayersInfoWMS extends LayersInfo {
 						} else {
 							var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
 						}
-						var item = new Item(capa.nombre, this.section+clearString(capa.nombre), "", this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+						var item = new Item(capa.nombre, this.section+clearString(capa.nombre), this.customizedLayers[key]["new_keywords"], this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
 						item.setImpresor(impresorItem);
 						if (itemGroup.getItemByName(this.section+capa.nombre) == null) {
 							itemGroup.setItem(item);
@@ -427,6 +427,14 @@ class ItemComposite {
         this._active = false;
 		
 		this.searchOrderIntoKeywords();
+        
+        this.keywords = [];
+        if (palabrasClave != null && palabrasClave != '') {
+            var keywordsAux = this.palabrasClave.split(',');
+            for (var key in keywordsAux) {
+                this.keywords.push(keywordsAux[key].trim());
+            }
+        }
 	}
         
     getQuerySearch() {
@@ -495,6 +503,11 @@ class ItemComposite {
         }
         if (this.capa.titulo.toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
             return true;
+        }        
+        for (var key in this.keywords) {
+            if (this.keywords[key].toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
+                return true;
+            }
         }
         return false;
     }
@@ -721,7 +734,8 @@ class Item extends ItemComposite {
 	}
     
     getAvailableTags() {
-        return [this.capa.titulo];
+        var tagsAux = [this.capa.titulo];
+        return tagsAux.concat(this.keywords);
     }
 }
 
@@ -1166,7 +1180,8 @@ class GestorMenu {
                 availableTags = availableTags.concat(itemComposite.getAvailableTags());
             }
         }
-        return availableTags;
+        let uniqueTags = [...new Set(availableTags)]; //Remove Duplicates from Tags array
+        return uniqueTags;
     }
     
     _printWithTabs() {
@@ -1279,8 +1294,10 @@ class GestorMenu {
 		
 		//To print all items in background
 		for (var key in this.layersInfo) {
-			this.addLazyInitLayerInfoCounter(ItemGroupPrefix + this.layersInfo[key].section);
-			this.layersInfo[key].get(this);
+            if (this.layersInfo[key].tab.listType != "combobox") {
+                this.addLazyInitLayerInfoCounter(ItemGroupPrefix + this.layersInfo[key].section);
+                this.layersInfo[key].get(this);
+            }
 		}
 		
 		//Call callback after print (if exists)
@@ -1366,8 +1383,13 @@ class GestorMenu {
     //Prints only one section (works on lazy initialization only)
     printOnlySection(sectionId) {
         var itemGroup = this.items[sectionId];
-        itemGroup.imprimir();
-        $('#' + sectionId + ' > ul').html(itemGroup.itemsStr);
+        if (itemGroup.tab.listType == "combobox") { //Si es combobox
+            itemGroup.imprimir();
+            $('#wms-combo-list').html(itemGroup.itemsStr);
+        } else { //Si no es es combobox
+            itemGroup.imprimir();
+            $('#' + sectionId + ' > ul').html(itemGroup.itemsStr);
+        }
     }
 	
 	muestraCapa(itemSeccion) {
@@ -1387,6 +1409,26 @@ class GestorMenu {
 	}
 	
 	showWMSLayerCombobox(itemSeccion) {
+        
+        //To print all items in background
+		/*
+        for (var key in this.items) {
+            if (this.items[key].tab.listType == "combobox" && this.items[key].seccion != itemSeccionAux) {
+                this.items[key].itemsComposite = {};
+            }
+		}
+        */
+        
+        //Realiza el GET de las capas
+        var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix,'');
+        for (var key in this.layersInfo) {
+            if (this.layersInfo[key].section == itemSeccionAux) {
+                this.addLazyInitLayerInfoCounter(itemSeccion);
+                this.layersInfo[key].get(this);
+            }
+        }
+        
+        //Reimprime menu
 		$('#wms-combo-list').html("");
 		for (var key in this.items) {
 			var itemComposite = this.items[key];
@@ -1395,6 +1437,7 @@ class GestorMenu {
 				$('#wms-combo-list').html(itemComposite.itemsStr);
 			}
 		}
+
 	}
 	
 }
