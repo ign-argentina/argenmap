@@ -144,6 +144,7 @@ class ImpresorCapasBaseHTML extends Impresor {
 			return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
 				'<div class="collapse pull-right" id="collapseBaseMapLayers">' +
 					'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
+					//'<div class="loading"><img src="img/loading.gif"></div>' +
 				'</div>';
 		}
 		
@@ -1106,12 +1107,6 @@ class GestorMenu {
     
     executeLayersInfo() {
         if (this.getLazyInitialization() == true) {
-			
-			//Generate basemap items
-			for (var key in this.layersInfo) {
-                this.layersInfo[key].get(this);
-            }
-			
             for (var key in this.layersInfo) {
                 this.layersInfo[key].generateGroups(this);
             }
