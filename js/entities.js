@@ -1420,6 +1420,9 @@ class GestorMenu {
             }
 		}
         */
+		
+		//Loader gif
+		$('#wms-combo-list').html('<div class="loading"><img src="img/loading.gif"></div>');
         
         //Realiza el GET de las capas
         var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix,'');
@@ -1431,10 +1434,10 @@ class GestorMenu {
         }
         
         //Reimprime menu
-		$('#wms-combo-list').html("");
+		//$('#wms-combo-list').html("");
 		for (var key in this.items) {
 			var itemComposite = this.items[key];
-			if (itemComposite.getId() == itemSeccion) {
+			if (itemComposite.getId() == itemSeccion && Object.keys(itemComposite.itemsComposite).length > 0) {
 				itemComposite.imprimir();
 				$('#wms-combo-list').html(itemComposite.itemsStr);
 			}
