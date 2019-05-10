@@ -65,22 +65,4 @@ $.getJSON("./js/menu.json", function (data) {
   });
   template = 'templates/' + template + '/main.html';
   $('#template').load(template);
-  
-  //const impresorWMSSelectorList = new ImpresorWMSSelectorList();
-  /*
-  var tab = new Tab({ "id":"tabbb", "searcheable":false, "content":"Tabbb" });
-  var wmsLayerInfo = new LayersInfoWMS('http://ramsac.ign.gob.ar/resource-proxy-1.1.2/PHP/proxy.php?https://sig.se.gob.ar/wmspubmap', 'wms', '1.3.0', tab, 'aaaaaaaa', 1, 'Secretaría de Energía', '', 'text/html', 'wmslayer_mapserver', '', impresorGroupWMSSelector);
-  wmsLayerInfo.setCustomizedLayers(itemData.customize_layers);
-  gestorMenu.addTab(tab);
-  gestorMenu.addLayersInfo(wmsLayerInfo);
-  */
-  /*
-  groupAux = new ItemGroupWMSSelector(tab, 'Industria y servicios', 'aaaaaaaa', '', '');
-  groupAux.setImpresor(impresorWMSSelectorList);
-  groupAux.addWMS('1', 'http://ramsac.ign.gob.ar/resource-proxy-1.1.2/PHP/proxy.php?https://sig.se.gob.ar/wmspubmap', 'Secretaría de Energía', 'wms', '1.3.0', 'text/html', 'wmslayer_mapserver');
-  //console.log(groupAux.wmsSelectorList);
-  gestorMenu.addTab(tab);
-  gestorMenu.addItemGroup(groupAux);
-  */
-
 });

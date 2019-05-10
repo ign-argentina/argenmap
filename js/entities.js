@@ -426,7 +426,7 @@ Composite para menu
 class ItemComposite {
 	constructor(nombre, seccion, palabrasClave, descripcion) {
 		this.nombre = nombre
-		this.seccion = seccion
+		this.seccion = sanatizeString(seccion)
 		this.peso = null;
 		this.palabrasClave = (palabrasClave == null || palabrasClave == '') ? [] : palabrasClave
 		this.descripcion = descripcion
