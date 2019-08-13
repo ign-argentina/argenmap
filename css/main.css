@@ -138,6 +138,11 @@ li.active > div > a {
 @media (min-width: 992px) {
   #sidebar-container.collapse {__height: 100% !important};
 }
+.wms-combobox-selector {
+	width: 100%;
+	height: 35px;
+	margin: 10px 0px 10px 0px;
+}
 
 /*******************************
 Searcher

@@ -39,6 +39,14 @@ function mainMenuSearch(e) {
     gestorMenu.printMenu();
 }
 
+function clearString(s) {
+	return s.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+}
+
+
+function sanatizeString(s) {
+	return clearString(s).replace(/ /g, '_');
+}
 
 /****** Enveloped functions ******/
 function loadGeojson (url, layer) {

@@ -1,6 +1,7 @@
 'use strict';
 
 const EmptyTab = 'main-menu-tab-';
+const ItemGroupPrefix = 'lista-';
 
 /******************************************
 Class Capa
@@ -77,6 +78,18 @@ class ImpresorItemHTML extends Impresor {
 	}
 }
 
+class ImpresorItemWMSSelector extends Impresor {
+	imprimir(itemComposite) {
+		
+		var childId = itemComposite.getId();
+		
+		return "<option value='" + childId + "'>" + 
+				(itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + 
+				"</option>";
+			
+	}
+}
+
 class ImpresorItemCapaBaseHTML extends Impresor {
 	imprimir(itemComposite) {
 		
@@ -113,6 +126,15 @@ class ImpresorGrupoHTML extends Impresor {
 	}
 }
 
+class ImpresorGroupWMSSelector extends Impresor {
+	imprimir(itemComposite) {
+		
+		var listaId = itemComposite.getId();
+        
+		return "<option value='" + listaId + "'>" + itemComposite.nombre + "</option>";		
+	}
+}
+
 class ImpresorCapasBaseHTML extends Impresor {
 	imprimir(itemComposite) {
 		
@@ -122,11 +144,13 @@ class ImpresorCapasBaseHTML extends Impresor {
 			return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
 				'<div class="collapse pull-right" id="collapseBaseMapLayers">' +
 					'<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
+					//'<div class="loading"><img src="img/loading.gif"></div>' +
 				'</div>';
 		}
 		
 	}
 }
+
 
 /******************************************
 Strategy for get layers info
@@ -185,7 +209,7 @@ class LayersInfo {
 
 class LayersInfoWMS extends LayersInfo {
     
-    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type) {
+    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type, customizedLayers, itemGroupPrinter) {
         super();
         this.host = host;
         this.service = service;
@@ -197,19 +221,59 @@ class LayersInfoWMS extends LayersInfo {
         this.short_abstract = short_abstract;
         this.feature_info_format = feature_info_format;
         this.type = type;
+        this.customizedLayers = (customizedLayers == "") ? null : customizedLayers;
+        this.itemGroupPrinter = (itemGroupPrinter == "") ? new ImpresorGrupoHTML : itemGroupPrinter;
         
         this._executed = false;
     }
     
 	get(_gestorMenu) {
         if (this._executed == false) {
-           this._executed = true;
-           this._parseRequest(_gestorMenu);
+		   this._executed = true; //Indicates that getCapabilities executed
+		   
+		   //If lazyInit and have custimized layers, print layer after wms loaded (for searcher)
+		   if (_gestorMenu.getLazyInitialization() == true && this.customizedLayers != null) {
+			    const impresorItem = new ImpresorItemHTML();
+			    var itemGroup = _gestorMenu.getItemGroupById(ItemGroupPrefix + this.section);
+				if (itemGroup != null) {
+					for (var key in this.customizedLayers) {
+						if (this.type == 'wmslayer_mapserver') {
+							var capa = new CapaMapserver(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+						} else {
+							var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+						}
+                        
+                        //Generate keyword array
+                        var keywordsAux = [];
+                        if (this.customizedLayers[key]["new_keywords"] != null && this.customizedLayers[key]["new_keywords"] != '') {
+                            keywordsAux = this.customizedLayers[key]["new_keywords"].split(',');
+                            for (var keykeywordsAux in keywordsAux) {
+                                keywordsAux[keykeywordsAux]  = keywordsAux[keykeywordsAux].trim();
+                            }
+                        }
+                        
+						var item = new Item(capa.nombre, this.section+clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+						item.setImpresor(impresorItem);
+						if (itemGroup.getItemByName(this.section+capa.nombre) == null) {
+							itemGroup.setItem(item);
+						}
+					}
+				}
+				//_gestorMenu.addItemGroup(itemGroup);
+				_gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + this.section);
+                if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + this.section)) { //Si ya cargó todas las capas solicitadas
+                    _gestorMenu.printOnlySection(this.section);
+                }
+            } else {
+				this._parseRequest(_gestorMenu);
+			}
+			
         }
 	}
     
     generateGroups(_gestorMenu) {
-        const impresorGroup = new ImpresorGrupoHTML();
+        //const impresorGroup = new ImpresorGrupoHTML();
+		const impresorGroup = this.itemGroupPrinter;
         const impresorItem = new ImpresorItemHTML();
         
         var thisObj = this;
@@ -222,7 +286,8 @@ class LayersInfoWMS extends LayersInfo {
     }
     
     _parseRequest(_gestorMenu) {
-        const impresorGroup = new ImpresorGrupoHTML();
+        //const impresorGroup = new ImpresorGrupoHTML();
+		const impresorGroup = this.itemGroupPrinter;
         const impresorItem = new ImpresorItemHTML();
         
         var thisObj = this;
@@ -318,8 +383,8 @@ class LayersInfoWMS extends LayersInfo {
             _gestorMenu.addItemGroup(groupAux);
             
             if (_gestorMenu.getLazyInitialization() == true) {
-                _gestorMenu.removeLazyInitLayerInfoCounter(thisObj.section);
-                if (_gestorMenu.finishLazyInitLayerInfo(thisObj.section)) { //Si ya cargó todas las capas solicitadas
+                _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
+                if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printOnlySection(thisObj.section);
                 }
             } else {
@@ -361,9 +426,9 @@ Composite para menu
 class ItemComposite {
 	constructor(nombre, seccion, palabrasClave, descripcion) {
 		this.nombre = nombre
-		this.seccion = seccion
+		this.seccion = sanatizeString(seccion)
 		this.peso = null;
-		this.palabrasClave = palabrasClave
+		this.palabrasClave = (palabrasClave == null || palabrasClave == '') ? [] : palabrasClave
 		this.descripcion = descripcion
 		this.impresor = null
 		this.objDOM = null
@@ -440,6 +505,11 @@ class ItemComposite {
         }
         if (this.capa.titulo.toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
             return true;
+        }        
+        for (var key in this.palabrasClave) {
+            if (this.palabrasClave[key].toLowerCase().indexOf(this.querySearch.toLowerCase()) >= 0) {
+                return true;
+            }
         }
         return false;
     }
@@ -463,12 +533,22 @@ class ItemGroup extends ItemComposite {
 	}
 	
 	getId() {
-		return "lista-" + this.seccion;
+		return ItemGroupPrefix + this.seccion;
 	}
     
     getTab() {
         return this.tab;
     }
+	
+	getItemByName(name) {
+		for (var key in this.itemsComposite) {
+			if (this.itemsComposite[key].nombre == name) {
+				return this.itemsComposite[key];
+			}
+		}
+		
+		return null;
+	}
 	
 	ordenaItems(a, b) {
 		var aOrden1 = a.peso;
@@ -504,16 +584,13 @@ class ItemGroup extends ItemComposite {
 		this.itemsStr = '';
 		
         var itemsAux = this.getItemsSearched();
-		if (itemsAux.length > 0) {
-            itemsAux.sort(this.ordenaItems);
-            
-            for (var key in itemsAux) {
-                this.itemsStr += itemsAux[key].imprimir();
-            }
-            return this.impresor.imprimir(this);
-        }
+        itemsAux.sort(this.ordenaItems);
         
-        return '';
+        for (var key in itemsAux) {
+            this.itemsStr += itemsAux[key].imprimir();
+        }
+        return this.impresor.imprimir(this);
+        
 	}
 	
 	getCantidadCapasVisibles() {
@@ -563,6 +640,39 @@ class ItemGroupBaseMap extends ItemGroup {
     getAvailableTags() {
         return [];
     }
+}
+
+//Auxilary class for ItemGroupWMSSelector
+class wmsSelector {
+	constructor(id, name, title, source, service, version, featureInfoFormat, type) {
+		if (type == 'wmslayer_mapserver') {
+			this.capa = new CapaMapserver(name, title, null, source, service, version, null, null, null, null, null, null);
+		} else {
+			this.capa = new Capa(name, title, null, source, service, version, null, null, null, null, null, null);
+		}
+		this.id = id;
+		this.featureInfoFormat = featureInfoFormat;
+		this.type = type;
+	}
+	
+	getId() {
+		return this.id;
+	}
+	
+	getTitle() {
+		return this.capa.titulo;
+	}
+}
+
+class ItemGroupWMSSelector extends ItemGroup {
+	constructor(tab, name, section, keyWords, description) {
+		super(tab, name, section, 0, keyWords, description, '');
+		this.wmsSelectorList = {};
+	}
+	
+	addWMS(id, title, source, service, version, featureInfoFormat, type) {
+		this.wmsSelectorList[id] = new wmsSelector(id, title, source, service, version, featureInfoFormat, type);
+	}
 }
 
 class Item extends ItemComposite {
@@ -626,7 +736,8 @@ class Item extends ItemComposite {
 	}
     
     getAvailableTags() {
-        return [this.capa.titulo];
+        var tagsAux = [this.capa.titulo];
+        return tagsAux.concat(this.palabrasClave);
     }
 }
 
@@ -770,6 +881,7 @@ class GestorMenu {
         this.itemsGroupDOM = '';
         this.printCallback = null;
         this.querySearch = '';
+        this.showSearcher = false;
         
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
@@ -831,6 +943,14 @@ class GestorMenu {
         this._getLayersInfoCounter++;
     }
     
+    setShowSearcher(show_searcher) {
+        this.showSearcher = show_searcher;
+    }
+    
+    getShowSearcher() {
+        return this.showSearcher;
+    }
+    
     getQuerySearch() {
         return this.querySearch;
     }
@@ -888,6 +1008,16 @@ class GestorMenu {
             this._selectedTab.itemsGetter = this._itemsGetter;
         }
     }
+	
+	getItemGroupById(id) {
+		for (var key in this.items) {
+			if (this.items[key].getId() == id) {
+				return this.items[key];
+			}
+		}
+		
+		return null;
+	}
 	
 	addItemGroup(itemGroup) {
 		var itemAux;
@@ -983,9 +1113,9 @@ class GestorMenu {
             this.printMenu();
             
             var thisObj = this;
-            
+			
             //Capture show.bs.collapse menu event
-            $(function() {
+			$(function() {
                 $(".collapse").on('show.bs.collapse', function(e) {
                     if ($(this).is(e.target)) {
                         var showingId = this.id;
@@ -1027,17 +1157,21 @@ class GestorMenu {
     }
     
     _printSearcher() {
-        return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" + 
-                "<div class='input-group'>" +
-                    "<div class='form-group has-feedback has-clear'>" +
-                        "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'>" +
-                        "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>" +
+        if (this.getShowSearcher() == true) {
+            return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" + 
+                    "<div class='input-group'>" +
+                        "<div class='form-group has-feedback has-clear'>" +
+                            "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'>" +
+                            "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>" +
+                        "</div>" +
+                        "<span class='input-group-btn'>" +
+                            "<button class='btn btn-default' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>" +
+                        "</span>" +
                     "</div>" +
-                    "<span class='input-group-btn'>" +
-                        "<button class='btn btn-default' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>" +
-                    "</span>" +
-                "</div>" +
-                "</form>";
+                    "</form>";
+        }
+        
+        return '';
     }
     
     getAvailableTags() {
@@ -1048,13 +1182,15 @@ class GestorMenu {
                 availableTags = availableTags.concat(itemComposite.getAvailableTags());
             }
         }
-        return availableTags;
+        let uniqueTags = [...new Set(availableTags)]; //Remove Duplicates from Tags array
+        return uniqueTags;
     }
     
     _printWithTabs() {
         
         var aSections = {};
         
+		//Set initial html printing for all tabs
         for (var key in this._tabs) {
             if (this._selectedTab == null) {
                 this.setSelectedTab(this._tabs[key].id);
@@ -1064,6 +1200,7 @@ class GestorMenu {
             }
             aSections[this._tabs[key].getExtendedId()] = [];
             aSections[this._tabs[key].getExtendedId()].push("<div role='tabpanel' class='tab-pane " + sClassAux + "' id='" + this._tabs[key].getExtendedId() + "'>");
+			aSections[this._tabs[key].getExtendedId()].push(this._tabs[key].getInitialPrint());
             sClassAux = '';
         }
         
@@ -1077,6 +1214,7 @@ class GestorMenu {
 		}
 		itemsAux.sort(this.ordenaPorPeso);
 
+		//Set items html printing for all tabs
 		for (var key in itemsAux) {
 			var itemComposite = itemsAux[key];
             if (itemComposite.getTab().getExtendedId() != EmptyTab) {
@@ -1090,6 +1228,11 @@ class GestorMenu {
                 itemComposite.getObjDom().append(itemComposite.imprimir());
             }
 		}
+		
+		//Set end html printing for all tabs
+        for (var key in this._tabs) {
+			aSections[this._tabs[key].getExtendedId()].push(this._tabs[key].getEndPrint());
+        }
 
         var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
         for (var key in this._tabs) {
@@ -1120,7 +1263,7 @@ class GestorMenu {
     
 	printMenu() {
 		
-        if (this._hasMoreTabsThanOne()) {
+		if (this._hasMoreTabsThanOne()) {
             
             this._printWithTabs();
             
@@ -1151,11 +1294,20 @@ class GestorMenu {
         
         this.getLoadingDOM().hide();
 		
+		//To print all items in background
+		for (var key in this.layersInfo) {
+            if (this.layersInfo[key].tab.listType != "combobox") {
+                this.addLazyInitLayerInfoCounter(ItemGroupPrefix + this.layersInfo[key].section);
+                this.layersInfo[key].get(this);
+            }
+		}
+		
+		//Call callback after print (if exists)
         if (this.printCallback != null) {
             this.printCallback();
         }
-        
-        //Show visible layers count in class (to save state after refresh menu)
+		
+		//Show visible layers count in class (to save state after refresh menu)
         for (var key in this.items) {
             this.items[key].muestraCantidadCapasVisibles();
         }
@@ -1176,7 +1328,7 @@ class GestorMenu {
               $('#searchForm').hide();
           }
         });
-        if (this._selectedTab.isSearcheable == false) { //Check if first active tab is searcheable
+        if (this._hasMoreTabsThanOne() == true && this._selectedTab.isSearcheable == false) { //Check if first active tab is searcheable
             $('#searchForm').hide();
         }
         
@@ -1233,8 +1385,13 @@ class GestorMenu {
     //Prints only one section (works on lazy initialization only)
     printOnlySection(sectionId) {
         var itemGroup = this.items[sectionId];
-        itemGroup.imprimir();
-        $('#' + sectionId + ' > ul').html(itemGroup.itemsStr);
+        if (itemGroup.tab.listType == "combobox") { //Si es combobox
+            itemGroup.imprimir();
+            $('#wms-combo-list').html(itemGroup.itemsStr);
+        } else { //Si no es es combobox
+            itemGroup.imprimir();
+            $('#' + sectionId + ' > ul').html(itemGroup.itemsStr);
+        }
     }
 	
 	muestraCapa(itemSeccion) {
@@ -1253,6 +1410,41 @@ class GestorMenu {
 		}
 	}
 	
+	showWMSLayerCombobox(itemSeccion) {
+        
+        //To print all items in background
+		/*
+        for (var key in this.items) {
+            if (this.items[key].tab.listType == "combobox" && this.items[key].seccion != itemSeccionAux) {
+                this.items[key].itemsComposite = {};
+            }
+		}
+        */
+		
+		//Loader gif
+		$('#wms-combo-list').html('<div class="loading"><img src="img/loading.gif"></div>');
+        
+        //Realiza el GET de las capas
+        var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix,'');
+        for (var key in this.layersInfo) {
+            if (this.layersInfo[key].section == itemSeccionAux) {
+                this.addLazyInitLayerInfoCounter(itemSeccion);
+                this.layersInfo[key].get(this);
+            }
+        }
+        
+        //Reimprime menu
+		//$('#wms-combo-list').html("");
+		for (var key in this.items) {
+			var itemComposite = this.items[key];
+			if (itemComposite.getId() == itemSeccion && Object.keys(itemComposite.itemsComposite).length > 0) {
+				itemComposite.imprimir();
+				$('#wms-combo-list').html(itemComposite.itemsStr);
+			}
+		}
+
+	}
+	
 }
 
 /******************************************
@@ -1264,14 +1456,18 @@ class Tab {
         this.content = "";
         this.isSearcheable = false;
         this.searchQuery = "";
+        this.listType = "accordion";
         this.itemsGetter = new ItemsGetter();
         if (tab != undefined && tab != "") {
             this.id = tab.id;
-            if (this.isSearcheable != undefined) {
+            if (tab.searcheable != undefined) {
                 this.isSearcheable = tab.searcheable;
             }
-            if (this.content != undefined) {
+            if (tab.content != undefined) {
                 this.content = tab.content;
+            }
+			if (tab.list_type != undefined) {
+                this.listType = tab.list_type;
             }
         }		
 	}
@@ -1295,4 +1491,18 @@ class Tab {
     setSearchQuery(q) {
         this.searchQuery = q;
     }
+	
+	getInitialPrint() {
+		if (this.listType == "combobox") {
+			return '<select id="wms-combobox-selector-' + this.id + '" onChange="gestorMenu.showWMSLayerCombobox(this.value)" class="wms-combobox-selector"><option value="">Seleccione un servicio</option>';
+		}
+		return '';
+	}
+	
+	getEndPrint() {
+		if (this.listType == "combobox") {
+			return '</select><div id="wms-combo-list"></div>';
+		}
+		return '';
+	}
 }
