@@ -477,7 +477,7 @@ function showMainMenuTpl() {
     gestorMenu.setMenuDOM(".nav.nav-sidebar");
     gestorMenu.setLoadingDOM(".loading");
     gestorMenu.setPrintCallback(printFinished);
-    //gestorMenu.setLazyInitialization(true);
+    gestorMenu.setLazyInitialization(true);
     gestorMenu.print();
 }
 
