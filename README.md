@@ -4,7 +4,7 @@ Visualizador de mapas. Consulta uno o varios Geoserver y genera un menú con tod
 # Requisitos
 El visualizador se debe instalar en un directorio accesible por un servidor web
 
-Los datos se deben consultar desde uno o mas Geoserver con el encabezado http Access-Control-Allow-Origin habilitado (ya sea para todos los dominios o para el dominio donde se publica el visualizador)
+Los datos se deben consultar desde uno o más Geoserver con el encabezado http Access-Control-Allow-Origin habilitado (ya sea para todos los dominios o para el dominio donde se publica el visualizador)
 
 ```De ser imposible la habilitación del encabezado Access-Control-Allow-Origin se puede instalar el visualizador en el directorio www de Geoserver```
 
@@ -21,9 +21,9 @@ En Windows:
 
 ```setup.bat```
 
-Editar el archivo js/menu.json agregando o quitando la dirección donde consultar los capabilities de cada servidor Geoserver a visualizar.
+Editar el archivo `js/menu.json` agregando o quitando la dirección donde consultar los capabilities de cada servidor Geoserver a visualizar.
 
-En la primer sección del archivo menu.json se agregan todas las capabase que se necesiten
+En la primera sección del archivo `menu.json` se agregan todas las capabase que se necesiten
 
 En la segunda sección se agrega la dirección de cada Geoserver que se necesite
 
