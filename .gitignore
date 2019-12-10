@@ -1,3 +1,5 @@
-templates/argenmap-leaflet-idera-tpl
+!/templates/
+/templates/*
+!/templates/ign-geoportal-basic
+!/templates/ign-geoportal-minimal
 js/menu.json
-templates/argenmap-leaflet-ign-tpl/
