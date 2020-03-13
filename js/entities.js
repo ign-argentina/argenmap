@@ -931,18 +931,24 @@ class Item extends ItemComposite {
             this.callback = eval(this.callback);
         }
 
-        //if (typeof this.callback === "function") {
-        if (this.capa.servicio === "wms") {
-            //loadWms(this.callback, this.capa.host, this.nombre);
-            loadWms(this.callback, this);
-        } else if (this.capa.servicio === "wmts") {
-            loadWmts(this.callback, this);
-        } else if (this.capa.servicio === "tms") {
-            loadMapaBase(this.capa.host, this.capa.nombre, this.capa.attribution);
-        } else if (this.capa.servicio === "bing") {
-            loadMapaBaseBing(this.capa.key, this.capa.nombre, this.capa.attribution);
-        } else {
-            loadGeojson(this.capa.host, this.nombre);
+        switch (this.capa.servicio) {
+            case "wms":
+                loadWms(this.callback, this);
+                break;
+            case "wmts":
+                loadWmts(this.callback, this);                
+                break;
+            case "tms":
+                loadMapaBase(this.capa.host, this.capa.nombre, this.capa.attribution);            
+                break;
+            case "bing":
+                loadMapaBaseBing(this.capa.key, this.capa.nombre, this.capa.attribution);
+                break;
+            case "geojson":
+                loadGeojson(this.capa.host, this.nombre);
+                break;
+            default:
+                break;
         }
         this.visible = !this.visible;
     }
