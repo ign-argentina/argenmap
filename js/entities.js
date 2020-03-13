@@ -36,7 +36,9 @@ class Capa {
         if (this.host == null) {
             return '';
         }
-        return this.host + "/wms?";
+        let owsHost = (this.servicio == "wms") ? this.host + "/wms?" : this.host + "/gwc/service/wmts";
+        //return this.host + "/wms?";
+        return owsHost;
     }
 }
 
@@ -930,8 +932,7 @@ class Item extends ItemComposite {
         }
 
         //if (typeof this.callback === "function") {
-        if (typeof this.callback === "wms") {
-            console.log("wms");
+        if (this.capa.servicio === "wms") {
             //loadWms(this.callback, this.capa.host, this.nombre);
             loadWms(this.callback, this);
         } else if (this.capa.servicio === "wmts") {
