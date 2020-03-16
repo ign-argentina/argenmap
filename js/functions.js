@@ -67,6 +67,15 @@ function loadWms (callbackFunction, objLayer) {
     }
 }
 
+function loadWmts (callbackFunction, objLayer) {
+    if (typeof callbackFunction === 'function') {
+        //return callbackFunction(wmsUrl, layer);
+        return callbackFunction(objLayer);
+    } else {
+        console.warn("Function " + callbackFunction + "() do not exists. Please, define it.");
+    }
+}
+
 function loadMapaBase (tmsUrl, layer, attribution) {
     if (typeof loadMapaBaseTpl === 'function') {
         return loadMapaBaseTpl(tmsUrl, layer, attribution);
