@@ -680,6 +680,7 @@ class Item extends ItemComposite {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.titulo = titulo;
 		this.capa = capa;
+		this.capas = [capa];
 		this.visible = false;
 		//this.legendImg = "templates/" + template + "/img/legends/" + this.titulo.replace(':', '').replace('/', '') + ".svg";
         this.legendImg = null;
@@ -718,15 +719,20 @@ class Item extends ItemComposite {
             this.callback = eval(this.callback);
         }
         
-		if (typeof this.callback === "function") {
-			//loadWms(this.callback, this.capa.host, this.nombre);
-            loadWms(this.callback, this);
-		} else if (this.capa.servicio === "tms") {
-			loadMapaBase(this.capa.host, this.capa.nombre, this.capa.attribution);
-		} else if (this.capa.servicio === "bing") {
-			loadMapaBaseBing(this.capa.key, this.capa.nombre, this.capa.attribution);
-		} else {
-			loadGeojson(this.capa.host, this.nombre);
+		//Recorrer todas las capas del item
+		for (var key in this.capas) {
+			var tmp = Object.assign({}, this); //Clonar el item para simular que solo tiene una unica capa
+			tmp.nombre = this.nombre + this.capas[key].nombre;
+			tmp.capa = this.capas[key];
+			if (typeof this.callback === "function") {
+				loadWms(tmp.callback, tmp);
+			} else if (tmp.capa.servicio === "tms") {
+				loadMapaBase(tmp.capa.host, tmp.capa.nombre, tmp.capa.attribution);
+			} else if (tmp.capa.servicio === "bing") {
+				loadMapaBaseBing(tmp.capa.key, tmp.capa.nombre, tmp.capa.attribution);
+			} else {
+				loadGeojson(tmp.capa.host, tmp.nombre);
+			}
 		}
 		this.visible = !this.visible;
 	}
@@ -890,6 +896,7 @@ class GestorMenu {
         this._selectedTab = null;
         this._lazyInitialization = false;
         this._itemsGetter = new ItemsGetter();
+		this._layersJoin = null;
 	}
     
     setMenuDOM(menuDOM) {
@@ -967,6 +974,10 @@ class GestorMenu {
         } else {
             this._itemsGetter = new ItemsGetterSearcher();
         }
+    }
+	
+    setLayersJoin(layersJoin) {
+        this._layersJoin = layersJoin;
     }
     
     addLazyInitLayerInfoCounter(sectionId) {
@@ -1152,6 +1163,39 @@ class GestorMenu {
         return (tab.replace(EmptyTab, ''));
     }
 	
+	processLayersJoin() {
+		if (this._layersJoin != null) {
+			
+			//Buscar el item al cual incluirle capas
+			for (var keyJoin in this._layersJoin) {
+				var item = this.items[this._layersJoin[keyJoin].seccion];
+				if (item) {
+					for (var keyItem in item.itemsComposite) {
+						if (item.itemsComposite[keyItem].capa.host == this._layersJoin[keyJoin].host && item.itemsComposite[keyItem].capa.nombre == this._layersJoin[keyJoin].layer) {
+							//console.log(item.itemsComposite[keyItem]);
+							
+							//Busca las capas a incluir
+							for (var keyJoinInt in this._layersJoin[keyJoin].joins) {
+								var itemInt = this.items[this._layersJoin[keyJoin].joins[keyJoinInt].seccion];
+								if (itemInt) {
+									for (var keyItemInt in itemInt.itemsComposite) {
+										if (itemInt.itemsComposite[keyItemInt].capa.host == this._layersJoin[keyJoin].joins[keyJoinInt].host && itemInt.itemsComposite[keyItemInt].capa.nombre == this._layersJoin[keyJoin].joins[keyJoinInt].layer) {
+											console.log(item.itemsComposite[keyItem].capas);
+											item.itemsComposite[keyItem].capas = item.itemsComposite[keyItem].capas.concat(itemInt.itemsComposite[keyItemInt].capas);
+											console.log(item.itemsComposite[keyItem].capas);
+											delete itemInt.itemsComposite[keyItemInt];
+										}
+									}
+								}
+							}
+							
+						}
+					}
+				}
+			}
+		}
+	}
+	
     print() {
         this.executeLayersInfo();
     }
@@ -1262,6 +1306,8 @@ class GestorMenu {
     }
     
 	printMenu() {
+		
+		this.processLayersJoin();
 		
 		if (this._hasMoreTabsThanOne()) {
             
@@ -1378,8 +1424,7 @@ class GestorMenu {
             $("#searchForm").submit();
           }
         });
-        //Jquery autocomplete (end)
-         
+        //Jquery autocomplete (end)         
 	}
     
     //Prints only one section (works on lazy initialization only)

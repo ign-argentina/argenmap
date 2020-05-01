@@ -11,9 +11,18 @@ var keywordFilter = 'dato-basico-y-fundamental';
 var template = "";
 
 $.getJSON("./js/menu.json", function (data) {
+  
+  //Template
   template = data.template; // define wich template to use
   gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
   delete data['template']; // delete template item from data
+  
+  //Layers Joins (join several layers into one item)
+  if (data.layers_joins) {
+	  gestorMenu.setLayersJoin(data.layers_joins);
+	  delete data['layers_joins']; // delete template item from data
+  }
+  
   $.each(data, function (key, val) {
 	//data.items.forEach(imprimirItem, data.items);
     for (var key in data.items) {
