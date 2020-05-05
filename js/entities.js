@@ -1403,9 +1403,9 @@ class GestorMenu {
 								if (itemInt) {
 									for (var keyItemInt in itemInt.itemsComposite) {
 										if (itemInt.itemsComposite[keyItemInt].capa.host == this._layersJoin[keyJoin].joins[keyJoinInt].host && itemInt.itemsComposite[keyItemInt].capa.nombre == this._layersJoin[keyJoin].joins[keyJoinInt].layer) {
-											console.log(item.itemsComposite[keyItem].capas);
+											//console.log(item.itemsComposite[keyItem].capas);
 											item.itemsComposite[keyItem].capas = item.itemsComposite[keyItem].capas.concat(itemInt.itemsComposite[keyItemInt].capas);
-											console.log(item.itemsComposite[keyItem].capas);
+											//console.log(item.itemsComposite[keyItem].capas);
 											delete itemInt.itemsComposite[keyItemInt];
 										}
 									}
