@@ -937,15 +937,25 @@ class Item extends ItemComposite {
 			var tmp = Object.assign({}, this); //Clonar el item para simular que solo tiene una unica capa
 			tmp.nombre = this.nombre + this.capas[key].nombre;
 			tmp.capa = this.capas[key];
-			if (typeof this.callback === "function") {
-				loadWms(tmp.callback, tmp);
-			} else if (tmp.capa.servicio === "tms") {
-				loadMapaBase(tmp.capa.host, tmp.capa.nombre, tmp.capa.attribution);
-			} else if (tmp.capa.servicio === "bing") {
-				loadMapaBaseBing(tmp.capa.key, tmp.capa.nombre, tmp.capa.attribution);
-			} else {
-				loadGeojson(tmp.capa.host, tmp.nombre);
-			}
+            switch (tmp.capa.servicio) {
+                case "wms":
+                    loadWms(tmp.callback, tmp);
+                    break;
+                case "wmts":
+                    loadWmts(tmp.callback, tmp);                
+                    break;
+                case "tms":
+                    loadMapaBase(tmp.capa.host, tmp.capa.nombre, tmp.capa.attribution);            
+                    break;
+                case "bing":
+                    loadMapaBaseBing(tmp.capa.key, tmp.capa.nombre, tmp.capa.attribution);
+                    break;
+                case "geojson":
+                    loadGeojson(tmp.capa.host, tmp.nombre);
+                    break;
+                default:
+                    break;
+            }
 		}
 		this.visible = !this.visible;
 	}
