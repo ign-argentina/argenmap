@@ -9,6 +9,7 @@ const impresorGroupWMSSelector = new ImpresorGroupWMSSelector();
 var getGeoserverCounter = 0;
 var keywordFilter = 'dato-basico-y-fundamental';
 var template = "";
+var templateFeatureInfoFieldException = [];
 
 $.getJSON("./js/menu.json", function (data) {
   
@@ -16,6 +17,12 @@ $.getJSON("./js/menu.json", function (data) {
   template = data.template; // define wich template to use
   gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
   delete data['template']; // delete template item from data
+  
+  //templateFeatureInfoFieldException
+  if (data.template_feature_info_exception) {
+	  templateFeatureInfoFieldException = data.template_feature_info_exception; // define not showing fields in feature info popup
+	  delete data['template_feature_info_exception']; // delete template item from data
+  }
   
   //Layers Joins (join several layers into one item)
   if (data.layers_joins) {
