@@ -118,13 +118,27 @@ class ImpresorGrupoHTML extends Impresor {
 
         var active = (itemComposite.getActive() == true) ? ' in ' : '';
 
+		/*
         return "<div id='" + listaId + "' class='" + itemClass + " panel-heading' >" +
             "<div class='panel-title'>" +
             "<a data-toggle='collapse' id='" + listaId + "-a' href='#" + itemComposite.seccion + "' class='item-group-title'>" + itemComposite.nombre + "</a>" +
             "<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "'>" + itemComposite.shortDesc + "</a></div>" +
             "</div>" +
             "<div id='" + itemComposite.seccion + "' class='panel-collapse collapse" + active + "'><ul class='list-group nav-sidebar'>" + itemComposite.itemsStr + "</ul></div></div>";
-
+		*/
+		return '<div id="' + listaId + '" class="' + itemClass + 'panel panel-default">' + 
+					'<div class="panel-heading">' +
+						'<h4 class="panel-title">' +
+							'<a id="' + listaId + '-a" data-toggle="collapse" data-parent="#accordion1" href="#' + itemComposite.seccion + '" class="item-group-title">' + itemComposite.nombre + '</a>' +
+							"<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" + itemComposite.descripcion + "' href='#" + itemComposite.seccion + "'>" + itemComposite.shortDesc + "</a></div>" +
+						'</h4>' +
+					'</div>' +
+					"<div id='" + itemComposite.seccion + "' class='panel-collapse collapse" + active + "'>" +
+						'<div class="panel-body">' +
+							itemComposite.itemsStr +
+						'</div>' +
+					'</div>' +
+				'</div>';
     }
 }
 
@@ -766,8 +780,8 @@ class ItemGroup extends ItemComposite {
     ordenaItems(a, b) {
         var aOrden1 = a.peso;
         var bOrden1 = b.peso;
-        var aOrden2 = a.titulo.toLowerCase();
-        var bOrden2 = b.titulo.toLowerCase();
+        var aOrden2 = (a.titulo) ? a.titulo.toLowerCase() : 0;
+        var bOrden2 = (b.titulo) ? b.titulo.toLowerCase() : 0;
         if (aOrden1 < bOrden1) {
             return -1
         } else if (aOrden1 > bOrden1) {
@@ -1120,6 +1134,7 @@ class GestorMenu {
         this._lazyInitialization = false;
         this._itemsGetter = new ItemsGetter();
 		this._layersJoin = null;
+		this._folders = {};
 	}
     
     setMenuDOM(menuDOM) {
@@ -1210,6 +1225,10 @@ class GestorMenu {
             this._getLazyInitLayersInfoCounter[sectionId]++;
         }
     }
+	
+	setFolders(folders) {
+		this._folders = folders;
+	}
 
     removeLazyInitLayerInfoCounter(sectionId) {
         this._getLazyInitLayersInfoCounter[sectionId]--;
@@ -1527,6 +1546,98 @@ class GestorMenu {
         this.getMenuDOM().html(sInitialHTML);
 
     }
+	
+	generateSubFolders(itemComposite, folders) {
+		var itemsToPrint = new Array();
+		
+		//for (var itemIndex in itemsToFolders) { //real items loop
+			//var itemComposite = itemsToFolders[itemIndex];
+			var encontro = false;
+			for (var folderIndex in folders) { //folders loop
+				var folder = folders[folderIndex];
+				if (folder.items) {
+					if (folder.items.indexOf(itemComposite.seccion) != -1) {
+						encontro = true;
+						if (!itemsToPrint[folderIndex]) {
+							itemsToPrint[folderIndex] = new ItemGroup(itemComposite.tab, folder.nombre, itemComposite.seccion + 'f' + folderIndex, itemComposite.peso, itemComposite.palabrasClave, folder.resumen, folder.resumen);
+							itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
+							itemsToPrint[folderIndex].itemsComposite = {};
+							itemsToPrint[folderIndex].setObjDom(itemComposite.objDOM);
+						}
+						itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = itemComposite;
+					}
+				}
+				if (folder.folders) {
+					ret = this.generateSubFolders(itemsToFolders, folder.folders);
+					if (ret != null && ret.length > 0) {
+						itemComposite = ret[0];
+						encontro = true;
+						if (!itemsToPrint[folderIndex]) {
+							itemsToPrint[folderIndex] = new ItemGroup(itemComposite.tab, folder.nombre, itemComposite.seccion + 'f' + folderIndex, itemComposite.peso, itemComposite.palabrasClave, folder.resumen, folder.resumen);
+							itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
+							itemsToPrint[folderIndex].itemsComposite = {};
+							itemsToPrint[folderIndex].setObjDom(itemComposite.objDOM);
+						}
+						for (var j = 0; j < ret.length; j++) {
+							itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[0];
+						}
+					}
+				}
+			}
+		//}
+		
+		return itemsToPrint;
+	}
+	
+	generateFolders(itemsToFolders) {
+		var itemsToPrint = new Array();
+		var i = 100;
+		
+		for (var itemIndex in itemsToFolders) { //real items loop
+			var itemComposite = itemsToFolders[itemIndex];
+			var encontro = false;
+			for (var folderIndex in this._folders) { //folders loop
+				var folder = this._folders[folderIndex];
+				if (folder.items) {
+					if (folder.items.indexOf(itemComposite.seccion) != -1) {
+						encontro = true;
+						if (!itemsToPrint[folderIndex]) {
+							itemsToPrint[folderIndex] = new ItemGroup(itemComposite.tab, folder.nombre, itemComposite.seccion + 'f' + folderIndex, itemComposite.peso, itemComposite.palabrasClave, folder.resumen, folder.resumen);
+							itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
+							itemsToPrint[folderIndex].itemsComposite = {};
+							itemsToPrint[folderIndex].setObjDom(itemComposite.objDOM);
+						}
+						itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = itemComposite;
+					}
+				}
+				if (folder.folders) {
+					var ret = this.generateSubFolders(itemComposite, folder.folders);
+					if (ret != null && ret.length > 0) {
+						itemComposite = ret[0];
+						encontro = true;
+						if (!itemsToPrint[folderIndex]) {
+							itemsToPrint[folderIndex] = new ItemGroup(itemComposite.tab, folder.nombre, itemComposite.seccion + 'f' + folderIndex, itemComposite.peso, itemComposite.palabrasClave, folder.resumen, folder.resumen);
+							itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
+							itemsToPrint[folderIndex].itemsComposite = {};
+							itemsToPrint[folderIndex].setObjDom(itemComposite.objDOM);
+						}
+						for (var j = 0; j < ret.length; j++) {
+							itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[0];
+						}
+					}
+				}
+			}
+			if (!encontro){
+				itemsToPrint[i++] = itemComposite;
+			}
+		}
+		
+		
+		itemsToPrint.sort(this.ordenaPorPeso);
+		for (var key in itemsToPrint) {
+			itemsToPrint[key].getObjDom().append(itemsToPrint[key].imprimir());
+		}
+	}
     
 	printMenu() {
 		
@@ -1546,7 +1657,8 @@ class GestorMenu {
                 itemsAux.push(itemsIterator[key]);
             }
             itemsAux.sort(this.ordenaPorPeso);
-
+			
+			var itemsAuxToFolders = new Array(); //Array with items and folders
             for (var key in itemsAux) {
 
                 var itemComposite = itemsAux[key];
@@ -1555,10 +1667,14 @@ class GestorMenu {
                 if ($('#' + itemComposite.seccion).length != 0) {
                     itemComposite.getObjDom().html('');
                 }
-                itemComposite.getObjDom().append(itemComposite.imprimir());
-
+				
+				////itemComposite.getObjDom().append(itemComposite.imprimir());
+				itemsAuxToFolders.push(itemComposite);
             }
-
+			
+			//Generate logical folders
+			this.generateFolders(itemsAuxToFolders);
+			
         }
 
         this.getLoadingDOM().hide();

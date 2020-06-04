@@ -30,6 +30,12 @@ $.getJSON("./js/menu.json", function (data) {
 	  delete data['layers_joins']; // delete template item from data
   }
   
+  //Folders (generate folders items into main menu to generate logical groups of layers)
+  if (data.folders) {
+	  gestorMenu.setFolders(data.folders);
+	  delete data['folders']; // delete folders item from data
+  }
+  
   $.each(data, function (key, val) {
     //data.items.forEach(imprimirItem, data.items);
     for (var key in data.items) {
@@ -74,6 +80,9 @@ $.getJSON("./js/menu.json", function (data) {
           }
           gestorMenu.addTab(tab);
           gestorMenu.addLayersInfo(wmsLayerInfo);
+		  if (itemData.folders) {
+			  gestorMenu.addFolders(itemData.seccion, itemData.folders);
+		  }
           break;
         case "wmts":
           getGeoserverCounter++;
@@ -94,6 +103,9 @@ $.getJSON("./js/menu.json", function (data) {
           }
           gestorMenu.addTab(tab);
           gestorMenu.addLayersInfo(wmtsLayerInfo);
+		  if (itemData.folders) {
+			  gestorMenu.addFolders(itemData.seccion, itemData.folders);
+		  }
           break;
         default:
           let sourceTypeUndefined = "The 'type' parameter is not set for the source:" + data.items[key].host;
