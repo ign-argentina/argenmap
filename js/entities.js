@@ -1547,11 +1547,11 @@ class GestorMenu {
 
     }
 	
-	generateSubFolders(itemComposite, folders) {
+	generateSubFolders(itemsToFolders, folders) {
 		var itemsToPrint = new Array();
 		
-		//for (var itemIndex in itemsToFolders) { //real items loop
-			//var itemComposite = itemsToFolders[itemIndex];
+		for (var itemIndex in itemsToFolders) { //real items loop
+			var itemComposite = itemsToFolders[itemIndex];
 			var encontro = false;
 			for (var folderIndex in folders) { //folders loop
 				var folder = folders[folderIndex];
@@ -1579,14 +1579,31 @@ class GestorMenu {
 							itemsToPrint[folderIndex].setObjDom(itemComposite.objDOM);
 						}
 						for (var j = 0; j < ret.length; j++) {
-							itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[0];
+							//itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[0];
+							itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[j];
 						}
 					}
 				}
 			}
-		//}
+		}
 		
 		return itemsToPrint;
+	}
+	
+	isItemInSubFolders(itemComposite, folders) {
+		for (var folderIndex in folders) { //folders loop
+			var folder = folders[folderIndex];
+			if (folder.items) {
+				if (folder.items.indexOf(itemComposite.seccion) != -1) {
+					return true;
+				}
+			}
+			if (folder.folders) {
+				return this.isItemInSubFolders(itemComposite, folder.folders);
+			}
+		}
+		
+		return false;
 	}
 	
 	generateFolders(itemsToFolders) {
@@ -1610,21 +1627,8 @@ class GestorMenu {
 						itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = itemComposite;
 					}
 				}
-				if (folder.folders) {
-					var ret = this.generateSubFolders(itemComposite, folder.folders);
-					if (ret != null && ret.length > 0) {
-						itemComposite = ret[0];
-						encontro = true;
-						if (!itemsToPrint[folderIndex]) {
-							itemsToPrint[folderIndex] = new ItemGroup(itemComposite.tab, folder.nombre, itemComposite.seccion + 'f' + folderIndex, itemComposite.peso, itemComposite.palabrasClave, folder.resumen, folder.resumen);
-							itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
-							itemsToPrint[folderIndex].itemsComposite = {};
-							itemsToPrint[folderIndex].setObjDom(itemComposite.objDOM);
-						}
-						for (var j = 0; j < ret.length; j++) {
-							itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[0];
-						}
-					}
+				if (encontro == false && folder.folders) {
+					encontro = this.isItemInSubFolders(itemComposite, folder.folders);
 				}
 			}
 			if (!encontro){
@@ -1632,6 +1636,25 @@ class GestorMenu {
 			}
 		}
 		
+		for (var folderIndex in this._folders) { //folders loop
+			var folder = this._folders[folderIndex];
+			if (folder.folders) {
+				var ret = this.generateSubFolders(itemsToFolders, folder.folders);
+				if (ret != null && ret.length > 0) {
+					itemComposite = ret[0];
+					if (!itemsToPrint[folderIndex]) {
+						itemsToPrint[folderIndex] = new ItemGroup(itemComposite.tab, folder.nombre, itemComposite.seccion + 'f' + folderIndex, itemComposite.peso, itemComposite.palabrasClave, folder.resumen, folder.resumen);
+						itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
+						itemsToPrint[folderIndex].itemsComposite = {};
+						itemsToPrint[folderIndex].setObjDom(itemComposite.objDOM);
+					}
+					for (var j = 0; j < ret.length; j++) {
+						//itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[0];
+						itemsToPrint[folderIndex].itemsComposite[itemComposite.seccion] = ret[j];
+					}
+				}
+			}
+		}
 		
 		itemsToPrint.sort(this.ordenaPorPeso);
 		for (var key in itemsToPrint) {
