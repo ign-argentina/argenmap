@@ -12,30 +12,30 @@ var template = "";
 var templateFeatureInfoFieldException = [];
 
 $.getJSON("./js/menu.json", function (data) {
-  
+
   //Template
   template = data.template; // define wich template to use
   gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
   delete data['template']; // delete template item from data
-  
+
   //templateFeatureInfoFieldException
   if (data.template_feature_info_exception) {
-	  templateFeatureInfoFieldException = data.template_feature_info_exception; // define not showing fields in feature info popup
-	  delete data['template_feature_info_exception']; // delete template item from data
+    templateFeatureInfoFieldException = data.template_feature_info_exception; // define not showing fields in feature info popup
+    delete data['template_feature_info_exception']; // delete template item from data
   }
-  
+
   //Layers Joins (join several layers into one item)
   if (data.layers_joins) {
-	  gestorMenu.setLayersJoin(data.layers_joins);
-	  delete data['layers_joins']; // delete template item from data
+    gestorMenu.setLayersJoin(data.layers_joins);
+    delete data['layers_joins']; // delete template item from data
   }
-  
+
   //Folders (generate folders items into main menu to generate logical groups of layers)
   if (data.folders) {
-	  gestorMenu.setFolders(data.folders);
-	  delete data['folders']; // delete folders item from data
+    gestorMenu.setFolders(data.folders);
+    delete data['folders']; // delete folders item from data
   }
-  
+
   $.each(data, function (key, val) {
     //data.items.forEach(imprimirItem, data.items);
     for (var key in data.items) {
@@ -52,8 +52,30 @@ $.getJSON("./js/menu.json", function (data) {
           //groupAux.setObjDom($("#basemap-selector"));
           groupAux.setObjDom(".basemap-selector");
           for (var key2 in data.items[key].capas) {
-            var capa = new Capa(data.items[key].capas[key2].nombre, data.items[key].capas[key2].titulo, null, data.items[key].capas[key2].host, data.items[key].capas[key2].servicio, data.items[key].capas[key2].version, data.items[key].capas[key2].key, null, null, null, null, data.items[key].capas[key2].attribution);
-            var item = new Item(capa.nombre, data.items[key].seccion + key2, "", data.items[key].capas[key2].attribution, capa.titulo, capa);
+            var capa = new Capa(
+              data.items[key].capas[key2].nombre,
+              data.items[key].capas[key2].titulo,
+              null,
+              data.items[key].capas[key2].host,
+              data.items[key].capas[key2].servicio,
+              data.items[key].capas[key2].version,
+              null,
+              data.items[key].capas[key2].key,
+              null,
+              null,
+              null,
+              null,
+              data.items[key].capas[key2].attribution
+            );
+            var item = new Item(
+              capa.nombre,
+              data.items[key].seccion + key2,
+              "",
+              capa.attribution,
+              capa.titulo,
+              capa,
+              null
+            );
             item.setLegendImg('templates/' + template + '/' + data.items[key].capas[key2].legendImg);
             item.setImpresor(impresorItemCapaBase);
             groupAux.setItem(item);
@@ -80,9 +102,9 @@ $.getJSON("./js/menu.json", function (data) {
           }
           gestorMenu.addTab(tab);
           gestorMenu.addLayersInfo(wmsLayerInfo);
-		  if (itemData.folders) {
-			  gestorMenu.addFolders(itemData.seccion, itemData.folders);
-		  }
+          if (itemData.folders) {
+            gestorMenu.addFolders(itemData.seccion, itemData.folders);
+          }
           break;
         case "wmts":
           getGeoserverCounter++;
@@ -103,9 +125,9 @@ $.getJSON("./js/menu.json", function (data) {
           }
           gestorMenu.addTab(tab);
           gestorMenu.addLayersInfo(wmtsLayerInfo);
-		  if (itemData.folders) {
-			  gestorMenu.addFolders(itemData.seccion, itemData.folders);
-		  }
+          if (itemData.folders) {
+            gestorMenu.addFolders(itemData.seccion, itemData.folders);
+          }
           break;
         default:
           let sourceTypeUndefined = "The 'type' parameter is not set for the source:" + data.items[key].host;
