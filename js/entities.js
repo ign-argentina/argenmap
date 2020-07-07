@@ -1372,8 +1372,8 @@ class GestorMenu {
                 $(".collapse").on('show.bs.collapse', function (e) {
                     if ($(this).is(e.target)) {
                         var showingId = this.id;
-                        if ($('#' + showingId + ' > ul').html() == '') {
-                            $('#' + showingId + ' > ul').html('<div class="loading"><img src="img/loading.gif" style="width:35px"></div>');
+                        if ($('#' + showingId + ' > div').html() == '') {
+                            $('#' + showingId + ' > div').html('<div class="loading"><img src="img/loading.gif" style="width:35px"></div>');
                         }
                         for (var key in thisObj.layersInfo) {
                             if (thisObj.layersInfo[key].section == showingId) {
@@ -1797,7 +1797,7 @@ class GestorMenu {
             $('#wms-combo-list').html(itemGroup.itemsStr);
         } else { //Si no es es combobox
             itemGroup.imprimir();
-            $('#' + sectionId + ' > ul').html(itemGroup.itemsStr);
+            $('#' + sectionId + ' > div').html(itemGroup.itemsStr);
         }
     }
 
