@@ -77,6 +77,12 @@ $.getJSON("./js/menu.json", function (data) {
               null
             );
             item.setLegendImg('templates/' + template + '/' + data.items[key].capas[key2].legendImg);
+			if (data.items[key].capas[key2].peso) {
+				item.setPeso(data.items[key].capas[key2].peso);
+			}
+			if (data.items[key].capas[key2].selected && data.items[key].capas[key2].selected == true) {
+				gestorMenu.setBasemapSelected(data.items[key].seccion + key2);
+			}
             item.setImpresor(impresorItemCapaBase);
             groupAux.setItem(item);
           }

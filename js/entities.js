@@ -682,6 +682,14 @@ class ItemComposite {
         this._active = active;
     }
 
+    getPeso() {
+        return this.peso;
+    }
+
+    setPeso(peso) {
+        this.peso = peso;
+    }
+
     searchOrderIntoKeywords() {
         //Recorrer palabrasClave para ver si viene el orden
         if (this.palabrasClave != undefined && this.palabrasClave != "") {
@@ -839,6 +847,8 @@ class ItemGroup extends ItemComposite {
         }
     }
 
+    hideAllLayers() { }
+	
     hideAllLayersExceptOne(item) { }
 
     getAvailableTags() {
@@ -855,10 +865,19 @@ class ItemGroupBaseMap extends ItemGroup {
     isBaseLayer() {
         return true;
     }
+	
+	hideAllLayers() {
+		for (var key2 in this.itemsComposite) {
+            var item = this.itemsComposite[key2];
+			if (item.getVisible() == true) {
+				item.showHide();
+			}
+		}
+	}
 
     hideAllLayersExceptOne(item) {
         for (var key in this.itemsComposite) {
-            if (this.itemsComposite[key].getVisible() == true && item !== this.itemsComposite[key]) {
+			if (this.itemsComposite[key].getVisible() == true && item !== this.itemsComposite[key]) {
                 this.itemsComposite[key].showHide();
             }
         }
@@ -1125,6 +1144,7 @@ class GestorMenu {
         this.printCallback = null;
         this.querySearch = '';
         this.showSearcher = false;
+        this.basemapSelected = null;
 
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
@@ -1229,6 +1249,14 @@ class GestorMenu {
 	setFolders(folders) {
 		this._folders = folders;
 	}
+
+    getBasemapSelected() {
+        return this.basemapSelected;
+    }
+
+    setBasemapSelected(basemapSelected) {
+        this.basemapSelected = basemapSelected;
+    }
 
     removeLazyInitLayerInfoCounter(sectionId) {
         this._getLazyInitLayersInfoCounter[sectionId]--;
@@ -1699,6 +1727,9 @@ class GestorMenu {
 			this.generateFolders(itemsAuxToFolders);
 			
         }
+		
+		//Mostrar mapa base por defecto
+		gestorMenu.muestraCapa("child-" + this.basemapSelected);
 
         this.getLoadingDOM().hide();
 
@@ -1804,10 +1835,11 @@ class GestorMenu {
     muestraCapa(itemSeccion) {
         for (var key in this.items) {
             var itemComposite = this.items[key];
+			itemComposite.hideAllLayers();
             for (var key2 in itemComposite.itemsComposite) {
                 var item = itemComposite.itemsComposite[key2];
                 if (item.getId() == itemSeccion) {
-                    itemComposite.hideAllLayersExceptOne(item);
+                    //itemComposite.hideAllLayersExceptOne(item);
                     item.showHide();
                     itemComposite.muestraCantidadCapasVisibles();
                     break;
