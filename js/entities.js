@@ -1833,9 +1833,26 @@ class GestorMenu {
     }
 
     muestraCapa(itemSeccion) {
+		//Hide all if itemComposite selected is Base Map
+		var isBaseLayer = false;
+		for (var key in this.items) {
+			var itemComposite = this.items[key];
+			for (var key2 in itemComposite.itemsComposite) {
+				var item = itemComposite.itemsComposite[key2];
+                if (item.getId() == itemSeccion) {
+					isBaseLayer = itemComposite.isBaseLayer();
+					break;
+					break;
+				}
+			}
+		}
+
+		//Show or hide selected item
         for (var key in this.items) {
             var itemComposite = this.items[key];
-			itemComposite.hideAllLayers();
+			if (isBaseLayer && itemComposite.isBaseLayer()) {
+				itemComposite.hideAllLayers();
+			}
             for (var key2 in itemComposite.itemsComposite) {
                 var item = itemComposite.itemsComposite[key2];
                 if (item.getId() == itemSeccion) {
