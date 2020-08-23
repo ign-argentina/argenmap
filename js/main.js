@@ -84,6 +84,18 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       });
     },
 
+    removeLayers: function () {
+      let sidebar = document.getElementById('sidebar');
+      sidebar.querySelectorAll('*').forEach(n => n.remove());
+      Object.keys(gestorMenu.items).forEach(key => {
+        if (key != "mapasbase") {
+          gestorMenu.items[key].hideAllLayers();
+          gestorMenu.items[key].muestraCantidadCapasVisibles();
+          delete gestorMenu.items[key];
+        }
+      });
+    },
+
     addLayers: function () {
 
       app.items.forEach(element => {
@@ -94,11 +106,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
             featureInfoFormat = (item.feature_info_format == undefined) ? "application/json" : item.feature_info_format,
             impresorGroupTemp = impresorGroup;
 
-          // Process item if is in profile
+          // Process item if it's in profile
           let matchItemProfile;
           matchItemProfile = app.profiles[app.profile].data.find(e => e == item.id);
           if (matchItemProfile != undefined) {
-            // matchItemProfile;
             if (item.tab == undefined) {
               item.tab = "";
             }
@@ -144,8 +155,6 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
                 let sourceTypeUndefined = "The 'type' parameter is not set for the source:" + item.host;
                 console.log(sourceTypeUndefined);
             }
-          } else {
-            // console.log("Profile or item id not defined")
           }
         }
       });
@@ -153,15 +162,23 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
     },
 
     changeProfile: function (profile) {
-      try {
+      if (profile != app.profile) {
         if (profile != undefined && app.profiles[profile] != undefined) {
-          app.profile = profile;
+          try {
+            app.profile = profile;
+            app.removeLayers();
+            app.addLayers();
+            gestorMenu.printMenu();
+            console.info(`Profile changed to ${profile}.`);
+          } catch (error) {
+            return error;
+          }
         } else {
-          let message = `Profile parameter missing or not present in profiles property. Available profiles: ${Object.keys(app.profiles)}`;
-          return message;
+          let message = `Profile '${profile}' missing or not present in profiles property. Available profiles: ${Object.keys(app.profiles)}`;
+          console.warn(message);
         }
-      } catch (error) {
-        return error;
+      } else {
+        console.info(`Profile ${profile} is already in use.`);
       }
     }
 
