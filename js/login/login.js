@@ -24,7 +24,7 @@ const login = {
 
     _append: function (file, format, parent) {
         // file must match '/path/to/file.extension'
-        let parentElement, url = window.location.origin + window.location.pathname + file, 
+        let parentElement, url = window.location.origin + window.location.pathname + file,
             data = {
                 url: url,
                 method: 'GET',
@@ -50,26 +50,31 @@ const login = {
     },
 
     load: function () {
-        document.addEventListener('DOMContentLoaded', (event) => {
+        try {
             login._append("/js/login/navbtn.html", "html", "navbar");
             login._append("/js/login/form.html", "html", "body");
+        } catch (error) {
+            document.addEventListener('DOMContentLoaded', (event) => {
+                login._append("/js/login/navbtn.html", "html", "navbar");
+                login._append("/js/login/form.html", "html", "body");
 
-            // Select the node that will be observed for mutations;
-            let targetNode = document.body;
-            let config = { attributes: true, childList: true, subtree: true };
-            let callback = function (mutationsList, observer) {
-                for (let mutation of mutationsList) {
-                    if (mutation.type === 'childList' &&
-                        mutation.addedNodes[0].id == "loginModal") {
-                        login._listeners();
-                        observer.disconnect();
+                // Select the node that will be observed for mutations;
+                let targetNode = document.body;
+                let config = { attributes: true, childList: true, subtree: true };
+                let callback = function (mutationsList, observer) {
+                    for (let mutation of mutationsList) {
+                        if (mutation.type === 'childList' &&
+                            mutation.addedNodes[0].id == "loginModal") {
+                            login._listeners();
+                            observer.disconnect();
+                        }
                     }
-                }
-            };
-            let observer = new MutationObserver(callback);
-            // Start observing the target node for configured mutations
-            observer.observe(targetNode, config);
-        });
+                };
+                let observer = new MutationObserver(callback);
+                // Start observing the target node for configured mutations
+                observer.observe(targetNode, config);
+            });
+        }
     },
 
     submit: function (event) {
