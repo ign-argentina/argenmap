@@ -1,7 +1,7 @@
 const login = {
 
     _ajax: function (data, callback) { // In case there isn't jQuery, fetch may be an option
-        var xhr = new XMLHttpRequest(),
+        let xhr = new XMLHttpRequest(),
             loginResponse;
 
         xhr.onreadystatechange = function () {
@@ -12,12 +12,18 @@ const login = {
 
         xhr.open(data.method, data.url, true);
         xhr.setRequestHeader(data.reqHeader.key, data.reqHeader.val);
-        //xhr.onerror = console.log(`Login error: ${xhr.status} \n Response: ${xhr.responseXML}`);
         xhr.send(data.params);
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                return xhr.status;
+            } else {
+                dump(xhr.status, xhr.responseText);
+            }
+        }
     },
 
     _append: function (file, format, parent) {
-        var parentElement, url = window.location.origin + file, // file must match '/path/to/file.extension' 
+        let parentElement, url = window.location.origin + file, // file must match '/path/to/file.extension' 
             data = {
                 url: url,
                 method: 'GET',
@@ -28,8 +34,8 @@ const login = {
             };
         parent == 'body' ? parent = document.body : parent = document.getElementById(parent);
         // Would load CSS here
-        var element = document.createElement("div");
-        this._ajax(data, function (res) {
+        let element = document.createElement("div");
+        login._ajax(data, function (res) {
             element.innerHTML = res;
             return element;
         });
@@ -39,22 +45,21 @@ const login = {
     _listeners: function () {
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', this.submit);
-        let resetPwdBtn = document.getElementById('resetPwd');
-        resetPwdBtn.addEventListener('click', this.resetPwd);
+        loginForm.resetPwd.addEventListener('click', this.resetPwd);
     },
 
     load: function () {
         document.addEventListener('DOMContentLoaded', (event) => {
-            this._append("/js/login/navbtn.html", "html", "navbar");
-            this._append("/js/login/form.html", "html", "body");
+            login._append("/js/login/navbtn.html", "html", "navbar");
+            login._append("/js/login/form.html", "html", "body");
 
             // Select the node that will be observed for mutations;
             let targetNode = document.body;
             let config = { attributes: true, childList: true, subtree: true };
             let callback = function (mutationsList, observer) {
                 for (let mutation of mutationsList) {
-                    if (mutation.type === 'childList' && 
-                    mutation.addedNodes[0].id == "loginModal") {
+                    if (mutation.type === 'childList' &&
+                        mutation.addedNodes[0].id == "loginModal") {
                         login._listeners();
                         observer.disconnect();
                     }
@@ -73,19 +78,33 @@ const login = {
 
     resetPwd: function (event) {
         event.preventDefault();
-        let newPwdInput = document.getElementById('newPwd');
-        newPwdInput.classList.toggle('hidden');
-        let resetPwdBtn = document.getElementById('resetPwd');
-        // resetPwdBtn.classList.toggle('hidden');
-        login._gsResetPwd(loginForm.name.value, loginForm.pwd.value, loginForm.newPwd.value);
-        // check if all values are defined
+        let nPwd = document.createElement("input");
+        nPwd.id = "newPwd";
+        nPwd.classList.add("form-control");
+        nPwd.type = "password";
+        nPwd.placeholder = "Nueva contraseña";
+        nPwd.required = "true";
+
+        if (!loginForm.newPwd) {
+            loginForm.insertBefore(nPwd, loginForm.submit);
+        }
+
+        if (login.server == undefined) {
+            login.server = window.location.origin;
+        }
+
+        let resetOptions = {
+            name: loginForm.name.value,
+            pwd: loginForm.pwd.value,
+            host: login.server,
+            newPwd: loginForm.newPwd.value
+        };
+        login._gsResetPwd(resetOptions);
     },
 
-    _gsResetPwd: function (name, pwd, newPwd) {
-        console.log('reset');
-        //var usrPwd = `<userPassword><newPassword>${pwd}</newPassword></userPassword>`,
-        var params = { "newPassword": newPwd },
-            gsHost = 'http://www.idecom.gob.ar',
+    _gsResetPwd: function (o) {
+        let params = { "newPassword": o.newPwd },
+            gsHost = o.host,
             gsUrl = gsHost + '/geoserver/rest/security/self/password',
             data = {
                 params: params,
@@ -96,12 +115,11 @@ const login = {
                     val: 'application/json'
                 }
             };
-        this._ajax(data);
+        login._ajax(data);
     },
-    
+
     _geoserver: function (name, pwd) {
-        console.log('submit');
-        var usrPwd = `username=${name}&password=${pwd}`,
+        let usrPwd = `username=${name}&password=${pwd}`,
             gsUrl = `${window.location.origin}/geoserver/j_spring_security_check`,
             data = {
                 params: usrPwd,
@@ -112,9 +130,11 @@ const login = {
                     val: 'application/x-www-form-urlencoded'
                 }
             };
-        this._ajax(data);
+        login._ajax(data);
     }
 
 }
 
-// login.load();
+/* if (app.profiles[app.profile].login.enabled == true) {
+    login.load();
+} */
