@@ -44,42 +44,40 @@ const login = {
     },
 
     _listeners: function () {
-        const loginForm = document.getElementById('loginForm');
-        loginForm.addEventListener('submit', this.submit);
+        loginForm.submit.addEventListener('click', this.submit);
         loginForm.resetPwd.addEventListener('click', this.resetPwd);
     },
 
     load: function () {
-        try {
-            login._append("/js/login/navbtn.html", "html", "navbar");
-            login._append("/js/login/form.html", "html", "body");
-        } catch (error) {
-            document.addEventListener('DOMContentLoaded', (event) => {
-                login._append("/js/login/navbtn.html", "html", "navbar");
-                login._append("/js/login/form.html", "html", "body");
+        login._append("/js/login/navbtn.html", "html", "navbar");
+        login._append("/js/login/form.html", "html", "body");
+        const loginForm = document.getElementById('loginForm');
 
-                // Select the node that will be observed for mutations;
-                let targetNode = document.body;
-                let config = { attributes: true, childList: true, subtree: true };
-                let callback = function (mutationsList, observer) {
-                    for (let mutation of mutationsList) {
-                        if (mutation.type === 'childList' &&
-                            mutation.addedNodes[0].id == "loginModal") {
-                            login._listeners();
-                            observer.disconnect();
-                        }
+        try {
+            login._listeners();
+        } catch (error) {
+            // Select the node that will be observed for mutations;
+            let targetNode = document.body;
+            let config = { attributes: true, childList: true, subtree: true };
+            let callback = function (mutationsList, observer) {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === 'childList' &&
+                        mutation.addedNodes[0].id == "loginModal") {
+                        login._listeners();
+                        observer.disconnect();
                     }
-                };
-                let observer = new MutationObserver(callback);
-                // Start observing the target node for configured mutations
-                observer.observe(targetNode, config);
-            });
+                }
+            };
+            let observer = new MutationObserver(callback);
+            // Start observing the target node for configured mutations
+            observer.observe(targetNode, config);
         }
     },
 
     submit: function (event) {
         event.preventDefault();
         login._geoserver(loginForm.name.value, loginForm.pwd.value);
+        app.changeProfile("logged"); // Logged should be a state, not a profile
     },
 
     resetPwd: function (event) {
