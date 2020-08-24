@@ -23,7 +23,8 @@ const login = {
     },
 
     _append: function (file, format, parent) {
-        let parentElement, url = window.location.origin + file, // file must match '/path/to/file.extension' 
+        // file must match '/path/to/file.extension'
+        let parentElement, url = window.location.origin + window.location.pathname + file, 
             data = {
                 url: url,
                 method: 'GET',
