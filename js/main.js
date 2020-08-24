@@ -12,6 +12,9 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
     init: function (data) {
       Object.assign(app, data);
+      if (app.profiles[app.profile].login.enabled == true) {
+        login.load();
+      }
     },
 
     _save: function (d) {

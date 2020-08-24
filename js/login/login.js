@@ -135,7 +135,3 @@ const login = {
     }
 
 }
-
-/* if (app.profiles[app.profile].login.enabled == true) {
-    login.load();
-} */
