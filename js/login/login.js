@@ -2,6 +2,7 @@ const login = {
     res: {},
 
     _ajax: function (data, callback) { // In case there isn't jQuery, fetch may be an option
+        
         let xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
@@ -21,7 +22,7 @@ const login = {
         if (data.method == 'PUT') { // Adds authorization header for password resetting
             let credentials = btoa(data.usr + ":" + data.pwd);
             xhr.withCredentials = true;
-            xhr.setRequestHeader('Authorization', `Basic ${credentials}` );
+            xhr.setRequestHeader('Authorization', `Basic ${credentials}`);
         }
         xhr.setRequestHeader(data.reqHeader.key, data.reqHeader.val);
         xhr.send(data.params);
@@ -107,8 +108,10 @@ const login = {
             pwd: loginForm.pwd.value,
             host: login.server,
             newPwd: loginForm.newPwd.value
-        };
-        login._gsResetPwd(resetOptions);
+        }, r = resetOptions;
+        if (r.name !== "" && r.pwd !== "" && r.newPwd !== "" ) {
+            login._gsResetPwd(resetOptions);
+        } 
     },
 
     _gsResetPwd: function (o) {
@@ -130,6 +133,7 @@ const login = {
             };
         login._ajax(data, (res) => {
             console.info(`Server response: ${res.response}, Status: ${res.status}`);
+            $('#loginModal').modal('hide');
         });
     },
 
