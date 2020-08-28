@@ -2,7 +2,7 @@ const login = {
     res: {},
 
     _ajax: function (data, callback) { // In case there isn't jQuery, fetch may be an option
-        
+
         let xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
@@ -109,9 +109,9 @@ const login = {
             host: login.server,
             newPwd: loginForm.newPwd.value
         }, r = resetOptions;
-        if (r.name !== "" && r.pwd !== "" && r.newPwd !== "" ) {
+        if (r.name !== "" && r.pwd !== "" && r.newPwd !== "") {
             login._gsResetPwd(resetOptions);
-        } 
+        }
     },
 
     _gsResetPwd: function (o) {
@@ -153,6 +153,23 @@ const login = {
             console.info(`Response status ${res.status}`);
             app.changeProfile("logged"); // Logged should be a state, not a profile
             $('#loginModal').modal('hide');
+        });
+    },
+
+    logout: function () {
+        gsUrl = `${window.location.origin}/geoserver/j_spring_security_logout`,
+            data = {
+                params: "",
+                url: gsUrl,
+                method: 'POST',
+                reqHeader: {
+                    key: 'Content-type',
+                    val: 'application/x-www-form-urlencoded'
+                }
+            };
+        login._ajax(data, (res) => {
+            console.info(`Response status ${res.status}`);
+            app.changeProfile("default");
         });
     }
 
