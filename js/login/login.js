@@ -51,6 +51,7 @@ const login = {
     },
 
     _listeners: function () {
+        document.getElementById("logoutBtn").addEventListener('click', this.logout); // convert UI to object
         loginForm.submit.addEventListener('click', this.submit);
         loginForm.resetPwd.addEventListener('click', this.resetPwd);
     },
@@ -68,8 +69,8 @@ const login = {
             let config = { attributes: true, childList: true, subtree: true };
             let callback = function (mutationsList, observer) {
                 for (let mutation of mutationsList) {
-                    if (mutation.type === 'childList' &&
-                        mutation.addedNodes[0].id == "loginModal") {
+                    let addedNode = mutation.addedNodes[0].id;
+                    if (mutation.type === 'childList' && (addedNode == "loginModal" || addedNode == "navbar")) {
                         login._listeners();
                         observer.disconnect();
                     }
@@ -84,6 +85,8 @@ const login = {
     submit: function (event) {
         event.preventDefault();
         login._geoserver(loginForm.name.value, loginForm.pwd.value);
+        document.getElementById("loginBtn").classList.add("hidden");
+        document.getElementById("logoutBtn").classList.remove("hidden");
     },
 
     resetPwd: function (event) {
@@ -171,6 +174,9 @@ const login = {
             console.info(`Response status ${res.status}`);
             app.changeProfile("default");
         });
+
+        document.getElementById("logoutBtn").classList.add("hidden");
+        document.getElementById("loginBtn").classList.remove("hidden");
     }
 
 }
