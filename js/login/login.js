@@ -1,25 +1,31 @@
 const login = {
+    res: {},
 
     _ajax: function (data, callback) { // In case there isn't jQuery, fetch may be an option
-        let xhr = new XMLHttpRequest(),
-            loginResponse;
+        let xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                callback ? callback(xhr.response) : xhr.response;
+            res = { response: xhr.response, status: xhr.status };
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                let status = xhr.status;
+                //if (status === 0 || (status >= 200 && status < 400)) {
+                if (status >= 200 && status < 400) {
+                    callback ? callback(res) : res;
+                } else {
+                    console.log(`Ajax request returned error: ${xhr.response}`);
+                }
             }
         }
 
         xhr.open(data.method, data.url, true);
+        if (data.method == 'PUT') { // Adds authorization header for password resetting
+            let credentials = btoa(data.usr + ":" + data.pwd);
+            xhr.withCredentials = true;
+            xhr.setRequestHeader('Authorization', `Basic ${credentials}` );
+        }
         xhr.setRequestHeader(data.reqHeader.key, data.reqHeader.val);
         xhr.send(data.params);
-        if (xhr.readyState == 4) {
-            if (xhr.status == 200) {
-                return xhr.status;
-            } else {
-                dump(xhr.status, xhr.responseText);
-            }
-        }
+
     },
 
     _append: function (file, format, parent) {
@@ -37,7 +43,7 @@ const login = {
         // Would load CSS here
         let element = document.createElement("div");
         login._ajax(data, function (res) {
-            element.innerHTML = res;
+            element.innerHTML = res.response;
             return element;
         });
         parent.appendChild(element);
@@ -77,7 +83,6 @@ const login = {
     submit: function (event) {
         event.preventDefault();
         login._geoserver(loginForm.name.value, loginForm.pwd.value);
-        app.changeProfile("logged"); // Logged should be a state, not a profile
     },
 
     resetPwd: function (event) {
@@ -107,19 +112,25 @@ const login = {
     },
 
     _gsResetPwd: function (o) {
-        let params = { "newPassword": o.newPwd },
+        let params = `{ "newPassword": "${o.newPwd}" }`,
             gsHost = o.host,
             gsUrl = gsHost + '/geoserver/rest/security/self/password',
+            _usr = o.name,
+            _pwd = o.pwd,
             data = {
                 params: params,
                 url: gsUrl,
                 method: 'PUT',
+                usr: _usr,
+                pwd: _pwd,
                 reqHeader: {
                     key: 'Content-type',
                     val: 'application/json'
                 }
             };
-        login._ajax(data);
+        login._ajax(data, (res) => {
+            console.info(`Server response: ${res.response}, Status: ${res.status}`);
+        });
     },
 
     _geoserver: function (name, pwd) {
@@ -134,7 +145,11 @@ const login = {
                     val: 'application/x-www-form-urlencoded'
                 }
             };
-        login._ajax(data);
+        login._ajax(data, (res) => {
+            console.info(`Response status ${res.status}`);
+            app.changeProfile("logged"); // Logged should be a state, not a profile
+            $('#loginModal').modal('hide');
+        });
     }
 
 }
