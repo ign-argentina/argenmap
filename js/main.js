@@ -1,146 +1,238 @@
-var gestorMenu = new GestorMenu();
-//gestorMenu.setItemsGroupDOM(".nav.nav-sidebar");
+const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
+  impresorBaseMap = new ImpresorCapasBaseHTML(),
+  impresorGroup = new ImpresorGrupoHTML(),
+  impresorGroupWMSSelector = new ImpresorGroupWMSSelector(),
+  app = {
+    profile: "default",
+    profiles: {},
+    templates: [
+      "ign-geoportal-basic",
+      "ign-geoportal-minimal"
+    ],
 
-const impresorItemCapaBase = new ImpresorItemCapaBaseHTML();
-const impresorBaseMap = new ImpresorCapasBaseHTML();
-const impresorGroup = new ImpresorGrupoHTML();
-const impresorGroupWMSSelector = new ImpresorGroupWMSSelector();
+    init: function (data) {
+      Object.assign(app, data);
+      this._startModules();
+    },
 
-var getGeoserverCounter = 0;
-var keywordFilter = 'dato-basico-y-fundamental';
-var template = "";
-var templateFeatureInfoFieldException = [];
+    _startModules: function () {
+      app.profiles[app.profile].modules.forEach(key => {
+        switch (key) {
+          case "login":
+            login.load();
+            break;
+          // Intialize here more modules defined in profile (config JSON)
+          default:
+            break;
+        }
+      });
+    },
 
-$.getJSON("./js/menu.json", function (data) {
+    _save: function (d) {
+      let fileName = 'config.json',
+        e = document.createEvent('MouseEvents'),
+        a = document.createElement('a'),
+        fileToSave = new Blob([JSON.stringify(d)], {
+          type: 'application/json',
+          name: fileName
+        });
 
-  //Template
-  template = data.template; // define wich template to use
-  gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
-  delete data['template']; // delete template item from data
+      a.download = fileName;
+      a.href = window.URL.createObjectURL(fileToSave);
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+      e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      a.dispatchEvent(e);
+    },
 
-  //templateFeatureInfoFieldException
-  if (data.template_feature_info_exception) {
-    templateFeatureInfoFieldException = data.template_feature_info_exception; // define not showing fields in feature info popup
-    delete data['template_feature_info_exception']; // delete template item from data
-  }
+    saveConfig: function () {
+      this._save(app)
+    },
 
-  //Layers Joins (join several layers into one item)
-  if (data.layers_joins) {
-    gestorMenu.setLayersJoin(data.layers_joins);
-    delete data['layers_joins']; // delete template item from data
-  }
+    addBasemaps: function () {
 
-  //Folders (generate folders items into main menu to generate logical groups of layers)
-  if (data.folders) {
-    gestorMenu.setFolders(data.folders);
-    delete data['folders']; // delete folders item from data
-  }
+      app.items.forEach(element => {
 
-  $.each(data, function (key, val) {
-    //data.items.forEach(imprimirItem, data.items);
-    for (var key in data.items) {
-
-      if (data.items[key].tab == undefined) {
-        data.items[key].tab = "";
-      }
-
-      switch (data.items[key].type) {
-        case "basemap":
-          var tab = new Tab(data.items[key].tab);
-          groupAux = new ItemGroupBaseMap(tab, data.items[key].nombre, data.items[key].seccion, data.items[key].peso, "", "", data.items[key].short_abstract, null);
+        if (element.type == "basemap") {
+          let item = element, tab = new Tab(item.tab),
+            groupAux = new ItemGroupBaseMap(tab, item.nombre, item.seccion, item.peso, "", "", item.short_abstract, null);
           groupAux.setImpresor(impresorBaseMap);
-          //groupAux.setObjDom($("#basemap-selector"));
           groupAux.setObjDom(".basemap-selector");
-          for (var key2 in data.items[key].capas) {
-            var capa = new Capa(
-              data.items[key].capas[key2].nombre,
-              data.items[key].capas[key2].titulo,
+          for (let key2 in item.capas) {
+            let capa = new Capa(
+              item.capas[key2].nombre,
+              item.capas[key2].titulo,
               null,
-              data.items[key].capas[key2].host,
-              data.items[key].capas[key2].servicio,
-              data.items[key].capas[key2].version,
+              item.capas[key2].host,
+              item.capas[key2].servicio,
+              item.capas[key2].version,
               null,
-              data.items[key].capas[key2].key,
-              null,
-              null,
+              item.capas[key2].key,
               null,
               null,
-              data.items[key].capas[key2].attribution
+              null,
+              null,
+              item.capas[key2].attribution
             );
-            var item = new Item(
+            let basemap = new Item(
               capa.nombre,
-              data.items[key].seccion + key2,
+              item.seccion + key2,
               "",
               capa.attribution,
               capa.titulo,
               capa,
               null
             );
-            item.setLegendImg('templates/' + template + '/' + data.items[key].capas[key2].legendImg);
-			if (data.items[key].capas[key2].peso) {
-				item.setPeso(data.items[key].capas[key2].peso);
-			}
-			if (data.items[key].capas[key2].selected && data.items[key].capas[key2].selected == true) {
-				gestorMenu.setBasemapSelected(data.items[key].seccion + key2);
-			}
-            item.setImpresor(impresorItemCapaBase);
-            groupAux.setItem(item);
+            basemap.setLegendImg('templates/' + template + '/' + item.capas[key2].legendImg);
+            if (item.capas[key2].peso) {
+              basemap.setPeso(item.capas[key2].peso);
+            }
+            if (item.capas[key2].selected && item.capas[key2].selected == true) {
+              gestorMenu.setBasemapSelected(item.seccion + key2);
+            }
+            basemap.setImpresor(impresorItemCapaBase);
+            groupAux.setItem(basemap);
           }
           gestorMenu.addTab(tab);
           gestorMenu.addItemGroup(groupAux);
-          break;
-        case "wmslayer":
-          getGeoserverCounter++;
-          var itemData = data.items[key];
-          var tab = new Tab(itemData.tab);
-          var customizedLayers = (itemData.customize_layers == undefined) ? "" : itemData.customize_layers;
-          var featureInfoFormat = (itemData.feature_info_format == undefined) ? "application/json" : itemData.feature_info_format;
-          var impresorGroupTemp = impresorGroup;
-          if (tab.listType == "combobox") {
-            impresorGroupTemp = impresorGroupWMSSelector;
+        }
+      });
+    },
+
+    removeLayers: function () {
+      let sidebar = document.getElementById('sidebar');
+      sidebar.querySelectorAll('*').forEach(n => n.remove());
+      Object.keys(gestorMenu.items).forEach(key => {
+        if (key != "mapasbase") {
+          gestorMenu.items[key].hideAllLayers();
+          gestorMenu.items[key].muestraCantidadCapasVisibles();
+          delete gestorMenu.items[key];
+        }
+      });
+    },
+
+    addLayers: function () {
+
+      app.items.forEach(element => {
+
+        if (element.type != "basemap") {
+          let item = element, tab = new Tab(item.tab),
+            customizedLayers = (item.customize_layers == undefined) ? "" : item.customize_layers,
+            featureInfoFormat = (item.feature_info_format == undefined) ? "application/json" : item.feature_info_format,
+            impresorGroupTemp = impresorGroup;
+
+          // Process item if it's in profile
+          let matchItemProfile;
+          matchItemProfile = app.profiles[app.profile].data.find(e => e == item.id);
+          if (matchItemProfile != undefined) {
+            if (item.tab == undefined) {
+              item.tab = "";
+            }
+
+            switch (item.type) {
+              case "wmslayer":
+                getGeoserverCounter++;
+                if (tab.listType == "combobox") {
+                  impresorGroupTemp = impresorGroupWMSSelector;
+                }
+                let wmsLayerInfo = new LayersInfoWMS(item.host, item.servicio, item.version, tab, item.seccion, item.peso, item.nombre, item.short_abstract, featureInfoFormat, item.type, customizedLayers, impresorGroupTemp);
+                if (item.allowed_layers) {
+                  wmsLayerInfo.setAllowebLayers(item.allowed_layers);
+                }
+                if (item.customize_layers) {
+                  wmsLayerInfo.setCustomizedLayers(item.customize_layers);
+                }
+                gestorMenu.addTab(tab);
+                gestorMenu.addLayersInfo(wmsLayerInfo);
+                if (item.folders) {
+                  gestorMenu.addFolders(item.seccion, item.folders);
+                }
+                break;
+              case "wmts":
+                getGeoserverCounter++;
+                if (tab.listType == "combobox") {
+                  impresorGroupTemp = impresorGroupWMSSelector;
+                }
+                let wmtsLayerInfo = new LayersInfoWMTS(item.host, item.servicio, item.version, tab, item.seccion, item.peso, item.nombre, item.short_abstract, featureInfoFormat, item.type, customizedLayers, impresorGroupTemp);
+                if (item.allowed_layers) {
+                  wmtsLayerInfo.setAllowebLayers(item.allowed_layers);
+                }
+                if (item.customize_layers) {
+                  wmtsLayerInfo.setCustomizedLayers(item.customize_layers);
+                }
+                gestorMenu.addTab(tab);
+                gestorMenu.addLayersInfo(wmtsLayerInfo);
+                if (item.folders) {
+                  gestorMenu.addFolders(item.seccion, item.folders);
+                }
+                break;
+              default:
+                let sourceTypeUndefined = "The 'type' parameter is not set for the source:" + item.host;
+                console.log(sourceTypeUndefined);
+            }
           }
-          var wmsLayerInfo = new LayersInfoWMS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, featureInfoFormat, data.items[key].type, customizedLayers, impresorGroupTemp);
-          if (itemData.allowed_layers) {
-            wmsLayerInfo.setAllowebLayers(itemData.allowed_layers);
+        }
+      });
+
+    },
+
+    changeProfile: function (profile) {
+      if (profile != app.profile) {
+        if (profile != undefined && app.profiles[profile] != undefined) {
+          try {
+            app.profile = profile;
+            app.removeLayers();
+            app.addLayers();
+            gestorMenu.printMenu();
+            console.info(`Profile changed to ${profile}.`);
+          } catch (error) {
+            return error;
           }
-          if (itemData.customize_layers) {
-            wmsLayerInfo.setCustomizedLayers(itemData.customize_layers);
-          }
-          gestorMenu.addTab(tab);
-          gestorMenu.addLayersInfo(wmsLayerInfo);
-          if (itemData.folders) {
-            gestorMenu.addFolders(itemData.seccion, itemData.folders);
-          }
-          break;
-        case "wmts":
-          getGeoserverCounter++;
-          var itemData = data.items[key];
-          var tab = new Tab(itemData.tab);
-          var customizedLayers = (itemData.customize_layers == undefined) ? "" : itemData.customize_layers;
-          var featureInfoFormat = (itemData.feature_info_format == undefined) ? "application/json" : itemData.feature_info_format;
-          var impresorGroupTemp = impresorGroup;
-          if (tab.listType == "combobox") {
-            impresorGroupTemp = impresorGroupWMSSelector;
-          }
-          var wmtsLayerInfo = new LayersInfoWMTS(itemData.host, itemData.servicio, itemData.version, tab, itemData.seccion, data.items[key].peso, itemData.nombre, data.items[key].short_abstract, featureInfoFormat, data.items[key].type, customizedLayers, impresorGroupTemp);
-          if (itemData.allowed_layers) {
-            wmtsLayerInfo.setAllowebLayers(itemData.allowed_layers);
-          }
-          if (itemData.customize_layers) {
-            wmtsLayerInfo.setCustomizedLayers(itemData.customize_layers);
-          }
-          gestorMenu.addTab(tab);
-          gestorMenu.addLayersInfo(wmtsLayerInfo);
-          if (itemData.folders) {
-            gestorMenu.addFolders(itemData.seccion, itemData.folders);
-          }
-          break;
-        default:
-          let sourceTypeUndefined = "The 'type' parameter is not set for the source:" + data.items[key].host;
-          console.log(sourceTypeUndefined);
+        } else {
+          let message = `Profile '${profile}' missing or not present in profiles property. Available profiles: ${Object.keys(app.profiles)}`;
+          console.warn(message);
+        }
+      } else {
+        console.info(`Profile ${profile} is already in use.`);
       }
     }
-  });
+
+  }
+
+let getGeoserverCounter = 0,
+  keywordFilter = 'dato-basico-y-fundamental',
+  template = "",
+  templateFeatureInfoFieldException = [],
+  gestorMenu = new GestorMenu();
+
+$.getJSON("./js/menu.json", function (data) {
+  app.init(data);
+
+  //Template
+  template = app.template; // define wich template to use
+  gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
+  delete app['template']; // delete template item from data
+
+  //templateFeatureInfoFieldException
+  if (app.template_feature_info_exception) {
+    templateFeatureInfoFieldException = app.template_feature_info_exception; // define not showing fields in feature info popup
+    delete app['template_feature_info_exception']; // delete template item from data
+  }
+
+  //Layers Joins (join several layers into one item)
+  if (app.layers_joins) {
+    gestorMenu.setLayersJoin(app.layers_joins);
+    delete app['layers_joins']; // delete template item from data
+  }
+
+  //Folders (generate folders items into main menu to generate logical groups of layers)
+  if (app.folders) {
+    gestorMenu.setFolders(app.folders);
+    delete app['folders']; // delete folders item from data
+  }
+
+  app.addBasemaps();
+  app.addLayers();
+
   template = 'templates/' + template + '/main.html';
   $('#template').load(template);
 });

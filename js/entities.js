@@ -847,7 +847,14 @@ class ItemGroup extends ItemComposite {
         }
     }
 
-    hideAllLayers() { }
+    hideAllLayers() { 
+        for (var key2 in this.itemsComposite) {
+            var item = this.itemsComposite[key2];
+			if (item.getVisible() == true) {
+				item.showHide();
+			}
+		}
+    }
 	
     hideAllLayersExceptOne(item) { }
 
