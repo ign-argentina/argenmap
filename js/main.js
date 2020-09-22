@@ -12,20 +12,36 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
     init: function (data) {
       Object.assign(app, data);
+
+      if (Object.keys(app.profiles).length === 0) {
+        app['profiles'] = {
+          "default": { "data": [], "modules": [] }
+        };
+        app['profile'] = "default";
+      };
+
       this._startModules();
     },
 
     _startModules: function () {
-      app.profiles[app.profile].modules.forEach(key => {
-        switch (key) {
-          case "login":
-            login.load();
-            break;
-          // Intialize here more modules defined in profile (config JSON)
-          default:
-            break;
+      try {
+        app.profiles[app.profile].modules.forEach(key => {
+          switch (key) {
+            case "login":
+              login.load();
+              break;
+            // Intialize here more modules defined in profile (config JSON)
+            default:
+              break;
+          }
+        });
+      } catch (error) {
+        if (app.profiles == undefined) {
+          console.warn("Profiles attribute isn't defined in configuration file.");
+        } else {
+          console.error(error);
         }
-      });
+      }
     },
 
     _save: function (d) {
@@ -120,9 +136,14 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
             featureInfoFormat = (item.feature_info_format == undefined) ? "application/json" : item.feature_info_format,
             impresorGroupTemp = impresorGroup;
 
-          // Process item if it's in profile
-          let matchItemProfile;
-          matchItemProfile = app.profiles[app.profile].data.find(e => e == item.id);
+          let profile = app.profiles[app.profile], matchItemProfile;
+          if (profile.data.length === 0) {
+            matchItemProfile = "";
+          } else {
+            // Process item if it's in profile
+            matchItemProfile = app.profiles[app.profile].data.find(e => e == item.id);
+          }
+
           if (matchItemProfile != undefined) {
             if (item.tab == undefined) {
               item.tab = "";
@@ -167,7 +188,6 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
                 break;
               default:
                 let sourceTypeUndefined = "The 'type' parameter is not set for the source:" + item.host;
-                console.log(sourceTypeUndefined);
             }
           }
         }
