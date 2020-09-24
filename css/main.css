@@ -3,6 +3,7 @@ General
 *******************************/
 body {
 	font-family: Roboto,sans-serif;
+	background-color: #008dc9;
 }
 
 /*******************************
@@ -150,7 +151,7 @@ li.active > div > a {
   .navbar-header a{font-size: 13px; font-weight: bold;}
 }
 @media (min-width: 992px) {
-  #sidebar-container.collapse {height: 100% !important};
+  #sidebar-container.collapse {height: 93% !important};
 }
 .wms-combobox-selector {
 	width: 100%;
