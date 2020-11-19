@@ -16,8 +16,6 @@ Cuenta por defecto con el mapa base de la República Argentina y se pueden agreg
 
 ## Inicio rápido
 
----
-
 ### Primer paso: descarga
 
 Clonar el repositorio o descargarlo en formato ZIP y descomprimirlo:
@@ -43,8 +41,6 @@ En la sección **Personalización** se detallan los pasos para modificar el arch
 Publicar el contenido de este repositorio con un servidor web o con alguna herramienta de depuración como LiveServer en Visual Studio Code, SimpleHTTPServer en Python, etc.
 
 ## Personalización
-
----
 
    > Esta sección explica cómo se pueden modificar las capas, los mapas base, el aspecto visual y extensiones del mapa.
 
