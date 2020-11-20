@@ -1,4 +1,4 @@
-<img width="150" src="img/logo-transparente.png" alt="Argenmap" />
+<img width="150" src="img/argenmap_logo.svg" alt="Argenmap" />
 
 ---
 
