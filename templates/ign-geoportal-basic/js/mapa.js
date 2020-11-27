@@ -1,4 +1,4 @@
-var atrib_ign = "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
     baseMaps = {},
     overlayMaps = new Object(),
     layerName,
@@ -7,7 +7,7 @@ var argenmap = "";
 var mapa = "";
 
 //Change logotype
-$('#top-left-logo-link').attr("href","http://www.ign.gob.ar/");
+$('#top-left-logo-link').attr("href","https://www.ign.gob.ar/");
 $('#top-left-logo').attr("src","templates/ign-geoportal-basic/img/logo.png");
 $('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
 $('#top-left-logo').attr("title","Instituto Geográfico Nacional");
@@ -361,7 +361,7 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	switch(unordered) {
 		case 'leaflet':
-			argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
+			argenmap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
 		    tms: true,
 		    maxZoom: 21,
 		    attribution: atrib_ign
@@ -571,7 +571,7 @@ function loadWmsTpl (objLayer) {
             }
             
             infoAux += '</ul>';
-            //infoAux += '<img style="height:40px" src="http://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
+            //infoAux += '<img style="height:40px" src="https://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
             infoAux += '</div></div></div>';
             
             return infoAux;
