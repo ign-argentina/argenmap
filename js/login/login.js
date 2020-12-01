@@ -31,7 +31,8 @@ const login = {
 
     _append: function (file, format, parent) {
         // file must match '/path/to/file.extension'
-        let parentElement, url = window.location.origin + window.location.pathname + file,
+        let parentElement, path = window.location.pathname;
+        let url = window.location.origin + path.replace('index.html', '') + file,
             data = {
                 url: url,
                 method: 'GET',
@@ -65,18 +66,17 @@ const login = {
             login._listeners();
         } catch (error) {
             // Select the node that will be observed for mutations;
-            let targetNode = document.body;
-            let config = { attributes: true, childList: true, subtree: true };
-            let callback = function (mutationsList, observer) {
-                for (let mutation of mutationsList) {
-                    let addedNode = mutation.addedNodes[0].id;
-                    if (mutation.type === 'childList' && (addedNode == "loginModal" || addedNode == "navbar")) {
-                        login._listeners();
-                        observer.disconnect();
-                    }
-                }
-            };
-            let observer = new MutationObserver(callback);
+            let targetNode = document.body,
+                config = { attributes: true, childList: true, subtree: true },
+                observer = new MutationObserver(function (mutationsList) {
+                    mutationsList.forEach(mutation => {
+                        if (mutation.type === 'childList' && (mutation.addedNodes[0].id == "loginModal" || mutation.addedNodes[0].id == "navbar")) {
+                            login._listeners();
+                            observer.disconnect();
+                        }
+                    });
+                });
+
             // Start observing the target node for configured mutations
             observer.observe(targetNode, config);
         }
