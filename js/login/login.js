@@ -9,7 +9,6 @@ const login = {
             res = { response: xhr.response, status: xhr.status };
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 let status = xhr.status;
-                //if (status === 0 || (status >= 200 && status < 400)) {
                 if (status >= 200 && status < 400) {
                     callback ? callback(res) : res;
                 } else {

@@ -100,13 +100,7 @@ Control mapa base
 #basemap-selector .leaflet-control-layers-toggle:hover {
 	background-color: #f4f4f4;
 }
-/*
-#collapseBaseMapLayers {
-	position:relative;
-	top:35px;
-	z-index:1100;
-}
-*/
+
 #collapseBaseMapLayers {
 	position: absolute;
 	top:1px;

@@ -64,7 +64,6 @@ function loadWmsTpl (objLayer) {
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
     } else {
-        //createWmsLayer(wmsUrl, layer);
         createWmsLayer(objLayer);
         overlayMaps[layer].addTo(mapa);
     }

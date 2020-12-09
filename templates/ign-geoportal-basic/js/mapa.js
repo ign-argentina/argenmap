@@ -141,13 +141,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
 					break;
 				case 'betterScale':
-					// Leaflet BetterScale plugin
-					/*
-					L.control.betterscale({
-						metric: true,
-						imperial: false
-					}).addTo(mapa);
-					*/ 
 					L.control.scale({
 						metric: true,
 						imperial: false
@@ -166,8 +159,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						toggleDisplay: false,
 						minimized: false,
 						position: 'bottomleft',
-						//collapsedWidth: 32,
-						//collapsedHeight: 32,
 						width: 100,
 						height: 100,
 						strings: {
@@ -248,7 +239,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						
 						container.onclick = function() {
 							if (customGraticule == null) {
-								//drawGrid(mapa.getZoom());
 								var options = {
 									interval: 10,
 									showshowOriginLabel: true,
@@ -506,7 +496,6 @@ function loadGeojsonTpl (url, layer) {
 
 }
 
-//function loadWmsTpl (wmsUrl, layer) {
 function loadWmsTpl (objLayer) {
     wmsUrl = objLayer.capa.host;
     layer = objLayer.nombre;
@@ -514,7 +503,6 @@ function loadWmsTpl (objLayer) {
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
     } else {
-        //createWmsLayer(wmsUrl, layer);
         createWmsLayer(objLayer);
         overlayMaps[layer].addTo(mapa);
     }
@@ -571,7 +559,6 @@ function loadWmsTpl (objLayer) {
             }
             
             infoAux += '</ul>';
-            //infoAux += '<img style="height:40px" src="https://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
             infoAux += '</div></div></div>';
             
             return infoAux;
@@ -580,7 +567,6 @@ function loadWmsTpl (objLayer) {
         return '';
     }
     
-    //function createWmsLayer(wmsUrl, layer) {
     function createWmsLayer(objLayer) {
         //Extends WMS.Source to customize popup behavior
         var MySource = L.WMS.Source.extend({
@@ -606,7 +592,6 @@ function loadWmsTpl (objLayer) {
                 return;
             }
         });
-        //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
         var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
             transparent: true,
             tiled: true,

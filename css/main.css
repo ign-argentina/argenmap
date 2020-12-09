@@ -21,13 +21,7 @@ Menu principal
 .loading > img {
 	width: 70px;
 }
-/*
-.menu1 {background-color: #1174a1  !important; color: white !important;}
-.menu2 {background-color: #0695d6 !important; color: white !important;}
-.menu3 {background-color: #2aaad1 !important; color: white !important;}
-.menu4 {background-color: #5bc0de !important; color: white !important;}
-.menu5 {background-color: #008dc9 !important; color: white !important;}
-*/
+
 .panel-default > .panel-heading {
     background-color: #008dc9;
 	color: white;
