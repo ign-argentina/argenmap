@@ -498,6 +498,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
         
         if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
 
+        // Load geoserver Capabilities, if success Create menu and append to DOM
         $('#temp-menu').load(thisObj.getHost() + '?service=' + thisObj.service + '&version=' + thisObj.version + '&request=GetCapabilities', function () {
             var content = $('#temp-menu').find("contents");
             var keywordHtml = $('#temp-menu').find("Keyword");
