@@ -498,7 +498,7 @@ function loadGeojsonTpl (url, layer) {
 
 function loadWmsTpl (objLayer) {
     wmsUrl = objLayer.capa.host;
-    layer = objLayer.nombre;
+		layer = objLayer.capa.nombre;
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
@@ -530,7 +530,6 @@ function loadWmsTpl (objLayer) {
                 return info;
             }
         }
-        
         return '';
     }
     
@@ -596,11 +595,11 @@ function loadWmsTpl (objLayer) {
             transparent: true,
             tiled: true,
             maxZoom: 21,
-            'title': objLayer.titulo,
+            'title': objLayer.capa.titulo,
             format: 'image/png',
             INFO_FORMAT: objLayer.capa.featureInfoFormat
         });
-        overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.nombre);
+        overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
     }
 }
 
