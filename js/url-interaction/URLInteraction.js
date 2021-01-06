@@ -42,6 +42,8 @@ class URLInteraction {
                 }
             });
         }
+
+        this.updateURL();
     }
 
     get url() {
