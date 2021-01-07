@@ -7,6 +7,9 @@ const LONGITUDE = 'lng';
 
 //Default map values
 //***Should be defined as global or as a separated module */
+const DEFAULT_MIN_ZOOM_LEVEL = 3;
+const DEFAULT_MAX_ZOOM_LEVEL = 21;
+
 const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
@@ -26,19 +29,27 @@ class URLInteraction {
             const paramsArray = params.slice(1).split('&');
             paramsArray.forEach(element => {
                 const [param, value] = element.split('=');
-                switch (param.toLowerCase()) {
-                    case ZOOM_LEVEL: {
-                        this._zoom = +value;
+                if (!isNaN(+value)) {
+                    switch (param.toLowerCase()) {
+                        case ZOOM_LEVEL: {
+                            if (+value < DEFAULT_MIN_ZOOM_LEVEL) {
+                                this._zoom = DEFAULT_MIN_ZOOM_LEVEL;
+                            } else if (+value > DEFAULT_MAX_ZOOM_LEVEL) {
+                                this._zoom = DEFAULT_MAX_ZOOM_LEVEL;
+                            } else {
+                                this._zoom = +value;
+                            }
+                        }
+                        break;
+                        case LATITUDE: {
+                            this._latitude = +value;
+                        }
+                        break;
+                        case LONGITUDE: {
+                            this._longitude = +value;
+                        }
+                        break;
                     }
-                    break;
-                    case LATITUDE: {
-                        this._latitude = +value;
-                    }
-                    break;
-                    case LONGITUDE: {
-                        this._longitude = +value;
-                    }
-                    break;
                 }
             });
         }
