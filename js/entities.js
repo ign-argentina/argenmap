@@ -1853,7 +1853,6 @@ class GestorMenu {
                 if (item.getId() == itemSeccion) {
 					isBaseLayer = itemComposite.isBaseLayer();
 					break;
-					break;
 				}
 			}
 		}
@@ -1869,10 +1868,8 @@ class GestorMenu {
 			}
             for (var key2 in itemComposite.itemsComposite) {
                 var item = itemComposite.itemsComposite[key2];
-                console.log(item.getId(), itemSeccion)
-                if (item.getId() == itemSeccion) {
 
-                    console.log(itemSeccion, 'asdasd')
+                if (item.getId() == itemSeccion) {
                     if ($(`#${item.getId()}`).hasClass('active')) {
                         this.removeActiveLayer(itemSeccion);
                     } else {
@@ -1881,7 +1878,6 @@ class GestorMenu {
 
                     item.showHide();
                     itemComposite.muestraCantidadCapasVisibles();
-                    break;
                     break;
                 }
             }
