@@ -1,13 +1,14 @@
-#contenedorPrincipal{
+
+#ContainerTable{
 	width: 450px;
 	overflow: hidden;
-	/* resize without jquery
+	/*resize without jquery
 	resize: both;
 	overflow:auto;
 	min-width: 450px;
 	min-height: 65px;
 	max-height: 475px;
-	*/
+	resize without jquery*/
 	text-align: right;
 	float: none;
 	border-radius: 8px;
@@ -26,6 +27,22 @@
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+#search-table{
+	text-align: left;
+	margin-top: 5px;
+}
+
+#containerTableHeader{
+	cursor: move;
+}
+
+#icons-table{
+	font-size: 10px;
+}
+
+#header-tabletabulator{
+	cursor: move;
+}
 #tab-content-table{
 	overflow: auto;
 }
