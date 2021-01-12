@@ -19,7 +19,7 @@ class UI{
   }
 
   addButtons(){
-    let btnmax = this.createElement("button","btnmax")
+    let btnmax = this.createElement("a","btnmax","icon-table")
     btnmax.hidden= true
     btnmax.innerHTML = '<span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>';
     btnmax.onclick = function(){
@@ -29,24 +29,24 @@ class UI{
         document.getElementById("btnmin").hidden= false;
         };
 
-        let btnmin = this.createElement("button","btnmin")
+        let btnmin = this.createElement("a","btnmin","icon-table")
         btnmin.innerHTML = '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>'
         btnmin.onclick = function(){
-            document.getElementById("ContainerTable").style.height="32px"
+            document.getElementById("ContainerTable").style.height="30px"
             document.getElementById("ContainerTable").style.width="270px"
             document.getElementById("btnmin").hidden= true;
             document.getElementById("btnmax").hidden= false;
         };
 
-        let btnclose = this.createElement("button","btnclose")
+        let btnclose = this.createElement("a","btnclose","icon-table")
         btnclose.innerHTML = '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
         btnclose.onclick = function(){
           document.body.removeChild(ContainerTable)
           datatable=[];
         };
 
-        let btnsave= this.createElement("button","btnsave")
-        btnsave.innerHTML = '<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true" title="Guardar como CSV"></span>';
+        let btnsave= this.createElement("a","btnsave","icon-table")
+        btnsave.innerHTML = '<span class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
         btnsave.onclick = function(){
           table.download("csv", "data.csv", {bom:true});
         };
@@ -59,14 +59,14 @@ class UI{
   }
 
   addSearchBar(){
-        let select = this.createElement("select","filter-field")
+        let select = this.createElement("select","filter-field","filteritems")
 
-        let inputsearch = this.createElement("input","filter-value")
+        let inputsearch = this.createElement("input","filter-value","filteritems")
         inputsearch.type="text"
         inputsearch.placeholder="Buscar"
 
-        let filterclear = this.createElement("button","filter-clear")
-        filterclear.innerHTML="Borrar"
+        let filterclear = this.createElement("a","filter-clear","filteritems")
+        filterclear.innerHTML=" X"
         filterclear.onclick = function(){
           document.getElementById("filter-value").value= "";
           document.getElementById("filter-field").selectedIndex = "0";
@@ -79,7 +79,10 @@ class UI{
   }
 
   addTabs(){
-    let aux = this.createElement("li",datatable.length)
+    let aux 
+    if(datatable.length==1){aux = this.createElement("li",datatable.length,"active")}
+    else{aux = this.createElement("li",datatable.length)}
+    
     aux.innerHTML='<a data-toggle="tab" aria-expanded="true" id ='+datatable.length+' >Tabla '+datatable.length+'</a>'
     aux.onclick =function(){
             let data = datatable[this.id-1]
@@ -103,9 +106,9 @@ class UI{
       movableColumns:true,      //allow column order to be changed
       locale:true,
       rowDblClick:function(e, row){
-        if(row._row.data.lon){
-          let lon = row._row.data.lon
-          let lat = row._row.data.lat
+        if(row._row.data.Longitud){
+          let lon = row._row.data.Longitud
+          let lat = row._row.data.Latitud
           //let marker = L.marker([lat, lon], {clickable: true})
           //mapa.addLayer(marker);
           mapa.flyTo([lat, lon],10)}
