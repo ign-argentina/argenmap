@@ -273,6 +273,12 @@ $.getJSON("./js/menu.json", function (data) {
         mapa.on('moveend', () => {
           urlInteraction.center = mapa.getCenter();
         });
+
+        gestorMenu.loadLayers([...urlInteraction.layers]);
+
+        gestorMenu.activeLayersHasBeenUpdated = () => {
+          urlInteraction.layers = gestorMenu.getActiveLayers();
+        }
       }
     }, 100);
   });
