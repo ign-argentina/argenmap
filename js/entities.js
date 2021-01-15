@@ -63,6 +63,7 @@ class ImpresorItemHTML extends Impresor {
     imprimir(itemComposite) {
 
         var childId = itemComposite.getId();
+        gestorMenu.setAvailableLayer(childId);
 
         var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
@@ -95,6 +96,8 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     imprimir(itemComposite) {
 
         var childId = itemComposite.getId();
+        gestorMenu.setAvailableBaseLayer(childId);
+
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
         return "<li id='" + childId + "' class='list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" +
@@ -1118,6 +1121,10 @@ class GestorMenu {
         this.showSearcher = false;
         this.basemapSelected = null;
 
+        this.availableLayers = [];
+        this.availableBaseLayers = [];
+        this.activeLayers = [];
+
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
         this._getLazyInitLayersInfoCounter = {};
@@ -1129,6 +1136,53 @@ class GestorMenu {
 		this._folders = {};
 	}
     
+    setAvailableLayer(layer_id) {
+        this.availableLayers.push(layer_id);
+    }
+
+    setAvailableBaseLayer(layer_id) {
+        this.availableBaseLayers.push(layer_id);
+    }
+
+    getAvailableLayers() {
+        return this.availableLayers;
+    }
+
+    addActiveLayer(layer_id) {
+        const idx = this.activeLayers.findIndex(layer => layer === layer_id);
+        if (idx === -1)
+            this.activeLayers.push(layer_id);
+    }
+
+    removeActiveLayer(layer_id) {
+        const idx = this.activeLayers.findIndex(layer => layer === layer_id);
+        if (idx > -1)
+            this.activeLayers.splice(idx, 1);
+    }
+
+    layerIsActive(layer_id) {
+        return this.activeLayers.findIndex(layer => layer === layer_id) > -1;
+    }
+
+    layerIsValid(layer_id) {
+        const idx1 = this.availableLayers.findIndex(layer => layer === layer_id) > -1;
+        const idx2 = this.availableBaseLayers.findIndex(layer => layer === layer_id) > -1;
+        return idx1 > -1 || idx2 > -1;
+    }
+
+    getActiveLayers() {
+        return this.activeLayers;
+    }
+
+    loadLayers(layers) {
+        setTimeout(() => {
+            layers.forEach(layer => {
+                if (this.layerIsValid(layer) && !this.layerIsActive(layer))
+                    this.muestraCapa(layer);
+            })
+        }, 1000);
+    }
+
     setMenuDOM(menuDOM) {
         this.menuDOM = menuDOM;
     }
@@ -1799,7 +1853,6 @@ class GestorMenu {
                 if (item.getId() == itemSeccion) {
 					isBaseLayer = itemComposite.isBaseLayer();
 					break;
-					break;
 				}
 			}
 		}
@@ -1808,18 +1861,30 @@ class GestorMenu {
         for (var key in this.items) {
             var itemComposite = this.items[key];
 			if (isBaseLayer && itemComposite.isBaseLayer()) {
+                this.availableBaseLayers.forEach(baseLayer => {
+                    this.removeActiveLayer(baseLayer);
+                });
 				itemComposite.hideAllLayers();
 			}
             for (var key2 in itemComposite.itemsComposite) {
                 var item = itemComposite.itemsComposite[key2];
+
                 if (item.getId() == itemSeccion) {
+                    if ($(`#${item.getId()}`).hasClass('active')) {
+                        this.removeActiveLayer(itemSeccion);
+                    } else {
+                        this.addActiveLayer(itemSeccion);
+                    }
+
                     item.showHide();
                     itemComposite.muestraCantidadCapasVisibles();
-                    break;
                     break;
                 }
             }
         }
+
+        if (this.activeLayersHasBeenUpdated)
+            this.activeLayersHasBeenUpdated();
     }
 
     showWMSLayerCombobox(itemSeccion) {

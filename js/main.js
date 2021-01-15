@@ -2,6 +2,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorBaseMap = new ImpresorCapasBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
   impresorGroupWMSSelector = new ImpresorGroupWMSSelector(),
+  urlInteraction = new URLInteraction(),
   app = {
     profile: "default",
     profiles: {},
@@ -254,5 +255,31 @@ $.getJSON("./js/menu.json", function (data) {
   app.addLayers();
 
   template = 'templates/' + template + '/main.html';
-  $('#template').load(template);
+  $('#template').load(template, function() {
+
+    //Wait until global 'mapa' object is available.
+    const intervalID = setInterval(() => {
+      if (mapa && mapa.hasOwnProperty('_leaflet_id')) {
+        window.clearInterval(intervalID);
+
+        if (urlInteraction.areParamsInUrl) {
+          mapa.setView(L.latLng(urlInteraction.center.latitude, urlInteraction.center.longitude), urlInteraction.zoom);
+        }
+
+        mapa.on('zoom', () => {
+          urlInteraction.zoom = mapa.getZoom();
+        });
+
+        mapa.on('moveend', () => {
+          urlInteraction.center = mapa.getCenter();
+        });
+
+        gestorMenu.loadLayers([...urlInteraction.layers]);
+
+        gestorMenu.activeLayersHasBeenUpdated = () => {
+          urlInteraction.layers = gestorMenu.getActiveLayers();
+        }
+      }
+    }, 100);
+  });
 });
