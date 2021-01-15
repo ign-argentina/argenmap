@@ -1,4 +1,4 @@
-var atrib_ign = "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
     baseMaps = {},
     overlayMaps = new Object(),
     layerName,
@@ -7,7 +7,7 @@ var argenmap = "";
 var mapa = "";
 
 //Change logotype
-$('#top-left-logo-link').attr("href","http://www.ign.gob.ar/");
+$('#top-left-logo-link').attr("href","https://www.ign.gob.ar/");
 $('#top-left-logo').attr("src","templates/ign-geoportal-basic/img/logo.png");
 $('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
 $('#top-left-logo').attr("title","Instituto Geográfico Nacional");
@@ -141,13 +141,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
 					break;
 				case 'betterScale':
-					// Leaflet BetterScale plugin
-					/*
-					L.control.betterscale({
-						metric: true,
-						imperial: false
-					}).addTo(mapa);
-					*/ 
 					L.control.scale({
 						metric: true,
 						imperial: false
@@ -166,8 +159,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						toggleDisplay: false,
 						minimized: false,
 						position: 'bottomleft',
-						//collapsedWidth: 32,
-						//collapsedHeight: 32,
 						width: 100,
 						height: 100,
 						strings: {
@@ -248,7 +239,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						
 						container.onclick = function() {
 							if (customGraticule == null) {
-								//drawGrid(mapa.getZoom());
 								var options = {
 									interval: 10,
 									showshowOriginLabel: true,
@@ -361,7 +351,7 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	switch(unordered) {
 		case 'leaflet':
-			argenmap = L.tileLayer('http://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
+			argenmap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
 		    tms: true,
 		    maxZoom: 21,
 		    attribution: atrib_ign
@@ -506,15 +496,13 @@ function loadGeojsonTpl (url, layer) {
 
 }
 
-//function loadWmsTpl (wmsUrl, layer) {
 function loadWmsTpl (objLayer) {
     wmsUrl = objLayer.capa.host;
-    layer = objLayer.nombre;
+		layer = objLayer.capa.nombre;
     if (overlayMaps.hasOwnProperty(layer)) {
         overlayMaps[layer].removeFrom(mapa);
         delete overlayMaps[layer];
     } else {
-        //createWmsLayer(wmsUrl, layer);
         createWmsLayer(objLayer);
         overlayMaps[layer].addTo(mapa);
     }
@@ -542,7 +530,6 @@ function loadWmsTpl (objLayer) {
                 return info;
             }
         }
-        
         return '';
     }
     
@@ -571,7 +558,6 @@ function loadWmsTpl (objLayer) {
             }
             
             infoAux += '</ul>';
-            //infoAux += '<img style="height:40px" src="http://ventas.ign.gob.ar/image/data/general/logoAzul.png"/>';
             infoAux += '</div></div></div>';
             
             return infoAux;
@@ -580,7 +566,6 @@ function loadWmsTpl (objLayer) {
         return '';
     }
     
-    //function createWmsLayer(wmsUrl, layer) {
     function createWmsLayer(objLayer) {
         //Extends WMS.Source to customize popup behavior
         var MySource = L.WMS.Source.extend({
@@ -606,16 +591,15 @@ function loadWmsTpl (objLayer) {
                 return;
             }
         });
-        //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
         var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
             transparent: true,
             tiled: true,
             maxZoom: 21,
-            'title': objLayer.titulo,
+            'title': objLayer.capa.titulo,
             format: 'image/png',
             INFO_FORMAT: objLayer.capa.featureInfoFormat
         });
-        overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.nombre);
+        overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
     }
 }
 

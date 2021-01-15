@@ -57,10 +57,8 @@ function loadGeojson (url, layer) {
     }
 }
 
-//function loadWms (callbackFunction, wmsUrl, layer) {
 function loadWms (callbackFunction, objLayer) {
     if (typeof callbackFunction === 'function') {
-        //return callbackFunction(wmsUrl, layer);
         return callbackFunction(objLayer);
     } else {
         console.warn("Function " + callbackFunction + "() do not exists. Please, define it.");
@@ -69,7 +67,6 @@ function loadWms (callbackFunction, objLayer) {
 
 function loadWmts (callbackFunction, objLayer) {
     if (typeof callbackFunction === 'function') {
-        //return callbackFunction(wmsUrl, layer);
         return callbackFunction(objLayer);
     } else {
         console.warn("Function " + callbackFunction + "() do not exists. Please, define it.");

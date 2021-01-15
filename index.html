@@ -8,31 +8,20 @@
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description" content="">
   <meta name="author" content="">
-   <title>IGN - Argenmap</title>
+  <title>IGN - Argenmap</title>
+  <link rel="icon" href="img/favicon.ico">
   <!-- Bootstrap core CSS -->
   <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <link href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-  <!-- Custom styles for this template 
-  <link href="https:/getbootstrap.com/docs/3.3/examples/dashboard/dashboard.css" rel="stylesheet">
-  -->
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  
-  <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-  <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+  <link rel="stylesheet" href="https://static.ign.gob.ar/lib/jquery/ui/jquery-ui.css">
+
   <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js"></script>
-  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-  <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-      <![endif]-->
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Bootstrap core JavaScript
-         ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+  <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->
+  <script src='https://static.ign.gob.ar/lib/jquery/jquery-3.3.1.min.js'></script>
+  <script src="https://static.ign.gob.ar/lib/jquery/ui/jquery-ui.js"></script>
   <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js"></script>
   <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
   <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js"></script>
@@ -43,14 +32,8 @@
   <script src="./js/entities.js"></script>
   <script src='./js/functions.js'></script>
   <script src="./js/main.js"></script>
-  <script>
-    /*
-    $.getScript("./js/entities.js");
-    $.getScript('./js/functions.js', function(){
-      $.getScript("./js/main.js"); // main.js must run after all functions are available
-    });
-    */
-  </script>
+  <script src="./js/login/login.js"></script>
+
   <!-- Main Styles -->
   <link rel="stylesheet" href="css/main.css">
   <link href="css/dashboard.css" rel="stylesheet">
@@ -70,15 +53,16 @@
         <a class="navbar-brand navbar-right">
           <span class="xxsmall-hide">
             <a id="top-left-logo-link" href="#" target="_blank">
-			  <img id="top-left-logo" src="img/noimage.gif" alt="" title="">
-			</a>
+              <img id="top-left-logo" src="img/noimage.gif" alt="" title="">
+            </a>
           </span>
         </a>
       </div>
       <div id="navbar" class="navbar-collapse collapse"></div>
       <span class="xxsmall-hide">
         <a id="top-right-logo-link" href="#" target="_blank">
-          <img id="top-right-logo" src="img/noimage.gif" alt="" title="" style="top:11px;position:absolute;right:10px;width:144px;float:right">
+          <img id="top-right-logo" src="img/noimage.gif" alt="" title=""
+            style="top:11px;position:absolute;right:10px;width:144px;float:right">
         </a>
       </span>
     </div>
@@ -87,13 +71,15 @@
     <div class="row">
       <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
         aria-expanded="false">
-		<div class="loading"><img src="img/loading.gif"></div>
+        <div class="loading"><img src="img/loading.gif"></div>
         <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
       </nav>
-      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main" style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
+      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"
+        style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
     </div>
   </div>
   <div id="basemap-selector"></div>
   <div id="template"></div>
 </body>
+
 </html>

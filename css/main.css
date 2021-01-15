@@ -3,6 +3,7 @@ General
 *******************************/
 body {
 	font-family: Roboto,sans-serif;
+	background-color: #008dc9;
 }
 
 /*******************************
@@ -20,11 +21,19 @@ Menu principal
 .loading > img {
 	width: 70px;
 }
-.menu1 {background-color: #1174a1  !important; color: white !important;}
-.menu2 {background-color: #0695d6 !important; color: white !important;}
-.menu3 {background-color: #2aaad1 !important; color: white !important;}
-.menu4 {background-color: #5bc0de !important; color: white !important;}
-.menu5 {background-color: #008dc9 !important; color: white !important;}
+
+.panel-default > .panel-heading {
+    background-color: #008dc9;
+	color: white;
+	font-size: 15px;
+	font-weight: bold;
+	
+}
+.panel-default > .panel-heading > .panel-title > a {
+	font-size: 15px;
+	font-weight: bold;
+	
+}
 #sidebar-container{z-index: 1500; background-color: #008dc9 }
 #sidebar .nav {border: 1px;}
 
@@ -136,7 +145,7 @@ li.active > div > a {
   .navbar-header a{font-size: 13px; font-weight: bold;}
 }
 @media (min-width: 992px) {
-  #sidebar-container.collapse {__height: 100% !important};
+  #sidebar-container.collapse {height: 93% !important};
 }
 .wms-combobox-selector {
 	width: 100%;
@@ -161,4 +170,48 @@ JQuery Autocomplete
 *******************************/
 .ui-widget.ui-widget-content {
     z-index: 3000;
+}
+
+/*******************************
+Login
+*******************************/
+.form-signin {
+	width    : 100%;
+	max-width: 330px;
+	padding  : 15px;
+	margin   : 0 auto;
+}
+
+.form-signin .checkbox {
+	font-weight: 400;
+}
+
+.form-signin .form-control {
+	position  : relative;
+	box-sizing: border-box;
+	height    : auto;
+	padding   : 10px;
+	font-size : 16px;
+}
+
+.form-signin .form-control:focus {
+	z-index: 999;
+}
+
+.form-signin input[type="text"] {
+	margin-bottom             : -1px;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius : 0;
+}
+
+.form-signin input[type="password"] {
+	margin-bottom          : 10px;
+	border-top-left-radius : 0;
+	border-top-right-radius: 0;
+}
+
+.top-right-btn {
+	position: absolute;
+	top     : 8px !important;
+	right   : 10px;
 }
