@@ -7,6 +7,21 @@ function setTableAsPopUp(cond) {
     loadTableAsPopUp = cond;
 }
 
+XMLHttpRequest.prototype.open = (function(open) {
+
+    return function(method,url,async) {
+        if (loadTableAsPopUp == true){
+            aux = url
+            var n = aux.includes("&request=GetFeatureInfo");
+            if (n){
+                url = url + "&feature_count=20"
+            }
+        }
+        open.apply(this,arguments);
+      };
+  })(XMLHttpRequest.prototype.open);
+
+
 function deg_to_dms(deg) {
    var d = Math.floor (deg);
    var minfloat = (deg-d)*60;
@@ -137,12 +152,13 @@ function loadWmsTplAux(objLayer, param) {
         //Extends WMS.Source to customize popup behavior
         var MySource = L.WMS.Source.extend({
             'showFeatureInfo': function(latlng, info) {
-				console.log(this, '...')
+				//console.log(this, '...')
                 if (!this._map) {
                     return;
 				}
                 
                 if (!loadTableAsPopUp) {
+                    
                     if (this.options.INFO_FORMAT == 'text/html') {
                         var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
                     } else {
@@ -159,6 +175,7 @@ function loadWmsTplAux(objLayer, param) {
                         popupInfoPage = 0;
                     }
                 } else {
+                                       
                     let tableD = new Datatable (JSON.parse(info), latlng);
 					createTabulator(tableD);
                 }

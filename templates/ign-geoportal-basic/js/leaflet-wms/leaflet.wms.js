@@ -189,7 +189,6 @@ wms.Source = L.Layer.extend({
             'query_layers': layers.join(','),
             'X': Math.round(point.x),
             'Y': Math.round(point.y),
-            'feature_count': 20
         };
         return L.extend({}, wmsParams, infoParams);
     },
