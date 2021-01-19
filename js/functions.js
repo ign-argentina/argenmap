@@ -15,7 +15,7 @@ function setTableFeatureCount(value) {
 XMLHttpRequest.prototype.open = (function(open) {
 
     return function(method, url, async) {
-        if (loadTableAsPopUp === true && url.includes("&request=GetFeatureInfo")){
+        if (loadTableAsPopUp && url.includes("&request=GetFeatureInfo")){
             url += `&feature_count=${tableFeatureCount}`;
         }
         open.apply(this,arguments);
