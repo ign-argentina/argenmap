@@ -2,25 +2,27 @@
 var plugins = new Array("loadGeojson", "loadWms");
 
 var loadTableAsPopUp = false;
+var tableFeatureCount = 20;
 
 function setTableAsPopUp(cond) {
     loadTableAsPopUp = cond;
 }
 
+function setTableFeatureCount(value) {
+    tableFeatureCount = value;
+}
+
 XMLHttpRequest.prototype.open = (function(open) {
 
     return function(method,url,async) {
-        if (loadTableAsPopUp == true){
-            aux = url
-            var n = aux.includes("&request=GetFeatureInfo");
-            if (n){
-                url = url + "&feature_count=20"
+        if (loadTableAsPopUp === true){
+            if (url.includes("&request=GetFeatureInfo")){
+                url += `&feature_count=${tableFeatureCount}`;
             }
         }
         open.apply(this,arguments);
       };
-  })(XMLHttpRequest.prototype.open);
-
+})(XMLHttpRequest.prototype.open);
 
 function deg_to_dms(deg) {
    var d = Math.floor (deg);
