@@ -1,13 +1,14 @@
-#contenedorPrincipal{
+
+#ContainerTable{
 	width: 450px;
 	overflow: hidden;
-	/* resize without jquery
+	/*resize without jquery
 	resize: both;
 	overflow:auto;
 	min-width: 450px;
 	min-height: 65px;
 	max-height: 475px;
-	*/
+	resize without jquery*/
 	text-align: right;
 	float: none;
 	border-radius: 8px;
@@ -26,33 +27,113 @@
 	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
+#search-table{
+	text-align: left;
+}
+
+#containerTableHeader{
+	cursor: move;
+}
+
+#icons-table{
+	font-size: 14px;
+}
+
+#header-tabletabulator{
+	cursor: move;
+}
 #tab-content-table{
 	overflow: auto;
 }
 
-#filter-value {
-	left: 5px;
-	border-radius: 8px;
-	border-color: #e6e6e6;
-}
-
-#filter-clear{
-	left: 5px;
-	border-radius: 8px;
-	border-color: #e6e6e6;
-}
-
-#filter-field {
-	left: 5px;
-	border-radius: 8px;
-	border-color: #e6e6e6;
-}
 
 #indextabulator{
 	height: 40px;
 	overflow: auto;
+	margin-top: 5px;
 }
 
 #filter-tabletabulator{
 	text-align:center;
+}
+
+.icon-table{
+	margin: 5px;
+}
+
+.filteritems{
+	height: 25px;
+	margin: 0px;
+}
+
+/*tabulator*/
+
+@media (max-width: 768px) {
+	#ContainerTable{
+		left: 45px ;
+		top: 50px ;
+		max-width: 700px;
+	}
+}
+@media (max-width: 600px) {
+	#ContainerTable{
+		left: 45px ;
+		top: 50px ;
+		max-width: 580px;
+	}
+
+
+}
+@media (max-width: 480px) {
+	#ContainerTable{
+		left: 45px ;
+		top: 50px ;
+		max-width: 300px;
+	}
+
+	#filter-field{
+		width: 80px;
+	}
+	#filter-value{
+	 width: 100px;
+	 }
+}
+@media (max-width: 360px) {
+	#ContainerTable{
+		left: 45px ;
+		top: 50px ;
+		max-width: 250px;
+	}
+ #filter-field{
+	 width: 80px;
+ }
+ #filter-value{
+	width: 100px;
+	}
+
+
+
+}
+
+@media (max-height: 480px) {
+	#ContainerTable{
+		left: 45px ;
+		top: 50px ;
+	  max-height: 380px;
+		overflow: scroll
+	}
+}
+@media (max-height: 420px) {
+	#ContainerTable{
+		max-height: 300px;
+		overflow: scroll;
+	}
+}
+@media (max-height: 360px) {
+	#ContainerTablel{
+		left: 45px ;
+		top: 50px ;
+		max-height: 250px;
+		overflow: scroll;
+	}
 }

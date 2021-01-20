@@ -4,6 +4,7 @@ General
 body {
 	font-family: Roboto,sans-serif;
 	background-color: #008dc9;
+	overflow: hidden;
 }
 
 /*******************************

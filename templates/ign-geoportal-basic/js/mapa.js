@@ -589,7 +589,7 @@ function loadWmsTpl (objLayer) {
                     this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
                     popupInfoPage = 0;
 								}*/
-								var tableD = new Datatable (JSON.parse(info),latlng)
+								let tableD = new Datatable (JSON.parse(info),latlng)
 								createTabulator(tableD)
                 return;
             }
