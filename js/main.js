@@ -20,6 +20,12 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         app['profile'] = "default";
       };
 
+      //Load table if is active
+      if (app.hasOwnProperty('table')) {
+        setTableAsPopUp(app.table.isActive);
+        setTableFeatureCount(app.table.rowsLimit);
+      }
+      
       this._startModules();
     },
 
