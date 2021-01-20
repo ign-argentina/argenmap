@@ -266,8 +266,11 @@ $.getJSON("./js/menu.json", function (data) {
           mapa.setView(L.latLng(urlInteraction.center.latitude, urlInteraction.center.longitude), urlInteraction.zoom);
         }
 
+        const zoomLevel = new ZoomLevel(mapa.getZoom());
+
         mapa.on('zoom', () => {
           urlInteraction.zoom = mapa.getZoom();
+          zoomLevel.zoom = mapa.getZoom();
         });
 
         mapa.on('moveend', () => {
