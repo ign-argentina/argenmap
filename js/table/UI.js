@@ -51,13 +51,6 @@ class UI{
           table.download("csv", "data.csv", {bom:true});
         };
 
-        let btnadd = this.createElement("a","btnadd","icon-table")
-        btnadd.innerHTML = '<span class="glyphicon glyphicon-folder-open" title="Abrir Json"></span>'
-        btnadd.onclick = function(){
-          table.setDataFromLocalFile(".json");;
-        };
-
-        document.getElementById("icons-table").append(btnadd)
         document.getElementById("icons-table").append(btnsave)
         document.getElementById("icons-table").append(btnmax)
         document.getElementById("icons-table").append(btnmin)
