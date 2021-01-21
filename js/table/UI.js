@@ -130,7 +130,8 @@ class UI{
         }
     },
      });
-     table.deleteColumn("bbox");
+     if(table.columnManager.columnsByField["bbox"]){table.deleteColumn("bbox");}
+     
   }
   
   createFilters(data){
