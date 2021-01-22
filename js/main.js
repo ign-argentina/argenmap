@@ -21,6 +21,12 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         app['profile'] = "default";
       };
 
+      //Load table if is active
+      if (app.hasOwnProperty('table')) {
+        setTableAsPopUp(app.table.isActive);
+        setTableFeatureCount(app.table.rowsLimit);
+      }
+      
       this._startModules();
     },
 
@@ -266,8 +272,11 @@ $.getJSON("./js/menu.json", function (data) {
           mapa.setView(L.latLng(urlInteraction.center.latitude, urlInteraction.center.longitude), urlInteraction.zoom);
         }
 
+        const zoomLevel = new ZoomLevel(mapa.getZoom());
+
         mapa.on('zoom', () => {
           urlInteraction.zoom = mapa.getZoom();
+          zoomLevel.zoom = mapa.getZoom();
         });
 
         mapa.on('moveend', () => {

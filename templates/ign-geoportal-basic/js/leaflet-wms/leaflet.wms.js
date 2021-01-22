@@ -188,7 +188,7 @@ wms.Source = L.Layer.extend({
             'request': 'GetFeatureInfo',
             'query_layers': layers.join(','),
             'X': Math.round(point.x),
-            'Y': Math.round(point.y)
+            'Y': Math.round(point.y),
         };
         return L.extend({}, wmsParams, infoParams);
     },
