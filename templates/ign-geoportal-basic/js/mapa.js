@@ -572,7 +572,8 @@ function loadWmsTpl (objLayer) {
             'showFeatureInfo': function(latlng, info) {
                 if (!this._map) {
                     return;
-                }
+								}
+								/*
                 if (this.options.INFO_FORMAT == 'text/html') {
                     var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
                 } else {
@@ -587,7 +588,9 @@ function loadWmsTpl (objLayer) {
                     latlngTmp = latlng;
                     this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
                     popupInfoPage = 0;
-                }
+								}*/
+								let tableD = new Datatable (JSON.parse(info),latlng)
+								createTabulator(tableD)
                 return;
             }
         });
