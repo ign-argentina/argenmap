@@ -53,17 +53,17 @@ class URLInteraction {
                         if (!isNaN(+value))
                             this._longitude = +value;
                     }
-                    break;
+                    break;/* 
                     case LAYER: {
                         const idx = this._layers.findIndex(layer => layer === value);
                         if (idx === -1)
                             this._layers.push(value);
                     }
-                    break;
+                    break; */
                 }
             });
         }
-        this.updateURL();
+        //this.updateURL();
     }
 
     get url() {
@@ -106,10 +106,12 @@ class URLInteraction {
     }
 
     updateURL() {
+        // eval here lat lon for round decimals based on zoom level
         const zoom = `${ZOOM_LEVEL}=${this._zoom}`;
-        const lat = `${LATITUDE}=${this._latitude}`;
-        const lng = `${LONGITUDE}=${this._longitude}`;
-        const layers = this._layers.reduce((prevVal, currentVal) => prevVal !== '' ? prevVal + '&' + `layer=${currentVal}` : `layer=${currentVal}`, '');
-        window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}&${layers}`);
+        const lat = `${LATITUDE}=${Math.round((this._latitude) * 10000) / 10000}`; 
+        const lng = `${LONGITUDE}=${Math.round((this._longitude) * 10000) / 10000}`;
+        /* const layers = this._layers.reduce((prevVal, currentVal) => prevVal !== '' ? prevVal + '&' + `layer=${currentVal}` : `layer=${currentVal}`, '');
+        window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}&${layers}`); */
+        window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}`);
     }
 }
