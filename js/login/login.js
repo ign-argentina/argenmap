@@ -28,26 +28,22 @@ const login = {
 
     },
 
-    _append: function (file, format, parent) {
+    _append: async function (file, format, parent) {
         // file must match '/path/to/file.extension'
-        let parentElement, path = window.location.pathname;
-        let url = window.location.origin + path.replace('index.html', '') + file,
-            data = {
-                url: url,
-                method: 'GET',
-                reqHeader: {
-                    key: 'Accept',
-                    val: `text/${format}`
-                }
-            };
-        parent == 'body' ? parent = document.body : parent = document.getElementById(parent);
-        // Would load CSS here
+        let parentElement = null;
+        let path = window.location.pathname;
+
+        parentElement = parent == 'body' ? document.body : document.getElementById(parent);
+
         let element = document.createElement("div");
-        login._ajax(data, function (res) {
-            element.innerHTML = res.response;
-            return element;
+    
+        const elementContent = await fetch(window.location.origin + path.replace('index.html', '') + file)
+        .then(res => {
+            return res.text();
         });
-        parent.appendChild(element);
+
+        element.innerHTML = elementContent;
+        parentElement.appendChild(element);
     },
 
     _listeners: function () {
@@ -56,29 +52,10 @@ const login = {
         loginForm.resetPwd.addEventListener('click', this.resetPwd);
     },
 
-    load: function () {
-        login._append("/js/login/navbtn.html", "html", "navbar");
-        login._append("/js/login/form.html", "html", "body");
-        const loginForm = document.getElementById('loginForm');
-
-        try {
-            login._listeners();
-        } catch (error) {
-            // Select the node that will be observed for mutations;
-            let targetNode = document.body,
-                config = { attributes: true, childList: true, subtree: true },
-                observer = new MutationObserver(function (mutationsList) {
-                    mutationsList.forEach(mutation => {
-                        if (mutation.type === 'childList' && (mutation.addedNodes[0].id == "loginModal" || mutation.addedNodes[0].id == "navbar")) {
-                            login._listeners();
-                            observer.disconnect();
-                        }
-                    });
-                });
-
-            // Start observing the target node for configured mutations
-            observer.observe(targetNode, config);
-        }
+    load: async function () {
+        await login._append("/js/login/navbtn.html", "html", "navbar");
+        await login._append("/js/login/form.html", "html", "body");
+        login._listeners();
     },
 
     submit: function (event) {

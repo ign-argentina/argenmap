@@ -30,18 +30,20 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       this._startModules();
     },
 
-    _startModules: function () {
+    _startModules: async function () {
       try {
-        app.profiles[app.profile].modules.forEach(key => {
-          switch (key) {
+        for (const module of app.profiles[app.profile].modules) {
+          switch (module) {
             case "login":
-              login.load();
+              window.onload = async () => {
+                await login.load();
+              }
               break;
             // Intialize here more modules defined in profile (config JSON)
             default:
               break;
           }
-        });
+        }
       } catch (error) {
         if (app.profiles == undefined) {
           console.warn("Profiles attribute isn't defined in configuration file.");
