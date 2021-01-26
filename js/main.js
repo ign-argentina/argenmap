@@ -11,7 +11,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       "ign-geoportal-minimal"
     ],
 
-    init: function (data) {
+    init: async function (data) {
       Object.assign(app, data);
 
       if (Object.keys(app.profiles).length === 0) {
@@ -27,7 +27,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setTableFeatureCount(app.table.rowsLimit);
       }
       
-      this._startModules();
+      await this._startModules();
     },
 
     _startModules: async function () {
@@ -35,9 +35,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         for (const module of app.profiles[app.profile].modules) {
           switch (module) {
             case "login":
-              window.onload = async () => {
                 await login.load();
-              }
               break;
             // Intialize here more modules defined in profile (config JSON)
             default:
@@ -233,64 +231,66 @@ let getGeoserverCounter = 0,
   templateFeatureInfoFieldException = [],
   gestorMenu = new GestorMenu();
 
-$.getJSON("./js/menu.json", function (data) {
-  app.init(data);
+$.getJSON("./js/menu.json", async function (data) {
+  window.onload = async () => {
+    await app.init(data);
 
-  //Template
-  template = app.template; // define wich template to use
-  gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
-  delete app['template']; // delete template item from data
+    //Template
+    template = app.template; // define wich template to use
+    gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
+    delete app['template']; // delete template item from data
 
-  //templateFeatureInfoFieldException
-  if (app.template_feature_info_exception) {
-    templateFeatureInfoFieldException = app.template_feature_info_exception; // define not showing fields in feature info popup
-    delete app['template_feature_info_exception']; // delete template item from data
-  }
+    //templateFeatureInfoFieldException
+    if (app.template_feature_info_exception) {
+      templateFeatureInfoFieldException = app.template_feature_info_exception; // define not showing fields in feature info popup
+      delete app['template_feature_info_exception']; // delete template item from data
+    }
 
-  //Layers Joins (join several layers into one item)
-  if (app.layers_joins) {
-    gestorMenu.setLayersJoin(app.layers_joins);
-    delete app['layers_joins']; // delete template item from data
-  }
+    //Layers Joins (join several layers into one item)
+    if (app.layers_joins) {
+      gestorMenu.setLayersJoin(app.layers_joins);
+      delete app['layers_joins']; // delete template item from data
+    }
 
-  //Folders (generate folders items into main menu to generate logical groups of layers)
-  if (app.folders) {
-    gestorMenu.setFolders(app.folders);
-    delete app['folders']; // delete folders item from data
-  }
+    //Folders (generate folders items into main menu to generate logical groups of layers)
+    if (app.folders) {
+      gestorMenu.setFolders(app.folders);
+      delete app['folders']; // delete folders item from data
+    }
 
-  app.addBasemaps();
-  app.addLayers();
+    app.addBasemaps();
+    app.addLayers();
 
-  template = 'templates/' + template + '/main.html';
-  $('#template').load(template, function() {
+    template = 'templates/' + template + '/main.html';
+    $('#template').load(template, function() {
 
-    //Wait until global 'mapa' object is available.
-    const intervalID = setInterval(() => {
-      if (mapa && mapa.hasOwnProperty('_leaflet_id')) {
-        window.clearInterval(intervalID);
+      //Wait until global 'mapa' object is available.
+      const intervalID = setInterval(() => {
+        if (mapa && mapa.hasOwnProperty('_leaflet_id')) {
+          window.clearInterval(intervalID);
 
-        if (urlInteraction.areParamsInUrl) {
-          mapa.setView(L.latLng(urlInteraction.center.latitude, urlInteraction.center.longitude), urlInteraction.zoom);
+          if (urlInteraction.areParamsInUrl) {
+            mapa.setView(L.latLng(urlInteraction.center.latitude, urlInteraction.center.longitude), urlInteraction.zoom);
+          }
+
+          const zoomLevel = new ZoomLevel(mapa.getZoom());
+
+          mapa.on('zoom', () => {
+            urlInteraction.zoom = mapa.getZoom();
+            zoomLevel.zoom = mapa.getZoom();
+          });
+
+          mapa.on('moveend', () => {
+            urlInteraction.center = mapa.getCenter();
+          });
+
+          gestorMenu.loadLayers([...urlInteraction.layers]);
+
+          gestorMenu.activeLayersHasBeenUpdated = () => {
+            urlInteraction.layers = gestorMenu.getActiveLayers();
+          }
         }
-
-        const zoomLevel = new ZoomLevel(mapa.getZoom());
-
-        mapa.on('zoom', () => {
-          urlInteraction.zoom = mapa.getZoom();
-          zoomLevel.zoom = mapa.getZoom();
-        });
-
-        mapa.on('moveend', () => {
-          urlInteraction.center = mapa.getCenter();
-        });
-
-        gestorMenu.loadLayers([...urlInteraction.layers]);
-
-        gestorMenu.activeLayersHasBeenUpdated = () => {
-          urlInteraction.layers = gestorMenu.getActiveLayers();
-        }
-      }
-    }, 100);
-  });
+      }, 100);
+    });
+  }
 });
