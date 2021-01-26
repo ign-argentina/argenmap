@@ -51,6 +51,13 @@ class UI{
           table.download("csv", "data.csv", {bom:true});
         };
 
+        let btntd= this.createElement("a","btngraphics","icon-table")
+        btntd.innerHTML = '<span class="glyphicon glyphicon-stats" aria-hidden="true" title="Gráficos"></span>';
+        btntd.onclick = function(){
+          created3()
+        };
+
+        document.getElementById("icons-table").append(btntd)
         document.getElementById("icons-table").append(btnsave)
         document.getElementById("icons-table").append(btnmax)
         document.getElementById("icons-table").append(btnmin)
@@ -85,6 +92,7 @@ class UI{
     
     aux.innerHTML='<a data-toggle="tab" aria-expanded="true" id ='+datatable.length+' >Tabla '+datatable.length+'</a>'
     aux.onclick =function(){
+      activedata=this.id-1
             let data = datatable[this.id-1]
             newTable(data)}
     document.getElementById("indextabulator").appendChild(aux)
