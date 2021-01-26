@@ -42,3 +42,9 @@
         right: 2.8%;
     }
 }
+
+@media (max-height: 500px) {
+    #zoom-level {
+        display: none;
+    }
+}

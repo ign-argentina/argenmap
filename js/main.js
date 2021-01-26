@@ -276,8 +276,10 @@ $.getJSON("./js/menu.json", async function (data) {
           const zoomLevel = new ZoomLevel(mapa.getZoom());
 
           mapa.on('zoom', () => {
-            urlInteraction.zoom = mapa.getZoom();
-            zoomLevel.zoom = mapa.getZoom();
+            if (Number.isInteger(mapa.getZoom())) {
+              urlInteraction.zoom = mapa.getZoom();
+              zoomLevel.zoom = mapa.getZoom();
+            }
           });
 
           mapa.on('moveend', () => {
