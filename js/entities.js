@@ -63,7 +63,7 @@ class ImpresorItemHTML extends Impresor {
     imprimir(itemComposite) {
 
         var childId = itemComposite.getId();
-        gestorMenu.setAvailableLayer(childId);
+        gestorMenu.setAvailableLayer(itemComposite.capa.nombre);
 
         var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
@@ -96,7 +96,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     imprimir(itemComposite) {
 
         var childId = itemComposite.getId();
-        gestorMenu.setAvailableBaseLayer(childId);
+        gestorMenu.setAvailableBaseLayer(itemComposite.capa.nombre);
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
@@ -1174,13 +1174,29 @@ class GestorMenu {
         return this.activeLayers;
     }
 
+    getLayerIdByName(layerName) {
+        for (const section in this.items) {
+            if (this.items[section].hasOwnProperty('itemsComposite')) {
+                if (this.items[section].getItemByName(layerName)) 
+                    return this.items[section].getItemByName(layerName).getId();
+            }
+        }
+    }
+
     loadLayers(layers) {
         setTimeout(() => {
             layers.forEach(layer => {
                 if (this.layerIsValid(layer) && !this.layerIsActive(layer))
-                    this.muestraCapa(layer);
+                    this.muestraCapa(this.getLayerIdByName(layer));
             })
         }, 1000);
+    }
+
+    toggleLayers(layers) {
+        layers.forEach(layer => {
+            if (this.layerIsValid(layer))
+                this.muestraCapa(this.getLayerIdByName(layer));
+        })
     }
 
     setMenuDOM(menuDOM) {
@@ -1871,9 +1887,9 @@ class GestorMenu {
 
                 if (item.getId() == itemSeccion) {
                     if ($(`#${item.getId()}`).hasClass('active')) {
-                        this.removeActiveLayer(itemSeccion);
+                        this.removeActiveLayer(item.nombre);
                     } else {
-                        this.addActiveLayer(itemSeccion);
+                        this.addActiveLayer(item.nombre);
                     }
 
                     item.showHide();
