@@ -3,6 +3,7 @@ var plugins = new Array("loadGeojson", "loadWms");
 
 var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
+var loadCharts = false;
 
 function setTableAsPopUp(cond) {
     loadTableAsPopUp = cond;
@@ -10,6 +11,10 @@ function setTableAsPopUp(cond) {
 
 function setTableFeatureCount(value) {
     tableFeatureCount = value;
+}
+
+function setCharts(cond) {
+   loadCharts = cond;
 }
 
 XMLHttpRequest.prototype.open = (function(open) {

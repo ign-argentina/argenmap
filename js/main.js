@@ -27,6 +27,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setTableFeatureCount(app.table.rowsLimit);
       }
       
+      if (app.hasOwnProperty('charts')) {
+        setCharts(app.charts.isActive);
+      }
+
       await this._startModules();
     },
 
@@ -261,6 +265,13 @@ $.getJSON("./js/menu.json", async function (data) {
     app.addBasemaps();
     app.addLayers();
 
+    //if charts is active in menu.json
+    if (loadCharts) {
+      $.getScript("https://d3js.org/d3.v5.min.js");
+      $.getScript("./js/components/charts/charts.js");
+      $('head').append('<link rel="stylesheet" type="text/css" href="./js/components/charts/charts.css">');
+    }
+
     template = 'templates/' + template + '/main.html';
     $('#template').load(template, function() {
 
@@ -296,3 +307,4 @@ $.getJSON("./js/menu.json", async function (data) {
     });
   }
 });
+
