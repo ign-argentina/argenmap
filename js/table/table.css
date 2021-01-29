@@ -119,13 +119,13 @@
 	#ContainerTable{
 		left: 45px ;
 		top: 50px ;
-	  max-height: 380px;
+	  max-height: 300px;
 		overflow: scroll
 	}
 }
 @media (max-height: 420px) {
 	#ContainerTable{
-		max-height: 300px;
+		max-height: 250px;
 		overflow: scroll;
 	}
 }
@@ -133,7 +133,16 @@
 	#ContainerTablel{
 		left: 45px ;
 		top: 50px ;
-		max-height: 250px;
+		max-height: 200px;
+		overflow: scroll;
+	}
+}
+
+@media (max-height: 320px) {
+	#ContainerTablel{
+		left: 45px ;
+		top: 50px ;
+		max-height: 150px;
 		overflow: scroll;
 	}
 }

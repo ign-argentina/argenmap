@@ -1,6 +1,6 @@
 #containergraphics{
   width: 500px;
-  height: 400px;
+  max-height: 400px;
 	overflow: hidden;
 	text-align: right;
 	float: none;
@@ -30,7 +30,7 @@ div#layout {
 
 div#container {
   width: 500px;
-  height: 400px;
+  max-height: 400px;
   margin: auto;
   background-color: #2F4A6D;
 }
@@ -93,4 +93,145 @@ text.label {
 
 text.source {
   font-size: 10px;
+}
+
+@media (max-width: 812px) {
+	#containergraphics{
+		left: 45px ;
+		top: 50px ;
+		max-width: 400px;
+  }
+
+  div#container {
+    max-width: 300px;
+  }
+  #svgd3{
+    max-width: 300px;
+  }
+  
+}
+
+
+@media (max-width: 768px) {
+	#containergraphics{
+		left: 45px ;
+		top: 50px ;
+		max-width: 400px;
+  }
+
+  div#container {
+    max-width: 300px;
+  }
+  #svgd3{
+    max-width: 300px;
+  }
+  
+}
+@media (max-width: 600px) {
+	#containergraphics{
+		left: 45px ;
+		top: 50px ;
+		max-width: 300px;
+  }
+  div#container {
+    max-width: 300px;
+  }
+  #svgd3{
+    max-width: 300px;
+  }
+
+}
+
+@media (max-width: 480px) {
+	#containergraphics{
+		left: 45px ;
+		top: 50px ;
+		max-width: 300px;
+	}
+  div#container {
+    max-width: 250px;
+  }
+  #svgd3{
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 360px) {
+	#containergraphics{
+		left: 45px ;
+		top: 50px ;
+		max-width: 250px;
+  }
+  
+  div#container {
+    max-width: 250px;
+  }
+
+  #svgd3{
+    max-width: 200px;
+  }
+ 
+}
+
+@media (max-height: 480px) {
+	#containergraphics{
+		left: 45px ;
+		top: 50px ;
+	  max-height: 300px;
+  }
+  
+  div#container {
+    max-height: 300px;
+  }
+
+  #svgd3{
+    max-height: 300px;
+  }
+}
+
+@media (max-height: 420px) {
+	#containergraphics{
+		max-height: 250px;
+  }
+  
+  div#container {
+    max-height: 250px;
+  }
+
+  #svgd3{
+    max-height: 250px;
+  }
+
+}
+
+@media (max-height: 360px) {
+	#containergraphicsl{
+		left: 45px ;
+		top: 50px ;
+		max-height: 200px;
+  }
+  
+  div#container {
+    max-height: 200px;
+  }
+
+  #svgd3{
+    max-height: 200px;
+  }
+}
+
+@media (max-height: 320px) {
+	#containergraphicsl{
+		left: 45px ;
+		top: 50px ;
+		max-height: 150px;
+  }
+  
+  div#container {
+    max-height: 150px;
+  }
+
+  #svgd3{
+    max-height: 150px;
+  }
 }
