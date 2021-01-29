@@ -232,7 +232,8 @@ let getGeoserverCounter = 0,
   gestorMenu = new GestorMenu();
 
 $.getJSON("./js/menu.json", async function (data) {
-  window.onload = async () => {
+
+  $(document).ready( async function() {
     await app.init(data);
 
     //Template
@@ -294,5 +295,5 @@ $.getJSON("./js/menu.json", async function (data) {
         }
       }, 100);
     });
-  }
+  });
 });
