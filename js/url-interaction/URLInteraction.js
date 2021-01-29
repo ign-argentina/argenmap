@@ -4,7 +4,7 @@
 const ZOOM_LEVEL = 'zoom';
 const LATITUDE = 'lat';
 const LONGITUDE = 'lng';
-const LAYER = 'layer';
+const LAYERS = 'layers';
 
 //Default map values
 //***Should be defined as global or as a separated module */
@@ -14,7 +14,6 @@ const DEFAULT_MAX_ZOOM_LEVEL = 21;
 const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
-const DEFAULT_BASE_LAYER = 'child-mapasbase0';
 
 class URLInteraction {
 
@@ -22,7 +21,7 @@ class URLInteraction {
         this._zoom = DEFAULT_ZOOM_LEVEL;
         this._latitude = DEFAULT_LATITUDE;
         this._longitude = DEFAULT_LONGITUDE;
-        this._layers = [ DEFAULT_BASE_LAYER ];
+        this._layers = [];
         this._areParamsInUrl = false;
 
         const params = window.location.search;
@@ -53,17 +52,20 @@ class URLInteraction {
                         if (!isNaN(+value))
                             this._longitude = +value;
                     }
-                    break;/* 
-                    case LAYER: {
-                        const idx = this._layers.findIndex(layer => layer === value);
-                        if (idx === -1)
-                            this._layers.push(value);
+                    break;
+                    case LAYERS: {
+                        const layers = value.split(',');
+                        layers.forEach(layerParam => {
+                            const idx = this._layers.findIndex(layer => layer === layerParam);
+                            if (idx === -1)
+                                this._layers.push(layerParam);
+                        });
                     }
-                    break; */
+                    break;
                 }
             });
         }
-        //this.updateURL();
+        this.updateURL();
     }
 
     get url() {
@@ -110,8 +112,7 @@ class URLInteraction {
         const zoom = `${ZOOM_LEVEL}=${this._zoom}`;
         const lat = `${LATITUDE}=${Math.round((this._latitude) * 10000) / 10000}`; 
         const lng = `${LONGITUDE}=${Math.round((this._longitude) * 10000) / 10000}`;
-        /* const layers = this._layers.reduce((prevVal, currentVal) => prevVal !== '' ? prevVal + '&' + `layer=${currentVal}` : `layer=${currentVal}`, '');
-        window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}&${layers}`); */
-        window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}`);
+        const layers = this._layers.reduce((prevVal, currentVal) => prevVal !== '' ? prevVal + ',' + currentVal : `layers=${currentVal}`, '');
+        window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}&${layers}`);
     }
 }
