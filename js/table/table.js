@@ -1,5 +1,6 @@
 let datatable = [];
 let table;
+let activedata = 0;
 let ui = new UI
 
 function createTabulator(tableD){
