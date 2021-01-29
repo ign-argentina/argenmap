@@ -204,7 +204,7 @@ function loadWms(callbackFunction, objLayer) {
 
 function loadWmts(callbackFunction, objLayer) {
     if (typeof callbackFunction === 'function') {
-        return loadWmsTplAux(objLayer, null);
+        return callbackFunction(objLayer);
     } else {
         console.warn("Function " + callbackFunction + "() do not exists. Please, define it.");
     }

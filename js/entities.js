@@ -943,7 +943,7 @@ class Item extends ItemComposite {
 		//Recorrer todas las capas del item
 		for (var key in this.capas) {
 			var tmp = Object.assign({}, this); //Clonar el item para simular que solo tiene una unica capa
-			tmp.nombre = this.nombre + this.capas[key].nombre;
+			tmp.nombre = this.nombre;
 			tmp.capa = this.capas[key];
             switch (tmp.capa.servicio) {
                 case "wms":
