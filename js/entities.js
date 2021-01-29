@@ -1184,12 +1184,16 @@ class GestorMenu {
     }
 
     loadLayers(layers) {
-        setTimeout(() => {
-            layers.forEach(layer => {
-                if (this.layerIsValid(layer) && !this.layerIsActive(layer))
+        layers.forEach(layer => {
+            if (this.layerIsValid(layer)) {
+                const interval = setInterval(() => {
                     this.muestraCapa(this.getLayerIdByName(layer));
-            })
-        }, 1000);
+                    if (this.layerIsActive(layer)) {
+                        window.clearInterval(interval);
+                    }
+                }, 200)
+            }
+        })
     }
 
     toggleLayers(layers) {
