@@ -60,8 +60,8 @@ class Graphics{
   }
 
   createHeaders(){
-    let datos= this.data[0]
-    let headers = Object.keys(datos)
+    let datos= this.data
+    let headers = Object.keys(datos[0])
     let auxhead = []
     let aux = `<option value="disable-button">Selecciona una opción</option>`
     headers.forEach( function(valor) {

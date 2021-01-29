@@ -139,7 +139,20 @@ class UI{
                 "next_title":"Siguiente",
                 "all":"Todo",
             },
-        }
+        },
+        "es-ar":{
+          "pagination":{
+              "first":"Primera", //text for the first page button
+              "first_title":"Primera", //tooltip text for the first page button
+              "last":"Ultima",
+              "last_title":"Ultima",
+              "prev":"Anterior",
+              "prev_title":"Anterior",
+              "next":"Siguiente",
+              "next_title":"Siguiente",
+              "all":"Todo",
+          }
+      }
     },
      });
      if(table.columnManager.columnsByField["bbox"]){table.deleteColumn("bbox");}
