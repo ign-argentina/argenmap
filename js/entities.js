@@ -63,7 +63,6 @@ class ImpresorItemHTML extends Impresor {
     imprimir(itemComposite) {
 
         var childId = itemComposite.getId();
-        gestorMenu.setAvailableLayer(itemComposite.capa.nombre);
 
         var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
@@ -96,7 +95,6 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     imprimir(itemComposite) {
 
         var childId = itemComposite.getId();
-        gestorMenu.setAvailableBaseLayer(itemComposite.capa.nombre);
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
@@ -361,9 +359,8 @@ class LayersInfoWMS extends LayersInfo {
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
                     item.setImpresor(impresorItem);
                     items.push(item);
-
+                    gestorMenu.setAvailableLayer(iName);
                 }
-
             });
 
             var groupAux;
@@ -392,11 +389,17 @@ class LayersInfoWMS extends LayersInfo {
                 _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
                 if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printOnlySection(thisObj.section);
+
+                    //
+                    gestorMenu.allLayersAreLoaded = true;
                 }
             } else {
                 _gestorMenu.addLayerInfoCounter();
                 if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printMenu();
+                    
+                    //
+                    gestorMenu.allLayersAreLoaded = true;
                 }
             }
 
@@ -558,7 +561,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
                     item.setImpresor(impresorItem);
                     items.push(item);
-
+                    gestorMenu.setAvailableLayer(iName);
                 }
 
             });
@@ -589,11 +592,17 @@ class LayersInfoWMTS extends LayersInfoWMS {
                 _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
                 if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printOnlySection(thisObj.section);
+
+                    //
+                    gestorMenu.allLayersAreLoaded = true;
                 }
             } else {
                 _gestorMenu.addLayerInfoCounter();
                 if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printMenu();
+
+                    //
+                    gestorMenu.allLayersAreLoaded = true;
                 }
             }
 
@@ -1121,6 +1130,7 @@ class GestorMenu {
         this.showSearcher = false;
         this.basemapSelected = null;
 
+        this.allLayersAreLoaded = false;
         this.availableLayers = [];
         this.availableBaseLayers = [];
         this.activeLayers = [];
@@ -1167,7 +1177,7 @@ class GestorMenu {
     layerIsValid(layer_id) {
         const idx1 = this.availableLayers.findIndex(layer => layer === layer_id) > -1;
         const idx2 = this.availableBaseLayers.findIndex(layer => layer === layer_id) > -1;
-        return idx1 > -1 || idx2 > -1;
+        return idx1 || idx2;
     }
 
     getActiveLayers() {
@@ -1183,17 +1193,56 @@ class GestorMenu {
         }
     }
 
-    loadLayers(layers) {
-        layers.forEach(layer => {
-            if (this.layerIsValid(layer)) {
-                const interval = setInterval(() => {
-                    this.muestraCapa(this.getLayerIdByName(layer));
-                    if (this.layerIsActive(layer)) {
-                        window.clearInterval(interval);
-                    }
-                }, 200)
+    baseMapIsInUrl(layers) {
+        for (const layer of layers) {
+            if (this.availableBaseLayers.findIndex(lyr => lyr === layer) > -1) {
+                return true;
             }
-        })
+        }
+        return false;
+    }
+
+    loadInitialLayers(urlInteraction) {
+        const initialInterval = setInterval(() => {
+            if (this.allLayersAreLoaded) {
+                window.clearInterval(initialInterval);
+
+                //Mostrar mapa base por defecto
+                const baseMapSelected = "child-" + this.basemapSelected;
+
+                if (!this.baseMapIsInUrl(urlInteraction.layers))
+                    this.muestraCapa(baseMapSelected);
+
+                let validLayersLoaded = 0;
+                let validLayers = [];
+                urlInteraction.layers.forEach(layer => {
+                    if (this.layerIsValid(layer))
+                        validLayers.push(layer);
+                });
+
+                validLayers.forEach(layer => {
+                    const interval = setInterval(() => {
+                        if (this.layerIsActive(layer)) {
+                            validLayersLoaded++;
+                            window.clearInterval(interval);
+                        } else {
+                            this.muestraCapa(this.getLayerIdByName(layer));
+                        }
+                    }, 200)
+                });
+
+                const lastInterval = setInterval(() => {
+                    if (validLayersLoaded === validLayers.length) {
+                        console.log(this.getActiveLayers())
+                        urlInteraction.layers = this.getActiveLayers();
+                        this.activeLayersHasBeenUpdated = () => {
+                            urlInteraction.layers = this.getActiveLayers();
+                        }
+                        window.clearInterval(lastInterval);
+                    }
+                }, 100)
+            }
+        }, 70)
     }
 
     toggleLayers(layers) {
@@ -1758,9 +1807,6 @@ class GestorMenu {
 			this.generateFolders(itemsAuxToFolders);
 			
         }
-		
-		//Mostrar mapa base por defecto
-		gestorMenu.muestraCapa("child-" + this.basemapSelected);
 
         this.getLoadingDOM().hide();
 
