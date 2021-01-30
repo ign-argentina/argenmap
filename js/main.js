@@ -85,6 +85,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           groupAux.setImpresor(impresorBaseMap);
           groupAux.setObjDom(".basemap-selector");
           for (let key2 in item.capas) {
+            gestorMenu.setAvailableBaseLayer(item.capas[key2].nombre);
             let capa = new Capa(
               item.capas[key2].nombre,
               item.capas[key2].titulo,
@@ -146,7 +147,6 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
             customizedLayers = (item.customize_layers == undefined) ? "" : item.customize_layers,
             featureInfoFormat = (item.feature_info_format == undefined) ? "application/json" : item.feature_info_format,
             impresorGroupTemp = impresorGroup;
-
           let profile = app.profiles[app.profile], matchItemProfile;
           if (profile.data.length === 0) {
             matchItemProfile = "";
@@ -298,12 +298,8 @@ $.getJSON("./js/menu.json", async function (data) {
             urlInteraction.center = mapa.getCenter();
           });
 
-          gestorMenu.loadLayers([...urlInteraction.layers]);
-
-          gestorMenu.activeLayersHasBeenUpdated = () => {
-            urlInteraction.layers = gestorMenu.getActiveLayers();
-          }
-        }
+          gestorMenu.loadInitialLayers(urlInteraction);
+        } 
       }, 100);
     });
   });

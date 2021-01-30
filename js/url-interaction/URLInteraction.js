@@ -112,7 +112,11 @@ class URLInteraction {
         const zoom = `${ZOOM_LEVEL}=${this._zoom}`;
         const lat = `${LATITUDE}=${Math.round((this._latitude) * 10000) / 10000}`; 
         const lng = `${LONGITUDE}=${Math.round((this._longitude) * 10000) / 10000}`;
-        const layers = this._layers.reduce((prevVal, currentVal) => prevVal !== '' ? prevVal + ',' + currentVal : `layers=${currentVal}`, '');
-        window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}&${layers}`);
+        if (this._layers.length > 0) {
+            const layers = this._layers.reduce((prevVal, currentVal) => prevVal !== '' ? prevVal + ',' + currentVal : `layers=${currentVal}`, '');
+            window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}&${layers}`);
+        } else {
+            window.history.replaceState(null, null, `?${zoom}&${lat}&${lng}`);
+        }
     }
 }
