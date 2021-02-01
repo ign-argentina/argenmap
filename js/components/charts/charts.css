@@ -35,25 +35,25 @@ div#container {
   background-color: #2F4A6D;
 }
 
-svg {
+svg #svgd3 {
   width: 100%;
   height: 100%;
 }
 
-.bar {
+#bar-d3 {
   fill: #80cbc4;
 }
 
-text {
+div .container svg text {
   font-size: 12px;
   fill: #fff;
 }
 
-path {
+svg#svgd3 g g path {
   stroke: gray;
 }
 
-line {
+svg#svgd3 g g g line {
   stroke: gray;
 }
 
@@ -77,22 +77,18 @@ text.divergence {
   fill: #2F4A6D;
 }
 
-text.value {
+#text-d3-value {
   font-size: 12px;
 }
 
-text.title {
+#text-d3-title {
   font-size: 22px;
   font-weight: 600;
 }
 
-text.label {
+#text-d3-label {
   font-size: 12px;
   font-weight: 400;
-}
-
-text.source {
-  font-size: 10px;
 }
 
 @media (max-width: 812px) {

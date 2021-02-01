@@ -102,6 +102,7 @@ class Graphics{
     if (isNaN(maxim)){
           svg.append('text')
           .attr('class', 'title')
+          .attr('id', 'text-d3')
           .attr('x', width / 2 + margin)
           .attr('y', 40)
           .attr('text-anchor', 'middle')
@@ -129,6 +130,7 @@ class Graphics{
       
       chart.append('g')
         .attr('class', 'grid')
+        .attr('id', 'grid-d3')
         .call(makeYLines()
           .tickSize(-width, 0, 0)
           .tickFormat('')
@@ -143,6 +145,7 @@ class Graphics{
       barGroups
         .append('rect')
         .attr('class', 'bar')
+        .attr('id', 'bar-d3')
         .attr('x', (g) => xScale(g.id))
         .attr('y', (g) => yScale(g.value))
         .attr('height', (g) => height - yScale(g.value))
@@ -152,6 +155,7 @@ class Graphics{
         barGroups 
         .append('text')
         .attr('class', 'value')
+        .attr('id', 'text-d3-value')
         .attr('x', (a) => xScale(a.id) + xScale.bandwidth() / 4)
         .attr('y', (a) => yScale(a.value) + 30)
         .attr('text-anchor', 'middle')
@@ -159,6 +163,7 @@ class Graphics{
       
       svg.append('text')
         .attr('class', 'label')
+        .attr('id', 'text-d3-label')
         .attr('x', width / 2 + margin)
         .attr('y', height + margin * 1.7)
         .attr('text-anchor', 'middle')
@@ -166,6 +171,7 @@ class Graphics{
 
         svg.append('text')
         .attr('class', 'title')
+        .attr('id', 'text-d3-title')
         .attr('x', width / 2 + margin)
         .attr('y', 40)
         .attr('text-anchor', 'middle')
