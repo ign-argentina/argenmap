@@ -1233,7 +1233,6 @@ class GestorMenu {
 
                 const lastInterval = setInterval(() => {
                     if (validLayersLoaded === validLayers.length) {
-                        console.log(this.getActiveLayers())
                         urlInteraction.layers = this.getActiveLayers();
                         this.activeLayersHasBeenUpdated = () => {
                             urlInteraction.layers = this.getActiveLayers();

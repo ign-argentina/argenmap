@@ -7,6 +7,12 @@ body {
 	overflow: hidden;
 }
 
+@media (max-width: 600px) {
+    body {
+        overflow-y: scroll;
+    }
+}
+
 /*******************************
 Menu principal
 *******************************/
