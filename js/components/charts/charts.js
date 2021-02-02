@@ -48,12 +48,20 @@ class Graphics{
           containment: "#mapa",
           scroll: false}
         );
+        $( "#containergraphics" ).resizable({
+          containment: "#mapa",
+          minHeight: 150,
+          minWidth: 250,
+          handles: 'e, w',
+          scroll: true,
+        });
+        
         
   }
 
   createcontainer(){
-    let divlay = this.createElement("div","layout","layout")
-    let divi = this.createElement("div","container","container")
+    let divlay = this.createElement("div","layout-d3","layout")
+    let divi = this.createElement("div","container-d3","container")
     divi.innerHTML="<svg id='svgd3' viewBox='0 0 750 500'/>"
     divlay.append(divi)
     document.getElementById("graphicsd3").append(divlay)  
@@ -179,6 +187,8 @@ class Graphics{
    }
    
   }
+
+ 
   
   newrender(value){
     this.render(this.data,value)
