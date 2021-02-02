@@ -1251,7 +1251,7 @@ class GestorMenu {
                     }
                 }, 100)
             }
-        }, 70)
+        }, 500)
     }
 
     toggleLayers(layers) {
