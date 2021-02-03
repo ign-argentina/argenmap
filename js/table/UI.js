@@ -89,12 +89,12 @@ class UI{
         document.getElementById("search-table").append(filterclear)
   }
 
-  addTabs(){
+  addTabs(layername){
     let aux 
     if(datatable.length==1){aux = this.createElement("li",datatable.length,"active")}
     else{aux = this.createElement("li",datatable.length)}
     
-    aux.innerHTML='<a data-toggle="tab" aria-expanded="true" id ='+datatable.length+' >Tabla '+datatable.length+'</a>'
+    aux.innerHTML='<a data-toggle="tab" aria-expanded="true" id ='+datatable.length+'>'+layername+' '+datatable.length+'</a>'
     aux.onclick =function(){
             activedata=this.id-1
             let data = datatable[this.id-1]

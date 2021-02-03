@@ -3,21 +3,21 @@ let table;
 let activedata = 0;
 let ui = new UI
 
-function createTabulator(tableD){
+function createTabulator(tableD, layername){
     if (tableD.data.features.length != 0){
         let datos = tableD.getDataForTabulator();
         datatable[datatable.length]=datos
 
         if (document.getElementById("ContainerTable") !== null)
         { 
-          ui.addTabs()
+          ui.addTabs(layername)
         }
 
         else{
           ui.createModal()
           ui.createTable(datos)
           ui.createFilters(datos)
-          ui.addTabs()
+          ui.addTabs(layername)
           //working on: disable jquery draggable and resizable
           //dragElement(document.getElementById("ContainerTable"));
           //ro.observe(ContainerTable);

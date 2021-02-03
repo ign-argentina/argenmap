@@ -157,7 +157,8 @@ function loadWmsTplAux(objLayer, param) {
         //Extends WMS.Source to customize popup behavior
         var MySource = L.WMS.Source.extend({
             'showFeatureInfo': function(latlng, info) {
-				//console.log(this, '...')
+                let layername = objLayer.capa.titulo
+
                 if (!this._map) {
                     return;
 				}
@@ -182,7 +183,8 @@ function loadWmsTplAux(objLayer, param) {
                 } else {
                                        
                     let tableD = new Datatable (JSON.parse(info), latlng);
-					createTabulator(tableD);
+                    createTabulator(tableD, layername);
+                    
                 }
                 return;
             }
