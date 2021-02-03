@@ -110,7 +110,7 @@ class Graphics{
     if (isNaN(maxim)){
           svg.append('text')
           .attr('class', 'title')
-          .attr('id', 'text-d3')
+          .attr('id', 'text-d3-title')
           .attr('x', width / 2 + margin)
           .attr('y', 40)
           .attr('text-anchor', 'middle')
