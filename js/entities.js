@@ -562,6 +562,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
                     item.setImpresor(impresorItem);
                     items.push(item);
                     gestorMenu.setAvailableLayer(iName);
+                    gestorMenu.setAvailableWmtsLayer(iName);
                 }
 
             });
@@ -1131,6 +1132,7 @@ class GestorMenu {
         this.basemapSelected = null;
 
         this.allLayersAreLoaded = false;
+        this.availableWmtsLayers = [];
         this.availableLayers = [];
         this.availableBaseLayers = [];
         this.activeLayers = [];
@@ -1148,6 +1150,10 @@ class GestorMenu {
     
     setAvailableLayer(layer_id) {
         this.availableLayers.push(layer_id);
+    }
+    
+    setAvailableWmtsLayer(layer_id) {
+        this.availableWmtsLayers.push(layer_id);
     }
 
     setAvailableBaseLayer(layer_id) {
@@ -1172,6 +1178,10 @@ class GestorMenu {
 
     layerIsActive(layer_id) {
         return this.activeLayers.findIndex(layer => layer === layer_id) > -1;
+    }
+
+    layerIsWmts(layer_id) {
+        return this.availableWmtsLayers.findIndex(layer => layer === layer_id) > -1;
     }
 
     layerIsValid(layer_id) {
@@ -1241,7 +1251,7 @@ class GestorMenu {
                     }
                 }, 100)
             }
-        }, 70)
+        }, 500)
     }
 
     toggleLayers(layers) {
@@ -1909,8 +1919,11 @@ class GestorMenu {
     }
 
     muestraCapa(itemSeccion) {
+        const wmtsLayers = [];
+
 		//Hide all if itemComposite selected is Base Map
-		var isBaseLayer = false;
+        var isBaseLayer = false;
+        
 		for (var key in this.items) {
 			var itemComposite = this.items[key];
 			for (var key2 in itemComposite.itemsComposite) {
@@ -1930,24 +1943,39 @@ class GestorMenu {
                     this.removeActiveLayer(baseLayer);
                 });
 				itemComposite.hideAllLayers();
-			}
+            }
+
             for (var key2 in itemComposite.itemsComposite) {
                 var item = itemComposite.itemsComposite[key2];
 
-                if (item.getId() == itemSeccion) {
-                    if ($(`#${item.getId()}`).hasClass('active')) {
-                        this.removeActiveLayer(item.nombre);
-                    } else {
-                        this.addActiveLayer(item.nombre);
+                const layerIsActive = this.layerIsActive(item.nombre);
+                const layerIsWmts = this.layerIsWmts(item.nombre);
+                
+                if (isBaseLayer && layerIsActive && layerIsWmts) {
+                    wmtsLayers.push(item);
+                } else {
+                    if (item.getId() == itemSeccion) {
+                        if ($(`#${item.getId()}`).hasClass('active')) {
+                            this.removeActiveLayer(item.nombre);
+                        } else {
+                            this.addActiveLayer(item.nombre);
+                        }
+    
+                        item.showHide();
+                        itemComposite.muestraCantidadCapasVisibles();
+                        break;
                     }
-
-                    item.showHide();
-                    itemComposite.muestraCantidadCapasVisibles();
-                    break;
                 }
             }
         }
 
+        if (isBaseLayer) {
+            wmtsLayers.forEach(wmtsLayer => {
+                wmtsLayer.showHide();
+                wmtsLayer.showHide();
+            });
+        }
+        
         if (this.activeLayersHasBeenUpdated)
             this.activeLayersHasBeenUpdated();
     }
