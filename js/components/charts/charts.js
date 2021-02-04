@@ -24,7 +24,7 @@ class Graphics{
 
   addButtons(){
         let btnclose = this.createElement("a","btnclosed3","icon-table")
-        btnclose.innerHTML = '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
+        btnclose.innerHTML = '<span id="remove" class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
         btnclose.onclick = function(){
           document.body.removeChild(containergraphics)
           document.getElementById("btngraphics").hidden= false;

@@ -74,6 +74,22 @@
       return;
     }
 
+    const targetId = event.target.id;
+    if (targetId === 'stats' || targetId === 'save' || targetId === 'minus' || targetId === 'remove' || targetId === 'resize-full' || event.target.type === 'button') {
+      event.target.onclick();
+      return;
+    }
+
+    if (event.target.getAttribute('istabletab')) {
+      event.target.parentElement.onclick();
+      return;
+    }
+
+    if (targetId === 'filter-field-d3' || targetId === 'filter-field') {
+      event.target.select();
+      return;
+    }
+
     // Set the flag to prevent other widgets from inheriting the touch event
     touchHandled = true;
 

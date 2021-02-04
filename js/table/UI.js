@@ -21,7 +21,7 @@ class UI{
   addButtons(){
     let btnmax = this.createElement("a","btnmax","icon-table")
     btnmax.hidden= true
-    btnmax.innerHTML = '<span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>';
+    btnmax.innerHTML = '<span id="resize-full" class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>';
     btnmax.onclick = function(){
         document.getElementById("ContainerTable").style.height=""
         document.getElementById("ContainerTable").style.width="450px"
@@ -30,7 +30,7 @@ class UI{
         };
 
         let btnmin = this.createElement("a","btnmin","icon-table")
-        btnmin.innerHTML = '<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>'
+        btnmin.innerHTML = '<span id="minus" class="glyphicon glyphicon-minus" aria-hidden="true"></span>'
         btnmin.onclick = function(){
             document.getElementById("ContainerTable").style.height="30px"
             document.getElementById("ContainerTable").style.width="270px"
@@ -39,14 +39,14 @@ class UI{
         };
 
         let btnclose = this.createElement("a","btnclose","icon-table")
-        btnclose.innerHTML = '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
+        btnclose.innerHTML = '<span id="remove" class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
         btnclose.onclick = function(){
           document.body.removeChild(ContainerTable)
           datatable=[];
         };
 
         let btnsave= this.createElement("a","btnsave","icon-table")
-        btnsave.innerHTML = '<span class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
+        btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
         btnsave.onclick = function(){
           table.download("csv", "data.csv", {bom:true});
         };
@@ -54,7 +54,7 @@ class UI{
         //if charts is avaible in menu.json
         if(loadCharts) {
           let btntd= this.createElement("a","btngraphics","icon-table")
-          btntd.innerHTML = '<span class="glyphicon glyphicon-stats" aria-hidden="true" title="Gráficos"></span>';
+          btntd.innerHTML = '<span id="stats" class="glyphicon glyphicon-stats" aria-hidden="true" title="Gráficos"></span>';
           btntd.onclick = function(){
             let data = datatable[activedata]
             created3(data)
@@ -94,7 +94,7 @@ class UI{
     if(datatable.length==1){aux = this.createElement("li",datatable.length,"active")}
     else{aux = this.createElement("li",datatable.length)}
     
-    aux.innerHTML='<a data-toggle="tab" aria-expanded="true" id ='+datatable.length+' >Tabla '+datatable.length+'</a>'
+    aux.innerHTML='<a data-toggle="tab" istabletab="true" aria-expanded="true" id='+datatable.length+' >Tabla '+datatable.length+'</a>'
     aux.onclick =function(){
             activedata=this.id-1
             let data = datatable[this.id-1]
