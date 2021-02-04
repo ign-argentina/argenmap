@@ -3,6 +3,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
   impresorGroupWMSSelector = new ImpresorGroupWMSSelector(),
   urlInteraction = new URLInteraction(),
+  metaTagsInteraction = new MetaTagsInteraction(),
   app = {
     profile: "default",
     profiles: {},
@@ -25,6 +26,16 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       if (app.hasOwnProperty('table')) {
         setTableAsPopUp(app.table.isActive);
         setTableFeatureCount(app.table.rowsLimit);
+      }
+
+      //Load meta-tags if they are available
+      if (app.hasOwnProperty('metaTags')) {
+        if (app.metaTags.title)
+          metaTagsInteraction.title = app.metaTags.title;
+        if (app.metaTags.description)
+          metaTagsInteraction.description = app.metaTags.description;
+        if (app.metaTags.image)
+          metaTagsInteraction.image = app.metaTags.image;
       }
       
       if (app.hasOwnProperty('charts')) {
@@ -304,4 +315,3 @@ $.getJSON("./js/menu.json", async function (data) {
     });
   });
 });
-
