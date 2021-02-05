@@ -1,0 +1,27 @@
+.center-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#screenshot {
+  position: absolute;
+  flex-direction: column;
+  width: 30px;
+  height: 30px;
+  color: black;
+  font-size: 1.1em;
+  bottom: 150px;
+  right: 1.15%;
+  z-index: 1000;
+}
+
+#iconSC-container {
+  height: 100%;
+  width: 100%;
+  flex: 3;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 3px ;
+}
+
+

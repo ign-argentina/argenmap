@@ -284,6 +284,8 @@ $.getJSON("./js/menu.json", async function (data) {
       $('head').append('<link rel="stylesheet" type="text/css" href="./js/components/charts/charts.css">');
     }
 
+
+
     template = 'templates/' + template + '/main.html';
     $('#template').load(template, function() {
 
@@ -310,8 +312,13 @@ $.getJSON("./js/menu.json", async function (data) {
           });
 
           gestorMenu.loadInitialLayers(urlInteraction);
+
+          const sc = new Screenshot
+          sc.createComponent()
         } 
       }, 100);
     });
+
+
   });
 });
