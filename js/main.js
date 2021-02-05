@@ -247,7 +247,17 @@ let getGeoserverCounter = 0,
   gestorMenu = new GestorMenu();
 
 $.getJSON("./js/menu.json", async function (data) {
+  await loadTemplate(data);
+})
+.fail(function( jqxhr, textStatus, error ) {
+  console.error( "Template Not Found");
 
+  $.getJSON("./examples/menu.json", async function (data) {
+    await loadTemplate(data);
+  });
+});
+
+async function loadTemplate(data) {
   $(document).ready( async function() {
     await app.init(data);
 
@@ -314,4 +324,4 @@ $.getJSON("./js/menu.json", async function (data) {
       }, 100);
     });
   });
-});
+};
