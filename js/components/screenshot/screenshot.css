@@ -11,9 +11,17 @@
   height: 30px;
   color: black;
   font-size: 1.1em;
-  bottom: 150px;
+  bottom: 130px;
   right: 1.15%;
   z-index: 1000;
+}
+
+#screenshot :hover {
+  color: grey;
+}
+
+#screenshot :active {
+  background-color: grey;
 }
 
 #iconSC-container {
@@ -24,4 +32,15 @@
   border-radius: 3px ;
 }
 
+@media (max-width: 600px) {
+  #screenshot {
+      bottom: 55px;
+      right: 2.8%;
+  }
+}
 
+@media (max-height: 500px) {
+  #screenshotl {
+      display: none;
+  }
+}

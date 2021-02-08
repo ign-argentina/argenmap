@@ -4,8 +4,7 @@ class Screenshot {
     this.component = `
     <div class="center-flex" id="screenshot" title="screenshot">
         <div class="center-flex" id="iconSC-container">
-            <i class="fa fa-camera" aria-hidden="true" onclick=capturemap() ></i>
-            <a href="#" id="saveAsSC" hidden></a>
+            <span class="fa fa-camera" aria-hidden="true" onclick=capturetoPNG('mapa') ></span>
         </div>
     </div>
     `;
@@ -20,19 +19,34 @@ class Screenshot {
 }
 
 
-//borrar leaflet-controls // screenshot
-function capturemap(){
-html2canvas(document.querySelector("#mapa"), {
-  allowTaint: true,
-  useCORS: true
-  }).then(canvas => {
-    var a = document.getElementById('saveAsSC');
-    var data = canvas.toDataURL('image/png');
-    a.setAttribute('href',data);
-    var d = new Date();
-    var n = d.getTime();
-    a.setAttribute('download', 'mapaIGN'+n+'.png');
-    a.click();
-  });
+function capturetoPNG(el){
+  //ignore elements
+  let auxleft = document.getElementsByClassName('leaflet-top leaflet-left')
+  auxleft[0].setAttribute("data-html2canvas-ignore", "true")
+  let auxright = document.getElementsByClassName('leaflet-top leaflet-right')
+  auxright[0].setAttribute("data-html2canvas-ignore", "true")
+  let auxbleft = document.getElementsByClassName('leaflet-bottom leaflet-left')
+  auxbleft[0].setAttribute("data-html2canvas-ignore", "true")
+  let zoom = document.getElementById("zoom-level")
+  zoom.setAttribute("data-html2canvas-ignore", "true")
+  let sc = document.getElementById("screenshot")
+  sc.setAttribute("data-html2canvas-ignore", "true")
+
+
+  let id =  '#'+el
+  html2canvas(document.querySelector(id), {
+    allowTaint: true,
+    logging: false, //consola off
+    useCORS: true
+    }).then(canvas => {
+      let a = document.createElement('a')
+      a.id= 'saveAsSC'
+      let data = canvas.toDataURL('image/png');
+      a.setAttribute('href',data);
+      let d = new Date();
+      let n = d.getTime();
+      a.setAttribute('download', 'mapaIGN'+n+'.png');
+      a.click()
+    });
 }
 
