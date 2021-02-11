@@ -1,5 +1,4 @@
 !/templates/
-/templates/*
 !/templates/ign-geoportal-basic
 !/templates/ign-geoportal-minimal
 js/menu.json

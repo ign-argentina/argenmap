@@ -1,0 +1,24 @@
+{
+  "name": "leaflet.browser.print",
+  "version": "0.9.1",
+  "keywords": [
+    "leaflet.js",
+    "browser",
+    "print",
+    "portrait",
+    "landscape",
+    "custom selection print tool"
+  ],
+  "description": "A leaflet plugin which allows users to print the map directly from the browser",
+  "homepage": "https://github.com/Igor-Vladyka/leaflet.browser.print",
+  "bugs": "https://github.com/Igor-Vladyka/leaflet.browser.print/issues",
+  "repository": {
+    "url": "https://github.com/Igor-Vladyka/leaflet.browser.print",
+    "type": "git"
+  },
+  "author": "Igor Vladyka <igor.vladyka@gmail.com> (https://github.com/Igor-Vladyka/)",
+  "license": "MIT (http://www.opensource.org/licenses/mit-license.php)",
+  "devDependencies": {
+    "webpack": "^4.0.0"
+  }
+}

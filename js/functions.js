@@ -232,3 +232,197 @@ function loadMapaBaseBing(bingKey, layer, attribution) {
         console.warn("Function loadMapaBaseBingTpl() do not exists. Please, define it.");
     }
 }
+
+function loadTemplateStyleConfig(template) {
+    try {
+      $('head').append(`<link rel="stylesheet" href="templates/${template}/css/main.css">`);
+    } catch (error) {
+      console.log(error);
+    }
+    switch(template) {
+      case 'argenmap-leaflet-bahra-tpl': {
+        $('head').append(`<link rel="shortcut icon" href="templates/argenmap-leaflet-bahra-tpl/img/favicon.ico" type="image/x-icon">`);
+        $('head').append(`<link rel="icon" href="templates/argenmap-leaflet-bahra-tpl/img/favicon.ico" type="image/x-icon">`);
+
+        //Change logotype
+        $(document).prop('title', 'Base de Asentamientos Humanos de la República Argentina (BAHRA)');
+        $('#top-left-logo-link').attr("href","//www.bahra.gob.ar/");
+        $('#top-left-logo').attr("src","templates/argenmap-leaflet-bahra-tpl/img/logo.png");
+        $('#top-left-logo').attr("alt","Base de Asentamientos Humanos de la República Argentina (BAHRA)");
+        $('#top-left-logo').attr("title","Base de Asentamientos Humanos de la República Argentina (BAHRA)");
+        $('#top-right-logo-link').attr("href","../descargas/mapa_ayuda.pdf");
+        $('#top-right-logo').attr("src","templates/argenmap-leaflet-bahra-tpl/img/ayuda_de_pagina_blanco.svg");
+        $('#top-right-logo').attr("alt","Ayuda");
+        $('#top-right-logo').attr("title","Ayuda");
+        $('#top-right-logo').css("width","35px");
+        $('#top-right-logo').css("top","0px");
+        //$('#top-right-logo-link').hide();
+      }
+      break;
+      case 'argenmap-leaflet-idecom-tpl': {
+        $('head').append(`<link rel="shortcut icon" href="https://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />`);
+      
+        //Change logotype
+        $('#top-left-logo-link').attr("href","https://www.argentina.gob.ar/jefatura/innovacion-publica/ssetic");
+        $('#top-left-logo').attr("src","templates/argenmap-leaflet-idecom-tpl/img/subseticlogo2.png");
+        $('#top-left-logo').attr("alt","Logo Subsecretaría de Tecnologías de la Información y las Comunicaciones");
+        $('#top-left-logo').attr("title","Subsecretaría de Tecnologías de la Información y las Comunicaciones");
+        //$('#top-left-logo').css("width","100px");
+        //$('#top-right-logo-link').attr("href","templates/argenmap-leaflet-ign-tpl/files/referencias.pdf");
+        //$('#top-right-logo-link').attr("href","#");
+        //$('#top-right-logo').attr("src","templates/argenmap-leaflet-ign-tpl/img/referencias_icono.png");
+        //$('#top-right-logo').attr("alt","Referencias");
+        //$('#top-right-logo').attr("title","Referencias");
+        //$('#top-right-logo').css("width","35px");
+        //$('#top-right-logo').css("top","0px");
+        /* 
+        $('#top-right-logo').on('click', function() {
+        event.preventDefault();
+        //$.fancybox.open( '<div class="message"><h2>Referencias</h2><p><img src="templates/argenmap-leaflet-ign-tpl/img/referencias.png" style="width:50%"></p></div>' );
+        //$.fancybox.getInstance();
+        //$(".fancybox").fancybox({"width":400,"height":300});
+        $.fancybox.open({
+            src : 'templates/argenmap-leaflet-ign-tpl/img/referencias.png',
+            type : 'image',
+            closeBtn: 'true'
+        });
+        }); */
+      }
+      break;
+      case 'argenmap-leaflet-idera-tpl': {
+        $('head').append(`<link rel="shortcut icon" href="https://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />`);
+      
+        //Change logotype
+        $(document).prop('title', 'IDERA - Argenmap');
+        $('#top-left-logo-link').attr("href","https://www.idera.gob.ar/");
+        $('#top-left-logo').attr("src","templates/argenmap-leaflet-idera-tpl/img/logo.png");
+        $('#top-left-logo').attr("alt","Logo IDERA");
+        $('#top-left-logo').attr("title","Infraestructura de Datos Espaciales de la República Argentina");
+        /*
+        $('#top-right-logo-link').attr("href","https://www.argentina.gob.ar/defensa");
+        $('#top-right-logo').attr("src","templates/argenmap-leaflet-idera-tpl/img/logoMinDef.png");
+        $('#top-right-logo').attr("alt","Logo Ministerio de Defensa");
+        $('#top-right-logo').attr("title","Ministerio de Defensa");
+        */
+        $('#top-right-logo-link').hide();
+      }
+      break;
+      case 'argenmap-leaflet-ign-tpl': {
+        $('head').append(`<link rel="shortcut icon" href="https://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />`);
+
+        //Change logotype
+        $('#top-left-logo-link').attr("href","https://www.ign.gob.ar/");
+        //$('#top-left-logo').attr("src","templates/argenmap-leaflet-ign-tpl/img/logo.png");
+        $('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
+        $('#top-left-logo').attr("title","Instituto Geográfico Nacional");
+        //$('#top-left-logo').css("width","100px");
+        //$('#top-right-logo-link').attr("href","templates/argenmap-leaflet-ign-tpl/files/referencias.pdf");
+        $('#top-right-logo-link').attr("href","#");
+        $('#top-right-logo').attr("src","templates/argenmap-leaflet-ign-tpl/img/referencias_icono.png");
+        $('#top-right-logo').attr("alt","Referencias");
+        $('#top-right-logo').attr("title","Referencias");
+        //$('#top-right-logo').css("width","35px");
+        //$('#top-right-logo').css("top","0px");
+        $('#top-right-logo').on('click', function() {
+            event.preventDefault();
+            //$.fancybox.open( '<div class="message"><h2>Referencias</h2><p><img src="templates/argenmap-leaflet-ign-tpl/img/referencias.png" style="width:50%"></p></div>' );
+            //$.fancybox.getInstance();
+            //$(".fancybox").fancybox({"width":400,"height":300});
+            $.fancybox.open({
+                src : 'templates/argenmap-leaflet-ign-tpl/img/referencias.png',
+                type : 'image',
+                closeBtn: 'true'
+            });
+        });
+      }
+      break;
+      case 'argenmap-leaflet-mindef-tpl': {
+        $('head').append(`<link rel="shortcut icon" href="templates/argenmap-leaflet-mindef-tpl/img/favicon.ico" type="image/x-icon" />`);
+
+        //Change logotype
+        document.title = "Ministerio de Defensa";
+        $('#top-left-logo-link').attr("href","https://www.argentina.gob.ar/defensa");
+        /* $('#top-left-logo').attr("src","templates/argenmap-leaflet-mindef-tpl/img/logo.svg"); */
+        $('#top-left-logo').attr("alt","Logo Ministerio de Defensa");
+        $('#top-left-logo').attr("title","Ministerio de Defensa");
+        /* Reemplazado por referencias */
+        /*
+        $('#top-right-logo-link').attr("href","https://www.argentina.gob.ar/");
+        $('#top-right-logo').attr("src","templates/argenmap-leaflet-mindef-tpl/img/right_logo.svg");
+        $('#top-right-logo').attr("alt","Argentina Unida");
+        $('#top-right-logo').attr("title","Ministerio de Defensa");
+        */
+        $('#top-right-logo-link').attr("href","#");
+        $('#top-right-logo').attr("src","templates/argenmap-leaflet-mindef-tpl/img/referencias_icono.png");
+        $('#top-right-logo').attr("alt","Referencias");
+        $('#top-right-logo').attr("title","Referencias");
+        $('#top-right-logo').on('click', function() {
+            event.preventDefault();
+            //$.fancybox.open( '<div class="message"><h2>Referencias</h2><p><img src="templates/argenmap-leaflet-mindef-tpl/img/referencias.png" style="width:50%"></p></div>' );
+            //$.fancybox.getInstance();
+            //$(".fancybox").fancybox({"width":400,"height":300});
+            $.fancybox.open({
+                src : 'templates/argenmap-leaflet-mindef-tpl/img/referencias.png',
+                type : 'image',
+                closeBtn: 'true'
+            });
+        });
+      }
+      break;
+      case 'argenmap-leaflet-muni-tpl': {
+        $('head').append(`<link rel="shortcut icon" href="https://www.pehuajo.gob.ar/favicon.ico?m=1" type="image/x-icon" />`);
+
+        const muni = "Municipalidad de Pehuajó"
+        const munilink = "http://www.pehuajo.gob.ar/"
+        document.title = muni;
+        //Change logotype
+        $('#top-left-logo-link').attr("href", munilink);
+        $('#top-left-logo').attr("alt", muni);
+        $('#top-left-logo').attr("title", muni);
+        $('#top-right-logo-link').attr("href","#");
+        $('#top-right-logo').attr("src","templates/argenmap-leaflet-muni-tpl/img/referencias_icono.png");
+        $('#top-right-logo').attr("alt","Referencias");
+        $('#top-right-logo').attr("title","Referencias");
+        $('#top-right-logo').on('click', function() {
+            event.preventDefault();
+            //$.fancybox.open( '<div class="message"><h2>Referencias</h2><p><img src="templates/argenmap-leaflet-muni-tpl/img/referencias.png" style="width:50%"></p></div>' );
+            //$.fancybox.getInstance();
+            //$(".fancybox").fancybox({"width":400,"height":300});
+            $.fancybox.open({
+                src : 'templates/argenmap-leaflet-muni-tpl/img/referencias.png',
+                type : 'image',
+                closeBtn: 'true'
+            });
+        });
+      }
+      break;
+      case 'ign-geoportal-basic': {
+        $('head').append(`<link rel="shortcut icon" href="https://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />`);
+
+        //Change logotype
+        $('#top-left-logo-link').attr("href","https://www.ign.gob.ar/");
+        $('#top-left-logo').attr("src","templates/ign-geoportal-basic/img/logo.png");
+        $('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
+        $('#top-left-logo').attr("title","Instituto Geográfico Nacional");
+        $('#top-right-logo-link').attr("href","https://www.argentina.gob.ar/defensa");
+        $('#top-right-logo').attr("src","templates/ign-geoportal-basic/img/logoMinDef.png");
+        $('#top-right-logo').attr("alt","Logo Ministerio de Defensa");
+        $('#top-right-logo').attr("title","Ministerio de Defensa");
+      }
+      break;
+      case 'ign-geoportal-minimal': {
+        $('head').append(`<link rel="shortcut icon" href="https://www.ign.gob.ar/sites/default/files/favicon.png" type="image/x-icon" />`);
+
+        //Change logotype
+        $('#top-left-logo-link').attr("href","https://www.ign.gob.ar/");
+        $('#top-left-logo').attr("src","templates/ign-geoportal-basic/img/logo.png");
+        $('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
+        $('#top-left-logo').attr("title","Instituto Geográfico Nacional");
+        $('#top-right-logo-link').attr("href","https://www.argentina.gob.ar/defensa");
+        $('#top-right-logo').attr("src","templates/ign-geoportal-basic/img/logoMinDef.png");
+        $('#top-right-logo').attr("alt","Logo Ministerio de Defensa");
+        $('#top-right-logo').attr("title","Ministerio de Defensa");
+      }
+      break;
+    }
+};

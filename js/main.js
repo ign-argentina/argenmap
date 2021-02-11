@@ -263,6 +263,10 @@ async function loadTemplate(data) {
 
     //Template
     template = app.template; // define wich template to use
+
+    //Load template config
+    loadTemplateStyleConfig(template);
+
     gestorMenu.setLegendImgPath('templates/' + template + '/img/legends/');
     delete app['template']; // delete template item from data
 
@@ -284,6 +288,11 @@ async function loadTemplate(data) {
       delete app['folders']; // delete folders item from data
     }
 
+    //Add Analytics
+    if (app.analytics_ids) {
+      addAnalytics(app.analytics_ids);
+    }
+
     app.addBasemaps();
     app.addLayers();
 
@@ -294,34 +303,40 @@ async function loadTemplate(data) {
       $('head').append('<link rel="stylesheet" type="text/css" href="./js/components/charts/charts.css">');
     }
 
-    template = 'templates/' + template + '/main.html';
-    $('#template').load(template, function() {
-
-      //Wait until global 'mapa' object is available.
-      const intervalID = setInterval(() => {
-        if (mapa && mapa.hasOwnProperty('_leaflet_id')) {
-          window.clearInterval(intervalID);
-
-          if (urlInteraction.areParamsInUrl) {
-            mapa.setView(L.latLng(urlInteraction.center.latitude, urlInteraction.center.longitude), urlInteraction.zoom);
-          }
-
-          const zoomLevel = new ZoomLevel(mapa.getZoom());
-
-          mapa.on('zoom', () => {
-            if (Number.isInteger(mapa.getZoom())) {
-              urlInteraction.zoom = mapa.getZoom();
-              zoomLevel.zoom = mapa.getZoom();
-            }
-          });
-
-          mapa.on('moveend', () => {
-            urlInteraction.center = mapa.getCenter();
-          });
-
-          gestorMenu.loadInitialLayers(urlInteraction);
-        } 
-      }, 100);
+    //Load dynamic mapa.js
+    app.template_id = template;
+    //$.getScript(`templates/${template}/js/mapa.js`, (res) => {
+    $.getScript(`js/mapa.js`, (res) => {
     });
+
+    template = 'templates/' + template + '/main.html';
+
+    //Wait until global 'mapa' object is available.
+    const intervalID = setInterval(() => {
+      if (mapa && mapa.hasOwnProperty('_leaflet_id')) {
+        window.clearInterval(intervalID);
+
+        if (urlInteraction.areParamsInUrl) {
+          mapa.setView(L.latLng(urlInteraction.center.latitude, urlInteraction.center.longitude), urlInteraction.zoom);
+        }
+
+        const zoomLevel = new ZoomLevel(mapa.getZoom());
+
+        urlInteraction.zoom = mapa.getZoom();
+        mapa.on('zoom', () => {
+          if (Number.isInteger(mapa.getZoom())) {
+            urlInteraction.zoom = mapa.getZoom();
+            zoomLevel.zoom = mapa.getZoom();
+          }
+        });
+
+        urlInteraction.center = mapa.getCenter();
+        mapa.on('moveend', () => {
+          urlInteraction.center = mapa.getCenter();
+        });
+
+        gestorMenu.loadInitialLayers(urlInteraction);
+      } 
+    }, 100);
   });
 };

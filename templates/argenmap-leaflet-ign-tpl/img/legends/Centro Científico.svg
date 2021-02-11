@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve">
+<circle fill="#FFFFFF" stroke="#FFFFFF" stroke-miterlimit="10" cx="12.001" cy="10.25" r="9"/>
+<g id="Capa_1_1_" display="none">
+	<circle display="inline" fill="#9A7D22" cx="12" cy="10.4" r="10"/>
+</g>
+<g id="Capa_3">
+	<path fill="#B5343A" d="M11.997,0.001L11.997,0.001c-5.66-0.085-10.315,4.434-10.4,10.093c0,0.044,0,0.089,0,0.133
+		c0,3.126,1.311,5.527,3.563,7.753c2.972,2.929,5.813,5.599,5.813,5.599c0.311,0.3,0.736,0.45,1.167,0.412v-0.412l0,0V24
+		c0.367-0.079,0.715-0.232,1.021-0.455c0,0,2.741-2.74,5.696-5.652c2.254-2.221,3.547-4.533,3.547-7.677
+		C22.376,4.547,17.759-0.027,12.09,0C12.06,0,12.028,0,11.997,0.001z M11.997,19c-4.946,0.003-8.957-4.004-8.959-8.949
+		c-0.003-4.945,4.003-8.956,8.948-8.959c4.944-0.002,8.956,4.003,8.958,8.949c0,0.003,0,0.007,0,0.011
+		C20.939,14.995,16.936,19,11.991,19H11.997z"/>
+</g>
+<polygon fill="#B5343A" stroke="#B5343A" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+	6.8,6.712 12.001,2.551 17.201,6.712 "/>
+<rect x="6.8" y="7.187" fill="#B5343A" stroke="#B5343A" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="10.401" height="6.76"/>
+<line fill="none" stroke="#B5343A" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="5.501" y1="14.604" x2="18.501" y2="14.604"/>
+<g>
+	<path fill="#FFFFFF" stroke="#B5343A" stroke-width="0.1" stroke-miterlimit="10" d="M9,12.335c0,0.157,0.129,0.286,0.287,0.286
+		l0,0h5.424c0.159,0,0.289-0.129,0.289-0.289c0-0.159-0.13-0.29-0.289-0.29H12.02c-1.164,0-2.343-0.681-2.343-1.994
+		c0.011-1.211,0.978-2.197,2.188-2.229v0.738h-0.138c-0.158,0-0.287,0.128-0.287,0.287l0,0v1.199c0,0.159,0.129,0.287,0.287,0.287
+		l0,0h2.241c0.158,0,0.287-0.128,0.287-0.287l0,0V8.844c0-0.159-0.129-0.287-0.287-0.287l0,0h-0.14V5.958
+		c0-0.159-0.128-0.287-0.286-0.287h-1.384c-0.159,0-0.287,0.128-0.287,0.287v1.281c-1.531,0.034-2.757,1.278-2.768,2.809
+		c-0.003,0.792,0.379,1.537,1.025,1.994H9.292C9.134,12.04,9.003,12.165,9,12.323C9,12.328,9,12.331,9,12.335z M12.445,6.25h0.804
+		v2.312h-0.804V6.25z M12.02,9.141h1.662v0.621H12.02V9.141z"/>
+	<path fill="#FFFFFF" stroke="#B5343A" stroke-width="0.1" stroke-miterlimit="10" d="M12.131,11.122
+		c-0.133,0-0.241,0.108-0.241,0.241c0,0.133,0.108,0.241,0.241,0.241l0,0h1.154c0.133,0,0.24-0.108,0.24-0.241
+		c0-0.133-0.107-0.241-0.24-0.241H12.131z"/>
+</g>
+</svg>
