@@ -310,6 +310,10 @@ $.getJSON("./js/menu.json", async function (data) {
           });
 
           gestorMenu.loadInitialLayers(urlInteraction);
+          
+          const modalgeojson = new IconModalGeojson
+          modalgeojson.createComponent();
+
         } 
       }, 100);
     });
