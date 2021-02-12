@@ -1,0 +1,46 @@
+.center-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#screenshot {
+  position: absolute;
+  flex-direction: column;
+  width: 30px;
+  height: 30px;
+  color: black;
+  font-size: 1.1em;
+  bottom: 130px;
+  right: 1.15%;
+  z-index: 1000;
+}
+
+#screenshot :hover {
+  color: grey;
+}
+
+#screenshot :active {
+  background-color: grey;
+}
+
+#iconSC-container {
+  height: 100%;
+  width: 100%;
+  flex: 3;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 3px ;
+}
+
+@media (max-width: 600px) {
+  #screenshot {
+      bottom: 55px;
+      right: 2.8%;
+  }
+}
+
+@media (max-height: 500px) {
+  #screenshotl {
+      display: none;
+  }
+}

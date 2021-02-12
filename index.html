@@ -1,134 +1,138 @@
 <!DOCTYPE html>
 <html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <meta name="description" content="">
-  <meta name="author" content="">
+    <meta id="og-type" property="og:type" content="website" />
+    <meta id="og-title" property="og:title" content="" />
+    <meta id="og-description" property="og:description" content="" />
+    <meta id="og-image" property="og:image" content="" />
 
-  <meta id="og-type" property="og:type" content="website" />
-  <meta id="og-title" property="og:title" content="" />
-  <meta id="og-description" property="og:description" content="" />
-  <meta id="og-image" property="og:image" content="" />
+    <title>IGN - Argenmap</title>
+    <link rel="icon" href="img/favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
-  <title>IGN - Argenmap</title>
-  <link rel="icon" href="img/favicon.ico">
-  <!-- Bootstrap core CSS -->
-  <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <link href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://static.ign.gob.ar/lib/jquery/ui/jquery-ui.min.css">
 
-  <link rel="stylesheet" href="https://static.ign.gob.ar/lib/jquery/ui/jquery-ui.min.css">
+    <!-- Plugins -->
+    <!-- jQuery -->
+    <script src='https://static.ign.gob.ar/lib/jquery/jquery-3.3.1.min.js'></script>
+    <script src="https://static.ign.gob.ar/lib/jquery/ui/jquery-ui.min.js"></script>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.css' />
+    <!-- Better scale css -->
+    <link rel='stylesheet' href='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css' />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <!-- Awesome Markers -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css">
+    <!-- Leaflet Zoomhome plugin -->
+    <link rel="stylesheet" href="plugins/leaflet-zoomhome/dist/leaflet.zoomhome.css"/>
+    <!-- Leaflet Minimap plugin -->
+    <link rel="stylesheet" href="plugins/leaflet-minimap/Control.MiniMap.css">
+    <!-- Leaflet Locate plugin -->
+    <link rel="stylesheet" href="plugins/leaflet-locate/L.Control.Locate.css">
+    <!-- Leaflet Mouse Position plugin -->
+    <link rel="stylesheet" href="plugins/leaflet-mouseposition/src/L.Control.MousePosition.css">
+    <!-- Leaflet Measure plugin -->
+    <link rel="stylesheet" href="plugins/leaflet-measure/leadflet-measure.css">
+    <!-- Leaflet Control.FullScreen plugin -->
+    <link rel="stylesheet" href="plugins/leaflet-fullscreen/Control.FullScreen.css" />
+    <!-- Leaflet Draw From CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <!-- Leaflet SimpleGraticule -->
+    <link rel="stylesheet" href="plugins/leaflet-simplegraticule/L.SimpleGraticule.css"/>
+    <!-- fancybox files -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
 
-  <!-- Plugins -->
-  <!-- jQuery -->
-  <script src='https://static.ign.gob.ar/lib/jquery/jquery-3.3.1.min.js'></script>
-  <script src="https://static.ign.gob.ar/lib/jquery/ui/jquery-ui.min.js"></script>
-  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.css' />
-  <!-- Better scale css -->
-  <link rel='stylesheet' href='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css' />
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
-  <!-- Awesome Markers -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css">
-  <!-- Leaflet Zoomhome plugin -->
-  <link rel="stylesheet" href="plugins/leaflet-zoomhome/dist/leaflet.zoomhome.css"/>
-  <!-- Leaflet Minimap plugin -->
-  <link rel="stylesheet" href="plugins/leaflet-minimap/Control.MiniMap.css">
-  <!-- Leaflet Locate plugin -->
-  <link rel="stylesheet" href="plugins/leaflet-locate/L.Control.Locate.css">
-  <!-- Leaflet Mouse Position plugin -->
-  <link rel="stylesheet" href="plugins/leaflet-mouseposition/src/L.Control.MousePosition.css">
-  <!-- Leaflet Measure plugin -->
-  <link rel="stylesheet" href="plugins/leaflet-measure/leadflet-measure.css">
-  <!-- Leaflet Control.FullScreen plugin -->
-  <link rel="stylesheet" href="plugins/leaflet-fullscreen/Control.FullScreen.css" />
-  <!-- Leaflet Draw From CDN -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
-  <!-- Leaflet SimpleGraticule -->
-  <link rel="stylesheet" href="plugins/leaflet-simplegraticule/L.SimpleGraticule.css"/>
-  <!-- fancybox files -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
-  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+    <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js"></script>
 
-  <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js"></script>
+    <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->
+    <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
 
-  <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->
-  <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js"></script>
-  <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-  <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js"></script>
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <!-- Argenmap basic libraries  -->
+    <script src="./js/entities.js"></script>
+    <script src="./js/analytics.js"></script>
+    <script src='./js/functions.js'></script>
+    <script src="./js/url-interaction/URLInteraction.js"></script>
+    <script src="./js/meta-tags-interaction/MetaTagsInteraction.js"></script>
+    <script src="./js/components/zoomLevel/ZoomLevel.js"></script>
+    <script src="./js/components/screenshot/screenshot.js"></script>
+    <script src="./js/components/openfiles/openfiles.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/login/login.js"></script>
 
-  <!-- Argenmap basic libraries  -->
-  <script src="./js/entities.js"></script>
-  <script src="./js/analytics.js"></script>
-  <script src='./js/functions.js'></script>
-  <script src="./js/url-interaction/URLInteraction.js"></script>
-  <script src="./js/meta-tags-interaction/MetaTagsInteraction.js"></script>
-  <script src="./js/components/zoomLevel/ZoomLevel.js"></script>
-  <script src="./js/main.js"></script>
-  <script src="./js/login/login.js"></script>
+    <!--tabulator-->
+    <link rel="stylesheet" href="https://static.ign.gob.ar/lib/tabulator/tabulator.min.css">
+    <script type="text/javascript" src="https://static.ign.gob.ar/lib/tabulator/tabulator.min.js"></script>
+    <script src="./js/table/Datatable.js"></script>
+    <script src="./js/table/UI.js"></script>
+    <script src="./js/table/table.js"></script>
+    <script src="./js/table/TouchPunch.js"></script>
+    <link rel="stylesheet" href="./js/table/table.css">
 
-  <!--tabulator-->
-  <link rel="stylesheet" href="https://static.ign.gob.ar/lib/tabulator/tabulator.min.css">
-  <script type="text/javascript" src="https://static.ign.gob.ar/lib/tabulator/tabulator.min.js"></script>
-  <script src="./js/table/Datatable.js"></script>
-  <script src="./js/table/UI.js"></script>
-  <script src="./js/table/table.js"></script>
-  <script src="./js/table/TouchPunch.js"></script>
-  <link rel="stylesheet" href="./js/table/table.css">
+    <!--htmltocanvas-->
+    <script type="text/javascript" src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
-  <!-- Main Styles -->
-  <link rel="stylesheet" href="css/main.css">
-  <link href="css/dashboard.css" rel="stylesheet">
-  <link href="js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
-</head>
-
-<body>
-  <nav class="navbar _navbar-inverse navbar-fixed-top">
-    <div class="container-fluid col-12 col-xs-12 col-sm-12 col-md-12">
-      <div class="navbar-header">
-        <button type="button" class="hidden-lg hidden-md navbar-toggle collapsed pull-left" data-toggle="collapse"
-          data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand navbar-right">
-          <span class="xxsmall-hide">
-            <a id="top-left-logo-link" href="#" target="_blank">
-              <img id="top-left-logo" src="img/noimage.gif" alt="" title="">
-            </a>
-          </span>
-        </a>
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link href="css/dashboard.css" rel="stylesheet">
+    <link href="js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
+    <link href="js/components/screenshot/screenshot.css" rel="stylesheet">
+    <link href="js/components/openfiles/openfiles.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar _navbar-inverse navbar-fixed-top">
+      <div class="container-fluid col-12 col-xs-12 col-sm-12 col-md-12">
+        <div class="navbar-header">
+          <button type="button" class="hidden-lg hidden-md navbar-toggle collapsed pull-left" data-toggle="collapse"
+            data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand navbar-right">
+            <span class="xxsmall-hide">
+              <a id="top-left-logo-link" href="#" target="_blank">
+                <img id="top-left-logo" src="img/noimage.gif" alt="" title="">
+              </a>
+            </span>
+          </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse"></div>
+        <span class="xxsmall-hide">
+          <a id="top-right-logo-link" href="#" target="_blank">
+            <img id="top-right-logo" src="img/noimage.gif" alt="" title=""
+              style="top:11px;position:absolute;right:10px;width:144px;float:right">
+          </a>
+        </span>
       </div>
-      <div id="navbar" class="navbar-collapse collapse"></div>
-      <span class="xxsmall-hide">
-        <a id="top-right-logo-link" href="#" target="_blank">
-          <img id="top-right-logo" src="img/noimage.gif" alt="" title=""
-            style="top:11px;position:absolute;right:10px;width:144px;float:right">
-        </a>
-      </span>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
+          aria-expanded="false">
+          <div class="loading"><img src="img/loading.gif"></div>
+          <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
+        </nav>
+        <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"
+          style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
+      </div>
     </div>
-  </nav>
-  <div class="container-fluid">
-    <div class="row">
-      <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
-        aria-expanded="false">
-        <div class="loading"><img src="img/loading.gif"></div>
-        <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
-      </nav>
-      <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"
-        style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
-    </div>
-  </div>
-  <div id="basemap-selector"></div>
-  <div id="template"></div>
-</body>
-
+    <div id="basemap-selector"></div>
+    <div id="template"></div>
+  </body>
 </html>

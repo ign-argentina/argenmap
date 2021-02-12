@@ -305,7 +305,6 @@ async function loadTemplate(data) {
 
     //Load dynamic mapa.js
     app.template_id = template;
-    //$.getScript(`templates/${template}/js/mapa.js`, (res) => {
     $.getScript(`js/mapa.js`, (res) => {
     });
 
@@ -336,6 +335,12 @@ async function loadTemplate(data) {
         });
 
         gestorMenu.loadInitialLayers(urlInteraction);
+
+        const sc = new Screenshot;
+        sc.createComponent();
+        
+        const modalgeojson = new IconModalGeojson;
+        modalgeojson.createComponent();
       } 
     }, 100);
   });
