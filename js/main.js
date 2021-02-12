@@ -325,6 +325,10 @@ async function loadTemplate(data) {
 
           const sc = new Screenshot
           sc.createComponent()
+          
+          const modalgeojson = new IconModalGeojson
+          modalgeojson.createComponent();
+
         } 
       }, 100);
     });
