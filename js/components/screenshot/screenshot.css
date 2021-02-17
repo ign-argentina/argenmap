@@ -34,13 +34,12 @@
 
 @media (max-width: 600px) {
   #screenshot {
-      bottom: 55px;
-      right: 2.8%;
-  }
+    display: none;
+ }
 }
 
 @media (max-height: 500px) {
-  #screenshotl {
+  #screenshot {
       display: none;
   }
 }

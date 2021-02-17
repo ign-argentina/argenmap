@@ -11,7 +11,7 @@
   height: 34px;
   color: black;
   font-size: 1.1em;
-  bottom: 230px;
+  bottom: 30%;
   left: 10px;
   z-index: 1000;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -33,8 +33,8 @@
   width: 100%;
   flex: 4;
   background-color: rgba(255, 255, 255, 0.9);
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+  border-radius: 3px;
+ border-color:#cccccc;
 }
 
 
