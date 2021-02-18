@@ -318,7 +318,7 @@ function loadTemplateStyleConfig(template) {
         //$('#top-left-logo').css("width","100px");
         //$('#top-right-logo-link').attr("href","templates/argenmap-leaflet-ign-tpl/files/referencias.pdf");
         $('#top-right-logo-link').attr("href","#");
-        $('#top-right-logo').attr("src","templates/argenmap-leaflet-ign-tpl/img/referencias_icono.png");
+        $('#top-right-logo').attr("src","img/referencias_icono.png");
         $('#top-right-logo').attr("alt","Referencias");
         $('#top-right-logo').attr("title","Referencias");
         //$('#top-right-logo').css("width","35px");
@@ -329,7 +329,7 @@ function loadTemplateStyleConfig(template) {
             //$.fancybox.getInstance();
             //$(".fancybox").fancybox({"width":400,"height":300});
             $.fancybox.open({
-                src : 'templates/argenmap-leaflet-ign-tpl/img/referencias.png',
+                src : 'img/referencias.png',
                 type : 'image',
                 closeBtn: 'true'
             });
@@ -353,7 +353,7 @@ function loadTemplateStyleConfig(template) {
         $('#top-right-logo').attr("title","Ministerio de Defensa");
         */
         $('#top-right-logo-link').attr("href","#");
-        $('#top-right-logo').attr("src","templates/argenmap-leaflet-mindef-tpl/img/referencias_icono.png");
+        $('#top-right-logo').attr("src","img/referencias_icono.png");
         $('#top-right-logo').attr("alt","Referencias");
         $('#top-right-logo').attr("title","Referencias");
         $('#top-right-logo').on('click', function() {
@@ -362,7 +362,7 @@ function loadTemplateStyleConfig(template) {
             //$.fancybox.getInstance();
             //$(".fancybox").fancybox({"width":400,"height":300});
             $.fancybox.open({
-                src : 'templates/argenmap-leaflet-mindef-tpl/img/referencias.png',
+                src : 'img/referencias.png',
                 type : 'image',
                 closeBtn: 'true'
             });
@@ -372,15 +372,15 @@ function loadTemplateStyleConfig(template) {
       case 'argenmap-leaflet-muni-tpl': {
         $('head').append(`<link rel="shortcut icon" href="https://www.pehuajo.gob.ar/favicon.ico?m=1" type="image/x-icon" />`);
 
-        const muni = "Municipalidad de Pehuajó"
-        const munilink = "http://www.pehuajo.gob.ar/"
+        const muni = "Municipalidad de Pehuajó";
+        const munilink = "http://www.pehuajo.gob.ar/";
         document.title = muni;
         //Change logotype
         $('#top-left-logo-link').attr("href", munilink);
         $('#top-left-logo').attr("alt", muni);
         $('#top-left-logo').attr("title", muni);
         $('#top-right-logo-link').attr("href","#");
-        $('#top-right-logo').attr("src","templates/argenmap-leaflet-muni-tpl/img/referencias_icono.png");
+        $('#top-right-logo').attr("src","img/referencias_icono.png");
         $('#top-right-logo').attr("alt","Referencias");
         $('#top-right-logo').attr("title","Referencias");
         $('#top-right-logo').on('click', function() {
@@ -389,7 +389,7 @@ function loadTemplateStyleConfig(template) {
             //$.fancybox.getInstance();
             //$(".fancybox").fancybox({"width":400,"height":300});
             $.fancybox.open({
-                src : 'templates/argenmap-leaflet-muni-tpl/img/referencias.png',
+                src : 'img/referencias.png',
                 type : 'image',
                 closeBtn: 'true'
             });
