@@ -8,7 +8,7 @@
     position: absolute;
     flex-direction: column;
     width: 30px;
-    height: 70px;
+    height: 62px;
     color: black;
     font-size: 1.1em;
     bottom: 50px;
@@ -20,7 +20,7 @@
 #icon-container {
     height: 100%;
     width: 100%;
-    flex: 3;
+    flex: 2;
     background-color: rgba(255, 255, 255, 0.9);
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
