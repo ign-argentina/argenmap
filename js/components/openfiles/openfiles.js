@@ -41,7 +41,7 @@ divalert.className="alert alert-danger"
 divalert.role="alert"
 divalert.style="padding:8px !important; margin:0px"
 
-//icon map
+
 class IconModalGeojson {
   constructor() {
     this.component = modalicon
@@ -193,11 +193,10 @@ function controlFormLoadFile() {
         onEachFeature: onEachFeature
       }).addTo(mapa);
     
-    //add layer in menu
-      //agregomenu(val)
+     //add layer in menu
       uimodalfs.addmenu(val)
 
-    //finish and close modal
+     //finish and close modal
       document.body.removeChild(modalOpenFile)
       document.getElementById("iconopenfile-container").disabled = false;
       document.getElementById("modalgeojson").style.color = "black";
@@ -209,17 +208,3 @@ function controlFormLoadFile() {
       document.getElementById("alert-message-modalfile").append(divalert)
     }
 }
-
-/*
-geojson url
-loadGeojsonTpl("https://gist.githubusercontent.com/Zalitoar/4e163ca8ed022249a074838c10434bd6/raw/4696651968dca5af07fe2cf151dfe8bf77a22907/map.geojson", "Aeródromos");
-*/
-//pendiente
-//para hacer: catch error si el formato no es el adecuado
-//catch error campo nombre vacio
-//catch erro si el nombre de capa es repetido
-//elegir tipo de icono
-//elegir diferentes colores de capas
-//agregar archivo desde url
-//nav bar porcentaje de carga de archivo
-//cancelar carga // https://jsfiddle.net/anshuverma1989/v5f0kzcc/
