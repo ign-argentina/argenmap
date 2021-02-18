@@ -7,17 +7,19 @@
 #screenshot {
   position: absolute;
   flex-direction: column;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   color: black;
   font-size: 1.1em;
   bottom: 130px;
   right: 1.15%;
   z-index: 1000;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px ;
 }
 
 #screenshot :hover {
-  color: grey;
+  background-color: #f5f4f4;
 }
 
 #screenshot :active {
