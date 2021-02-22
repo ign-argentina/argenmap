@@ -1,3 +1,4 @@
+var baseLayers = {};
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorBaseMap = new ImpresorCapasBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
@@ -21,6 +22,8 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         };
         app['profile'] = "default";
       };
+
+      setBaseLayersZoomLevels(app.items[0].capas);
 
       //Load table if is active
       if (app.hasOwnProperty('table')) {

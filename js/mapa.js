@@ -883,8 +883,17 @@ function loadMapaBaseTpl (tmsUrl, layer, attribution) {
     }
 
     function createTmsLayer(tmsUrl, layer, attribution) {
+		if (baseLayers.hasOwnProperty(layer) && baseLayers[layer].hasOwnProperty('zoom')) {
+			const { min, max } = baseLayers[layer].zoom;
+			baseMaps[layer] = new L.tileLayer(tmsUrl, {
+				attribution: attribution,
+				minZoom: min,
+				maxZoom: max,
+			});
+			return;
+		}
         baseMaps[layer] = new L.tileLayer(tmsUrl, {
-            attribution: attribution,
+            attribution: attribution
         });
     }
 }

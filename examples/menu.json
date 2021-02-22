@@ -15,7 +15,11 @@
                     "version": "1.0.0",
                     "attribution": "Imágenes satelitales © here",
                     "host": "https://2.aerial.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=XiMlA4JwMurUFFYUWYe3&app_code=oTsmqovbl2YudG3E0UlxDA",
-                    "legendImg": "img/here.png"
+                    "legendImg": "img/here.png",
+                    "zoom": {
+                      "min": 3,
+                      "max":21
+                    }
                 }
             ]
         },

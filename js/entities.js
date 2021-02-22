@@ -1923,6 +1923,7 @@ class GestorMenu {
 
 		//Hide all if itemComposite selected is Base Map
         var isBaseLayer = false;
+        let baseLayerName = '';
         
 		for (var key in this.items) {
 			var itemComposite = this.items[key];
@@ -1930,6 +1931,7 @@ class GestorMenu {
 				var item = itemComposite.itemsComposite[key2];
                 if (item.getId() == itemSeccion) {
 					isBaseLayer = itemComposite.isBaseLayer();
+                    baseLayerName = item.nombre;
 					break;
 				}
 			}
@@ -1970,6 +1972,8 @@ class GestorMenu {
         }
 
         if (isBaseLayer) {
+            setValidZoomLevel(baseLayerName);
+
             wmtsLayers.forEach(wmtsLayer => {
                 wmtsLayer.showHide();
                 wmtsLayer.showHide();

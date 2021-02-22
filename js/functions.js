@@ -426,3 +426,25 @@ function loadTemplateStyleConfig(template) {
       break;
     }
 };
+
+function setBaseLayersZoomLevels(layers) {
+    layers.forEach(layer => {
+        if (layer.hasOwnProperty('zoom'))
+            baseLayers[layer.nombre] = layer.hasOwnProperty('zoom') ? { zoom: layer.zoom } : {};
+    });
+}
+
+function setValidZoomLevel(baseLayer) {
+    const zoom = mapa.getZoom();
+    if (baseLayers.hasOwnProperty(baseLayer) && baseLayers[baseLayer].hasOwnProperty('zoom')) {
+        const { min, max } = baseLayers[baseLayer].zoom;
+        if (zoom < min || zoom > max) {
+            mapa.setZoom(zoom < min ? min : max);
+        }
+        mapa.setMinZoom(min);
+        mapa.setMaxZoom(max);
+    } else {
+        mapa.setMinZoom(3);
+        mapa.setMaxZoom(21);
+    }
+};
