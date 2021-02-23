@@ -2,7 +2,7 @@ let geojsonfile = ""
 
 const modalicon =  `
 <div class="center-flex" id="modalgeojson" title="Abrir Archivo">
-    <button class="center-flex" id="iconopenfile-container" onClick=uimodalfs.clickOpenFileIcon()>
+    <div class="center-flex" id="iconopenfile-container" onClick=uimodalfs.clickOpenFileIcon()>
         <span id="spanopenfolder" class="fa fa-folder-open" aria-hidden="true" ></span>
     </button>
 </div>

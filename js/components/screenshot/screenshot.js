@@ -2,9 +2,9 @@ class Screenshot {
 
   constructor() {
     this.component = `
-    <div class="center-flex" id="screenshot" title="screenshot">
+    <div class="center-flex" id="screenshot" title="screenshot" onclick=capturetoPNG('mapa')>
         <div class="center-flex" id="iconSC-container">
-            <span class="fa fa-camera" aria-hidden="true" onclick=capturetoPNG('mapa') ></span>
+            <span class="fa fa-camera" aria-hidden="true"  ></span>
         </div>
     </div>
     `;
