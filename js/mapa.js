@@ -6,86 +6,12 @@ var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/Introduc
 var argenmap = "";
 var mapa = "";
 
-// get all libraries
-gestorMenu.addPlugin("leaflet","https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js", function() {
-
-    if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'leafletAjax')) {
-        gestorMenu.addPlugin("leafletAjax", 'https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js');
-    }
-
-    if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'betterScale')) {
-        gestorMenu.addPlugin("betterScale", 'https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js');
-    }
-
-    if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'AwesomeMarkers')) {
-        // Awesome Markers
-	    gestorMenu.addPlugin("AwesomeMarkers", "https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'ZoomHome')) {
-        // Leaflet Zoomhome plugin
-	    gestorMenu.addPlugin("ZoomHome", "plugins/leaflet-zoomhome/dist/leaflet.zoomhome.min.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'BingLayer')) {
-        // Leaflet Bing Layer
-	    gestorMenu.addPlugin("BingLayer", "plugins/leaflet-bing-layer-gh-pages/leaflet-bing-layer.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'minimap')) {
-        // <!-- Leaflet Minimap plugin -->
-	    gestorMenu.addPlugin("minimap", "plugins/leaflet-minimap/Control.MiniMap.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'locate')) {
-        // <!-- Leaflet Locate plugin -->
-	    gestorMenu.addPlugin("locate", "plugins/leaflet-locate/L.Control.Locate.min.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'MousePosition')) {
-        // <!-- Leaflet Mouse Position plugin -->
-	    gestorMenu.addPlugin("MousePosition", "plugins/leaflet-mouseposition/src/L.Control.MousePosition.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'Measure')) {
-        // <!-- Leaflet Measure plugin --> 
-	    gestorMenu.addPlugin("Measure", "plugins/leaflet-measure/leaflet-measure.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'BrowserPrint')) {
-        // <!-- Leaflet BrowserPrint plugin -->
-	    gestorMenu.addPlugin("BrowserPrint", "plugins/leaflet-browser-print/dist/leaflet.browser.print.min.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'FullScreen')) {
-        // <!-- Leaflet Control.FullScreen plugin -->
-	    gestorMenu.addPlugin("FullScreen", "plugins/leaflet-fullscreen/Control.FullScreen.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'betterWMS')) {
-        // <!-- Leaflet BetterWMS -->
-	    gestorMenu.addPlugin("betterWMS", "plugins/leaflet-wms/leaflet.wms.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'Draw')) {
-        // <!-- Leaflet Draw -->  
-	    gestorMenu.addPlugin("Draw", "https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js");
-    }
-    
-	if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'graticula')) {
-        // <!-- Leaflet SimpleGraticule -->
-	    gestorMenu.addPlugin("graticula", "plugins/leaflet-simplegraticule/L.SimpleGraticule.js");
-    }
-
-    if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'WMTS')) {
-        // <!-- Leaflet WMTS -->
-	    gestorMenu.addPlugin("WMTS", "plugins/leaflet-wmts/leaflet-tilelayer-wmts.js");
-    }
-
-    if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(plugin => plugin === 'EasyPrint')) {
-        // <!-- Leaflet EasyPrint plugin -->
-	    gestorMenu.addPlugin("EasyPrint", "plugins/leaflet-easyPrint/bundle.js");
-    }
+gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
+	for (const plugin in PLUGINS) {
+		if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(excluded_plugin => excluded_plugin === plugin)) {
+			gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
+		}
+	}
 });
 
 // Add plugins to map when (and if) avaiable
@@ -452,7 +378,7 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'leaflet':
 			argenmap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
 		    tms: true,
-		    maxZoom: 21,
+		    maxZoom: DEFAULT_MAX_ZOOM_LEVEL,
 		    attribution: atrib_ign
 			});
 
@@ -468,12 +394,12 @@ $("body").on("pluginLoad", function(event, plugin){
                 });
             } else {
                 mapa = L.map('mapa', {
-                    center: [-40, -59],
-                    zoom: 4,
+                    center: [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
+                    zoom: DEFAULT_ZOOM_LEVEL,
                     layers: [argenmap],
                     zoomControl: false,
-                    minZoom: 3,
-                    maxZoom: 21
+                    minZoom: DEFAULT_MIN_ZOOM_LEVEL,
+                    maxZoom: DEFAULT_MAX_ZOOM_LEVEL
                 });
             }
 

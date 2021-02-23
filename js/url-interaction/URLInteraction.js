@@ -1,20 +1,5 @@
 'use strict';
 
-//Param values
-const ZOOM_LEVEL = 'zoom';
-const LATITUDE = 'lat';
-const LONGITUDE = 'lng';
-const LAYERS = 'layers';
-
-//Default map values
-//***Should be defined as global or as a separated module */
-const DEFAULT_MIN_ZOOM_LEVEL = 3;
-const DEFAULT_MAX_ZOOM_LEVEL = 21;
-
-const DEFAULT_ZOOM_LEVEL = 4;
-const DEFAULT_LATITUDE = -40;
-const DEFAULT_LONGITUDE = -59;
-
 class URLInteraction {
 
     constructor() {

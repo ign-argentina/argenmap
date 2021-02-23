@@ -444,7 +444,7 @@ function setValidZoomLevel(baseLayer) {
         mapa.setMinZoom(min);
         mapa.setMaxZoom(max);
     } else {
-        mapa.setMinZoom(3);
-        mapa.setMaxZoom(21);
+        mapa.setMinZoom(DEFAULT_MIN_ZOOM_LEVEL);
+        mapa.setMaxZoom(DEFAULT_MAX_ZOOM_LEVEL);
     }
 };
