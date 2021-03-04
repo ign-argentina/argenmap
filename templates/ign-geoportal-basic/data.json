@@ -9,6 +9,35 @@
       "seccion": "mapasbase",
       "capas": [
         {
+          "titulo": "Argenmap",
+          "nombre": "argenmap",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap.png",
+          "peso": 10,
+          "selected": true,
+          "zoom": {
+            "min": 3,
+            "max": 21
+          }
+        },
+        {
+          "titulo": "Argenmap gris",
+          "nombre": "argenmap_gris",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/mapabase_gris@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap-gris.png",
+          "peso": 20,
+          "zoom": {
+            "min": 3,
+            "max": 21
+          }
+        },
+        {
           "titulo": "Imágenes satelitales Here",
           "nombre": "here_imagery",
           "servicio": "tms",
