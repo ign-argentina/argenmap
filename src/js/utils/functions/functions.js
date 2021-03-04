@@ -235,7 +235,7 @@ function loadMapaBaseBing(bingKey, layer, attribution) {
 
 function loadTemplateStyleConfig(template, isDefaultTemplate) {
     try {
-    const STYLE_PATH = isDefaultTemplate ? 'src/config/styles.default/css/main.css' : 'src/config/styles/css/main.css';
+    const STYLE_PATH = isDefaultTemplate ? 'src/config/default/styles/css/main.css' : 'src/config/styles/css/main.css';
       $('head').append(`<link rel="stylesheet" href=${STYLE_PATH}>`);
     } catch (error) {
       console.log(error);
@@ -402,11 +402,11 @@ function loadTemplateStyleConfig(template, isDefaultTemplate) {
 
         //Change logotype
         $('#top-left-logo-link').attr("href","https://www.ign.gob.ar/");
-        $('#top-left-logo').attr("src","src/config/styles.default/images/logo.png");
+        $('#top-left-logo').attr("src","src/config/default/styles/images/logo.png");
         $('#top-left-logo').attr("alt","Logo Instituto Geográfico Nacional");
         $('#top-left-logo').attr("title","Instituto Geográfico Nacional");
         $('#top-right-logo-link').attr("href","https://www.argentina.gob.ar/defensa");
-        $('#top-right-logo').attr("src","src/config/styles.default/images/logoMinDef.png");
+        $('#top-right-logo').attr("src","src/config/default/styles/images/logoMinDef.png");
         $('#top-right-logo').attr("alt","Logo Ministerio de Defensa");
         $('#top-right-logo').attr("title","Ministerio de Defensa");
       }

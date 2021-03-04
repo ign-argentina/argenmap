@@ -264,9 +264,9 @@ $.getJSON("./src/config/data.json", async function (data) {
 });
 
 async function loadDefaultJson() {
-  $.getJSON("./src/config/data.default.json", async function (data) {
-    $.getJSON("./src/config/preferences.default.json", async function (preferences) {
-        gestorMenu.setLegendImgPath('src/config/styles.default/images/legends/');
+  $.getJSON("./src/config/default/data.json", async function (data) {
+    $.getJSON("./src/config/default/preferences.json", async function (preferences) {
+        gestorMenu.setLegendImgPath('src/config/default/styles/images/legends/');
         await loadTemplate({ ...data, ...preferences }, true);
     });
   });
