@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -14,18 +15,19 @@
     <meta id="og-image" property="og:image" content="" />
 
     <title>IGN - Argenmap</title>
-    <link rel="icon" href="img/favicon.ico">
+    
+    <link rel="icon" href="src/styles/images/favicon.ico">
     <!-- Bootstrap core CSS -->
     <link href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="plugins/jquery/ui/jquery-ui.min.css">
+    <link rel="stylesheet" href="src/js/plugins/jquery/ui/jquery-ui.min.css">
 
     <!-- Plugins -->
     <!-- jQuery -->
-    <script src='plugins/jquery/jquery-3.3.1.min.js'></script>
-    <script src="plugins/jquery/ui/jquery-ui.min.js"></script>
+    <script src='src/js/plugins/jquery/jquery-3.3.1.min.js'></script>
+    <script src="src/js/plugins/jquery/ui/jquery-ui.min.js"></script>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.css' />
     <!-- Better scale css -->
     <link rel='stylesheet' href='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css' />
@@ -34,21 +36,21 @@
     <!-- Awesome Markers -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css">
     <!-- Leaflet Zoomhome plugin -->
-    <link rel="stylesheet" href="plugins/leaflet-zoomhome/dist/leaflet.zoomhome.css"/>
+    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-zoomhome/dist/leaflet.zoomhome.css"/>
     <!-- Leaflet Minimap plugin -->
-    <link rel="stylesheet" href="plugins/leaflet-minimap/Control.MiniMap.css">
+    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-minimap/Control.MiniMap.css">
     <!-- Leaflet Locate plugin -->
-    <link rel="stylesheet" href="plugins/leaflet-locate/L.Control.Locate.css">
+    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-locate/L.Control.Locate.css">
     <!-- Leaflet Mouse Position plugin -->
-    <link rel="stylesheet" href="plugins/leaflet-mouseposition/src/L.Control.MousePosition.css">
+    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-mouseposition/src/L.Control.MousePosition.css">
     <!-- Leaflet Measure plugin -->
-    <link rel="stylesheet" href="plugins/leaflet-measure/leadflet-measure.css">
+    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-measure/leadflet-measure.css">
     <!-- Leaflet Control.FullScreen plugin -->
-    <link rel="stylesheet" href="plugins/leaflet-fullscreen/Control.FullScreen.css" />
+    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-fullscreen/Control.FullScreen.css" />
     <!-- Leaflet Draw From CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
     <!-- Leaflet SimpleGraticule -->
-    <link rel="stylesheet" href="plugins/leaflet-simplegraticule/L.SimpleGraticule.css"/>
+    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-simplegraticule/L.SimpleGraticule.css"/>
     <!-- fancybox files -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
     <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
@@ -63,36 +65,36 @@
     <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js"></script>
 
     <!-- Argenmap basic libraries  -->
-    <script src="./js/constants/constants.js"></script>
-    <script src="./js/entities.js"></script>
-    <script src="./js/analytics.js"></script>
-    <script src='./js/functions.js'></script>
-    <script src="./js/url-interaction/URLInteraction.js"></script>
-    <script src="./js/meta-tags-interaction/MetaTagsInteraction.js"></script>
-    <script src="./js/components/zoomLevel/ZoomLevel.js"></script>
-    <script src="./js/components/screenshot/screenshot.js"></script>
-    <script src="./js/components/openfiles/openfiles.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="./js/login/login.js"></script>
+    <script src="src/js/utils/analytics/analytics.js"></script>
+    <script src="src/js/utils/constants/constants.js"></script>
+    <script src="src/js/entities.js"></script>
+    <script src='src/js/utils/functions/functions.js'></script>
+    <script src="src/js/components/url-interaction/URLInteraction.js"></script>
+    <script src="src/js/components/meta-tags-interaction/MetaTagsInteraction.js"></script>
+    <script src="src/js/components/zoomLevel/ZoomLevel.js"></script>
+    <script src="src/js/components/screenshot/screenshot.js"></script>
+    <script src="src/js/components/openfiles/openfiles.js"></script>
+    <script src="src/js/app.js"></script>
+    <script src="src/js/components/login/login.js"></script>
 
     <!--tabulator-->
-    <link rel="stylesheet" href="plugins/tabulator/tabulator.min.css">
-    <script type="text/javascript" src="plugins/tabulator/tabulator.min.js"></script>
-    <script src="./js/table/Datatable.js"></script>
-    <script src="./js/table/UI.js"></script>
-    <script src="./js/table/table.js"></script>
-    <script src="./js/table/TouchPunch.js"></script>
-    <link rel="stylesheet" href="./js/table/table.css">
+    <link rel="stylesheet" href="src/js/plugins/tabulator/tabulator.min.css">
+    <script type="text/javascript" src="src/js/plugins/tabulator/tabulator.min.js"></script>
+    <script src="src/js/components/table/Datatable.js"></script>
+    <script src="src/js/components/table/UI.js"></script>
+    <script src="src/js/components/table/table.js"></script>
+    <script src="src/js/components/table/TouchPunch.js"></script>
+    <link rel="stylesheet" href="src/js/components/table/table.css">
 
     <!--html2canvas-->
-    <script src="plugins/html2canvas/html2canvas.min.js"></script>
+    <script src="src/js/plugins/html2canvas/html2canvas.min.js"></script>
 
     <!-- Main Styles -->
-    <link rel="stylesheet" href="css/main.css">
-    <link href="css/dashboard.css" rel="stylesheet">
-    <link href="js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
-    <link href="js/components/screenshot/screenshot.css" rel="stylesheet">
-    <link href="js/components/openfiles/openfiles.css" rel="stylesheet">
+    <link rel="stylesheet" href="src/styles/css/main.css">
+    <link href="src/styles/css/dashboard.css" rel="stylesheet">
+    <link href="src/js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
+    <link href="src/js/components/screenshot/screenshot.css" rel="stylesheet">
+    <link href="src/js/components/openfiles/openfiles.css" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar _navbar-inverse navbar-fixed-top">
@@ -108,7 +110,7 @@
           <a class="navbar-brand navbar-right">
             <span class="xxsmall-hide">
               <a id="top-left-logo-link" href="#" target="_blank">
-                <img id="top-left-logo" src="img/noimage.gif" alt="" title="">
+                <img id="top-left-logo" src="src/styles/images/noimage.gif" alt="" title="">
               </a>
             </span>
           </a>
@@ -116,7 +118,7 @@
         <div id="navbar" class="navbar-collapse collapse"></div>
         <span class="xxsmall-hide">
           <a id="top-right-logo-link" href="#" target="_blank">
-            <img id="top-right-logo" src="img/noimage.gif" alt="" title=""
+            <img id="top-right-logo" src="src/styles/images/noimage.gif" alt="" title=""
               style="top:11px;position:absolute;right:10px;width:144px;float:right">
           </a>
         </span>
@@ -126,7 +128,7 @@
       <div class="row">
         <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
           aria-expanded="false">
-          <div class="loading"><img src="img/loading.gif"></div>
+          <div class="loading"><img src="src/styles/images/loading.gif"></div>
           <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
         </nav>
         <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"

@@ -1,0 +1,28 @@
+{
+  "table": {
+    "isActive": false,
+    "rowsLimit": 5
+  },
+  "charts": {
+    "isActive": false
+  },
+  "metaTags": {
+    "title": "",
+    "description": "",
+    "image": ""
+  },
+  "analytics_ids": ["G-YY8394DZ3Y"],
+  "excluded_plugins": ["minimap"],
+  "mapConfig": {
+    "center": {
+      "latitude": -35.910758,
+      "longitude": -61.933611
+    },
+    "zoom": {
+      "initial": 9,
+      "min": 3,
+      "max": 21
+    }
+  },
+  "showSearchBar": false
+}

@@ -1,0 +1,74 @@
+:root {
+	--my-color:  #5D8F47 !important;
+	--color-osc: #304a24 !important;
+}
+body {
+	background-color: var(--my-color);
+}
+.navbar {
+  background-color: var(--my-color);
+}
+.nav-tabs {
+	background-color: var(--my-color);
+}
+.panel-default > .panel-heading {
+	background-color: var(--my-color);
+}
+#sidebar-container{background-color: var(--my-color)}
+.navbar-toggle .icon-bar{border: 1px solid var(--color-osc);} 
+
+/*******************************
+Leaflet popup featureInfo
+*******************************/
+.featureInfo h4{
+	border-bottom:3px solid var(--my-color);
+	margin:2em;
+}
+
+.featuresGroup {
+	border-bottom: 2px solid var(--my-color);
+}
+
+.individualFeature {
+	border-bottom: 1px dashed var(--my-color);
+}
+
+/*******************************
+Personalizado
+*******************************/
+.navbar-header > a > img {
+	width: 336px;
+	top: 0px;
+}
+
+.basemap-selector > a {
+    width: 34px !important;
+    height: 34px !important;
+}
+
+#top-right-logo-link > img {
+	position: absolute;
+	top: 7px !important;
+	width: 25px !important;
+}
+
+@media (max-width: 768px) {
+	#top-left-logo {
+		background-image: url("../images/logo.png");
+		background-size: 20%;
+		background-repeat: no-repeat;
+		height: 50px;
+	}
+}
+
+@media (min-width: 769px) {
+	#top-left-logo {
+		background-image: url("../images/logo.png");
+		background-size: 20%;
+		background-repeat: no-repeat;
+		height: 50px;
+	}
+	.list-group-item {
+		min-height: 54px;
+	}
+}

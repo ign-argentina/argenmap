@@ -1,0 +1,194 @@
+{
+  "items": [
+    {
+      "type": "basemap",
+      "peso": 1,
+      "nombre": "Mapas base",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "mapasbase",
+      "capas": [
+        {
+          "titulo": "Argenmap",
+          "nombre": "argenmap",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap.png",
+          "peso": 10,
+          "zoom": {
+            "min": 3,
+            "max": 21
+          },
+          "selected": true
+        },
+        {
+          "titulo": "Argenmap gris",
+          "nombre": "argenmap_gris",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/mapabase_gris@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap-gris.png",
+          "peso": 20,
+          "zoom": {
+            "min": 5,
+            "max": 9
+          }
+        },
+        {
+          "titulo": "Imágenes satelitales Esri",
+          "nombre": "esri_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © Esri",
+          "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          "legendImg": "src/styles/images/esri.png",
+          "peso": 30,
+          "zoom": {
+            "min": 6,
+            "max": 9
+          }
+        },
+        {
+          "titulo": "Mapa topográfico Esri",
+          "nombre": "esri_imagery_t",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Mapa topográfico © Esri",
+          "host": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
+          "legendImg": "src/styles/images/esrit.png",
+          "peso": 40,
+          "zoom": {
+            "min": 3,
+            "max": 21
+          }
+        },
+        {
+          "titulo": "Imágenes satelitales Here",
+          "nombre": "here_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © here",
+          "host": "https://2.aerial.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=XiMlA4JwMurUFFYUWYe3&app_code=oTsmqovbl2YudG3E0UlxDA",
+          "legendImg": "src/styles/images/here.png",
+          "peso": 50,
+          "zoom": {
+            "min": 3,
+            "max": 21
+          }
+        }
+      ]
+    },
+    {
+      "id": "planeamiento-y-catastro",
+      "type": "wmslayer",
+      "peso": 20,
+      "nombre": "Planeamiento y Catastro",
+      "short_abstract": "Objetos territoriales legales y catastrales",
+      "class": "",
+      "seccion": "planeamiento-y-catastro",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/planeamiento-y-catastro"
+    },
+    {
+      "id": "transporte",
+      "type": "wmslayer",
+      "peso": 25,
+      "nombre": "Transporte",
+      "short_abstract": "Red vial, red ferroviaria, aeródromo, etc.",
+      "class": "",
+      "seccion": "transporte",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/transporte"
+    },
+    {
+      "id": "ambiente",
+      "type": "wmslayer",
+      "peso": 30,
+      "nombre": "Ambiente",
+      "short_abstract": "Objetos de gestión ambiental",
+      "class": "",
+      "seccion": "ambiente",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/ambiente"
+    },
+    {
+      "id": "seguridad",
+      "type": "wmslayer",
+      "peso": 35,
+      "nombre": "Seguridad",
+      "short_abstract": "Policía, bomberos, instalaciones militares, etc.",
+      "class": "",
+      "seccion": "seguridad",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/seguridad"
+    },
+    {
+      "id": "salud-y-educacion",
+      "type": "wmslayer",
+      "peso": 40,
+      "nombre": "Salud y educación",
+      "short_abstract": "Objetos de gestión sanitaria y educativa",
+      "class": "",
+      "seccion": "salud-y-educacion",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/salud-y-educacion"
+    },
+    {
+      "id": "geografia-fisica",
+      "type": "wmslayer",
+      "peso": 45,
+      "nombre": "Geografía física",
+      "short_abstract": "Formas de relieve, suelos, cobertura",
+      "class": "",
+      "seccion": "geografia-fisica",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/geografia-fisica"
+    },
+    {
+      "id": "equipamiento-urbano",
+      "type": "wmslayer",
+      "peso": 50,
+      "nombre": "Equipamiento urbano",
+      "short_abstract": "Servicios y espacios de recreación",
+      "class": "",
+      "seccion": "equipamiento-urbano",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/equipamiento-urbano"
+    },
+    {
+      "id": "infraestructura-y-produccion",
+      "type": "wmslayer",
+      "peso": 55,
+      "nombre": "Infraestructura y producción",
+      "short_abstract": "Industrias, producción agropecuaria, energía, etc.",
+      "class": "",
+      "seccion": "infraestructura-y-produccion",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/infraestructura-y-produccion"
+    },
+    {
+      "id": "cultura-y-deportes",
+      "type": "wmslayer",
+      "peso": 60,
+      "nombre": "Cultura y deportes",
+      "short_abstract": "Centros culturales y deportivos.",
+      "class": "",
+      "seccion": "cultura-y-deportes",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://pehuajo.ign.gob.ar/geoserver/cultura-y-deportes"
+    }
+  ],
+  "template": "argenmap-leaflet-muni-tpl"
+}
