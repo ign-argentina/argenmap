@@ -1,0 +1,207 @@
+{
+  "items": [
+    {
+      "type": "basemap",
+      "peso": 1,
+      "nombre": "Mapas base",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "mapasbase",
+      "capas": [
+        {
+          "titulo": "Argenmap",
+          "nombre": "argenmap",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap.png",
+          "peso": 10,
+          "selected": true
+        },
+        {
+          "titulo": "Argenmap gris",
+          "nombre": "argenmap_gris",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='http://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='http://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/mapabase_gris@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap-gris.png",
+          "peso": 20
+        },
+        {
+          "titulo": "Imágenes satelitales Esri",
+          "nombre": "esri_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © Esri",
+          "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          "legendImg": "src/styles/images/esri.png",
+          "peso": 30
+        },
+        {
+          "titulo": "Mapa topográfico Esri",
+          "nombre": "esri_imagery_t",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Mapa topográfico © Esri",
+          "host": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
+          "legendImg": "src/styles/images/esrit.png",
+          "peso": 40
+        },
+        {
+          "titulo": "Imágenes satelitales Here",
+          "nombre": "here_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © here",
+          "host": "https://2.aerial.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=XiMlA4JwMurUFFYUWYe3&app_code=oTsmqovbl2YudG3E0UlxDA",
+          "legendImg": "src/styles/images/here.png",
+          "peso": 50
+        },
+        {
+          "titulo": "Imágenes satelitales Bing",
+          "nombre": "bing_imagery",
+          "servicio": "bing",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © Bing",
+          "key": "AuhiCJHlGzhg93IqUH_oCpl_-ZUrIE6SPftlyGYUvr9Amx5nzA-WqGcPquyFZl4L",
+          "legendImg": "src/styles/images/bing.png",
+          "peso": 60
+        }
+      ]
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 20,
+      "nombre": "Mapa cultural de la Defensa",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "mapa-cultural-defensa",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://idemindef.ign.gob.ar/geoserver/cultura"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 30,
+      "nombre": "Fábricas y empresas",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "fabricas-empresas",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://idemindef.ign.gob.ar/geoserver/fabricas_empresas"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 40,
+      "nombre": "Límites y unidades territoriales",
+      "short_abstract": "Provincias, departamentos, municipios, áreas protegidas, etc.",
+      "class": "",
+      "seccion": "limites",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://wms.ign.gob.ar/geoserver/limites"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 41,
+      "nombre": "Industria y servicios",
+      "short_abstract": "Industrias, producción agropecuaria, minería, energía, comunicaciones, etc.",
+      "class": "",
+      "seccion": "industria-servicios",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://wms.ign.gob.ar/geoserver/industria-servicios"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 42,
+      "nombre": "Hábitat e infraestructura social",
+      "short_abstract": "Asentamientos humanos, edificaciones, etc.",
+      "class": "",
+      "seccion": "habitat-infraestructura-social",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://wms.ign.gob.ar/geoserver/infraestructura-social"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 43,
+      "nombre": "Redes geodésicas",
+      "short_abstract": "Redes RAMSAC, POSGAR, altimétrica y gravimétrica.",
+      "class": "",
+      "seccion": "geodesia-demarcacion",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://wms.ign.gob.ar/geoserver/geodesia-demarcacion"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 50,
+      "nombre": "Servicio Meteorológico Nacional",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "servicio-meteorologico-nacional",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://idemindef.ign.gob.ar/geoserver/meteorologico"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 55,
+      "nombre": "Servicio de Hidrografía Naval",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "servicio-hidrografia-naval",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://idemindef.ign.gob.ar/geoserver/hidrografia"
+    },
+    {
+      "tab": { "id": "Datos", "searcheable": true, "content": "Datos" },
+      "type": "wmslayer",
+      "peso": 60,
+      "nombre": "Fuerzas Armadas",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "fuerzas-armadas",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://idemindef.ign.gob.ar/geoserver/fuerzas_armadas"
+    }
+  ],
+  "folders": [
+    {
+      "nombre": "Secretaría de Investigación, Política Industrial y Producción para la Defensa",
+      "resumen": "",
+      "folders": [
+        {
+          "nombre": "Instituto Geográfico Nacional",
+          "resumen": "",
+          "items": [
+            "limites",
+            "habitat-infraestructura-social",
+            "industria-servicios",
+            "geodesia-demarcacion"
+          ]
+        }
+      ],
+      "items": [
+        "fabricas-empresas",
+        "servicio-meteorologico-nacional",
+        "servicio-hidrografia-naval"
+      ]
+    }
+  ],
+  "template": "argenmap-leaflet-mindef-tpl"
+}

@@ -1,4 +1,4 @@
-!/templates/ign-geoportal-basic
-!/templates/ign-geoportal-minimal
-js/menu.json
+src/config/styles
+src/config/data.json
+src/config/preferences.json
 .vscode
