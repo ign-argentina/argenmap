@@ -11,26 +11,26 @@
   height: 34px;
   color: black;
   font-size: 1.1em;
-  bottom: 30%;
+  top: 334px;
   left: 10px;
-  z-index: 1000;
+  z-index: 999;
   border: 2px solid rgba(0, 0, 0, 0.2);
-	border-radius: 3px ;
+  border-radius: 3px;
 }
 
-#modalgeojson :hover{
-	background-color: #f4f4f4;
+#modalgeojson :hover {
+  background-color: #f4f4f4;
 }
 
-.preoutputfile{
-	width: 100%;
+.preoutputfile {
+  width: 100%;
   height: 200px;
-	overflow: auto;
-	text-align: left;
+  overflow: auto;
+  text-align: left;
 }
 
-#submitfile{
-	bottom: 0%; 
+#submitfile {
+  bottom: 0%;
 }
 
 #iconopenfile-container {
@@ -39,142 +39,150 @@
   flex: 4;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 3px;
- border-color:#cccccc;
+  border-color: #cccccc;
 }
 
-
-#modalOpenFile{
+#modalOpenFile {
   width: 450px;
   height: 450px;
-	overflow: hidden;
-	float: none;
-	border-radius: 8px;
-	z-index: 1200;
-	border: 3px;
-	padding: 5px;
-	background-color: white;
-	left:40%;
-	top: 100px;
-	position: absolute;
-	margin-bottom: 10px; 
-	-moz-box-shadow:    inset 0 0 10px #000000;
+  overflow: hidden;
+  float: none;
+  border-radius: 8px;
+  z-index: 1200;
+  border: 3px;
+  padding: 5px;
+  background-color: white;
+  left: 40%;
+  top: 100px;
+  position: absolute;
+  margin-bottom: 10px;
+  -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
 
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19)
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-#btnclose-icon-modalfile{
-	text-align: right;
-	width: 10%;
+#btnclose-icon-modalfile {
+  text-align: right;
+  width: 10%;
 }
 
-#title-icon-modalfile{
-	text-align: center;
-	width: 90%;
-	color: #3f3f3f ;
+#title-icon-modalfile {
+  text-align: center;
+  width: 90%;
+  color: #3f3f3f;
 }
 
-.icon-modalfile{
-	display: inline-block;
-
+.icon-modalfile {
+  display: inline-block;
 }
-
 
 @media (max-width: 768px) {
-	#modalOpenFile{
-		left: 45px ;
-		top: 50px ;
-		max-width: 700px;
-	}
+  #modalOpenFile {
+    left: 45px;
+    top: 50px;
+    max-width: 700px;
+  }
 }
 @media (max-width: 600px) {
-	#modalOpenFile{
-		left: 45px ;
-		top: 50px ;
-		max-width: 580px;
-	}
-
-
+  #modalOpenFile {
+    left: 45px;
+    top: 50px;
+    max-width: 580px;
+  }
 }
 @media (max-width: 480px) {
-	#modalOpenFile{
-		left: 45px ;
-		top: 50px ;
-		max-width: 300px;
-	}
+  #modalOpenFile {
+    left: 45px;
+    top: 50px;
+    max-width: 300px;
+  }
 
-	#filter-field{
-		width: 80px;
-	}
-	#filter-value{
-	 width: 100px;
-	 }
+  #filter-field {
+    width: 80px;
+  }
+  #filter-value {
+    width: 100px;
+  }
 }
 @media (max-width: 360px) {
-	#modalOpenFile{
-		left: 45px ;
-		top: 50px ;
-		max-width: 250px;
-	}
- #filter-field{
-	 width: 80px;
- }
- #filter-value{
-	width: 100px;
-	}
-
-
-
+  #modalOpenFile {
+    left: 45px;
+    top: 50px;
+    max-width: 250px;
+  }
+  #filter-field {
+    width: 80px;
+  }
+  #filter-value {
+    width: 100px;
+  }
 }
 
 #progress_bar {
-	margin: 10px 0;
-	padding: 3px;
-	border: 1px solid #000;
-	font-size: 14px;
-	clear: both;
-	opacity: 0;
-
+  margin: 10px 0;
+  padding: 3px;
+  border: 1px solid #000;
+  font-size: 14px;
+  clear: both;
+  opacity: 0;
 }
 
 #progress_bar.loading {
-	opacity: 1.0;
+  opacity: 1;
 }
 
 #progress_bar .percent {
-	background-color: #99ccff;
-	height: auto;
-	width: 0;
+  background-color: #99ccff;
+  height: auto;
+  width: 0;
 }
 
 @media (max-height: 480px) {
-	#modalOpenFile{
-		left: 45px ;
-		top: 50px ;
-	  max-height: 300px;
-		overflow: scroll
-	}
+  #modalOpenFile {
+    left: 45px;
+    top: 50px;
+    max-height: 300px;
+    overflow: scroll;
+  }
 }
 @media (max-height: 420px) {
-	#modalOpenFile{
-		max-height: 250px;
-		overflow: scroll;
-	}
+  #modalOpenFile {
+    max-height: 250px;
+    overflow: scroll;
+  }
 }
 @media (max-height: 360px) {
-	#modalOpenFilel{
-		left: 45px ;
-		top: 50px ;
-		max-height: 200px;
-		overflow: scroll;
-	}
+  #modalOpenFilel {
+    left: 45px;
+    top: 50px;
+    max-height: 200px;
+    overflow: scroll;
+  }
 }
 
 @media (max-height: 320px) {
-	#modalOpenFilel{
-		left: 45px ;
-		top: 50px ;
-		max-height: 150px;
-		overflow: scroll;
-	}
+  #modalOpenFilel {
+    left: 45px;
+    top: 50px;
+    max-height: 150px;
+    overflow: scroll;
+  }
+}
+
+@media (max-height: 500px) {
+  #modalgeojson {
+    left: 34px;
+    top: 188px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  #modalgeojson {
+    left: 0px !important;
+    top: 264px;
+  }
 }

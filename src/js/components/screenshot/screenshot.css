@@ -11,11 +11,11 @@
   height: 34px;
   color: black;
   font-size: 1.1em;
-  bottom: 130px;
-  right: 1.15%;
-  z-index: 1000;
+  top: 378px;
+  left: 10px;
+  z-index: 999;
   border: 2px solid rgba(0, 0, 0, 0.2);
-  border-radius: 3px ;
+  border-radius: 3px;
 }
 
 #screenshot :hover {
@@ -31,17 +31,29 @@
   width: 100%;
   flex: 3;
   background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 3px ;
+  border-radius: 3px;
 }
 
 @media (max-width: 600px) {
   #screenshot {
-    display: none;
- }
+    right: 1px;
+  }
 }
 
 @media (max-height: 500px) {
   #screenshot {
-      display: none;
+    top: 124px;
+    left: 34px;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  #screenshot {
+    top: 299px;
+    left: 0px;
+    border: 2px solid rgba(0, 0, 0, 0.2) !important;
   }
 }

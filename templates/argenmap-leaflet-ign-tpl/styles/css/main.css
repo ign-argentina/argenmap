@@ -10,11 +10,6 @@ Personalizado
 	top: 0px;
 }
 
-.basemap-selector > a {
-    width: 34px !important;
-    height: 34px !important;
-}
-
 #top-right-logo-link > img {
 	position: absolute;
 	top: 7px !important;

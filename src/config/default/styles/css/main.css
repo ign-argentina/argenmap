@@ -4,8 +4,3 @@ Personalizado
 .leaflet-container {
 	font: 12px/1.5 Roboto, sans-serif !important;
 }
-
-.basemap-selector > a {
-    width: 34px !important;
-    height: 34px !important;
-}

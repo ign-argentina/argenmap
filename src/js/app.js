@@ -355,6 +355,9 @@ async function loadTemplate(data, isDefaultTemplate) {
         
         const modalgeojson = new IconModalGeojson;
         modalgeojson.createComponent();
+
+        const sidebarTool = new SidebarTools;
+        sidebarTool.createComponent();
       } 
     }, 100);
   });
