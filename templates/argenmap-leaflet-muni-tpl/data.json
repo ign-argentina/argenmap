@@ -33,8 +33,8 @@
           "legendImg": "src/styles/images/argenmap-gris.png",
           "peso": 20,
           "zoom": {
-            "min": 5,
-            "max": 9
+            "min": 3,
+            "max": 21
           }
         },
         {
@@ -47,8 +47,8 @@
           "legendImg": "src/styles/images/esri.png",
           "peso": 30,
           "zoom": {
-            "min": 6,
-            "max": 9
+            "min": 3,
+            "max": 21
           }
         },
         {

@@ -254,12 +254,12 @@ $.getJSON("./src/config/data.json", async function (data) {
       await loadTemplate({ ...data, ...preferences }, false);
   })
   .fail(async function( jqxhr, textStatus, error ) {
-    console.error( "Template Not Found");
+    console.warn( "Template not found. Default configuration will be loaded.");
     await loadDefaultJson();
   });
 })
 .fail(async function( jqxhr, textStatus, error ) {
-  console.error( "Template Not Found");
+  console.warn( "Template not found. Default configuration will be loaded.");
   await loadDefaultJson();
 });
 
