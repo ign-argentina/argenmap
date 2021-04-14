@@ -217,6 +217,11 @@ function loadWmts(callbackFunction, objLayer) {
     }
 }
 
+function loadWfs(dataToSend) {
+    //...
+    //return result to layer and layer load table
+}
+
 function loadMapaBase(tmsUrl, layer, attribution) {
     if (typeof loadMapaBaseTpl === 'function') {
         return loadMapaBaseTpl(tmsUrl, layer, attribution);

@@ -1164,6 +1164,12 @@ class GestorMenu {
         return this.availableLayers;
     }
 
+    getActiveLayersWithoutBasemap() {
+        return this.activeLayers.filter(layer => {
+            return this.availableBaseLayers.find(baseLayer => baseLayer === layer) ? false : true;
+        });
+    }
+
     addActiveLayer(layer_id) {
         const idx = this.activeLayers.findIndex(layer => layer === layer_id);
         if (idx === -1)

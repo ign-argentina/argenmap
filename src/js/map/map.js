@@ -305,8 +305,20 @@ $("body").on("pluginLoad", function(event, plugin){
                     }).addTo(mapa);
                     */
 					break;
-				case 'Draw':    
+				case 'Draw':
 				    var drawnItems = L.featureGroup().addTo(mapa);
+
+					mapa.editableLayers = {
+						marker: [],
+						circle: [],
+						circlemarker: [],
+						rectangle: [],
+						polygon: [],
+						polyline: []
+					};
+
+					mapa.groupLayers = {};
+
 					var drawControl = new L.Control.Draw({
 						edit: {
 							featureGroup: drawnItems,
@@ -362,11 +374,284 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.edit.tooltip.subtext = 'Click en cancelar para deshacer los cambios';
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
 					mapa.addControl(drawControl);
-					mapa.on(L.Draw.Event.CREATED, function (event) {
-						var layer = event.layer;
+
+					mapa.on('draw:created', (e) => {
+						const layer = e.layer;
+						const type = e.layerType;
+
+						let name = type + '_';
+						if (mapa.editableLayers[type].length === 0) {
+							name += '1';
+						} else {
+							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+							name += parseInt(lastLayerName.split('_')[1]) + 1;
+						}
+
+						layer.name = name;
+						layer.type = type;
+						layer.data = null;
+
+						layer.getGeoJSON = () => {
+							return mapa.getLayerGeoJSON(layer.name);
+						}
+
+						layer.downloadGeoJSON = () => {
+							mapa.downloadLayerGeoJSON(layer);
+						}
+
+						mapa.editableLayers[type].push(layer);
+						layer.bindTooltip(layer.name);
+
+						layer.bindPopup(`<div><p>${layer.name}</p><button id="btn_${layer.name}" onclick="mapa.showInfoLayer('${layer.name}')">Ver información</button></div>`);
+
+						console.log('layer', layer, {...mapa.editableLayers})
+						//
+						drawnItems.addLayer(layer);
+
+						mapa.checkLayersInDrawedGeometry(layer, type);
+
+						//L.geoJSON(layer.toGeoJSON()).addTo(mapa);
+					});
+
+					mapa.on('draw:edited', (e) => {
+						var layers = e.layers;
+						//Each layer recently edited..
+						layers.eachLayer(function (layer) {
+							console.log(layer)
+							//mapa.checkLayersInDrawedGeometry(layer, type);
+						});
+						console.log({...mapa.editableLayers})
+					});
+					
+					mapa.on('draw:deleted', function (e) {
+						var layers = e.layers;
+						Object.values(layers._layers).forEach(deletedLayer => {
+							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
+							if (lyrIdx >= 0)
+								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
+
+							//Delete from groups
+							for (const group in mapa.groupLayers) {
+								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
+								if (lyrInGrpIdx >= 0)
+									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+							}
+						})
+					});
+
+					mapa.showInfoLayer = (layerName) => {
+						const type = layerName.split('_')[0];
+						const layer = mapa.editableLayers[type].find(lyr => lyr.name === layerName);
+						layer.closePopup();
+						
+						console.log(layer);
+
+						if (!layer.data) {
+							//Download
+						} else {
+							//Load data in table
+						}
+					}
+
+					mapa.getEditableLayers = (type) => {
+						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type] : mapa.editableLayers;
+					}
+
+					mapa.getEditableLayer = (name) => {
+						const type = name.split('_')[0];
+						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
+					}
+
+					mapa.checkLayersInDrawedGeometry = (layer, type) => {
+						if (type === 'polygon' || type === 'rectangle') {
+							const coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
+							const activeLayers = gestorMenu.getActiveLayersWithoutBasemap();
+							const dataToSend = {
+								coords: coords,
+								layers: activeLayers
+							}
+					
+							//
+							layer.coords = coords;
+					
+							console.log(type, layer, dataToSend, layer.toGeoJSON());
+					
+							if (activeLayers.length > 0) {
+								loadWfs(dataToSend);
+					
+								//we can style the figure in case it can receive some information
+								layer.setStyle({
+									color: 'orange'
+								});
+							}
+						} else if (type === 'circle') {
+							console.log(type, layer);
+						}
+					}
+					
+					mapa.getLayerGeoJSON = (layer) => {
+						const type = layer.split('_')[0];
+						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
+					}
+					
+					mapa.showLayer = (layer) => {
+						const type = layer.split('_')[0];
+						if (mapa.editableLayers.hasOwnProperty(type)) {
+							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
+							if (lyr)
+								drawnItems.addLayer(lyr);
+						}
+					}
+
+					mapa.hideLayer = (layer) => {
+						Object.values(drawnItems._layers).forEach(lyr => {
+							if (layer === lyr.name) {
+								drawnItems.removeLayer(lyr);
+								return;
+							}
+						});
+					}
+
+					mapa.showGroupLayer = (group) => {
+						if (mapa.groupLayers.hasOwnProperty(group))
+							mapa.groupLayers[group].forEach(layer => {
+								mapa.showLayer(layer);
+							});
+					}
+
+					mapa.hideGroupLayer = (group) => {
+						if (mapa.groupLayers.hasOwnProperty(group))
+						mapa.groupLayers[group].forEach(layer => {
+							mapa.hideLayer(layer);
+						});
+					}
+
+					mapa.addLayerToGroup = (layer, group) => {
+						if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
+							mapa.groupLayers[group].push(layer);
+						}
+					}
+
+					mapa.removeLayerFromGroup = (layer, group) => {
+						if (mapa.groupLayers.hasOwnProperty(group)) {
+							const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
+							if (layerIdx >= 0)
+								mapa.groupLayers[group].splice(layerIdx, 1);
+						}
+					}
+
+					mapa.downloadLayerGeoJSON = (layer) => {
+						const geoJSON = layer.toGeoJSON();
+						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON));
+						const downloadANode = document.createElement('a');
+						downloadANode.setAttribute("href", dataStr);
+						downloadANode.setAttribute("download", layer.name + ".geojson");
+						document.body.appendChild(downloadANode);
+						downloadANode.click();
+						downloadANode.remove();
+					}
+
+					mapa.downloadMultiLayerGeoJSON = (groupLayer) => {
+						const jsonToDownload = {
+							type: "FeatureCollection",
+							features: []
+						};
+
+						mapa.groupLayers[groupLayer].forEach(layerName => {
+							const layer = mapa.getEditableLayer(layerName);
+							jsonToDownload.features.push(layer.toGeoJSON());
+						});
+
+						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
+						const downloadANode = document.createElement('a');
+						downloadANode.setAttribute("href", dataStr);
+						downloadANode.setAttribute("download", groupLayer + ".geojson");
+						document.body.appendChild(downloadANode);
+						downloadANode.click();
+						downloadANode.remove();
+					}
+
+					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, isMulti) => {
+						console.log(geoJSON);
+
+						if (geoJSON.type === 'FeatureCollection') {
+							mapa.groupLayers[groupName] = [];
+							geoJSON.features.forEach(feature => {
+								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true);
+							});
+							return;
+						}
+
+						let type = geoJSON.geometry.type.toLowerCase();
+						let layer = null;
+
+						switch (type) {
+							case 'point': {
+								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
+								layer = L.marker(invertedCoords);
+								type = 'marker';
+							}
+							break;
+							case 'linestring': {
+								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
+								layer = L.polyline(invertedCoords);
+								type = 'polyline';
+							}
+							break;
+							case 'polygon': {
+								const invertedCoords = geoJSON.geometry.coordinates[0].map(coords => [coords[1], coords[0]]);
+								layer = L.polygon(invertedCoords);
+							}
+							break;
+							case 'multipoint': {
+								//
+							}
+							break;
+							case 'multilinestring': {
+								//
+							}
+							break;
+							case 'multipolygon': {
+								//
+							}
+							break;
+						}
+
+						let name = type + '_';
+						if (mapa.editableLayers[type].length === 0) {
+							name += '1';
+						} else {
+							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+							name += parseInt(lastLayerName.split('_')[1]) + 1;
+						}
+
+						layer.name = name;
+						layer.type = type;
+
+						if (isMulti) {
+							mapa.groupLayers[groupName].push(name);
+						}
+
+						layer.getGeoJSON = () => {
+							return mapa.getLayerGeoJSON(layer.name);
+						}
+
+						layer.downloadGeoJSON = () => {
+							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+						}
+
+						mapa.editableLayers[type].push(layer);
+						layer.bindTooltip(layer.name);
 
 						drawnItems.addLayer(layer);
-					});
+
+						if (type !== 'marker') {
+							mapa.fitBounds(layer.getBounds());
+						} else {
+							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+						}
+					}
+
 					gestorMenu.plugins['Draw'].setStatus('visible');
 					break;
 				default:
