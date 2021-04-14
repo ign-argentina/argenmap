@@ -408,8 +408,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						//
 						drawnItems.addLayer(layer);
 
-						mapa.checkLayersInDrawedGeometry(layer, type);
-
 						//L.geoJSON(layer.toGeoJSON()).addTo(mapa);
 					});
 
@@ -448,8 +446,11 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						if (!layer.data) {
 							//Download
+							mapa.checkLayersInDrawedGeometry(layer);
 						} else {
 							//Load data in table
+							//.. its more complicated if active layers is different to each search.
+							console.log(layer.data);
 						}
 					}
 
@@ -462,26 +463,29 @@ $("body").on("pluginLoad", function(event, plugin){
 						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
 					}
 
-					mapa.checkLayersInDrawedGeometry = (layer, type) => {
-						if (type === 'polygon' || type === 'rectangle') {
+					mapa.checkLayersInDrawedGeometry = (layer) => {
+						if (layer.type === 'polygon' || layer.type === 'rectangle') {
 							const coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
 							const activeLayers = gestorMenu.getActiveLayersWithoutBasemap();
-							const dataToSend = {
-								coords: coords,
-								layers: activeLayers
-							}
 					
-							//
 							layer.coords = coords;
 					
-							console.log(type, layer, dataToSend, layer.toGeoJSON());
+							console.log(type, layer, layer.toGeoJSON());
 					
 							if (activeLayers.length > 0) {
-								loadWfs(dataToSend);
-					
-								//we can style the figure in case it can receive some information
-								layer.setStyle({
-									color: 'orange'
+								getLayerDataByWFS(coords, activeLayers)
+								.then(data => {
+									console.log('data from server', data);
+									layer.data = data;
+									//Load data in table
+
+									//we can style the figure in case it can receive some information
+									layer.setStyle({
+										color: 'orange'
+									});
+								})
+								.catch(error => {
+									console.log(error)
 								});
 							}
 						} else if (type === 'circle') {

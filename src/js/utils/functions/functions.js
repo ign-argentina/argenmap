@@ -217,9 +217,9 @@ function loadWmts(callbackFunction, objLayer) {
     }
 }
 
-function loadWfs(dataToSend) {
-    //...
-    //return result to layer and layer load table
+async function getLayerDataByWFS(coords, layers) {
+    const data = await { data: 'data from server' };
+    return data;
 }
 
 function loadMapaBase(tmsUrl, layer, attribution) {
