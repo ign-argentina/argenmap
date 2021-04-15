@@ -1164,10 +1164,28 @@ class GestorMenu {
         return this.availableLayers;
     }
 
+    setLayersDataForWfs() {
+        this.layersDataForWfs = {};
+        for (const item in this.items) {
+            if (item !== 'mapasbase') {
+                Object.values(this.items[item].itemsComposite).forEach(iC => {
+                    iC.capas.forEach(capa => {
+                        this.layersDataForWfs[capa.nombre] = {
+                            name: capa.nombre,
+                            section: this.items[item].seccion,
+                            host: capa.host
+                        }
+                    })
+                })
+            }
+        }
+    }
+
     getActiveLayersWithoutBasemap() {
-        return this.activeLayers.filter(layer => {
+        const activeLayers = this.activeLayers.filter(layer => {
             return this.availableBaseLayers.find(baseLayer => baseLayer === layer) ? false : true;
         });
+        return activeLayers.map(activeLayer => this.layersDataForWfs[activeLayer]);
     }
 
     addActiveLayer(layer_id) {
@@ -1253,6 +1271,7 @@ class GestorMenu {
                         this.activeLayersHasBeenUpdated = () => {
                             urlInteraction.layers = this.getActiveLayers();
                         }
+                        this.setLayersDataForWfs();
                         window.clearInterval(lastInterval);
                     }
                 }, 100)

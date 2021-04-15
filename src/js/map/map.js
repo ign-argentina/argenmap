@@ -389,7 +389,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						layer.name = name;
 						layer.type = type;
-						layer.data = null;
+						layer.data = {};
 
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
@@ -441,10 +441,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						const type = layerName.split('_')[0];
 						const layer = mapa.editableLayers[type].find(lyr => lyr.name === layerName);
 						layer.closePopup();
-						
-						console.log(layer);
 
-						if (!layer.data) {
+						if (Object.keys(layer.data).length === 0) {
 							//Download
 							mapa.checkLayersInDrawedGeometry(layer);
 						} else {
@@ -470,22 +468,25 @@ $("body").on("pluginLoad", function(event, plugin){
 					
 							layer.coords = coords;
 					
-							console.log(type, layer, layer.toGeoJSON());
+							console.log('activeLayers', activeLayers);
 					
 							if (activeLayers.length > 0) {
-								getLayerDataByWFS(coords, activeLayers)
-								.then(data => {
-									console.log('data from server', data);
-									layer.data = data;
-									//Load data in table
+								activeLayers.forEach(activeLayer => {
+									getLayerDataByWFS(coords, activeLayer)
+									.then(data => {
+										console.log('data from server', data);
+										layer.data[activeLayer.name] = data;
+										//Load data in table
+										//..
 
-									//we can style the figure in case it can receive some information
-									layer.setStyle({
-										color: 'orange'
+										//we can style the figure in case it can receive some information
+										layer.setStyle({
+											color: 'orange'
+										});
+									})
+									.catch(error => {
+										console.log(error)
 									});
-								})
-								.catch(error => {
-									console.log(error)
 								});
 							}
 						} else if (type === 'circle') {

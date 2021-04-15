@@ -217,9 +217,25 @@ function loadWmts(callbackFunction, objLayer) {
     }
 }
 
-async function getLayerDataByWFS(coords, layers) {
-    const data = await { data: 'data from server' };
-    return data;
+function setCoordinatesFormat(coords) {
+    let coordsFormatted = '';
+    coords.forEach(coord => {
+        console.log(`${coord[0]}%20${coord[1]},`)
+        coordsFormatted += `${coord[0]}%20${coord[1]},`;
+    });
+    //Add first point again
+    coordsFormatted += `${coords[0][0]}%20${coords[0][1]}`;
+    return coordsFormatted;
+}
+
+async function getLayerDataByWFS(coords, layerData) {
+    const coordsFormatted = setCoordinatesFormat(coords);
+    const url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=DISJOINT(geom,POLYGON((${coordsFormatted})))`;
+    //const url = 'https://wms.ign.gob.ar/geoserver/industria-servicios/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=industria-servicios:areas_de_fabricacion_y_procesamiento_AC070&outputFormat=application%2Fjson&CQL_FILTER=DISJOINT(geom,POLYGON((-70.523434%20-29.168,-57.429297%20-29.168406,77.248008%20-28.711174,-70.523434%20-29.168)))';
+    const response = await fetch(url);
+    if (response.status !== 200)
+        return null;
+    return await response.json();
 }
 
 function loadMapaBase(tmsUrl, layer, attribution) {
