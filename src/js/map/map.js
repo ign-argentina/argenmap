@@ -476,6 +476,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (layer.type === 'polygon' || layer.type === 'rectangle') {
 							coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
 							layer.coords = coords;
+							console.log(coords)
 						} else if (layer.type === 'circle') {
 							coords = {
 								lat: layer._latlng.lat,
@@ -487,6 +488,9 @@ $("body").on("pluginLoad", function(event, plugin){
 								lat: layer._latlng.lat,
 								lng: layer._latlng.lng,
 							};
+						} else if (layer.type === 'polyline') {
+							coords = layer._latlngs.map((coords) => [coords.lng, coords.lat]);
+							layer.coords = coords;
 						}
 
 						if (activeLayers.length > 0) {

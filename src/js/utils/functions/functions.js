@@ -220,7 +220,7 @@ function loadWmts(callbackFunction, objLayer) {
 function setCoordinatesFormat(coords) {
     let coordsFormatted = '';
     coords.forEach(coord => {
-        console.log(`${coord[0]}%20${coord[1]},`)
+        //console.log(`${coord[0]}%20${coord[1]},`)
         coordsFormatted += `${coord[0]}%20${coord[1]},`;
     });
     //Add first point again
@@ -236,8 +236,10 @@ async function getLayerDataByWFS(coords, type, layerData) {
     }else if (type === 'circle'){
         url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=DWITHIN(geom,POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
     }else if (type === 'marker'){
-        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POINT(${coords.lat}%20${coords.lng}))`;
-        console.log("marker",url)
+        url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POINT(${coords.lat}%20${coords.lng}))`;
+    }else if(type === 'polyline'){
+        const coordsFormatted = setCoordinatesFormat(coords);
+        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,LINESTRING(${coordsFormatted}))`;
     }
 
     const response = await fetch(url);
