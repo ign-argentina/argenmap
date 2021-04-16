@@ -462,22 +462,21 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer) => {
+						const activeLayers = gestorMenu.getActiveLayersWithoutBasemap();
 						if (layer.type === 'polygon' || layer.type === 'rectangle') {
 							const coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
-							const activeLayers = gestorMenu.getActiveLayersWithoutBasemap();
-					
 							layer.coords = coords;
-					
-							console.log('activeLayers', activeLayers);
 					
 							if (activeLayers.length > 0) {
 								activeLayers.forEach(activeLayer => {
-									getLayerDataByWFS(coords, activeLayer)
+									getLayerDataByWFS(coords, layer.type, activeLayer)
 									.then(data => {
 										console.log('data from server', data);
 										layer.data[activeLayer.name] = data;
+
 										//Load data in table
-										//..
+										let tableD = new Datatable (data, coords);
+                    createTabulator(tableD, activeLayer.name);
 
 										//we can style the figure in case it can receive some information
 										layer.setStyle({
@@ -489,8 +488,56 @@ $("body").on("pluginLoad", function(event, plugin){
 									});
 								});
 							}
-						} else if (type === 'circle') {
-							console.log(type, layer);
+						} else if (layer.type === 'circle') {
+							const coords = {
+								lat: layer._latlng.lat,
+								lng: layer._latlng.lng,
+								r: layer._mRadius
+							}
+						
+							if (activeLayers.length > 0) {
+								activeLayers.forEach(activeLayer => {
+									getLayerDataByWFS(coords, layer.type, activeLayer)
+									.then(data => {
+
+										layer.data[activeLayer.name] = data;
+										let tableD = new Datatable (data, coords);
+                    createTabulator(tableD, activeLayer.name);
+
+										//we can style the figure in case it can receive some information
+										layer.setStyle({
+											color: 'orange'
+										});
+									})
+									.catch(error => {
+										console.log(error)
+									});
+								});
+							}
+						}else if (layer.type === 'marker') {
+							const coords = {
+								lat: layer._latlng.lat,
+								lng: layer._latlng.lng,
+							}
+							if (activeLayers.length > 0) {
+								activeLayers.forEach(activeLayer => {
+									getLayerDataByWFS(coords, layer.type, activeLayer)
+									.then(data => {
+
+										layer.data[activeLayer.name] = data;
+										let tableD = new Datatable (data, coords);
+                    createTabulator(tableD, activeLayer.name);
+
+										//we can style the figure in case it can receive some information
+										layer.setStyle({
+											color: 'orange'
+										});
+									})
+									.catch(error => {
+										console.log(error)
+									});
+								});
+							}
 						}
 					}
 					

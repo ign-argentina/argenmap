@@ -228,10 +228,18 @@ function setCoordinatesFormat(coords) {
     return coordsFormatted;
 }
 
-async function getLayerDataByWFS(coords, layerData) {
-    const coordsFormatted = setCoordinatesFormat(coords);
-    const url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=DISJOINT(geom,POLYGON((${coordsFormatted})))`;
-    //const url = 'https://wms.ign.gob.ar/geoserver/industria-servicios/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=industria-servicios:areas_de_fabricacion_y_procesamiento_AC070&outputFormat=application%2Fjson&CQL_FILTER=DISJOINT(geom,POLYGON((-70.523434%20-29.168,-57.429297%20-29.168406,77.248008%20-28.711174,-70.523434%20-29.168)))';
+async function getLayerDataByWFS(coords, type, layerData) {
+    let url = ''
+    if (type === 'polygon' || type === 'rectangle') {
+        const coordsFormatted = setCoordinatesFormat(coords);
+        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POLYGON((${coordsFormatted})))`;
+    }else if (type === 'circle'){
+        url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=DWITHIN(geom,POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
+    }else if (type === 'marker'){
+        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POINT(${coords.lat}%20${coords.lng}))`;
+        console.log("marker",url)
+    }
+
     const response = await fetch(url);
     if (response.status !== 200)
         return null;
