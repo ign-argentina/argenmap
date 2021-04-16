@@ -437,8 +437,7 @@ function loadTemplateStyleConfig(template, isDefaultTemplate) {
 
 function setBaseLayersZoomLevels(layers) {
     layers.forEach(layer => {
-        if (layer.hasOwnProperty('zoom'))
-            baseLayers[layer.nombre] = layer.hasOwnProperty('zoom') ? { zoom: layer.zoom } : {};
+        baseLayers[layer.nombre] = layer.hasOwnProperty('zoom') ? { zoom: layer.zoom } : {};
     });
 }
 

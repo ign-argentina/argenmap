@@ -632,6 +632,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						layer.name = name;
 						layer.type = type;
+						layer.data = {};
 
 						if (isMulti) {
 							mapa.groupLayers[groupName].push(name);
@@ -647,6 +648,9 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 						layer.bindTooltip(layer.name);
+
+						if (type === 'polygon')
+							layer.bindPopup(`<div><p>${layer.name}</p><button id="btn_${layer.name}" onclick="mapa.showInfoLayer('${layer.name}')">Ver información</button></div>`);
 
 						drawnItems.addLayer(layer);
 
