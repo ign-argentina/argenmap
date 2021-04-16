@@ -415,7 +415,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						var layers = e.layers;
 						//Each layer recently edited..
 						layers.eachLayer(function (layer) {
-							console.log(layer)
 							//mapa.checkLayersInDrawedGeometry(layer, type);
 						});
 						console.log({...mapa.editableLayers})
@@ -431,8 +430,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							//Delete from groups
 							for (const group in mapa.groupLayers) {
 								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
-								if (lyrInGrpIdx >= 0)
+								if (lyrInGrpIdx >= 0) {
 									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+									if (mapa.groupLayers[group].length === 0)
+										delete mapa.groupLayers[group];
+								}
 							}
 						})
 					});
@@ -448,7 +450,12 @@ $("body").on("pluginLoad", function(event, plugin){
 						} else {
 							//Load data in table
 							//.. its more complicated if active layers is different to each search.
-							console.log(layer.data);
+
+							//Load data in table
+							//let tableD = new Datatable (data, coords);
+							//createTabulator(tableD, activeLayer.name);
+
+							mapa.checkLayersInDrawedGeometry(layer);
 						}
 					}
 
@@ -463,81 +470,47 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.checkLayersInDrawedGeometry = (layer) => {
 						const activeLayers = gestorMenu.getActiveLayersWithoutBasemap();
+
+						let coords = null;
+
 						if (layer.type === 'polygon' || layer.type === 'rectangle') {
-							const coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
+							coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
 							layer.coords = coords;
-					
-							if (activeLayers.length > 0) {
-								activeLayers.forEach(activeLayer => {
-									getLayerDataByWFS(coords, layer.type, activeLayer)
-									.then(data => {
-										console.log('data from server', data);
-										layer.data[activeLayer.name] = data;
-
-										//Load data in table
-										let tableD = new Datatable (data, coords);
-                    createTabulator(tableD, activeLayer.name);
-
-										//we can style the figure in case it can receive some information
-										layer.setStyle({
-											color: 'orange'
-										});
-									})
-									.catch(error => {
-										console.log(error)
-									});
-								});
-							}
 						} else if (layer.type === 'circle') {
-							const coords = {
+							coords = {
 								lat: layer._latlng.lat,
 								lng: layer._latlng.lng,
 								r: layer._mRadius
-							}
-						
-							if (activeLayers.length > 0) {
-								activeLayers.forEach(activeLayer => {
-									getLayerDataByWFS(coords, layer.type, activeLayer)
-									.then(data => {
-
-										layer.data[activeLayer.name] = data;
-										let tableD = new Datatable (data, coords);
-                    createTabulator(tableD, activeLayer.name);
-
-										//we can style the figure in case it can receive some information
-										layer.setStyle({
-											color: 'orange'
-										});
-									})
-									.catch(error => {
-										console.log(error)
-									});
-								});
-							}
-						}else if (layer.type === 'marker') {
-							const coords = {
+							};
+						} else if (layer.type === 'marker') {
+							coords = {
 								lat: layer._latlng.lat,
 								lng: layer._latlng.lng,
-							}
-							if (activeLayers.length > 0) {
-								activeLayers.forEach(activeLayer => {
-									getLayerDataByWFS(coords, layer.type, activeLayer)
-									.then(data => {
+							};
+						}
 
-										layer.data[activeLayer.name] = data;
-										let tableD = new Datatable (data, coords);
-                    createTabulator(tableD, activeLayer.name);
+						if (activeLayers.length > 0) {
+							activeLayers.forEach(activeLayer => {
+								getLayerDataByWFS(coords, layer.type, activeLayer)
+								.then(data => {
+									console.log('data from server', data);
+									layer.data[activeLayer.name] = data;
+									layer.coords = coords;
 
-										//we can style the figure in case it can receive some information
+									//Load data in table
+									let tableD = new Datatable (data, coords);
+									createTabulator(tableD, activeLayer.name);
+
+									//we can style the figure in case it can receive some information
+									if (layer.type !== 'marker')
 										layer.setStyle({
 											color: 'orange'
 										});
-									})
-									.catch(error => {
-										console.log(error)
-									});
+								})
+								.catch(error => {
+									console.log(error)
 								});
-							}
+							});
 						}
 					}
 					
@@ -576,6 +549,34 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.groupLayers[group].forEach(layer => {
 							mapa.hideLayer(layer);
 						});
+					}
+
+					mapa.deleteLayer = (layer) => {
+						const type = layer.split('_')[0];
+						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name = layer);
+						if (lyrIdx >= 0) {
+							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
+							mapa.editableLayers[type].splice(lyrIdx, 1);
+						}
+
+						//Delete from groups
+						for (const group in mapa.groupLayers) {
+							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = layer);
+							if (lyrInGrpIdx >= 0)
+								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+						}
+					}
+
+					mapa.removeGroup = (group, deleteLayers) => {
+						if (mapa.groupLayers.hasOwnProperty(group)) {
+							if (deleteLayers) {
+								const layersArr = [...mapa.groupLayers[group]];
+								layersArr.forEach(layer => {
+									mapa.deleteLayer(layer);
+								});
+							}
+							delete mapa.groupLayers[group];
+						}
 					}
 
 					mapa.addLayerToGroup = (layer, group) => {
@@ -623,11 +624,11 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.remove();
 					}
 
-					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, isMulti) => {
-						console.log(geoJSON);
+					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, groupIsCreated) => {
+						if (!groupIsCreated)
+							mapa.groupLayers[groupName] = [];
 
 						if (geoJSON.type === 'FeatureCollection') {
-							mapa.groupLayers[groupName] = [];
 							geoJSON.features.forEach(feature => {
 								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true);
 							});
@@ -681,9 +682,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.type = type;
 						layer.data = {};
 
-						if (isMulti) {
-							mapa.groupLayers[groupName].push(name);
-						}
+						mapa.groupLayers[groupName].push(name);
 
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);

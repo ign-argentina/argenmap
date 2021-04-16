@@ -180,9 +180,10 @@ class UImf {
   }
 
   removegeojsonfile(value) {
+    mapa.removeGroup(value, true);
     mapa.eachLayer(function (layer) {
       if (layer.myTag && layer.myTag === value) {
-        mapa.removeLayer(layer);
+        //mapa.removeLayer(layer);
       }
     });
     let auxname = "li" + value;
@@ -219,7 +220,7 @@ function controlFormLoadFile() {
       style: myStyle,
       onEachFeature: onEachFeature,
     });
-    let layerId = mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, document.getElementById('capaname').value);
+    let layerId = mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, document.getElementById('capaname').value, false);
 
     //add layer in menu
     uimodalfs.addmenu(val);
