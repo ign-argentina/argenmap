@@ -23,6 +23,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       };
 
       setBaseLayersZoomLevels(app.items[0].capas);
+      gestorMenu.setBaseMapDependencies(app.items[0].capas);
 
       //Load table if is active
       if (app.hasOwnProperty('table')) {

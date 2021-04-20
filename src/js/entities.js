@@ -1130,6 +1130,7 @@ class GestorMenu {
         this.querySearch = '';
         this.showSearcher = false;
         this.basemapSelected = null;
+        this.baseMapDependencies = {};
 
         this.allLayersAreLoaded = false;
         this.availableWmtsLayers = [];
@@ -1147,6 +1148,14 @@ class GestorMenu {
 		this._layersJoin = null;
 		this._folders = {};
 	}
+
+    setBaseMapDependencies(baseLayers) {
+        const baseMapDependencies = {};
+        baseLayers.forEach(bLayer => {
+            baseMapDependencies[bLayer.nombre] = bLayer.hasOwnProperty('isOpenWith') ? bLayer.isOpenWith : null;
+        });
+        this.baseMapDependencies = baseMapDependencies;
+    }
     
     setAvailableLayer(layer_id) {
         this.availableLayers.push(layer_id);
@@ -1378,6 +1387,10 @@ class GestorMenu {
 
     setBasemapSelected(basemapSelected) {
         this.basemapSelected = basemapSelected;
+    }
+
+    setLastBaseMapSelected(lastBaseMapSelected) {
+        this.lastBaseMapSelected = lastBaseMapSelected;
     }
 
     removeLazyInitLayerInfoCounter(sectionId) {
@@ -1962,6 +1975,14 @@ class GestorMenu {
 			}
 		}
 
+        if (isBaseLayer && this.lastBaseMapSelected !== baseLayerName) {
+            if (this.baseMapDependencies[this.lastBaseMapSelected])
+                this.baseMapDependencies[this.lastBaseMapSelected].forEach(layer => {
+                    if (this.activeLayers.find(lyr => lyr === layer))
+                        this.muestraCapa(this.getLayerIdByName(layer));
+                });
+        }
+
 		//Show or hide selected item
         for (var key in this.items) {
             var itemComposite = this.items[key];
@@ -1997,7 +2018,15 @@ class GestorMenu {
         }
 
         if (isBaseLayer) {
+            this.setLastBaseMapSelected(baseLayerName);
+
             setValidZoomLevel(baseLayerName);
+
+            if (this.baseMapDependencies[baseLayerName])
+                this.baseMapDependencies[baseLayerName].forEach(layer => {
+                    if (!this.activeLayers.find(lyr => lyr === layer))
+                        this.muestraCapa(this.getLayerIdByName(layer));
+                });
 
             wmtsLayers.forEach(wmtsLayer => {
                 wmtsLayer.showHide();
