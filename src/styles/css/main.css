@@ -315,6 +315,13 @@ Leaflet popup featureInfo
 }
 
 /*******************************
+Popup geometría
+*******************************/
+.active-layer:hover {
+  background-color: rgb(0,141,201, 0.1);
+}
+
+/*******************************
 Control mapa base
 *******************************/
 #basemap-selector {

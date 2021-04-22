@@ -464,11 +464,14 @@ $("body").on("pluginLoad", function(event, plugin){
 						selectedLayersDiv.style.maxHeight = '300px';
 
 						const inputDiv = document.createElement('div');
+						inputDiv.className = 'active-layer';
 						inputDiv.style.display = 'flex';
 						inputDiv.style.flexDirection = 'row';
 						inputDiv.style.justifyContent = 'flex-start';
 						inputDiv.style.alignItems = 'center';
-						inputDiv.style.marginBottom = '5px';
+						inputDiv.style.marginBottom = '2px';
+						inputDiv.style.padding = '4px';
+						inputDiv.style.borderRadius = '3px';
 						inputDiv.onclick = () => {
 							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
 							inputs[0].checked = !inputs[0].checked;
@@ -484,7 +487,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						input.id = 'seleccionar_capas';
 						input.name = 'Seleccionar Capas';
 						input.value = 'Seleccionar Capas';
-						input.style.marginRight = '5px';
+						input.style.marginRight = '3px';
+						input.style.marginBottom = '4px';
 						input.onclick = () => {
 							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
 							inputs[0].checked = !inputs[0].checked;
@@ -498,7 +502,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						const label = document.createElement('label');
 						label.innerHTML = 'Seleccionar Capas';
 						label.setAttribute("for", 'seleccionar_capas');
-						label.style.marginBottom = '-2px';
+						label.style.marginBottom = '2px';
 						label.style.overflow = 'hidden';
 						label.style.textOverflow = 'ellipsis';
 						label.onclick = () => {
@@ -517,23 +521,27 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						gestorMenu.getActiveLayersWithoutBasemap().forEach(activeLayer => {
 							const inputDiv = document.createElement('div');
+							inputDiv.className = 'active-layer';
 							inputDiv.style.display = 'flex';
 							inputDiv.style.flexDirection = 'row';
 							inputDiv.style.justifyContent = 'flex-start';
 							inputDiv.style.alignItems = 'center';
-							inputDiv.style.marginBottom = '5px';
+							inputDiv.style.marginBottom = '2px';
+							inputDiv.style.padding = '4px';
+							inputDiv.style.borderRadius = '3px';
 
 							const input = document.createElement('input');
 							input.type = 'checkbox';
 							input.id = activeLayer.name;
 							input.name = activeLayer.name;
 							input.value = activeLayer.name;
-							input.style.marginRight = '5px';
+							input.style.marginRight = '3px';
+							input.style.marginBottom = '4px';
 
 							const label = document.createElement('label');
 							label.innerHTML = activeLayer.name;
 							label.setAttribute("for", activeLayer.name);
-							label.style.marginBottom = '-2px';
+							label.style.marginBottom = '2px';
 							label.style.overflow = 'hidden';
 							label.style.textOverflow = 'ellipsis';
 
