@@ -400,9 +400,15 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						mapa.editableLayers[type].push(layer);
-						layer.bindTooltip(layer.name);
 
-						layer.bindPopup(`<div><p>${layer.name}</p><button id="btn_${layer.name}" onclick="mapa.showInfoLayer('${layer.name}')">Ver información</button></div>`);
+						const popUpDiv = mapa.createPopUp(layer);
+						layer.bindPopup(popUpDiv);
+
+						layer.on('click', (e) => {
+							const layer = e.target;
+							const popUpDiv = mapa.createPopUp(layer);
+							layer.bindPopup(popUpDiv);
+						});
 
 						console.log('layer', layer, {...mapa.editableLayers})
 						//
@@ -439,14 +445,157 @@ $("body").on("pluginLoad", function(event, plugin){
 						})
 					});
 
-					mapa.showInfoLayer = (layerName) => {
+					mapa.createPopUp = (layer) => {
+						const popUpDiv = document.createElement('div');
+						popUpDiv.style.alignItems = 'center';
+						popUpDiv.style.alignContent = 'center';
+
+						const title = document.createElement('p');
+						title.innerHTML = 'Capas Activas';
+						title.style.fontSize = 14;
+						title.style.fontWeight = 'bold';
+						title.style.margin = '0px 0px 5px 3px';
+						popUpDiv.appendChild(title);
+
+						const selectedLayersDiv = document.createElement('div');
+						selectedLayersDiv.id = 'activeLayers';
+						selectedLayersDiv.style.padding = '3px';
+						selectedLayersDiv.style.overflowY = 'auto';
+						selectedLayersDiv.style.maxHeight = '300px';
+
+						const inputDiv = document.createElement('div');
+						inputDiv.style.display = 'flex';
+						inputDiv.style.flexDirection = 'row';
+						inputDiv.style.justifyContent = 'flex-start';
+						inputDiv.style.alignItems = 'center';
+						inputDiv.style.marginBottom = '5px';
+						inputDiv.onclick = () => {
+							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+							inputs[0].checked = !inputs[0].checked;
+							if (inputs.length > 1) {
+								inputs.slice(1, inputs.length).forEach(input => {
+									input.checked = inputs[0].checked;
+								});
+							}
+						}
+
+						const input = document.createElement('input');
+						input.type = 'checkbox';
+						input.id = 'seleccionar_capas';
+						input.name = 'Seleccionar Capas';
+						input.value = 'Seleccionar Capas';
+						input.style.marginRight = '5px';
+						input.onclick = () => {
+							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+							inputs[0].checked = !inputs[0].checked;
+							if (inputs.length > 1) {
+								inputs.slice(1, inputs.length).forEach(input => {
+									input.checked = inputs[0].checked;
+								});
+							}
+						}
+
+						const label = document.createElement('label');
+						label.innerHTML = 'Seleccionar Capas';
+						label.setAttribute("for", 'seleccionar_capas');
+						label.style.marginBottom = '-2px';
+						label.style.overflow = 'hidden';
+						label.style.textOverflow = 'ellipsis';
+						label.onclick = () => {
+							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+							inputs[0].checked = !inputs[0].checked;
+							if (inputs.length > 1) {
+								inputs.slice(1, inputs.length).forEach(input => {
+									input.checked = inputs[0].checked;
+								});
+							}
+						}
+
+						inputDiv.appendChild(input);
+						inputDiv.appendChild(label);
+						selectedLayersDiv.appendChild(inputDiv);
+
+						gestorMenu.getActiveLayersWithoutBasemap().forEach(activeLayer => {
+							const inputDiv = document.createElement('div');
+							inputDiv.style.display = 'flex';
+							inputDiv.style.flexDirection = 'row';
+							inputDiv.style.justifyContent = 'flex-start';
+							inputDiv.style.alignItems = 'center';
+							inputDiv.style.marginBottom = '5px';
+
+							const input = document.createElement('input');
+							input.type = 'checkbox';
+							input.id = activeLayer.name;
+							input.name = activeLayer.name;
+							input.value = activeLayer.name;
+							input.style.marginRight = '5px';
+
+							const label = document.createElement('label');
+							label.innerHTML = activeLayer.name;
+							label.setAttribute("for", activeLayer.name);
+							label.style.marginBottom = '-2px';
+							label.style.overflow = 'hidden';
+							label.style.textOverflow = 'ellipsis';
+
+							inputDiv.appendChild(input);
+							inputDiv.appendChild(label);
+							selectedLayersDiv.appendChild(inputDiv);
+						});
+
+						const popUpBtn = document.createElement('button');
+						popUpBtn.setAttribute('id', layer.name);
+						popUpBtn.onclick = () => {
+							mapa.showInfoLayer(layer.name, false);
+						};
+						popUpBtn.innerHTML = 'Consultar capas seleccionadas en área';
+						popUpBtn.disabled = gestorMenu.getActiveLayersWithoutBasemap().length === 0;
+						popUpBtn.style.marginTop = '5px';
+						popUpBtn.style.width = '100%';
+
+						popUpDiv.appendChild(selectedLayersDiv);
+						popUpDiv.appendChild(popUpBtn);
+
+						const popUpBtn2 = document.createElement('button');
+						popUpBtn2.setAttribute('id', layer.name);
+						popUpBtn2.onclick = () => {
+							mapa.showInfoLayer(layer.name, true);
+						};
+						popUpBtn2.innerHTML = 'Ver última consulta';
+						popUpBtn2.disabled = Object.keys(layer.data).length === 0;
+						popUpBtn2.style.marginTop = '5px';
+						popUpBtn2.style.width = '100%';
+
+						popUpDiv.appendChild(popUpBtn2);
+
+						return popUpDiv;
+					}
+
+					mapa.showInfoLayer = (layerName, showLastSearch) => {
+
 						const type = layerName.split('_')[0];
 						const layer = mapa.editableLayers[type].find(lyr => lyr.name === layerName);
+
+						if (showLastSearch) {
+							for (const dataName in layer.data) {
+								let table = new Datatable (layer.data[dataName], layer.coords);
+								createTabulator(table, dataName);
+							}
+							layer.closePopup();
+							return;
+						}
+
+						const selectedLayersInputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+						const selectedLayers = [];
+						selectedLayersInputs.forEach(selectedLayer => {
+							if (selectedLayer.checked)
+								selectedLayers.push(selectedLayer.id);
+						});
+						
 						layer.closePopup();
 
 						if (Object.keys(layer.data).length === 0) {
 							//Download
-							mapa.checkLayersInDrawedGeometry(layer);
+							mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
 						} else {
 							//Load data in table
 							//.. its more complicated if active layers is different to each search.
@@ -455,7 +604,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							//let tableD = new Datatable (data, coords);
 							//createTabulator(tableD, activeLayer.name);
 
-							mapa.checkLayersInDrawedGeometry(layer);
+							mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
 						}
 					}
 
@@ -468,15 +617,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
 					}
 
-					mapa.checkLayersInDrawedGeometry = (layer) => {
-						const activeLayers = gestorMenu.getActiveLayersWithoutBasemap();
+					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
+						const filteredActiveLayers = gestorMenu.getActiveLayersWithoutBasemap().filter(activeLayer => {
+							return selectedLayers.find(selectedLayer => selectedLayer === activeLayer.name) ? true : false;
+						});
 
 						let coords = null;
 
 						if (layer.type === 'polygon' || layer.type === 'rectangle') {
 							coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
 							layer.coords = coords;
-							console.log(coords)
 						} else if (layer.type === 'circle') {
 							coords = {
 								lat: layer._latlng.lat,
@@ -493,11 +643,10 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.coords = coords;
 						}
 
-						if (activeLayers.length > 0) {
-							activeLayers.forEach(activeLayer => {
+						if (filteredActiveLayers.length > 0) {
+							filteredActiveLayers.forEach(activeLayer => {
 								getLayerDataByWFS(coords, layer.type, activeLayer)
 								.then(data => {
-									console.log('data from server', data);
 									layer.data[activeLayer.name] = data;
 									layer.coords = coords;
 
@@ -699,8 +848,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.editableLayers[type].push(layer);
 						layer.bindTooltip(layer.name);
 
-						if (type === 'polygon')
-							layer.bindPopup(`<div><p>${layer.name}</p><button id="btn_${layer.name}" onclick="mapa.showInfoLayer('${layer.name}')">Ver información</button></div>`);
+						if (type === 'polygon') {
+							const popUpDiv = mapa.createPopUp(layer);
+							layer.bindPopup(popUpDiv);
+	
+							layer.on('click', (e) => {
+								const layer = e.target;
+								const popUpDiv = mapa.createPopUp(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+								layer.bindPopup(popUpDiv);
+							});
+						}
 
 						drawnItems.addLayer(layer);
 
