@@ -5,6 +5,8 @@ var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
 var loadCharts = false;
 
+var currentlyDrawing = false;
+
 function setTableAsPopUp(cond) {
     loadTableAsPopUp = cond;
 }
@@ -18,13 +20,16 @@ function setCharts(cond) {
 }
 
 XMLHttpRequest.prototype.open = (function(open) {
-
     return function(method, url, async) {
-        if (loadTableAsPopUp && url.includes("&request=GetFeatureInfo")){
-            url += `&feature_count=${tableFeatureCount}`;
+        if (url.includes("&request=GetFeatureInfo")){
+            if (currentlyDrawing)
+                url += `&feature_count=0`;
+            else if (loadTableAsPopUp) {
+                url += `&feature_count=${tableFeatureCount}`;
+            }
         }
-        open.apply(this,arguments);
-      };
+        open.apply(this, arguments);
+    };
 })(XMLHttpRequest.prototype.open);
 
 function deg_to_dms(deg) {

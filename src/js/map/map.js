@@ -375,6 +375,14 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
 					mapa.addControl(drawControl);
 
+					mapa.on('draw:drawstart', (e) => {
+						currentlyDrawing = true;
+					});
+					
+					mapa.on('draw:editstart', (e) => {
+						currentlyDrawing = true;
+					});
+
 					mapa.on('draw:created', (e) => {
 						const layer = e.layer;
 						const type = e.layerType;
@@ -410,8 +418,6 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.bindPopup(popUpDiv);
 						});
 
-						console.log('layer', layer, {...mapa.editableLayers})
-						//
 						drawnItems.addLayer(layer);
 
 						//L.geoJSON(layer.toGeoJSON()).addTo(mapa);
@@ -443,6 +449,16 @@ $("body").on("pluginLoad", function(event, plugin){
 								}
 							}
 						})
+					});
+
+					mapa.on('draw:drawstop', (e) => {
+						setTimeout(() => {
+							currentlyDrawing = false;
+						}, 300);
+					});
+
+					mapa.on('draw:editstop', (e) => {
+						currentlyDrawing = false;
 					});
 
 					mapa.createPopUp = (layer) => {
@@ -498,17 +514,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						input.id = 'seleccionar_capas';
 						input.name = 'Seleccionar Capas';
 						input.value = 'Seleccionar Capas';
-						input.style.marginRight = '3px';
-						input.style.marginBottom = '4px';
+						input.style.margin = '0px 3px 0px 0px';
 						input.onclick = () => {
 							onClickAllActiveLayers();
 						}
 
 						const label = document.createElement('label');
 						label.className = 'active-layer-label';
-						label.innerHTML = 'Seleccionar Capas';
+						label.innerHTML = 'Seleccionar Todas';
 						label.setAttribute("for", 'seleccionar_capas');
-						label.style.marginBottom = '2px';
+						label.style.marginBottom = '0px';
 						label.style.overflow = 'hidden';
 						label.style.textOverflow = 'ellipsis';
 						label.onclick = () => {
@@ -538,8 +553,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							input.id = activeLayer.name;
 							input.name = activeLayer.name;
 							input.value = activeLayer.name;
-							input.style.marginRight = '3px';
-							input.style.marginBottom = '4px';
+							input.style.margin = '0px 3px 0px 0px';
 							input.onclick = () => {
 								onClickActiveLayer(activeLayer);
 							};
@@ -548,7 +562,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							label.innerHTML = activeLayer.name;
 							label.className = 'active-layer-label';
 							label.setAttribute("for", activeLayer.name);
-							label.style.marginBottom = '2px';
+							label.style.marginBottom = '0px';
 							label.style.overflow = 'hidden';
 							label.style.textOverflow = 'ellipsis';
 							label.onclick = () => {
@@ -661,10 +675,18 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.coords = coords;
 						}
 
+						//Clean all old data
+						layer.data = {};
+
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
 								getLayerDataByWFS(coords, layer.type, activeLayer)
 								.then(data => {
+
+									if (!data) {
+										throw new Error('Error fetching to server');
+									};
+
 									layer.data[activeLayer.name] = data;
 									layer.coords = coords;
 
@@ -675,11 +697,15 @@ $("body").on("pluginLoad", function(event, plugin){
 									//we can style the figure in case it can receive some information
 									if (layer.type !== 'marker')
 										layer.setStyle({
-											color: 'orange'
+											color: '#33b560'
 										});
 								})
 								.catch(error => {
-									console.log(error)
+									console.log(error);
+									if (layer.type !== 'marker')
+										layer.setStyle({
+											color: 'red'
+										});
 								});
 							});
 						}
