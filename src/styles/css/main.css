@@ -320,6 +320,12 @@ Popup geometría
 .active-layer:hover {
   background-color: rgb(0,141,201, 0.1);
 }
+.active-layer-label {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
 /*******************************
 Control mapa base

@@ -446,11 +446,28 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.createPopUp = (layer) => {
+
+						const onClickAllActiveLayers = () => {
+							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+							inputs[0].checked = !inputs[0].checked;
+							if (inputs.length > 1) {
+								inputs.slice(1, inputs.length).forEach(input => {
+									input.checked = inputs[0].checked;
+								});
+							}
+						};
+
+						const onClickActiveLayer = (activeLayer) => {
+							const inputElement = document.getElementById(activeLayer.name);
+							inputElement.checked = !inputElement.checked;
+						};
+
 						const popUpDiv = document.createElement('div');
 						popUpDiv.style.alignItems = 'center';
 						popUpDiv.style.alignContent = 'center';
 
 						const title = document.createElement('p');
+						title.className = 'active-layer-label';
 						title.innerHTML = 'Capas Activas';
 						title.style.fontSize = 14;
 						title.style.fontWeight = 'bold';
@@ -461,7 +478,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						selectedLayersDiv.id = 'activeLayers';
 						selectedLayersDiv.style.padding = '3px';
 						selectedLayersDiv.style.overflowY = 'auto';
-						selectedLayersDiv.style.maxHeight = '300px';
+						selectedLayersDiv.style.maxHeight = '250px';
 
 						const inputDiv = document.createElement('div');
 						inputDiv.className = 'active-layer';
@@ -473,13 +490,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						inputDiv.style.padding = '4px';
 						inputDiv.style.borderRadius = '3px';
 						inputDiv.onclick = () => {
-							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
-							inputs[0].checked = !inputs[0].checked;
-							if (inputs.length > 1) {
-								inputs.slice(1, inputs.length).forEach(input => {
-									input.checked = inputs[0].checked;
-								});
-							}
+							onClickAllActiveLayers();
 						}
 
 						const input = document.createElement('input');
@@ -490,29 +501,18 @@ $("body").on("pluginLoad", function(event, plugin){
 						input.style.marginRight = '3px';
 						input.style.marginBottom = '4px';
 						input.onclick = () => {
-							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
-							inputs[0].checked = !inputs[0].checked;
-							if (inputs.length > 1) {
-								inputs.slice(1, inputs.length).forEach(input => {
-									input.checked = inputs[0].checked;
-								});
-							}
+							onClickAllActiveLayers();
 						}
 
 						const label = document.createElement('label');
+						label.className = 'active-layer-label';
 						label.innerHTML = 'Seleccionar Capas';
 						label.setAttribute("for", 'seleccionar_capas');
 						label.style.marginBottom = '2px';
 						label.style.overflow = 'hidden';
 						label.style.textOverflow = 'ellipsis';
 						label.onclick = () => {
-							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
-							inputs[0].checked = !inputs[0].checked;
-							if (inputs.length > 1) {
-								inputs.slice(1, inputs.length).forEach(input => {
-									input.checked = inputs[0].checked;
-								});
-							}
+							onClickAllActiveLayers();
 						}
 
 						inputDiv.appendChild(input);
@@ -529,6 +529,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							inputDiv.style.marginBottom = '2px';
 							inputDiv.style.padding = '4px';
 							inputDiv.style.borderRadius = '3px';
+							inputDiv.onclick = () => {
+								onClickActiveLayer(activeLayer);
+							};
 
 							const input = document.createElement('input');
 							input.type = 'checkbox';
@@ -537,13 +540,20 @@ $("body").on("pluginLoad", function(event, plugin){
 							input.value = activeLayer.name;
 							input.style.marginRight = '3px';
 							input.style.marginBottom = '4px';
+							input.onclick = () => {
+								onClickActiveLayer(activeLayer);
+							};
 
 							const label = document.createElement('label');
 							label.innerHTML = activeLayer.name;
+							label.className = 'active-layer-label';
 							label.setAttribute("for", activeLayer.name);
 							label.style.marginBottom = '2px';
 							label.style.overflow = 'hidden';
 							label.style.textOverflow = 'ellipsis';
+							label.onclick = () => {
+								onClickActiveLayer(activeLayer);
+							};
 
 							inputDiv.appendChild(input);
 							inputDiv.appendChild(label);
