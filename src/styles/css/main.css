@@ -326,6 +326,40 @@ Popup geometría
   -ms-user-select: none;
   user-select: none;
 }
+.popup-btn {
+  width: 100%;
+  height: 26px;
+  text-align: center;
+  padding: 3px;
+  border: solid;
+  border-radius: 3px;
+  border-width: 1px;
+  margin-top: 7px;
+}
+.popup-btn-text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin: 0 !important;
+  font-weight: 700;
+}
+.btn-active {
+  border-color: rgb(0,141,201);
+  color: rgb(0,141,201);
+}
+.btn-active:hover {
+  background-color: rgb(0,141,201);
+  color: white;
+}
+.btn-active:active {
+  background-color: rgb(0, 92, 131);
+  color: white;
+}
+.btn-disabled {
+  border-color: rgb(107, 109, 110);
+  color: rgb(107, 109, 110);
+}
 
 /*******************************
 Control mapa base

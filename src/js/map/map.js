@@ -14,6 +14,21 @@ gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
 	}
 });
 
+const onClickAllActiveLayers = () => {
+	const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+	inputs[0].checked = !inputs[0].checked;
+	if (inputs.length > 1) {
+		inputs.slice(1, inputs.length).forEach(input => {
+			input.checked = inputs[0].checked;
+		});
+	}
+};
+
+const onClickActiveLayer = (activeLayer) => {
+	const inputElement = document.getElementById(activeLayer);
+	inputElement.checked = !inputElement.checked;
+};
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
@@ -461,23 +476,71 @@ $("body").on("pluginLoad", function(event, plugin){
 						currentlyDrawing = false;
 					});
 
+					mapa.addLayerToPopUp = (container, activeLayer) => {
+						const inputDiv = document.createElement('div');
+						inputDiv.className = 'active-layer';
+						inputDiv.id = 'container_' + activeLayer;
+						inputDiv.style.display = 'flex';
+						inputDiv.style.flexDirection = 'row';
+						inputDiv.style.justifyContent = 'flex-start';
+						inputDiv.style.alignItems = 'center';
+						inputDiv.style.marginBottom = '2px';
+						inputDiv.style.padding = '4px';
+						inputDiv.style.borderRadius = '3px';
+						inputDiv.onclick = () => {
+							onClickActiveLayer(activeLayer);
+						};
+
+						const input = document.createElement('input');
+						input.type = 'checkbox';
+						input.id = activeLayer;
+						input.name = activeLayer;
+						input.value = activeLayer;
+						input.style.margin = '0px 3px 0px 0px';
+						input.onclick = () => {
+							onClickActiveLayer(activeLayer);
+						};
+
+						const label = document.createElement('label');
+						label.innerHTML = activeLayer;
+						label.className = 'active-layer-label';
+						label.setAttribute("for", activeLayer);
+						label.style.marginBottom = '0px';
+						label.style.overflow = 'hidden';
+						label.style.textOverflow = 'ellipsis';
+						label.onclick = () => {
+							onClickActiveLayer(activeLayer);
+						};
+
+						inputDiv.appendChild(input);
+						inputDiv.appendChild(label);
+						container.appendChild(inputDiv);
+					}
+
+					mapa.activeLayerHasChanged = (layer, addToList) => {
+						const activeLayersDiv = document.getElementById('activeLayers');
+						if (!activeLayersDiv)
+							return;
+					
+						const activeLayersDivChilds = Array.from(activeLayersDiv.childNodes);
+						const containerIdx = activeLayersDivChilds.findIndex(layerDiv => layerDiv.id.split('container_')[1] === layer);
+						if (containerIdx >= 0 && !addToList) {
+							activeLayersDiv.removeChild(activeLayersDivChilds[containerIdx]);
+						} else if (containerIdx === -1 && addToList) {
+							mapa.addLayerToPopUp(activeLayersDiv, layer);	
+						}
+					
+						const showInfoBtn = document.getElementById('btn-show-info');
+						if (gestorMenu.getActiveLayersWithoutBasemap().length > 0) {
+							showInfoBtn.classList.remove("btn-disabled");
+							showInfoBtn.classList.add("btn-active");
+						} else {
+							showInfoBtn.classList.remove("btn-active");
+							showInfoBtn.classList.add("btn-disabled");
+						}
+					}
+
 					mapa.createPopUp = (layer) => {
-
-						const onClickAllActiveLayers = () => {
-							const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
-							inputs[0].checked = !inputs[0].checked;
-							if (inputs.length > 1) {
-								inputs.slice(1, inputs.length).forEach(input => {
-									input.checked = inputs[0].checked;
-								});
-							}
-						};
-
-						const onClickActiveLayer = (activeLayer) => {
-							const inputElement = document.getElementById(activeLayer.name);
-							inputElement.checked = !inputElement.checked;
-						};
-
 						const popUpDiv = document.createElement('div');
 						popUpDiv.style.alignItems = 'center';
 						popUpDiv.style.alignContent = 'center';
@@ -535,67 +598,31 @@ $("body").on("pluginLoad", function(event, plugin){
 						selectedLayersDiv.appendChild(inputDiv);
 
 						gestorMenu.getActiveLayersWithoutBasemap().forEach(activeLayer => {
-							const inputDiv = document.createElement('div');
-							inputDiv.className = 'active-layer';
-							inputDiv.style.display = 'flex';
-							inputDiv.style.flexDirection = 'row';
-							inputDiv.style.justifyContent = 'flex-start';
-							inputDiv.style.alignItems = 'center';
-							inputDiv.style.marginBottom = '2px';
-							inputDiv.style.padding = '4px';
-							inputDiv.style.borderRadius = '3px';
-							inputDiv.onclick = () => {
-								onClickActiveLayer(activeLayer);
-							};
-
-							const input = document.createElement('input');
-							input.type = 'checkbox';
-							input.id = activeLayer.name;
-							input.name = activeLayer.name;
-							input.value = activeLayer.name;
-							input.style.margin = '0px 3px 0px 0px';
-							input.onclick = () => {
-								onClickActiveLayer(activeLayer);
-							};
-
-							const label = document.createElement('label');
-							label.innerHTML = activeLayer.name;
-							label.className = 'active-layer-label';
-							label.setAttribute("for", activeLayer.name);
-							label.style.marginBottom = '0px';
-							label.style.overflow = 'hidden';
-							label.style.textOverflow = 'ellipsis';
-							label.onclick = () => {
-								onClickActiveLayer(activeLayer);
-							};
-
-							inputDiv.appendChild(input);
-							inputDiv.appendChild(label);
-							selectedLayersDiv.appendChild(inputDiv);
+							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer.name);
 						});
 
-						const popUpBtn = document.createElement('button');
-						popUpBtn.setAttribute('id', layer.name);
+						const popUpBtn = document.createElement('div');
+						popUpBtn.className = 'popup-btn';
+						popUpBtn.setAttribute('id', 'btn-show-info');
 						popUpBtn.onclick = () => {
-							mapa.showInfoLayer(layer.name, false);
+							if (gestorMenu.getActiveLayersWithoutBasemap().length > 0)
+								mapa.showInfoLayer(layer.name, false);
 						};
-						popUpBtn.innerHTML = 'Consultar capas seleccionadas en área';
-						popUpBtn.disabled = gestorMenu.getActiveLayersWithoutBasemap().length === 0;
-						popUpBtn.style.marginTop = '5px';
-						popUpBtn.style.width = '100%';
+						popUpBtn.innerHTML = '<p class="popup-btn-text">Consultar capas seleccionadas en área</p>';
+						popUpBtn.classList.add(gestorMenu.getActiveLayersWithoutBasemap().length === 0 ? 'btn-disabled' : 'btn-active');
 
 						popUpDiv.appendChild(selectedLayersDiv);
 						popUpDiv.appendChild(popUpBtn);
 
-						const popUpBtn2 = document.createElement('button');
-						popUpBtn2.setAttribute('id', layer.name);
+						const popUpBtn2 = document.createElement('div');
+						popUpBtn2.className = 'popup-btn';
+						popUpBtn2.setAttribute('id', 'btn-show-prev-info');
 						popUpBtn2.onclick = () => {
-							mapa.showInfoLayer(layer.name, true);
+							if (Object.keys(layer.data).length > 0)
+								mapa.showInfoLayer(layer.name, true);
 						};
-						popUpBtn2.innerHTML = 'Ver última consulta';
-						popUpBtn2.disabled = Object.keys(layer.data).length === 0;
-						popUpBtn2.style.marginTop = '5px';
-						popUpBtn2.style.width = '100%';
+						popUpBtn2.innerHTML = '<p class="popup-btn-text">Ver última consulta</p>';
+						popUpBtn2.classList.add(Object.keys(layer.data).length === 0 ? 'btn-disabled' : 'btn-active');
 
 						popUpDiv.appendChild(popUpBtn2);
 
@@ -609,7 +636,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						if (showLastSearch) {
 							for (const dataName in layer.data) {
-								let table = new Datatable (layer.data[dataName], layer.coords);
+								let table = new Datatable(layer.data[dataName], layer.coords);
 								createTabulator(table, dataName);
 							}
 							layer.closePopup();

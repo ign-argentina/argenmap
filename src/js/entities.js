@@ -1984,10 +1984,13 @@ class GestorMenu {
                     if (item.getId() == itemSeccion) {
                         if ($(`#${item.getId()}`).hasClass('active')) {
                             this.removeActiveLayer(item.nombre);
+                            if (!isBaseLayer)
+                                mapa.activeLayerHasChanged(item.nombre, false);
                         } else {
                             this.addActiveLayer(item.nombre);
+                            if (!isBaseLayer)
+                                mapa.activeLayerHasChanged(item.nombre, true);
                         }
-    
                         item.showHide();
                         itemComposite.muestraCantidadCapasVisibles();
                         break;
