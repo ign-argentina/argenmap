@@ -487,6 +487,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						inputDiv.style.marginBottom = '2px';
 						inputDiv.style.padding = '4px';
 						inputDiv.style.borderRadius = '3px';
+						inputDiv.style.transition = '0.2s';
 						inputDiv.onclick = () => {
 							onClickActiveLayer(activeLayer);
 						};
@@ -568,6 +569,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						inputDiv.style.marginBottom = '2px';
 						inputDiv.style.padding = '4px';
 						inputDiv.style.borderRadius = '3px';
+						inputDiv.style.transition = '0.2s';
 						inputDiv.onclick = () => {
 							onClickAllActiveLayers();
 						}

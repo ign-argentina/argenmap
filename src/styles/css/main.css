@@ -335,6 +335,7 @@ Popup geometría
   border-radius: 3px;
   border-width: 1px;
   margin-top: 7px;
+  transition: 0.2s;
 }
 .popup-btn-text {
   -webkit-user-select: none;
