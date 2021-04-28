@@ -1,10 +1,15 @@
 /*******************************
 General
 *******************************/
+html {
+  height: 100%;
+}
+
 body {
   font-family: Roboto, sans-serif;
   background-color: #008dc9;
   overflow: hidden;
+  height: 100%;
 }
 
 @media (max-width: 600px) {
@@ -360,6 +365,69 @@ Popup geometría
 .btn-disabled {
   border-color: rgb(107, 109, 110);
   color: rgb(107, 109, 110);
+}
+.context-menu {
+  width: 170px;
+  background-color: white;
+  border-radius: 3px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 2000;
+  left: -20px;
+  top: -15px;
+}
+.context-menu-item {
+  height: 30px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(0, 92, 131);
+  transition: 0.2s;
+}
+.context-menu-item:hover {
+  background-color: rgb(0,141,201);
+  color: white;
+}
+.context-menu-item:active {
+  background-color: rgb(0, 92, 131);
+  color: white;
+}
+.context-popup {
+  left: 20px !important;
+  top: 20px;
+}
+.context-menu-item-text {
+  margin: 0px !important;
+  font-weight: 700;
+}
+.non-selectable-text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.edit-style-popup {
+  left: 20px !important;
+  top: 20px;
+}
+.edit-style-popup-container {
+  width: 350px;
+  height: 250px;
+  background-color: white;
+  border-radius: 3px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 2000;
+  left: -20px;
+  top: -15px;
 }
 
 /*******************************

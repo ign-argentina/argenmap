@@ -429,13 +429,81 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						layer.on('click', (e) => {
 							const layer = e.target;
+							//evaluar si conviene la sig. instrucción
+							//mapa.flyTo(layer.getBounds().getCenter());
 							const popUpDiv = mapa.createPopUp(layer);
 							layer.bindPopup(popUpDiv);
 						});
 
-						drawnItems.addLayer(layer);
+						let contextPopup = null;
 
-						//L.geoJSON(layer.toGeoJSON()).addTo(mapa);
+						const contextMenu = document.createElement('div');
+						contextMenu.className = 'context-menu';
+
+						const contextMenuItem0 = document.createElement('div');
+						contextMenuItem0.className = 'context-menu-item';
+						contextMenuItem0.innerHTML = '<p class="non-selectable-text context-menu-item-text">Ver información</p>';
+						contextMenuItem0.style.borderRadius = '3px 3px 0 0';
+						contextMenuItem0.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+						};
+
+						const editStylePopup = mapa.createEditStylePopup(layer);
+						const contextMenuItem1 = document.createElement('div');
+						contextMenuItem1.className = 'context-menu-item';
+						contextMenuItem1.innerHTML = '<p class="non-selectable-text context-menu-item-text">Editar estilos</p>';
+						contextMenuItem1.onclick = (e) => {
+							console.log(e)
+							mapa.closePopup(contextPopup);
+							const popup = L.popup({ closeButton: false, className: 'edit-style-popup' }).setLatLng(layer.getBounds().getCenter()).setContent(editStylePopup);
+							mapa.openPopup(popup);
+						};
+						
+						const contextMenuItem2 = document.createElement('div');
+						contextMenuItem2.className = 'context-menu-item';
+						contextMenuItem2.innerHTML = '<p class="non-selectable-text context-menu-item-text">Acercar</p>';
+						contextMenuItem2.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+							mapa.fitBounds(layer.getBounds());
+						};
+
+						const contextMenuItem3 = document.createElement('div');
+						contextMenuItem3.className = 'context-menu-item';
+						contextMenuItem3.innerHTML = '<p class="non-selectable-text context-menu-item-text">Ocultar</p>';
+						contextMenuItem3.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+							mapa.hideLayer(layer.name);
+						};
+						
+						const contextMenuItem4 = document.createElement('div');
+						contextMenuItem4.className = 'context-menu-item';
+						contextMenuItem4.innerHTML = '<p class="non-selectable-text context-menu-item-text">Descargar geometría</p>';
+						contextMenuItem4.style.borderRadius = '0 0 3px 3px';
+						contextMenuItem4.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+							layer.downloadGeoJSON();
+						};
+
+						contextMenu.appendChild(contextMenuItem0);
+						contextMenu.appendChild(contextMenuItem1);
+						contextMenu.appendChild(contextMenuItem2);
+						contextMenu.appendChild(contextMenuItem3);
+						contextMenu.appendChild(contextMenuItem4);
+
+						layer.on('contextmenu', (e) => {
+							contextPopup = L.popup({ closeButton: false, className: 'context-popup' }).setLatLng(e.latlng).setContent(contextMenu);
+							mapa.openPopup(contextPopup);
+						});
+
+						L.DomEvent.on(contextMenu, 'click', function (e) {
+							L.DomEvent.stopPropagation(e);
+						});
+
+						L.DomEvent.on(editStylePopup, 'click', function (e) {
+							L.DomEvent.stopPropagation(e);
+						});
+
+						drawnItems.addLayer(layer);
 					});
 
 					mapa.on('draw:edited', (e) => {
@@ -475,6 +543,140 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('draw:editstop', (e) => {
 						currentlyDrawing = false;
 					});
+
+					mapa.createEditStylePopup = (layer) => {
+						const container = document.createElement('div');
+						container.className = 'edit-style-popup-container';
+
+						const colorInputDiv1 = document.createElement('div');
+						colorInputDiv1.className = 'color-input-div';
+
+						const colorInput1 = document.createElement('input');
+						colorInput1.id = 'color-input-1';
+						colorInput1.type = 'color';
+						colorInput1.value = layer.options.color;
+						colorInput1.addEventListener("change", (e) => {
+							layer.setStyle({ color: colorInput1.value });
+						});
+						colorInput1.addEventListener("input", (e) => {
+							layer.setStyle({ color: colorInput1.value });
+						});
+
+						const colorLabel1 = document.createElement('label');
+						colorLabel1.setAttribute('for', 'color-input-1');
+						colorLabel1.innerHTML = 'Color del borde:';
+
+						const colorInputDiv2 = document.createElement('div');
+						colorInputDiv2.className = 'color-input-div';
+
+						const colorInput2 = document.createElement('input');
+						colorInput2.id = 'color-input-2';
+						colorInput2.type = 'color';
+						colorInput2.value = layer.options.fillColor ? layer.options.fillColor : layer.options.color;
+						colorInput2.addEventListener("change", (e) => {
+							layer.setStyle({ fillColor: colorInput2.value });
+						});
+						colorInput2.addEventListener("input", (e) => {
+							layer.setStyle({ fillColor: colorInput2.value });
+						});
+
+						const colorLabel2 = document.createElement('label');
+						colorLabel2.setAttribute('for', 'color-input-2');
+						colorLabel2.innerHTML = 'Color de relleno:';
+
+						const opacityInputDiv1 = document.createElement('div');
+						opacityInputDiv1.className = 'opacity-input-div';
+
+						const opacityInput1 = document.createElement('input');
+						opacityInput1.id = 'opacity-input-1';
+						opacityInput1.type = 'range';
+						opacityInput1.min = 0;
+						opacityInput1.max = 1;
+						opacityInput1.step = 0.01;
+						opacityInput1.value = layer.options.opacity;
+						opacityInput1.addEventListener("change", (e) => {
+							layer.setStyle({ opacity: opacityInput1.value });
+						});
+						opacityInput1.addEventListener("input", (e) => {
+							layer.setStyle({ opacity: opacityInput1.value });
+						});
+
+						const opacityLabel1 = document.createElement('label');
+						opacityLabel1.setAttribute('for', 'opacity-input-1');
+						opacityLabel1.innerHTML = 'Nivel de transparencia del borde:';
+
+						const opacityInputDiv2 = document.createElement('div');
+						opacityInputDiv2.className = 'opacity-input-div';
+
+						const opacityInput2 = document.createElement('input');
+						opacityInput2.id = 'opacity-input-2';
+						opacityInput2.type = 'range';
+						opacityInput2.min = 0;
+						opacityInput2.max = 1;
+						opacityInput2.step = 0.01;
+						opacityInput2.value = layer.options.fillOpacity;
+						opacityInput2.addEventListener("change", (e) => {
+							layer.setStyle({ fillOpacity: opacityInput2.value });
+						});
+						opacityInput2.addEventListener("input", (e) => {
+							layer.setStyle({ fillOpacity: opacityInput2.value });
+						});
+
+						const opacityLabel2 = document.createElement('label');
+						opacityLabel2.setAttribute('for', 'opacity-input-2');
+						opacityLabel2.innerHTML = 'Nivel de transparencia del relleno:';
+
+						const weightInputDiv = document.createElement('div');
+						weightInputDiv.className = 'weight-input-div';
+
+						const weightInput = document.createElement('input');
+						weightInput.id = 'weight-input';
+						weightInput.type = 'range';
+						weightInput.min = 0;
+						weightInput.max = 10;
+						weightInput.step = 1;
+						weightInput.value = layer.options.weight;
+						weightInput.addEventListener("change", (e) => {
+							layer.setStyle({
+								weight: weightInput.value,
+								opacity: opacityInput1.value,
+								fillOpacity: opacityInput2.value
+							});
+						});
+						weightInput.addEventListener("input", (e) => {
+							layer.setStyle({
+								weight: weightInput.value,
+								opacity: opacityInput1.value,
+								fillOpacity: opacityInput2.value
+							});
+						});
+
+						const weightLabel = document.createElement('label');
+						weightLabel.setAttribute('for', 'weight-input');
+						weightLabel.innerHTML = 'Grosor del borde:';
+
+						colorInputDiv1.appendChild(colorLabel1);
+						colorInputDiv1.appendChild(colorInput1);
+						container.appendChild(colorInputDiv1);
+
+						colorInputDiv2.appendChild(colorLabel2);
+						colorInputDiv2.appendChild(colorInput2);
+						container.appendChild(colorInputDiv2);
+						
+						opacityInputDiv1.appendChild(opacityLabel1);
+						opacityInputDiv1.appendChild(opacityInput1);
+						container.appendChild(opacityInputDiv1);
+						
+						opacityInputDiv2.appendChild(opacityLabel2);
+						opacityInputDiv2.appendChild(opacityInput2);
+						container.appendChild(opacityInputDiv2);
+						
+						weightInputDiv.appendChild(weightLabel);
+						weightInputDiv.appendChild(weightInput);
+						container.appendChild(weightInputDiv);
+
+						return container;
+					};
 
 					mapa.addLayerToPopUp = (container, activeLayer) => {
 						const inputDiv = document.createElement('div');
@@ -720,14 +922,14 @@ $("body").on("pluginLoad", function(event, plugin){
 									layer.coords = coords;
 
 									//Load data in table
-									let tableD = new Datatable (data, coords);
-									createTabulator(tableD, activeLayer.name);
+									const table = new Datatable(data, coords);
+									createTabulator(table, activeLayer.name);
 
 									//we can style the figure in case it can receive some information
-									if (layer.type !== 'marker')
+									/* if (layer.type !== 'marker')
 										layer.setStyle({
 											color: '#33b560'
-										});
+										}); */
 								})
 								.catch(error => {
 									console.log(error);
