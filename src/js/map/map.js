@@ -413,6 +413,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
+						layer.options.fillColor = !layer.options.fillColor ? layer.options.color : layer.options.fillColor;
 
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
@@ -453,10 +454,15 @@ $("body").on("pluginLoad", function(event, plugin){
 						contextMenuItem1.className = 'context-menu-item';
 						contextMenuItem1.innerHTML = '<p class="non-selectable-text context-menu-item-text">Editar estilos</p>';
 						contextMenuItem1.onclick = (e) => {
-							console.log(e)
 							mapa.closePopup(contextPopup);
-							const popup = L.popup({ closeButton: false, className: 'edit-style-popup' }).setLatLng(layer.getBounds().getCenter()).setContent(editStylePopup);
+							const popup = L.popup({ closeButton: false, className: 'edit-style-popup' })
+							.setLatLng(layer.type !== 'marker' && layer.type !== 'circlemarker' ? layer.getBounds().getCenter() : layer.getLatLng())
+							.setContent(editStylePopup);
 							mapa.openPopup(popup);
+
+							//
+							const parent = editStylePopup.parentElement;
+							parent.className = 'leaflet-popup-content popup-parent';
 						};
 						
 						const contextMenuItem2 = document.createElement('div');
@@ -464,7 +470,11 @@ $("body").on("pluginLoad", function(event, plugin){
 						contextMenuItem2.innerHTML = '<p class="non-selectable-text context-menu-item-text">Acercar</p>';
 						contextMenuItem2.onclick = (e) => {
 							mapa.closePopup(contextPopup);
-							mapa.fitBounds(layer.getBounds());
+							if (layer.type === 'marker' || layer.type === 'circlemarker') {
+								mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+							} else {
+								mapa.fitBounds(layer.getBounds());
+							}
 						};
 
 						const contextMenuItem3 = document.createElement('div');
@@ -548,46 +558,21 @@ $("body").on("pluginLoad", function(event, plugin){
 						const container = document.createElement('div');
 						container.className = 'edit-style-popup-container';
 
-						const colorInputDiv1 = document.createElement('div');
-						colorInputDiv1.className = 'color-input-div';
+						//-Lines
+						const borderSection = document.createElement('div');
+						borderSection.className = 'section-popup';
 
-						const colorInput1 = document.createElement('input');
-						colorInput1.id = 'color-input-1';
-						colorInput1.type = 'color';
-						colorInput1.value = layer.options.color;
-						colorInput1.addEventListener("change", (e) => {
-							layer.setStyle({ color: colorInput1.value });
-						});
-						colorInput1.addEventListener("input", (e) => {
-							layer.setStyle({ color: colorInput1.value });
-						});
+						//Title
+						const title = document.createElement('p');
+						title.className = 'section-title non-selectable-text';
+						title.textContent = 'Líneas';
+						borderSection.appendChild(title);
 
-						const colorLabel1 = document.createElement('label');
-						colorLabel1.setAttribute('for', 'color-input-1');
-						colorLabel1.innerHTML = 'Color del borde:';
-
-						const colorInputDiv2 = document.createElement('div');
-						colorInputDiv2.className = 'color-input-div';
-
-						const colorInput2 = document.createElement('input');
-						colorInput2.id = 'color-input-2';
-						colorInput2.type = 'color';
-						colorInput2.value = layer.options.fillColor ? layer.options.fillColor : layer.options.color;
-						colorInput2.addEventListener("change", (e) => {
-							layer.setStyle({ fillColor: colorInput2.value });
-						});
-						colorInput2.addEventListener("input", (e) => {
-							layer.setStyle({ fillColor: colorInput2.value });
-						});
-
-						const colorLabel2 = document.createElement('label');
-						colorLabel2.setAttribute('for', 'color-input-2');
-						colorLabel2.innerHTML = 'Color de relleno:';
-
+						//Opacity
 						const opacityInputDiv1 = document.createElement('div');
-						opacityInputDiv1.className = 'opacity-input-div';
-
+						opacityInputDiv1.className = 'section-item';
 						const opacityInput1 = document.createElement('input');
+						opacityInput1.className = 'section-item-input';
 						opacityInput1.id = 'opacity-input-1';
 						opacityInput1.type = 'range';
 						opacityInput1.min = 0;
@@ -600,36 +585,19 @@ $("body").on("pluginLoad", function(event, plugin){
 						opacityInput1.addEventListener("input", (e) => {
 							layer.setStyle({ opacity: opacityInput1.value });
 						});
-
 						const opacityLabel1 = document.createElement('label');
 						opacityLabel1.setAttribute('for', 'opacity-input-1');
-						opacityLabel1.innerHTML = 'Nivel de transparencia del borde:';
+						opacityLabel1.className = 'non-selectable-text';
+						opacityLabel1.innerHTML = 'Opacidad';
+						opacityInputDiv1.appendChild(opacityLabel1);
+						opacityInputDiv1.appendChild(opacityInput1);
+						borderSection.appendChild(opacityInputDiv1);
 
-						const opacityInputDiv2 = document.createElement('div');
-						opacityInputDiv2.className = 'opacity-input-div';
-
-						const opacityInput2 = document.createElement('input');
-						opacityInput2.id = 'opacity-input-2';
-						opacityInput2.type = 'range';
-						opacityInput2.min = 0;
-						opacityInput2.max = 1;
-						opacityInput2.step = 0.01;
-						opacityInput2.value = layer.options.fillOpacity;
-						opacityInput2.addEventListener("change", (e) => {
-							layer.setStyle({ fillOpacity: opacityInput2.value });
-						});
-						opacityInput2.addEventListener("input", (e) => {
-							layer.setStyle({ fillOpacity: opacityInput2.value });
-						});
-
-						const opacityLabel2 = document.createElement('label');
-						opacityLabel2.setAttribute('for', 'opacity-input-2');
-						opacityLabel2.innerHTML = 'Nivel de transparencia del relleno:';
-
+						//Weight
 						const weightInputDiv = document.createElement('div');
-						weightInputDiv.className = 'weight-input-div';
-
+						weightInputDiv.className = 'section-item';
 						const weightInput = document.createElement('input');
+						weightInput.className = 'section-item-input';
 						weightInput.id = 'weight-input';
 						weightInput.type = 'range';
 						weightInput.min = 0;
@@ -650,31 +618,276 @@ $("body").on("pluginLoad", function(event, plugin){
 								fillOpacity: opacityInput2.value
 							});
 						});
-
 						const weightLabel = document.createElement('label');
 						weightLabel.setAttribute('for', 'weight-input');
-						weightLabel.innerHTML = 'Grosor del borde:';
-
-						colorInputDiv1.appendChild(colorLabel1);
-						colorInputDiv1.appendChild(colorInput1);
-						container.appendChild(colorInputDiv1);
-
-						colorInputDiv2.appendChild(colorLabel2);
-						colorInputDiv2.appendChild(colorInput2);
-						container.appendChild(colorInputDiv2);
-						
-						opacityInputDiv1.appendChild(opacityLabel1);
-						opacityInputDiv1.appendChild(opacityInput1);
-						container.appendChild(opacityInputDiv1);
-						
-						opacityInputDiv2.appendChild(opacityLabel2);
-						opacityInputDiv2.appendChild(opacityInput2);
-						container.appendChild(opacityInputDiv2);
-						
+						weightLabel.className = 'non-selectable-text';
+						weightLabel.innerHTML = 'Grosor';
 						weightInputDiv.appendChild(weightLabel);
 						weightInputDiv.appendChild(weightInput);
-						container.appendChild(weightInputDiv);
+						borderSection.appendChild(weightInputDiv);
 
+						//Dash
+						const dashArrayInputDiv = document.createElement('div');
+						dashArrayInputDiv.className = 'section-item';
+						const dashArrayInput = document.createElement('input');
+						dashArrayInput.className = 'section-item-input';
+						dashArrayInput.id = 'dash-input';
+						dashArrayInput.type = 'range';
+						dashArrayInput.min = 0;
+						dashArrayInput.max = 50;
+						dashArrayInput.step = 1;
+						dashArrayInput.value = layer.options.dashArray ? layer.options.dashArray : 0;
+						dashArrayInput.addEventListener("change", (e) => {
+							layer.setStyle({
+								dashArray: dashArrayInput.value
+							});
+						});
+						dashArrayInput.addEventListener("input", (e) => {
+							layer.setStyle({
+								dashArray: dashArrayInput.value
+							});
+						});
+						const dashLabel = document.createElement('label');
+						dashLabel.setAttribute('for', 'dash-input');
+						dashLabel.innerHTML = 'Discontinuidad';
+						dashArrayInputDiv.appendChild(dashLabel);
+						dashArrayInputDiv.appendChild(dashArrayInput);
+						borderSection.appendChild(dashArrayInputDiv);
+
+						//Join
+						const joinSelectDiv = document.createElement('div');
+						joinSelectDiv.className = 'section-item';
+						const joinSelect = document.createElement('select');
+						joinSelect.className = 'section-item-input';
+						joinSelect.id = "join-select";
+						const joinOptions = ['round', 'bevel', 'miter', 'miter-clip'];
+						joinOptions.forEach(optionName => {
+							const option = document.createElement("option");
+							option.value = optionName;
+							option.text = optionName;
+							option.selected = layer.lineJoin === optionName;
+							joinSelect.appendChild(option);
+						});
+						joinSelect.addEventListener("change", (e) => {
+							layer.setStyle({
+								lineJoin: joinSelect.value
+							});
+						});
+						const joinLabel = document.createElement('label');
+						joinLabel.setAttribute('for', 'join-select');
+						joinLabel.innerHTML = 'Unión';
+						joinSelectDiv.appendChild(joinLabel);
+						joinSelectDiv.appendChild(joinSelect);
+						borderSection.appendChild(joinSelectDiv);
+
+						//Cap
+						const capSelectDiv = document.createElement('div');
+						capSelectDiv.className = 'section-item';
+						const capSelect = document.createElement('select');
+						capSelect.className = 'section-item-input';
+						capSelect.id = "cap-select";
+						const capOptions = ['round', 'butt', 'square'];
+						capOptions.forEach(optionName => {
+							const option = document.createElement("option");
+							option.value = optionName;
+							option.text = optionName;
+							option.selected = layer.lineCap === optionName;
+							capSelect.appendChild(option);
+						});
+						capSelect.addEventListener("change", (e) => {
+							layer.setStyle({
+								lineCap: capSelect.value
+							});
+						});
+						const capLabel = document.createElement('label');
+						capLabel.setAttribute('for', 'cap-select');
+						capLabel.innerHTML = 'Terminación';
+						capSelectDiv.appendChild(capLabel);
+						capSelectDiv.appendChild(capSelect);
+						if (layer.type === 'polyline')
+							borderSection.appendChild(capSelectDiv);
+
+						//Color
+						const colorInputDiv1 = document.createElement('div');
+						colorInputDiv1.className = 'section-item';
+						const colorInput1 = document.createElement('input');
+						colorInput1.className = 'section-item-input';
+						colorInput1.id = 'color-input-1';
+						colorInput1.type = 'color';
+						colorInput1.value = layer.options.color;
+						colorInput1.addEventListener("change", (e) => {
+							layer.setStyle({ color: colorInput1.value });
+						});
+						colorInput1.addEventListener("input", (e) => {
+							layer.setStyle({ color: colorInput1.value });
+						});
+						const colorLabel1 = document.createElement('label');
+						colorLabel1.setAttribute('for', 'color-input-1');
+						colorLabel1.innerHTML = 'Color';
+						colorInputDiv1.appendChild(colorLabel1);
+						colorInputDiv1.appendChild(colorInput1);
+						borderSection.appendChild(colorInputDiv1);
+
+						//-Fill
+						const fillSection = document.createElement('div');
+						fillSection.className = 'section-popup';
+
+						//Title
+						const title2 = document.createElement('p');
+						title2.className = 'section-title';
+						title2.textContent = 'Relleno';
+						fillSection.appendChild(title2);
+
+						//Color
+						const colorInputDiv2 = document.createElement('div');
+						colorInputDiv2.className = 'section-item';
+						const colorInput2 = document.createElement('input');
+						colorInput2.className = 'section-item-input';
+						colorInput2.id = 'color-input-2';
+						colorInput2.type = 'color';
+						colorInput2.value = layer.options.fillColor ? layer.options.fillColor : layer.options.color;
+						colorInput2.addEventListener("change", (e) => {
+							layer.setStyle({ fillColor: colorInput2.value });
+						});
+						colorInput2.addEventListener("input", (e) => {
+							layer.setStyle({ fillColor: colorInput2.value });
+						});
+						const colorLabel2 = document.createElement('label');
+						colorLabel2.setAttribute('for', 'color-input-2');
+						colorLabel2.innerHTML = 'Color';
+						colorInputDiv2.appendChild(colorLabel2);
+						colorInputDiv2.appendChild(colorInput2);
+						fillSection.appendChild(colorInputDiv2);
+
+						//Opacity
+						const opacityInputDiv2 = document.createElement('div');
+						opacityInputDiv2.className = 'section-item';
+						const opacityInput2 = document.createElement('input');
+						opacityInput2.className = 'section-item-input';
+						opacityInput2.id = 'opacity-input-2';
+						opacityInput2.type = 'range';
+						opacityInput2.min = 0;
+						opacityInput2.max = 1;
+						opacityInput2.step = 0.01;
+						opacityInput2.value = layer.options.fillOpacity;
+						opacityInput2.addEventListener("change", (e) => {
+							layer.setStyle({ fillOpacity: opacityInput2.value });
+						});
+						opacityInput2.addEventListener("input", (e) => {
+							layer.setStyle({ fillOpacity: opacityInput2.value });
+						});
+						const opacityLabel2 = document.createElement('label');
+						opacityLabel2.setAttribute('for', 'opacity-input-2');
+						opacityLabel2.innerHTML = 'Opacidad';
+						opacityInputDiv2.appendChild(opacityLabel2);
+						opacityInputDiv2.appendChild(opacityInput2);
+						fillSection.appendChild(opacityInputDiv2);
+
+						//-Circle
+						const circleSection = document.createElement('div');
+						circleSection.className = 'section-popup';
+
+						//Title
+						const title3 = document.createElement('p');
+						title3.className = 'section-title';
+						title3.textContent = 'Círculo';
+						circleSection.appendChild(title3);
+
+						const radiusInputDiv = document.createElement('div');
+						radiusInputDiv.className = 'section-item';
+						const radiusInput = document.createElement('input');
+						radiusInput.className = 'section-item-input';
+						radiusInput.id = 'radius-input';
+						radiusInput.type = 'range';
+						radiusInput.min = 1;
+						radiusInput.max = 2500000;
+						radiusInput.step = 0.1;
+						radiusInput.value = layer.options.radius;
+						radiusInput.addEventListener("change", (e) => {
+							layer.setRadius(radiusInput.value);
+						});
+						radiusInput.addEventListener("input", (e) => {
+							layer.setRadius(radiusInput.value);
+						});
+						const radiusLabel = document.createElement('label');
+						radiusLabel.setAttribute('for', 'radius-input');
+						radiusLabel.innerHTML = 'Radio';
+						radiusInputDiv.appendChild(radiusLabel);
+						radiusInputDiv.appendChild(radiusInput);
+						circleSection.appendChild(radiusInputDiv);
+
+						//-Marker
+						const markerSection = document.createElement('div');
+						markerSection.className = 'section-popup';
+
+						//Title
+						const title4 = document.createElement('p');
+						title4.className = 'section-title';
+						title4.textContent = 'Marcador';
+						markerSection.appendChild(title4);
+
+						//Opacity
+						const opacityInputDiv3 = document.createElement('div');
+						opacityInputDiv3.className = 'section-item';
+						const opacityInput3 = document.createElement('input');
+						opacityInput3.className = 'section-item-input';
+						opacityInput3.id = 'opacity-input-3';
+						opacityInput3.type = 'range';
+						opacityInput3.min = 0;
+						opacityInput3.max = 1;
+						opacityInput3.step = 0.01;
+						opacityInput3.value = layer.options.opacity;
+						opacityInput3.addEventListener("change", (e) => {
+							layer.setOpacity(opacityInput3.value);
+						});
+						opacityInput3.addEventListener("input", (e) => {
+							layer.setOpacity(opacityInput3.value);
+						});
+						const opacityLabel3 = document.createElement('label');
+						opacityLabel3.setAttribute('for', 'opacity-input-3');
+						opacityLabel3.innerHTML = 'Opacidad';
+						opacityInputDiv3.appendChild(opacityLabel3);
+						opacityInputDiv3.appendChild(opacityInput3);
+						markerSection.appendChild(opacityInputDiv3);
+
+						switch (layer.type) {
+							case 'marker': {
+								container.appendChild(markerSection);
+								container.style.height = '110px';
+							}
+							break;
+							case 'circlemarker': {
+								container.appendChild(borderSection);
+								container.appendChild(fillSection);
+								container.style.height = '310px';
+							}
+							break;
+							case 'circle': {
+								container.appendChild(borderSection);
+								container.appendChild(fillSection);
+								container.appendChild(circleSection);
+								container.style.height = '400px';
+							}
+							break;
+							case 'polyline': {
+								container.appendChild(borderSection);
+								container.appendChild(fillSection);
+								container.style.height = '310px';
+							}
+							break;
+							case 'polygon': {
+								container.appendChild(borderSection);
+								container.appendChild(fillSection);
+								container.style.height = '310px';
+							}
+							break;
+							case 'rectangle': {
+								container.appendChild(borderSection);
+								container.appendChild(fillSection);
+								container.style.height = '310px';
+							}
+							break;
+						}
 						return container;
 					};
 

@@ -417,17 +417,66 @@ Popup geometría
 }
 .edit-style-popup-container {
   width: 350px;
-  height: 250px;
   background-color: white;
   border-radius: 3px;
   position: absolute;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   z-index: 2000;
   left: -20px;
   top: -15px;
+  padding: 7px;
+}
+.edit-style-popup-container .section-popup .section-title {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.edit-style-popup-container .section-popup .section-item label {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.section-popup {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+.section-title {
+  position: absolute;
+  align-self: center;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  top: -30px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.section-item {
+  flex-basis: 45%;
+  height: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.section-item-input {
+  width: 95% !important;
+  height: 22px;
+}
+.popup-parent {
+  height: 0px !important;
+  width: 0px !important;
 }
 
 /*******************************
