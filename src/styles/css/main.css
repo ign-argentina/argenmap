@@ -369,7 +369,7 @@ Popup geometría
 .context-menu {
   width: 170px;
   background-color: white;
-  border-radius: 3px;
+  border-radius: 5px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -378,6 +378,7 @@ Popup geometría
   z-index: 2000;
   left: -20px;
   top: -15px;
+  box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
 }
 .context-menu-item {
   height: 30px;
@@ -386,16 +387,21 @@ Popup geometría
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgb(0, 92, 131);
   transition: 0.2s;
 }
-.context-menu-item:hover {
+.context-menu-item-active {
+  color: rgb(0, 92, 131);
+}
+.context-menu-item-active:hover {
   background-color: rgb(0,141,201);
   color: white;
 }
-.context-menu-item:active {
+.context-menu-item-active:active {
   background-color: rgb(0, 92, 131);
   color: white;
+}
+.context-menu-item-disabled {
+  color: rgb(107, 109, 110);
 }
 .context-popup {
   left: 20px !important;
@@ -418,7 +424,7 @@ Popup geometría
 .edit-style-popup-container {
   width: 350px;
   background-color: white;
-  border-radius: 3px;
+  border-radius: 5px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -428,6 +434,7 @@ Popup geometría
   left: -20px;
   top: -15px;
   padding: 7px;
+  box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
 }
 .edit-style-popup-container .section-popup .section-title {
   -webkit-user-select: none;
@@ -464,7 +471,7 @@ Popup geometría
 }
 .section-item {
   flex-basis: 45%;
-  height: 55px;
+  height: 58px;
   display: flex;
   flex-direction: column;
   justify-content: center;
