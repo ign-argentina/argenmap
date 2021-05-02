@@ -30,10 +30,10 @@ const onClickActiveLayer = (activeLayer) => {
 };
 
 const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
-	mapa.setStyleToMarker(layer.name, borderColor, fillColor, borderWidth);
-	layer.options.markerStyles.borderWidth = borderWidth;
-	layer.options.markerStyles.borderColor = borderColor;
-	layer.options.markerStyles.fillColor = fillColor;
+	mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
+	layer.options.borderWidth = borderWidth;
+	layer.options.borderColor = borderColor;
+	layer.options.fillColor = fillColor;
 };
 
 // Add plugins to map when (and if) avaiable
@@ -444,15 +444,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						drawnItems.addLayer(layer);
 						
 						if (layer.type === 'marker') {
-							const borderWidth = 1.5;
-							const borderColor = '#4698d0';
-							const fillColor = '#4698d0';
-
-							layer.options.markerStyles = {
-								borderWidth: borderWidth,
-								borderColor: borderColor,
-								fillColor: fillColor,
-							};
+							layer.options.borderWidth = 1.5;
+							layer.options.borderColor = '#4698d0';
+							layer.options.fillColor = '#4698d0';
 						}
 
 						mapa.addSelectionLayersMenuToLayer(layer);
@@ -896,19 +890,22 @@ $("body").on("pluginLoad", function(event, plugin){
 							enableMarkerInput.className = 'section-item-input';
 							enableMarkerInput.id = 'enable-marker-input';
 							enableMarkerInput.type = 'checkbox';
-							enableMarkerInput.checked = false;
+							enableMarkerInput.checked = layer.options.hasOwnProperty('customMarker');
 							enableMarkerInput.addEventListener("change", (e) => {
 								weightInput2.disabled = !enableMarkerInput.checked;
 								colorInput3.disabled = !enableMarkerInput.checked;
 								colorInput4.disabled = !enableMarkerInput.checked;
+								downloadBtn1.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+								downloadBtn1.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
+								downloadBtn2.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+								downloadBtn2.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
 								if (!enableMarkerInput.checked) {
 									layer.setIcon(new L.Icon.Default);
 								} else {
-									mapa.setIconToMarker(layer);
 									const weight = weightInput2.value;
 									const borderColor = colorInput3.value;
 									const fillColor = colorInput4.value;
-									mapa.setStyleToMarker(layer.name, borderColor, fillColor, weight);
+									mapa.setIconToMarker(layer, borderColor, fillColor, weight);
 								}
 							});
 							const enableMarkerLabel = document.createElement('label');
@@ -952,7 +949,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							weightInput2.min = 0;
 							weightInput2.max = 3;
 							weightInput2.step = 0.1;
-							weightInput2.value = layer.options.markerStyles.borderWidth;
+							weightInput2.value = layer.options.borderWidth;
 							weightInput2.disabled = !enableMarkerInput.checked;
 							weightInput2.addEventListener("change", (e) => {
 								const weight = weightInput2.value;
@@ -981,7 +978,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorInput3.className = 'section-item-input';
 							colorInput3.id = 'color-input-3';
 							colorInput3.type = 'color';
-							colorInput3.value = layer.options.markerStyles.borderColor;
+							colorInput3.value = layer.options.borderColor;
 							colorInput3.disabled = !enableMarkerInput.checked;
 							colorInput3.addEventListener("change", (e) => {
 								const weight = weightInput2.value;
@@ -1009,7 +1006,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorInput4.className = 'section-item-input';
 							colorInput4.id = 'color-input-4';
 							colorInput4.type = 'color';
-							colorInput4.value = layer.options.markerStyles.fillColor;
+							colorInput4.value = layer.options.fillColor;
 							colorInput4.disabled = !enableMarkerInput.checked;
 							colorInput4.addEventListener("change", (e) => {
 								const weight = weightInput2.value;
@@ -1028,8 +1025,55 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorLabel4.innerHTML = 'Color del relleno';
 							colorInputDiv4.appendChild(colorLabel4);
 							colorInputDiv4.appendChild(colorInput4);
-							markerSection.appendChild(colorInputDiv4);	
+							markerSection.appendChild(colorInputDiv4);
+
+							//Download
+							const downloadDiv = document.createElement('div');
+							downloadDiv.className = 'section-item';
+							
+							const downloadTitle = document.createElement('label');
+							downloadTitle.className = '';
+							downloadTitle.innerHTML = 'Descargar como';
+
+							const downloadBtnsDiv = document.createElement('div');
+							downloadBtnsDiv.className = 'download-item';
+
+							const downloadBtn1 = document.createElement('div');
+							downloadBtn1.className = 'popup-btn download-btn';
+							downloadBtn1.innerHTML = '<p class="non-selectable-text" style="font-weight: bold; margin: 0;">SVG</p>';
+							downloadBtn1.onclick = () => {
+								if (enableMarkerInput.checked) {
+									const weight = weightInput2.value;
+									const borderColor = colorInput3.value;
+									const fillColor = colorInput4.value;
+									mapa.downloadMarker('svg', borderColor, fillColor, weight);
+								}
+							};
+							downloadBtnsDiv.appendChild(downloadBtn1);
+
+							const downloadBtn2 = document.createElement('div');
+							downloadBtn2.className = 'popup-btn download-btn';
+							downloadBtn2.innerHTML = '<p class="non-selectable-text" style="font-weight: bold; margin: 0;">PNG</p>';
+							downloadBtn2.onclick = () => {
+								if (enableMarkerInput.checked) {
+									const weight = weightInput2.value;
+									const borderColor = colorInput3.value;
+									const fillColor = colorInput4.value;
+									mapa.downloadMarker('png', borderColor, fillColor, weight);
+								}
+							};
+							downloadBtnsDiv.appendChild(downloadBtn2);
+
+							downloadBtn1.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+							downloadBtn1.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
+							downloadBtn2.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+							downloadBtn2.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
+
+							downloadDiv.appendChild(downloadTitle);
+							downloadDiv.appendChild(downloadBtnsDiv);
+							markerSection.appendChild(downloadDiv);
 						}
+						
 
 						switch (layer.type) {
 							case 'marker': {
@@ -1417,8 +1461,13 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.downloadLayerGeoJSON = (layer) => {
 						const geoJSON = layer.toGeoJSON();
 						const styleOptions = { ...layer.options };
-						geoJSON.properties.styles = styleOptions;
+						geoJSON.properties.styles = { ...styleOptions };
 						geoJSON.properties.type = layer.type;
+						if (layer.type === 'marker') {
+							if (geoJSON.properties.styles.hasOwnProperty('icon')) {
+								delete geoJSON.properties.styles.icon;
+							}
+						}
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
@@ -1452,23 +1501,20 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.remove();
 					}
 
-					mapa.setStyleToMarker = (layer, color1, color2, borderWidth) => {
+					mapa.createMarker = (color1, color2, borderWidth) => {
 						const svgNS = 'http://www.w3.org/2000/svg';
 
-						const svg = document.getElementById(layer);
+						const marker = document.createElementNS(svgNS, "svg");
+						marker.setAttribute('width', 28);
+						marker.setAttribute('height', 41);
+						marker.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+						marker.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
-						/* const path = svg.querySelector('path');
-						path.setAttribute('stroke', color1);
-						path.setAttribute('fill', color2);
-						path.setAttribute('stroke-linecap', 'round');
-						path.setAttribute('stroke-width', borderWidth);
-						return; */
-
-						const defs = svg.querySelector('defs');
-						defs.innerHTML = '';
+						const defs = document.createElementNS(svgNS, "defs");
+						marker.appendChild(defs);
 
 						const borderGradient = document.createElementNS(svgNS, 'linearGradient');
-						borderGradient.setAttribute('id', layer + '_strokeGradient');
+						borderGradient.setAttribute('id', 'strokeGradient');
 						borderGradient.setAttribute('x1', '0');
 						borderGradient.setAttribute('x2', '0');
 						borderGradient.setAttribute('y1', '0');
@@ -1485,7 +1531,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						borderGradient.appendChild(stop2);
 				
 						const fillGradient = document.createElementNS(svgNS, 'linearGradient');
-						fillGradient.setAttribute('id', layer + '_fillGradient');
+						fillGradient.setAttribute('id', 'fillGradient');
 						fillGradient.setAttribute('x1', '0');
 						fillGradient.setAttribute('x2', '0');
 						fillGradient.setAttribute('y1', '0');
@@ -1504,39 +1550,74 @@ $("body").on("pluginLoad", function(event, plugin){
 						defs.appendChild(borderGradient);
 						defs.appendChild(fillGradient);
 
-						const path = document.getElementById(`${layer}_path`);
-						path.setAttribute('stroke', `url(#${layer}_strokeGradient)`);
-						path.setAttribute('fill', `url(#${layer}_fillGradient)`);
-						path.setAttribute('stroke-linecap', 'round');
-						path.setAttribute('stroke-width', borderWidth);
-					}
-
-					mapa.setIconToMarker = (layer) => {
-						const svgNS = 'http://www.w3.org/2000/svg';
-
-						const marker = document.createElementNS(svgNS, "svg");
-						marker.setAttribute('id', layer.name);
-						marker.setAttribute('width', '28');
-						marker.setAttribute('height', '41');
-				
-						const defs = document.createElementNS(svgNS, "defs");
-						marker.appendChild(defs);
-
 						const g = document.createElementNS(svgNS, "g");
 						marker.appendChild(g);
 						
 						const path = document.createElementNS(svgNS, "path");
-						path.setAttribute('id', layer.name + '_path');
 						path.setAttribute('d', 'm14.095833,1.55c-6.846875,0 -12.545833,5.691 -12.545833,11.866c0,2.778 1.629167,6.308 2.80625,8.746l9.69375,17.872l9.647916,-17.872c1.177083,-2.438 2.852083,-5.791 2.852083,-8.746c0,-6.175 -5.607291,-11.866 -12.454166,-11.866zm0,7.155c2.691667,0.017 4.873958,2.122 4.873958,4.71s-2.182292,4.663 -4.873958,4.679c-2.691667,-0.017 -4.873958,-2.09 -4.873958,-4.679c0,-2.588 2.182292,-4.693 4.873958,-4.71z');
+						path.setAttribute('stroke', `url(#strokeGradient)`);
+						path.setAttribute('fill', `url(#fillGradient)`);
+						path.setAttribute('stroke-linecap', 'round');
+						path.setAttribute('stroke-width', borderWidth);
 						g.appendChild(path);
-				
-						const icon = L.divIcon({
-							className: 'leaflet-marker',
-							iconSize: [28, 41],
-							iconAnchor: [15, 43],
-							html: marker.outerHTML
-						});
 
+						return marker;
+					}
+
+					mapa.convertMarkerToPng = async (markerSvg) => {
+						let svgString = new XMLSerializer().serializeToString(markerSvg);
+						let canvas = document.createElement('canvas');
+						canvas.width = 28;
+						canvas.height = 41;
+						let ctx = canvas.getContext("2d");
+						let DOMURL = self.URL || self.webkitURL || self;
+						let img = new Image();
+						let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+						let url = DOMURL.createObjectURL(svg);
+						return new Promise((resolve, reject) => {
+							img.onload = function() {
+								ctx.drawImage(img, 0, 0);
+								let png = canvas.toDataURL("image/png", 1);
+								markerSvg.innerHTML = '<img src="'+png+'"/>';
+								DOMURL.revokeObjectURL(png);
+								resolve(png);
+							};
+							img.src = url;
+						});
+					}
+
+					mapa.downloadMarker = async (format, color1, color2, borderWidth) => {
+						const markerSVG = mapa.createMarker(color1, color2, borderWidth);
+						let downloadLink = document.createElement("a");
+						switch (format) {
+							case 'svg': {
+								let svgData = markerSVG.outerHTML;
+								let svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+								let svgUrl = URL.createObjectURL(svgBlob);
+								downloadLink.href = svgUrl;
+								downloadLink.download = "marker.svg";
+							}
+							break;
+							case 'png': {
+								const markerPNG = await mapa.convertMarkerToPng(markerSVG);
+								downloadLink.href = markerPNG;
+								downloadLink.download = "marker.png";
+							}
+							break;
+						}
+						document.body.appendChild(downloadLink);
+						downloadLink.click();
+						document.body.removeChild(downloadLink);
+					}
+
+					mapa.setIconToMarker = async (layer, color1, color2, borderWidth) => {
+						const markerSVG = mapa.createMarker(color1, color2, borderWidth);
+						const markerPNG = await mapa.convertMarkerToPng(markerSVG);
+						const icon = L.icon({
+							iconUrl: markerPNG,
+							shadowUrl: 'src/styles/images/marker-shadow.png',
+							popupAnchor:  [1, -33]
+						});
 						layer.setIcon(icon);
 					};
 
@@ -1562,19 +1643,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						switch (type) {
 							case 'point': {
 								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
-								
-								const defaultColor = '#008dc9';
-								let color = geoJSON.properties.hasOwnProperty('type') &&
-									geoJSON.properties.type.hasOwnProperty('styles') &&
-									geoJSON.properties.type.styles.hasOwnProperty('color')
-									? geoJSON.properties.type.styles.color : null
-
-								const icon = L.divIcon({
-									className: "leaflet-marker",
-									iconSize: [40, 40],
-									iconAnchor: [15, 43],
-									html: mapa.getMarkerSvg(color ? color : defaultColor, getDarkerColorTone(color ? color : defaultColor, -0.3))
-								});
 
 								//Check if it is circle, circlemarker or marker
 								if (geoJSON.properties.hasOwnProperty('type')) {
@@ -1590,17 +1658,17 @@ $("body").on("pluginLoad", function(event, plugin){
 										};
 										break;
 										case 'marker': {
-											layer = L.marker(invertedCoords, { ...options, icon });
+											layer = L.marker(invertedCoords);
 											type = 'marker';
 										};
 										break;
 										default: {
-											layer = L.marker(invertedCoords, { ...options, icon });
+											layer = L.marker(invertedCoords);
 											type = 'marker';
 										}
 									}
 								} else {
-									layer = L.marker(invertedCoords, { ...options, icon });
+									layer = L.marker(invertedCoords);
 									type = 'marker';
 								}
 							}
@@ -1659,6 +1727,21 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						mapa.editableLayers[type].push(layer);
+						
+						if (layer.type === 'marker') {
+							if (geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
+								const borderWidth = geoJSON.properties.styles.borderWidth;
+								const borderColor = geoJSON.properties.styles.borderColor;
+								const fillColor = geoJSON.properties.styles.fillColor;
+
+								layer.options.borderWidth = borderWidth;
+								layer.options.borderColor = borderColor;
+								layer.options.fillColor = fillColor;
+								layer.options.customMarker = true;
+
+								mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
+							}
+						}
 
 						//Left-click
 						mapa.addSelectionLayersMenuToLayer(layer);
@@ -1666,7 +1749,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.addContextMenuToLayer(layer);
 
 						drawnItems.addLayer(layer);
-						
+
 						if (type !== 'marker' && type !== 'circlemarker') {
 							mapa.fitBounds(layer.getBounds());
 						} else {

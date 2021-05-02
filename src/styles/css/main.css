@@ -485,6 +485,37 @@ Popup geometría
   height: 0px !important;
   width: 0px !important;
 }
+.download-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+}
+.download-btn {
+  width: 49%;
+  height: 22px;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.download-btn-active {
+  color: rgb(0,141,201);
+  border-color: rgb(0,141,201);
+}
+.download-btn-active:hover {
+  background-color: rgb(0,141,201);
+  color: white;
+}
+.download-btn-active:active {
+  background-color: rgb(0, 92, 131);
+  color: white;
+}
+.download-btn-disable {
+  color: rgb(107, 109, 110);
+  border-color: rgb(107, 109, 110);
+}
 
 /*******************************
 Control mapa base
