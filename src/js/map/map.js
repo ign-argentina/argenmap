@@ -432,24 +432,18 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
-						const popUpDiv = mapa.createPopUp(layer);
-						layer.bindPopup(popUpDiv);
-
-						layer.on('click', (e) => {
-							const layer = e.target;
-							const popUpDiv = mapa.createPopUp(layer);
-							layer.bindPopup(popUpDiv);
-						});
-						
 						drawnItems.addLayer(layer);
 						
 						if (layer.type === 'marker') {
-							layer.options.borderWidth = 1.5;
-							layer.options.borderColor = '#4698d0';
-							layer.options.fillColor = '#4698d0';
+							//Default marker styles
+							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
+							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
+							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
 
-						mapa.addSelectionLayersMenuToLayer(layer);
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+							mapa.addSelectionLayersMenuToLayer(layer);
+						}
 						mapa.addContextMenuToLayer(layer);
 					});
 
@@ -855,7 +849,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						radiusInput.id = 'radius-input';
 						radiusInput.type = 'range';
 						radiusInput.min = 1;
-						radiusInput.max = 2500000;
+						radiusInput.max = 1250000;
 						radiusInput.step = 0.1;
 						radiusInput.value = layer.options.radius;
 						radiusInput.addEventListener("change", (e) => {
@@ -947,7 +941,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							weightInput2.id = 'weight-input-2';
 							weightInput2.type = 'range';
 							weightInput2.min = 0;
-							weightInput2.max = 3;
+							weightInput2.max = 3.2;
 							weightInput2.step = 0.1;
 							weightInput2.value = layer.options.borderWidth;
 							weightInput2.disabled = !enableMarkerInput.checked;
@@ -1505,8 +1499,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						const svgNS = 'http://www.w3.org/2000/svg';
 
 						const marker = document.createElementNS(svgNS, "svg");
-						marker.setAttribute('width', 28);
-						marker.setAttribute('height', 41);
+						marker.setAttribute('width', 54);
+						marker.setAttribute('height', 82);
 						marker.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 						marker.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
 
@@ -1554,7 +1548,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						marker.appendChild(g);
 						
 						const path = document.createElementNS(svgNS, "path");
-						path.setAttribute('d', 'm14.095833,1.55c-6.846875,0 -12.545833,5.691 -12.545833,11.866c0,2.778 1.629167,6.308 2.80625,8.746l9.69375,17.872l9.647916,-17.872c1.177083,-2.438 2.852083,-5.791 2.852083,-8.746c0,-6.175 -5.607291,-11.866 -12.454166,-11.866zm0,7.155c2.691667,0.017 4.873958,2.122 4.873958,4.71s-2.182292,4.663 -4.873958,4.679c-2.691667,-0.017 -4.873958,-2.09 -4.873958,-4.679c0,-2.588 2.182292,-4.693 4.873958,-4.71z');
+						path.setAttribute('d', 'm27.3 3.1c-13.694 0-25.092 11.382-25.092 23.732 0 5.556 3.258 12.616 5.613 17.492l19.388 35.744 19.296-35.744c2.354-4.876 5.704-11.582 5.704-17.492 0-12.35-11.215-23.732-24.908-23.732zm0 14.31c5.383.034 9.748 4.244 9.748 9.42s-4.365 9.326-9.748 9.358c-5.383-.034-9.748-4.18-9.748-9.358 0-5.176 4.365-9.386 9.748-9.42z');
 						path.setAttribute('stroke', `url(#strokeGradient)`);
 						path.setAttribute('fill', `url(#fillGradient)`);
 						path.setAttribute('stroke-linecap', 'round');
@@ -1567,8 +1561,8 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.convertMarkerToPng = async (markerSvg) => {
 						let svgString = new XMLSerializer().serializeToString(markerSvg);
 						let canvas = document.createElement('canvas');
-						canvas.width = 28;
-						canvas.height = 41;
+						canvas.width = 54;
+						canvas.height = 82;
 						let ctx = canvas.getContext("2d");
 						let DOMURL = self.URL || self.webkitURL || self;
 						let img = new Image();
@@ -1729,6 +1723,11 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.editableLayers[type].push(layer);
 						
 						if (layer.type === 'marker') {
+							//Default marker styles
+							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
+							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
+							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
+
 							if (geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
 								const borderWidth = geoJSON.properties.styles.borderWidth;
 								const borderColor = geoJSON.properties.styles.borderColor;
@@ -1740,11 +1739,15 @@ $("body").on("pluginLoad", function(event, plugin){
 								layer.options.customMarker = true;
 
 								mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
+							} else {
+								
 							}
 						}
 
 						//Left-click
-						mapa.addSelectionLayersMenuToLayer(layer);
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+							mapa.addSelectionLayersMenuToLayer(layer);
+						}
 						//Right-click
 						mapa.addContextMenuToLayer(layer);
 
