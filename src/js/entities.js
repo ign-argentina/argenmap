@@ -1133,12 +1133,6 @@ class GestorMenu {
         this.baseMapDependencies = {};
 
         this.allLayersAreLoaded = false;
-
-        this.layersAreLoaded1 = false;
-        this.layersAreLoaded2 = false;
-        this.layersAreLoaded3 = false;
-        this.layersAreLoaded4 = false;
-
         this.availableWmtsLayers = [];
         this.availableLayers = [];
         this.availableBaseLayers = [];
