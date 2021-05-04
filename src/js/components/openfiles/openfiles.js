@@ -107,7 +107,7 @@ class UImf {
   }
 
   addForm() {
-    let name = this.createElement("input", "capaname", "form-control");
+    var name = this.createElement("input", "capaname", "form-control");
     name.type = "text";
     name.placeholder = "Nombre de capa";
     name.style = "margin-bottom:10px; margin-top:10px";
@@ -180,9 +180,10 @@ class UImf {
   }
 
   removegeojsonfile(value) {
+    mapa.removeGroup(value, true);
     mapa.eachLayer(function (layer) {
       if (layer.myTag && layer.myTag === value) {
-        mapa.removeLayer(layer);
+        //mapa.removeLayer(layer);
       }
     });
     let auxname = "li" + value;
@@ -210,10 +211,16 @@ function controlFormLoadFile() {
     };
 
     //add layer to map
-    let aux = L.geoJSON(geojsonfile, {
+    /* let aux = L.geoJSON(geojsonfile, {
       style: myStyle,
       onEachFeature: onEachFeature,
-    }).addTo(mapa);
+    }).addTo(mapa); */
+
+    const geoJSON = L.geoJSON(geojsonfile, {
+      style: myStyle,
+      onEachFeature: onEachFeature,
+    });
+    let layerId = mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, document.getElementById('capaname').value, false);
 
     //add layer in menu
     uimodalfs.addmenu(val);

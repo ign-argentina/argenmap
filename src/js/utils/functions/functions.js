@@ -217,6 +217,37 @@ function loadWmts(callbackFunction, objLayer) {
     }
 }
 
+function setCoordinatesFormat(coords) {
+    let coordsFormatted = '';
+    coords.forEach(coord => {
+        //console.log(`${coord[0]}%20${coord[1]},`)
+        coordsFormatted += `${coord[0]}%20${coord[1]},`;
+    });
+    //Add first point again
+    coordsFormatted += `${coords[0][0]}%20${coords[0][1]}`;
+    return coordsFormatted;
+}
+
+async function getLayerDataByWFS(coords, type, layerData) {
+    let url = ''
+    if (type === 'polygon' || type === 'rectangle') {
+        const coordsFormatted = setCoordinatesFormat(coords);
+        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POLYGON((${coordsFormatted})))`;
+    }else if (type === 'circle'){
+        url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=DWITHIN(geom,POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
+    }else if (type === 'marker'){
+        url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POINT(${coords.lat}%20${coords.lng}))`;
+    }else if(type === 'polyline'){
+        const coordsFormatted = setCoordinatesFormat(coords);
+        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,LINESTRING(${coordsFormatted}))`;
+    }
+
+    const response = await fetch(url);
+    if (response.status !== 200)
+        return null;
+    return await response.json();
+}
+
 function loadMapaBase(tmsUrl, layer, attribution) {
     if (typeof loadMapaBaseTpl === 'function') {
         return loadMapaBaseTpl(tmsUrl, layer, attribution);
@@ -416,8 +447,7 @@ function loadTemplateStyleConfig(template, isDefaultTemplate) {
 
 function setBaseLayersZoomLevels(layers) {
     layers.forEach(layer => {
-        if (layer.hasOwnProperty('zoom'))
-            baseLayers[layer.nombre] = layer.hasOwnProperty('zoom') ? { zoom: layer.zoom } : {};
+        baseLayers[layer.nombre] = layer.hasOwnProperty('zoom') ? { zoom: layer.zoom } : {};
     });
 }
 
