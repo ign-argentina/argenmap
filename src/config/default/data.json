@@ -49,7 +49,7 @@
             "min": 3,
             "max": 21
           },
-          "isOpenWith": ["mde_v2_30m"]
+          "isOpenWith": []
         }
       ]
     },
