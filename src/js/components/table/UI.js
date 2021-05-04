@@ -11,7 +11,27 @@ class UI{
     let divContainer= this.createElement("div","ContainerTable", "ContainerTable")
     divContainer.appendChild(this.createElement("div","icons-table"))
     let ul= this.createElement("ul","indextabulator", "nav nav-pills")
-    divContainer.appendChild(this.createElement("div","tabs-table").appendChild(ul))
+    let tabcontainer = this.createElement("div","tabscontainer")
+    let tabstable = this.createElement("div","tabs-table")
+    let buttonl = this.createElement("button","btn-left-tabtable")
+    buttonl.innerHTML='<i class="fa fa-arrow-left" style="color: grey !important; aria-hidden="true"></i>'
+    buttonl.onclick = function(){
+      let container =  document.getElementById("indextabulator")
+      let ht = window.getComputedStyle(container, null).getPropertyValue("height").match(/\d+/)[0]
+      container.scrollBy(0, -ht)
+    }
+    let buttonr = this.createElement("button","btn-right-tabtable")
+    buttonr.innerHTML='<i class="fa fa-arrow-right" style="color: grey !important; aria-hidden="true"></i>'
+    buttonr.onclick = function(){
+      let container =  document.getElementById("indextabulator")
+      let ht = window.getComputedStyle(container, null).getPropertyValue("height").match(/\d+/)[0]
+      container.scrollBy(0, ht)
+    }
+    tabstable.appendChild(ul)
+    tabcontainer.append(buttonl)
+    tabcontainer.append(tabstable)
+    tabcontainer.append(buttonr)
+    divContainer.append(tabcontainer)
     divContainer.appendChild(this.createElement("div","search-table"))
     divContainer.appendChild(this.createElement("div","example-table"))
     document.body.appendChild(divContainer)
@@ -32,7 +52,7 @@ class UI{
         let btnmin = this.createElement("a","btnmin","icon-table")
         btnmin.innerHTML = '<span id="minus" class="glyphicon glyphicon-minus" aria-hidden="true"></span>'
         btnmin.onclick = function(){
-            document.getElementById("ContainerTable").style.height="30px"
+            document.getElementById("ContainerTable").style.height="25px"
             document.getElementById("ContainerTable").style.width="270px"
             document.getElementById("btnmin").hidden= true;
             document.getElementById("btnmax").hidden= false;
@@ -77,7 +97,7 @@ class UI{
         inputsearch.placeholder="Buscar"
 
         let filterclear = this.createElement("a","filter-clear","filteritems")
-        filterclear.innerHTML=" X"
+        filterclear.innerHTML='<i style="padding-left: 5px; color: grey !important;" class="fas fa-times"></i>'
         filterclear.onclick = function(){
           document.getElementById("filter-value").value= "";
           document.getElementById("filter-field").selectedIndex = "0";
@@ -93,8 +113,9 @@ class UI{
     let aux 
     if(datatable.length==1){aux = this.createElement("li",datatable.length,"active")}
     else{aux = this.createElement("li",datatable.length)}
+    aux.style = "border: 1px solid silver;border-top-right-radius: 8px;border-top-left-radius: 8px;"
     
-    aux.innerHTML='<a data-toggle="tab" istabletab="true" aria-expanded="true" id ='+datatable.length+'>'+layername+' '+datatable.length+'</a>'
+    aux.innerHTML='<a style="height:38px; padding:10px !important; overflow:hidden; white-space: nowrap; direction: rtl;text-overflow: ellipsis;" data-toggle="tab" istabletab="true" aria-expanded="true" id ='+datatable.length+'>'+layername+' '+datatable.length+'</a>'
     aux.onclick =function(){
             activedata=this.id-1
             let data = datatable[this.id-1]
@@ -165,7 +186,7 @@ class UI{
     document.getElementById("filter-value").addEventListener("keyup", updateFilter);
 
     let headers = Object.keys(data[0])
-    let aux = `<option value="no">Selecciona una opción</option>`
+    let aux = `<option style="color: grey !important;" value="no">Selecciona una opción</option>`
     headers.forEach( function(valor) {
       if(valor!='bbox'){
         aux +=`<option value="${valor}">${valor}</option>`
@@ -190,3 +211,4 @@ class UI{
   }
    
 }
+

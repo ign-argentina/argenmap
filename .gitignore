@@ -1,4 +1,3 @@
-src/config/styles
-src/config/data.json
-src/config/preferences.json
+src/config
+!src/config/default
 .vscode
