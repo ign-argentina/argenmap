@@ -453,7 +453,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						layers.eachLayer(function (layer) {
 							//mapa.checkLayersInDrawedGeometry(layer, type);
 						});
-						console.log({...mapa.editableLayers})
 					});
 					
 					mapa.on('draw:deleted', function (e) {

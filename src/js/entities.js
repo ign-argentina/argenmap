@@ -1133,6 +1133,12 @@ class GestorMenu {
         this.baseMapDependencies = {};
 
         this.allLayersAreLoaded = false;
+
+        this.layersAreLoaded1 = false;
+        this.layersAreLoaded2 = false;
+        this.layersAreLoaded3 = false;
+        this.layersAreLoaded4 = false;
+
         this.availableWmtsLayers = [];
         this.availableLayers = [];
         this.availableBaseLayers = [];
@@ -1194,7 +1200,11 @@ class GestorMenu {
         const activeLayers = this.activeLayers.filter(layer => {
             return this.availableBaseLayers.find(baseLayer => baseLayer === layer) ? false : true;
         });
-        return activeLayers.map(activeLayer => this.layersDataForWfs[activeLayer]);
+        return activeLayers.map(activeLayer => {
+            if (this.layersDataForWfs.hasOwnProperty(activeLayer)) {
+                return this.layersDataForWfs[activeLayer];
+            }
+        });
     }
 
     addActiveLayer(layer_id) {
@@ -1258,17 +1268,23 @@ class GestorMenu {
 
                 let validLayersLoaded = 0;
                 let validLayers = [];
+                let rejectedLayers = [];
                 urlInteraction.layers.forEach(layer => {
-                    if (this.layerIsValid(layer))
+                    if (this.layerIsValid(layer)) {
                         validLayers.push(layer);
+                    } else {
+                        rejectedLayers.push(layer);
+                    }
                 });
 
                 validLayers.forEach(layer => {
                     const interval = setInterval(() => {
                         if (this.layerIsActive(layer)) {
-                            validLayersLoaded++;
                             window.clearInterval(interval);
+                            validLayersLoaded++;
                         } else {
+                            window.clearInterval(interval);
+                            validLayersLoaded++;
                             this.muestraCapa(this.getLayerIdByName(layer));
                         }
                     }, 200)
@@ -1282,6 +1298,29 @@ class GestorMenu {
                         }
                         this.setLayersDataForWfs();
                         window.clearInterval(lastInterval);
+
+                        //last chances to load layers
+                        if (rejectedLayers.length > 0) {
+                            let tryNumber = 0;
+                            const intervalId = setInterval(() => {
+                                if (rejectedLayers.length === 0 || tryNumber === 15) {
+                                    window.clearInterval(intervalId);
+                                    console.log('Rejected layers: ', rejectedLayers);
+                                } else {
+                                    tryNumber++;
+                                    const validLayers = [];
+                                    for (let i = 0; i < rejectedLayers.length; i++) {
+                                        if (this.layerIsValid(rejectedLayers[i])) {
+                                            validLayers.unshift(i);
+                                            this.muestraCapa(this.getLayerIdByName(rejectedLayers[i]));
+                                        }
+                                    }
+                                    validLayers.forEach(vL => {
+                                        rejectedLayers.splice(vL, 1);
+                                    });
+                                }
+                            }, 1000);
+                        }
                     }
                 }, 100)
             }
@@ -1957,6 +1996,17 @@ class GestorMenu {
     }
 
     muestraCapa(itemSeccion) {
+
+        if (!mapa.hasOwnProperty('activeLayerHasChanged')) {
+            const intervalId = setInterval(() => {
+                if (mapa.hasOwnProperty('activeLayerHasChanged')) {
+                    window.clearInterval(intervalId);
+                    gestorMenu.muestraCapa(itemSeccion);
+                }
+            }, 500);
+            return;
+        }
+
         const wmtsLayers = [];
 
 		//Hide all if itemComposite selected is Base Map
