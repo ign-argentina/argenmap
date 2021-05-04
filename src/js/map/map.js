@@ -14,6 +14,28 @@ gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
 	}
 });
 
+const onClickAllActiveLayers = () => {
+	const inputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+	inputs[0].checked = !inputs[0].checked;
+	if (inputs.length > 1) {
+		inputs.slice(1, inputs.length).forEach(input => {
+			input.checked = inputs[0].checked;
+		});
+	}
+};
+
+const onClickActiveLayer = (activeLayer) => {
+	const inputElement = document.getElementById(activeLayer);
+	inputElement.checked = !inputElement.checked;
+};
+
+const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
+	mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
+	layer.options.borderWidth = borderWidth;
+	layer.options.borderColor = borderColor;
+	layer.options.fillColor = fillColor;
+};
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
@@ -375,6 +397,14 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
 					mapa.addControl(drawControl);
 
+					mapa.on('draw:drawstart', (e) => {
+						currentlyDrawing = true;
+					});
+					
+					mapa.on('draw:editstart', (e) => {
+						currentlyDrawing = true;
+					});
+
 					mapa.on('draw:created', (e) => {
 						const layer = e.layer;
 						const type = e.layerType;
@@ -390,6 +420,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
+						layer.options.fillColor = !layer.options.fillColor ? layer.options.color : layer.options.fillColor;
 
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
@@ -400,15 +431,20 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						mapa.editableLayers[type].push(layer);
-						layer.bindTooltip(layer.name);
 
-						layer.bindPopup(`<div><p>${layer.name}</p><button id="btn_${layer.name}" onclick="mapa.showInfoLayer('${layer.name}')">Ver información</button></div>`);
-
-						console.log('layer', layer, {...mapa.editableLayers})
-						//
 						drawnItems.addLayer(layer);
+						
+						if (layer.type === 'marker') {
+							//Default marker styles
+							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
+							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
+							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
+						}
 
-						//L.geoJSON(layer.toGeoJSON()).addTo(mapa);
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+							mapa.addSelectionLayersMenuToLayer(layer);
+						}
+						mapa.addContextMenuToLayer(layer);
 					});
 
 					mapa.on('draw:edited', (e) => {
@@ -439,14 +475,821 @@ $("body").on("pluginLoad", function(event, plugin){
 						})
 					});
 
-					mapa.showInfoLayer = (layerName) => {
+					mapa.on('draw:drawstop', (e) => {
+						setTimeout(() => {
+							currentlyDrawing = false;
+						}, 300);
+					});
+
+					mapa.on('draw:editstop', (e) => {
+						currentlyDrawing = false;
+					});
+
+					mapa.addSelectionLayersMenuToLayer = (layer) => {
+						const popUpDiv = mapa.createPopUp(layer);
+						layer.bindPopup(popUpDiv);
+
+						layer.on('click', (e) => {
+							const layer = e.target;
+							const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+							layer.bindPopup(popUpDiv);
+						});
+					}
+
+					mapa.addContextMenuToLayer = (layer) => {
+						let contextPopup = null;
+
+						const contextMenu = document.createElement('div');
+						contextMenu.className = 'context-menu';
+
+						const contextMenuItem0 = document.createElement('div');
+						contextMenuItem0.className = 'context-menu-item context-menu-item-disabled';
+						contextMenuItem0.innerHTML = '<p class="non-selectable-text context-menu-item-text">Ver información</p>';
+						contextMenuItem0.style.borderRadius = '5px 5px 0 0';
+						contextMenuItem0.disabled = true;
+						contextMenuItem0.onclick = (e) => {
+							if (!contextMenuItem0.disabled) {
+								mapa.closePopup(contextPopup);
+							}
+						};
+
+						const editStylePopup = L.popup({ closeButton: false, className: 'edit-style-popup' });
+						const editStylePopupContent = mapa.createEditStylePopup(layer, editStylePopup);
+						const contextMenuItem1 = document.createElement('div');
+						contextMenuItem1.className = 'context-menu-item context-menu-item-active';
+						contextMenuItem1.innerHTML = '<p class="non-selectable-text context-menu-item-text">Editar estilos</p>';
+						contextMenuItem1.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+							editStylePopup.setContent(editStylePopupContent)
+							.setLatLng(layer.type !== 'marker' && layer.type !== 'circlemarker' ? layer.getBounds().getCenter() : layer.getLatLng())
+							mapa.openPopup(editStylePopup);
+
+							//
+							const parent = editStylePopupContent.parentElement;
+							parent.className = 'leaflet-popup-content popup-parent';
+						};
+						
+						const contextMenuItem2 = document.createElement('div');
+						contextMenuItem2.className = 'context-menu-item context-menu-item-active';
+						contextMenuItem2.innerHTML = '<p class="non-selectable-text context-menu-item-text">Acercar</p>';
+						contextMenuItem2.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+							if (layer.type === 'marker' || layer.type === 'circlemarker') {
+								mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+							} else {
+								mapa.fitBounds(layer.getBounds());
+							}
+						};
+
+						const contextMenuItem3 = document.createElement('div');
+						contextMenuItem3.className = 'context-menu-item context-menu-item-disabled';
+						contextMenuItem3.innerHTML = '<p class="non-selectable-text context-menu-item-text">Ocultar geometría</p>';
+						contextMenuItem3.disabled = true;
+						contextMenuItem3.onclick = (e) => {
+							if (!contextMenuItem3.disabled) {
+								mapa.closePopup(contextPopup);
+								mapa.hideLayer(layer.name);
+							}
+						};
+						
+						const contextMenuItem4 = document.createElement('div');
+						contextMenuItem4.className = 'context-menu-item context-menu-item-active';
+						contextMenuItem4.innerHTML = '<p class="non-selectable-text context-menu-item-text">Descargar geometría</p>';
+						contextMenuItem4.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+							layer.downloadGeoJSON();
+						};
+						
+						const contextMenuItem5 = document.createElement('div');
+						contextMenuItem5.className = 'context-menu-item context-menu-item-active';
+						contextMenuItem5.innerHTML = '<p class="non-selectable-text context-menu-item-text">Eliminar geometría</p>';
+						contextMenuItem5.style.borderRadius = '0 0 5px 5px';
+						contextMenuItem5.onclick = (e) => {
+							mapa.closePopup(contextPopup);
+							mapa.deleteLayer(layer.name);
+						};
+
+						contextMenu.appendChild(contextMenuItem0);
+						contextMenu.appendChild(contextMenuItem1);
+						contextMenu.appendChild(contextMenuItem2);
+						contextMenu.appendChild(contextMenuItem3);
+						contextMenu.appendChild(contextMenuItem4);
+						contextMenu.appendChild(contextMenuItem5);
+
+						layer.on('contextmenu', (e) => {
+							contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
+							.setLatLng(e.latlng)
+							.setContent(contextMenu);
+							mapa.openPopup(contextPopup);
+						});
+
+						L.DomEvent.on(contextMenu, 'click', function (e) {
+							L.DomEvent.stopPropagation(e);
+						});
+
+						L.DomEvent.on(editStylePopup, 'click', function (e) {
+							L.DomEvent.stopPropagation(e);
+						});
+					}
+
+					mapa.createEditStylePopup = (layer, popup) => {
+						const container = document.createElement('div');
+						container.className = 'edit-style-popup-container';
+
+						const closeBtn = document.createElement('a');
+						closeBtn.innerHTML = '<a class="leaflet-popup-close-button" href="#" style="outline: none;">×</a>';
+						closeBtn.onclick = () => {
+							mapa.closePopup(popup);
+						};
+						container.appendChild(closeBtn);
+
+						//-Lines
+						const lineSection = document.createElement('div');
+						lineSection.className = 'section-popup';
+
+						//Title
+						const title = document.createElement('p');
+						title.className = 'section-title non-selectable-text';
+						title.textContent = 'Línea';
+						lineSection.appendChild(title);
+
+						//Opacity
+						const opacityInputDiv1 = document.createElement('div');
+						opacityInputDiv1.className = 'section-item';
+						const opacityInput1 = document.createElement('input');
+						opacityInput1.className = 'section-item-input';
+						opacityInput1.id = 'opacity-input-1';
+						opacityInput1.type = 'range';
+						opacityInput1.min = 0;
+						opacityInput1.max = 1;
+						opacityInput1.step = 0.01;
+						opacityInput1.value = layer.options.opacity;
+						opacityInput1.addEventListener("change", (e) => {
+							layer.setStyle({ opacity: opacityInput1.value });
+						});
+						opacityInput1.addEventListener("input", (e) => {
+							layer.setStyle({ opacity: opacityInput1.value });
+						});
+						const opacityLabel1 = document.createElement('label');
+						opacityLabel1.setAttribute('for', 'opacity-input-1');
+						opacityLabel1.className = 'non-selectable-text';
+						opacityLabel1.innerHTML = 'Opacidad';
+						opacityInputDiv1.appendChild(opacityLabel1);
+						opacityInputDiv1.appendChild(opacityInput1);
+						lineSection.appendChild(opacityInputDiv1);
+
+						//Weight
+						const weightInputDiv = document.createElement('div');
+						weightInputDiv.className = 'section-item';
+						const weightInput = document.createElement('input');
+						weightInput.className = 'section-item-input';
+						weightInput.id = 'weight-input';
+						weightInput.type = 'range';
+						weightInput.min = 0;
+						weightInput.max = 10;
+						weightInput.step = 1;
+						weightInput.value = layer.options.weight;
+						weightInput.addEventListener("change", (e) => {
+							layer.setStyle({
+								weight: weightInput.value,
+								opacity: opacityInput1.value,
+								fillOpacity: opacityInput2.value
+							});
+						});
+						weightInput.addEventListener("input", (e) => {
+							layer.setStyle({
+								weight: weightInput.value,
+								opacity: opacityInput1.value,
+								fillOpacity: opacityInput2.value
+							});
+						});
+						const weightLabel = document.createElement('label');
+						weightLabel.setAttribute('for', 'weight-input');
+						weightLabel.className = 'non-selectable-text';
+						weightLabel.innerHTML = 'Grosor';
+						weightInputDiv.appendChild(weightLabel);
+						weightInputDiv.appendChild(weightInput);
+						lineSection.appendChild(weightInputDiv);
+
+						//Dash
+						const dashArrayInputDiv = document.createElement('div');
+						dashArrayInputDiv.className = 'section-item';
+						const dashArrayInput = document.createElement('input');
+						dashArrayInput.className = 'section-item-input';
+						dashArrayInput.id = 'dash-input';
+						dashArrayInput.type = 'range';
+						dashArrayInput.min = 0;
+						dashArrayInput.max = 50;
+						dashArrayInput.step = 1;
+						dashArrayInput.value = layer.options.dashArray ? layer.options.dashArray : 0;
+						dashArrayInput.addEventListener("change", (e) => {
+							layer.setStyle({
+								dashArray: dashArrayInput.value
+							});
+						});
+						dashArrayInput.addEventListener("input", (e) => {
+							layer.setStyle({
+								dashArray: dashArrayInput.value
+							});
+						});
+						const dashLabel = document.createElement('label');
+						dashLabel.setAttribute('for', 'dash-input');
+						dashLabel.innerHTML = 'Discontinuidad';
+						dashArrayInputDiv.appendChild(dashLabel);
+						dashArrayInputDiv.appendChild(dashArrayInput);
+						lineSection.appendChild(dashArrayInputDiv);
+
+						//Join
+						const joinSelectDiv = document.createElement('div');
+						joinSelectDiv.className = 'section-item';
+						const joinSelect = document.createElement('select');
+						joinSelect.className = 'section-item-input';
+						joinSelect.id = "join-select";
+						const joinOptions = ['round', 'bevel', 'miter', 'miter-clip'];
+						joinOptions.forEach(optionName => {
+							const option = document.createElement("option");
+							option.value = optionName;
+							option.text = optionName;
+							option.selected = layer.lineJoin === optionName;
+							joinSelect.appendChild(option);
+						});
+						joinSelect.addEventListener("change", (e) => {
+							layer.setStyle({
+								lineJoin: joinSelect.value
+							});
+						});
+						const joinLabel = document.createElement('label');
+						joinLabel.setAttribute('for', 'join-select');
+						joinLabel.innerHTML = 'Unión';
+						joinSelectDiv.appendChild(joinLabel);
+						joinSelectDiv.appendChild(joinSelect);
+						//Should be visible if geometry only is rectangle, polygon or polyline
+						if (layer.type === 'rectangle' || layer.type === 'polygon' || layer.type === 'polyline') {
+							lineSection.appendChild(joinSelectDiv);
+						}
+
+						//Cap
+						const capSelectDiv = document.createElement('div');
+						capSelectDiv.className = 'section-item';
+						const capSelect = document.createElement('select');
+						capSelect.className = 'section-item-input';
+						capSelect.id = "cap-select";
+						const capOptions = ['round', 'butt', 'square'];
+						capOptions.forEach(optionName => {
+							const option = document.createElement("option");
+							option.value = optionName;
+							option.text = optionName;
+							option.selected = layer.lineCap === optionName;
+							capSelect.appendChild(option);
+						});
+						capSelect.addEventListener("change", (e) => {
+							layer.setStyle({
+								lineCap: capSelect.value
+							});
+						});
+						const capLabel = document.createElement('label');
+						capLabel.setAttribute('for', 'cap-select');
+						capLabel.innerHTML = 'Terminación';
+						capSelectDiv.appendChild(capLabel);
+						capSelectDiv.appendChild(capSelect);
+						//Should be visible if geometry only is polyline
+						if (layer.type === 'polyline')
+							lineSection.appendChild(capSelectDiv);
+
+						//Color
+						const colorInputDiv1 = document.createElement('div');
+						colorInputDiv1.className = 'section-item';
+						const colorInput1 = document.createElement('input');
+						colorInput1.className = 'section-item-input';
+						colorInput1.id = 'color-input-1';
+						colorInput1.type = 'color';
+						colorInput1.value = layer.options.color;
+						colorInput1.addEventListener("change", (e) => {
+							layer.setStyle({ color: colorInput1.value });
+						});
+						colorInput1.addEventListener("input", (e) => {
+							layer.setStyle({ color: colorInput1.value });
+						});
+						const colorLabel1 = document.createElement('label');
+						colorLabel1.setAttribute('for', 'color-input-1');
+						colorLabel1.innerHTML = 'Color';
+						colorInputDiv1.appendChild(colorLabel1);
+						colorInputDiv1.appendChild(colorInput1);
+						lineSection.appendChild(colorInputDiv1);
+
+						//-Fill
+						const fillSection = document.createElement('div');
+						fillSection.className = 'section-popup';
+
+						//Title
+						const title2 = document.createElement('p');
+						title2.className = 'section-title';
+						title2.textContent = 'Relleno';
+						fillSection.appendChild(title2);
+
+						//Color
+						const colorInputDiv2 = document.createElement('div');
+						colorInputDiv2.className = 'section-item';
+						const colorInput2 = document.createElement('input');
+						colorInput2.className = 'section-item-input';
+						colorInput2.id = 'color-input-2';
+						colorInput2.type = 'color';
+						colorInput2.value = layer.options.fillColor ? layer.options.fillColor : layer.options.color;
+						colorInput2.addEventListener("change", (e) => {
+							layer.setStyle({ fillColor: colorInput2.value });
+						});
+						colorInput2.addEventListener("input", (e) => {
+							layer.setStyle({ fillColor: colorInput2.value });
+						});
+						const colorLabel2 = document.createElement('label');
+						colorLabel2.setAttribute('for', 'color-input-2');
+						colorLabel2.innerHTML = 'Color';
+						colorInputDiv2.appendChild(colorLabel2);
+						colorInputDiv2.appendChild(colorInput2);
+						fillSection.appendChild(colorInputDiv2);
+
+						//Opacity
+						const opacityInputDiv2 = document.createElement('div');
+						opacityInputDiv2.className = 'section-item';
+						const opacityInput2 = document.createElement('input');
+						opacityInput2.className = 'section-item-input';
+						opacityInput2.id = 'opacity-input-2';
+						opacityInput2.type = 'range';
+						opacityInput2.min = 0;
+						opacityInput2.max = 1;
+						opacityInput2.step = 0.01;
+						opacityInput2.value = layer.options.fillOpacity;
+						opacityInput2.addEventListener("change", (e) => {
+							layer.setStyle({ fillOpacity: opacityInput2.value });
+						});
+						opacityInput2.addEventListener("input", (e) => {
+							layer.setStyle({ fillOpacity: opacityInput2.value });
+						});
+						const opacityLabel2 = document.createElement('label');
+						opacityLabel2.setAttribute('for', 'opacity-input-2');
+						opacityLabel2.innerHTML = 'Opacidad';
+						opacityInputDiv2.appendChild(opacityLabel2);
+						opacityInputDiv2.appendChild(opacityInput2);
+						fillSection.appendChild(opacityInputDiv2);
+
+						//-Circle
+						const circleSection = document.createElement('div');
+						circleSection.className = 'section-popup';
+
+						//Title
+						const title3 = document.createElement('p');
+						title3.className = 'section-title';
+						title3.textContent = 'Círculo';
+						circleSection.appendChild(title3);
+
+						const radiusInputDiv = document.createElement('div');
+						radiusInputDiv.className = 'section-item';
+						const radiusInput = document.createElement('input');
+						radiusInput.className = 'section-item-input';
+						radiusInput.id = 'radius-input';
+						radiusInput.type = 'range';
+						radiusInput.min = 1;
+						radiusInput.max = 1250000;
+						radiusInput.step = 0.1;
+						radiusInput.value = layer.options.radius;
+						radiusInput.addEventListener("change", (e) => {
+							layer.setRadius(radiusInput.value);
+						});
+						radiusInput.addEventListener("input", (e) => {
+							layer.setRadius(radiusInput.value);
+						});
+						const radiusLabel = document.createElement('label');
+						radiusLabel.setAttribute('for', 'radius-input');
+						radiusLabel.innerHTML = 'Radio';
+						radiusInputDiv.appendChild(radiusLabel);
+						radiusInputDiv.appendChild(radiusInput);
+						circleSection.appendChild(radiusInputDiv);
+
+						//-Marker
+						const markerSection = document.createElement('div');
+						markerSection.className = 'section-popup';
+						
+						if (layer.type === 'marker') {
+
+							//Title
+							const title4 = document.createElement('p');
+							title4.className = 'section-title';
+							title4.textContent = 'Marcador';
+							markerSection.appendChild(title4);
+
+							//Enable
+							const enableMarkerInputDiv = document.createElement('div');
+							enableMarkerInputDiv.className = 'section-item';
+							const enableMarkerInput = document.createElement('input');
+							enableMarkerInput.className = 'section-item-input';
+							enableMarkerInput.id = 'enable-marker-input';
+							enableMarkerInput.type = 'checkbox';
+							enableMarkerInput.checked = layer.options.hasOwnProperty('customMarker');
+							enableMarkerInput.addEventListener("change", (e) => {
+								weightInput2.disabled = !enableMarkerInput.checked;
+								colorInput3.disabled = !enableMarkerInput.checked;
+								colorInput4.disabled = !enableMarkerInput.checked;
+								downloadBtn1.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+								downloadBtn1.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
+								downloadBtn2.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+								downloadBtn2.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
+								if (!enableMarkerInput.checked) {
+									layer.setIcon(new L.Icon.Default);
+								} else {
+									const weight = weightInput2.value;
+									const borderColor = colorInput3.value;
+									const fillColor = colorInput4.value;
+									mapa.setIconToMarker(layer, borderColor, fillColor, weight);
+								}
+							});
+							const enableMarkerLabel = document.createElement('label');
+							enableMarkerLabel.setAttribute('for', 'enable-marker-input');
+							enableMarkerLabel.innerHTML = 'Marcador personalizado';
+							enableMarkerInputDiv.appendChild(enableMarkerLabel);
+							enableMarkerInputDiv.appendChild(enableMarkerInput);
+							markerSection.appendChild(enableMarkerInputDiv);
+
+							//Opacity
+							const opacityInputDiv3 = document.createElement('div');
+							opacityInputDiv3.className = 'section-item';
+							const opacityInput3 = document.createElement('input');
+							opacityInput3.className = 'section-item-input';
+							opacityInput3.id = 'opacity-input-3';
+							opacityInput3.type = 'range';
+							opacityInput3.min = 0;
+							opacityInput3.max = 1;
+							opacityInput3.step = 0.01;
+							opacityInput3.value = layer.options.opacity;
+							opacityInput3.addEventListener("change", (e) => {
+								layer.setOpacity(opacityInput3.value);
+							});
+							opacityInput3.addEventListener("input", (e) => {
+								layer.setOpacity(opacityInput3.value);
+							});
+							const opacityLabel3 = document.createElement('label');
+							opacityLabel3.setAttribute('for', 'opacity-input-3');
+							opacityLabel3.innerHTML = 'Opacidad';
+							opacityInputDiv3.appendChild(opacityLabel3);
+							opacityInputDiv3.appendChild(opacityInput3);
+							markerSection.appendChild(opacityInputDiv3);
+
+							//Weight
+							const weightInputDiv2 = document.createElement('div');
+							weightInputDiv2.className = 'section-item';
+							const weightInput2 = document.createElement('input');
+							weightInput2.className = 'section-item-input';
+							weightInput2.id = 'weight-input-2';
+							weightInput2.type = 'range';
+							weightInput2.min = 0;
+							weightInput2.max = 3.2;
+							weightInput2.step = 0.1;
+							weightInput2.value = layer.options.borderWidth;
+							weightInput2.disabled = !enableMarkerInput.checked;
+							weightInput2.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								changeMarkerStyles(layer, weight, borderColor, fillColor);
+							});
+							weightInput2.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								changeMarkerStyles(layer, weight, borderColor, fillColor);
+							});
+							const weightLabel2 = document.createElement('label');
+							weightLabel2.setAttribute('for', 'weight-input-2');
+							weightLabel2.className = 'non-selectable-text';
+							weightLabel2.innerHTML = 'Anchura del borde';
+							weightInputDiv2.appendChild(weightLabel2);
+							weightInputDiv2.appendChild(weightInput2);
+							markerSection.appendChild(weightInputDiv2);
+
+							//Color
+							const colorInputDiv3 = document.createElement('div');
+							colorInputDiv3.className = 'section-item';
+							const colorInput3 = document.createElement('input');
+							colorInput3.className = 'section-item-input';
+							colorInput3.id = 'color-input-3';
+							colorInput3.type = 'color';
+							colorInput3.value = layer.options.borderColor;
+							colorInput3.disabled = !enableMarkerInput.checked;
+							colorInput3.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								changeMarkerStyles(layer, weight, borderColor, fillColor);
+							});
+							colorInput3.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								changeMarkerStyles(layer, weight, borderColor, fillColor);
+							});
+							const colorLabel3 = document.createElement('label');
+							colorLabel3.setAttribute('for', 'color-input-3');
+							colorLabel3.innerHTML = 'Color del borde';
+							colorInputDiv3.appendChild(colorLabel3);
+							colorInputDiv3.appendChild(colorInput3);
+							markerSection.appendChild(colorInputDiv3);
+
+							//Color
+							const colorInputDiv4 = document.createElement('div');
+							colorInputDiv4.className = 'section-item';
+							const colorInput4 = document.createElement('input');
+							colorInput4.className = 'section-item-input';
+							colorInput4.id = 'color-input-4';
+							colorInput4.type = 'color';
+							colorInput4.value = layer.options.fillColor;
+							colorInput4.disabled = !enableMarkerInput.checked;
+							colorInput4.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								changeMarkerStyles(layer, weight, borderColor, fillColor);
+							});
+							colorInput4.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								changeMarkerStyles(layer, weight, borderColor, fillColor);
+							});
+							const colorLabel4 = document.createElement('label');
+							colorLabel4.setAttribute('for', 'color-input-4');
+							colorLabel4.innerHTML = 'Color del relleno';
+							colorInputDiv4.appendChild(colorLabel4);
+							colorInputDiv4.appendChild(colorInput4);
+							markerSection.appendChild(colorInputDiv4);
+
+							//Download
+							const downloadDiv = document.createElement('div');
+							downloadDiv.className = 'section-item';
+							
+							const downloadTitle = document.createElement('label');
+							downloadTitle.className = '';
+							downloadTitle.innerHTML = 'Descargar como';
+
+							const downloadBtnsDiv = document.createElement('div');
+							downloadBtnsDiv.className = 'download-item';
+
+							const downloadBtn1 = document.createElement('div');
+							downloadBtn1.className = 'popup-btn download-btn';
+							downloadBtn1.innerHTML = '<p class="non-selectable-text" style="font-weight: bold; margin: 0;">SVG</p>';
+							downloadBtn1.onclick = () => {
+								if (enableMarkerInput.checked) {
+									const weight = weightInput2.value;
+									const borderColor = colorInput3.value;
+									const fillColor = colorInput4.value;
+									mapa.downloadMarker('svg', borderColor, fillColor, weight);
+								}
+							};
+							downloadBtnsDiv.appendChild(downloadBtn1);
+
+							const downloadBtn2 = document.createElement('div');
+							downloadBtn2.className = 'popup-btn download-btn';
+							downloadBtn2.innerHTML = '<p class="non-selectable-text" style="font-weight: bold; margin: 0;">PNG</p>';
+							downloadBtn2.onclick = () => {
+								if (enableMarkerInput.checked) {
+									const weight = weightInput2.value;
+									const borderColor = colorInput3.value;
+									const fillColor = colorInput4.value;
+									mapa.downloadMarker('png', borderColor, fillColor, weight);
+								}
+							};
+							downloadBtnsDiv.appendChild(downloadBtn2);
+
+							downloadBtn1.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+							downloadBtn1.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
+							downloadBtn2.classList.add(enableMarkerInput.checked ? 'download-btn-active' : 'download-btn-disable');
+							downloadBtn2.classList.remove(enableMarkerInput.checked ? 'download-btn-disable' : 'download-btn-active');
+
+							downloadDiv.appendChild(downloadTitle);
+							downloadDiv.appendChild(downloadBtnsDiv);
+							markerSection.appendChild(downloadDiv);
+						}
+						
+
+						switch (layer.type) {
+							case 'marker': {
+								container.appendChild(markerSection);
+								container.style.height = '240px';
+							}
+							break;
+							case 'circlemarker': {
+								container.appendChild(lineSection);
+								container.appendChild(fillSection);
+								container.style.height = '270px';
+							}
+							break;
+							case 'circle': {
+								container.appendChild(lineSection);
+								container.appendChild(fillSection);
+								container.appendChild(circleSection);
+								container.style.height = '370px';
+							}
+							break;
+							case 'polyline': {
+								container.appendChild(lineSection);
+								container.style.height = '240px';
+							}
+							break;
+							case 'polygon': {
+								container.appendChild(lineSection);
+								container.appendChild(fillSection);
+								container.style.height = '330px';
+							}
+							break;
+							case 'rectangle': {
+								container.appendChild(lineSection);
+								container.appendChild(fillSection);
+								container.style.height = '330px';
+							}
+							break;
+						}
+						return container;
+					};
+
+					mapa.addLayerToPopUp = (container, activeLayer) => {
+						const inputDiv = document.createElement('div');
+						inputDiv.className = 'active-layer';
+						inputDiv.id = 'container_' + activeLayer;
+						inputDiv.style.display = 'flex';
+						inputDiv.style.flexDirection = 'row';
+						inputDiv.style.justifyContent = 'flex-start';
+						inputDiv.style.alignItems = 'center';
+						inputDiv.style.marginBottom = '2px';
+						inputDiv.style.padding = '4px';
+						inputDiv.style.borderRadius = '3px';
+						inputDiv.style.transition = '0.2s';
+						inputDiv.onclick = () => {
+							onClickActiveLayer(activeLayer);
+						};
+
+						const input = document.createElement('input');
+						input.type = 'checkbox';
+						input.id = activeLayer;
+						input.name = activeLayer;
+						input.value = activeLayer;
+						input.style.margin = '0px 3px 0px 0px';
+						input.onclick = () => {
+							onClickActiveLayer(activeLayer);
+						};
+
+						const label = document.createElement('label');
+						label.innerHTML = activeLayer;
+						label.className = 'active-layer-label';
+						label.setAttribute("for", activeLayer);
+						label.style.marginBottom = '0px';
+						label.style.overflow = 'hidden';
+						label.style.textOverflow = 'ellipsis';
+						label.onclick = () => {
+							onClickActiveLayer(activeLayer);
+						};
+
+						inputDiv.appendChild(input);
+						inputDiv.appendChild(label);
+						container.appendChild(inputDiv);
+					}
+
+					mapa.activeLayerHasChanged = (layer, addToList) => {
+						const activeLayersDiv = document.getElementById('activeLayers');
+						if (!activeLayersDiv)
+							return;
+					
+						const activeLayersDivChilds = Array.from(activeLayersDiv.childNodes);
+						const containerIdx = activeLayersDivChilds.findIndex(layerDiv => layerDiv.id.split('container_')[1] === layer);
+						if (containerIdx >= 0 && !addToList) {
+							activeLayersDiv.removeChild(activeLayersDivChilds[containerIdx]);
+						} else if (containerIdx === -1 && addToList) {
+							mapa.addLayerToPopUp(activeLayersDiv, layer);	
+						}
+					
+						const showInfoBtn = document.getElementById('btn-show-info');
+						if (gestorMenu.getActiveLayersWithoutBasemap().length > 0) {
+							showInfoBtn.classList.remove("btn-disabled");
+							showInfoBtn.classList.add("btn-active");
+						} else {
+							showInfoBtn.classList.remove("btn-active");
+							showInfoBtn.classList.add("btn-disabled");
+						}
+					}
+
+					mapa.createPopUp = (layer) => {
+						const popUpDiv = document.createElement('div');
+						popUpDiv.style.alignItems = 'center';
+						popUpDiv.style.alignContent = 'center';
+
+						const title = document.createElement('p');
+						title.className = 'active-layer-label';
+						title.innerHTML = 'Capas Activas';
+						title.style.fontSize = 14;
+						title.style.fontWeight = 'bold';
+						title.style.margin = '0px 0px 5px 3px';
+						popUpDiv.appendChild(title);
+
+						const selectedLayersDiv = document.createElement('div');
+						selectedLayersDiv.id = 'activeLayers';
+						selectedLayersDiv.style.padding = '3px';
+						selectedLayersDiv.style.overflowY = 'auto';
+						selectedLayersDiv.style.maxHeight = '250px';
+
+						const inputDiv = document.createElement('div');
+						inputDiv.className = 'active-layer';
+						inputDiv.style.display = 'flex';
+						inputDiv.style.flexDirection = 'row';
+						inputDiv.style.justifyContent = 'flex-start';
+						inputDiv.style.alignItems = 'center';
+						inputDiv.style.marginBottom = '2px';
+						inputDiv.style.padding = '4px';
+						inputDiv.style.borderRadius = '3px';
+						inputDiv.style.transition = '0.2s';
+						inputDiv.onclick = () => {
+							onClickAllActiveLayers();
+						}
+
+						const input = document.createElement('input');
+						input.type = 'checkbox';
+						input.id = 'seleccionar_capas';
+						input.name = 'Seleccionar Capas';
+						input.value = 'Seleccionar Capas';
+						input.style.margin = '0px 3px 0px 0px';
+						input.onclick = () => {
+							onClickAllActiveLayers();
+						}
+
+						const label = document.createElement('label');
+						label.className = 'active-layer-label';
+						label.innerHTML = 'Seleccionar Todas';
+						label.setAttribute("for", 'seleccionar_capas');
+						label.style.marginBottom = '0px';
+						label.style.overflow = 'hidden';
+						label.style.textOverflow = 'ellipsis';
+						label.onclick = () => {
+							onClickAllActiveLayers();
+						}
+
+						inputDiv.appendChild(input);
+						inputDiv.appendChild(label);
+						selectedLayersDiv.appendChild(inputDiv);
+
+						gestorMenu.getActiveLayersWithoutBasemap().forEach(activeLayer => {
+							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer.name);
+						});
+
+						const popUpBtn = document.createElement('div');
+						popUpBtn.className = 'popup-btn';
+						popUpBtn.setAttribute('id', 'btn-show-info');
+						popUpBtn.onclick = () => {
+							if (gestorMenu.getActiveLayersWithoutBasemap().length > 0)
+								mapa.showInfoLayer(layer.name, false);
+						};
+						popUpBtn.innerHTML = '<p class="popup-btn-text">Consultar capas seleccionadas en área</p>';
+						popUpBtn.classList.add(gestorMenu.getActiveLayersWithoutBasemap().length === 0 ? 'btn-disabled' : 'btn-active');
+
+						popUpDiv.appendChild(selectedLayersDiv);
+						popUpDiv.appendChild(popUpBtn);
+
+						const popUpBtn2 = document.createElement('div');
+						popUpBtn2.className = 'popup-btn';
+						popUpBtn2.setAttribute('id', 'btn-show-prev-info');
+						popUpBtn2.onclick = () => {
+							if (Object.keys(layer.data).length > 0)
+								mapa.showInfoLayer(layer.name, true);
+						};
+						popUpBtn2.innerHTML = '<p class="popup-btn-text">Ver última consulta</p>';
+						popUpBtn2.classList.add(Object.keys(layer.data).length === 0 ? 'btn-disabled' : 'btn-active');
+
+						popUpDiv.appendChild(popUpBtn2);
+
+						return popUpDiv;
+					}
+
+					mapa.showInfoLayer = (layerName, showLastSearch) => {
+
 						const type = layerName.split('_')[0];
 						const layer = mapa.editableLayers[type].find(lyr => lyr.name === layerName);
+
+						if (showLastSearch) {
+							for (const dataName in layer.data) {
+								let table = new Datatable(layer.data[dataName], layer.coords);
+								createTabulator(table, dataName);
+							}
+							layer.closePopup();
+							return;
+						}
+
+						const selectedLayersInputs = Array.from(document.getElementById('activeLayers').getElementsByTagName('input'));
+						const selectedLayers = [];
+						selectedLayersInputs.forEach(selectedLayer => {
+							if (selectedLayer.checked)
+								selectedLayers.push(selectedLayer.id);
+						});
+						
 						layer.closePopup();
 
 						if (Object.keys(layer.data).length === 0) {
 							//Download
-							mapa.checkLayersInDrawedGeometry(layer);
+							mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
 						} else {
 							//Load data in table
 							//.. its more complicated if active layers is different to each search.
@@ -455,7 +1298,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							//let tableD = new Datatable (data, coords);
 							//createTabulator(tableD, activeLayer.name);
 
-							mapa.checkLayersInDrawedGeometry(layer);
+							mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
 						}
 					}
 
@@ -468,15 +1311,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
 					}
 
-					mapa.checkLayersInDrawedGeometry = (layer) => {
-						const activeLayers = gestorMenu.getActiveLayersWithoutBasemap();
+					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
+						const filteredActiveLayers = gestorMenu.getActiveLayersWithoutBasemap().filter(activeLayer => {
+							return selectedLayers.find(selectedLayer => selectedLayer === activeLayer.name) ? true : false;
+						});
 
 						let coords = null;
 
 						if (layer.type === 'polygon' || layer.type === 'rectangle') {
 							coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
 							layer.coords = coords;
-							console.log(coords)
 						} else if (layer.type === 'circle') {
 							coords = {
 								lat: layer._latlng.lat,
@@ -493,26 +1337,37 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.coords = coords;
 						}
 
-						if (activeLayers.length > 0) {
-							activeLayers.forEach(activeLayer => {
+						//Clean all old data
+						layer.data = {};
+
+						if (filteredActiveLayers.length > 0) {
+							filteredActiveLayers.forEach(activeLayer => {
 								getLayerDataByWFS(coords, layer.type, activeLayer)
 								.then(data => {
-									console.log('data from server', data);
+
+									if (!data) {
+										throw new Error('Error fetching to server');
+									};
+
 									layer.data[activeLayer.name] = data;
 									layer.coords = coords;
 
 									//Load data in table
-									let tableD = new Datatable (data, coords);
-									createTabulator(tableD, activeLayer.name);
+									const table = new Datatable(data, coords);
+									createTabulator(table, activeLayer.name);
 
 									//we can style the figure in case it can receive some information
-									if (layer.type !== 'marker')
+									/* if (layer.type !== 'marker')
 										layer.setStyle({
-											color: 'orange'
-										});
+											color: '#33b560'
+										}); */
 								})
 								.catch(error => {
-									console.log(error)
+									console.log(error);
+									if (layer.type !== 'marker')
+										layer.setStyle({
+											color: 'red'
+										});
 								});
 							});
 						}
@@ -599,6 +1454,14 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.downloadLayerGeoJSON = (layer) => {
 						const geoJSON = layer.toGeoJSON();
+						const styleOptions = { ...layer.options };
+						geoJSON.properties.styles = { ...styleOptions };
+						geoJSON.properties.type = layer.type;
+						if (layer.type === 'marker') {
+							if (geoJSON.properties.styles.hasOwnProperty('icon')) {
+								delete geoJSON.properties.styles.icon;
+							}
+						}
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
@@ -616,7 +1479,11 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.groupLayers[groupLayer].forEach(layerName => {
 							const layer = mapa.getEditableLayer(layerName);
-							jsonToDownload.features.push(layer.toGeoJSON());
+							const geoJSON = layer.toGeoJSON();
+							const styleOptions = { ...layer.options };
+							geoJSON.properties.styles = styleOptions;
+							geoJSON.properties.type = layer.type;
+							jsonToDownload.features.push(geoJSON);
 						});
 
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
@@ -627,6 +1494,126 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.click();
 						downloadANode.remove();
 					}
+
+					mapa.createMarker = (color1, color2, borderWidth) => {
+						const svgNS = 'http://www.w3.org/2000/svg';
+
+						const marker = document.createElementNS(svgNS, "svg");
+						marker.setAttribute('width', 54);
+						marker.setAttribute('height', 82);
+						marker.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+						marker.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+
+						const defs = document.createElementNS(svgNS, "defs");
+						marker.appendChild(defs);
+
+						const borderGradient = document.createElementNS(svgNS, 'linearGradient');
+						borderGradient.setAttribute('id', 'strokeGradient');
+						borderGradient.setAttribute('x1', '0');
+						borderGradient.setAttribute('x2', '0');
+						borderGradient.setAttribute('y1', '0');
+						borderGradient.setAttribute('y2', '1');
+				
+						const stop1 = document.createElementNS(svgNS, 'stop');
+						stop1.setAttribute('offset', '0');
+						stop1.setAttribute('stop-color', color1);
+						borderGradient.appendChild(stop1);
+						
+						const stop2 = document.createElementNS(svgNS, 'stop');
+						stop2.setAttribute('offset', '1');
+						stop2.setAttribute('stop-color', getDarkerColorTone(color1, -0.3));
+						borderGradient.appendChild(stop2);
+				
+						const fillGradient = document.createElementNS(svgNS, 'linearGradient');
+						fillGradient.setAttribute('id', 'fillGradient');
+						fillGradient.setAttribute('x1', '0');
+						fillGradient.setAttribute('x2', '0');
+						fillGradient.setAttribute('y1', '0');
+						fillGradient.setAttribute('y2', '1');
+				
+						const stop3 = document.createElementNS(svgNS, 'stop');
+						stop3.setAttribute('offset', '0');
+						stop3.setAttribute('stop-color', color2);
+						fillGradient.appendChild(stop3);
+						
+						const stop4 = document.createElementNS(svgNS, 'stop');
+						stop4.setAttribute('offset', '1');
+						stop4.setAttribute('stop-color', getDarkerColorTone(color2, -0.3));
+						fillGradient.appendChild(stop4);
+				
+						defs.appendChild(borderGradient);
+						defs.appendChild(fillGradient);
+
+						const g = document.createElementNS(svgNS, "g");
+						marker.appendChild(g);
+						
+						const path = document.createElementNS(svgNS, "path");
+						path.setAttribute('d', 'm27.3 3.1c-13.694 0-25.092 11.382-25.092 23.732 0 5.556 3.258 12.616 5.613 17.492l19.388 35.744 19.296-35.744c2.354-4.876 5.704-11.582 5.704-17.492 0-12.35-11.215-23.732-24.908-23.732zm0 14.31c5.383.034 9.748 4.244 9.748 9.42s-4.365 9.326-9.748 9.358c-5.383-.034-9.748-4.18-9.748-9.358 0-5.176 4.365-9.386 9.748-9.42z');
+						path.setAttribute('stroke', `url(#strokeGradient)`);
+						path.setAttribute('fill', `url(#fillGradient)`);
+						path.setAttribute('stroke-linecap', 'round');
+						path.setAttribute('stroke-width', borderWidth);
+						g.appendChild(path);
+
+						return marker;
+					}
+
+					mapa.convertMarkerToPng = async (markerSvg) => {
+						let svgString = new XMLSerializer().serializeToString(markerSvg);
+						let canvas = document.createElement('canvas');
+						canvas.width = 54;
+						canvas.height = 82;
+						let ctx = canvas.getContext("2d");
+						let DOMURL = self.URL || self.webkitURL || self;
+						let img = new Image();
+						let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+						let url = DOMURL.createObjectURL(svg);
+						return new Promise((resolve, reject) => {
+							img.onload = function() {
+								ctx.drawImage(img, 0, 0);
+								let png = canvas.toDataURL("image/png", 1);
+								markerSvg.innerHTML = '<img src="'+png+'"/>';
+								DOMURL.revokeObjectURL(png);
+								resolve(png);
+							};
+							img.src = url;
+						});
+					}
+
+					mapa.downloadMarker = async (format, color1, color2, borderWidth) => {
+						const markerSVG = mapa.createMarker(color1, color2, borderWidth);
+						let downloadLink = document.createElement("a");
+						switch (format) {
+							case 'svg': {
+								let svgData = markerSVG.outerHTML;
+								let svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+								let svgUrl = URL.createObjectURL(svgBlob);
+								downloadLink.href = svgUrl;
+								downloadLink.download = "marker.svg";
+							}
+							break;
+							case 'png': {
+								const markerPNG = await mapa.convertMarkerToPng(markerSVG);
+								downloadLink.href = markerPNG;
+								downloadLink.download = "marker.png";
+							}
+							break;
+						}
+						document.body.appendChild(downloadLink);
+						downloadLink.click();
+						document.body.removeChild(downloadLink);
+					}
+
+					mapa.setIconToMarker = async (layer, color1, color2, borderWidth) => {
+						const markerSVG = mapa.createMarker(color1, color2, borderWidth);
+						const markerPNG = await mapa.convertMarkerToPng(markerSVG);
+						const icon = L.icon({
+							iconUrl: markerPNG,
+							shadowUrl: 'src/styles/images/marker-shadow.png',
+							popupAnchor:  [1, -33]
+						});
+						layer.setIcon(icon);
+					};
 
 					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, groupIsCreated) => {
 						if (!groupIsCreated)
@@ -642,22 +1629,59 @@ $("body").on("pluginLoad", function(event, plugin){
 						let type = geoJSON.geometry.type.toLowerCase();
 						let layer = null;
 
+						let options = {};
+						if (geoJSON.properties.hasOwnProperty('styles')) {
+							options = { ...geoJSON.properties.styles };
+						}
+
 						switch (type) {
 							case 'point': {
 								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
-								layer = L.marker(invertedCoords);
-								type = 'marker';
+
+								//Check if it is circle, circlemarker or marker
+								if (geoJSON.properties.hasOwnProperty('type')) {
+									switch (geoJSON.properties.type.toLowerCase()) {
+										case 'circle': {
+											layer = L.circle(invertedCoords, options);
+											type = 'circle';
+										}
+										break;
+										case 'circlemarker': {
+											layer = L.circlemarker(invertedCoords, options);
+											type = 'circlemarker';
+										};
+										break;
+										case 'marker': {
+											layer = L.marker(invertedCoords);
+											type = 'marker';
+										};
+										break;
+										default: {
+											layer = L.marker(invertedCoords);
+											type = 'marker';
+										}
+									}
+								} else {
+									layer = L.marker(invertedCoords);
+									type = 'marker';
+								}
 							}
 							break;
 							case 'linestring': {
 								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
-								layer = L.polyline(invertedCoords);
+								layer = L.polyline(invertedCoords, options);
 								type = 'polyline';
 							}
 							break;
 							case 'polygon': {
 								const invertedCoords = geoJSON.geometry.coordinates[0].map(coords => [coords[1], coords[0]]);
-								layer = L.polygon(invertedCoords);
+								if (geoJSON.properties.hasOwnProperty('type') && geoJSON.properties.type.toLowerCase() === 'rectangle') {
+									layer = L.rectangle(invertedCoords, options);
+									type = 'rectangle';
+								} else {
+									layer = L.polygon(invertedCoords, options);
+									type = 'polygon';
+								}
 							}
 							break;
 							case 'multipoint': {
@@ -697,14 +1721,39 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						mapa.editableLayers[type].push(layer);
-						layer.bindTooltip(layer.name);
+						
+						if (layer.type === 'marker') {
+							//Default marker styles
+							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
+							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
+							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 
-						if (type === 'polygon')
-							layer.bindPopup(`<div><p>${layer.name}</p><button id="btn_${layer.name}" onclick="mapa.showInfoLayer('${layer.name}')">Ver información</button></div>`);
+							if (geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
+								const borderWidth = geoJSON.properties.styles.borderWidth;
+								const borderColor = geoJSON.properties.styles.borderColor;
+								const fillColor = geoJSON.properties.styles.fillColor;
+
+								layer.options.borderWidth = borderWidth;
+								layer.options.borderColor = borderColor;
+								layer.options.fillColor = fillColor;
+								layer.options.customMarker = true;
+
+								mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
+							} else {
+								
+							}
+						}
+
+						//Left-click
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+							mapa.addSelectionLayersMenuToLayer(layer);
+						}
+						//Right-click
+						mapa.addContextMenuToLayer(layer);
 
 						drawnItems.addLayer(layer);
 
-						if (type !== 'marker') {
+						if (type !== 'marker' && type !== 'circlemarker') {
 							mapa.fitBounds(layer.getBounds());
 						} else {
 							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));

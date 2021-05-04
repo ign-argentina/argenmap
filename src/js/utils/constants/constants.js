@@ -11,6 +11,13 @@ const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
 
+//Default Marker Styles
+const DEFAULT_MARKER_STYLES = {
+    borderWidth: 2.5,
+    borderColor: '#008dc9',
+    fillColor: '#fafafa'
+}
+
 //Default Meta Tags Values
 const METATAG_TITLE = 'Argenmap - Instituto Geográfico Nacional';
 const METATAG_DESCRIPTION = 'Visualizador de mapas web';

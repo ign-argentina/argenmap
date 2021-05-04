@@ -1,10 +1,15 @@
 /*******************************
 General
 *******************************/
+html {
+  height: 100%;
+}
+
 body {
   font-family: Roboto, sans-serif;
   background-color: #008dc9;
   overflow: hidden;
+  height: 100%;
 }
 
 @media (max-width: 600px) {
@@ -312,6 +317,204 @@ Leaflet popup featureInfo
 #popupPageSeekerPrev {
   float: left;
   padding-left: 10px;
+}
+
+/*******************************
+Popup geometría
+*******************************/
+.active-layer:hover {
+  background-color: rgb(0,141,201, 0.1);
+}
+.active-layer-label {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.popup-btn {
+  width: 100%;
+  height: 26px;
+  text-align: center;
+  padding: 3px;
+  border: solid;
+  border-radius: 3px;
+  border-width: 1px;
+  margin-top: 7px;
+  transition: 0.2s;
+}
+.popup-btn-text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin: 0 !important;
+  font-weight: 700;
+}
+.btn-active {
+  border-color: rgb(0,141,201);
+  color: rgb(0,141,201);
+}
+.btn-active:hover {
+  background-color: rgb(0,141,201);
+  color: white;
+}
+.btn-active:active {
+  background-color: rgb(0, 92, 131);
+  color: white;
+}
+.btn-disabled {
+  border-color: rgb(107, 109, 110);
+  color: rgb(107, 109, 110);
+}
+.context-menu {
+  width: 170px;
+  background-color: white;
+  border-radius: 5px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 2000;
+  left: -20px;
+  top: -15px;
+  box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
+}
+.context-menu-item {
+  height: 30px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.context-menu-item-active {
+  color: rgb(0, 92, 131);
+}
+.context-menu-item-active:hover {
+  background-color: rgb(0,141,201);
+  color: white;
+}
+.context-menu-item-active:active {
+  background-color: rgb(0, 92, 131);
+  color: white;
+}
+.context-menu-item-disabled {
+  color: rgb(107, 109, 110);
+}
+.context-popup {
+  left: 20px !important;
+  top: 20px;
+}
+.context-menu-item-text {
+  margin: 0px !important;
+  font-weight: 700;
+}
+.non-selectable-text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.edit-style-popup {
+  left: 20px !important;
+  top: 20px;
+}
+.edit-style-popup-container {
+  width: 350px;
+  background-color: white;
+  border-radius: 5px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  left: -20px;
+  top: -15px;
+  padding: 7px;
+  box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
+}
+.edit-style-popup-container .section-popup .section-title {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.edit-style-popup-container .section-popup .section-item label {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.section-popup {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+.section-title {
+  position: absolute;
+  align-self: center;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  top: -30px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.section-item {
+  flex-basis: 45%;
+  height: 58px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.section-item-input {
+  width: 95% !important;
+  height: 22px;
+}
+.popup-parent {
+  height: 0px !important;
+  width: 0px !important;
+}
+.download-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+}
+.download-btn {
+  width: 49%;
+  height: 22px;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.download-btn-active {
+  color: rgb(0,141,201);
+  border-color: rgb(0,141,201);
+}
+.download-btn-active:hover {
+  background-color: rgb(0,141,201);
+  color: white;
+}
+.download-btn-active:active {
+  background-color: rgb(0, 92, 131);
+  color: white;
+}
+.download-btn-disable {
+  color: rgb(107, 109, 110);
+  border-color: rgb(107, 109, 110);
 }
 
 /*******************************

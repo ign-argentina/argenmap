@@ -100,7 +100,7 @@
   </head>
   <body>
     <nav class="navbar _navbar-inverse navbar-fixed-top">
-      <div class="container-fluid col-12 col-xs-12 col-sm-12 col-md-12">
+      <div class="container-fluid col-12 col-xs-12 col-sm-12 col-md-12" style="height: 100%;">
         <div class="navbar-header">
           <button type="button" class="hidden-lg hidden-md navbar-toggle collapsed pull-left" data-toggle="collapse"
             data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
@@ -126,15 +126,15 @@
         </span>
       </div>
     </nav>
-    <div class="container-fluid">
-      <div class="row">
+    <div class="container-fluid" style="height: 100%;">
+      <div class="row" style="height: 100%;">
         <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
           aria-expanded="false">
           <div class="loading"><img src="src/styles/images/loading.gif"></div>
           <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
         </nav>
         <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"
-          style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
+          style="position: relative; height: 100%; background-color: white"></div>
       </div>
     </div>
     <div id="basemap-selector"></div>

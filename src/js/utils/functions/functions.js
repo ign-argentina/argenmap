@@ -5,6 +5,8 @@ var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
 var loadCharts = false;
 
+var currentlyDrawing = false;
+
 function setTableAsPopUp(cond) {
     loadTableAsPopUp = cond;
 }
@@ -18,13 +20,16 @@ function setCharts(cond) {
 }
 
 XMLHttpRequest.prototype.open = (function(open) {
-
     return function(method, url, async) {
-        if (loadTableAsPopUp && url.includes("&request=GetFeatureInfo")){
-            url += `&feature_count=${tableFeatureCount}`;
+        if (url.includes("&request=GetFeatureInfo")){
+            if (currentlyDrawing)
+                url += `&feature_count=0`;
+            else if (loadTableAsPopUp) {
+                url += `&feature_count=${tableFeatureCount}`;
+            }
         }
-        open.apply(this,arguments);
-      };
+        open.apply(this, arguments);
+    };
 })(XMLHttpRequest.prototype.open);
 
 function deg_to_dms(deg) {
@@ -51,6 +56,23 @@ function deg_to_dms(deg) {
    s += "";
    s = s.padStart(2, '0');
    return ("" + d + "° " + m + "' " + s + "''");
+}
+
+function getDarkerColorTone(hex, lum) {
+	// validate hex string
+	hex = String(hex).replace(/[^0-9a-f]/gi, '');
+	if (hex.length < 6) {
+		hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+	}
+	lum = lum || 0;
+	// convert to decimal and change luminosity
+	var rgb = "#", c, i;
+	for (i = 0; i < 3; i++) {
+		c = parseInt(hex.substr(i*2,2), 16);
+		c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+		rgb += ("00"+c).substr(c.length);
+	}
+	return rgb;
 }
 
 function showImageOnError(image) {
