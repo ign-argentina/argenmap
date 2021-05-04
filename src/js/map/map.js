@@ -1412,7 +1412,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.deleteLayer = (layer) => {
 						const type = layer.split('_')[0];
-						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name = layer);
+						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
 						if (lyrIdx >= 0) {
 							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
 							mapa.editableLayers[type].splice(lyrIdx, 1);
@@ -1420,7 +1420,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						//Delete from groups
 						for (const group in mapa.groupLayers) {
-							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = layer);
+							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
 							if (lyrInGrpIdx >= 0)
 								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 						}
