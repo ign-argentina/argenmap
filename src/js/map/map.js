@@ -1727,7 +1727,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 
-							if (geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
+							if (geoJSON.properties.hasOwnProperty('styles') && geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
 								const borderWidth = geoJSON.properties.styles.borderWidth;
 								const borderColor = geoJSON.properties.styles.borderColor;
 								const fillColor = geoJSON.properties.styles.fillColor;
@@ -1738,8 +1738,6 @@ $("body").on("pluginLoad", function(event, plugin){
 								layer.options.customMarker = true;
 
 								mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
-							} else {
-								
 							}
 						}
 
@@ -1752,11 +1750,11 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						drawnItems.addLayer(layer);
 
-						if (type !== 'marker' && type !== 'circlemarker') {
+						/* if (type !== 'marker' && type !== 'circlemarker') {
 							mapa.fitBounds(layer.getBounds());
 						} else {
 							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
-						}
+						} */
 					}
 
 					gestorMenu.plugins['Draw'].setStatus('visible');
