@@ -19,6 +19,22 @@ function setCharts(cond) {
    loadCharts = cond;
 }
 
+const reverseCoords = (coords) => {
+    return [coords[1], coords[0]];
+}
+
+const reverseMultipleCoords = (coords) => {
+    let reversedCoords = [];
+    coords.forEach(coord => {
+        if (typeof coord[0] === 'object') {
+            reversedCoords.push(reverseMultipleCoords(coord));
+        } else {
+            reversedCoords.push(reverseCoords(coord));
+        }
+    });
+    return reversedCoords;
+}
+
 XMLHttpRequest.prototype.open = (function(open) {
     return function(method, url, async) {
         if (url.includes("&request=GetFeatureInfo")){

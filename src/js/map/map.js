@@ -1693,6 +1693,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							break;
 							case 'multipolygon': {
 								//
+								const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
+								layer = L.polygon(reversedCoords);
+								type = 'polygon';
 							}
 							break;
 						}
