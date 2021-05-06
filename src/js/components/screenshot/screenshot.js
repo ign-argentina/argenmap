@@ -1,7 +1,7 @@
 class Screenshot {
   constructor() {
     this.component = `
-    <div class="center-flex" id="screenshot" title="screenshot" onclick=capturetoPNG('mapa')>
+    <div class="center-flex" id="screenshot" title="screenshot" onclick=capturetoPNG('mapa') data-html2canvas-ignore="true">
         <div class="center-flex" id="iconSC-container">
             <span class="fa fa-camera" aria-hidden="true"  ></span>
         </div>
@@ -24,10 +24,10 @@ function capturetoPNG(el) {
   auxright[0].setAttribute("data-html2canvas-ignore", "true");
   let auxbleft = document.getElementsByClassName("leaflet-bottom leaflet-left");
   auxbleft[0].setAttribute("data-html2canvas-ignore", "true");
-  let zoom = document.getElementById("zoom-level");
-  zoom.setAttribute("data-html2canvas-ignore", "true");
-  let sc = document.getElementById("screenshot");
-  sc.setAttribute("data-html2canvas-ignore", "true");
+  let mapa =  document.getElementById("mapa")
+  if(mapa.querySelectorAll('svg.leaflet-zoom-animated')[0]){
+    mapa.querySelectorAll('svg.leaflet-zoom-animated')[0].setAttribute("data-html2canvas-ignore", "true");
+  }
 
   let id = "#" + el;
   html2canvas(document.querySelector(id), {

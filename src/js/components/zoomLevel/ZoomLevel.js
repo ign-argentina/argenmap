@@ -1,5 +1,5 @@
 const zoomTemplate = `
-    <div class="center-flex" id="zoom-level" title="Zoom">
+    <div class="center-flex" id="zoom-level" title="Zoom" data-html2canvas-ignore="true">
         <div class="center-flex" id="icon-container">
             <i class="fa fa-search" aria-hidden="true"></i>
         </div>
