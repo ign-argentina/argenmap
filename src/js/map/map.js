@@ -1684,15 +1684,34 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 							break;
 							case 'multipoint': {
-								//
+								geoJSON.geometry.coordinates.forEach(coords => {
+									const point = {
+										type: "Feature",
+										geometry: {
+											type: "Point",
+											coordinates: coords
+										},
+										properties: geoJSON.properties
+									};
+									mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true);
+								});
+								return;
 							}
-							break;
 							case 'multilinestring': {
-								//
+								geoJSON.geometry.coordinates.forEach(coords => {
+									const lineString = {
+										type: "Feature",
+										geometry: {
+											type: "LineString",
+											coordinates: coords
+										},
+										properties: geoJSON.properties
+									};
+									mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true);
+								});
+								return;
 							}
-							break;
 							case 'multipolygon': {
-								//
 								const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
 								layer = L.polygon(reversedCoords);
 								type = 'polygon';
