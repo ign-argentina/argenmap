@@ -1293,6 +1293,8 @@ class GestorMenu {
                         this.setLayersDataForWfs();
                         window.clearInterval(lastInterval);
 
+                        this.printMenu();
+
                         //last chances to load layers
                         if (rejectedLayers.length > 0) {
                             let tryNumber = 0;
@@ -1313,6 +1315,7 @@ class GestorMenu {
                                         rejectedLayers.splice(vL, 1);
                                     });
                                 }
+                                this.printMenu();
                             }, 1000);
                         }
                     }
@@ -1399,6 +1402,7 @@ class GestorMenu {
     }
 	
     setLayersJoin(layersJoin) {
+        console.log(layersJoin)
         this._layersJoin = layersJoin;
     }
     
@@ -1990,6 +1994,7 @@ class GestorMenu {
     }
 
     muestraCapa(itemSeccion) {
+        console.log(itemSeccion)
 
         if (!mapa.hasOwnProperty('activeLayerHasChanged')) {
             const intervalId = setInterval(() => {
