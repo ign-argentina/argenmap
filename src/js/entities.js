@@ -1402,7 +1402,6 @@ class GestorMenu {
     }
 	
     setLayersJoin(layersJoin) {
-        console.log(layersJoin)
         this._layersJoin = layersJoin;
     }
     
@@ -1994,8 +1993,7 @@ class GestorMenu {
     }
 
     muestraCapa(itemSeccion) {
-        console.log(itemSeccion)
-
+        
         if (!mapa.hasOwnProperty('activeLayerHasChanged')) {
             const intervalId = setInterval(() => {
                 if (mapa.hasOwnProperty('activeLayerHasChanged')) {
