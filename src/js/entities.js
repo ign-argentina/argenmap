@@ -943,6 +943,31 @@ class Item extends ItemComposite {
         return this.legendImg;
     }
 
+    loadLayer(capa, key) {
+        var tmp = Object.assign({}, capa); //Clonar el item para simular que solo tiene una unica capa
+        tmp.nombre = capa.nombre;
+        tmp.capa = capa.capas[key];
+        switch (tmp.capa.servicio) {
+            case "wms":
+                loadWms(tmp.callback, tmp);
+                break;
+            case "wmts":
+                loadWmts(tmp.callback, tmp);                
+                break;
+            case "tms":
+                loadMapaBase(tmp.capa.host, tmp.capa.nombre, tmp.capa.attribution);            
+                break;
+            case "bing":
+                loadMapaBaseBing(tmp.capa.key, tmp.capa.nombre, tmp.capa.attribution);
+                break;
+            case "geojson":
+                loadGeojson(tmp.capa.host, tmp.nombre);
+                break;
+            default:
+                break;
+        }
+    }
+
     showHide() {
         $('#' + this.getId()).toggleClass('active');
 
@@ -950,32 +975,26 @@ class Item extends ItemComposite {
             this.callback = eval(this.callback);
         }
         
-		//Recorrer todas las capas del item
-		for (var key in this.capas) {
-			var tmp = Object.assign({}, this); //Clonar el item para simular que solo tiene una unica capa
-			tmp.nombre = this.nombre;
-			tmp.capa = this.capas[key];
-            switch (tmp.capa.servicio) {
-                case "wms":
-                    loadWms(tmp.callback, tmp);
-                    break;
-                case "wmts":
-                    loadWmts(tmp.callback, tmp);                
-                    break;
-                case "tms":
-                    loadMapaBase(tmp.capa.host, tmp.capa.nombre, tmp.capa.attribution);            
-                    break;
-                case "bing":
-                    loadMapaBaseBing(tmp.capa.key, tmp.capa.nombre, tmp.capa.attribution);
-                    break;
-                case "geojson":
-                    loadGeojson(tmp.capa.host, tmp.nombre);
-                    break;
-                default:
-                    break;
+        this.visible = !this.visible;
+        this.capas[0].visible = this.visible;
+        this.loadLayer(this, 0);
+		
+        //Recorrer todas las capas del item
+		if (this.capas.length > 1) {
+            const secondaryLayers = this.capas.slice(1, this.capas.length);
+            for (var key in secondaryLayers) {
+                if (this.capas[+key + 1].hasOwnProperty('visible')) {
+                    if (this.capas[+key + 1].visible !== this.visible) {
+                        this.capas[+key + 1].visible = this.visible;
+                    }
+                    this.loadLayer(this, +key + 1);
+                } else {
+                    this.capas[+key + 1].visible = this.visible;
+                    if (this.visible)
+                        this.loadLayer(this, +key + 1);
+                }
             }
-		}
-		this.visible = !this.visible;
+        }
 	}
 	
 	getLegendURL() {
@@ -1619,8 +1638,14 @@ class GestorMenu {
 								if (itemInt) {
 									for (var keyItemInt in itemInt.itemsComposite) {
 										if (itemInt.itemsComposite[keyItemInt].capa.host == this._layersJoin[keyJoin].joins[keyJoinInt].host && itemInt.itemsComposite[keyItemInt].capa.nombre == this._layersJoin[keyJoin].joins[keyJoinInt].layer) {
-											item.itemsComposite[keyItem].capas = item.itemsComposite[keyItem].capas.concat(itemInt.itemsComposite[keyItemInt].capas);
+                                            item.itemsComposite[keyItem].capas = item.itemsComposite[keyItem].capas.concat(itemInt.itemsComposite[keyItemInt].capas);
 											delete itemInt.itemsComposite[keyItemInt];
+                                            if (item.itemsComposite[keyItem].visible) {
+                                                if (!isNaN(keyItemInt)) {
+                                                    item.itemsComposite[keyItem].capas[keyItemInt].visible = true;
+                                                    item.itemsComposite[keyItem].loadLayer(item.itemsComposite[keyItem], keyItemInt);
+                                                }
+                                            }
 										}
 									}
 								}
@@ -1993,7 +2018,7 @@ class GestorMenu {
     }
 
     muestraCapa(itemSeccion) {
-        
+
         if (!mapa.hasOwnProperty('activeLayerHasChanged')) {
             const intervalId = setInterval(() => {
                 if (mapa.hasOwnProperty('activeLayerHasChanged')) {
