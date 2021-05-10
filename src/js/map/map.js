@@ -6,6 +6,8 @@ var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/Introduc
 var argenmap = "";
 var mapa = "";
 
+let currentBaseMap = null;
+
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
 	for (const plugin in PLUGINS) {
 		if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(excluded_plugin => excluded_plugin === plugin)) {
@@ -1788,10 +1790,10 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	switch(unordered) {
 		case 'leaflet':
-			argenmap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
-		    tms: true,
-		    maxZoom: DEFAULT_MAX_ZOOM_LEVEL,
-		    attribution: atrib_ign
+			currentBaseMap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
+				tms: true,
+				maxZoom: DEFAULT_MAX_ZOOM_LEVEL,
+				attribution: atrib_ign
 			});
 
 			//Construye el mapa
@@ -1799,7 +1801,7 @@ $("body").on("pluginLoad", function(event, plugin){
                 mapa = L.map('mapa', {
                     center: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
                     zoom: app.mapConfig.zoom.initial,
-                    layers: [argenmap],
+                    layers: [currentBaseMap],
                     zoomControl: false,
                     minZoom: app.mapConfig.zoom.min,
                     maxZoom: app.mapConfig.zoom.max
@@ -1808,7 +1810,7 @@ $("body").on("pluginLoad", function(event, plugin){
                 mapa = L.map('mapa', {
                     center: [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
                     zoom: DEFAULT_ZOOM_LEVEL,
-                    layers: [argenmap],
+                    layers: [currentBaseMap],
                     zoomControl: false,
                     minZoom: DEFAULT_MIN_ZOOM_LEVEL,
                     maxZoom: DEFAULT_MAX_ZOOM_LEVEL
@@ -2196,6 +2198,7 @@ function loadWmsTpl (objLayer) {
     }
 
     function createWmtsLayer(objLayer) {
+		console.log('abc')
 		// tilematrix, style and format should be set by a method
 		let _style = "", _tilematrixSet = "EPSG:3857", _format = "image/png";
 		var wmtsSource = new L.TileLayer.WMTS(objLayer.capa.getHostWMS(),
@@ -2211,29 +2214,31 @@ function loadWmsTpl (objLayer) {
 	}
 }
 
-function loadMapaBaseTpl (tmsUrl, layer, attribution) {
-    if (baseMaps.hasOwnProperty(layer)) {
-        baseMaps[layer].removeFrom(mapa);
-        delete baseMaps[layer];
-    } else {
-        createTmsLayer(tmsUrl, layer, attribution);
-        baseMaps[layer].addTo(mapa);
-    }
+function createTmsLayer(tmsUrl, layer, attribution) {
+	if (baseLayers.hasOwnProperty(layer) && baseLayers[layer].hasOwnProperty('zoom')) {
+		const { min, max } = baseLayers[layer].zoom;
+		currentBaseMap = new L.tileLayer(tmsUrl, {
+			attribution: attribution,
+			minZoom: min,
+			maxZoom: max,
+		});
+		return;
+	}
+	currentBaseMap = new L.tileLayer(tmsUrl, {
+		attribution: attribution
+	});
+}
 
-    function createTmsLayer(tmsUrl, layer, attribution) {
-		if (baseLayers.hasOwnProperty(layer) && baseLayers[layer].hasOwnProperty('zoom')) {
-			const { min, max } = baseLayers[layer].zoom;
-			baseMaps[layer] = new L.tileLayer(tmsUrl, {
-				attribution: attribution,
-				minZoom: min,
-				maxZoom: max,
-			});
-			return;
-		}
-        baseMaps[layer] = new L.tileLayer(tmsUrl, {
-            attribution: attribution
-        });
-    }
+function createBingLayer(bingKey, layer, attribution) {
+    baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
+}
+
+function loadMapaBaseTpl(tmsUrl, layer, attribution) {
+	mapa.removeLayer(currentBaseMap);
+	createTmsLayer(tmsUrl, layer, attribution);
+	currentBaseMap.addTo(mapa);
+
+	mapa.eachLayer((lay) => {console.log(lay)})
 }
 
 function loadMapaBaseBingTpl (bingKey, layer, attribution) {
@@ -2243,10 +2248,6 @@ function loadMapaBaseBingTpl (bingKey, layer, attribution) {
     } else {
         createBingLayer(bingKey, layer, attribution);
         baseMaps[layer].addTo(mapa);
-    }
-
-    function createBingLayer(bingKey, layer, attribution) {
-    baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
     }
 }
 
