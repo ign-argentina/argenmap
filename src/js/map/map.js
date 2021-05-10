@@ -2237,8 +2237,6 @@ function loadMapaBaseTpl(tmsUrl, layer, attribution) {
 	mapa.removeLayer(currentBaseMap);
 	createTmsLayer(tmsUrl, layer, attribution);
 	currentBaseMap.addTo(mapa);
-
-	mapa.eachLayer((lay) => {console.log(lay)})
 }
 
 function loadMapaBaseBingTpl (bingKey, layer, attribution) {
