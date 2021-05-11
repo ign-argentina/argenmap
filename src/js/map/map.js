@@ -905,7 +905,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							});
 							const enableMarkerLabel = document.createElement('label');
 							enableMarkerLabel.setAttribute('for', 'enable-marker-input');
-							enableMarkerLabel.innerHTML = 'Marcador personalizado';
+							enableMarkerLabel.innerHTML = 'Personalizado';
 							enableMarkerInputDiv.appendChild(enableMarkerLabel);
 							enableMarkerInputDiv.appendChild(enableMarkerInput);
 							markerSection.appendChild(enableMarkerInputDiv);
@@ -2198,7 +2198,6 @@ function loadWmsTpl (objLayer) {
     }
 
     function createWmtsLayer(objLayer) {
-		console.log('abc')
 		// tilematrix, style and format should be set by a method
 		let _style = "", _tilematrixSet = "EPSG:3857", _format = "image/png";
 		var wmtsSource = new L.TileLayer.WMTS(objLayer.capa.getHostWMS(),
@@ -2216,11 +2215,13 @@ function loadWmsTpl (objLayer) {
 
 function createTmsLayer(tmsUrl, layer, attribution) {
 	if (baseLayers.hasOwnProperty(layer) && baseLayers[layer].hasOwnProperty('zoom')) {
-		const { min, max } = baseLayers[layer].zoom;
+		const { min, max, nativeMin, nativeMax } = baseLayers[layer].zoom;
 		currentBaseMap = new L.tileLayer(tmsUrl, {
 			attribution: attribution,
 			minZoom: min,
 			maxZoom: max,
+			minNativeZoom: nativeMin,
+			maxNativeZoom: nativeMax
 		});
 		return;
 	}

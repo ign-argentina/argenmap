@@ -20,7 +20,9 @@
           "selected": true,
           "zoom": {
             "min": 3,
-            "max": 21
+            "max": 21,
+            "nativeMin": 3,
+            "nativeMax": 21
           }
         },
         {
@@ -34,7 +36,9 @@
           "peso": 20,
           "zoom": {
             "min": 3,
-            "max": 21
+            "max": 21,
+            "nativeMin": 3,
+            "nativeMax": 21
           }
         },
         {
@@ -47,7 +51,9 @@
           "legendImg": "src/styles/images/here.png",
           "zoom": {
             "min": 3,
-            "max": 21
+            "max": 21,
+            "nativeMin": 5,
+            "nativeMax": 18
           },
           "isOpenWith": []
         }
