@@ -249,7 +249,6 @@ class LayersInfoWMS extends LayersInfo {
                         } else {
                             var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         }
-
                         //Generate keyword array
                         var keywordsAux = [];
                         if (this.customizedLayers[key]["new_keywords"] != null && this.customizedLayers[key]["new_keywords"] != '') {
@@ -260,6 +259,10 @@ class LayersInfoWMS extends LayersInfo {
                         }
 
                         var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+                        
+                        gestorMenu.setAllLayersAreDeclaredInJson(true);
+                        gestorMenu.setAvailableLayer(capa.nombre);
+                        
                         item.setImpresor(impresorItem);
                         if (itemGroup.getItemByName(this.section + capa.nombre) == null) {
                             itemGroup.setItem(item);
@@ -467,6 +470,11 @@ class LayersInfoWMTS extends LayersInfoWMS {
                         }
 
                         var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+                        
+                        gestorMenu.setAllLayersAreDeclaredInJson(true);
+                        gestorMenu.setAvailableLayer(capa.nombre);
+                        gestorMenu.setAvailableWmtsLayer(capa.nombre);
+                        
                         item.setImpresor(impresorItem);
                         if (itemGroup.getItemByName(this.section + capa.nombre) == null) {
                             itemGroup.setItem(item);
@@ -1156,6 +1164,8 @@ class GestorMenu {
         this.availableLayers = [];
         this.availableBaseLayers = [];
         this.activeLayers = [];
+        this.layersDataForWfs = {};
+        this.allLayersAreDeclaredInJson = false;
 
         this._existsIndexes = new Array(); //Identificador para evitar repetir ID de los items cuando provinen de distintas fuentes
         this._getLayersInfoCounter = 0;
@@ -1188,12 +1198,15 @@ class GestorMenu {
         this.availableBaseLayers.push(layer_id);
     }
 
+    setAllLayersAreDeclaredInJson(value) {
+        this.allLayersAreDeclaredInJson = value;
+    }
+
     getAvailableLayers() {
         return this.availableLayers;
     }
 
     setLayersDataForWfs() {
-        this.layersDataForWfs = {};
         for (const item in this.items) {
             if (item !== 'mapasbase') {
                 Object.values(this.items[item].itemsComposite).forEach(iC => {
@@ -1213,8 +1226,8 @@ class GestorMenu {
         const activeLayers = this.activeLayers.filter(layer => {
             return this.availableBaseLayers.find(baseLayer => baseLayer === layer) ? false : true;
         });
-        return activeLayers.map(activeLayer => {
-            if (this.layersDataForWfs.hasOwnProperty(activeLayer)) {
+        return Object.keys(this.layersDataForWfs).length === 0 ? [] : activeLayers.map(activeLayer => {
+            if (this.layersDataForWfs.hasOwnProperty(activeLayer) && this.layersDataForWfs[activeLayer]) {
                 return this.layersDataForWfs[activeLayer];
             }
         });
@@ -1269,6 +1282,24 @@ class GestorMenu {
     }
 
     loadInitialLayers(urlInteraction) {
+        if (this.allLayersAreDeclaredInJson) {
+            //Mostrar mapa base por defecto
+            const baseMapSelected = this.basemapSelected ? "child-" + this.basemapSelected : this.getLayerIdByName(this.availableBaseLayers[0]);
+            if (!this.baseMapIsInUrl(urlInteraction.layers))
+                this.muestraCapa(baseMapSelected);
+            urlInteraction.layers.forEach(layer => {
+                if (this.layerIsValid(layer)) {
+                    this.muestraCapa(this.getLayerIdByName(layer));
+                }
+            });
+            urlInteraction.layers = this.getActiveLayers();
+            this.activeLayersHasBeenUpdated = () => {
+                urlInteraction.layers = this.getActiveLayers();
+            }
+            this.setLayersDataForWfs();
+            return;
+        }
+
         const initialInterval = setInterval(() => {
             if (this.allLayersAreLoaded) {
                 window.clearInterval(initialInterval);

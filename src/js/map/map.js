@@ -1338,11 +1338,12 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.coords = coords;
 						}
 
-						//Clean all old data
+						//Clear all old data
 						layer.data = {};
 
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
+								//console.log(coords, layer.type, activeLayer)
 								getLayerDataByWFS(coords, layer.type, activeLayer)
 								.then(data => {
 
@@ -1365,10 +1366,10 @@ $("body").on("pluginLoad", function(event, plugin){
 								})
 								.catch(error => {
 									console.log(error);
-									if (layer.type !== 'marker')
+									/* if (layer.type !== 'marker')
 										layer.setStyle({
 											color: 'red'
-										});
+										}); */
 								});
 							});
 						}
