@@ -516,6 +516,49 @@ Popup geometría
   color: rgb(107, 109, 110);
   border-color: rgb(107, 109, 110);
 }
+.zoom-info-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.a-base-layer {
+  pointer-events: none;
+  cursor: default;
+}
+.tooltip {
+  position: relative;
+}
+.tooltiptext {
+  visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  height: 40px;
+  background-color: white;
+  border: 1px solid #008dc9;
+  color: #008dc9;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  white-space: pre;
+  position: absolute;
+  top: -9px;
+  left: 150%;
+  z-index: 50000;
+}
+.zoom-info-icon:hover .tooltiptext {
+  visibility: visible;
+}
+.base-layer-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
 
 /*******************************
 Control mapa base
@@ -557,6 +600,11 @@ Control mapa base
   padding: 5px;
   background: rgba(255, 255, 255, 0.9);
   font-size: 14px;
+  width: 240px;
+}
+#collapseBaseMapLayers .list-group-item:hover {
+  background: rgb(97, 202, 134);
+  color: white;
 }
 #collapseBaseMapLayers .img-rounded {
   width: 50px;

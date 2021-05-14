@@ -98,15 +98,38 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
+        const iconSvg = `
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 92 92" enable-background="new 0 0 92 92" xml:space="preserve">
+                <path fill="${DEFAULT_ZOOM_INFO_ICON_COLOR}" id="XMLID_89_" d="M43.3,73.8c-0.8,0-1.6-0.3-2.2-0.8c-1-0.8-1.5-2.1-1.2-3.4l4.9-25l-2.7,1.5c-1.7,0.9-3.8,0.4-4.8-1.3
+                    c-0.9-1.7-0.4-3.8,1.3-4.8l9.3-5.3c1.2-0.7,2.7-0.6,3.8,0.2c1.1,0.8,1.6,2.2,1.4,3.5L48,64.4l4.2-1.8c1.8-0.8,3.8,0,4.6,1.8
+                    c0.8,1.8,0,3.8-1.8,4.6l-10.3,4.5C44.3,73.7,43.8,73.8,43.3,73.8z M53.2,26c0.9-0.9,1.5-2.2,1.5-3.5c0-1.3-0.5-2.6-1.5-3.5
+                    c-0.9-0.9-2.2-1.5-3.5-1.5c-1.3,0-2.6,0.5-3.5,1.5c-0.9,0.9-1.5,2.2-1.5,3.5c0,1.3,0.5,2.6,1.5,3.5c0.9,0.9,2.2,1.5,3.5,1.5
+                    C51,27.5,52.3,27,53.2,26z M92,46C92,20.6,71.4,0,46,0S0,20.6,0,46s20.6,46,46,46S92,71.4,92,46z M84,46c0,21-17,38-38,38S8,67,8,46
+                    S25,8,46,8S84,25,84,46z"
+                />
+            </svg>
+        `;
+
+        let minZoom = DEFAULT_MIN_ZOOM_LEVEL;
+        let maxZoom = DEFAULT_MAX_ZOOM_LEVEL;
+        const layer = baseLayers[gestorMenu.getLayerNameById(childId)];
+        if (layer && layer.hasOwnProperty('zoom')) {
+            minZoom = layer.zoom.min;
+            maxZoom = layer.zoom.max;
+        }
+
         return "<li id='" + childId + "' class='list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" +
             "<div style='vertical-align:top'>" +
-            "<a nombre=" + itemComposite.nombre + " href='#'>" +
-            "<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
-            "<span>" + titulo + "</span>" +
-            "</a>" +
+                "<div class='base-layer-item' nombre=" + itemComposite.nombre + " href='#'>" +
+                    "<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
+                    "<span class='non-selectable-text'>" + titulo + "</span>" +
+                    "<div class='zoom-info-icon'>" + 
+                        iconSvg + 
+                        "<span class='tooltiptext'>" + "Zoom mínimo de " + "<b>" + minZoom + "</b>" + " y máximo de " + "<b>" + maxZoom + "</b>" + "</span>" +
+                    "</div>" +
+                "</div>" +
             "</div>" +
-            "</li>";
-
+        "</li>";
     }
 }
 
@@ -1270,6 +1293,18 @@ class GestorMenu {
                     return this.items[section].getItemByName(layerName).getId();
             }
         }
+    }
+    
+    getLayerNameById(layerId) {
+		for (var key in this.items) {
+			var itemComposite = this.items[key];
+			for (var key2 in itemComposite.itemsComposite) {
+				var item = itemComposite.itemsComposite[key2];
+                if (item.getId() === layerId) {
+					return item.nombre;
+				}
+			}
+		}
     }
 
     baseMapIsInUrl(layers) {
