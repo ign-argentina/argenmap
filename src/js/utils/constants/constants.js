@@ -16,7 +16,9 @@ const DEFAULT_MARKER_STYLES = {
     borderWidth: 2.5,
     borderColor: '#008dc9',
     fillColor: '#fafafa'
-}
+};
+
+const DEFAULT_ZOOM_INFO_ICON_COLOR = '#008dc9';
 
 //Default Meta Tags Values
 const METATAG_TITLE = 'Argenmap - Instituto Geográfico Nacional';
