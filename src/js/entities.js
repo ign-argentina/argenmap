@@ -121,8 +121,10 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         return "<li id='" + childId + "' class='list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" +
             "<div style='vertical-align:top'>" +
                 "<div class='base-layer-item' nombre=" + itemComposite.nombre + " href='#'>" +
-                    "<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
-                    "<span class='non-selectable-text'>" + titulo + "</span>" +
+                    "<div class='base-layer-item-info'>" +
+                        "<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
+                        "<div class='non-selectable-text'><p style='margin: 0px;'>" + titulo + "</p></div>" +
+                    "</div>" +
                     "<div class='zoom-info-icon'>" + 
                         iconSvg + 
                         "<span class='tooltiptext'>" + "Zoom mínimo de " + "<b>" + minZoom + "</b>" + " y máximo de " + "<b>" + maxZoom + "</b>" + "</span>" +

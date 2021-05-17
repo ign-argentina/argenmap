@@ -559,6 +559,17 @@ Popup geometría
   justify-content: space-between;
   align-items: center;
 }
+.base-layer-item-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+@media (max-width: 700px) {
+  .zoom-info-icon {
+    visibility: hidden;
+  }
+}
 
 /*******************************
 Control mapa base
