@@ -10,12 +10,6 @@
   box-shadow: inset 0 0 10px rgb(174, 174, 174, 1);
 }
 
-div #sidebar-toolbar-icon-left:hover {
-  width: 30px;
-  height: 30px;
-  background: rgba(0, 0, 0, 0.2);
-}
-
 #sidebar-toolbar-icon-right {
   text-align: center;
   position: absolute;
@@ -26,12 +20,6 @@ div #sidebar-toolbar-icon-left:hover {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   box-shadow: inset 0 0 10px rgb(174, 174, 174, 0.8);
-}
-
-div #sidebar-toolbar-icon-right:hover {
-  width: 30px;
-  height: 30px;
-  background: rgba(0, 0, 0, 0.2);
 }
 
 #sidebar-toolbar-span {
@@ -77,4 +65,19 @@ div #sidebar-toolbar-icon-right:hover {
     top: 0px;
     right: 36px;
   }
+}
+
+
+@media (min-width: 769px) {
+  div #sidebar-toolbar-icon-left:hover {
+    width: 30px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  div #sidebar-toolbar-icon-right:hover {
+  width: 30px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.2);
+}
 }
