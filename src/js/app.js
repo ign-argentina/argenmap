@@ -1,4 +1,6 @@
 var baseLayers = {};
+var baseLayersInfo = {};
+var selectedBasemap = null;
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorBaseMap = new ImpresorCapasBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
@@ -22,6 +24,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         app['profile'] = "default";
       };
 
+      setBaseLayersInfo(app.items[0].capas);
       setBaseLayersZoomLevels(app.items[0].capas);
       gestorMenu.setBaseMapDependencies(app.items[0].capas);
 
@@ -138,6 +141,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           gestorMenu.addItemGroup(groupAux);
         }
       });
+      selectedBasemap = setBasemapToLoad(urlInteraction.layers, gestorMenu.availableBaseLayers);
     },
 
     removeLayers: function () {

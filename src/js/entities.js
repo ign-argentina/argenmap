@@ -1319,11 +1319,9 @@ class GestorMenu {
     }
 
     loadInitialLayers(urlInteraction) {
+        $('#' + this.basemapSelected).toggleClass('active');
+
         if (this.allLayersAreDeclaredInJson) {
-            //Mostrar mapa base por defecto
-            const baseMapSelected = this.basemapSelected ? "child-" + this.basemapSelected : this.getLayerIdByName(this.availableBaseLayers[0]);
-            if (!this.baseMapIsInUrl(urlInteraction.layers))
-                this.muestraCapa(baseMapSelected);
             urlInteraction.layers.forEach(layer => {
                 if (this.layerIsValid(layer)) {
                     this.muestraCapa(this.getLayerIdByName(layer));
@@ -1340,12 +1338,6 @@ class GestorMenu {
         const initialInterval = setInterval(() => {
             if (this.allLayersAreLoaded) {
                 window.clearInterval(initialInterval);
-
-                //Mostrar mapa base por defecto
-                const baseMapSelected = "child-" + this.basemapSelected;
-
-                if (!this.baseMapIsInUrl(urlInteraction.layers))
-                    this.muestraCapa(baseMapSelected);
 
                 let validLayersLoaded = 0;
                 let validLayers = [];
@@ -2175,6 +2167,13 @@ class GestorMenu {
                 wmtsLayer.showHide();
                 wmtsLayer.showHide();
             });
+
+            for (let i = 0; i < this.availableBaseLayers.length; i++) {
+                const id = 'child-mapasbase' + i;
+                if (itemSeccion !== id && $('#' + id).hasClass('active')) {
+                    $('#' + id).removeClass('active');
+                }
+            }
         }
         
         if (this.activeLayersHasBeenUpdated)
