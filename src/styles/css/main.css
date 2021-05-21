@@ -166,6 +166,9 @@ li.active > div > a {
     font-size: 13px;
     font-weight: bold;
   }
+  .tooltip{
+    display: none !important;
+  }
 }
 @media (min-width: 992px) {
   #sidebar-container.collapse {
