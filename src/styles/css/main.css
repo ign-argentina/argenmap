@@ -18,6 +18,22 @@ body {
   }
 }
 
+#mapa {
+  position: relative;
+  height: 100%;
+  background-color: white;
+}
+
+@media (max-width: 800px) {
+  #mapa {
+    position: fixed;
+  }
+  #sidebar-container {
+    height: 100%;
+    margin-bottom: 0px;
+  }
+}
+
 /*******************************
 Menu principal
 *******************************/
