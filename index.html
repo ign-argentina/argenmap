@@ -28,7 +28,7 @@
     <!-- jQuery -->
     <script src='src/js/plugins/jquery/jquery-3.3.1.min.js'></script>
     <script src="src/js/plugins/jquery/ui/jquery-ui.min.js"></script>
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.css' />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css' />
     <!-- Better scale css -->
     <link rel='stylesheet' href='https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css' />
     <!-- Font Awesome -->
@@ -133,8 +133,9 @@
           <div class="loading"><img src="src/styles/images/loading.gif"></div>
           <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
         </nav>
-        <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"
-          style="position: absolute; bottom:0; top: 51px; background-color: white"></div>
+        <div class="map-container">
+          <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"></div>
+        </div>
       </div>
     </div>
     <div id="basemap-selector"></div>

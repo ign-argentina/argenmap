@@ -27,7 +27,7 @@ const METATAG_IMAGE_URL = 'https://pbs.twimg.com/profile_images/1274694532421083
 
 //Available Plugins
 const PLUGINS = {
-    "leaflet": "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/leaflet.js",
+    "leaflet": "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js",
     "leafletAjax": "https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js",
     "betterScale": "https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js",
     "AwesomeMarkers": "https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js",
