@@ -15,6 +15,7 @@
   right: 1.15%;
   /* transform: translateX(4%); */
   z-index: 1000;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
 }
 
 #icon-container {

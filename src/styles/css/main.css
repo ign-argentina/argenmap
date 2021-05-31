@@ -42,6 +42,18 @@ body {
   }
 }
 
+@media (min-width: 800px) {
+  .leaflet-control-layers-toggle,
+  .leaflet-control-customgraticule,
+  #modalgeojson,
+  #screenshot {
+    width: 26px !important;
+    height: 26px !important;
+    border: none !important;
+    box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
+  }
+}
+
 /*******************************
 Menu principal
 *******************************/
