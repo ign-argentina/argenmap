@@ -18,8 +18,6 @@ body {
   }
 }
 
-<<<<<<< HEAD
-=======
 .map-container {
   display: flex;
   justify-content: center;
@@ -28,7 +26,6 @@ body {
   height: 100%;
 }
 
->>>>>>> bug_leafletdraw
 #mapa {
   position: relative;
   height: 100%;
@@ -36,14 +33,6 @@ body {
 }
 
 @media (max-width: 800px) {
-<<<<<<< HEAD
-  #mapa {
-    position: fixed;
-  }
-  #sidebar-container {
-    height: 100%;
-    margin-bottom: 0px;
-=======
   .map-container {
     position: fixed;
   }
@@ -62,7 +51,6 @@ body {
     height: 26px !important;
     border: none !important;
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
->>>>>>> bug_leafletdraw
   }
 }
 
