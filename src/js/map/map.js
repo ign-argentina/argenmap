@@ -1791,32 +1791,41 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	switch(unordered) {
 		case 'leaflet':
-			currentBaseMap = L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
-				tms: true,
-				maxZoom: DEFAULT_MAX_ZOOM_LEVEL,
-				attribution: atrib_ign
+			if (selectedBasemap.hasOwnProperty('key')) {
+				const interval = setInterval(() => {
+					if (L.tileLayer.bing) {
+						window.clearInterval(interval);
+						currentBaseMap = L.tileLayer.bing({ 
+							bingMapsKey: selectedBasemap.key,
+							culture: 'es_AR',
+							minZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
+							maxZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.max : DEFAULT_MAX_ZOOM_LEVEL,
+							minNativeZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.nativeMin : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
+							maxNativeZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.nativeMax : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
+							attribution: selectedBasemap.attribution
+						}).addTo(mapa);
+					}
+				}, 100);
+			} else {
+				currentBaseMap = L.tileLayer(selectedBasemap.host, {
+					minZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
+					maxZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.max : DEFAULT_MAX_ZOOM_LEVEL,
+					minNativeZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.nativeMin : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
+					maxNativeZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.nativeMax : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
+					attribution: selectedBasemap.attribution
+				});
+			};
+
+			mapa = L.map('mapa', {
+				center: app.hasOwnProperty('mapConfig') ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude] : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
+				zoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.initial : DEFAULT_ZOOM_LEVEL,
+				layers: currentBaseMap ? [currentBaseMap] : undefined,
+				zoomControl: false,
+				minZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
+				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL
 			});
 
-			//Construye el mapa
-            if (app.hasOwnProperty('mapConfig')) {
-                mapa = L.map('mapa', {
-                    center: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
-                    zoom: app.mapConfig.zoom.initial,
-                    layers: [currentBaseMap],
-                    zoomControl: false,
-                    minZoom: app.mapConfig.zoom.min,
-                    maxZoom: app.mapConfig.zoom.max
-                });
-            } else {
-                mapa = L.map('mapa', {
-                    center: [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
-                    zoom: DEFAULT_ZOOM_LEVEL,
-                    layers: [currentBaseMap],
-                    zoomControl: false,
-                    minZoom: DEFAULT_MIN_ZOOM_LEVEL,
-                    maxZoom: DEFAULT_MAX_ZOOM_LEVEL
-                });
-            }
+			setValidZoomLevel(selectedBasemap.nombre);
 
 			gestorMenu.plugins['leaflet'].setStatus('visible');
 
@@ -1861,7 +1870,6 @@ $("body").on("pluginLoad", function(event, plugin){
 			break;
 		case 'BingLayer':
 			if(gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready' ){	
-				
 		        gestorMenu.plugins['BingLayer'].setStatus('visible');
 			}
 		default:
@@ -2227,12 +2235,20 @@ function createTmsLayer(tmsUrl, layer, attribution) {
 		return;
 	}
 	currentBaseMap = new L.tileLayer(tmsUrl, {
-		attribution: attribution
+		attribution: attribution,
+		minZoom: DEFAULT_MIN_ZOOM_LEVEL,
+		maxZoom: DEFAULT_MAX_ZOOM_LEVEL,
+		minNativeZoom: DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
+		maxNativeZoom: DEFAULT_MAX_NATIVE_ZOOM_LEVEL
 	});
 }
 
 function createBingLayer(bingKey, layer, attribution) {
-    baseMaps[layer] = L.tileLayer.bing({bingMapsKey: bingKey, culture: 'es_AR'}).addTo(mapa);
+    currentBaseMap = L.tileLayer.bing({ 
+		bingMapsKey: bingKey,
+		culture: 'es_AR',
+		attribution: attribution
+	}).addTo(mapa);
 }
 
 function loadMapaBaseTpl(tmsUrl, layer, attribution) {
@@ -2242,13 +2258,9 @@ function loadMapaBaseTpl(tmsUrl, layer, attribution) {
 }
 
 function loadMapaBaseBingTpl (bingKey, layer, attribution) {
-    if (baseMaps.hasOwnProperty(layer)) {
-        baseMaps[layer].removeFrom(mapa);
-        delete baseMaps[layer];
-    } else {
-        createBingLayer(bingKey, layer, attribution);
-        baseMaps[layer].addTo(mapa);
-    }
+	mapa.removeLayer(currentBaseMap);
+	createBingLayer(bingKey, layer, attribution);
+	currentBaseMap.addTo(mapa);
 }
 
 //Paginate FeatureInfo into popup

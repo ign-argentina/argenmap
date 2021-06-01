@@ -483,6 +483,12 @@ function loadTemplateStyleConfig(template, isDefaultTemplate) {
     }
 };
 
+function setBaseLayersInfo(layers) {
+    layers.forEach(layer => {
+        baseLayersInfo[layer.nombre] = layer;
+    });
+}
+
 function setBaseLayersZoomLevels(layers) {
     layers.forEach(layer => {
         baseLayers[layer.nombre] = layer.hasOwnProperty('zoom') ? { zoom: layer.zoom } : {};
@@ -502,4 +508,36 @@ function setValidZoomLevel(baseLayer) {
         mapa.setMinZoom(DEFAULT_MIN_ZOOM_LEVEL);
         mapa.setMaxZoom(DEFAULT_MAX_ZOOM_LEVEL);
     }
+};
+
+function setSelectedBasemapAsActive(layerName, availableBasemaps) {
+    const baseLayerId = 'child-mapasbase' + availableBasemaps.findIndex(basemap => basemap === layerName);
+    gestorMenu.addActiveLayer(layerName);
+    gestorMenu.setLastBaseMapSelected(baseLayerId);
+    gestorMenu.setBasemapSelected(baseLayerId);
+};
+
+//Orden de prioridad:
+//1. Declarado en url.
+//2. Marcado en json como selected: true.
+//3. Si los casos anteriores no se dan, se elige el primer mapa base declarado en el json.
+function setBasemapToLoad(urlLayers, availableBasemaps) {
+    const basemap = availableBasemaps[0];
+    for (let i = 0; i < urlLayers.length; i++) {
+        if (availableBasemaps.find(availableBasemap => availableBasemap === urlLayers[i])) {
+            const selected = urlLayers[i];
+            setSelectedBasemapAsActive(selected, availableBasemaps);
+            urlLayers.splice(i, 1);
+            urlInteraction.layers = urlLayers;
+            return baseLayersInfo[selected];
+        }
+    }
+    for (const baseLayer of availableBasemaps) {
+        if (baseLayersInfo[baseLayer].hasOwnProperty('selected') && baseLayersInfo[baseLayer].selected) {
+            setSelectedBasemapAsActive(baseLayer, availableBasemaps);
+            return baseLayersInfo[baseLayer];
+        }
+    }
+    setSelectedBasemapAsActive(basemap, availableBasemaps);
+    return baseLayersInfo[basemap];
 };
