@@ -42,7 +42,7 @@ body {
   }
 }
 
-@media (min-width: 800px) {
+@media (min-width: 1367px) {
   .leaflet-control-layers-toggle,
   .leaflet-control-customgraticule,
   #modalgeojson,
