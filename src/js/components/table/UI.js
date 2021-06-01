@@ -129,21 +129,30 @@ class UI{
   }  
   
   createTable(data){
+    let pagination = 10
+    
+    if (ISCelular){
+        if(window.matchMedia("(orientation: landscape)").matches){
+          pagination = 3
+          let cont = document.getElementById("ContainerTable")
+          cont.style =  "margin: 0px !important; bottom: 0px !important;"
+        }else{pagination = 4}
+    }
+    
     table = new Tabulator("#example-table", {
-
       data: data, //assign data to table
       autoColumns:true, //create columns from data field names
       tooltips:true,            //show tool tips on cells
       pagination:"local",       //paginate the data
-      paginationSize:10,         //allow 7 rows per page of data
-      movableColumns:true,      //allow column order to be changed
+      paginationSize: pagination,         //allow 10 rows per page of data
+      movableColumns: false,      //allow column order to be changed
       locale:true,
+      resizableRows:false,
+      resizableColumns:false,
       rowDblClick:function(e, row){
         if(row._row.data.Longitud){
           let lon = row._row.data.Longitud
           let lat = row._row.data.Latitud
-          //let marker = L.marker([lat, lon], {clickable: true})
-          //mapa.addLayer(marker);
           mapa.flyTo([lat, lon],10)}
       },
   

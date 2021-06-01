@@ -18,6 +18,17 @@ body {
   }
 }
 
+<<<<<<< HEAD
+=======
+.map-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+>>>>>>> bug_leafletdraw
 #mapa {
   position: relative;
   height: 100%;
@@ -25,12 +36,33 @@ body {
 }
 
 @media (max-width: 800px) {
+<<<<<<< HEAD
   #mapa {
     position: fixed;
   }
   #sidebar-container {
     height: 100%;
     margin-bottom: 0px;
+=======
+  .map-container {
+    position: fixed;
+  }
+  .leaflet-bottom,
+  #zoom-level {
+    margin-bottom: 51px;
+  }
+}
+
+@media (min-width: 1367px) {
+  .leaflet-control-layers-toggle,
+  .leaflet-control-customgraticule,
+  #modalgeojson,
+  #screenshot {
+    width: 26px !important;
+    height: 26px !important;
+    border: none !important;
+    box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
+>>>>>>> bug_leafletdraw
   }
 }
 
@@ -181,6 +213,9 @@ li.active > div > a {
   .navbar-header a {
     font-size: 13px;
     font-weight: bold;
+  }
+  .tooltip{
+    display: none !important;
   }
 }
 @media (min-width: 992px) {
