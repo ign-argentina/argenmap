@@ -489,9 +489,13 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('contextmenu', (e) => {
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
+
+						const lng = e.latlng.lng.toFixed(5);
+						const lat = e.latlng.lat.toFixed(5);
+
 						contextMenu.createOption({
 							isDisabled: false,
-							text: '[-54.123, -32.413]',
+							text: `${lng}, ${lat}`,
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 							}
