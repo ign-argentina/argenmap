@@ -495,7 +495,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						contextMenu.createOption({
 							isDisabled: false,
-							text: `<div onclick="copytoClipboard('copycoords')" title="copiar" style="cursor: default"><span id="copycoords">${lng}, ${lat}</span>  <i class="far fa-copy" aria-hidden="true"></i></div>`,
+							text: `<div onclick="copytoClipboard('copycoords')" title="copiar" style="cursor: default"><span id="copycoords">${lat}, ${lng}</span>  <i class="far fa-copy" aria-hidden="true"></i></div>`,
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 							}
@@ -511,7 +511,7 @@ $("body").on("pluginLoad", function(event, plugin){
 											borderWidth: DEFAULT_MARKER_STYLES.borderWidth,
 											borderColor: DEFAULT_MARKER_STYLES.borderColor,
 											fillColor: DEFAULT_MARKER_STYLES.borderColor,
-										},
+										}
 									},
 									geometry: { type: "Point", coordinates: [lng,lat]},
 								}
