@@ -486,6 +486,29 @@ $("body").on("pluginLoad", function(event, plugin){
 						currentlyDrawing = false;
 					});
 
+					mapa.on('contextmenu', (e) => {
+						let contextPopup = null;
+						const contextMenu = new ContextMenu();
+						contextMenu.createOption({
+							isDisabled: false,
+							text: '[-54.123, -32.413]',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+							}
+						});
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Agregar marcador',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+							}
+						});
+						contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
+						.setLatLng(e.latlng)
+						.setContent(contextMenu.menu);
+						mapa.openPopup(contextPopup);
+					});
+
 					mapa.addSelectionLayersMenuToLayer = (layer) => {
 						const popUpDiv = mapa.createPopUp(layer);
 						layer.bindPopup(popUpDiv);
@@ -500,88 +523,83 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.addContextMenuToLayer = (layer) => {
 						let contextPopup = null;
 
-						const contextMenu = document.createElement('div');
-						contextMenu.className = 'context-menu';
-
-						const contextMenuItem0 = document.createElement('div');
-						contextMenuItem0.className = 'context-menu-item context-menu-item-disabled';
-						contextMenuItem0.innerHTML = '<p class="non-selectable-text context-menu-item-text">Ver información</p>';
-						contextMenuItem0.style.borderRadius = '5px 5px 0 0';
-						contextMenuItem0.disabled = true;
-						contextMenuItem0.onclick = (e) => {
-							if (!contextMenuItem0.disabled) {
-								mapa.closePopup(contextPopup);
-							}
-						};
-
 						const editStylePopup = L.popup({ closeButton: false, className: 'edit-style-popup' });
 						const editStylePopupContent = mapa.createEditStylePopup(layer, editStylePopup);
-						const contextMenuItem1 = document.createElement('div');
-						contextMenuItem1.className = 'context-menu-item context-menu-item-active';
-						contextMenuItem1.innerHTML = '<p class="non-selectable-text context-menu-item-text">Editar estilos</p>';
-						contextMenuItem1.onclick = (e) => {
-							mapa.closePopup(contextPopup);
-							editStylePopup.setContent(editStylePopupContent)
-							.setLatLng(layer.type !== 'marker' && layer.type !== 'circlemarker' ? layer.getBounds().getCenter() : layer.getLatLng())
-							mapa.openPopup(editStylePopup);
 
-							//
-							const parent = editStylePopupContent.parentElement;
-							parent.className = 'leaflet-popup-content popup-parent';
-						};
-						
-						const contextMenuItem2 = document.createElement('div');
-						contextMenuItem2.className = 'context-menu-item context-menu-item-active';
-						contextMenuItem2.innerHTML = '<p class="non-selectable-text context-menu-item-text">Acercar</p>';
-						contextMenuItem2.onclick = (e) => {
-							mapa.closePopup(contextPopup);
-							if (layer.type === 'marker' || layer.type === 'circlemarker') {
-								mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
-							} else {
-								mapa.fitBounds(layer.getBounds());
+						const contextMenu = new ContextMenu();
+
+						contextMenu.createOption({
+							isDisabled: true,
+							text: 'Ver información',
+							onclick: (option) => {
+								if (!option.disabled) {
+									mapa.closePopup(contextPopup);
+								}
 							}
-						};
+						});
 
-						const contextMenuItem3 = document.createElement('div');
-						contextMenuItem3.className = 'context-menu-item context-menu-item-disabled';
-						contextMenuItem3.innerHTML = '<p class="non-selectable-text context-menu-item-text">Ocultar geometría</p>';
-						contextMenuItem3.disabled = true;
-						contextMenuItem3.onclick = (e) => {
-							if (!contextMenuItem3.disabled) {
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Editar estilos',
+							onclick: (option) => {
 								mapa.closePopup(contextPopup);
-								mapa.hideLayer(layer.name);
+								editStylePopup.setContent(editStylePopupContent)
+								.setLatLng(layer.type !== 'marker' && layer.type !== 'circlemarker' ? layer.getBounds().getCenter() : layer.getLatLng())
+								mapa.openPopup(editStylePopup);
+								//
+								const parent = editStylePopupContent.parentElement;
+								parent.className = 'leaflet-popup-content popup-parent';
 							}
-						};
+						});
 						
-						const contextMenuItem4 = document.createElement('div');
-						contextMenuItem4.className = 'context-menu-item context-menu-item-active';
-						contextMenuItem4.innerHTML = '<p class="non-selectable-text context-menu-item-text">Descargar geometría</p>';
-						contextMenuItem4.onclick = (e) => {
-							mapa.closePopup(contextPopup);
-							layer.downloadGeoJSON();
-						};
-						
-						const contextMenuItem5 = document.createElement('div');
-						contextMenuItem5.className = 'context-menu-item context-menu-item-active';
-						contextMenuItem5.innerHTML = '<p class="non-selectable-text context-menu-item-text">Eliminar geometría</p>';
-						contextMenuItem5.style.borderRadius = '0 0 5px 5px';
-						contextMenuItem5.onclick = (e) => {
-							mapa.closePopup(contextPopup);
-							mapa.deleteLayer(layer.name);
-						};
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Acercar',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								if (layer.type === 'marker' || layer.type === 'circlemarker') {
+									mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+								} else {
+									mapa.fitBounds(layer.getBounds());
+								}
+							}
+						});
 
-						contextMenu.appendChild(contextMenuItem0);
-						contextMenu.appendChild(contextMenuItem1);
-						contextMenu.appendChild(contextMenuItem2);
-						contextMenu.appendChild(contextMenuItem3);
-						contextMenu.appendChild(contextMenuItem4);
-						contextMenu.appendChild(contextMenuItem5);
+						contextMenu.createOption({
+							isDisabled: true,
+							text: 'Ocultar geometría',
+							onclick: (option) => {
+								if (!option.disabled) {
+									mapa.closePopup(contextPopup);
+									mapa.hideLayer(layer.name);
+								}
+							}
+						});
+						
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Descargar geometría',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								layer.downloadGeoJSON();
+							}
+						});
+						
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Eliminar geometría',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								mapa.deleteLayer(layer.name);
+							}
+						});
 
 						layer.on('contextmenu', (e) => {
 							contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
 							.setLatLng(e.latlng)
-							.setContent(contextMenu);
+							.setContent(contextMenu.menu);
 							mapa.openPopup(contextPopup);
+							L.DomEvent.stopPropagation(e);
 						});
 
 						L.DomEvent.on(contextMenu, 'click', function (e) {
