@@ -182,7 +182,7 @@
 
 @media (max-width: 600px) {
   #modalgeojson {
-    left: 0px !important;
+    left: 2px !important;
     top: 264px;
   }
 }

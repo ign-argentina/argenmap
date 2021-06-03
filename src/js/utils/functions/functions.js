@@ -541,3 +541,28 @@ function setBasemapToLoad(urlLayers, availableBasemaps) {
     setSelectedBasemapAsActive(basemap, availableBasemaps);
     return baseLayersInfo[basemap];
 };
+
+function setProperStyleToCtrlBtns() {
+    const zoomhomeCtrlBtn = document.getElementsByClassName('leaflet-control-zoomhome-home');
+    const interval = setInterval(() => {
+        if (zoomhomeCtrlBtn.length > 0) {
+            window.clearInterval(interval);
+            const width = zoomhomeCtrlBtn[0].offsetWidth;
+            const btns = [];
+            const layersToggleCtrlBtn= document.getElementsByClassName('leaflet-control-layers-toggle')[0];
+            btns.push(layersToggleCtrlBtn);
+            const customGraticuleCtrlBtn= document.getElementsByClassName('leaflet-control-customgraticule')[0];
+            btns.push(customGraticuleCtrlBtn);
+            const modalGeojsonCtrlBtn= document.getElementById('modalgeojson');
+            btns.push(modalGeojsonCtrlBtn);
+            const screenshotCtrlBtn= document.getElementById('screenshot');
+            btns.push(screenshotCtrlBtn);
+            btns.forEach(btn => {
+                btn.style.width = width + 'px';
+                btn.style.height = width + 'px';
+                btn.style.border = 'none';
+                btn.style.boxShadow = '0 1px 5px rgb(0 0 0 / 65%)';
+            });
+        }
+    }, 100);
+};

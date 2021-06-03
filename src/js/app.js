@@ -363,6 +363,8 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         const sidebarTool = new SidebarTools;
         sidebarTool.createComponent();
+
+        setProperStyleToCtrlBtns();
       } 
     }, 100);
   });
