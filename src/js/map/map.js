@@ -495,7 +495,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						contextMenu.createOption({
 							isDisabled: false,
-							text: `<div onclick="copytoClipboard('copycoords')" title="copiar" style="cursor: default"><span id="copycoords">${lat}, ${lng}</span>  <i class="far fa-copy" aria-hidden="true"></i></div>`,
+							text: `<div onclick="copytoClipboard('${lat}, ${lng}')" title="Copiar" style="cursor: default"><span><b id="copycoords" class="non-selectable-text">${lat}, ${lng}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 							}
@@ -507,11 +507,6 @@ $("body").on("pluginLoad", function(event, plugin){
 								let geojsonMarker = {
 									type: "Feature",
 									properties: {
-										styles: {
-											borderWidth: DEFAULT_MARKER_STYLES.borderWidth,
-											borderColor: DEFAULT_MARKER_STYLES.borderColor,
-											fillColor: DEFAULT_MARKER_STYLES.borderColor,
-										}
 									},
 									geometry: { type: "Point", coordinates: [lng,lat]},
 								}
@@ -2343,11 +2338,11 @@ function changePopupPage(changeType) {
     mapa.openPopup(paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext), latlngTmp); //Show all info
 }
 
-function copytoClipboard(id){
+function copytoClipboard(coords){
 	var aux = document.createElement("input");
-  aux.setAttribute("value", document.getElementById(id).innerHTML);
-  document.body.appendChild(aux);
-  aux.select();
-  document.execCommand("copy");
-  document.body.removeChild(aux);
+	aux.setAttribute("value", coords);
+	document.body.appendChild(aux);
+	aux.select();
+	document.execCommand("copy");
+	document.body.removeChild(aux);
 }
