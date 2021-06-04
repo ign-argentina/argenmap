@@ -47,3 +47,15 @@ const PLUGINS = {
     "WMTS": "./src/js/map/plugins/leaflet/leaflet-wmts/leaflet-tilelayer-wmts.js",
     "EasyPrint": "./src/js/map/plugins/leaflet/leaflet-easyPrint/bundle.js"
 };
+
+const MESSSAGE_TIME = 4000;
+const MESSAGE_COLORS = {
+    information: {
+        background: 'rgba(0,141,201, 0.75)',
+        text: 'white'
+    },
+    error: {
+        background: 'rgba(255, 0, 0, 0.75)',
+        text: 'white'
+    }
+};
