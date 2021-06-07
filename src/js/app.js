@@ -365,7 +365,7 @@ async function loadTemplate(data, isDefaultTemplate) {
         sidebarTool.createComponent();
 
         setProperStyleToCtrlBtns();
-      } 
+      }
     }, 100);
   });
 };

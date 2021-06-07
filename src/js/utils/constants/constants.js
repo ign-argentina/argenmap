@@ -48,7 +48,7 @@ const PLUGINS = {
     "EasyPrint": "./src/js/map/plugins/leaflet/leaflet-easyPrint/bundle.js"
 };
 
-const MESSSAGE_TIME = 4000;
+const MESSAGE_TIME = 4000;
 const MESSAGE_COLORS = {
     information: {
         background: 'rgba(0,141,201, 0.75)',

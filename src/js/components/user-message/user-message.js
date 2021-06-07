@@ -20,7 +20,6 @@ class UserMessage {
 
         const closeBtn = document.createElement('div');
         closeBtn.className = 'message-close-btn';
-        closeBtn.innerHTML = 'X';
         closeBtn.style.color = MESSAGE_COLORS[type].text;
         closeBtn.onclick = () => {
             messageContainer.remove();
@@ -37,6 +36,6 @@ class UserMessage {
             if (messageContainer) {
                 messageContainer.remove();
             }
-        }, MESSSAGE_TIME);
+        }, MESSAGE_TIME);
     }
 };
