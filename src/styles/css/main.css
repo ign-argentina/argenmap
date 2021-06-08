@@ -9,7 +9,7 @@ body {
   font-family: Roboto, sans-serif;
   background-color: #008dc9;
   overflow: hidden;
-  height: 100%;
+  height: 100% !important;
 }
 
 @media (max-width: 600px) {
