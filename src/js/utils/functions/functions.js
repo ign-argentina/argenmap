@@ -513,7 +513,7 @@ function setValidZoomLevel(baseLayer) {
 function setSelectedBasemapAsActive(layerName, availableBasemaps) {
     const baseLayerId = 'child-mapasbase' + availableBasemaps.findIndex(basemap => basemap === layerName);
     gestorMenu.addActiveLayer(layerName);
-    gestorMenu.setLastBaseMapSelected(baseLayerId);
+    gestorMenu.setLastBaseMapSelected(layerName);
     gestorMenu.setBasemapSelected(baseLayerId);
 };
 
