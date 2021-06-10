@@ -1,0 +1,59 @@
+.center-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#screenshot {
+  position: absolute;
+  flex-direction: column;
+  width: 34px;
+  height: 34px;
+  color: black;
+  font-size: 1.1em;
+  top: 378px;
+  left: 10px;
+  z-index: 999;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+#screenshot :hover {
+  background-color: #f5f4f4;
+}
+
+#screenshot :active {
+  background-color: grey;
+}
+
+#iconSC-container {
+  height: 100%;
+  width: 100%;
+  flex: 3;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+}
+
+@media (max-width: 600px) {
+  #screenshot {
+    right: 1px;
+  }
+}
+
+@media (max-height: 500px) {
+  #screenshot {
+    top: 124px;
+    left: 34px;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  #screenshot {
+    top: 299px;
+    left: 2px;
+    /* border: 2px solid rgba(0, 0, 0, 0.2) !important; */
+  }
+}
