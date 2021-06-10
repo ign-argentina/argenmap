@@ -1,4 +1,4 @@
-# To collaborate
+# Contributing
 
 To collaborate with the development of Argenmap, we suggest first checking in the issues section if there are changes or requests in process. You can also report bugs or propose ideas in this section.
 
