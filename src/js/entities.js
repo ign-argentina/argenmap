@@ -64,7 +64,7 @@ class ImpresorItemHTML extends Impresor {
 
         var childId = itemComposite.getId();
 
-        var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
 
         return "<li id='" + childId + "' class='capa list-group-item" + activated + "' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" +
@@ -122,7 +122,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
             "<div style='vertical-align:top'>" +
                 "<div class='base-layer-item' nombre=" + itemComposite.nombre + " href='#'>" +
                     "<div class='base-layer-item-info'>" +
-                        "<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
+                        "<img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
                         "<div class='non-selectable-text'><p style='margin: 0px;'>" + titulo + "</p></div>" +
                     "</div>" +
                     "<div class='zoom-info-icon'>" + 
