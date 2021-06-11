@@ -1727,7 +1727,7 @@ class GestorMenu {
             return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" +
                 "<div class='input-group'>" +
                 "<div class='form-group has-feedback has-clear'>" +
-                "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar...'>" +
+                "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar capas...'>" +
                 "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>" +
                 "</div>" +
                 "<span class='input-group-btn'>" +

@@ -94,7 +94,7 @@ class UI{
 
         let inputsearch = this.createElement("input","filter-value","filteritems")
         inputsearch.type="text"
-        inputsearch.placeholder="Buscar"
+        inputsearch.placeholder="Buscar capas..."
 
         let filterclear = this.createElement("a","filter-clear","filteritems")
         filterclear.innerHTML='<i style="padding-left: 5px; color: grey !important;" class="fas fa-times"></i>'
