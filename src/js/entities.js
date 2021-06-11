@@ -1650,7 +1650,7 @@ class GestorMenu {
                     if ($(this).is(e.target)) {
                         var showingId = this.id;
                         if ($('#' + showingId + ' > div').html() == '') {
-                            $('#' + showingId + ' > div').html('<div class="loading"><img src="src/styles/images/loading.gif" style="width:35px"></div>');
+                            $('#' + showingId + ' > div').html('<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>');
                         }
                         for (var key in thisObj.layersInfo) {
                             if (thisObj.layersInfo[key].section == showingId) {
@@ -2184,7 +2184,7 @@ class GestorMenu {
 
 
         //Loader gif
-        $('#wms-combo-list').html('<div class="loading"><img src="src/styles/images/loading.gif"></div>');
+        $('#wms-combo-list').html('<div class="loading"><img src="src/styles/images/loading.svg"></div>');
 
         //Realiza el GET de las capas
         var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, '');
