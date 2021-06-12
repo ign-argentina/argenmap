@@ -10,7 +10,7 @@ It is based on [Leaflet][] and only requires a web server to work. The app creat
 The app comes with the Argentina Republic base map by default and more can be added.
 
 ## Documentation
-- [Deployment][] fast guide
+- [Deployment][] quick guide
 - [Configure][] layers, base maps and styles
 - [Features][]
 - [Contribute][]
