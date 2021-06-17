@@ -3,7 +3,6 @@ class StylesUI {
  createstyles(){
   const style = document.createElement('style');
   style.id="main-style-ui"
-  console.log(app.logo.srclogomini, "logominin")
   style.innerHTML = `
     .navbar{
       background-color: ${app.theme.headerBackground};
