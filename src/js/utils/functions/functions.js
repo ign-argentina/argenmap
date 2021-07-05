@@ -4,6 +4,7 @@ var plugins = new Array("loadGeojson", "loadWms");
 var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
 var loadCharts = false;
+var loadSearchbar = false;
 
 var currentlyDrawing = false;
 
@@ -18,6 +19,10 @@ function setTableFeatureCount(value) {
 function setCharts(cond) {
    loadCharts = cond;
 }
+
+function setSearchbar(cond) {
+    loadSearchbar = cond;
+ }
 
 const reverseCoords = (coords) => {
     return [coords[1], coords[0]];
