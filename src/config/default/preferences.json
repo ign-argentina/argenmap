@@ -24,5 +24,14 @@
       "max": 21
     }
   },
-  "showSearchBar": false
+  "showSearchBar": false,
+  "searchbar":{
+    "isActive": true
+  },
+  "geocoder":{
+    "url": "https://mapa.ign.gob.ar/search?",
+    "lang": "es",
+    "limit":10,
+    "Key": ""
+  }
 }

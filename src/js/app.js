@@ -328,8 +328,12 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //if searchbar is active in menu.json
     if(loadSearchbar){
-        $.getScript("src/js/components/searchbar/searchbar.js");
-        $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.js">');
+        $.getScript("src/js/components/searchbar/searchbar.js")
+        .done(function() {
+          var searchBar_ui =  new Searchbar_UI
+          searchBar_ui.createElement();
+        })
+        $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
       }
 
 
