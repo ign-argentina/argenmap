@@ -26,10 +26,14 @@
   },
   "showSearchBar": false,
   "searchbar":{
-    "isActive": true
+    "isActive": true,
+    "top": "60px",
+    "left": "300px",
+    "color_focus": "#008dc9",
+    "background_color": "rgba(255, 255, 255, 0.7)"
   },
   "geocoder":{
-    "url": "https://mapa.ign.gob.ar/search?",
+    "url": "",
     "lang": "es",
     "limit":10,
     "Key": ""
