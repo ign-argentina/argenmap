@@ -4,7 +4,10 @@ let geosearchbar_color_focus = null
 let geosearchbar_background_color = null
 let results = ""
 let search_term = ""
-let url_search = "src/js/components/searchbar/lista.json"
+let id_search = ""
+let url_search = "http://172.20.205.50:3000/search?q="
+let url_by_id= "http://172.20.205.50:3000/places?id="
+let url_consulta = ""
 
 let limit = 5
 
@@ -114,8 +117,6 @@ class Searchbar_UI{
     divsearch.append(maininput)
     divsearch.append(res)
     
-    let mapa = document.getElementById("mapa")
-    //mapa.appendChild()
     document.body.appendChild(divsearch)
 
     const search_input = document.getElementById('search_bar');
@@ -138,7 +139,6 @@ class Card_UI{
     let container = document.getElementById("results_search_bar")
     container.style="margin: 5px"
     container.innerHTML=""
-    console.log(data.properties)
     let card = document.createElement("div")
     card.className = "card"
     let html = `
@@ -162,16 +162,45 @@ class Card_UI{
 
     let btn = document.getElementById("close_card_gc")
     btn.addEventListener('click', (e) => {
+      mapa.removeGroup("markerSearchResult", true);
       container.innerHTML=""
     });
   }
 }
 
+class Card_Coord{
+  createElement(data){
+    let container = document.getElementById("results_search_bar")
+    container.style="margin: 5px"
+    container.innerHTML=""
+    let card = document.createElement("div")
+    card.className = "card"
+    let html = `
+    <li class="list-group-item-gc" style="height:auto">
+    <div class="card-header bg-transparent border-bottom-0"><button id="close_card_gc" type="button" class="closebtn">
+    <span aria-hidden="true">×</span>
+  </button></div>
+    <div class="card-body">
+      <br>
+      <h5 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.geom.coordinates[1]} ${data.geom.coordinates[0]}</h5>
+      <h6 class="card-text">${data.properties}</h6>
+    </div>
+    </li>
+  `
+    card.innerHTML = html
+    container.append(card)
+
+    let btn = document.getElementById("close_card_gc")
+    btn.addEventListener('click', (e) => {
+      mapa.removeGroup("markerSearchResultCoord", true);
+      container.innerHTML=""
+    });
+  }
+}
 
 const fetchGeocoder= async () => {
-  //response_items = await fetch(url_search+search_term).then(
-	  response_items = await fetch(url_search).then(
-		res => res.json()
+  response_items = await fetch(url_consulta).then(
+  res => res.json()
 	);
 }
 
@@ -180,37 +209,92 @@ const showGeocoderResults = async () => {
   container.style.margin = "5px;"
 
 	results.innerHTML = '';
+  mapa.removeGroup("markerSearchResult", true);
 	
   const ul = document.createElement("ul");
   ul.className = "list-group-gc"
 
+  url_consulta = url_search+search_term
 	await fetchGeocoder();
+  if(response_items[0].row_to_json){
+    mapa.removeGroup("markerSearchResultCoord", true);
+    let lat = response_items[0].row_to_json.geom.coordinates[1]
+    let lng = response_items[0].row_to_json.geom.coordinates[0]
+    mapa.setView([lat, lng], 13);
+
+    let geojsonMarker = {
+      type: "Feature",
+      properties: {
+      },
+      geometry: { type: "Point", coordinates: [lng,lat]},
+    }
+    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResultCoord", false)
+    
+    let newcard = new Card_Coord
+    newcard.createElement(response_items[0].row_to_json)
+
+  }else{
 
   for (let  i = 0; i<limit; i++){
-
-    let item = response_items.features[i]
+    container.innerHTML = ""; 
+    let item = response_items[i]
     let li = document.createElement("li")
-    let lat = item.geometry.coordinates[1]
-    let lng = item.geometry.coordinates[0]
+    if(item){
     li.onclick = (e) => {
+      id_search = item.place.id
+      searchById(item.place.id)
+    };
+
+    li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+item.place.name+" " + item.place.depto +" "+  item.place.pcia
+    li.className = "list-group-item-gc"
+    li.style="cursor: pointer;"
+    ul.append(li)}
+    else{
+      li.innerHTML = 'No encontrado'
+      li.className = "list-group-item-gc"
+      li.style="cursor: pointer;color:grey;"
+      ul.append(li)
+      break;
+    }
+  }
+
+  container.innerHTML = "";  
+  container.append(ul)
+ }
+}
+
+
+const  searchById = async () => {
+  url_consulta = url_by_id + id_search+"&format=geojson"
+	await fetchGeocoder();
+
+  let lat = response_items.features[0].geometry.coordinates[1]
+  let lng = response_items.features[0].geometry.coordinates[0]
+  mapa.setView([lat, lng], 13);
+
+  let geojsonMarker = {
+    type: "Feature",
+    properties: {
+    },
+    geometry: { type: "Point", coordinates: [lng,lat]},
+  }
+  mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)
+
+  let newcard = new Card_UI
+  newcard.createElement(response_items.features[0])
+
+};
+
+
+/*
       let newcard = new Card_UI
       newcard.createElement(item)
-      mapa.flyTo([lat, lng],12);
+      mapa.setView([lat, lng], 13);
+      //mapa.flyTo([lat, lng],12);
       let geojsonMarker = {
         type: "Feature",
         properties: {
         },
         geometry: { type: "Point", coordinates: [lng,lat]},
       }
-      mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "geojsonMarker", false)
-    };
-    li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+item.properties.name+" " + item.properties.depto +" "+  item.properties.pcia
-    li.className = "list-group-item-gc"
-    li.style="cursor: pointer;"
-    ul.append(li)
-  }
-
-  container.innerHTML = "";  
-  container.append(ul)
-}
-
+      mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)*/
