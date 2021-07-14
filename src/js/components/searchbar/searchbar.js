@@ -8,7 +8,6 @@ let id_search = ""
 let url_search = "http://172.20.205.50:3000/search?q="
 let url_by_id= "http://172.20.205.50:3000/places?id="
 let url_consulta = ""
-
 let limit = 5
 
 geosearchbar_top =  (app.searchbar.top)? app.searchbar.top : DEFAULT_GEOSEARCHBAR_TOP
@@ -149,7 +148,7 @@ class Card_UI{
     <div class="card-body">
       <br>
       <h4 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.properties.name}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">Coordenadas: ${data.geometry.coordinates}</h6>
+      <h6 class="card-subtitle mb-2 text-muted">Coordenadas: ${data.geometry.coordinates[1]}, ${data.geometry.coordinates[0]}</h6>
       <h6 class="card-text">Codigo BAHRA: ${data.properties.cod_bahra}</p>
       <h6 class="card-text">Dpto: ${data.properties.depto}</p>
       <h6 class="card-text">Provincia: ${data.properties.pcia}</p>
@@ -175,6 +174,12 @@ class Card_Coord{
     container.innerHTML=""
     let card = document.createElement("div")
     card.className = "card"
+    let data_split = data.properties.split(",")
+    let cardtext = ""
+    for(let item in data_split){
+      cardtext +=`<h6 class="card-text">${data_split[item]}</h6>`
+    }
+    
     let html = `
     <li class="list-group-item-gc" style="height:auto">
     <div class="card-header bg-transparent border-bottom-0"><button id="close_card_gc" type="button" class="closebtn">
@@ -182,8 +187,8 @@ class Card_Coord{
   </button></div>
     <div class="card-body">
       <br>
-      <h5 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.geom.coordinates[1]} ${data.geom.coordinates[0]}</h5>
-      <h6 class="card-text">${data.properties}</h6>
+      <h5 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.geom.coordinates[1]} ,${data.geom.coordinates[0]}</h5>
+      ${cardtext}
     </div>
     </li>
   `
@@ -213,10 +218,14 @@ const showGeocoderResults = async () => {
 	
   const ul = document.createElement("ul");
   ul.className = "list-group-gc"
-
   url_consulta = url_search+search_term
+
 	await fetchGeocoder();
-  if(response_items[0].row_to_json){
+  console.log(response_items)
+  console.log(response_items.length)
+
+  //resp item coord
+  if(response_items[0] && response_items[0].row_to_json){
     mapa.removeGroup("markerSearchResultCoord", true);
     let lat = response_items[0].row_to_json.geom.coordinates[1]
     let lng = response_items[0].row_to_json.geom.coordinates[0]
@@ -232,35 +241,33 @@ const showGeocoderResults = async () => {
     
     let newcard = new Card_Coord
     newcard.createElement(response_items[0].row_to_json)
-
-  }else{
-
-  for (let  i = 0; i<limit; i++){
-    container.innerHTML = ""; 
-    let item = response_items[i]
-    let li = document.createElement("li")
-    if(item){
-    li.onclick = (e) => {
-      id_search = item.place.id
-      searchById(item.place.id)
-    };
-
-    li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+item.place.name+" " + item.place.depto +" "+  item.place.pcia
-    li.className = "list-group-item-gc"
-    li.style="cursor: pointer;"
-    ul.append(li)}
-    else{
-      li.innerHTML = 'No encontrado'
-      li.className = "list-group-item-gc"
-      li.style="cursor: pointer;color:grey;"
-      ul.append(li)
-      break;
-    }
   }
+  else if (response_items.length===0){
+    let li = document.createElement("li")
+    li.innerHTML = 'No encontrado'
+    li.className = "list-group-item-gc"
+    li.style="cursor: pointer;color:grey;"
+    ul.append(li)
+    container.innerHTML = "";  
+    container.append(ul)
+  }
+  else{
+    for (let  i = 0; i<limit; i++){
+      container.innerHTML = ""; 
+      let item = response_items[i]
+      let li = document.createElement("li")
+      li.onclick = (e) => {
+        id_search = item.place.id
+        searchById(item.place.id)
+      };
+      li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+item.place.name+" " + item.place.depto +" "+  item.place.pcia
+      li.className = "list-group-item-gc"
+      li.style="cursor: pointer;"
+      ul.append(li)}
+      container.innerHTML = "";  
+      container.append(ul)
+    }
 
-  container.innerHTML = "";  
-  container.append(ul)
- }
 }
 
 
@@ -284,17 +291,3 @@ const  searchById = async () => {
   newcard.createElement(response_items.features[0])
 
 };
-
-
-/*
-      let newcard = new Card_UI
-      newcard.createElement(item)
-      mapa.setView([lat, lng], 13);
-      //mapa.flyTo([lat, lng],12);
-      let geojsonMarker = {
-        type: "Feature",
-        properties: {
-        },
-        geometry: { type: "Point", coordinates: [lng,lat]},
-      }
-      mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)*/
