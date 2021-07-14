@@ -39,45 +39,44 @@ class Searchbar_UI{
     style.id="geocoder-style"
     style.innerHTML = `
     #searchbar {
-      width: 300px;
-      height: auto;
-      overflow: hidden;
-      float: none;
-      border-radius: 8px;
       z-index: 1500;
-      border: 3px;
-      padding: 5px;
-      background-color: ${this.style_background_color};
       left: ${this.style_left};
       top: ${this.style_top};
+      background-color: ${this.style_background_color};
       position: absolute;
-      margin: 5px;
+      border-radius: 8px;
       -moz-box-shadow: inset 0 0 10px #000000;
       -webkit-box-shadow: inset 0 0 10px #000000;
       box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
     }
     
-    input:focus{
-      border: 1px !important;
+    #search_bar {
+      outline: none !important;
+      height: 35px;
+      width: 130px;
+      overflow: auto;
+      box-sizing: border-box;
+      padding-left: 10px;
+      font-size: 14px;
+      font-family: FrutigerLTStd45Light,Helvetica,Arial,sans-serif;
+      background-color: white;
+      -webkit-transition: width 0.4s ease-in-out;
+      transition: width 0.4s ease-in-out;
+      border: 0px!important ;
+      border-radius: 8px;
+      box-shadow: 0 0 3px grey !important;
+      -moz-box-shadow: 0 0 3px grey !important;
+      -webkit-box-shadow: 0 0 3px grey !important;
+  }
+
+  #search_bar:focus {
+      outline: none !important;
+      border: 0px!important; 
       border-radius: 8px !important;
       box-shadow: 0 0 3px ${this.style_color_focus} !important;
       -moz-box-shadow: 0 0 3px ${this.style_color_focus}!important;
       -webkit-box-shadow: 0 0 3px ${this.style_color_focus}!important;
-    }
-    
-    .searchbar-input{
-      padding-left: 10px;
-      outline: none;
-      border-radius: 8px
-    }
-    
-    .searchbar-input:hover{
-      border: 1px !important;
-      border-radius: 8px !important;
-      box-shadow: 0 0 3px ${this.style_color_focus} !important;
-      -moz-box-shadow: 0 0 3px ${this.style_color_focus} !important;
-      -webkit-box-shadow: 0 0 3px ${this.style_color_focus} !important;
-    }
+  }
     `
     document.head.appendChild(style);
   }
@@ -89,44 +88,61 @@ class Searchbar_UI{
 
     let maininput = document.createElement("div")
     maininput.style.display = "flex"
-    maininput.style.flexDirection = "row"
-    maininput.style.border = "1px"
 
     let input = document.createElement("input")
     input.placeholder = "Buscar..."
     input.id = "search_bar"
     input.autocomplete = "off"
-    input.className = "searchbar-input"
-    input.style.width = "90%"
-    input.style.border = "0px"
-    input.style.margin = "5px"
     
     let icon = document.createElement("div")
-    icon.id = "div-icon-searchbar"
-    icon.style = "margin: 5px;"
-    icon.innerHTML = `<i id="spanopenfolder" class="fa fa-search" aria-hidden="true" style="color:grey;width:20px; "></i>`
+    icon.id = "div-icon-close-searchbar"
+    icon.style = "margin: 5px;text-align: center;"
+    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:20px; "></i>`
     icon.style.width = "10%"
-
     maininput.append(input)
     maininput.append(icon)
 
     let res = document.createElement("div")
     res.id = "results_search_bar"
+    res.style.maxWidth = "330px"
 
     divsearch.append(maininput)
     divsearch.append(res)
     
     document.body.appendChild(divsearch)
-
+    
+    let textinput = document.getElementById("search_bar")
+    let results = document.getElementById("results_search_bar")
     const search_input = document.getElementById('search_bar');
+    const icon_searchbar = document.getElementById('div-icon-close-searchbar');
+
+    icon_searchbar.style.display = "none"
+    icon_searchbar.addEventListener('click', (e) => {
+      icon_searchbar.style.display = "none"
+      textinput.value = ""
+      results.innerHTML = ""
+      results.style.margin = "0px"
+      search_input.style.width = "130px"
+      mapa.removeGroup("markerSearchResult", true);
+    });
+
     
     search_input.addEventListener('input', (e) => {
       search_term = e.target.value;
-      if(search_term.length ===0){
-        let container = document.getElementById("results_search_bar")
-        container.innerHTML = ""
+        if(search_term.length ===0){
+        search_input.style.width = "130px"
+        icon_searchbar.style.display = "none"
+        results.innerHTML = ""
+        }
+        else if(search_term.length <=2) {
+          search_input.style.width = "300px"
+          icon_searchbar.style.display="block"
+          }
+      else{
+          search_input.style.width = "300px"
+          icon_searchbar.style.display="block"
+          showGeocoderResults()
       }
-      if(search_term.length >= 3) showGeocoderResults()
     });
     
   }
@@ -142,9 +158,6 @@ class Card_UI{
     card.className = "card"
     let html = `
     <li class="list-group-item-gc" style="height:auto">
-    <div class="card-header bg-transparent border-bottom-0"><button id="close_card_gc" type="button" class="closebtn">
-    <span aria-hidden="true">×</span>
-  </button></div>
     <div class="card-body">
       <br>
       <h4 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.properties.name}</h5>
@@ -159,11 +172,6 @@ class Card_UI{
     card.innerHTML = html
     container.append(card)
 
-    let btn = document.getElementById("close_card_gc")
-    btn.addEventListener('click', (e) => {
-      mapa.removeGroup("markerSearchResult", true);
-      container.innerHTML=""
-    });
   }
 }
 
@@ -182,12 +190,9 @@ class Card_Coord{
     
     let html = `
     <li class="list-group-item-gc" style="height:auto">
-    <div class="card-header bg-transparent border-bottom-0"><button id="close_card_gc" type="button" class="closebtn">
-    <span aria-hidden="true">×</span>
-  </button></div>
     <div class="card-body">
       <br>
-      <h5 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.geom.coordinates[1]} ,${data.geom.coordinates[0]}</h5>
+      <h5 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>Coordenadas: ${data.geom.coordinates[1]} ,${data.geom.coordinates[0]}</h5>
       ${cardtext}
     </div>
     </li>
@@ -195,38 +200,37 @@ class Card_Coord{
     card.innerHTML = html
     container.append(card)
 
-    let btn = document.getElementById("close_card_gc")
-    btn.addEventListener('click', (e) => {
-      mapa.removeGroup("markerSearchResultCoord", true);
-      container.innerHTML=""
-    });
   }
 }
 
 const fetchGeocoder= async () => {
-  response_items = await fetch(url_consulta).then(
-  res => res.json()
-	);
+  try{
+    response_items = await fetch(url_consulta).then(
+    res => res.json()
+    );}
+  catch(err) {
+    new UserMessage(err.message, true, 'error')
+  }
+
+  
 }
 
 const showGeocoderResults = async () => {
   let container = document.getElementById("results_search_bar")
-  container.style.margin = "5px;"
 
 	results.innerHTML = '';
   mapa.removeGroup("markerSearchResult", true);
 	
   const ul = document.createElement("ul");
   ul.className = "list-group-gc"
+  ul.style.margin = "5px"
   url_consulta = url_search+search_term
 
 	await fetchGeocoder();
-  console.log(response_items)
-  console.log(response_items.length)
 
   //resp item coord
   if(response_items[0] && response_items[0].row_to_json){
-    mapa.removeGroup("markerSearchResultCoord", true);
+    mapa.removeGroup("markerSearchResult", true);
     let lat = response_items[0].row_to_json.geom.coordinates[1]
     let lng = response_items[0].row_to_json.geom.coordinates[0]
     mapa.setView([lat, lng], 13);
@@ -237,7 +241,7 @@ const showGeocoderResults = async () => {
       },
       geometry: { type: "Point", coordinates: [lng,lat]},
     }
-    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResultCoord", false)
+    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)
     
     let newcard = new Card_Coord
     newcard.createElement(response_items[0].row_to_json)
