@@ -94,8 +94,8 @@ class StylesUI {
   topleftlogolink.href = app.website
 
   let topleftlogo = document.getElementById("top-left-logo")
-  topleftlogo.alt = app.title
-  topleftlogo.title = app.title
+  topleftlogo.alt = app.logo.title
+  topleftlogo.title = app.logo.title
 
   if(app.referencias.show){
     let toprightlogo = document.getElementById("top-right-logo")
