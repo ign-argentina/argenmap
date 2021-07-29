@@ -26,7 +26,7 @@
   },
   "showSearchBar": false,
   "referencias": {
-    "show": false,
+    "show": true,
     "src": "src/styles/images/referencias_icono.png",
     "width":"25px",
     "height":"31px"

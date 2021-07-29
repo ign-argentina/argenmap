@@ -81,6 +81,44 @@ class StylesUI {
     `;
 
   document.head.appendChild(style);
+  let linkicon =  document.createElement("link")
+  linkicon.rel = "icon"
+  linkicon.href = app.favicon
+  document.head.appendChild(linkicon);
+
+  let title = document.createElement("title")
+  title.innerHTML = app.title
+  document.head.appendChild(title);
+
+  let topleftlogolink = document.getElementById("top-left-logo-link")
+  topleftlogolink.href = app.website
+
+  let topleftlogo = document.getElementById("top-left-logo")
+  topleftlogo.alt = app.title
+  topleftlogo.title = app.title
+
+  if(app.referencias.show){
+    let toprightlogo = document.getElementById("top-right-logo")
+    toprightlogo.src = app.referencias.src
+    toprightlogo.alt = "Referencias"
+    toprightlogo.title = "Referencias"
+    toprightlogo.style.width = app.referencias.width
+    toprightlogo.style.height = app.referencias.height
+    toprightlogo.style.top = "7px"
+
+    toprightlogo.onclick = function () {
+      clickReferencias()
+    };
+  }
  }
 }
 
+function clickReferencias(){
+    event.preventDefault();
+    $.fancybox.open({
+        src : 'src/styles/images/referencias.png',
+        type : 'image',
+        closeBtn: 'true'
+    });
+
+}
