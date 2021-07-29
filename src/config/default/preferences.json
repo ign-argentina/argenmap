@@ -43,16 +43,17 @@
     "iconBar":"#4f4f4f"
     },
   "logo": {
+    "title":"Instituto Geográfico Nacional",
     "src": "src/config/default/styles/images/logo2.png",
-    "height": "100%",
-    "width": "100%",
+    "height": "",
+    "width": "",
     "style": "filter: drop-shadow(1px 1px 1px #103847)",
     "srcLogoMini": "src/config/default/styles/images/logo_RESPONSIVE.png",
     "miniHeight": "",
     "miniWidth": "",
     "ministyle": "filter: drop-shadow(1px 1px 1px #103847);"
   },
-  "title": "Instituto Geográfico Nacional",
+  "title": "IGN - ARGENMAP",
   "website": "https://www.ign.gob.ar/",
   "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png"
 }
