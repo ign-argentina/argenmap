@@ -288,6 +288,8 @@ async function loadTemplate(data, isDefaultTemplate) {
     //Template
     template = app.template; // define wich template to use
 
+    let stylesui = new StylesUI
+    stylesui.createstyles()
     //Load template config
     loadTemplateStyleConfig(template, isDefaultTemplate);
 

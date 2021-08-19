@@ -7,7 +7,6 @@ html {
 
 body {
   font-family: Roboto, sans-serif;
-  background-color: #008dc9;
   overflow: hidden;
   height: 100% !important;
 }
@@ -30,6 +29,18 @@ body {
   position: relative;
   height: 100%;
   background-color: white;
+}
+
+#top-left-logo{
+  width: 490px;
+  height: 50px;
+}
+
+#top-right-logo{
+position:absolute;
+right:10px;
+float:right;
+top: 0;
 }
 
 @media (max-width: 800px) {
@@ -80,7 +91,6 @@ Menu principal
 }
 
 .panel-default > .panel-heading {
-  background-color: #008dc9;
   color: white;
   font-size: 15px;
   font-weight: bold;
@@ -91,21 +101,15 @@ Menu principal
 }
 #sidebar-container {
   z-index: 1500;
-  background-color: #008dc9;
 }
 #sidebar .nav {
   border: 1px;
 }
 
-.navbar-toggle .icon-bar {
-  border: 1px solid #337ab7;
-}
 .navbar-header > button {
   display: block;
 }
-.navbar {
-  background-color: #008dc9;
-}
+
 .navbar-brand {
   padding-top: 7px;
 }
@@ -115,11 +119,10 @@ Menu principal
 }
 .navbar-header > a > img {
   width: 50px;
-  top: 7px;
+  /*top: 7px;*/
   position: absolute;
 }
 .nav-tabs {
-  background-color: #008dc9;
   border-bottom: 1px solid #ddd;
 }
 .nav-tabs > .active {
@@ -333,17 +336,9 @@ Leaflet popup featureInfo
 }
 
 .featureInfo h4 {
-  border-bottom: 3px solid #085183;
   margin: 2em;
 }
 
-.featuresGroup {
-  border-bottom: 2px solid #085183;
-}
-
-.individualFeature {
-  border-bottom: 1px dashed #085183;
-}
 .individualFeature h4 {
   margin: 9px 0px !important;
 }
