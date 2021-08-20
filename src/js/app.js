@@ -48,6 +48,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setCharts(app.charts.isActive);
       }
 
+      if (app.hasOwnProperty('searchbar')) {
+        setSearchbar(app.searchbar.isActive);
+      }
+
       await this._startModules();
     },
 
@@ -323,6 +327,17 @@ async function loadTemplate(data, isDefaultTemplate) {
       $.getScript("src/js/components/charts/charts.js");
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">');
     }
+
+    //if searchbar is active in menu.json
+    if(loadSearchbar){
+        $.getScript("src/js/components/searchbar/searchbar.js")
+        .done(function() {
+          var searchBar_ui =  new Searchbar_UI
+          searchBar_ui.createElement();
+        })
+        $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
+      }
+
 
     //Load dynamic mapa.js
     app.template_id = template;

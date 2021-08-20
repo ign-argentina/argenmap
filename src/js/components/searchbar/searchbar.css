@@ -1,0 +1,38 @@
+.list-group-gc{
+  padding-left: 0;
+}
+
+.list-group-item-gc{
+position: relative;
+display: block;
+padding: 10px 5px;
+margin-bottom: -1px;
+background-color: #fff;
+border: 1px solid #ddd;
+text-overflow: ellipsis;
+height: 36px;
+width: 100%;
+white-space: nowrap;
+overflow: hidden;
+}
+
+.closebtn {
+  -webkit-appearance: none;
+  padding: 0;
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  float: right;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  filter: alpha(opacity=20);
+  opacity: .2;
+}
+
+.list-group-item-heading-gc{
+  margin-top: 0;
+  margin-bottom: 5px;
+}
