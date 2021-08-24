@@ -2267,3 +2267,49 @@ class Tab {
         return '';
     }
 }
+/******************************************
+Item for Gestor Menu
+******************************************/
+class Item_GestorMenu_UI{
+    createElement(groupname, layer){
+        let groupnamev= groupname.replace(/ /g, "_")
+        let main = document.getElementById("lista-"+groupnamev)
+        let itemnew = document.createElement("div")
+
+        let div = ` 
+        <div style="display:flex; flex-direction:row;">
+        <div style="cursor: pointer; width: 70%" onclick="clickGeometryLayer('${layer}')"><span style="user-select: none;">${layer}</span></div>
+        <div class="icon-layer-geo" onclick="mapa.downloadMultiLayerGeoJSON('${layer}')"><i class="fas fa-download" title="descargar"></i></div>
+        <div class="icon-layer-geo" onclick="deleteLayerGeometry('${layer}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
+        </div>
+        `
+        if(!main){
+        itemnew.innerHTML =`
+        <div id="lista-${groupnamev}" class="menu5 panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a id="${groupnamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${groupnamev}-content" class="item-group-title">${groupname}</a>
+            </h4>
+        </div>
+        <div id='${groupnamev}-content' class="panel-collapse collapse">
+            <div class="panel-body" id ="${groupnamev}-panel-body"> 
+            <li id="li-${layer}" class="capa list-group-item active" ><div class="capa-title">${div}<span data-toggle2="tooltip" title="" data-original-title=""></span><div class="legend-layer"></div></div></li>
+            </div>
+        </div>
+        </div>`
+
+        let container = document.getElementById("sidebar")
+        let aux = container.getElementsByClassName("menu5 panel-default")[0]
+        container.insertBefore(itemnew,aux)
+        }
+        else{
+            let content = document.getElementById(groupnamev+"-panel-body")
+            let aux = document.createElement("li")
+            aux.id = "li-"+layer 
+            aux.className = "capa list-group-item active"
+            aux.innerHTML = `<div class="capa-title"><span data-toggle2="tooltip" title="" data-original-title="">${div}</span><div class="legend-layer"></div></div>`
+            content.appendChild(aux)
+        }
+
+    }
+}

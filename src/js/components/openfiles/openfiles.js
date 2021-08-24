@@ -11,9 +11,9 @@ const modalicon = `
 const bootstraptabs = `
 <ul class="nav nav-tabs" id="ul-modalfies" style="background-color: white">
   <li class="active"><a style="background-color: white !important; color:black !important" data-toggle="tab" href="#geoJSON-openfile">geoJSON</a></li>
-  <li class="disabled"><a style="background-color: white !important; color:grey !important"  href="#KML-openfile">KML</a></li>
-  <li class="disabled"><a style="background-color: white !important; color:grey !important"  href="#Shapefile-openfile">Shapefile</a></li>
-  <li class="disabled"><a style="background-color: white !important; color:grey !important"  href="#CSV-openfile">CSV</a></li>
+  <li class="disabled"><a style="background-color: white !important; color:silver !important"  href="#KML-openfile">KML</a></li>
+  <li class="disabled"><a style="background-color: white !important; color:silver !important"  href="#Shapefile-openfile">Shapefile</a></li>
+  <li class="disabled"><a style="background-color: white !important; color:silver!important"  href="#CSV-openfile">CSV</a></li>
   </ul>
   <div class="tab-content" style="border:white" >
       <form id="geoJSON-openfile" class="tab-pane fade in active" style="background-color: white !important">
@@ -111,6 +111,7 @@ class UImf {
     name.type = "text";
     name.placeholder = "Nombre de capa";
     name.style = "margin-bottom:10px; margin-top:10px";
+    name.autocomplete = "off"
 
     document.getElementById("geoJSON-openfile").append(name);
 
@@ -156,7 +157,7 @@ class UImf {
       .getElementById("submitfile")
       .addEventListener("click", controlFormLoadFile);
   }
-
+ /*
   addmenu(layername) {
     let menuitem = `
     <div id="sidebar"
@@ -170,7 +171,7 @@ class UImf {
     let divmenu = document.createElement("div");
     divmenu.innerHTML = menuitem;
     document.getElementById("sidebar").append(divmenu);
-  }
+  }*/
 
   clickOpenFileIcon() {
     document.getElementById("iconopenfile-container").disabled = true;
@@ -220,10 +221,13 @@ function controlFormLoadFile() {
       style: myStyle,
       onEachFeature: onEachFeature,
     });
-    let layerId = mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, document.getElementById('capaname').value, false);
+    let layer_name = normalize(document.getElementById('capaname').value)
+    let layerId = mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, layer_name, false);
 
     //add layer in menu
-    uimodalfs.addmenu(val);
+    //uimodalfs.addmenu(val);
+    let item_GestorMenu = new Item_GestorMenu_UI
+    item_GestorMenu.createElement("geoJSON", layer_name)
 
     //finish and close modal
     document.body.removeChild(modalOpenFile);

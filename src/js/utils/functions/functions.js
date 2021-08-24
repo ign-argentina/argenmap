@@ -400,3 +400,53 @@ function setProperStyleToCtrlBtns() {
         }
     }, 100);
 };
+
+let normalize = (function() {
+    var from = "ÃÀÁÄÂÈÉËÊÌÍÏÎÒÓÖÔÙÚÜÛãàáäâèéëêìíïîòóöôùúüûÑñÇç", 
+        to   = "AAAAAEEEEIIIIOOOOUUUUaaaaaeeeeiiiioooouuuunncc",
+        mapping = {};
+   
+    for(var i = 0, j = from.length; i < j; i++ )
+        mapping[ from.charAt( i ) ] = to.charAt( i );
+   
+    return function( str ) {
+        var ret = [];
+        for( var i = 0, j = str.length; i < j; i++ ) {
+            var c = str.charAt( i );
+            if( mapping.hasOwnProperty( str.charAt( i ) ) )
+                ret.push( mapping[ c ] );
+            else
+                ret.push( c );
+        }      
+        return ret.join( '' ).replace( /[^-A-Za-z0-9]+/g, '-' ).toLowerCase();
+    }
+   
+  })();
+
+  function clickGeometryLayer(layer){
+    let aux = document.getElementById("li-"+layer)
+  
+    if(aux.className === "capa list-group-item active"){
+      aux.className = "capa list-group-item" 
+      mapa.hideGroupLayer(layer)
+    }
+    else{
+      aux.className = "capa list-group-item active"
+      mapa.showGroupLayer(layer)
+    }
+}
+
+function deleteLayerGeometry(layer){
+    mapa.removeGroup(layer, true);
+    let id = "#li-"+layer
+    let parent = $(id).parent()[0]
+    
+    if(parent.childElementCount<=1){
+        let index = parent.id.indexOf("-panel-body")
+        let lista = "#lista-"+parent.id.substr(0,index)
+        $(lista).remove();
+    }else{
+        $(id).remove();
+    }
+
+}

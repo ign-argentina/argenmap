@@ -194,6 +194,15 @@ li.active > div > a {
   vertical-align: top;
   width: 96%;
 }
+
+.icon-layer-geo{
+  color:silver;
+  margin-left:  15px;
+}
+
+.icon-layer-geo :hover{
+  color: black
+}
 @media (max-width: 390px) {
   /*.tooltip {
 		display: none !important;
