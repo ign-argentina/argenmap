@@ -1456,6 +1456,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							if (lyrInGrpIdx >= 0)
 								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 						}
+
+						controlSeccionGeom()
 					}
 
 					mapa.removeGroup = (group, deleteLayers) => {

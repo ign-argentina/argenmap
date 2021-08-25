@@ -450,3 +450,12 @@ function deleteLayerGeometry(layer){
     }
 
 }
+
+function controlSeccionGeom(){
+	let aux = mapa.groupLayers
+	for (n in aux){
+		if(aux[n].length===0){
+			deleteLayerGeometry(n)
+		}
+	}
+}
