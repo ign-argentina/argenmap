@@ -7,6 +7,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorGroupWMSSelector = new ImpresorGroupWMSSelector(),
   urlInteraction = new URLInteraction(),
   metaTagsInteraction = new MetaTagsInteraction(),
+  geometry = new Geometry(),
   app = {
     profile: "default",
     profiles: {},

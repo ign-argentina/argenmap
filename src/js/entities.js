@@ -36,7 +36,15 @@ class Capa {
         if (this.host == null) {
             return '';
         }
-        let owsHost = (this.servicio == "wms") ? this.host + "/wms?" : this.host + "/gwc/service/wmts";
+        let owsHost = this.host,
+        isMapserver = this.host.includes('cgi-bin');
+        
+        if (!isMapserver) {   
+            if (this.servicio === "wms") { owsHost += "/wms?"};
+            //if (this.servicio === "mapserver") { owsHost };
+            if (this.servicio === "wmts") { owsHost += "/gwc/service/wmts" };
+        }
+
         return owsHost;
     }
 }
@@ -2312,4 +2320,26 @@ class Item_GestorMenu_UI{
         }
 
     }
+}
+
+class Geometry {
+  constructor() {
+    this._types = [
+      "Geometry",
+      "Point",
+      "MultiPoint",
+      "LineString",
+      "MultilineString",
+      "Polygon",
+      'MultiPolygon'
+    ];
+  }
+
+  isValidType(geom) {
+    if(this._types.filter((type) => type === geom)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
