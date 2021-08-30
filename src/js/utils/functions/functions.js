@@ -271,19 +271,69 @@ function setCoordinatesFormat(coords) {
     return coordsFormatted;
 }
 
+async function getWfsLayerFields(url, params) {
+    let _params = { 
+        typeName: params.typeName, 
+        service: params.service, 
+        version: params.version,
+        request: 'DescribeFeatureType',
+        outputFormat: params.outputFormat
+    }, paramsStr = [], res, geom;
+
+    Object.entries(_params).forEach( p => {
+        paramsStr.push(p.join('='));
+    });
+    url += '/ows?' + paramsStr.join('&');
+    
+    let response = await fetch(url);
+
+    if (response.ok) {
+      res = await response.json();
+      res.featureTypes[0].properties.forEach((field) => {
+        // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
+        let lc = field.localType;
+        if (lc === 'Geometry' || lc === 'Point' || lc === 'Polygon' || lc === 'MultilineString' || lc === 	'MultiPolygon') {
+          geom = field.name;
+        }
+      });
+    } else {
+      alert("HTTP-Error: " + response.status);
+    }
+
+    return geom;
+
+}
+
 async function getLayerDataByWFS(coords, type, layerData) {
-    let url = ''
+    let url = layerData.host, params = { 
+        service: 'wfs',
+        request: 'GetFeature',
+        version: '',
+        outputFormat: 'application%2Fjson',
+        typeName: layerData.name,
+        cql_filter: ''
+    }, paramsStr = [], geom = await getWfsLayerFields(url, params);
+    
+
     if (type === 'polygon' || type === 'rectangle') {
         const coordsFormatted = setCoordinatesFormat(coords);
-        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POLYGON((${coordsFormatted})))`;
-    }else if (type === 'circle'){
-        url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=DWITHIN(geom,POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
-    }else if (type === 'marker'){
-        url = `${layerData.host}/ows?service=wfs&version=1.1.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,POINT(${coords.lat}%20${coords.lng}))`;
-    }else if(type === 'polyline'){
-        const coordsFormatted = setCoordinatesFormat(coords);
-        url = `${layerData.host}/ows?service=wfs&version=1.0.0&request=GetFeature&typeName=${layerData.section}:${layerData.name}&outputFormat=application%2Fjson&CQL_FILTER=INTERSECTS(geom,LINESTRING(${coordsFormatted}))`;
+        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
     }
+    if (type === 'circle'){
+        params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
+    }
+    if (type === 'marker'){
+        params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`;
+    }
+    if(type === 'polyline'){
+        const coordsFormatted = setCoordinatesFormat(coords);
+        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
+    }
+
+    Object.entries(params).forEach( p => {
+        paramsStr.push(p.join('='));
+    });
+    url += '/ows?' + paramsStr.join('&');
 
     const response = await fetch(url);
     if (response.status !== 200)
