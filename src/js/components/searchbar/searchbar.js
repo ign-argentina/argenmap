@@ -1,37 +1,22 @@
-let geosearchbar_top = null
-let geosearchbar_left = null
-let geosearchbar_color_focus = null
-let geosearchbar_background_color = null
+const geosearchbar_top = "60px"
+const geosearchbar_left = "300px"
+const geosearchbar_color_focus = "#008dc9"
+const geosearchbar_background_color = "rgba(255, 255, 255, 0.7)"
+const url_search = app.geocoder.url_search
+const url_by_id= app.geocoder.url_by_id
+const limit = app.geocoder.limit
 let results = ""
+let url_consulta = ""
 let search_term = ""
 let id_search = ""
-let url_search = "http://172.20.205.50:3000/search?q="
-let url_by_id= "http://172.20.205.50:3000/places?id="
-let url_consulta = ""
-let limit = 5
-
-geosearchbar_top =  (app.searchbar.top)? app.searchbar.top : DEFAULT_GEOSEARCHBAR_TOP
-geosearchbar_left =  app.searchbar.left? app.searchbar.left : DEFAULT_GEOSEARCHBAR_LEFT
-geosearchbar_color_focus =  app.searchbar.color_focus? app.searchbar.color_focus: DEFAULT_GEOSEARCHBAR_COLOR_FOCUS
-geosearchbar_background_color =  app.searchbar.background_color? app.searchbar.background_color: DEFAULT_GEOSEARCHBAR_BACKGROUND_COLOR
-
-class Geocoder_config{
-/*
-    url = null;
-    lang = null;
-    limit = null;
-    key = null;
-
- setConfig(){}*/
-}
 
 class Searchbar_UI{
   constructor()
   {
-    this.style_top = geosearchbar_top
-    this.style_left = geosearchbar_left
-    this.style_color_focus = geosearchbar_color_focus
-    this.style_background_color  = geosearchbar_background_color 
+    this.style_top = app.searchbar.top? app.searchbar.top :geosearchbar_top
+    this.style_left = app.searchbar.left? app.searchbar.left :geosearchbar_left
+    this.style_color_focus = app.searchbar.color_focus? app.searchbar.color_focus : geosearchbar_color_focus
+    this.style_background_color  = app.searchbar.background_color? app.searchbar.background_color: geosearchbar_background_color
   }
 
   createStyle(){
@@ -39,49 +24,20 @@ class Searchbar_UI{
     style.id="geocoder-style"
     style.innerHTML = `
     #searchbar {
-      z-index: 1500;
       left: ${this.style_left};
       top: ${this.style_top};
       background-color: ${this.style_background_color};
-      position: absolute;
-      border-radius: 8px;
-      -moz-box-shadow: inset 0 0 10px #000000;
-      -webkit-box-shadow: inset 0 0 10px #000000;
-      box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
     }
-    
-    #search_bar {
-      outline: none !important;
-      height: 35px;
-      width: 130px;
-      overflow: auto;
-      box-sizing: border-box;
-      padding-left: 10px;
-      font-size: 14px;
-      font-family: FrutigerLTStd45Light,Helvetica,Arial,sans-serif;
-      background-color: white;
-      -webkit-transition: width 0.4s ease-in-out;
-      transition: width 0.4s ease-in-out;
-      border: 0px!important ;
-      border-radius: 8px;
-      box-shadow: 0 0 3px grey !important;
-      -moz-box-shadow: 0 0 3px grey !important;
-      -webkit-box-shadow: 0 0 3px grey !important;
-  }
-
-  #search_bar:focus {
-      outline: none !important;
-      border: 0px!important; 
-      border-radius: 8px !important;
-      box-shadow: 0 0 3px ${this.style_color_focus} !important;
-      -moz-box-shadow: 0 0 3px ${this.style_color_focus}!important;
-      -webkit-box-shadow: 0 0 3px ${this.style_color_focus}!important;
-  }
-    `
+    #search_bar:focus {
+        box-shadow: 0 0 3px ${this.style_color_focus} !important;
+        -moz-box-shadow: 0 0 3px ${this.style_color_focus}!important;
+        -webkit-box-shadow: 0 0 3px ${this.style_color_focus}!important;
+    }
+      `
     document.head.appendChild(style);
   }
 
-  createElement(){
+  create_sarchbar(){
     this.createStyle()
     let divsearch = document.createElement("div")
     divsearch.id = "searchbar"
@@ -146,37 +102,49 @@ class Searchbar_UI{
     });
     
   }
-}
 
-
-class Card_UI{
-  createElement(data){
+  create_item_notfound(){
     let container = document.getElementById("results_search_bar")
-    container.style="margin: 5px"
-    container.innerHTML=""
-    let card = document.createElement("div")
-    card.className = "card"
-    let html = `
-    <li class="list-group-item-gc" style="height:auto">
-    <div class="card-body">
-      <br>
-      <h4 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.properties.name}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">Coordenadas: ${data.geometry.coordinates[1]}, ${data.geometry.coordinates[0]}</h6>
-      <h6 class="card-text">Codigo BAHRA: ${data.properties.cod_bahra}</p>
-      <h6 class="card-text">Dpto: ${data.properties.depto}</p>
-      <h6 class="card-text">Provincia: ${data.properties.pcia}</p>
-    </div>
-    </li>
-  `
+    let ul = document.createElement("ul");
+    ul.className = "list-group-gc"
+    ul.style.margin = "5px"
 
-    card.innerHTML = html
-    container.append(card)
+    let li = document.createElement("li")
+    li.innerHTML = 'No encontrado'
+    li.className = "list-group-item-gc"
+    li.style="cursor: pointer;color:grey;"
 
+    ul.append(li)
+    container.innerHTML = "";  
+    container.append(ul)
   }
-}
 
-class Card_Coord{
-  createElement(data){
+  create_items(items){
+    let container = document.getElementById("results_search_bar")
+    const ul = document.createElement("ul");
+    ul.className = "list-group-gc"
+    ul.style.margin = "5px"
+    url_consulta = url_search+search_term
+    container.innerHTML = "";  
+
+    items.forEach((el) => {
+      container.innerHTML = ""; 
+      let li = document.createElement("li")
+      li.onclick = (e) => {
+        id_search = el.place.id
+        searchById(el.place.id)
+        console.log(el.place.id)
+      };
+
+      li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+el.place.name+" " + el.place.depto +" "+  el.place.pcia
+      li.className = "list-group-item-gc"
+      li.style="cursor: pointer;"
+      ul.append(li)
+    });
+    container.append(ul)
+  }
+
+  create_coord_result(data){
     let container = document.getElementById("results_search_bar")
     container.style="margin: 5px"
     container.innerHTML=""
@@ -199,8 +167,30 @@ class Card_Coord{
   `
     card.innerHTML = html
     container.append(card)
-
   }
+
+  create_card(data){
+    let container = document.getElementById("results_search_bar")
+    container.style="margin: 5px"
+    container.innerHTML=""
+    let card = document.createElement("div")
+    card.className = "card"
+    let html = `
+    <li class="list-group-item-gc" style="height:auto">
+    <div class="card-body">
+      <br>
+      <h4 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.properties.name}</h5>
+      <h6 class="card-subtitle mb-2 text-muted">Coordenadas: ${data.geometry.coordinates[1]}, ${data.geometry.coordinates[0]}</h6>
+      <h6 class="card-text">Codigo BAHRA: ${data.properties.cod_bahra}</p>
+      <h6 class="card-text">Dpto: ${data.properties.depto}</p>
+      <h6 class="card-text">Provincia: ${data.properties.pcia}</p>
+    </div>
+    </li>
+  `
+    card.innerHTML = html
+    container.append(card)
+  }
+
 }
 
 const fetchGeocoder= async () => {
@@ -211,69 +201,27 @@ const fetchGeocoder= async () => {
   catch(err) {
     new UserMessage(err.message, true, 'error')
   }
-
-  
 }
 
 const showGeocoderResults = async () => {
-  let container = document.getElementById("results_search_bar")
-
-	results.innerHTML = '';
   mapa.removeGroup("markerSearchResult", true);
-	
-  const ul = document.createElement("ul");
-  ul.className = "list-group-gc"
-  ul.style.margin = "5px"
+  let ui_elements = new Searchbar_UI
   url_consulta = url_search+search_term
 
 	await fetchGeocoder();
 
-  //resp item coord
   if(response_items[0] && response_items[0].row_to_json){
-    mapa.removeGroup("markerSearchResult", true);
-    let lat = response_items[0].row_to_json.geom.coordinates[1]
-    let lng = response_items[0].row_to_json.geom.coordinates[0]
-    mapa.setView([lat, lng], 13);
-
-    let geojsonMarker = {
-      type: "Feature",
-      properties: {
-      },
-      geometry: { type: "Point", coordinates: [lng,lat]},
-    }
-    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)
-    
-    let newcard = new Card_Coord
-    newcard.createElement(response_items[0].row_to_json)
+  console.log(response_items[0].row_to_json)
+   ui_elements.create_coord_result(response_items[0].row_to_json)
   }
   else if (response_items.length===0){
-    let li = document.createElement("li")
-    li.innerHTML = 'No encontrado'
-    li.className = "list-group-item-gc"
-    li.style="cursor: pointer;color:grey;"
-    ul.append(li)
-    container.innerHTML = "";  
-    container.append(ul)
+    ui_elements.create_item_notfound()
   }
   else{
-    for (let  i = 0; i<limit; i++){
-      container.innerHTML = ""; 
-      let item = response_items[i]
-      let li = document.createElement("li")
-      li.onclick = (e) => {
-        id_search = item.place.id
-        searchById(item.place.id)
-      };
-      li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+item.place.name+" " + item.place.depto +" "+  item.place.pcia
-      li.className = "list-group-item-gc"
-      li.style="cursor: pointer;"
-      ul.append(li)}
-      container.innerHTML = "";  
-      container.append(ul)
-    }
-
+    ui_elements.create_items(response_items)
+  }
+  
 }
-
 
 const  searchById = async () => {
   url_consulta = url_by_id + id_search+"&format=geojson"
@@ -291,7 +239,6 @@ const  searchById = async () => {
   }
   mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)
 
-  let newcard = new Card_UI
-  newcard.createElement(response_items.features[0])
-
+  let newcard = new Searchbar_UI
+  newcard.create_card(response_items.features[0])
 };
