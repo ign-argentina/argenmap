@@ -27,8 +27,8 @@
   "showSearchBar": false,
   "searchbar":{
     "isActive": true,
-    "top": "60px",
-    "left": "300px",
+    "top": "5px",
+    "left": "40%",
     "color_focus": "#008dc9",
     "background_color": "rgba(255, 255, 255, 0.7)"
   },
@@ -71,4 +71,3 @@
   "website": "https://www.ign.gob.ar/",
   "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png"
 }
-

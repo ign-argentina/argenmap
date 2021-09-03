@@ -5,10 +5,10 @@ const geosearchbar_background_color = "rgba(255, 255, 255, 0.7)"
 const url_search = app.geocoder.url_search
 const url_by_id= app.geocoder.url_by_id
 const limit = app.geocoder.limit
-let results = ""
-let url_consulta = ""
-let search_term = ""
-let id_search = ""
+let results = null
+let url_consulta = null
+let id_search = null
+let search_term = null
 
 class Searchbar_UI{
   constructor()
@@ -23,11 +23,12 @@ class Searchbar_UI{
     const style = document.createElement('style');
     style.id="geocoder-style"
     style.innerHTML = `
+    @media (min-width: 769px) {
     #searchbar {
       left: ${this.style_left};
       top: ${this.style_top};
       background-color: ${this.style_background_color};
-    }
+    }}
     #search_bar:focus {
         box-shadow: 0 0 3px ${this.style_color_focus} !important;
         -moz-box-shadow: 0 0 3px ${this.style_color_focus}!important;
@@ -73,6 +74,7 @@ class Searchbar_UI{
     const icon_searchbar = document.getElementById('div-icon-close-searchbar');
 
     icon_searchbar.style.display = "none"
+
     icon_searchbar.addEventListener('click', (e) => {
       icon_searchbar.style.display = "none"
       textinput.value = ""
@@ -82,24 +84,28 @@ class Searchbar_UI{
       mapa.removeGroup("markerSearchResult", true);
     });
 
-    
-    search_input.addEventListener('input', (e) => {
-      search_term = e.target.value;
-        if(search_term.length ===0){
+    search_input.onkeyup = async (e) => {
+      let q = e.target.value;
+      q = q.trim();
+      q = q.toLowerCase();
+      q = q.replace(";", ",");
+
+       if(q.length ===0){
         search_input.style.width = "130px"
         icon_searchbar.style.display = "none"
         results.innerHTML = ""
         }
-        else if(search_term.length <=2) {
+        else if(q.length <=2) {
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           }
       else{
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
+          search_term = q
           showGeocoderResults()
       }
-    });
+    }
     
   }
 
@@ -133,10 +139,10 @@ class Searchbar_UI{
       li.onclick = (e) => {
         id_search = el.place.id
         searchById(el.place.id)
-        console.log(el.place.id)
       };
+      let txtresult = el.place.name+" "+el.place.depto+" "+el.place.pcia
 
-      li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+el.place.name+" " + el.place.depto +" "+  el.place.pcia
+      li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+txtresult
       li.className = "list-group-item-gc"
       li.style="cursor: pointer;"
       ul.append(li)
@@ -145,6 +151,10 @@ class Searchbar_UI{
   }
 
   create_coord_result(data){
+    let lat = data.geom.coordinates[1]
+    let lng = data.geom.coordinates[0]
+    mapa.setView([lat, lng], 13);
+
     let container = document.getElementById("results_search_bar")
     container.style="margin: 5px"
     container.innerHTML=""
@@ -196,49 +206,57 @@ class Searchbar_UI{
 const fetchGeocoder= async () => {
   try{
     response_items = await fetch(url_consulta).then(
-    res => res.json()
-    );}
+    res => res.json());
+  }
   catch(err) {
     new UserMessage(err.message, true, 'error')
   }
 }
 
+
 const showGeocoderResults = async () => {
-  mapa.removeGroup("markerSearchResult", true);
-  let ui_elements = new Searchbar_UI
-  url_consulta = url_search+search_term
+  try{
+      mapa.removeGroup("markerSearchResult", true);
+      let ui_elements = new Searchbar_UI
+      url_consulta = url_search+search_term
+      await fetchGeocoder();
 
-	await fetchGeocoder();
-
-  if(response_items[0] && response_items[0].row_to_json){
-  console.log(response_items[0].row_to_json)
-   ui_elements.create_coord_result(response_items[0].row_to_json)
+      if(response_items[0] && response_items[0].row_to_json){
+      ui_elements.create_coord_result(response_items[0].row_to_json)
+      }
+      else if (response_items.length===0){
+        ui_elements.create_item_notfound()
+      }
+      else{
+        ui_elements.create_items(response_items)
+      }
   }
-  else if (response_items.length===0){
-    ui_elements.create_item_notfound()
+  catch(err) {
+      new UserMessage(err.message, true, 'error')
   }
-  else{
-    ui_elements.create_items(response_items)
-  }
-  
 }
 
 const  searchById = async () => {
-  url_consulta = url_by_id + id_search+"&format=geojson"
-	await fetchGeocoder();
+  try{
+    url_consulta = url_by_id + id_search+"&format=geojson"
+    await fetchGeocoder();
 
-  let lat = response_items.features[0].geometry.coordinates[1]
-  let lng = response_items.features[0].geometry.coordinates[0]
-  mapa.setView([lat, lng], 13);
+    let lat = response_items.features[0].geometry.coordinates[1]
+    let lng = response_items.features[0].geometry.coordinates[0]
+    mapa.setView([lat, lng], 13);
 
-  let geojsonMarker = {
-    type: "Feature",
-    properties: {
-    },
-    geometry: { type: "Point", coordinates: [lng,lat]},
+    let geojsonMarker = {
+        type: "Feature",
+        properties: {
+        },
+        geometry: { type: "Point", coordinates: [lng,lat]},
+    }
+    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)
+
+    let newcard = new Searchbar_UI
+    newcard.create_card(response_items.features[0])
   }
-  mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)
-
-  let newcard = new Searchbar_UI
-  newcard.create_card(response_items.features[0])
+  catch(err) {
+    new UserMessage(err.message, true, 'error')
+  }
 };
