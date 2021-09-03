@@ -137,7 +137,9 @@ $("body").on("pluginLoad", function(event, plugin){
 					var zoomHome = L.Control.zoomHome({
 						zoomHomeTitle: 'Inicio',
 						zoomInTitle: 'Acercarse',
-						zoomOutTitle: 'Alejarse'
+						zoomOutTitle: 'Alejarse',
+						homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
+						homeZoom: app.mapConfig.zoom.initial
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
