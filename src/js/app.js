@@ -323,7 +323,7 @@ async function loadTemplate(data, isDefaultTemplate) {
         $.getScript("src/js/components/searchbar/searchbar.js")
         .done(function() {
           var searchBar_ui =  new Searchbar_UI
-          searchBar_ui.createElement();
+          searchBar_ui.create_sarchbar();
         })
         $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
       }

@@ -491,7 +491,7 @@ function deleteLayerGeometry(layer){
     let id = "#li-"+layer
     let parent = $(id).parent()[0]
     
-    if(parent.childElementCount<=1){
+    if(parent && parent.childElementCount<=1){
         let index = parent.id.indexOf("-panel-body")
         let lista = "#lista-"+parent.id.substr(0,index)
         $(lista).remove();
