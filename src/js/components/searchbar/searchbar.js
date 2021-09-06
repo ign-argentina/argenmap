@@ -155,6 +155,14 @@ class Searchbar_UI{
     let lng = data.geom.coordinates[0]
     mapa.setView([lat, lng], 13);
 
+    let geojsonMarker = {
+        type: "Feature",
+        properties: {
+        },
+        geometry: { type: "Point", coordinates: [lng,lat]},
+    }
+    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "markerSearchResult", false)
+
     let container = document.getElementById("results_search_bar")
     container.style="margin: 5px"
     container.innerHTML=""
