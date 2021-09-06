@@ -1856,7 +1856,8 @@ $("body").on("pluginLoad", function(event, plugin){
 				layers: currentBaseMap ? [currentBaseMap] : undefined,
 				zoomControl: false,
 				minZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
-				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL
+				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
+				renderer: L.canvas()
 			});
 
 			setValidZoomLevel(selectedBasemap.nombre);
