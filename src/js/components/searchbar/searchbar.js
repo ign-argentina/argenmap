@@ -89,6 +89,7 @@ class Searchbar_UI{
       //caracteres permitidos para coordenadas: ° ' "
       q = q.trim();
       q = q.toLowerCase();
+      //test regex 
       q = q.replace(";", ",");
       q = q.replace("$", "");
       q = q.replace("#", "");
@@ -101,7 +102,6 @@ class Searchbar_UI{
       q = q.replace(")", "");
       q = q.replace("*", "");
       q = q.replace("_", " ");
-      q = q.replace("-", " ");
       q = q.replace("=", " ");
 
        if(q.length ===0){
