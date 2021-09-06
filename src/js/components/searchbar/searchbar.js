@@ -53,8 +53,8 @@ class Searchbar_UI{
     
     let icon = document.createElement("div")
     icon.id = "div-icon-close-searchbar"
-    icon.style = "margin: 5px;text-align: center;"
-    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:20px; "></i>`
+    icon.style = "margin: 5px;text-align:center;width:32px;height:27px"
+    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px"></i>`
     icon.style.width = "10%"
     maininput.append(input)
     maininput.append(icon)
@@ -86,9 +86,23 @@ class Searchbar_UI{
 
     search_input.onkeyup = async (e) => {
       let q = e.target.value;
+      //caracteres permitidos para coordenadas: ° ' "
       q = q.trim();
       q = q.toLowerCase();
       q = q.replace(";", ",");
+      q = q.replace("$", "");
+      q = q.replace("#", "");
+      q = q.replace("<", "");
+      q = q.replace(">", "");
+      q = q.replace("@", "");
+      q = q.replace("!", "");
+      q = q.replace("%", "");
+      q = q.replace("(", "");
+      q = q.replace(")", "");
+      q = q.replace("*", "");
+      q = q.replace("_", " ");
+      q = q.replace("-", " ");
+      q = q.replace("=", " ");
 
        if(q.length ===0){
         search_input.style.width = "130px"
@@ -141,6 +155,12 @@ class Searchbar_UI{
         searchById(el.place.id)
       };
       let txtresult = el.place.name+" "+el.place.depto+" "+el.place.pcia
+      let n_txtresult = norma(txtresult)
+      let index = n_txtresult.indexOf(search_term)
+      let end = index+search_term.length
+      let original_txt = txtresult.slice(index,end);
+      let newtxt = '<strong>'+original_txt+'</strong>'
+      txtresult = txtresult.replace(original_txt,newtxt);
 
       li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+txtresult
       li.className = "list-group-item-gc"
@@ -178,7 +198,7 @@ class Searchbar_UI{
     <li class="list-group-item-gc" style="height:auto">
     <div class="card-body">
       <br>
-      <h5 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>Coordenadas: ${data.geom.coordinates[1]} ,${data.geom.coordinates[0]}</h5>
+      <h5 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.geom.coordinates[1]} ,${data.geom.coordinates[0]}</h5>
       ${cardtext}
     </div>
     </li>
@@ -209,6 +229,14 @@ class Searchbar_UI{
     container.append(card)
   }
 
+  loading(value){
+    let iconclose = document.getElementById("div-icon-close-searchbar")
+    if(value === "true"){
+      iconclose.innerHTML= '<div><img style="width:24px;height:24px" src="src/styles/images/loading.svg"></div>'
+    }else{
+      iconclose.innerHTML='<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px"></i>'}
+  }
+
 }
 
 const fetchGeocoder= async () => {
@@ -226,16 +254,20 @@ const showGeocoderResults = async () => {
   try{
       mapa.removeGroup("markerSearchResult", true);
       let ui_elements = new Searchbar_UI
+      ui_elements.loading("true")
       url_consulta = url_search+search_term
       await fetchGeocoder();
 
       if(response_items[0] && response_items[0].row_to_json){
-      ui_elements.create_coord_result(response_items[0].row_to_json)
+        ui_elements.loading("false")
+        ui_elements.create_coord_result(response_items[0].row_to_json)
       }
       else if (response_items.length===0){
+        ui_elements.loading("false")
         ui_elements.create_item_notfound()
       }
       else{
+        ui_elements.loading("false")
         ui_elements.create_items(response_items)
       }
   }
@@ -268,3 +300,39 @@ const  searchById = async () => {
     new UserMessage(err.message, true, 'error')
   }
 };
+
+let norma= (function() {
+  var from = "ÃÀÁÄÂÈÉËÊÌÍÏÎÒÓÖÔÙÚÜÛãàáäâèéëêìíïîòóöôùúüûÑñÇç", 
+      to   = "AAAAAEEEEIIIIOOOOUUUUaaaaaeeeeiiiioooouuuunncc",
+      mapping = {};
+ 
+  for(var i = 0, j = from.length; i < j; i++ )
+      mapping[ from.charAt( i ) ] = to.charAt( i );
+ 
+  return function( str ) {
+      var ret = [];
+      for( var i = 0, j = str.length; i < j; i++ ) {
+          var c = str.charAt( i );
+          if( mapping.hasOwnProperty( str.charAt( i ) ) )
+              ret.push( mapping[ c ] );
+          else
+              ret.push( c );
+      }      
+      return ret.join( '' ).toLowerCase();
+  }
+ 
+})();
+
+
+const agregarCaracter = (cadena, caracter, pasos) => {
+  let cadenaConCaracteres = "";
+  const longitudCadena = cadena.length;
+  for (let i = 0; i < longitudCadena; i += pasos) {
+      if (i + pasos < longitudCadena) {
+          cadenaConCaracteres += cadena.substring(i, i + pasos) + caracter;
+      } else {
+          cadenaConCaracteres += cadena.substring(i, longitudCadena);
+      }
+  }
+  return cadenaConCaracteres;
+}
