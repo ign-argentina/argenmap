@@ -9,6 +9,8 @@ let results = null
 let url_consulta = null
 let id_search = null
 let search_term = null
+let loading_searchbar = false
+
 
 class Searchbar_UI{
   constructor()
@@ -71,6 +73,7 @@ class Searchbar_UI{
     let textinput = document.getElementById("search_bar")
     let results = document.getElementById("results_search_bar")
     const search_input = document.getElementById('search_bar');
+    search_input.spellcheck = "false"
     const icon_searchbar = document.getElementById('div-icon-close-searchbar');
 
     icon_searchbar.style.display = "none"
@@ -86,24 +89,9 @@ class Searchbar_UI{
 
     search_input.onkeyup = async (e) => {
       let q = e.target.value;
-      //caracteres permitidos para coordenadas: ° ' "
       q = q.trim();
       q = q.toLowerCase();
-      //test regex 
-      q = q.replace(";", ",");
-      q = q.replace("$", "");
-      q = q.replace("#", "");
-      q = q.replace("<", "");
-      q = q.replace(">", "");
-      q = q.replace("@", "");
-      q = q.replace("!", "");
-      q = q.replace("%", "");
-      q = q.replace("(", "");
-      q = q.replace(")", "");
-      q = q.replace("*", "");
-      q = q.replace("_", " ");
-      q = q.replace("=", " ");
-
+     
        if(q.length ===0){
         search_input.style.width = "130px"
         icon_searchbar.style.display = "none"
@@ -117,7 +105,7 @@ class Searchbar_UI{
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           search_term = q
-          showGeocoderResults()
+          if (regexValidator(search_term) && !loading_searchbar) {showGeocoderResults()}
       }
     }
     
@@ -138,6 +126,23 @@ class Searchbar_UI{
     container.innerHTML = "";  
     container.append(ul)
   }
+
+  create_character_invalid(){
+    let container = document.getElementById("results_search_bar")
+    let ul = document.createElement("ul");
+    ul.className = "list-group-gc"
+    ul.style.margin = "5px"
+
+    let li = document.createElement("li")
+    li.innerHTML = 'Carácter no válido'
+    li.className = "list-group-item-gc"
+    li.style="cursor: pointer;color:grey;"
+
+    ul.append(li)
+    container.innerHTML = "";  
+    container.append(ul)
+  }
+
 
   create_items(items){
     let container = document.getElementById("results_search_bar")
@@ -218,7 +223,7 @@ class Searchbar_UI{
     <div class="card-body">
       <br>
       <h4 class="list-group-item-heading-gc"><i class="fa fa-map-marker" aria-hidden="true" style="color:grey;margin-right: 10px;"></i>${data.properties.name}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">Coordenadas: ${data.geometry.coordinates[1]}, ${data.geometry.coordinates[0]}</h6>
+      <h6 class="card-subtitle mb-2 text-muted">${data.geometry.coordinates[1]}, ${data.geometry.coordinates[0]}</h6>
       <h6 class="card-text">Codigo BAHRA: ${data.properties.cod_bahra}</p>
       <h6 class="card-text">Dpto: ${data.properties.depto}</p>
       <h6 class="card-text">Provincia: ${data.properties.pcia}</p>
@@ -232,12 +237,15 @@ class Searchbar_UI{
   loading(value){
     let iconclose = document.getElementById("div-icon-close-searchbar")
     if(value === "true"){
+      loading_searchbar =  true
       iconclose.innerHTML= '<div><img style="width:24px;height:24px" src="src/styles/images/loading.svg"></div>'
     }else{
+      loading_searchbar =  false
       iconclose.innerHTML='<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px"></i>'}
   }
 
 }
+let ui_elements = new Searchbar_UI
 
 const fetchGeocoder= async () => {
   try{
@@ -245,6 +253,8 @@ const fetchGeocoder= async () => {
     res => res.json());
   }
   catch(err) {
+    response_items = []
+    ui_elements.loading("false")
     new UserMessage(err.message, true, 'error')
   }
 }
@@ -253,16 +263,17 @@ const fetchGeocoder= async () => {
 const showGeocoderResults = async () => {
   try{
       mapa.removeGroup("markerSearchResult", true);
-      let ui_elements = new Searchbar_UI
+      
       ui_elements.loading("true")
       url_consulta = url_search+search_term
+
       await fetchGeocoder();
 
       if(response_items[0] && response_items[0].row_to_json){
         ui_elements.loading("false")
         ui_elements.create_coord_result(response_items[0].row_to_json)
       }
-      else if (response_items.length===0){
+      else if (response_items.length===0 || response_items === undefined){
         ui_elements.loading("false")
         ui_elements.create_item_notfound()
       }
@@ -272,6 +283,7 @@ const showGeocoderResults = async () => {
       }
   }
   catch(err) {
+      ui_elements.loading("false")
       new UserMessage(err.message, true, 'error')
   }
 }
@@ -297,6 +309,7 @@ const  searchById = async () => {
     newcard.create_card(response_items.features[0])
   }
   catch(err) {
+    ui_elements.loading("false")
     new UserMessage(err.message, true, 'error')
   }
 };
@@ -335,4 +348,16 @@ const agregarCaracter = (cadena, caracter, pasos) => {
       }
   }
   return cadenaConCaracteres;
+}
+
+function regexValidator(val) {
+  //caracteres permitidos para coordenadas: ° ' " -
+  let reg = /[!^()_+=@$#%&*:<>?/{|}]+/
+  let reg_url = /(http|https):\/\/([^\/\r\n]+)(\/[^\r\n]*)?/
+          if(val.match(reg) === null && val.match(reg_url) === null){
+            return true
+          }else {
+            ui_elements.create_character_invalid()
+            return false
+          }
 }

@@ -10,7 +10,6 @@ let leafletbottom = null;
 let drawb = null;
 let screenshot = null;
 let divbar = null;
-let searchbar_geocoder = null
 class SidebarTools {
   constructor() {
     locate = document.getElementsByClassName(
@@ -33,7 +32,6 @@ class SidebarTools {
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
     screenshot = document.getElementById("screenshot");
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
-    searchbar_geocoder = document.getElementById("searchbar");
     this.component = `
     <span data-html2canvas-ignore="true" id="sidebar-toolbar-span"class="glyphicon glyphicon-option-vertical" aria-hidden="true">
     `;
@@ -68,7 +66,6 @@ class SidebarTools {
         abrirarchivo.style.display = "";
         screenshot.style.display = "";
         divbar[2].hidden = false;
-        searchbar_geocoder.style.display = "block"
       } else {
         this.style.left = "10px";
         areHiddenLeft = true;
@@ -80,7 +77,6 @@ class SidebarTools {
         abrirarchivo.style.display = "none";
         screenshot.style.display = "none";
         divbar[2].hidden = true;
-        searchbar_geocoder.style.display = "none"
       }
     });
 
