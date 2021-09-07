@@ -5,6 +5,11 @@
     max-width: 250px;
   }
 
+ #top-left-logo {
+  left: 50px;
+  background-size: 180px;
+ }
+
   
 }
 

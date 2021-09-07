@@ -61,11 +61,11 @@
     "src": "src/config/default/styles/images/logo2.png",
     "height": "",
     "width": "",
-    "style": "filter: drop-shadow(1px 1px 1px #103847)",
+    "style": "",
     "srcLogoMini": "src/config/default/styles/images/logo_RESPONSIVE.png",
     "miniHeight": "",
     "miniWidth": "",
-    "ministyle": "filter: drop-shadow(1px 1px 1px #103847);"
+    "ministyle": ";"
   },
   "title": "IGN - ARGENMAP",
   "website": "https://www.ign.gob.ar/",
