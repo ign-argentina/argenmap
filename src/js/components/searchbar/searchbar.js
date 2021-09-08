@@ -91,17 +91,23 @@ class Searchbar_UI{
       let q = e.target.value;
       q = q.trim();
       q = q.toLowerCase();
-     
+
        if(q.length ===0){
+        loading_searchbar =  false
+        search_term = null
         search_input.style.width = "130px"
         icon_searchbar.style.display = "none"
         results.innerHTML = ""
         }
         else if(q.length <=2) {
+          results.innerHTML = ""
+          loading_searchbar =  false
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           }
       else{
+          this.loading("false")
+          results.innerHTML = ""
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           search_term = q
@@ -210,6 +216,8 @@ class Searchbar_UI{
   `
     card.innerHTML = html
     container.append(card)
+    
+    
   }
 
   create_card(data){
@@ -266,10 +274,13 @@ const showGeocoderResults = async () => {
       
       ui_elements.loading("true")
       url_consulta = url_search+search_term
-
+      let word =  search_term
       await fetchGeocoder();
 
-      if(response_items[0] && response_items[0].row_to_json){
+      if (word != search_term){
+        ui_elements.loading("false")
+      }
+      else if(response_items[0] && response_items[0].row_to_json){
         ui_elements.loading("false")
         ui_elements.create_coord_result(response_items[0].row_to_json)
       }
@@ -281,6 +292,7 @@ const showGeocoderResults = async () => {
         ui_elements.loading("false")
         ui_elements.create_items(response_items)
       }
+
   }
   catch(err) {
       ui_elements.loading("false")

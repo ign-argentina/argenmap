@@ -12,7 +12,6 @@ border: 1px solid #ddd;
 text-overflow: ellipsis;
 height: 36px;
 width: 100%;
-white-space: nowrap;
 overflow: hidden;
 }
 

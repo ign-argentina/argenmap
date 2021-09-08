@@ -3,13 +3,13 @@
     left: 50px;
     top: 5px;
     max-width: 250px;
+    max-height: 300px ;
   }
 
  #top-left-logo {
   left: 50px;
   background-size: 180px;
  }
-
   
 }
 
@@ -17,10 +17,17 @@
   #searchbar  {
     left: 50px ;
     top: 5px ;
-    max-width: 250px ;
+    max-width: 300px ;
+    max-height: 300px ;
   }
 
   #top-left-logo {
-    left: 200px ;
+    left: 250px ;
+  }
+}
+
+@media (min-width: 769px) {
+  #searchbar {
+    max-width: 300px;
   }
 }
