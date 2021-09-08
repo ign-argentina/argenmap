@@ -292,7 +292,7 @@ async function getWfsLayerFields(url, params) {
       res.featureTypes[0].properties.forEach((field) => {
         // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
         let lc = field.localType;
-        if (lc === 'Geometry' || lc === 'Point' || lc === 'Polygon' || lc === 'MultilineString' || lc === 	'MultiPolygon') {
+        if (lc === 'Geometry' || lc === 'Point' || lc === 'MultiPoint' || lc === 'Polygon' || lc === 'MultilineString' || lc === 'MultiPolygon') {
           geom = field.name;
         }
       });

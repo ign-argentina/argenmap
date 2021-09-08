@@ -2190,7 +2190,6 @@ class GestorMenu {
 
     showWMSLayerCombobox(itemSeccion) {
 
-
         //Loader gif
         $('#wms-combo-list').html('<div class="loading"><img src="src/styles/images/loading.svg"></div>');
 
@@ -2202,6 +2201,16 @@ class GestorMenu {
                 this.layersInfo[key].get(this);
             }
         }
+
+        /* 
+            usar gestorMenu.setLayersDataForWfs() (que usa app.items) o
+            agregar cada capa obtenida en el capabilities en el objeto
+            gestorMenu.layersDataForWfs[] = {
+                name: nombre_de_la_capa,
+                section: nombre_seccion,
+                host: url
+            }
+        */
 
         //Reimprime menu
         for (var key in this.items) {
