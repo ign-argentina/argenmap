@@ -31,9 +31,9 @@ function capturetoPNG(el) {
 
   let id = "#" + el;
   html2canvas(document.querySelector(id), {
-    allowTaint: true,
     logging: false, //consola off
-    useCORS: true,
+    allowTaint : false,
+    useCORS: true
   }).then((canvas) => {
     let a = document.createElement("a");
     a.id = "saveAsSC";
