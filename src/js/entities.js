@@ -281,6 +281,7 @@ class LayersInfoWMS extends LayersInfo {
                             var capa = new CapaMapserver(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         } else {
                             var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            
                         }
                         //Generate keyword array
                         var keywordsAux = [];
@@ -390,6 +391,11 @@ class LayersInfoWMS extends LayersInfo {
                         var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
                     } else {
                         var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                        gestorMenu.layersDataForWfs[capa.nombre] = {
+                            name: capa.nombre,
+                            section: capa.titulo,
+                            host: capa.host
+                        }
                     }
                     var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
@@ -2189,7 +2195,6 @@ class GestorMenu {
     }
 
     showWMSLayerCombobox(itemSeccion) {
-
         //Loader gif
         $('#wms-combo-list').html('<div class="loading"><img src="src/styles/images/loading.svg"></div>');
 
@@ -2202,18 +2207,10 @@ class GestorMenu {
             }
         }
 
-        /* 
-            usar gestorMenu.setLayersDataForWfs() (que usa app.items) o
-            agregar cada capa obtenida en el capabilities en el objeto
-            gestorMenu.layersDataForWfs[] = {
-                name: nombre_de_la_capa,
-                section: nombre_seccion,
-                host: url
-            }
-        */
-
         //Reimprime menu
         for (var key in this.items) {
+            // console.info(key);
+            // console.info(this.items[key])
             var itemComposite = this.items[key];
             if (itemComposite.getId() == itemSeccion && Object.keys(itemComposite.itemsComposite).length > 0) {
                 itemComposite.imprimir();
