@@ -71,6 +71,7 @@ overflow: hidden;
   }
 
 
+
   @media (max-width: 768px) and (orientation: portrait){
     #searchbar  {
       left: 50px;
@@ -85,8 +86,13 @@ overflow: hidden;
       left: 50px ;
       top: 5px ;
       max-width: 300px ;
-      max-height: 300px ;
+      max-height: 340px ;
     }
+    .list-group-gc{
+      max-width: 300px ;
+      max-height: 270px ;
+    }
+
   }
 
   @media (min-width: 769px) {

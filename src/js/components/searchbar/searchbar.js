@@ -1,10 +1,16 @@
+
+const config_url = app.geocoder.url
+const config_search = app.geocoder.search
+const config_places =  app.geocoder.url_by_id
+const config_query = app.geocoder.query
+const config_lang = app.geocoder.lang
+const config_limit = app.geocoder.limit
+const config_key = app.geocoder.key
 const geosearchbar_top = "60px"
 const geosearchbar_left = "300px"
 const geosearchbar_color_focus = "#008dc9"
 const geosearchbar_background_color = "rgba(255, 255, 255, 0.7)"
-const url_search = app.geocoder.url_search
-const url_by_id= app.geocoder.url_by_id
-const limit = app.geocoder.limit
+
 let results = null
 let url_consulta = null
 let id_search = null
@@ -111,7 +117,10 @@ class Searchbar_UI{
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           search_term = q
-          if (regexValidator(search_term) && !loading_searchbar) {showGeocoderResults()}
+          if ((e.which <= 90 && e.which >= 48)|| e.which == 13) {
+            if (regexValidator(search_term) && !loading_searchbar) {showGeocoderResults()}
+          }
+          
       }
     }
     
@@ -155,7 +164,6 @@ class Searchbar_UI{
     const ul = document.createElement("ul");
     ul.className = "list-group-gc"
     ul.style.margin = "5px"
-    url_consulta = url_search+search_term
     container.innerHTML = "";  
 
     items.forEach((el) => {
@@ -273,7 +281,7 @@ const showGeocoderResults = async () => {
       mapa.removeGroup("markerSearchResult", true);
       
       ui_elements.loading("true")
-      url_consulta = url_search+search_term
+      url_consulta = `${config_url}${config_search}?${config_query}=${search_term}&limit=${config_limit}`
       let word =  search_term
       await fetchGeocoder();
 
@@ -302,7 +310,7 @@ const showGeocoderResults = async () => {
 
 const  searchById = async () => {
   try{
-    url_consulta = url_by_id + id_search+"&format=geojson"
+    url_consulta = config_url + config_places +"?id="+ id_search+ "&format=geojson"
     await fetchGeocoder();
 
     let lat = response_items.features[0].geometry.coordinates[1]

@@ -33,12 +33,14 @@
     "background_color": "rgba(255, 255, 255, 0.7)"
   },
   "geocoder":{
-    "url_search": "https://api.ign.gob.ar/buscador/search?q=",
-    "url_by_id": "https://api.ign.gob.ar/buscador/places?id=",
+    "url": "https://api.ign.gob.ar/buscador/",
+    "search": "search",
+    "url_by_id": "places",
+    "query": "q",
     "lang": "es",
     "limit":5,
-    "Key": ""
-  },
+    "key": ""
+  }, 
   "referencias": {
     "show": true,
     "src": "src/config/default/styles/images/referencias.png",
