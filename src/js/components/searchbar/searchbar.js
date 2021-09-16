@@ -15,7 +15,7 @@ let results = null
 let url_consulta = null
 let id_search = null
 let search_term = null
-let loading_searchbar = false
+let itsloading = false
 
 
 class Searchbar_UI{
@@ -94,12 +94,12 @@ class Searchbar_UI{
     });
 
     search_input.onkeyup = async (e) => {
+
       let q = e.target.value;
       q = q.trim();
       q = q.toLowerCase();
 
        if(q.length ===0){
-        loading_searchbar =  false
         search_term = null
         search_input.style.width = "130px"
         icon_searchbar.style.display = "none"
@@ -107,18 +107,23 @@ class Searchbar_UI{
         }
         else if(q.length <=2) {
           results.innerHTML = ""
-          loading_searchbar =  false
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           }
       else{
-          this.loading("false")
-          results.innerHTML = ""
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           search_term = q
-          if ((e.which <= 90 && e.which >= 48)|| e.which == 13) {
-            if (regexValidator(search_term) && !loading_searchbar) {showGeocoderResults()}
+          //caracteres validos y enter (no acepta flechas, ctrl, alt)
+          if ((e.which <= 90 && e.which >= 48)|| e.which == 13 || e.which == 8) {
+            this.loading("false")
+            results.innerHTML = ""
+            //si contienen caracteres invalidos #$%#$% o url
+            if (itsloading)console.log("aguanta")
+            if (regexValidator(search_term) && !itsloading) {
+              itsloading = true
+              showGeocoderResults()
+              }
           }
           
       }
@@ -158,7 +163,6 @@ class Searchbar_UI{
     container.append(ul)
   }
 
-
   create_items(items){
     let container = document.getElementById("results_search_bar")
     const ul = document.createElement("ul");
@@ -181,7 +185,7 @@ class Searchbar_UI{
       let newtxt = '<strong>'+original_txt+'</strong>'
       txtresult = txtresult.replace(original_txt,newtxt);
 
-      li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i>'+txtresult
+      li.innerHTML = '<i class="fa fa-map-marker" aria-hidden="true" style="color:silver;margin-right: 10px;"></i><span class="txtg-result">'+txtresult +'</span>'
       li.className = "list-group-item-gc"
       li.style="cursor: pointer;"
       ul.append(li)
@@ -253,10 +257,8 @@ class Searchbar_UI{
   loading(value){
     let iconclose = document.getElementById("div-icon-close-searchbar")
     if(value === "true"){
-      loading_searchbar =  true
       iconclose.innerHTML= '<div><img style="width:24px;height:24px" src="src/styles/images/loading.svg"></div>'
     }else{
-      loading_searchbar =  false
       iconclose.innerHTML='<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px"></i>'}
   }
 
@@ -279,24 +281,23 @@ const fetchGeocoder= async () => {
 const showGeocoderResults = async () => {
   try{
       mapa.removeGroup("markerSearchResult", true);
-      
       ui_elements.loading("true")
       url_consulta = `${config_url}${config_search}?${config_query}=${search_term}&limit=${config_limit}`
-      let word =  search_term
       await fetchGeocoder();
 
-      if (word != search_term){
-        ui_elements.loading("false")
-      }
-      else if(response_items[0] && response_items[0].row_to_json){
+      if(response_items[0] && response_items[0].row_to_json){
+        
+        itsloading = false
         ui_elements.loading("false")
         ui_elements.create_coord_result(response_items[0].row_to_json)
       }
       else if (response_items.length===0 || response_items === undefined){
+        itsloading = false
         ui_elements.loading("false")
         ui_elements.create_item_notfound()
       }
       else{
+        itsloading = false
         ui_elements.loading("false")
         ui_elements.create_items(response_items)
       }
