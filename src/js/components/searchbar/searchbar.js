@@ -119,7 +119,7 @@ class Searchbar_UI{
             this.loading("false")
             results.innerHTML = ""
             //si contienen caracteres invalidos #$%#$% o url
-            if (itsloading)console.log("aguanta")
+            
             if (regexValidator(search_term) && !itsloading) {
               itsloading = true
               showGeocoderResults()
