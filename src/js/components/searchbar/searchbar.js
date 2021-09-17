@@ -114,12 +114,14 @@ class Searchbar_UI{
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
           search_term = q
-          //caracteres validos y enter (no acepta flechas, ctrl, alt)
-          if ((e.which <= 90 && e.which >= 48)|| e.which == 13 || e.which == 8) {
+          //e.which <= 90 && e.which >= 48 Alfanumericos
+          //e.which == 13 Enter
+          //e.which == 8 Backspace
+          //e.which == 229 Teclado Android
+          if ((e.which <= 90 && e.which >= 48)|| e.which == 13 || e.which == 8 || e.which == 229) {
             this.loading("false")
             results.innerHTML = ""
-            //si contienen caracteres invalidos #$%#$% o url
-            
+            //si contienen caracteres invalidos #$%#$% o es igual a url
             if (regexValidator(search_term) && !itsloading) {
               itsloading = true
               showGeocoderResults()
