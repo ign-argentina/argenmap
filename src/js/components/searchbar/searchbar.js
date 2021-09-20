@@ -16,7 +16,8 @@ let url_consulta = null
 let id_search = null
 let search_term = null
 let itsloading = false
-
+let selected_item = false
+let id_selected_item = null
 
 class Searchbar_UI{
   constructor()
@@ -57,6 +58,7 @@ class Searchbar_UI{
     let input = document.createElement("input")
     input.placeholder = "Buscar..."
     input.id = "search_bar"
+    input.spellcheck = false
     input.autocomplete = "off"
     
     let icon = document.createElement("div")
@@ -79,7 +81,6 @@ class Searchbar_UI{
     let textinput = document.getElementById("search_bar")
     let results = document.getElementById("results_search_bar")
     const search_input = document.getElementById('search_bar');
-    search_input.spellcheck = "false"
     const icon_searchbar = document.getElementById('div-icon-close-searchbar');
 
     icon_searchbar.style.display = "none"
@@ -94,21 +95,39 @@ class Searchbar_UI{
     });
 
     search_input.onkeyup = async (e) => {
-
+      let items = $('.list-group-item-gc')
       let q = e.target.value;
       q = q.trim();
       q = q.toLowerCase();
+
+      if (e.which == 13 && selected_item){
+        let id = response_items[id_selected_item].place.id
+        id_search = id
+        searchById()
+      }
+
+      //e.which == 40 down
+      if(e.which == 40 && items.length>0){
+        selectorItems(40)
+      }
+
+       //e.which == 38 up
+      if(e.which == 38 && items.length>0){
+        selectorItems(38)
+      }
 
        if(q.length ===0){
         search_term = null
         search_input.style.width = "130px"
         icon_searchbar.style.display = "none"
         results.innerHTML = ""
+        selected_item = false
         }
         else if(q.length <=2) {
           results.innerHTML = ""
           search_input.style.width = "300px"
           icon_searchbar.style.display="block"
+          selected_item = false
           }
       else{
           search_input.style.width = "300px"
@@ -118,9 +137,10 @@ class Searchbar_UI{
           //e.which == 13 Enter
           //e.which == 8 Backspace
           //e.which == 229 Teclado Android
-          if ((e.which <= 90 && e.which >= 48)|| e.which == 13 || e.which == 8 || e.which == 229) {
+          if ((e.which <= 90 && e.which >= 48)|| (e.which == 13 && !selected_item)  || e.which == 8 || e.which == 229) {
             this.loading("false")
             results.innerHTML = ""
+            selected_item = false
             //si contienen caracteres invalidos #$%#$% o es igual a url
             if (regexValidator(search_term) && !itsloading) {
               itsloading = true
@@ -138,6 +158,7 @@ class Searchbar_UI{
     let ul = document.createElement("ul");
     ul.className = "list-group-gc"
     ul.style.margin = "5px"
+    
 
     let li = document.createElement("li")
     li.innerHTML = 'No encontrado'
@@ -170,14 +191,16 @@ class Searchbar_UI{
     const ul = document.createElement("ul");
     ul.className = "list-group-gc"
     ul.style.margin = "5px"
+    ul.id = "ul-results"
     container.innerHTML = "";  
 
     items.forEach((el) => {
       container.innerHTML = ""; 
       let li = document.createElement("li")
+      li.id=el.place.id
       li.onclick = (e) => {
         id_search = el.place.id
-        searchById(el.place.id)
+        searchById()
       };
       let txtresult = el.place.name+" "+el.place.depto+" "+el.place.pcia
       let n_txtresult = norma(txtresult)
@@ -383,4 +406,69 @@ function regexValidator(val) {
             ui_elements.create_character_invalid()
             return false
           }
+}
+
+function selectorItems(key){
+  let ul = document.getElementById("ul-results").getElementsByTagName('li')
+  let items = $('.list-group-item-gc')
+  let selected = null
+  let txt_search_bar = document.getElementById("search_bar")
+  let up = false
+  let down = false
+
+  if(key==38){ up = true} else{down=true}
+
+    if(!selected_item && down){
+                ul[0].className = "list-group-item-gc itemgc-focus"
+                let txt = items[0].getElementsByClassName("txtg-result")
+                txt_search_bar.value= txt[0].innerText
+                id_selected_item = 0
+                selected_item=true
+    }
+
+    else if(!selected_item && up){
+      selected_item=true
+      ul[ul.length-1].className = "list-group-item-gc itemgc-focus"
+      id_selected_item = ul.length-1
+      let txt = items[ul.length-1].getElementsByClassName("txtg-result")
+      txt_search_bar.value= txt[0].innerText
+    }
+
+    else if(selected_item && up){
+       for (var i = 0; i < ul.length; i++) {
+        if(ul[i].className==="list-group-item-gc itemgc-focus")selected = i
+      }
+      if(selected === 0){
+        ul[selected].className = "list-group-item-gc"
+        ul[ul.length-1].className = "list-group-item-gc itemgc-focus"
+        id_selected_item = ul.length-1
+        let txt = items[ul.length-1].getElementsByClassName("txtg-result")
+        txt_search_bar.value= txt[0].innerText
+      } else{
+        ul[selected].className = "list-group-item-gc"
+        ul[selected-1].className = "list-group-item-gc itemgc-focus"
+        let txt = items[selected-1].getElementsByClassName("txtg-result")
+        txt_search_bar.value= txt[0].innerText
+        id_selected_item = selected-1
+      }
+    }
+
+    else if(selected_item && down){
+      for (var i = 0; i < ul.length; i++) {
+        if(ul[i].className==="list-group-item-gc itemgc-focus")selected = i
+      }
+      if(selected === ul.length-1){
+        ul[selected].className = "list-group-item-gc"
+        ul[0].className = "list-group-item-gc itemgc-focus"
+        let txt = items[0].getElementsByClassName("txtg-result")
+        txt_search_bar.value= txt[0].innerText
+        id_selected_item = 0
+      } else{
+        ul[selected].className = "list-group-item-gc"
+        ul[selected+1].className = "list-group-item-gc itemgc-focus"
+        let txt = items[selected+1].getElementsByClassName("txtg-result")
+        txt_search_bar.value= txt[0].innerText
+        id_selected_item = selected+1
+      }
+    }
 }
