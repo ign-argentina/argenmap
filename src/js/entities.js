@@ -390,7 +390,7 @@ class LayersInfoWMS extends LayersInfo {
                     if (thisObj.type == 'wmslayer_mapserver') {
                         var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
                     } else {
-                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY);
                         gestorMenu.layersDataForWfs[capa.nombre] = {
                             name: capa.nombre,
                             section: capa.titulo,
@@ -581,28 +581,19 @@ class LayersInfoWMTS extends LayersInfoWMS {
                     $.each(keywordsHTMLList, function (i, el) {
                         keywords.push(el.innerText);
                     });
-                    var iBoundingBox = $('ows:wgs84boundingbox', i);
-                    var iSrs = null;
-                    var iMaxY = null;
-                    var iMinY = null;
-                    var iMinX = null;
-                    var iMaxX = null;
-                    if (iBoundingBox.length > 0) {
-                        if (iBoundingBox[0].attributes.srs) {
-                            var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
-                        } else {
-                            var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
-                        }
-                        var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
-                        var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
-                        var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
-                        var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
-                    }
+                    let iBoundingBox = $('ows\\:wgs84boundingbox', i), 
+                        iSrs = null, 
+                        lowerCorner = iBoundingBox[0].firstElementChild.innerText.split(' '),
+                        upperCorner = iBoundingBox[0].lastElementChild.innerText.split(' '),
+                        iMaxY = lowerCorner[1],
+                        iMaxX = lowerCorner[0],
+                        iMinY = upperCorner[1],
+                        iMinX = upperCorner[0];
 
                     if (thisObj.type == 'wmslayer_mapserver') {
                         var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
                     } else {
-                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY);
                     }
                     var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
@@ -2157,6 +2148,14 @@ class GestorMenu {
                             this.addActiveLayer(item.nombre);
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, true);
+                        }
+                        let bbox = item.capa;
+                        let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
+                        console.log(bounds);
+                        try {
+                            mapa.fitBounds(bounds);
+                        } catch (error) {
+                            //console.log(bounds);
                         }
                         item.showHide();
                         itemComposite.muestraCantidadCapasVisibles();
