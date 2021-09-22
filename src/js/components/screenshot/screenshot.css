@@ -32,6 +32,21 @@
   flex: 3;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 3px;
+
+}
+
+#iconSC {
+  animation: none;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 600px) {
