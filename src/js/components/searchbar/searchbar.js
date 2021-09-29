@@ -282,7 +282,7 @@ class Searchbar_UI{
   loading(value){
     let iconclose = document.getElementById("div-icon-close-searchbar")
     if(value === "true"){
-      iconclose.innerHTML= '<div><img style="width:24px;height:24px" src="src/styles/images/loading.svg"></div>'
+      iconclose.innerHTML= '<div style="width:20px;height:20px;animation:spin 1s linear infinite;"><i class="fa fa-spinner" aria-hidden="true"></i></div>'
     }else{
       iconclose.innerHTML='<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px"></i>'}
   }

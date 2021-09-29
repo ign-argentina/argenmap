@@ -2,6 +2,8 @@
 
 const EmptyTab = 'main-menu-tab-';
 const ItemGroupPrefix = 'lista-';
+let layers_dom = {}
+let layers_app = {}
 
 /******************************************
 Class Capa
@@ -67,21 +69,27 @@ class Impresor {
     }
 }
 
+
 class ImpresorItemHTML extends Impresor {
     imprimir(itemComposite) {
 
         var childId = itemComposite.getId();
+        let aux = {
+            'childid': childId,
+            'display_options': false,
+            'type': itemComposite.capa.servicio,
+        }
 
-        var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        layers_dom[itemComposite.nombre] = aux
+        var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
-
-        return "<li id='" + childId + "' class='capa list-group-item" + activated + "' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" +
-            "<div class='capa-title'>" +
-            "<a nombre=" + itemComposite.nombre + " href='#'>" +
-            "<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" +
-            legendImg +
-            "</a>" +
-            "</div>" +
+ 
+        return "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" +
+            "<div class='capa-title'>" + legendImg +
+            "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre + " href='#'>" +
+            "<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
+            "</a>" +"<div class='zoom-layer'  layername="+itemComposite.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+itemComposite.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
+            "</div><div class='display-none' id=layer-options-"+itemComposite.nombre+"></div>" +
             "</li>";
 
     }
@@ -145,10 +153,10 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 
 class ImpresorGrupoHTML extends Impresor {
     imprimir(itemComposite) {
-
+        
         var listaId = itemComposite.getId();
         var itemClass = 'menu5';
-
+        
         var active = (itemComposite.getActive() == true) ? ' in ' : '';
 
 		return '<div id="' + listaId + '" class="' + itemClass + ' panel-default">' + 
@@ -296,7 +304,7 @@ class LayersInfoWMS extends LayersInfo {
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
-                        
+                        layers_app[capa.nombre] = capa
                         item.setImpresor(impresorItem);
                         if (itemGroup.getItemByName(this.section + capa.nombre) == null) {
                             itemGroup.setItem(item);
@@ -402,6 +410,7 @@ class LayersInfoWMS extends LayersInfo {
                     item.setImpresor(impresorItem);
                     items.push(item);
                     gestorMenu.setAvailableLayer(iName);
+                    layers_app[capa.nombre] = capa
                 }
             });
 
@@ -2149,14 +2158,15 @@ class GestorMenu {
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, true);
                         }
+                        /*
                         let bbox = item.capa;
                         let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
-                        console.log(bounds);
+                        //console.log(bounds);
                         try {
                             mapa.fitBounds(bounds);
                         } catch (error) {
                             //console.log(bounds);
-                        }
+                        }*/
                         item.showHide();
                         itemComposite.muestraCantidadCapasVisibles();
                         break;
@@ -2281,13 +2291,57 @@ class Tab {
     }
 }
 /******************************************
-Item for Gestor Menu
+Menu_UI
 ******************************************/
-class Item_GestorMenu_UI{
-    createElement(groupname, layer){
+class Menu_UI{
+
+    constructor() {
+        this.layers= []
+        this.sections= []
+        this.layer_active_options = null
+        this.available_options = ["download","filter","trash"]
+    }
+
+    getLayers() {
+        return this.layers;
+    }
+
+    setLayers(layer) {
+        this.layers.push(layer);
+    }
+
+    getSections() {
+        return this.sections;
+    }
+
+    setSections(section_name) {
+        this.sections.push(section_name);
+    }
+
+    addSection(name){
+        this.setSections(name)
+        let groupnamev= name.replace(/ /g, "_")
+        let itemnew = document.createElement("div")
+        itemnew.innerHTML =`
+        <div id="lista-${groupnamev}" class="menu5 panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a id="${groupnamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${groupnamev}-content" class="item-group-title">${name}</a>
+            </h4>
+        </div>
+        <div id='${groupnamev}-content' class="panel-collapse collapse">
+            <div class="panel-body" id ="${groupnamev}-panel-body"></div>
+        </div>
+        </div>`
+
+        //add before first child of: div .menu5
+        $('#sidebar div.menu5').first().prepend(itemnew)
+    }
+
+    addLayer(groupname, layer){
+        this.setLayers(layer)
         let groupnamev= groupname.replace(/ /g, "_")
         let main = document.getElementById("lista-"+groupnamev)
-        let itemnew = document.createElement("div")
 
         let div = ` 
         <div style="display:flex; flex-direction:row;">
@@ -2296,35 +2350,66 @@ class Item_GestorMenu_UI{
         <div class="icon-layer-geo" onclick="deleteLayerGeometry('${layer}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
         </div>
         `
-        if(!main){
-        itemnew.innerHTML =`
-        <div id="lista-${groupnamev}" class="menu5 panel-default">
-        <div class="panel-heading">
-            <h4 class="panel-title">
-                <a id="${groupnamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${groupnamev}-content" class="item-group-title">${groupname}</a>
-            </h4>
-        </div>
-        <div id='${groupnamev}-content' class="panel-collapse collapse">
-            <div class="panel-body" id ="${groupnamev}-panel-body"> 
-            <li id="li-${layer}" class="capa list-group-item active" ><div class="capa-title">${div}<span data-toggle2="tooltip" title="" data-original-title=""></span><div class="legend-layer"></div></div></li>
-            </div>
-        </div>
-        </div>`
-
-        let container = document.getElementById("sidebar")
-        let aux = container.getElementsByClassName("menu5 panel-default")[0]
-        container.insertBefore(itemnew,aux)
-        }
-        else{
+       //<div class="layer-menu-ui" layername='${layer}'><i class="fas fa-search-plus"></i></div>
+        //si no existe contenedor
+        if(!main){this.addSection(groupnamev)}
+        
             let content = document.getElementById(groupnamev+"-panel-body")
             let aux = document.createElement("li")
             aux.id = "li-"+layer 
             aux.className = "capa list-group-item active"
             aux.innerHTML = `<div class="capa-title"><span data-toggle2="tooltip" title="" data-original-title="">${div}</span><div class="legend-layer"></div></div>`
             content.appendChild(aux)
-        }
+            
+           /* $('.layer-menu-ui').bind('click', function() {
+                let layername = this.getAttribute("layername")
+                zoomEditableLayers(layername)
+              });*/
+    }
+
+    addLayerOptions(layer){
+        //display options true
+        layers_dom[layer].display_options = true
+        this.layer_active_options = layer
+
+        let id = "layer-options-" + layer
+        let el = document.getElementById(id)
+
+
+            el.setAttribute('class', 'layer-options-active')
+            let options_container = document.createElement("div")
+            options_container.className = "options-container"
+
+            let options_tabs = document.createElement("div")
+            options_tabs.className = "options-tabs"
+            options_tabs.innerHTML=`
+            <div class="option-tab-icon-active" title="descargar capa"><i class="fa fa-download" aria-hidden="true"></i></div>
+            <div class="option-tab-icon" title="filtros"><i class="fa fa-filter" aria-hidden="true"></i></div>
+            <div class="option-tab-icon" title="borrar capa"><i class="fa fa-trash" aria-hidden="true"></i></div>
+            `
+
+            let options_panel = document.createElement("div")
+            options_panel.className = "options-panel"
+            options_panel.innerHTML=`
+            <div class="panel-download"></div>
+            <div class="panel-filter"></div>
+            <div class="panel-trash"></div>
+            `
+            options_container.append(options_tabs)
+            options_container.append(options_panel)
+            el.append(options_container)
 
     }
+
+    closeLayerOptions(layer){
+        let el = document.getElementById("layer-options-"+layer)
+        layers_dom[layer].display_options = false
+        if(el){
+            el.setAttribute('class', 'display-none')
+            el.innerHTML = ""
+        }
+    }
+
 }
 
 class Geometry {

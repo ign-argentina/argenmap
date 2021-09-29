@@ -179,8 +179,7 @@ li.active > div > a {
   font-size: 15px;
 }
 .legend-layer {
-  height: 20px;
-  width: 0px;
+  width: 15%;
   display: table-cell;
   font-size: 10px;
   font-weight: bolder;
@@ -190,9 +189,15 @@ li.active > div > a {
   padding-top: 2px;
   padding-right: 2px;
 }
+.name-layer{
+  padding-left: 5px;
+  width: 80%;
+}
 .capa-title {
   vertical-align: top;
-  width: 96%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
 .icon-layer-geo{
@@ -203,6 +208,92 @@ li.active > div > a {
 .icon-layer-geo :hover{
   color: black
 }
+
+.layer-menu-ui{
+  color:silver;
+  margin-left:  15px;
+}
+
+.layer-menu-ui :hover{
+  color: black
+}
+
+.zoom-layer {  
+  cursor:pointer;
+  width: 10%;
+  color:silver;
+  margin-left:  5%;}
+  
+.zoom-layer:hover{
+    color: black
+  }
+
+  .layer-options-icon{
+
+    cursor:pointer;
+    width: 10%;
+    color:silver;
+    margin-left:  5%;
+  }
+  .layer-options-icon:hover{
+    color: black
+  }
+
+  .option-tab-icon:hover{
+    color: grey
+  }
+  .display-none{
+    display: none;
+  }
+
+  .layer-options-active{
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+  }
+
+
+  .options-container{
+    background-color: white;
+    display: flex;
+    flex-direction: initial;
+  }
+
+  .options-tabs{
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center
+  }
+
+  .options-panel{
+    width: 80%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+  }
+
+  .option-tab-icon{
+    height: 30px;
+    text-align: center;
+    width: 100%;
+    color:silver;
+    padding: 2px;
+    border: 1px solid #ddd;
+  }
+
+  .option-tab-icon-active{
+    height: 40px;
+    text-align: center;
+    width: 100%;
+    color:grey;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    padding: 2px;
+  }
+  option-panel-active{
+    background-color: yellowgreen;
+  }
 @media (max-width: 390px) {
   /*.tooltip {
 		display: none !important;
@@ -706,6 +797,11 @@ SideBar
 }
 
 @media (max-height: 500px) {
+
+    .leaflet-bottom {
+        display: none;
+    }
+  
   #collapseBaseMapLayers .list-group-item {
     padding: 0px !important;
   }
@@ -785,3 +881,6 @@ SideBar
     margin-right: 40px !important;
   }
 }
+
+
+

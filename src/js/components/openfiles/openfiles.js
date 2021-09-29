@@ -157,21 +157,6 @@ class UImf {
       .getElementById("submitfile")
       .addEventListener("click", controlFormLoadFile);
   }
- /*
-  addmenu(layername) {
-    let menuitem = `
-    <div id="sidebar"
-    <div id="geoJSON" class="nav nav-sidebar">
-    <li id="li${layername}" class="capa list-group-item"><span>geoJSON: ${layername}</span>
-    <button aria-hidden="true" onClick=uimodalfs.removegeojsonfile("${layername}")>X</button>
-    </li>
-    </div>
-   </div>
-    `;
-    let divmenu = document.createElement("div");
-    divmenu.innerHTML = menuitem;
-    document.getElementById("sidebar").append(divmenu);
-  }*/
 
   clickOpenFileIcon() {
     document.getElementById("iconopenfile-container").disabled = true;
@@ -180,16 +165,6 @@ class UImf {
     uimodalfs.addForm();
   }
 
-  removegeojsonfile(value) {
-    mapa.removeGroup(value, true);
-    mapa.eachLayer(function (layer) {
-      if (layer.myTag && layer.myTag === value) {
-        //mapa.removeLayer(layer);
-      }
-    });
-    let auxname = "li" + value;
-    $("#" + auxname + "").remove();
-  }
 }
 
 let uimodalfs = new UImf();
@@ -212,22 +187,15 @@ function controlFormLoadFile() {
     };
 
     //add layer to map
-    /* let aux = L.geoJSON(geojsonfile, {
-      style: myStyle,
-      onEachFeature: onEachFeature,
-    }).addTo(mapa); */
-
     const geoJSON = L.geoJSON(geojsonfile, {
       style: myStyle,
       onEachFeature: onEachFeature,
     });
     let layer_name = normalize(document.getElementById('capaname').value)
-    let layerId = mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, layer_name, false);
+    mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, layer_name, false);
 
-    //add layer in menu
-    //uimodalfs.addmenu(val);
-    let item_GestorMenu = new Item_GestorMenu_UI
-    item_GestorMenu.createElement("geoJSON", layer_name)
+    //add layer in menu  
+    menu_ui.addLayer("geoJSON", layer_name)
 
     //finish and close modal
     document.body.removeChild(modalOpenFile);

@@ -1,6 +1,7 @@
 var baseLayers = {};
 var baseLayersInfo = {};
 var selectedBasemap = null;
+let menu_ui = new Menu_UI;
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorBaseMap = new ImpresorCapasBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
@@ -372,7 +373,11 @@ async function loadTemplate(data, isDefaultTemplate) {
         sidebarTool.createComponent();
 
         setProperStyleToCtrlBtns();
+
+        
       }
     }, 100);
+
   });
 };
+
