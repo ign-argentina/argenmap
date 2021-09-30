@@ -454,6 +454,8 @@ class LayersInfoWMS extends LayersInfo {
                 }
             }
 
+            console.log(`${thisObj.section} printed`);
+
             return;
         });
     }
@@ -2432,4 +2434,38 @@ class Geometry {
       return false;
     }
   }
+}
+
+class Data {
+    constructor() {
+        this.items = Object.values(gestorMenu.items);
+        this.layers = []
+    }
+    setLayers() {
+        let lyrsObjs;
+        this.items.forEach((i) => {
+            lyrsObjs = Object.values(i.itemsComposite);
+            lyrsObjs.forEach((l) => {
+                let lyr = {
+                    name : l.nombre,
+                    title : l.title,
+                    icon : l.legendImg,
+                    desc : l.descripcion,
+                    bbox : [
+                        [l.capa.miny, l.capa.minx], 
+                        [l.capa.maxy, l.capa.maxx]
+                    ],
+                    section: l.seccion
+                }
+                this.layers.push(lyr);
+            })
+        })
+    }
+    getLayer(layer) {
+        let lyr;
+        this.layers.forEach(l => {
+            (l.name === layer) ? lyr = l : "";
+        });
+        return lyr
+    }
 }
