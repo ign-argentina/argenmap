@@ -520,43 +520,50 @@ function zoomEditableLayers(layername){
     }
 }
 
-window.onload = function() {
-    setTimeout(function(){ 
+  function bindZoomLayer(){
+
+    let elements = document.getElementsByClassName("zoom-layer");
+    let zoomLayer = function() {
+        let layer_name = this.getAttribute("layername")
+        let bbox = app.layers[layer_name].capa
+
+        //si la capa no esta activa activar
+        let activas = gestorMenu.activeLayers
+        let active = false
+        activas.forEach(function(key) {
+            if(key===layer_name)
+            active = true
+          })
+        if(!active)gestorMenu.muestraCapa(app.layers[layer_name].childid)
         
-        $('.zoom-layer').bind('click', function() {
-            let layer_name = this.getAttribute("layername")
-            let bbox = layers_app[layer_name]
+        let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
+        try {
+            mapa.fitBounds(bounds,{maxZoom:4});
+        } catch (error) {
+            //console.log(bounds);
+        }
+    };
+    
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].addEventListener('click', zoomLayer, false);
+    }
 
-            //si la capa no esta activa activar
-            let activas = gestorMenu.activeLayers
-            let active = false
-            activas.forEach(function(key) {
-                if(key===layer_name)
-                active = true
-              })
-            if(!active)gestorMenu.muestraCapa(layers_dom[layer_name].childid)
-            
-            let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
-            try {
-                mapa.fitBounds(bounds,{maxZoom:4});
-            } catch (error) {
-                //console.log(bounds);
-            }
+  }
 
+  function bindLayerOptions(){
 
+    let elements = document.getElementsByClassName("layer-options-icon");
+    let layerOptions = function() {
+        let layername = this.getAttribute("layername")
+        if(!app.layers[layername].display_options){
+            menu_ui.addLayerOptions(layername)
+        }else{
+            menu_ui.closeLayerOptions(layername)
+        }
+    };
+    
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].addEventListener('click', layerOptions, false);
+    }
 
-          });
-
-        $('.layer-options-icon').bind('click', function() {
-            let layername = this.getAttribute("layername")
-            
-            if(!layers_dom[layername].display_options){
-                menu_ui.addLayerOptions(layername)
-            }else{
-                menu_ui.closeLayerOptions(layername)
-            }
-
-        });
-
-     }, 2000);
-  };
+  }

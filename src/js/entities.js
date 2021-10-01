@@ -2,8 +2,6 @@
 
 const EmptyTab = 'main-menu-tab-';
 const ItemGroupPrefix = 'lista-';
-let layers_dom = {}
-let layers_app = {}
 
 /******************************************
 Class Capa
@@ -75,12 +73,15 @@ class ImpresorItemHTML extends Impresor {
 
         var childId = itemComposite.getId();
         let aux = {
+            ...itemComposite,
             'childid': childId,
             'display_options': false,
             'type': itemComposite.capa.servicio,
         }
-
-        layers_dom[itemComposite.nombre] = aux
+        app.setLayer(aux)
+        app.layerNameByDomId[childId] = itemComposite.nombre
+        
+        app.layerNameByDomId[childId] = itemComposite.nombre
         var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
  
@@ -109,8 +110,15 @@ class ImpresorItemWMSSelector extends Impresor {
 
 class ImpresorItemCapaBaseHTML extends Impresor {
     imprimir(itemComposite) {
-
+        
         var childId = itemComposite.getId();
+        let aux = {
+            ...itemComposite,
+            'childid': childId,
+            'display_options': false,
+            'type': itemComposite.capa.servicio,
+        }
+        app.setLayer(aux)
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
@@ -304,7 +312,6 @@ class LayersInfoWMS extends LayersInfo {
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
-                        layers_app[capa.nombre] = capa
                         item.setImpresor(impresorItem);
                         if (itemGroup.getItemByName(this.section + capa.nombre) == null) {
                             itemGroup.setItem(item);
@@ -410,7 +417,6 @@ class LayersInfoWMS extends LayersInfo {
                     item.setImpresor(impresorItem);
                     items.push(item);
                     gestorMenu.setAvailableLayer(iName);
-                    layers_app[capa.nombre] = capa
                 }
             });
 
@@ -454,8 +460,8 @@ class LayersInfoWMS extends LayersInfo {
                 }
             }
 
-            console.log(`${thisObj.section} printed`);
-
+            //console.log(`${thisObj.section} printed`);
+            
             return;
         });
     }
@@ -537,9 +543,13 @@ class LayersInfoWMTS extends LayersInfoWMS {
                 }
             } else {
                 this._parseRequest(_gestorMenu);
+                
             }
-
+            
         }
+        //termina de imprimir el menu
+        bindZoomLayer()
+        bindLayerOptions()
     }
 
     generateGroups(_gestorMenu) {
@@ -1577,10 +1587,12 @@ class GestorMenu {
         for (var key in itemGroup.itemsComposite) {
             if (this._existsIndexes[itemGroup.seccion] > 0) { //Para modificar item.seccion para no duplicar el contenido
                 itemGroup.itemsComposite[key].seccion += this._existsIndexes[itemGroup.seccion];
+                
             }
             itemAux.setItem(itemGroup.itemsComposite[key]);
         }
         this.items[itemGroup.seccion] = itemAux;
+        
     }
 
     addPlugin(pluginName, url, callback) {
@@ -2298,30 +2310,11 @@ Menu_UI
 class Menu_UI{
 
     constructor() {
-        this.layers= []
-        this.sections= []
         this.layer_active_options = null
         this.available_options = ["download","filter","trash"]
     }
 
-    getLayers() {
-        return this.layers;
-    }
-
-    setLayers(layer) {
-        this.layers.push(layer);
-    }
-
-    getSections() {
-        return this.sections;
-    }
-
-    setSections(section_name) {
-        this.sections.push(section_name);
-    }
-
     addSection(name){
-        this.setSections(name)
         let groupnamev= name.replace(/ /g, "_")
         let itemnew = document.createElement("div")
         itemnew.innerHTML =`
@@ -2341,7 +2334,6 @@ class Menu_UI{
     }
 
     addLayer(groupname, layer){
-        this.setLayers(layer)
         let groupnamev= groupname.replace(/ /g, "_")
         let main = document.getElementById("lista-"+groupnamev)
 
@@ -2371,7 +2363,7 @@ class Menu_UI{
 
     addLayerOptions(layer){
         //display options true
-        layers_dom[layer].display_options = true
+        app.layers[layer].display_options = true
         this.layer_active_options = layer
 
         let id = "layer-options-" + layer
@@ -2405,7 +2397,7 @@ class Menu_UI{
 
     closeLayerOptions(layer){
         let el = document.getElementById("layer-options-"+layer)
-        layers_dom[layer].display_options = false
+        app.layers[layer].display_options = false
         if(el){
             el.setAttribute('class', 'display-none')
             el.innerHTML = ""
@@ -2436,36 +2428,3 @@ class Geometry {
   }
 }
 
-class Data {
-    constructor() {
-        this.items = Object.values(gestorMenu.items);
-        this.layers = []
-    }
-    setLayers() {
-        let lyrsObjs;
-        this.items.forEach((i) => {
-            lyrsObjs = Object.values(i.itemsComposite);
-            lyrsObjs.forEach((l) => {
-                let lyr = {
-                    name : l.nombre,
-                    title : l.title,
-                    icon : l.legendImg,
-                    desc : l.descripcion,
-                    bbox : [
-                        [l.capa.miny, l.capa.minx], 
-                        [l.capa.maxy, l.capa.maxx]
-                    ],
-                    section: l.seccion
-                }
-                this.layers.push(lyr);
-            })
-        })
-    }
-    getLayer(layer) {
-        let lyr;
-        this.layers.forEach(l => {
-            (l.name === layer) ? lyr = l : "";
-        });
-        return lyr
-    }
-}
