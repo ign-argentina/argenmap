@@ -119,6 +119,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
             'type': itemComposite.capa.servicio,
         }
         app.setLayer(aux)
+        app.layerNameByDomId[childId] = itemComposite.nombre
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
@@ -547,7 +548,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
             }
             
         }
-        //termina de imprimir el menu
+        //console.log("//termina de imprimir el menu")
         bindZoomLayer()
         bindLayerOptions()
     }

@@ -567,3 +567,14 @@ function zoomEditableLayers(layername){
     }
 
   }
+
+
+  //add funcion with setTimeout 
+  //fix bug--->  line 553 entities.js 
+  //no funciona para todos los templates
+     window.onload = function() {
+        setTimeout(function(){ 
+            bindZoomLayer()
+            bindLayerOptions()
+         }, 2000);
+      };
