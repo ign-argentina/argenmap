@@ -1,11 +1,10 @@
 // -- Plugins Control
 var plugins = new Array("loadGeojson", "loadWms");
-
 var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
 var loadCharts = false;
 var loadSearchbar = false;
-
+var loadLayerOptions = false;
 var currentlyDrawing = false;
 
 function setTableAsPopUp(cond) {
@@ -22,6 +21,10 @@ function setCharts(cond) {
 
 function setSearchbar(cond) {
     loadSearchbar = cond;
+ }
+
+ function setLayerOptions(cond) {
+    loadLayerOptions = cond;
  }
 
 const reverseCoords = (coords) => {
@@ -509,3 +512,72 @@ function controlSeccionGeom(){
 		}
 	}
 }
+
+function zoomEditableLayers(layername){
+    let layer = mapa.groupLayers.hasOwnProperty(layername)
+   console.log(layer)
+   if (layer.type === 'marker' || layer.type === 'circlemarker') {
+    mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+    } else {
+        mapa.fitBounds(layer.getBounds());
+    }
+}
+
+  function bindZoomLayer(){
+
+    let elements = document.getElementsByClassName("zoom-layer");
+    let zoomLayer = function() {
+        let layer_name = this.getAttribute("layername")
+        let bbox = app.layers[layer_name].capa
+
+        //si la capa no esta activa activar
+        let activas = gestorMenu.activeLayers
+        let active = false
+        activas.forEach(function(key) {
+            if(key===layer_name)
+            active = true
+          })
+        if(!active)gestorMenu.muestraCapa(app.layers[layer_name].childid)
+        
+        let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
+        try {
+            mapa.fitBounds(bounds,{maxZoom:4});
+        } catch (error) {
+            //console.log(bounds);
+        }
+    };
+    
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].addEventListener('click', zoomLayer, false);
+    }
+
+  }
+
+  function bindLayerOptions(){
+
+    let elements = document.getElementsByClassName("layer-options-icon");
+    let layerOptions = function() {
+        let layername = this.getAttribute("layername")
+        if(!app.layers[layername].display_options){
+            menu_ui.addLayerOptions(layername)
+        }else{
+            menu_ui.closeLayerOptions(layername)
+        }
+    };
+    
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].addEventListener('click', layerOptions, false);
+    }
+
+  }
+
+
+  //add funcion with setTimeout 
+  //fix bug--->  line 553 entities.js 
+  //no funciona para todos los templates
+     window.onload = function() {
+        setTimeout(function(){ 
+            bindZoomLayer()
+            bindLayerOptions()
+         }, 2000);
+      };

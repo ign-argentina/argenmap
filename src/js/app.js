@@ -1,6 +1,8 @@
 var baseLayers = {};
+
 var baseLayersInfo = {};
 var selectedBasemap = null;
+let menu_ui = new Menu_UI;
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorBaseMap = new ImpresorCapasBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
@@ -10,6 +12,8 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   app = {
     profile: "default",
     profiles: {},
+    layers: {},
+    layerNameByDomId: {},
     templates: [
       "ign-geoportal-basic"
     ],
@@ -40,6 +44,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
       if (app.hasOwnProperty('searchbar')) {
         setSearchbar(app.searchbar.isActive);
+      }
+
+      if (app.hasOwnProperty('layer_options')) {
+        setLayerOptions(app.layer_options.isActive);
       }
 
       await this._startModules();
@@ -95,6 +103,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
             groupAux = new ItemGroupBaseMap(tab, item.nombre, item.seccion, item.peso, "", "", item.short_abstract, null);
           groupAux.setImpresor(impresorBaseMap);
           groupAux.setObjDom(".basemap-selector");
+
           for (let key2 in item.capas) {
             gestorMenu.setAvailableBaseLayer(item.capas[key2].nombre);
             let capa = new Capa(
@@ -237,8 +246,51 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       } else {
         console.info(`Profile ${profile} is already in use.`);
       }
-    }
+    },
 
+    setLayer: function (layer){
+      this.layers[layer.capa.nombre] = layer
+    },
+
+    getLayers: function (){
+      return this.layers;
+    },
+
+    getSections: function(){
+    return gestorMenu.items;
+    },
+
+    getActiveLayers: function(){
+      return overlayMaps;
+    },
+
+    getBaseMapPane: function(){
+      return mapa.getPane("tilePane").firstChild;
+    },
+
+    addMenuSection: function(name_section){
+      menu_ui.addSection(name_section)
+    },
+
+    addLayerBtn: function (name_section,name_layer){
+      menu_ui.addLayer(name_section,name_layer)
+    },
+
+    showLayer: function (layer_name){
+      gestorMenu.muestraCapa(app.layers[layer_name].childid)
+    },
+
+    argenmapDarkMode: function(){
+      this.showLayer('argenmap')
+      mapa.getPane("tilePane").firstChild.style="filter:  invert(1) brightness(1.5) hue-rotate(180deg);"
+      let stylesui = new StylesUI;
+      stylesui.createdarktheme()
+      let oldstyle = document.getElementById("main-style-ui")
+      //oldstyle.innerHTML=""
+      
+    }
+     
+      
   }
 
 let getGeoserverCounter = 0,
@@ -278,7 +330,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     //Template
     template = app.template; // define wich template to use
 
-    let stylesui = new StylesUI
+    let stylesui = new StylesUI;
     stylesui.createstyles()
     //Load template config
     loadTemplateStyleConfig(template, isDefaultTemplate);
@@ -372,7 +424,11 @@ async function loadTemplate(data, isDefaultTemplate) {
         sidebarTool.createComponent();
 
         setProperStyleToCtrlBtns();
+
+        
       }
     }, 100);
+
   });
 };
+
