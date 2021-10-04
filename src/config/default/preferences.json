@@ -6,6 +6,9 @@
   "charts": {
     "isActive": true
   },
+  "layer_options":{
+    "isActive": false
+  },
   "metaTags": {
     "title": "",
     "description": "",

@@ -84,14 +84,28 @@ class ImpresorItemHTML extends Impresor {
         app.layerNameByDomId[childId] = itemComposite.nombre
         var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
- 
-        return "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" +
+        let btnhtml = ""
+
+        if (loadLayerOptions){
+            btnhtml =  "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" +
             "<div class='capa-title'>" + legendImg +
             "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre + " href='#'>" +
             "<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
             "</a>" +"<div class='zoom-layer'  layername="+itemComposite.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+itemComposite.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
             "</div><div class='display-none' id=layer-options-"+itemComposite.nombre+"></div>" +
-            "</li>";
+            "</li>"
+        }
+        else{
+            btnhtml = "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 10px 1px;' >" +
+            "<div class='capa-title'>" + legendImg +
+            "<div class='name-layer' style='align-self: center;' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre + " href='#'>" +
+            "<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
+            "</a>" +"<div class='zoom-layer'  style='align-self: center;' layername="+itemComposite.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div>"+
+            "</div><div class='display-none' id=layer-options-"+itemComposite.nombre+"></div>" +
+            "</li>"
+        }
+ 
+        return btnhtml;
 
     }
 }

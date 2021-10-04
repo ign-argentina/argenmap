@@ -1,11 +1,10 @@
 // -- Plugins Control
 var plugins = new Array("loadGeojson", "loadWms");
-
 var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
 var loadCharts = false;
 var loadSearchbar = false;
-
+var loadLayerOptions = false;
 var currentlyDrawing = false;
 
 function setTableAsPopUp(cond) {
@@ -22,6 +21,10 @@ function setCharts(cond) {
 
 function setSearchbar(cond) {
     loadSearchbar = cond;
+ }
+
+ function setLayerOptions(cond) {
+    loadLayerOptions = cond;
  }
 
 const reverseCoords = (coords) => {

@@ -111,6 +111,69 @@ class StylesUI {
     };
   }
  }
+
+ createdarktheme(){
+  const style = document.createElement('style');
+  style.id="darktheme"
+  style.innerHTML = `
+    .navbar{
+      background-color: #164A5E;
+    }
+    body{
+      background-color: #164A5E;
+    }
+    .nav-tabs {
+      background-color: #164A5E;
+    }
+    .panel-default > .panel-heading {
+      background-color: #164A5E !important;
+
+    }
+    .featureInfo h4{
+      border-bottom:3px solid #164A5E;
+      margin:2em;
+    }
+    .featuresGroup {
+      border-bottom: 2px solid #164A5E;
+    }
+    .individualFeature {
+      border-bottom: 1px dashed #164A5E;
+    }
+    .nav-tabs > li.active > a {
+      background-color: ${app.theme.activeLayer} !important;
+    }
+    .active {
+      background-color: ${app.theme.activeLayer} !important;
+    }
+    .featureInfo h4 {
+    border-bottom: 3px solid #164A5E;
+    }
+   .featuresGroup {
+    border-bottom: 2px solid #164A5E;
+    }
+    .individualFeature {
+    border-bottom: 1px dashed #164A5E;
+    }
+    .active-layers-counter {
+      background: #164A5E !important;
+    }
+    .panel-default > .panel-heading {
+      color:${app.theme.textMenu};
+    }
+    .item-group-short-desc a {
+      color:${app.theme.textLegendMenu};
+      ${app.theme.textLegendMenuStyle}
+    }
+    .navbar-toggle .icon-bar {
+      border: 1px solid ${app.theme.iconBar};
+    }
+    #sidebar-container{
+      background-color:#164A5E;
+    }
+
+    `;
+    document.head.appendChild(style);
+ }
 }
 
 function clickReferencias(){

@@ -1,4 +1,5 @@
 var baseLayers = {};
+
 var baseLayersInfo = {};
 var selectedBasemap = null;
 let menu_ui = new Menu_UI;
@@ -43,6 +44,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
       if (app.hasOwnProperty('searchbar')) {
         setSearchbar(app.searchbar.isActive);
+      }
+
+      if (app.hasOwnProperty('layer_options')) {
+        setLayerOptions(app.layer_options.isActive);
       }
 
       await this._startModules();
@@ -275,10 +280,17 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       gestorMenu.muestraCapa(app.layers[layer_name].childid)
     },
 
-    argenmapDarkMode(){
+    argenmapDarkMode: function(){
       this.showLayer('argenmap')
       mapa.getPane("tilePane").firstChild.style="filter:  invert(1) brightness(1.5) hue-rotate(180deg);"
+      let stylesui = new StylesUI;
+      stylesui.createdarktheme()
+      let oldstyle = document.getElementById("main-style-ui")
+      //oldstyle.innerHTML=""
+      
     }
+     
+      
   }
 
 let getGeoserverCounter = 0,
@@ -318,7 +330,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     //Template
     template = app.template; // define wich template to use
 
-    let stylesui = new StylesUI
+    let stylesui = new StylesUI;
     stylesui.createstyles()
     //Load template config
     loadTemplateStyleConfig(template, isDefaultTemplate);
