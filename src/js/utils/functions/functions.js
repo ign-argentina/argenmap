@@ -307,41 +307,138 @@ async function getWfsLayerFields(url, params) {
 
 }
 
-async function getLayerDataByWFS(coords, type, layerData) {
-    let url = layerData.host, params = { 
-        service: 'wfs',
-        request: 'GetFeature',
-        version: '',
-        outputFormat: 'application%2Fjson',
-        typeName: layerData.name,
-        cql_filter: ''
-    }, paramsStr = [], geom = await getWfsLayerFields(url, params);
-    
+/**
+ * Returns the projection type through a GetCapabilities request from the WFS service.
+ * @param {String} api where to look for the CRS type
+ * @returns only the number of the projection ex: 22183
+ */
+ function getCRSByWFSCapabilities(api){
+    // TODO falta implementar reject para manejar el error
+    return new Promise((resolve,reject)=>{
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var xmlDoc = this.responseXML;
+                // Element: <DefaultCRS>
+                xmlDoc.getElementsByTagName('DefaultCRS');
+                let crs = xmlDoc.getElementsByTagName('DefaultCRS')[0].innerHTML;
+                // The format of DefaultCRS is "urn:ogc:def:crs:EPSG::22183"
+                // TODO mejora a través de definiciones -> proj4.defs('urn:x-ogc:def:crs:EPSG::4326', proj4.defs('EPSG:4326'));
+                resolve(crs.split('::')[1]);
+            }else if(this.readyState == 4 && this.status != 200){
+                reject(null)
+            }
+        };
+        xhttp.open("GET", api, true);
+        xhttp.send();
+    })
+}
 
-    if (type === 'polygon' || type === 'rectangle') {
-        const coordsFormatted = setCoordinatesFormat(coords);
-        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
-    }
-    if (type === 'circle'){
-        params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
-    }
-    if (type === 'marker'){
-        params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`;
-    }
-    if(type === 'polyline'){
-        const coordsFormatted = setCoordinatesFormat(coords);
-        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
-    }
+function getLayerDataByWFS(coords, type, layerData) {
+    return new Promise((resolve) => {
+        // Make the url to retrieve the request
+        let capabilitiesUrl = `${layerData.host}/${layerData.name}/ows?service=wfs&request=GetCapabilities`;
+        // Where to save the reprojection
+        let reprojectedCoords = [];
+        // Get the CRS
+        getCRSByWFSCapabilities(capabilitiesUrl).then((crs)=>{
+            if (crs != '84') {
+                // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
+                // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
+                // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+                
+                // If the CRS is not 84, reproject the coords
+                coords.forEach((coordsPair,i) => {
+                    let result = proj4(proj4('WGS84'),proj4(PROJECTIONS[crs]),coordsPair);
+                    // coords[i] = result;
+                    reprojectedCoords[i] = result;
+                });
 
-    Object.entries(params).forEach( p => {
-        paramsStr.push(p.join('='));
-    });
-    url += '/ows?' + paramsStr.join('&');
+                // Make the url to retrive WFS data
+                let url = layerData.host, params = {
+                    service: 'wfs',
+                    request: 'GetFeature',
+                    version: '',
+                    outputFormat: 'application%2Fjson',
+                    typeName: layerData.name,
+                    cql_filter: ''
+                }
+                let paramsStr = [];
+                getWfsLayerFields(url, params).then((geom) => {
+                    if (type === 'polygon' || type === 'rectangle') {
+                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
+                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
+                    }
+                    if (type === 'circle'){
+                        params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}),${reprojectedCoords.r},meters)`;
+                    }
+                    if (type === 'marker'){
+                        params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}))`;
+                    }
+                    if(type === 'polyline'){
+                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
+                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
+                    }
 
-    const response = await fetch(url);
-    if (response.status !== 200)
-        return null;
-    return await response.json();
+                    Object.entries(params).forEach( p => {
+                        paramsStr.push(p.join('='));
+                    });
+                    url += '/ows?' + paramsStr.join('&');
+                
+                    fetch(url).then((response) => {
+                        if (response.status !== 200)
+                            resolve(null);
+                         resolve(response.json());
+                    });
+                })
+            }
+        }).catch(()=>{
+            console.info('The host does not provide capabilities for the WFS service');
+            //Test
+            // TODO Obtener el CRS a través del get capabilities del servicio WMS (gestorMenu.items[k].itemComposite.capa)
+            // coords.forEach((coordsPair,i) => {
+            //     let result = proj4(proj4('WGS84'),proj4(PROJECTIONS['22185']),coordsPair);
+            //     // coords[i] = result;
+            //     coords[i] = result;
+            // });
+            let url = layerData.host, params = { 
+                service: 'wfs',
+                request: 'GetFeature',
+                version: '',
+                outputFormat: 'application%2Fjson',
+                typeName: layerData.name,
+                cql_filter: ''
+            }, paramsStr = [];
+
+            getWfsLayerFields(url, params).then((geom)=> {
+                if (type === 'polygon' || type === 'rectangle') {
+                    const coordsFormatted = setCoordinatesFormat(coords);
+                    params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
+                }
+                if (type === 'circle'){
+                    params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
+                }
+                if (type === 'marker'){
+                    params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`;
+                }
+                if(type === 'polyline'){
+                    const coordsFormatted = setCoordinatesFormat(coords);
+                    params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
+                }
+            
+                Object.entries(params).forEach( p => {
+                    paramsStr.push(p.join('='));
+                });
+                url += '/ows?' + paramsStr.join('&');
+            
+                fetch(url).then((response) => {
+                    if (response.status !== 200)
+                        resolve(null);
+                    resolve(response.json());
+                })
+            })
+        })
+    })
 }
 
 function loadMapaBase(tmsUrl, layer, attribution) {
