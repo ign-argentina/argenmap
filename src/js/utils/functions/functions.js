@@ -541,7 +541,7 @@ function zoomEditableLayers(layername){
         
         let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
         try {
-            mapa.fitBounds(bounds,{maxZoom:4});
+            mapa.fitBounds(bounds);
         } catch (error) {
             //console.log(bounds);
         }
