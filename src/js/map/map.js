@@ -2243,6 +2243,7 @@ function loadWmsTpl (objLayer) {
 
     function createWmtsLayer(objLayer) {
 		// tilematrix, style and format should be set by a method
+		let wmts_maxZoom = app.hasOwnProperty('service') ? app.service.wmts.maxZoom : DEFAULT_WMTS_MAX_ZOOM_LEVEL
 		let _style = "", _tilematrixSet = "EPSG:3857", _format = "image/png";
 		var wmtsSource = new L.TileLayer.WMTS(objLayer.capa.getHostWMS(),
 			{
@@ -2250,7 +2251,8 @@ function loadWmsTpl (objLayer) {
 				style: _style,
 				tilematrixSet: _tilematrixSet,
 				format: _format,
-				attribution: objLayer.nombre
+				attribution: objLayer.nombre,
+				maxZoom: wmts_maxZoom
 			}
 		);
 		overlayMaps[objLayer.nombre] = wmtsSource;

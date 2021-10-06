@@ -13,6 +13,11 @@ const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
 
+
+//Default Services Values
+const DEFAULT_WMTS_MAX_ZOOM_LEVEL = 21;
+
+
 //Default Marker Styles
 const DEFAULT_MARKER_STYLES = {
     borderWidth: 2.5,

@@ -27,6 +27,11 @@
       "max": 21
     }
   },
+  "service":{
+    "wmts": {
+      "maxZoom": 21
+    }
+  },
   "showSearchBar": false,
   "searchbar":{
     "isActive": true,
