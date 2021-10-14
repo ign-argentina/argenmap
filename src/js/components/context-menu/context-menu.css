@@ -1,5 +1,5 @@
 .context-menu {
-  width: 170px;
+  width: 400px;
   background-color: white;
   border-radius: 5px;
   position: absolute;
@@ -54,4 +54,15 @@
 }
 .context-menu :last-child {
   border-radius: 0 0 5px 5px;
+}
+
+.context-menu-item-active select:hover {
+  color: #005c83;
+}
+.context-menu-item-active select {
+  color: #005c83;
+  border-radius: 5px !important;
+  border: 2px solid #005c83;
+  padding: 3px;
+  font-weight: bold;
 }

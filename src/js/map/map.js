@@ -492,15 +492,58 @@ $("body").on("pluginLoad", function(event, plugin){
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
 
-						const lng = e.latlng.lng.toFixed(5);
 						const lat = e.latlng.lat.toFixed(5);
+						const lng = e.latlng.lng.toFixed(5);
 
+						var coords = [e.latlng.lat,e.latlng.lng];
+
+						console.log(e.latlng.lat);
+
+						contextMenu.createSelect({
+							isDisabled: false,
+							options:[
+								{value:'4326',label:'EPSG:4326'},
+								{value:'22183',label:'EPSG:22183'},
+								{value:'22185',label:'EPSG:22185'}
+							],
+							selected:(value)=>{
+								coords = proj4(proj4(PROJECTIONS[value]),coords);
+								
+								// Remove the actual coords and the add marker option to replace
+								contextMenu.menu.removeChild(contextMenu.menu.lastElementChild)
+								contextMenu.menu.removeChild(contextMenu.menu.lastElementChild)
+
+								contextMenu.createOption({
+									isDisabled: false,
+									text: `<div title="Copiar" style="cursor: pointer"><span><b id="copycoords" class="non-selectable-text">${coords[0].toFixed(5)} , ${coords[1].toFixed(5)}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
+									onclick: (option) => {
+										mapa.closePopup(contextPopup);
+										copytoClipboard(`${coords.toString()}`);
+									}
+								});
+
+								contextMenu.createOption({
+									isDisabled: false,
+									text: 'Agregar marcador',
+									onclick: (option) => {
+										let geojsonMarker = {
+											type: "Feature",
+											properties: {
+											},
+											geometry: { type: "Point", coordinates: [lng,lat]},
+										}
+										mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "geojsonMarker", false)
+										mapa.closePopup(contextPopup);
+									}
+								});
+							},
+						});
 						contextMenu.createOption({
 							isDisabled: false,
-							text: `<div title="Copiar" style="cursor: default"><span><b id="copycoords" class="non-selectable-text">${lat}, ${lng}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
+							text: `<div title="Copiar" style="cursor: pointer"><span><b id="copycoords" class="non-selectable-text">${coords[0].toFixed(5)} , ${coords[1].toFixed(5)}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
-								copytoClipboard(`${lat}, ${lng}`);
+								copytoClipboard(`${coords.toString()}`);
 							}
 						});
 						contextMenu.createOption({
