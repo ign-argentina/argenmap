@@ -680,3 +680,34 @@ function zoomEditableLayers(layername){
             bindLayerOptions()
          }, 2000);
       };
+
+
+      function bindLayerOptionsIdera(){
+          setTimeout(function(){ 
+            bindZoomLayer()
+            bindLayerOptions()
+         }, 1000);
+      }
+
+
+      function zoomLayer(id_dom){
+            let nlayer = app.layerNameByDomId[id_dom]
+            let bbox = app.layers[nlayer].capa
+            //solo sii la capa no esta activa activar
+            let activas = gestorMenu.activeLayers
+            let active = false
+            activas.forEach(function(key) {
+                if(key===nlayer)
+                active = true
+              })
+            if(!active)gestorMenu.muestraCapa(app.layers[nlayer].childid)
+            
+            let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
+            try {
+                mapa.fitBounds(bounds);
+            } catch (error) {
+                //console.log(bounds);
+            }
+        
+    
+      }

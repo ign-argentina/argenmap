@@ -17,6 +17,16 @@ body {
   }
 }
 
+#wms-combo-list{
+  display: none;
+}
+.capa-info {
+  vertical-align: top;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
 .map-container {
   display: flex;
   justify-content: center;
@@ -192,6 +202,7 @@ li.active > div > a {
 .name-layer{
   padding-left: 5px;
   width: 80%;
+  overflow: hidden;
 }
 .capa-title {
   vertical-align: top;
@@ -227,6 +238,25 @@ li.active > div > a {
 .zoom-layer:hover{
     color: black
   }
+
+  .zoom-layer-combobox {  
+    cursor:pointer;
+    width: 10%;
+    color:silver;
+    margin-left:  5%;}
+    
+  .zoom-layer-combobox:hover{
+      color: black
+    }
+
+    .resize-legend-combobox {  
+      cursor:pointer;
+      color:silver;
+      }
+      
+    .resize-legend-combobox:hover{
+        color: black
+      }
 
   .layer-options-icon{
 

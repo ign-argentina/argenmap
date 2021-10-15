@@ -7,7 +7,7 @@ const ItemGroupPrefix = 'lista-';
 Class Capa
 ******************************************/
 class Capa {
-    constructor(nombre, titulo, srs, host, servicio, version, featureInfoFormat, key, minx, maxx, miny, maxy, attribution) {
+    constructor(nombre, titulo, srs, host, servicio, version, featureInfoFormat, key, minx, maxx, miny, maxy,attribution,legendURL) {
         this.nombre = nombre
         this.titulo = titulo
         this.srs = srs
@@ -21,6 +21,7 @@ class Capa {
         this.miny = miny
         this.maxy = maxy
         this.attribution = attribution
+        this.legendURL = legendURL
     }
 
     getLegendURL() {
@@ -70,7 +71,6 @@ class Impresor {
 
 class ImpresorItemHTML extends Impresor {
     imprimir(itemComposite) {
-
         var childId = itemComposite.getId();
         let aux = {
             ...itemComposite,
@@ -80,9 +80,16 @@ class ImpresorItemHTML extends Impresor {
         }
         app.setLayer(aux)
         app.layerNameByDomId[childId] = itemComposite.nombre
-        
-        app.layerNameByDomId[childId] = itemComposite.nombre
-        var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        var legendImg = ""
+
+        //if tab = combobox, img source from 
+        if(itemComposite.listType === "combobox"){
+            let url_img = itemComposite.capa.legendURL+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' 
+            legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + url_img+ "' onerror='showImageOnError(this);'></div>";
+        }else{
+            legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        }
+        var legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + itemComposite.capa.legendURL+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' + "' onerror='showImageOnError(this);'></div>";
         var activated = (itemComposite.visible == true) ? " active " : "";
         let btnhtml = ""
 
@@ -109,6 +116,7 @@ class ImpresorItemHTML extends Impresor {
 
     }
 }
+
 
 class ImpresorItemWMSSelector extends Impresor {
     imprimir(itemComposite) {
@@ -323,7 +331,7 @@ class LayersInfoWMS extends LayersInfo {
                             }
                         }
 
-                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback(),null);
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
@@ -344,6 +352,11 @@ class LayersInfoWMS extends LayersInfo {
         }
     }
 
+    get_without_print(_gestorMenu) {
+        console.log("get_without_print")
+                this._parseRequest_without_print(_gestorMenu);
+    }
+
     generateGroups(_gestorMenu) {
         const impresorGroup = this.itemGroupPrinter;
         const impresorItem = new ImpresorItemHTML();
@@ -362,6 +375,11 @@ class LayersInfoWMS extends LayersInfo {
         const impresorItem = new ImpresorItemHTML();
 
         var thisObj = this;
+
+        var ilistType = null
+        if(this.tab.listType){
+            ilistType = this.tab.listType
+        }
 
         if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
 
@@ -386,7 +404,6 @@ class LayersInfoWMS extends LayersInfo {
             // create an object with all layer info for each layer
             capas_info.each(function (index, b) {
                 var i = $(this);
-
                 var iName = $('name', i).html();
                 if (thisObj.isAllowebLayer(iName)) {
 
@@ -405,6 +422,15 @@ class LayersInfoWMS extends LayersInfo {
                     var iMinY = null;
                     var iMinX = null;
                     var iMaxX = null;
+                    var ilegendURLaux= $('Style', i).html()
+                    let divi =  document.createElement("div")
+                    let aux = null
+                    divi.innerHTML= ilegendURLaux
+                    if(divi.getElementsByTagName("onlineresource")){
+                    aux = divi.getElementsByTagName("onlineresource")[0].getAttribute('xlink:href')
+                    }
+                    var ilegendURL = aux
+                    
                     if (iBoundingBox.length > 0) {
                         if (iBoundingBox[0].attributes.srs) {
                             var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
@@ -417,17 +443,18 @@ class LayersInfoWMS extends LayersInfo {
                         var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
                     }
 
+
                     if (thisObj.type == 'wmslayer_mapserver') {
                         var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
                     } else {
-                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY);
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
                         gestorMenu.layersDataForWfs[capa.nombre] = {
                             name: capa.nombre,
                             section: capa.titulo,
                             host: capa.host
                         }
                     }
-                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
+                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(), ilistType);
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
                     item.setImpresor(impresorItem);
                     items.push(item);
@@ -477,6 +504,146 @@ class LayersInfoWMS extends LayersInfo {
 
             //console.log(`${thisObj.section} printed`);
             
+            return;
+        });
+    }
+
+    _parseRequest_without_print(_gestorMenu) {
+        console.log("_parseRequest_without_print(_gestorMenu)")
+        const impresorGroup = this.itemGroupPrinter;
+        const impresorItem = new ImpresorItemHTML();
+        const nuevo_impresor = new Menu_UI
+
+        var thisObj = this;
+
+        var ilistType = null
+        if(this.tab.listType){
+            ilistType = this.tab.listType
+        }
+
+        if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
+
+        // Load geoserver Capabilities, if success Create menu and append to DOM
+        $('#temp-menu').load(thisObj.getHostOWS() + '?service=' + thisObj.service + '&version=' + thisObj.version + '&request=GetCapabilities', function () {
+            var capability = $('#temp-menu').find("capability");
+            var keywordHtml = $('#temp-menu').find("Keyword");
+            var keyword = '';
+            if (keywordHtml.length > 0) {
+                keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+            }
+            var abstractHtml = $('#temp-menu').find("Abstract");
+            var abstract = '';
+            if (abstractHtml.length > 0) {
+                abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+            }
+            var capas_layer = $('layer', capability);
+            var capas_info = $('layer', capas_layer);
+
+            var items = new Array();
+
+            // create an object with all layer info for each layer
+            capas_info.each(function (index, b) {
+                var i = $(this);
+                var iName = $('name', i).html();
+                if (thisObj.isAllowebLayer(iName)) {
+
+                    var iTitle = $('title', i).html();
+                    iTitle = thisObj.formatLayerTitle(iName, iTitle);
+                    var iAbstract = $('abstract', i).html();
+                    iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
+                    var keywordsHTMLList = $('keywordlist', i).find("keyword");
+                    var keywords = [];
+                    $.each(keywordsHTMLList, function (i, el) {
+                        keywords.push(el.innerText);
+                    });
+                    var iBoundingBox = $('boundingbox', i);
+                    var iSrs = null;
+                    var iMaxY = null;
+                    var iMinY = null;
+                    var iMinX = null;
+                    var iMaxX = null;
+                    var ilegendURLaux= $('Style', i).html()
+                    let divi =  document.createElement("div")
+                    let aux = null
+                    divi.innerHTML= ilegendURLaux
+                    if(divi.getElementsByTagName("onlineresource")){
+                    aux = divi.getElementsByTagName("onlineresource")[0].getAttribute('xlink:href')
+                    }
+                    var ilegendURL = aux
+                    
+                    if (iBoundingBox.length > 0) {
+                        if (iBoundingBox[0].attributes.srs) {
+                            var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
+                        } else {
+                            var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
+                        }
+                        var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
+                        var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
+                        var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
+                        var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
+                    }
+
+
+                    if (thisObj.type == 'wmslayer_mapserver') {
+                        var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                    } else {
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
+                        gestorMenu.layersDataForWfs[capa.nombre] = {
+                            name: capa.nombre,
+                            section: capa.titulo,
+                            host: capa.host
+                        }
+                    }
+                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(), ilistType);
+                    item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
+                    item.setImpresor(impresorItem);
+                    items.push(item);
+                    gestorMenu.setAvailableLayer(iName);
+                }
+            });
+
+            var groupAux;
+            try {
+                var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
+                groupAux.setImpresor(impresorGroup);
+                groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
+                for (var i = 0; i < items.length; i++) {
+                    groupAux.setItem(items[i]);
+                }
+            }
+            catch (err) {
+                if (err.name == "ReferenceError") {
+                    var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
+                    groupAux.setImpresor(impresorGroup);
+                    groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
+                    for (var i = 0; i < items.length; i++) {
+                        groupAux.setItem(items[i]);
+                    }
+                }
+            }
+
+            _gestorMenu.addItemGroup(groupAux);
+
+            if (_gestorMenu.getLazyInitialization() == true) {
+                _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
+                if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) { //Si ya cargó todas las capas solicitadas
+                    _gestorMenu.printOnlySection(thisObj.section);
+
+                    //
+                    gestorMenu.allLayersAreLoaded = true;
+                }
+            } else {
+                _gestorMenu.addLayerInfoCounter();
+                if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
+                    _gestorMenu.printMenu();
+                    
+                    gestorMenu.allLayersAreLoaded = true;
+                }
+            }
+
+            //console.log(`${thisObj.section} printed`);
+            //prueba
+             nuevo_impresor.addLayers_combobox(groupAux)
             return;
         });
     }
@@ -540,7 +707,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
                             }
                         }
 
-                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback(), null);
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
@@ -605,6 +772,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
             
             capas_layer.each(function (index, b) {
                 var i = $(this);
+
                 
                 var iName = $('ows\\:identifier', i).html();
                 if (thisObj.isAllowebLayer(iName)) {
@@ -612,6 +780,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
                     iTitle = thisObj.formatLayerTitle(iName, iTitle);
                     var iAbstract = $('ows\\:abstract', i).html();
                     iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
+                    console.log(iAbstract)
                     var keywordsHTMLList = $('keywordlist', i).find("keyword");
                     var keywords = [];
                     $.each(keywordsHTMLList, function (i, el) {
@@ -631,7 +800,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
                     } else {
                         var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY);
                     }
-                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
+                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(),null);
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
                     item.setImpresor(impresorItem);
                     items.push(item);
@@ -982,7 +1151,7 @@ class ItemGroupWMSSelector extends ItemGroup {
 }
 
 class Item extends ItemComposite {
-	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback) {
+	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback, listType) {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.titulo = titulo;
 		this.capa = capa;
@@ -990,6 +1159,7 @@ class Item extends ItemComposite {
 		this.visible = false;
         this.legendImg = null;
         this.callback = callback;
+        this.listType = null;
     }
 
     getId() {
@@ -2233,28 +2403,26 @@ class GestorMenu {
     }
 
     showWMSLayerCombobox(itemSeccion) {
-        //Loader gif
-        $('#wms-combo-list').html('<div class="loading"><img src="src/styles/images/loading.svg"></div>');
-
+        console.log("showWMSLayerCombobox(itemSeccion)")
+        let nuevo_impresor = new Menu_UI
+        nuevo_impresor.addLoadingAnimation("NEW-wms-combo-list")
         //Realiza el GET de las capas
+
         var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, '');
         for (var key in this.layersInfo) {
+            
             if (this.layersInfo[key].section == itemSeccionAux) {
                 this.addLazyInitLayerInfoCounter(itemSeccion);
-                this.layersInfo[key].get(this);
+                //nueva opcion crea un objeto para cada btn 
+                console.log("this.layersInfo[key].get_without_print(this);")
+                this.layersInfo[key].get_without_print(this);
+                //this.layersInfo[key].get(this)
+
+             
             }
         }
 
-        //Reimprime menu
-        for (var key in this.items) {
-            // console.info(key);
-            // console.info(this.items[key])
-            var itemComposite = this.items[key];
-            if (itemComposite.getId() == itemSeccion && Object.keys(itemComposite.itemsComposite).length > 0) {
-                itemComposite.imprimir();
-                $('#wms-combo-list').html(itemComposite.itemsStr);
-            }
-        }
+        bindLayerOptionsIdera();
 
     }
 
@@ -2314,7 +2482,7 @@ class Tab {
 
     getEndPrint() {
         if (this.listType == "combobox") {
-            return '</select><div id="wms-combo-list"></div>';
+            return '</select><div id="wms-combo-list"></div><div id="NEW-wms-combo-list"></div>';
         }
         return '';
     }
@@ -2359,7 +2527,6 @@ class Menu_UI{
         <div class="icon-layer-geo" onclick="deleteLayerGeometry('${layer}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
         </div>
         `
-       //<div class="layer-menu-ui" layername='${layer}'><i class="fas fa-search-plus"></i></div>
         //si no existe contenedor
         if(!main){this.addSection(groupnamev)}
         
@@ -2417,6 +2584,155 @@ class Menu_UI{
             el.setAttribute('class', 'display-none')
             el.innerHTML = ""
         }
+    }
+
+    addLoadingAnimation(id_dom){
+        let contenedor = document.getElementById(id_dom)
+        contenedor.innerHTML= ""
+        contenedor.innerHTML = '<div class="loading"><img src="src/styles/images/loading.svg"></div>'
+    }
+
+    addLayers_combobox(items){
+        let contenedor = document.getElementById("NEW-wms-combo-list")
+        let list = document.createElement("div")
+        let layers = items.itemsComposite
+        for (const property in layers) {
+            let id_dom = "child-"+layers[property].seccion
+            let title = layers[property].capa.titulo
+            let url_img = layers[property].capa.legendURL
+            let descripcion = layers[property].capa.descripcion
+            //add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options)
+            let li_layer = this.add_btn_Layer_combobox(id_dom,title,url_img,descripcion, false)
+            list.append(li_layer)
+          }
+          contenedor.innerHTML = ""
+          contenedor.append(list)
+
+    }
+
+    add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options){
+        // reemplazar =title 
+        let min_url_img = url_img+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off'
+        let max_url_img = url_img+'&scale=1&&LEGEND_OPTIONS=forceTitles:on;forceLabels:on'
+        let li = document.createElement("li")
+        li.id= id_dom
+        li.className = "capa list-group-item"
+        li.style = "padding: 10px 1px 10px 1px;"
+
+        if(options){
+            //pendiente crear objeto 
+            options_layer = "<div class='display-none' id=layer-options-"+title+"></div>"
+        }
+
+        let capa_info = document.createElement("div")
+        capa_info.className = "capa-info"
+
+        let container_expand_legend_grafic = document.createElement("div")
+        container_expand_legend_grafic.className="expand_legend_grafic"
+        container_expand_legend_grafic.style = "overflow:hidden;"
+        container_expand_legend_grafic.setAttribute('load', false);
+
+        let capa_legend_div = document.createElement("div")
+        capa_legend_div.className = "legend-layer"
+
+        let img_legend = document.createElement("img")
+        img_legend.className="legend-img"
+        img_legend.style = "width:22px;height:22px"
+        img_legend.loading="lazy"
+        img_legend.src=min_url_img
+        img_legend.onerror = showImageOnError(this);
+        capa_legend_div.append(img_legend) 
+
+        let resize_img_icon = document.createElement("div")
+        resize_img_icon.className = "resize-legend-combobox"
+        resize_img_icon.style = "align-self: center;font-size: 14px"
+        resize_img_icon.innerHTML = '<i class="fas fa-angle-down" aria-hidden="true"></i>'
+        resize_img_icon.onclick = () => {
+            if(container_expand_legend_grafic.getAttribute('load')==="true"){
+                container_expand_legend_grafic.innerHTML=""
+                container_expand_legend_grafic.setAttribute('load', false);
+                resize_img_icon.innerHTML = '<i class="fas fa-angle-down" aria-hidden="true"></i>'
+            }
+            else{
+                container_expand_legend_grafic.innerHTML="<img class='legend-img-max' loading='lazy'  src='" + max_url_img+ "' onerror='showImageOnError(this);'></img>"
+                container_expand_legend_grafic.setAttribute('load', true);
+                resize_img_icon.innerHTML = '<i class="fas fa-angle-up" aria-hidden="true"></i>'
+            }
+            
+        }
+
+        img_legend.addEventListener("load", event => {
+            if(img_legend.naturalHeight>22){
+                capa_legend_div.removeChild(img_legend);
+                capa_legend_div.append(resize_img_icon)
+                capa_legend_div.title="abrir leyenda"
+                img_legend.src=""
+            }
+
+          });
+
+        capa_legend_div.onclick = () => {
+            /*
+            if(li.className === "capa list-group-item active"){
+                li.className = "capa list-group-item"
+            }else{li.className = "capa list-group-item active"}
+            gestorMenu.muestraCapa(id_dom)*/
+        };
+
+        let capa_title_div = document.createElement("div")
+        capa_title_div.className = "name-layer"
+        capa_title_div.style="align-self: center;"
+        capa_title_div.onclick = function () {
+
+            if(li.className === "capa list-group-item active"){
+                //clase btn desactivada
+                li.className = "capa list-group-item"
+                //desactivar capa en mapa
+                gestorMenu.muestraCapa(id_dom)
+                //si tiene opcion a expand legend grafic y esta abierta cerrar.
+                if(li.getElementsByClassName("legend-img").length==0){
+                    if(container_expand_legend_grafic.getAttribute('load')==="true")resize_img_icon.click()
+                }
+
+            }else{
+                //activar capa
+                li.className = "capa list-group-item active"
+                gestorMenu.muestraCapa(id_dom)
+                if(li.getElementsByClassName("legend-img").length==0){
+                    resize_img_icon.click()
+                }
+            }
+
+          };
+
+
+        let capa_description_a = document.createElement("a")
+        capa_description_a.nombre = title
+        capa_description_a.href="#"
+        capa_description_a.innerHTML = "<span data-toggle2='tooltip' title='" + descripcion + "'>" + title+ "</span>"
+        capa_title_div.append(capa_description_a)
+
+        let btn_zoom_layer = document.createElement("div")
+        btn_zoom_layer.className = "zoom-layer-combobox"
+        btn_zoom_layer.style = "align-self: center;"
+        btn_zoom_layer.layername = title
+        btn_zoom_layer.innerHTML = "<i class='fas fa-search-plus' title='Zoom a capa'></i>"
+        btn_zoom_layer.addEventListener("click", function(){
+            if(li.className === "capa list-group-item"){
+                li.className = "capa list-group-item active"
+            }
+            if(li.getElementsByClassName("legend-img").length==0){
+                if(container_expand_legend_grafic.getAttribute('load')==="false")resize_img_icon.click()
+            }
+            zoomLayer(id_dom)
+        })
+
+        capa_info.append(capa_legend_div)
+        capa_info.append(capa_title_div)
+        capa_info.append(btn_zoom_layer)
+        li.append(capa_info)
+        li.append(container_expand_legend_grafic)
+        return li
     }
 
 }
