@@ -882,5 +882,19 @@ SideBar
   }
 }
 
+@media print{
+  .navbar,
+  .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n+2)),
+  #sidebar,
+  #zoom-level,
+  #screenshot,
+  #spanopenfolder,
+  div[id^="sidebar-toolbar-icon-"] {
+      display:none;
+  }
 
-
+  /* .leaflet-control-attribution > a:nth-child(n+2) {
+		content: ' (' attr(href) ')';
+    display: block;
+  } */
+}
