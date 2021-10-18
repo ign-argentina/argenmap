@@ -202,7 +202,7 @@ class Searchbar_UI{
         id_search = el.place.id
         searchById()
       };
-      let txtresult = el.place.name+" "+el.place.depto+" "+el.place.pcia
+      let txtresult = el.place.name+", "+el.place.depto+", "+el.place.pcia
       let n_txtresult = norma(txtresult)
       let index = n_txtresult.indexOf(search_term)
       let end = index+search_term.length
