@@ -6,6 +6,7 @@ const config_query = app.geocoder.query
 const config_lang = app.geocoder.lang
 const config_limit = app.geocoder.limit
 const config_key = app.geocoder.key
+const sb_strings = app.searchbar.strings
 const geosearchbar_top = "60px"
 const geosearchbar_left = "300px"
 const geosearchbar_color_focus = "#008dc9"
@@ -56,7 +57,7 @@ class Searchbar_UI{
     maininput.style.display = "flex"
 
     let input = document.createElement("input")
-    input.placeholder = "Buscar..."
+    input.placeholder = sb_strings.placeholder || "Search places..."
     input.id = "search_bar"
     input.spellcheck = false
     input.autocomplete = "off"
