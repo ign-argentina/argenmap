@@ -499,7 +499,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						console.log(e.latlng.lat);
 
-						contextMenu.createSelect({
+						/* contextMenu.createSelect({
 							isDisabled: false,
 							options:[
 								{value:'4326',label:'EPSG:4326'},
@@ -537,7 +537,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									}
 								});
 							},
-						});
+						}); */
 						contextMenu.createOption({
 							isDisabled: false,
 							text: `<div title="Copiar" style="cursor: pointer"><span><b id="copycoords" class="non-selectable-text">${coords[0].toFixed(5)} , ${coords[1].toFixed(5)}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
