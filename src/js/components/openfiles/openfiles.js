@@ -56,20 +56,23 @@ class UImf {
       document.body.removeChild(modalOpenFile);
       document.getElementById("iconopenfile-container").disabled = false;
       document.getElementById("modalgeojson").style.color = "black";
-      open = false
+      open = false;
+      addedLayers = [];
     };
     s_sec.append(btnclose);
 
     mainIcons.append(f_sec)
     mainIcons.append(s_sec)
 
+    
     let tab_div = document.createElement("div")
     tab_div.className = "tabs_upload"
     tab_div.innerHTML = `
-    <li class="active-tab-upload">Archivo</li>
-    <li class="disabled-tab-upload">URL</li>
-    <li class="disabled-tab-upload">+ Nuevo</li>
-    `
+    <span style="font-size:12px;color:#37bbed;margin:0px 5px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX,<br>
+    SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
+    //<li class="active-tab-upload">Archivo</li>
+    //    <li class="disabled-tab-upload">+ Nuevo</li>
+
     let mainContainerFile = document.createElement("div")
     mainContainerFile.id = "file_gestor"
     mainContainerFile.style = "width:80%"
@@ -99,6 +102,7 @@ class UImf {
     divaux.className = "upload"
     
     let main_inputfile = document.createElement("input")
+    main_inputfile.accept = ".txt,.json,.geojson,.wkt,.kml,.zip,.gpx"
     main_inputfile.id = "input_uploadfile"
     main_inputfile.name = "file"
     main_inputfile.type = "file"
@@ -124,7 +128,7 @@ class UImf {
         addedLayers.push({layer:lyr, name:fileLayer.getFileName()});
 
         let cont = document.getElementById("uploaded-area")
-        if (cont.children.length>0){
+        if (cont.children.length>1){
           let txt = document.getElementById("btn-upload-agregar-capa")
           txt.innerHTML = "Agregar Capas"
         }
