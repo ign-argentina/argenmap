@@ -5,6 +5,7 @@ let kb_example = 8
 let geojsonfile = JSON.parse(data_file);
 
 let addedLayers = [];
+let open = false;
 
 
 let divalert = document.createElement("div");
@@ -135,6 +136,7 @@ class UImf {
       }).catch((error)=>{
         // TODO Manejar el error
         console.warn('Hay error: ',error);
+        new UserMessage(error, true, 'error');
         ui_upload.reload_logo();
       })
 
@@ -167,7 +169,6 @@ class UImf {
 
    btnCapa.innerHTML = "Agregar Capa"
    btnCapa.onclick = function () {
-     // TODO modificar el llamado a la función
      addLayersfromFiles();
    };
 
@@ -204,62 +205,32 @@ class UImf {
 
 
   clickOpenFileIcon() {
-    document.getElementById("iconopenfile-container").disabled = true;
-    document.getElementById("modalgeojson").style.color = "grey";
-    uimodalfs.createModal();
-    uimodalfs.addForm2();
+    if(!open){
+      open=true;
+      document.getElementById("iconopenfile-container").disabled = true;
+      document.getElementById("modalgeojson").style.color = "grey";
+      uimodalfs.createModal();
+      uimodalfs.addForm2();
+    }
   }
 
 }
 
 let uimodalfs = new UImf();
 
-
-// function addLayersfromFiles(layer,name) {
-//   // TODO recorrer capas agregadas
-//   let layer_name = normalize(name)
-
-//   // TODO importar al Argenmap
-//   //add layer in map 
-//   mapa.addGeoJsonLayerToDrawedLayers(layer,layer_name, false);
-  
-//   //add layer in menu  
-//   menu_ui.addLayer("Archivos", layer_name)
-
-//   let close = document.getElementById("modalOpenFile")
-//   document.body.removeChild(close);
-// }
-
 function addLayersfromFiles() {
-  // TODO recorrer capas agregadas
-  // let layer_name = normalize(name)
-
+  // recorrer capas agregadas
   addedLayers.forEach((e)=>{
     //add layer in map 
-    // mapa.addGeoJsonLayerToDrawedLayers(e.layer,e.name, false);
-    // e.layer.addTo(mapa);
+    mapa.addGeoJsonLayerToDrawedLayers(e.layer.toGeoJSON(),normalize(e.name), false);
 
-    // e.layer.onEachFeature((f, l)=>{
-    //   l.bindPopup('<pre>'+JSON.stringify(f.properties,null,' ').replace(/[\{\}"]/g,'')+'</pre>');
-    // }).addTo(mapa);
-   
-    // e.on('onEachFeature',function (f, l) {
-    //   l.bindPopup('<pre>'+JSON.stringify(f.properties,null,' ').replace(/[\{\}"]/g,'')+'</pre>');
-    // }).addTo(mapa);
-    
-
-    // L.geoJSON(lay, {
-    //   onEachFeature: function (f, l) {
-    //     l.bindPopup('<pre>'+JSON.stringify(f.properties,null,' ').replace(/[\{\}"]/g,'')+'</pre>');
-    //   }
-    //  }).addTo(mapa);
-     
     //add layer in menu  
     menu_ui.addLayer("Archivos", normalize(e.name))
   });
 
-  // TODO importar al Argenmap
-
+  addedLayers = [];
   let close = document.getElementById("modalOpenFile")
+  document.getElementById("modalgeojson").style.color = "black";
   document.body.removeChild(close);
+  open=false;
 }

@@ -24,8 +24,8 @@ class FileLayer {
         return this.layer;
     }
 
-    getLayerName(){
-
+    getRawLayerData(){
+        return this.layerData;
     }
 
     getFileSize(measure){
@@ -118,16 +118,19 @@ class FileLayer {
             switch (responseType) {
                 case 'text':
                     response.text().then((data)=>{
+                        this.layerData = data;
                         resolve(data);
                     });
                     break;
-                case 'json':
+                    case 'json':
                     response.json().then((data)=>{
+                        this.layerData = data;
                         resolve(data);
                     });
                     break;
-                case 'arrayBuffer':
+                    case 'arrayBuffer':
                     response.arrayBuffer().then((data)=>{
+                        this.layerData = data;
                         resolve(data);
                     });
                     break;
