@@ -1,17 +1,6 @@
 let upload_files = null;
-let file_name = "archivo1.geojson"
-let data_file = `{"type":"Feature","properties":{"styles":{"stroke":true,"color":"#ff33ee","weight":4,"opacity":0.5,"fill":true,"fillColor":"#ff0d00","fillOpacity":0.2,"clickable":true,"_dashArray":null},"type":"rectangle"},"geometry":{"type":"Polygon","coordinates":[[[-63.632813,-36.031332],[-63.632813,-33.28462],[-58.535156,-33.28462],[-58.535156,-36.031332],[-63.632813,-36.031332]]]}}`
-let kb_example = 8
-let geojsonfile = JSON.parse(data_file);
-
 let addedLayers = [];
 let open = false;
-
-
-let divalert = document.createElement("div");
-divalert.className = "alert alert-danger";
-divalert.role = "alert";
-divalert.style = "padding:8px !important; margin:0px";
 
 class IconModalGeojson {
   constructor() {
@@ -31,7 +20,6 @@ class IconModalGeojson {
   }
 }
 
-//modal
 class UImf {
   createElement(element, id, className) {
     let aux = document.createElement(element);
@@ -44,7 +32,7 @@ class UImf {
     return aux;
   }
 
-  createModal() {
+   createModal() {
 
     let divContainer = document.createElement("div")
     divContainer.id = "modalOpenFile"
@@ -54,10 +42,10 @@ class UImf {
     mainIcons.className = "icons-modalfile"
 
     let f_sec = document.createElement("section")
-    f_sec.style = "width:90%"
+    f_sec.style = "width:95%"
 
     let s_sec = document.createElement("section")
-    s_sec.style = "width:10%"
+    s_sec.style = "width:5%"
     let btnclose = document.createElement("a")
     btnclose.style = "color:#37bbed;"
     btnclose.id = "btnclose-icon-modalfile"
@@ -68,19 +56,26 @@ class UImf {
       document.body.removeChild(modalOpenFile);
       document.getElementById("iconopenfile-container").disabled = false;
       document.getElementById("modalgeojson").style.color = "black";
+      open = false
     };
     s_sec.append(btnclose);
 
     mainIcons.append(f_sec)
     mainIcons.append(s_sec)
 
-    
-
+    let tab_div = document.createElement("div")
+    tab_div.className = "tabs_upload"
+    tab_div.innerHTML = `
+    <li class="active-tab-upload">Archivo</li>
+    <li class="disabled-tab-upload">URL</li>
+    <li class="disabled-tab-upload">+ Nuevo</li>
+    `
     let mainContainerFile = document.createElement("div")
     mainContainerFile.id = "file_gestor"
     mainContainerFile.style = "width:80%"
 
-    divContainer.appendChild(mainIcons);
+    divContainer.append(mainIcons);
+    divContainer.append(tab_div);
     divContainer.append(mainContainerFile);
     document.body.appendChild(divContainer);
 
@@ -96,7 +91,6 @@ class UImf {
 
     let contenedor_principal = document.getElementById("file_gestor")
 
-    //logo
     let logo_upload = document.createElement("div")
     logo_upload.className = "wrapper"
 
@@ -116,25 +110,25 @@ class UImf {
       //FileReader.onload --->ui_upload.logoAnimation()
       ui_upload.logoAnimation()
 
-      //FileReader.onloadend --->ui_upload.reload_logo() & ui_upload.addFileItem(file_name, kb_example)
-      // setTimeout(function(){ 
-      //   ui_upload.reload_logo() 
-      //   let normalize_forleaflet = normalize(file_name)
-      //   ui_upload.addFileItem(normalize_forleaflet,kb_example)
-      // }, 1000);
-
       // Initialize File Layer
       let fileLayer = new FileLayer();
       // Give uploaded file to fileLayer
       fileLayer.handleFile(e.target.files[0]).then((lyr)=>{
+        //active btn add layer
+        ui_upload.enabledbtnCapa()
         // Stop load animation
         ui_upload.reload_logo();
         // Show the uploaded file
         ui_upload.addFileItem(normalize(fileLayer.getFileName()),fileLayer.getFileSize('kb'));
         // add the layer obtained
         addedLayers.push({layer:lyr, name:fileLayer.getFileName()});
+
+        let cont = document.getElementById("uploaded-area")
+        if (cont.children.length>0){
+          let txt = document.getElementById("btn-upload-agregar-capa")
+          txt.innerHTML = "Agregar Capas"
+        }
       }).catch((error)=>{
-        // TODO Manejar el error
         console.warn('Hay error: ',error);
         new UserMessage(error, true, 'error');
         ui_upload.reload_logo();
@@ -164,13 +158,10 @@ class UImf {
    section_load.id="uploaded-area"
 
    let btnCapa = document.createElement("button")
-   btnCapa.className = "btn btn-info"
-   btnCapa.style = "width:100%; margin:5px"
-
-   btnCapa.innerHTML = "Agregar Capa"
-   btnCapa.onclick = function () {
-     addLayersfromFiles();
-   };
+    btnCapa.id = "btn-upload-agregar-capa"
+    btnCapa.className = "btn btn-info disabled"
+    btnCapa.style = "width:100%; margin:20px 0px 10px 0px"
+    btnCapa.innerHTML = "Agregar Capa"
 
    contenedor_principal.append(logo_upload)
    contenedor_principal.append(section_load)
@@ -190,7 +181,9 @@ class UImf {
   addFileItem(fileName, kb){
     let contenedor = document.getElementById("uploaded-area")
     let file_item = document.createElement("li")
+  
     file_item.className = "row"
+    //TODO convertir en objeto
     file_item.innerHTML = `
     <div class="content upload">
         <i class="fas fa-file-alt"></i>
@@ -198,8 +191,12 @@ class UImf {
             <span class="name">${fileName}</span>
             <span class="size">${kb} KB</span>
           </div>
+          
     </div>
     `
+    //<div><i title="eliminar archivo" class="fas fa-times"></i>
+    let content_upload = document.createElement("div")
+    let icon_file = document.createElement("div")
     contenedor.append(file_item)
   }
 
@@ -214,18 +211,28 @@ class UImf {
     }
   }
 
+  enabledbtnCapa(){
+    let btn = document.getElementById("btn-upload-agregar-capa")
+    btn.className = "btn btn-info"
+    btn.onclick = function () {
+      addLayersfromFiles()
+    };
+  }
+  
 }
 
 let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
-  // recorrer capas agregadas
-  addedLayers.forEach((e)=>{
-    //add layer in map 
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer.toGeoJSON(),normalize(e.name), false);
 
-    //add layer in menu  
-    menu_ui.addLayer("Archivos", normalize(e.name))
+  addedLayers.forEach((e)=>{
+
+    let layer_name = normalize(e.name)
+    let geojson_data = e.layer.toGeoJSON()
+
+    mapa.addGeoJsonLayerToDrawedLayers(geojson_data,layer_name, false);
+    menu_ui.addFileLayer("Archivos", layer_name)
+
   });
 
   addedLayers = [];

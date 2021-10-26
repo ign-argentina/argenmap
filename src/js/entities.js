@@ -2348,32 +2348,78 @@ class Menu_UI{
         $('#sidebar div.menu5').first().prepend(itemnew)
     }
 
-    addLayer(groupname, layer){
+    addFileLayer(groupname, layer){
         let groupnamev= groupname.replace(/ /g, "_")
         let main = document.getElementById("lista-"+groupnamev)
 
-        let div = ` 
-        <div style="display:flex; flex-direction:row;">
-        <div style="cursor: pointer; width: 70%" onclick="clickGeometryLayer('${layer}')"><span style="user-select: none;">${layer}</span></div>
-        <div class="icon-layer-geo" onclick="mapa.downloadMultiLayerGeoJSON('${layer}')"><i class="fas fa-download" title="descargar"></i></div>
-        <div class="icon-layer-geo" onclick="deleteLayerGeometry('${layer}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
-        </div>
-        `
-       //<div class="layer-menu-ui" layername='${layer}'><i class="fas fa-search-plus"></i></div>
-        //si no existe contenedor
         if(!main){this.addSection(groupnamev)}
-        
-            let content = document.getElementById(groupnamev+"-panel-body")
-            let aux = document.createElement("li")
-            aux.id = "li-"+layer 
-            aux.className = "capa list-group-item active"
-            aux.innerHTML = `<div class="capa-title"><span data-toggle2="tooltip" title="" data-original-title="">${div}</span><div class="legend-layer"></div></div>`
-            content.appendChild(aux)
+        let content = document.getElementById(groupnamev+"-panel-body")
+          
+             let layer_container = document.createElement("div")
+             layer_container.id = "fl-" +layer
+
+              let layer_item = document.createElement("div")
+              layer_item.id = "flc-" +layer
+              layer_item.className = "file-layer active"
+              
+              let img_icon =document.createElement("div")
+              img_icon.className = "file-img"
+              img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
+              img_icon.onclick = function(){
+                clickGeometryLayer(layer)
+                }
+
+            let layer_name = document.createElement("div")
+            layer_name.className = "file-layername"
+            layer_name.innerHTML= "<a>"+layer+"</a>"
+            layer_name .onclick = function(){
+                clickGeometryLayer(layer)
+            }
             
-           /* $('.layer-menu-ui').bind('click', function() {
-                let layername = this.getAttribute("layername")
-                zoomEditableLayers(layername)
-              });*/
+            let id_options_container = "opt-c-"+layer
+
+            let options = document.createElement("div")
+            options.className = "file-opt-icon"
+            options.innerHTML = `<i class="fa fa-angle-down" title="opciones"></i>`
+            options.onclick = function(){
+                 let aux = document.getElementById(id_options_container)
+                 if(aux.style.display === "none"){
+                    aux.style.display = "block"
+                    this.innerHTML = `<i class="fa fa-angle-up" title="opciones"></i>`
+
+                 }else{
+                     aux.style.display = "none"
+                    this.innerHTML = `<i class="fa fa-angle-down" title="opciones"></i>`
+                    }
+                }
+
+            let options_container =  document.createElement("div")
+            options_container.className = "file-opt-cont"
+            options_container.style.display = "none"
+            options_container.id = "opt-c-"+layer
+
+            let delete_opt = document.createElement("div")
+            delete_opt.innerHTML = `<a  style="width:15%">Eliminar Capa</a>`
+            delete_opt.className = "file-opt-item"
+            delete_opt.onclick = function(){
+                deleteLayerGeometry(layer)
+            }
+
+            let download_opt = document.createElement("div")
+            download_opt.className = "file-opt-item"
+            download_opt.innerHTML =`<a>Descargar geojson</a>`
+            download_opt.onclick = function(){
+                mapa.downloadMultiLayerGeoJSON(layer)
+            }
+            options_container.append(delete_opt)
+            options_container.append(download_opt)
+
+            layer_item.append(img_icon)
+            layer_item.append(layer_name)
+            layer_item.append(options)
+            layer_container.append(layer_item)
+            layer_container.append(options_container)
+            content.appendChild(layer_container)
     }
 
     addLayerOptions(layer){

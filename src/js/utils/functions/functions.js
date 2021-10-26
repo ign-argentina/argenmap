@@ -576,21 +576,21 @@ let normalize = (function() {
   })();
 
   function clickGeometryLayer(layer){
-    let aux = document.getElementById("li-"+layer)
+    let aux = document.getElementById("flc-"+layer)
   
-    if(aux.className === "capa list-group-item active"){
-      aux.className = "capa list-group-item" 
+    if(aux.className === "file-layer active"){
+      aux.className = "file-layer" 
       mapa.hideGroupLayer(layer)
     }
     else{
-      aux.className = "capa list-group-item active"
+      aux.className = "file-layer active"
       mapa.showGroupLayer(layer)
     }
 }
 
 function deleteLayerGeometry(layer){
     mapa.removeGroup(layer, true);
-    let id = "#li-"+layer
+    let id = "#fl-"+layer
     let parent = $(id).parent()[0]
     
     if(parent && parent.childElementCount<=1){

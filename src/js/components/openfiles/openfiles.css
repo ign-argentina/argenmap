@@ -1,3 +1,59 @@
+/*menu_ui layers for files*/
+
+.file-layer{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  padding: 10px 1px 10px 1px; 
+  border:1px solid #ddd;
+  background-color: white;
+  user-select:none;
+  margin-bottom: -1px;
+}
+
+.file-img{
+  cursor: pointer;
+  width:15%;
+  text-align: center;
+}
+
+.file-img img{
+  height:20px;
+}
+
+.file-opt-icon{
+  cursor: pointer;
+  color: silver;
+  margin-left: 15px;
+  width:10%;
+  text-align: center;
+}
+
+.file-opt-cont{
+  display:flex;
+  justify-content: space-around; 
+  padding:5px;
+  cursor: pointer;
+}
+
+.file-opt-item{
+  width:100%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.file-opt-item a{
+  font-size: 12px;
+  width:15%;
+}
+
+.file-layername{
+  cursor: pointer;
+  width:75%;
+  padding-left: 5px;
+}
+
 .center-flex {
   display: flex;
   align-items: center;
@@ -62,18 +118,226 @@
 
 #btnclose-icon-modalfile {
   text-align: right;
-  width: 10%;
+  width: 5%;
 }
 
 #title-icon-modalfile {
   text-align: center;
-  width: 90%;
+  width: 95%;
   color: #3f3f3f;
 }
 
 .icon-modalfile {
   display: inline-block;
 }
+
+
+
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+.wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+.wrapper .upload{
+  height: 100px;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: "Poppins", sans-serif
+}
+
+#logo_up{
+  font-size: 50px;
+}
+.fa-file-alt{
+  font-size: 30px;
+}
+
+.fa-times{
+  font-size: 20px;
+}
+
+.fa-times:hover{
+  color: #73CFF2;
+}
+.upload p{
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+section .row{
+  margin: 10px;
+  background: #EBF8FD;
+  list-style: none;
+  padding: 10px 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+section .row i{
+  color: #37bbed;
+}
+section .details span{
+  font-size: 14px;
+}
+.progress-area .row .content{
+  width: 100%;
+  margin-left: 15px;
+}
+.progress-area .details{
+  display: flex;
+  align-items: center;
+  margin-bottom: 7px;
+  justify-content: space-between;
+}
+.progress-area .content .progress-bar{
+  height: 6px;
+  width: 100%;
+  margin-bottom: 4px;
+  background: #fff;
+  border-radius: 30px;
+}
+.content .progress-bar .progress{
+  height: 100%;
+  width: 0%;
+  background: #37bbed;
+  border-radius: inherit;
+}
+.uploaded-area{
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.uploaded-area.onprogress{
+  max-height: 150px;
+}
+
+.uploaded-area .row .content{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.uploaded-area .row .details{
+  display: flex;
+  margin-left: 15px;
+  flex-direction: column;
+}
+
+.uploaded-area .row .details .size{
+  color: #404040;
+  font-size: 11px;
+}
+
+.upload{
+  width: 100%;
+  color:#37bbed;
+  cursor: pointer;
+}
+.upload:hover{
+color: #73CFF2;
+cursor: pointer;
+}
+
+
+#uploaded-area::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+#uploaded-area::-webkit-scrollbar
+{
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+#uploaded-area::-webkit-scrollbar-thumb
+{
+	background-color: #37bbed;
+	
+	background-image: -webkit-gradient(linear, 0 0, 0 100%,
+	                   color-stop(.5, rgba(255, 255, 255, .2)),
+					   color-stop(.5, transparent), to(transparent));
+}
+
+.active-tab-upload{
+  color: #37bbed;
+  border-bottom: 2px solid #5fbae9;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+  margin: 5px 8px 10px 8px;
+  cursor: pointer;
+}
+.disabled-tab-upload{
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+  margin: 5px 8px 10px 8px;
+  color: #cccccc;
+  cursor: pointer;
+}
+
+.tabs_upload{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.btn-info {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+.btn.disabled{
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .65;
+}
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+
+
 
 @media (max-width: 768px) {
   #modalOpenFile {
@@ -165,131 +429,4 @@
     left: 2px !important;
     top: 264px;
   }
-}
-
-/* Import Google font - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
-.wrapper{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-}
-.wrapper .upload{
-  height: 100px;
-  width: 100px;
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  font-family: "Poppins", sans-serif
-}
-
-#logo_up{
-  font-size: 50px;
-}
-.fa-file-alt{
-  font-size: 30px;
-}
-.upload p{
-  margin-top: 15px;
-  font-size: 16px;
-}
-
-section .row{
-  margin: 10px;
-  background: #EBF8FD;
-  list-style: none;
-  padding: 10px 10px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-section .row i{
-  color: #37bbed;
-  font-size: 30px;
-}
-section .details span{
-  font-size: 14px;
-}
-.progress-area .row .content{
-  width: 100%;
-  margin-left: 15px;
-}
-.progress-area .details{
-  display: flex;
-  align-items: center;
-  margin-bottom: 7px;
-  justify-content: space-between;
-}
-.progress-area .content .progress-bar{
-  height: 6px;
-  width: 100%;
-  margin-bottom: 4px;
-  background: #fff;
-  border-radius: 30px;
-}
-.content .progress-bar .progress{
-  height: 100%;
-  width: 0%;
-  background: #37bbed;
-  border-radius: inherit;
-}
-.uploaded-area{
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-}
-.uploaded-area.onprogress{
-  max-height: 150px;
-}
-
-.uploaded-area .row .content{
-  display: flex;
-  align-items: center;
-}
-.uploaded-area .row .details{
-  display: flex;
-  margin-left: 15px;
-  flex-direction: column;
-}
-
-.uploaded-area .row .details .size{
-  color: #404040;
-  font-size: 11px;
-}
-
-.upload{
-  color:#37bbed;
-  cursor: pointer;
-}
-.upload:hover{
-color: #73CFF2;
-cursor: pointer;
-}
-
-
-#uploaded-area::-webkit-scrollbar-track
-{
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-	background-color: #F5F5F5;
-}
-
-#uploaded-area::-webkit-scrollbar
-{
-	width: 10px;
-	background-color: #F5F5F5;
-}
-
-#uploaded-area::-webkit-scrollbar-thumb
-{
-	background-color: #37bbed;
-	
-	background-image: -webkit-gradient(linear, 0 0, 0 100%,
-	                   color-stop(.5, rgba(255, 255, 255, .2)),
-					   color-stop(.5, transparent), to(transparent));
 }
