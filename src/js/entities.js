@@ -2376,49 +2376,47 @@ class Menu_UI{
                 clickGeometryLayer(layer)
             }
             
-            let id_options_container = "opt-c-"+layer
+            //let id_options_container = "opt-c-"+layer
 
             let options = document.createElement("div")
-            options.className = "file-opt-icon"
-            options.innerHTML = `<i class="fa fa-angle-down" title="opciones"></i>`
-            options.onclick = function(){
-                 let aux = document.getElementById(id_options_container)
-                 if(aux.style.display === "none"){
-                    aux.style.display = "block"
-                    this.innerHTML = `<i class="fa fa-angle-up" title="opciones"></i>`
+            options.style = "padding-right:5px;cursor:pointer;"
+            options.className = "btn-group"
+            options.role ="group"
 
-                 }else{
-                     aux.style.display = "none"
-                    this.innerHTML = `<i class="fa fa-angle-down" title="opciones"></i>`
-                    }
-                }
+            let fdiv = document.createElement("div")
+            fdiv.style = "border: 0px;"
+            fdiv.className = "dropdown-toggle"
+            fdiv.setAttribute('data-toggle', 'dropdown')
+            fdiv.setAttribute('aria-haspopup', 'true')
+            fdiv.setAttribute('aria-expanded', 'false')
+            fdiv.innerHTML = '<span class="caret"></span>'
 
-            let options_container =  document.createElement("div")
-            options_container.className = "file-opt-cont"
-            options_container.style.display = "none"
-            options_container.id = "opt-c-"+layer
+            let mainul = document.createElement("ul")
+            mainul.className = "dropdown-menu"
+            mainul.style = "right:0px !important;left:auto !important;"
+            mainul.id = "opt-c-"+layer
 
-            let delete_opt = document.createElement("div")
-            delete_opt.innerHTML = `<a  style="width:15%">Eliminar Capa</a>`
-            delete_opt.className = "file-opt-item"
+            let delete_opt = document.createElement("li")
+            delete_opt.innerHTML = `<a href="#">Eliminar Capa</a>`
             delete_opt.onclick = function(){
                 deleteLayerGeometry(layer)
             }
 
-            let download_opt = document.createElement("div")
-            download_opt.className = "file-opt-item"
-            download_opt.innerHTML =`<a>Descargar geojson</a>`
+            let download_opt = document.createElement("li")
+            download_opt.innerHTML =`<a href="#">Descargar geojson</a>`
             download_opt.onclick = function(){
                 mapa.downloadMultiLayerGeoJSON(layer)
             }
-            options_container.append(delete_opt)
-            options_container.append(download_opt)
 
+            mainul.append(delete_opt)
+            mainul.append(download_opt)
+            options.append(fdiv)
+            options.append(mainul)
+                      
             layer_item.append(img_icon)
             layer_item.append(layer_name)
             layer_item.append(options)
             layer_container.append(layer_item)
-            layer_container.append(options_container)
             content.appendChild(layer_container)
     }
 

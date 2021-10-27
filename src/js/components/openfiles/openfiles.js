@@ -146,7 +146,7 @@ class UImf {
     faicon.className = "fas fa-arrow-circle-up"
 
     let ptitle = document.createElement("p")
-    ptitle.innerHTML="Subir Archivo"
+    ptitle.innerHTML="Abrir Archivo"
 
     divaux.append(main_inputfile)
     divaux.append(faicon)
@@ -186,7 +186,7 @@ class UImf {
   addFileItem(fileName, kb){
     let contenedor = document.getElementById("uploaded-area")
     let file_item = document.createElement("li")
-  
+  //TODO crear objeto, buscar icono eliminar adecuado
     file_item.className = "row"
     file_item.innerHTML = `
     <div class="content upload">
@@ -195,7 +195,7 @@ class UImf {
             <span class="name">${fileName}</span>
             <span class="size">${kb} KB</span>
           </div>
-          
+          <i title="eliminar archivo" class="fas fa-times"></i>
     </div>
     `
     //<div><i title="eliminar archivo" class="fas fa-times"></i>
