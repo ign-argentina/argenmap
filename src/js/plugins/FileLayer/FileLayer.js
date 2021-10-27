@@ -28,15 +28,19 @@ class FileLayer {
         return this.layerData;
     }
 
+    getGeoJSON(){
+        // we assume that zip is the format for shapefile
+        if(this.format == 'zip'){
+            return this.layer;
+        }
+
+        return this.layer.toGeoJSON();
+    }
+
     getFileSize(measure){
         if (measure && typeof measure == 'string') {
             if(measure == 'kb') {
                 return this.fileSize/1000;
-            }else if(measure == 'mb') {
-                return this.fileSize/1000000;
-            }else {
-                console.info(`The measure '${measure}' is not supported`);
-                return this.fileSize;
             }
         }
         return this.fileSize;
@@ -54,14 +58,24 @@ class FileLayer {
             .then((response)=>{
                 // Parse the response
                 let responseType = this.getResponseType();
+                // Parse the response to the required format ex: response.text(), response.json()
                 this.handleResponse(response,responseType).then((data)=>{
+                    // Converts using the libraries
                     this.getGeojson(data).then((result)=>{
                         this.layer = result;
-                        resolve(this.layer);
-
-                    }).catch((error)=>{reject(error)})
-                }).catch((error)=>{reject(error)})
-            }).catch((error)=>{reject(error)})
+                        resolve();
+                    }).catch((error)=>{
+                        console.error("error converting to geoJSON");
+                        reject(error)
+                    })
+                }).catch((error)=>{
+                    console.error("error reading the file");
+                    reject(error)
+                })
+            }).catch((error)=>{
+                console.error("error getting the file");
+                reject(error)
+            })
         });
     }
 
@@ -75,9 +89,12 @@ class FileLayer {
             let layer = null;
             switch (this.format) {
                 case 'zip':
-                    shp(data).then((parsedLayer)=>{
-                        layer = parsedLayer;
-                    });
+                    // Its necessary return the promise, only in this case because shp resolves in a promise
+                    return shp(data).then((parsedLayer)=>{
+                        resolve(parsedLayer);
+                    }).catch(()=>{
+                        reject(`El archivo ${this.fileName} no pudo ser procesado, verifíquelo e intente nuevamente.`)
+                    })
                     break;
                 case 'json':
                 case 'geojson':
@@ -101,6 +118,7 @@ class FileLayer {
                     break;
             }
 
+            // Se comprueba que layer haya sido resuelto y que disponga de layers
             if(layer == null || Object.keys(layer._layers).length == 0){
                 reject(`El archivo ${this.fileName} no pudo ser procesado, verifíquelo e intente nuevamente.`);
             }else {resolve(layer)}

@@ -113,7 +113,7 @@ class UImf {
       // Initialize File Layer
       let fileLayer = new FileLayer();
       // Give uploaded file to fileLayer
-      fileLayer.handleFile(e.target.files[0]).then((lyr)=>{
+      fileLayer.handleFile(e.target.files[0]).then(()=>{
         //active btn add layer
         ui_upload.enabledbtnCapa()
         // Stop load animation
@@ -121,7 +121,8 @@ class UImf {
         // Show the uploaded file
         ui_upload.addFileItem(normalize(fileLayer.getFileName()),fileLayer.getFileSize('kb'));
         // add the layer obtained
-        addedLayers.push({layer:lyr, name:fileLayer.getFileName()});
+        
+        addedLayers.push({layer:fileLayer.getGeoJSON(), name:fileLayer.getFileName()});
 
         let cont = document.getElementById("uploaded-area")
         if (cont.children.length>0){
@@ -183,7 +184,6 @@ class UImf {
     let file_item = document.createElement("li")
   
     file_item.className = "row"
-    //TODO convertir en objeto
     file_item.innerHTML = `
     <div class="content upload">
         <i class="fas fa-file-alt"></i>
@@ -224,20 +224,18 @@ class UImf {
 let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
-
   addedLayers.forEach((e)=>{
-
+    // Normalize the name to work correctly with Leaflet
     let layer_name = normalize(e.name)
-    let geojson_data = e.layer.toGeoJSON()
-
-    mapa.addGeoJsonLayerToDrawedLayers(geojson_data,layer_name, false);
+    // Add the geoJSON layer
+    mapa.addGeoJsonLayerToDrawedLayers(e.layer,layer_name, false);
+    // Add the layer to the Menu
     menu_ui.addFileLayer("Archivos", layer_name)
-
   });
 
-  addedLayers = [];
   let close = document.getElementById("modalOpenFile")
   document.getElementById("modalgeojson").style.color = "black";
   document.body.removeChild(close);
+  addedLayers = [];
   open=false;
 }
