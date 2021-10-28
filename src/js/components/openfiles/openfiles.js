@@ -1,6 +1,7 @@
 let upload_files = null;
 let addedLayers = [];
 let open = false;
+let control_btn_add_layer = false;
 
 class IconModalGeojson {
   constructor() {
@@ -47,11 +48,9 @@ class UImf {
     let s_sec = document.createElement("section")
     s_sec.style = "width:5%"
     let btnclose = document.createElement("a")
-    btnclose.style = "color:#37bbed;"
     btnclose.id = "btnclose-icon-modalfile"
     btnclose.className = "icon-modalfile"
-    btnclose.innerHTML =
-      '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
+    btnclose.innerHTML ='<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = function () {
       document.body.removeChild(modalOpenFile);
       document.getElementById("iconopenfile-container").disabled = false;
@@ -68,10 +67,10 @@ class UImf {
     let tab_div = document.createElement("div")
     tab_div.className = "tabs_upload"
     tab_div.innerHTML = `
-    <span style="font-size:12px;color:#37bbed;margin:0px 5px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX,<br>
-    SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
+    <span style="font-size:12px;color:#37bbed;margin:0px 10px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX, SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
+ 
     //<li class="active-tab-upload">Archivo</li>
-    //    <li class="disabled-tab-upload">+ Nuevo</li>
+    // <li class="disabled-tab-upload">+ Nuevo</li>
 
     let mainContainerFile = document.createElement("div")
     mainContainerFile.id = "file_gestor"
@@ -84,13 +83,12 @@ class UImf {
 
 
     $( "#modalOpenFile" ).draggable({
-      containment: "#mapa",
-      scroll: false})
+      containment: "#mapa"})
   }
 
 
 
-  addForm2(){
+  addForm(){
 
     let contenedor_principal = document.getElementById("file_gestor")
 
@@ -128,11 +126,6 @@ class UImf {
         
         addedLayers.push({layer:fileLayer.getGeoJSON(), name:fileLayer.getFileName()});
 
-        let cont = document.getElementById("uploaded-area")
-        if (cont.children.length>1){
-          let txt = document.getElementById("btn-upload-agregar-capa")
-          txt.innerHTML = "Agregar Capas"
-        }
       }).catch((error)=>{
         console.warn('Hay error: ',error);
         new UserMessage(error, true, 'error');
@@ -167,10 +160,14 @@ class UImf {
     btnCapa.className = "btn btn-info disabled"
     btnCapa.style = "width:100%; margin:20px 0px 10px 0px"
     btnCapa.innerHTML = "Agregar Capa"
+    btnCapa.onclick = function () {
+      if(control_btn_add_layer)addLayersfromFiles()
+    }
 
    contenedor_principal.append(logo_upload)
    contenedor_principal.append(section_load)
    contenedor_principal.append(btnCapa)
+
   }
 
   logoAnimation(){
@@ -184,24 +181,34 @@ class UImf {
   }
 
   addFileItem(fileName, kb){
+    let id_item = "item_uf_"+fileName
     let contenedor = document.getElementById("uploaded-area")
     let file_item = document.createElement("li")
-  //TODO crear objeto, buscar icono eliminar adecuado
+    file_item.id=id_item
     file_item.className = "row"
-    file_item.innerHTML = `
-    <div class="content upload">
-        <i class="fas fa-file-alt"></i>
-         <div class="details">
-            <span class="name">${fileName}</span>
+
+    let content_upload = document.createElement("div")
+    content_upload.className = "content upload"
+    content_upload.innerHTML= `
+        <i style="width: 20%;" class="fas fa-file-alt"></i>
+         <div style="width: 70%;" class="details">
+            <span class="name" title="${fileName}">${fileName}</span>
             <span class="size">${kb} KB</span>
           </div>
-          <i title="eliminar archivo" class="fas fa-times"></i>
-    </div>
     `
-    //<div><i title="eliminar archivo" class="fas fa-times"></i>
-    let content_upload = document.createElement("div")
     let icon_file = document.createElement("div")
+    icon_file.innerHTML = '<i style="width: 10%;" title="eliminar archivo" class="fa fa-times-circle"></i>'
+    icon_file.onclick = function(){
+      $("#"+id_item).remove()
+      //TODO Eliminar archivo de array
+      console.log("TODO eliminar archivo de array")
+    }
+
+    content_upload.append(icon_file)
+    file_item.append(content_upload)
+
     contenedor.append(file_item)
+    
   }
 
 
@@ -211,16 +218,31 @@ class UImf {
       document.getElementById("iconopenfile-container").disabled = true;
       document.getElementById("modalgeojson").style.color = "grey";
       uimodalfs.createModal();
-      uimodalfs.addForm2();
+      uimodalfs.addForm();
     }
   }
 
   enabledbtnCapa(){
+    control_btn_add_layer =true
     let btn = document.getElementById("btn-upload-agregar-capa")
     btn.className = "btn btn-info"
-    btn.onclick = function () {
-      addLayersfromFiles()
-    };
+
+    $('#uploaded-area').bind('DOMSubtreeModified', function(){
+
+      let cont = document.getElementById("uploaded-area")
+      let txt = document.getElementById("btn-upload-agregar-capa")
+        if (cont.children.length>1){
+          txt.innerHTML = "Agregar Capas"
+        }else{
+          txt.innerHTML = "Agregar Capa"
+        }
+
+      if($('#uploaded-area')[0].childElementCount==0){
+        control_btn_add_layer = false;
+        let btn = document.getElementById("btn-upload-agregar-capa")
+        btn.className = "btn btn-info disabled"
+      }
+   });
   }
   
 }
@@ -228,6 +250,7 @@ class UImf {
 let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
+  //TODO Animacion de carga a boton "Agregar capa"
   addedLayers.forEach((e)=>{
     // Normalize the name to work correctly with Leaflet
     let layer_name = normalize(e.name)

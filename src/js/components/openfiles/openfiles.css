@@ -1,4 +1,70 @@
-/*menu_ui layers for files*/
+.name{
+  max-height: 45px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fa-times-circle{
+  font-size: 20px;
+}
+
+.fa-times-circle:hover{
+  color:#e37d7b;
+}
+.icon_close_mf{
+  color:silver ;
+  font-size:16px !important;
+  cursor:pointer
+}
+.icon_close_mf:hover{
+  color:#73CFF2;
+}
+
+.modal-file-delete{
+  top:25%;
+  background-color:white;
+  width:300px;
+  max-height:350px;
+  position: absolute;
+  z-index:2000;
+  border-radius: 8px;
+  -moz-box-shadow: inset 0 0 10px #000000;
+  -webkit-box-shadow: inset 0 0 10px #000000;
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+@media (max-width: 768px) {
+  .modal-file-delete{
+      left:10%;
+    } 
+    
+}
+
+@media (min-width: 769px) {
+  .modal-file-delete{
+    left:40%;
+  } 
+}
+
+.modal-file-delete-body{
+  font-family: Poppins, sans-serif;
+  text-align: center;
+  cursor: default;
+  margin: 10px 10px 30px;
+  max-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-layer-container:first-child{
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.file-layer-container:last-child{
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
 
 .file-layer{
   display: flex;
@@ -52,6 +118,9 @@
   cursor: pointer;
   width:75%;
   padding-left: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 56px;
 }
 
 .center-flex {
@@ -164,6 +233,7 @@
 .fa-times{
   font-size: 20px;
 }
+.fa-trash-o{font-size: 20px;}
 
 .fa-times:hover{
   color: #73CFF2;
@@ -224,7 +294,7 @@ section .details span{
 .uploaded-area .row .content{
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  width: 100%;
 }
 .uploaded-area .row .details{
   display: flex;

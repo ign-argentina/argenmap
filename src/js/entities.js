@@ -2357,6 +2357,7 @@ class Menu_UI{
           
              let layer_container = document.createElement("div")
              layer_container.id = "fl-" +layer
+             layer_container.className = "file-layer-container"
 
               let layer_item = document.createElement("div")
               layer_item.id = "flc-" +layer
@@ -2372,7 +2373,8 @@ class Menu_UI{
             let layer_name = document.createElement("div")
             layer_name.className = "file-layername"
             layer_name.innerHTML= "<a>"+layer+"</a>"
-            layer_name .onclick = function(){
+            layer_name.title = layer
+            layer_name.onclick = function(){
                 clickGeometryLayer(layer)
             }
             
@@ -2397,13 +2399,15 @@ class Menu_UI{
             mainul.id = "opt-c-"+layer
 
             let delete_opt = document.createElement("li")
-            delete_opt.innerHTML = `<a href="#">Eliminar Capa</a>`
+            delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
             delete_opt.onclick = function(){
-                deleteLayerGeometry(layer)
+                let menu = new Menu_UI
+                menu.modalEliminar(layer)
+                //deleteLayerGeometry(layer)
             }
 
             let download_opt = document.createElement("li")
-            download_opt.innerHTML =`<a href="#">Descargar geojson</a>`
+            download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
             download_opt.onclick = function(){
                 mapa.downloadMultiLayerGeoJSON(layer)
             }
@@ -2461,6 +2465,62 @@ class Menu_UI{
             el.setAttribute('class', 'display-none')
             el.innerHTML = ""
         }
+    }
+
+    modalEliminar(layer){
+        $("#modal_layer_del").remove();
+        let modal =  document.createElement("div")
+        modal.id="modal_layer_del"
+        modal.className = "modal-file-delete"
+
+        let close_icon = document.createElement("div")
+        close_icon.style= "display:flex;flex-direction: row;padding-top:5px"
+        let c_empty = document.createElement("div")
+        c_empty.style.width = "90%"
+        let c_close = document.createElement("div")
+        c_close.style = 'width:10%;text-align: center;cursor:pointer;'
+        c_close.innerHTML ='<i style="color:grey;font-size:16px" class="fa fa-times" aria-hidden="true"></i>'
+        c_close.onclick = function(){
+            $("#modal_layer_del").remove();
+        }
+        close_icon.append(c_empty)
+        close_icon.append(c_close)
+
+        let modal_body = document.createElement("div")
+        modal_body.className = "modal-file-delete-body"
+        modal_body.innerHTML = `¿Eliminar Capa <strong>${layer}</strong>?`
+        modal_body.title = `¿Eliminar Capa ${layer}?`
+
+        let btn_container = document.createElement("div")
+        btn_container.style =   'display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;'
+        
+        let btn_si = document.createElement("button")
+        btn_si.className = "btn btn-info"
+        btn_si.innerHTML = "Eliminar"    
+        btn_si.onclick = function(){
+            deleteLayerGeometry(layer)
+            $("#modal_layer_del").remove();
+        }
+
+        let btn_no = document.createElement("button")
+        btn_no.className = "btn btn-default"
+        btn_no.style = 'border: 1px solid silver'
+        btn_no.innerHTML = "Cancelar"
+        btn_no.onclick = function(){
+            $("#modal_layer_del").remove();
+        }
+
+        btn_container.append(btn_si)
+        btn_container.append(btn_no)
+
+        modal.append(close_icon)
+        modal.append(modal_body)
+        modal.append(btn_container)
+        document.body.appendChild(modal)
+
+        $( "#modal_layer_del" ).draggable({
+            containment: "#mapa"})
+
     }
 
 }
