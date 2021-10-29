@@ -61,14 +61,16 @@
     }
 
     handleFile(file){
-        // TODO Agregar soporte para archivos locales desde consola por ejemplo, no solo de input.
-        this.file = file;
-        this.fileName = file.name;
-        this.format = file.name.split(".").pop();
-        this.fileSize = file.size;
-        this.id = this.format + (''+new Date().getTime()).substr(8);
-        // Fetch the file
         return new Promise((resolve,reject)=>{
+            // Check file exists
+            if(file==undefined || file==null) reject('Ningún archivo seleccionado');
+
+            this.file = file;
+            this.fileName = file.name;
+            this.format = file.name.split(".").pop();
+            this.fileSize = file.size;
+            this.id = this.format + (''+new Date().getTime()).substr(8);
+            // Fetch the file
             fetch(URL.createObjectURL(file))
             .then((response)=>{
                 // Parse the response

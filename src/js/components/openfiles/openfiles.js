@@ -108,6 +108,9 @@ class UImf {
     main_inputfile.className="file-input"
     main_inputfile.style="opacity: 0.0;top: 0; left: 0; bottom: 0;right: 0;"
     main_inputfile .addEventListener("change", function (e) {
+      // Fix Chrome bug: change event fires on cancel when previous file was uploaded
+      if (!e.target.files[0]) return;
+
       let ui_upload = new UImf();
 
       //FileReader.onload --->ui_upload.logoAnimation()
