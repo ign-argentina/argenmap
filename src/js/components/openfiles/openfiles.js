@@ -123,27 +123,29 @@ class UImf {
         ui_upload.reload_logo();
         // Show the uploaded file
 
-        // Check if the file was loaded
+        // Check if the file was loaded in the current dialog
         let existsInCurrent = currentLayers.filter((e)=>{
           return e.file_name == fileLayer.getFileName()
         })
-
+        // Check if the file was load previously
         let existsInAdded = addedLayers.filter((e)=>{
           return e.file_name == fileLayer.getFileName()
         })
 
+        // Set the name, short or add number of ocurrencies
         let name;
         if(existsInCurrent.length  || existsInAdded.length){
           let exists = existsInCurrent.length + existsInAdded.length;
-          name = stringShortener(normalize(fileLayer.getFileName()),13,false)+`(${exists})..`;
+          name = stringShortener(normalize(fileLayer.getFileName()),13,false)+`..(${exists})`;
         }else {
           name = stringShortener(normalize(fileLayer.getFileName()),16,true);
         }
 
+        // Show in the dialog
         ui_upload.addFileItem(name,fileLayer.getFileSize('kb'));
-        // add the layer obtained
-        
+        // Add to current layers to add to the layers menu later
         currentLayers.push({
+          id: fileLayer.getId(),
           layer:fileLayer.getGeoJSON(), 
           name:name,
           file_name:fileLayer.getFileName()
@@ -273,14 +275,12 @@ class UImf {
 let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
-  //TODO Animacion de carga a boton "Agregar capa"
   currentLayers.forEach((e)=>{
-    // Normalize the name to work correctly with Leaflet
-    let layer_name = e.name
-    // Add the geoJSON layer
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer,layer_name, false);
+    // Draw the layer in the map
+    mapa.addGeoJsonLayerToDrawedLayers(e.layer,e.name, false);
     // Add the layer to the Menu
-    menu_ui.addFileLayer("Archivos", layer_name)
+    menu_ui.addFileLayer("Archivos", e.name);
+    // Save layer to check its existence in the next layer load
     addedLayers.push(e);
   });
 
