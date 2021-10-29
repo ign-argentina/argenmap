@@ -136,13 +136,13 @@ class UImf {
         let name;
         if(existsInCurrent.length  || existsInAdded.length){
           let exists = existsInCurrent.length + existsInAdded.length;
-          name = stringShortener(normalize(fileLayer.getFileName()),13,false)+`..(${exists})`;
+          name = stringShortener(fileLayer.getFileName(),13,false)+`..(${exists})`;
         }else {
-          name = stringShortener(normalize(fileLayer.getFileName()),16,true);
+          name = stringShortener(fileLayer.getFileName(),16,true);
         }
 
         // Show in the dialog
-        ui_upload.addFileItem(name,fileLayer.getFileSize('kb'));
+        ui_upload.addFileItem(fileLayer.getId(),name,fileLayer.getFileSize('kb'),fileLayer.getFileName());
         // Add to current layers to add to the layers menu later
         currentLayers.push({
           id: fileLayer.getId(),
@@ -205,8 +205,10 @@ class UImf {
     logo.className = "fas fa-arrow-circle-up"
   }
 
-  addFileItem(fileName, kb){
-    let id_item = "item_uf_"+fileName
+  addFileItem(id,fileName, kb, fileNameOriginal){
+    let del_index = currentLayers.length
+    console.log(currentLayers.length)
+    let id_item = "item_uf_"+id
     let contenedor = document.getElementById("uploaded-area")
     let file_item = document.createElement("li")
     file_item.id=id_item
@@ -217,7 +219,7 @@ class UImf {
     content_upload.innerHTML= `
         <i style="width: 20%;" class="fas fa-file-alt"></i>
          <div style="width: 70%;" class="details">
-            <span class="name" title="${fileName}">${fileName}</span>
+            <span class="name" title="${fileNameOriginal}">${fileName}</span>
             <span class="size">${kb} KB</span>
           </div>
     `
@@ -225,8 +227,7 @@ class UImf {
     icon_file.innerHTML = '<i style="width: 10%;" title="eliminar archivo" class="fa fa-times-circle"></i>'
     icon_file.onclick = function(){
       $("#"+id_item).remove()
-      //TODO Eliminar archivo de array
-      console.log("TODO eliminar archivo de array")
+      currentLayers.splice(del_index, 1)
     }
 
     content_upload.append(icon_file)
@@ -277,9 +278,9 @@ let uimodalfs = new UImf();
 function addLayersfromFiles() {
   currentLayers.forEach((e)=>{
     // Draw the layer in the map
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer,e.name, false);
+    mapa.addGeoJsonLayerToDrawedLayers(e.layer,e.id, false);
     // Add the layer to the Menu
-    menu_ui.addFileLayer("Archivos", e.name);
+    menu_ui.addFileLayer("Archivos", e.name, e.id, e.file_name);
     // Save layer to check its existence in the next layer load
     addedLayers.push(e);
   });

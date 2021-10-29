@@ -2348,7 +2348,7 @@ class Menu_UI{
         $('#sidebar div.menu5').first().prepend(itemnew)
     }
 
-    addFileLayer(groupname, layer){
+    addFileLayer(groupname, textName, id, fileName){
         let groupnamev= groupname.replace(/ /g, "_")
         let main = document.getElementById("lista-"+groupnamev)
 
@@ -2356,26 +2356,26 @@ class Menu_UI{
         let content = document.getElementById(groupnamev+"-panel-body")
           
              let layer_container = document.createElement("div")
-             layer_container.id = "fl-" +layer
+             layer_container.id = "fl-" +id
              layer_container.className = "file-layer-container"
 
               let layer_item = document.createElement("div")
-              layer_item.id = "flc-" +layer
+              layer_item.id = "flc-" +id
               layer_item.className = "file-layer active"
               
               let img_icon =document.createElement("div")
               img_icon.className = "file-img"
               img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
               img_icon.onclick = function(){
-                clickGeometryLayer(layer)
+                clickGeometryLayer(id)
                 }
 
             let layer_name = document.createElement("div")
             layer_name.className = "file-layername"
-            layer_name.innerHTML= "<a>"+layer+"</a>"
-            layer_name.title = layer
+            layer_name.innerHTML= "<a>"+textName+"</a>"
+            layer_name.title = fileName
             layer_name.onclick = function(){
-                clickGeometryLayer(layer)
+                clickGeometryLayer(id)
             }
             
             //let id_options_container = "opt-c-"+layer
@@ -2397,20 +2397,20 @@ class Menu_UI{
             let mainul = document.createElement("ul")
             mainul.className = "dropdown-menu"
             mainul.style = "right:0px !important;left:auto !important;"
-            mainul.id = "opt-c-"+layer
+            mainul.id = "opt-c-"+id
 
             let delete_opt = document.createElement("li")
             delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
             delete_opt.onclick = function(){
                 let menu = new Menu_UI
-                menu.modalEliminar(layer)
+                menu.modalEliminar(textName,id,fileName)
                 //deleteLayerGeometry(layer)
             }
 
             let download_opt = document.createElement("li")
             download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
             download_opt.onclick = function(){
-                mapa.downloadMultiLayerGeoJSON(layer)
+                mapa.downloadMultiLayerGeoJSON(id)
             }
 
             mainul.append(delete_opt)
@@ -2468,7 +2468,7 @@ class Menu_UI{
         }
     }
 
-    modalEliminar(layer){
+    modalEliminar(textname,id,fileName){
         $("#modal_layer_del").remove();
         let modal =  document.createElement("div")
         modal.id="modal_layer_del"
@@ -2489,8 +2489,8 @@ class Menu_UI{
 
         let modal_body = document.createElement("div")
         modal_body.className = "modal-file-delete-body"
-        modal_body.innerHTML = `¿Eliminar Capa <strong>${layer}</strong>?`
-        modal_body.title = `¿Eliminar Capa ${layer}?`
+        modal_body.innerHTML = `¿Eliminar Capa <strong>${textname}</strong>?`
+        modal_body.title = `¿Eliminar ${fileName}?`
 
         let btn_container = document.createElement("div")
         btn_container.style =   'display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;'
@@ -2499,7 +2499,7 @@ class Menu_UI{
         btn_si.className = "btn btn-info"
         btn_si.innerHTML = "Eliminar"    
         btn_si.onclick = function(){
-            deleteLayerGeometry(layer)
+            deleteLayerGeometry(id)
             $("#modal_layer_del").remove();
         }
 
