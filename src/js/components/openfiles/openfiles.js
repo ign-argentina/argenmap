@@ -210,7 +210,6 @@ class UImf {
 
   addFileItem(id,fileName, kb, fileNameOriginal){
     let del_index = currentLayers.length
-    console.log(currentLayers.length)
     let id_item = "item_uf_"+id
     let contenedor = document.getElementById("uploaded-area")
     let file_item = document.createElement("li")
@@ -293,4 +292,15 @@ function addLayersfromFiles() {
   document.body.removeChild(close);
   currentLayers = [];
   open=false;
+}
+
+function delFileItembyID(id){
+  
+  let del_index = null
+
+  addedLayers.forEach((e, i)=>{
+    if(e.id===id) index = i
+  });
+
+  addedLayers.splice(del_index,1)
 }

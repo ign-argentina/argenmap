@@ -2499,6 +2499,7 @@ class Menu_UI{
         btn_si.className = "btn btn-info"
         btn_si.innerHTML = "Eliminar"    
         btn_si.onclick = function(){
+            delFileItembyID(id)
             deleteLayerGeometry(id)
             $("#modal_layer_del").remove();
         }
