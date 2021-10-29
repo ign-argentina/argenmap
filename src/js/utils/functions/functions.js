@@ -671,6 +671,22 @@ function zoomEditableLayers(layername){
   }
 
 
+    /**
+     * Recorta un string si su longitud es mayor a la longitud dada 
+     * agrega ".." al final en caso de realizar el recorte
+     * @param str es el string a recortar
+     * @param chars la longitud del string limite
+     * @return un string recortado o no
+     */
+    function stringShortener(str,chars,addDots){
+        if (str.length > chars) {
+            return (addDots) ? str.substr(0,chars) + '..' : str.substr(0,chars);
+        }else {
+            return str
+        }
+    }
+
+
   //add funcion with setTimeout 
   //fix bug--->  line 553 entities.js 
   //no funciona para todos los templates

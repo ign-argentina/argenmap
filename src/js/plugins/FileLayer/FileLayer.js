@@ -6,12 +6,13 @@
  * · GeoJSON: Leaflet
  **/
 
-class FileLayer {
+ class FileLayer {
     constructor(){
         this.file = null;
         this.fileName = null;
         this.format = null;
         this.layerData = null;
+        this.layerType = null;
         this.fileSize = null;
         this.layer = null;
     }
@@ -26,6 +27,14 @@ class FileLayer {
 
     getRawLayerData(){
         return this.layerData;
+    }
+
+    getFormat(){
+        return this.format;
+    }
+
+    getLayerType(){
+        return this.layerType;
     }
 
     getGeoJSON(){
@@ -90,6 +99,7 @@ class FileLayer {
             switch (this.format) {
                 case 'zip':
                     // Its necessary return the promise, only in this case because shp resolves in a promise
+                    this.layerType = 'shapefile';
                     return shp(data).then((parsedLayer)=>{
                         resolve(parsedLayer);
                     }).catch(()=>{
@@ -99,19 +109,24 @@ class FileLayer {
                 case 'json':
                 case 'geojson':
                     if (data.type == 'Topology') {
+                        this.layerType = 'topoJSON';
                         layer = omnivore.topojson.parse(data);
                     }else{
+                        this.layerType = 'geoJSON';
                         layer = L.geoJSON(data);
                     }
                     break;
                 case 'kml':
+                    this.layerType = 'kml';
                     layer = omnivore.kml.parse(data);
                     break;
                 case 'txt':
                 case 'wkt':
+                    this.layerType = 'wkt';
                     layer = omnivore.wkt.parse(data);
                     break;
                 case 'gpx':
+                    this.layerType = 'gpx';
                     layer = omnivore.gpx.parse(data);
                     break;
                 default:

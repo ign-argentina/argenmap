@@ -1,4 +1,5 @@
 let upload_files = null;
+let currentLayers = [];
 let addedLayers = [];
 let open = false;
 let control_btn_add_layer = false;
@@ -56,7 +57,7 @@ class UImf {
       document.getElementById("iconopenfile-container").disabled = false;
       document.getElementById("modalgeojson").style.color = "black";
       open = false;
-      addedLayers = [];
+      currentLayers = [];
     };
     s_sec.append(btnclose);
 
@@ -121,10 +122,32 @@ class UImf {
         // Stop load animation
         ui_upload.reload_logo();
         // Show the uploaded file
-        ui_upload.addFileItem(normalize(fileLayer.getFileName()),fileLayer.getFileSize('kb'));
+
+        // Check if the file was loaded
+        let existsInCurrent = currentLayers.filter((e)=>{
+          return e.file_name == fileLayer.getFileName()
+        })
+
+        let existsInAdded = addedLayers.filter((e)=>{
+          return e.file_name == fileLayer.getFileName()
+        })
+
+        let name;
+        if(existsInCurrent.length  || existsInAdded.length){
+          let exists = existsInCurrent.length + existsInAdded.length;
+          name = stringShortener(normalize(fileLayer.getFileName()),13,false)+`(${exists})..`;
+        }else {
+          name = stringShortener(normalize(fileLayer.getFileName()),16,true);
+        }
+
+        ui_upload.addFileItem(name,fileLayer.getFileSize('kb'));
         // add the layer obtained
         
-        addedLayers.push({layer:fileLayer.getGeoJSON(), name:fileLayer.getFileName()});
+        currentLayers.push({
+          layer:fileLayer.getGeoJSON(), 
+          name:name,
+          file_name:fileLayer.getFileName()
+        });
 
       }).catch((error)=>{
         console.warn('Hay error: ',error);
@@ -251,18 +274,19 @@ let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
   //TODO Animacion de carga a boton "Agregar capa"
-  addedLayers.forEach((e)=>{
+  currentLayers.forEach((e)=>{
     // Normalize the name to work correctly with Leaflet
-    let layer_name = normalize(e.name)
+    let layer_name = e.name
     // Add the geoJSON layer
     mapa.addGeoJsonLayerToDrawedLayers(e.layer,layer_name, false);
     // Add the layer to the Menu
     menu_ui.addFileLayer("Archivos", layer_name)
+    addedLayers.push(e);
   });
 
   let close = document.getElementById("modalOpenFile")
   document.getElementById("modalgeojson").style.color = "black";
   document.body.removeChild(close);
-  addedLayers = [];
+  currentLayers = [];
   open=false;
 }
