@@ -70,45 +70,48 @@ class Impresor {
 
 
 class ImpresorItemHTML extends Impresor {
-    imprimir(itemComposite) {
-        var childId = itemComposite.getId();
-        let aux = {
-            ...itemComposite,
+    imprimir(item) {
+        var childId = item.getId();
+        let lyr = item.capa,
+        aux = {
+            ...item,
             'childid': childId,
             'display_options': false,
-            'type': itemComposite.capa.servicio,
-        }
+            'type': lyr.servicio,
+        }; 
         app.setLayer(aux)
-        app.layerNameByDomId[childId] = itemComposite.nombre
+        app.layerNameByDomId[childId] = item.nombre
         var legendImg = ""
-
+        
         //if tab = combobox, img source from 
-        if(itemComposite.listType === "combobox"){
-            let url_img = itemComposite.capa.legendURL+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' 
+        if(item.listType === "combobox"){
+            let url_img = lyr.legendURL+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' 
             legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + url_img+ "' onerror='showImageOnError(this);'></div>";
-        }else{
-            legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
-        }
-        var legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + itemComposite.capa.legendURL+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' + "' onerror='showImageOnError(this);'></div>";
-        var activated = (itemComposite.visible == true) ? " active " : "";
+        }/* else{
+            legendImg = (item.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + item.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
+        } */
+        let legend = lyr.servicio === 'wms' ? lyr.legendURL : lyr.legendURL +'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off';
+        console.log(item);
+        var legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
+        var activated = (item.visible == true) ? " active " : "";
         let btnhtml = ""
 
         if (loadLayerOptions){
             btnhtml =  "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" +
             "<div class='capa-title'>" + legendImg +
-            "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre + " href='#'>" +
-            "<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
-            "</a>" +"<div class='zoom-layer'  layername="+itemComposite.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+itemComposite.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
-            "</div><div class='display-none' id=layer-options-"+itemComposite.nombre+"></div>" +
+            "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" +
+            "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
+            "</a>" +"<div class='zoom-layer'  layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+item.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
+            "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" +
             "</li>"
         }
         else{
             btnhtml = "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 10px 1px;' >" +
             "<div class='capa-title'>" + legendImg +
-            "<div class='name-layer' style='align-self: center;' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + itemComposite.nombre + " href='#'>" +
-            "<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
-            "</a>" +"<div class='zoom-layer'  style='align-self: center;' layername="+itemComposite.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div>"+
-            "</div><div class='display-none' id=layer-options-"+itemComposite.nombre+"></div>" +
+            "<div class='name-layer' style='align-self: center;' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" +
+            "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
+            "</a>" +"<div class='zoom-layer'  style='align-self: center;' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div>"+
+            "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" +
             "</li>"
         }
  
@@ -319,8 +322,8 @@ class LayersInfoWMS extends LayersInfo {
                         if (this.type == 'wmslayer_mapserver') {
                             var capa = new CapaMapserver(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         } else {
-                            var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
-                            
+                            //var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null, null, null, null);
+                            var capa = new Capa(key,this.customizedLayers[key]["new_title"],this.srs,this.host,this.service,this.version,this.feature_info_format,null,this.minx,this.maxx,this.miny,this.maxy,this.attribution,this.customizedLayers[key]["legend"]);
                         }
                         //Generate keyword array
                         var keywordsAux = [];
@@ -2592,7 +2595,7 @@ class Menu_UI{
         contenedor.innerHTML = '<div class="loading"><img src="src/styles/images/loading.svg"></div>'
     }
 
-    addLayers_combobox(items){
+    async addLayers_combobox(items){
         let contenedor = document.getElementById("NEW-wms-combo-list")
         let list = document.createElement("div")
         let layers = items.itemsComposite
@@ -2604,6 +2607,7 @@ class Menu_UI{
             //add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options)
             let li_layer = this.add_btn_Layer_combobox(id_dom,title,url_img,descripcion, false)
             list.append(li_layer)
+            console.log(layers[property]);
           }
           contenedor.innerHTML = ""
           contenedor.append(list)

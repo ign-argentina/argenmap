@@ -625,9 +625,25 @@ function zoomEditableLayers(layername){
   function bindZoomLayer(){
 
     let elements = document.getElementsByClassName("zoom-layer");
-    let zoomLayer = function() {
+    let zoomLayer = async function() {
         let layer_name = this.getAttribute("layername")
         let bbox = app.layers[layer_name].capa
+            //if (bbox.servicio === "wms" && typeof bbox.maxy == "null" || typeof bbox.maxy == "undefined") {
+            if (bbox.servicio === "wms" && [bbox.minx,bbox.legendURL].some(el => el === null || 'undefined')) {
+                await getWmsLyrParams(bbox); // gets layer atribtutes from WMS
+            }
+
+        if (bbox.maxy == "null" || typeof bbox.maxy == "undefined"){
+            for (i = 0; i < this.childNodes.length; i++) {
+                if (this.childNodes[i].className == "fas fa-search-plus") {
+                  this.childNodes[i].classList.remove('fa-search-plus');
+                  this.childNodes[i].classList.add('fa-exclamation-triangle');
+                  this.childNodes[i].setAttribute('style', 'color: orange');
+                  this.childNodes[i].setAttribute('title', 'Invalid bbox in WMS response');
+                  break;
+                }        
+            }
+        }
 
         //si la capa no esta activa activar
         let activas = gestorMenu.activeLayers
@@ -637,12 +653,11 @@ function zoomEditableLayers(layername){
             active = true
           })
         if(!active)gestorMenu.muestraCapa(app.layers[layer_name].childid)
-        
         let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
         try {
             mapa.fitBounds(bounds);
         } catch (error) {
-            //console.log(bounds);
+            console.error(error);
         }
     };
     
@@ -690,24 +705,77 @@ function zoomEditableLayers(layername){
       }
 
 
-      function zoomLayer(id_dom){
-            let nlayer = app.layerNameByDomId[id_dom]
-            let bbox = app.layers[nlayer].capa
-            //solo sii la capa no esta activa activar
-            let activas = gestorMenu.activeLayers
-            let active = false
-            activas.forEach(function(key) {
-                if(key===nlayer)
-                active = true
-              })
-            if(!active)gestorMenu.muestraCapa(app.layers[nlayer].childid)
-            
-            let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
-            try {
-                mapa.fitBounds(bounds);
-            } catch (error) {
-                //console.log(bounds);
+function zoomLayer(id_dom) {
+  let nlayer = app.layerNameByDomId[id_dom];
+  let bbox = app.layers[nlayer].capa;
+  //solo sii la capa no esta activa activar
+  let activas = gestorMenu.activeLayers;
+  let active = false;
+  activas.forEach(function (key) {
+    if (key === nlayer) active = true;
+  });
+  if (!active) gestorMenu.muestraCapa(app.layers[nlayer].childid);
+
+  let bounds = [
+    [bbox.maxy, bbox.maxx],
+    [bbox.miny, bbox.minx],
+  ];
+  try {
+    mapa.fitBounds(bounds);
+  } catch (error) {
+    //console.log(bounds);
+  }
+}
+
+async function getWmsLyrParams(lyr) {
+  let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
+    sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
+  await fetch(url)
+    .then((res) => res.text())
+    .then((str) => {
+      parseXml(str, lyr, sys);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+}
+
+function parseXml(str, lyr, sys) {
+    let xmlLyr, parser = new DOMParser(), xmlDoc, xmlNodes;
+    try {
+        xmlDoc = parser.parseFromString(str, "text/xml");
+    } catch (error) { }
+    xmlDoc.documentElement.nodeName == "parsererror"
+        ? console.error("error while parsing")
+        : (xmlNodes = xmlDoc.getElementsByTagName("Name"));
+
+    if (xmlNodes) {
+        for (i = 0; i < xmlNodes.length; i++) {
+            if (xmlNodes[i].childNodes[0].nodeValue === lyr.nombre) {
+                xmlLyr = xmlNodes[i].parentNode;
             }
-        
-    
-      }
+        }
+
+        let bboxNodes = xmlLyr.getElementsByTagName("BoundingBox");
+        lyr.legendURL =
+            xmlLyr.getElementsByTagName("OnlineResource")[0].attributes["xlink:href"].value;
+
+        for (i = 0; i < bboxNodes.length; i++) {
+            if (lyr.minx === null || typeof lyr.minx === "undefined") {
+                let srs = bboxNodes[i].attributes[sys];
+                if (srs.value === sys + ":4326" ||
+                    srs.value === sys + ":84") {
+                    lyr.minx = bboxNodes[i].attributes["minx"].value;
+                    lyr.miny = bboxNodes[i].attributes["miny"].value;
+                    lyr.maxx = bboxNodes[i].attributes["maxx"].value;
+                    lyr.maxy = bboxNodes[i].attributes["maxy"].value;
+                    lyr.srs = srs.value;
+                } else {
+                    console.info(
+                        `Layer SRS is ${srs.value}, not supported for zoom to layer yet.`
+                    );
+                }
+            }
+        }
+    }
+}
