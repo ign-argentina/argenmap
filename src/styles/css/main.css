@@ -442,6 +442,7 @@ Leaflet
 }
 .leaflet-control-minimap {
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   box-shadow: none;
   border-radius: 4px;
@@ -709,6 +710,7 @@ Control mapa base
   border-radius: 4px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: white;
   background-image: none;
@@ -751,6 +753,7 @@ Control mapa base
   border-radius: 4px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: white;
   text-align: center;
@@ -784,6 +787,7 @@ Control graticula
   border-radius: 2px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: white;
   background-image: none;
