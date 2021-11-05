@@ -37,14 +37,14 @@ class Capa {
         if (this.host == null) {
             return '';
         }
-        let owsHost = this.host,
-        isMapserver = this.host.includes('cgi-bin');
+        let owsHost = this.host;
+        /* isMapserver = this.host.includes('cgi-bin');
         
         if (!isMapserver) {   
             if (this.servicio === "wms") { owsHost += "/wms?"};
             //if (this.servicio === "mapserver") { owsHost };
-            if (this.servicio === "wmts") { owsHost += "/gwc/service/wmts" };
-        }
+        } */
+        if (this.servicio === "wmts") { owsHost += "/gwc/service/wmts" };
 
         return owsHost;
     }
@@ -91,7 +91,7 @@ class ImpresorItemHTML extends Impresor {
             legendImg = (item.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + item.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         } */
         let legend = lyr.servicio === 'wms' ? lyr.legendURL : lyr.legendURL +'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off';
-        console.log(item);
+        //console.log(item);
         var legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
         var activated = (item.visible == true) ? " active " : "";
         let btnhtml = ""
@@ -783,7 +783,6 @@ class LayersInfoWMTS extends LayersInfoWMS {
                     iTitle = thisObj.formatLayerTitle(iName, iTitle);
                     var iAbstract = $('ows\\:abstract', i).html();
                     iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
-                    console.log(iAbstract)
                     var keywordsHTMLList = $('keywordlist', i).find("keyword");
                     var keywords = [];
                     $.each(keywordsHTMLList, function (i, el) {
