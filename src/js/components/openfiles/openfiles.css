@@ -1,3 +1,6 @@
+.input_newname{
+  height: 20px !important;
+}
 .name{
   max-height: 45px;
   overflow: hidden;
@@ -286,7 +289,7 @@ section .details span{
 }
 .uploaded-area .row .details{
   display: flex;
-  margin-left: 15px;
+  margin: 5px;
   flex-direction: column;
 }
 

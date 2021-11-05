@@ -144,15 +144,19 @@ class UImf {
           name = stringShortener(fileLayer.getFileName(),16,true);
         }
 
-        // Show in the dialog
-        ui_upload.addFileItem(fileLayer.getId(),name,fileLayer.getFileSize('kb'),fileLayer.getFileName());
+        
         // Add to current layers to add to the layers menu later
         currentLayers.push({
           id: fileLayer.getId(),
           layer:fileLayer.getGeoJSON(), 
           name:name,
-          file_name:fileLayer.getFileName()
+          file_name:fileLayer.getFileName(),
+          kb:fileLayer.getFileSize('kb')
         });
+
+        // Show in the dialog
+        ui_upload.addFileItem(fileLayer.getId());
+
 
       }).catch((error)=>{
         console.warn('Hay error: ',error);
@@ -208,23 +212,66 @@ class UImf {
     logo.className = "fas fa-arrow-circle-up"
   }
 
-  addFileItem(id,fileName, kb, fileNameOriginal){
-    let del_index = currentLayers.length
+  addFileItem(id){
+    let i_id = getIndexCurrentFileLayerbyID(id)
+    let kb = currentLayers[i_id].kb
+    let del_index = i_id
+
     let id_item = "item_uf_"+id
     let contenedor = document.getElementById("uploaded-area")
     let file_item = document.createElement("li")
-    file_item.id=id_item
+    file_item.id = id_item
     file_item.className = "row"
 
     let content_upload = document.createElement("div")
     content_upload.className = "content upload"
-    content_upload.innerHTML= `
-        <i style="width: 20%;" class="fas fa-file-alt"></i>
-         <div style="width: 70%;" class="details">
-            <span class="name" title="${fileNameOriginal}">${fileName}</span>
-            <span class="size">${kb} KB</span>
-          </div>
-    `
+
+    let i_file_alt = document.createElement("i")
+    i_file_alt.style = "width: 20%;"
+    i_file_alt.className = "fas fa-file-alt"
+
+    let div_details = document.createElement("div")
+    div_details.className = "details"
+    div_details.style = "width: 70%;"
+
+    let span_name = document.createElement("span")
+    span_name.className = "name"
+    span_name.title = "Editar Nombre de Capa"
+    span_name.innerHTML = currentLayers[i_id].name
+    span_name.onclick = function(){
+      span_name.style = "display:none;"
+      finput_name.value = currentLayers[i_id].name
+      finput_name.style = "display:block"
+      finput_name.focus()
+    }
+
+    let finput_name = document.createElement("input")
+    finput_name.className = "form-control"
+    finput_name.style = "display:none"
+    finput_name.onkeyup = function(e){
+      if(e.key === 'Enter' || e.keyCode === 13){
+        currentLayers[i_id].name = finput_name.value
+        finput_name.style = "display:none"
+        span_name.innerHTML = currentLayers[i_id].name
+        span_name.style = "display:block;"
+      }
+    }
+    finput_name.onblur = function(){
+        finput_name.style = "display:none"
+        span_name.innerHTML = currentLayers[i_id].name
+        span_name.style = "display:block;"
+    }
+
+    let span_size = document.createElement("span")
+    span_size.className = "size"
+    span_size.innerHTML = kb+" KB"
+
+    div_details.append(span_name)
+    div_details.append(finput_name)
+    div_details.append(span_size)
+    content_upload.append(i_file_alt)
+    content_upload.append(div_details)
+
     let icon_file = document.createElement("div")
     icon_file.innerHTML = '<i style="width: 10%;" title="eliminar archivo" class="fa fa-times-circle"></i>'
     icon_file.onclick = function(){
@@ -303,4 +350,28 @@ function delFileItembyID(id){
   });
 
   addedLayers.splice(del_index,1)
+}
+
+function editDomNameofFileLayerbyID(id,name){
+  let edit_index = null
+  addedLayers.forEach((e, i)=>{
+    if(e.id===id) edit_index = i
+  });
+  addedLayers[edit_index].name = name
+}
+
+function getIndexFileLayerbyID(id){
+  let edit_index = null
+  addedLayers.forEach((e, i)=>{
+    if(e.id===id) edit_index = i
+  });
+  return edit_index
+}
+
+function getIndexCurrentFileLayerbyID(id){
+  let index = null
+  currentLayers.forEach((e, i)=>{
+    if(e.id===id) index = i
+  });
+  return index
 }

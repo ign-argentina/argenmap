@@ -1550,7 +1550,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.remove();
 					}
 
-					mapa.downloadMultiLayerGeoJSON = (groupLayer) => {
+					mapa.downloadMultiLayerGeoJSON = (groupLayer,filename) => {
+						let dfilename= filename.replace(/[\\\/:\*\?"<>\|]/g, "_")
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []
@@ -1568,7 +1569,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
-						downloadANode.setAttribute("download", groupLayer + ".geojson");
+						downloadANode.setAttribute("download", dfilename + ".geojson");
 						document.body.appendChild(downloadANode);
 						downloadANode.click();
 						downloadANode.remove();
