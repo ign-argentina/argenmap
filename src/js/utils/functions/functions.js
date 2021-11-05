@@ -728,7 +728,8 @@ function zoomLayer(id_dom) {
 }
 
 async function getWmsLyrParams(lyr) {
-  let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
+  //let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
+  let url = `${lyr.host}?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
     sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
   await fetch(url)
     .then((res) => res.text())
