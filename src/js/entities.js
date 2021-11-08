@@ -2405,7 +2405,6 @@ class GestorMenu {
     }
 
     showWMSLayerCombobox(itemSeccion) {
-        console.log("showWMSLayerCombobox(itemSeccion)")
         let nuevo_impresor = new Menu_UI
         nuevo_impresor.addLoadingAnimation("NEW-wms-combo-list")
         //Realiza el GET de las capas
@@ -2416,7 +2415,6 @@ class GestorMenu {
             if (this.layersInfo[key].section == itemSeccionAux) {
                 this.addLazyInitLayerInfoCounter(itemSeccion);
                 //nueva opcion crea un objeto para cada btn 
-                console.log("this.layersInfo[key].get_without_print(this);")
                 this.layersInfo[key].get_without_print(this);
                 //this.layersInfo[key].get(this)
 
