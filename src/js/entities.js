@@ -80,19 +80,20 @@ class ImpresorItemHTML extends Impresor {
             'type': lyr.servicio,
         }; 
         app.setLayer(aux)
-        app.layerNameByDomId[childId] = item.nombre
-        var legendImg = ""
+        app.layerNameByDomId[childId] = item.nombre;
         
         //if tab = combobox, img source from 
         if(item.listType === "combobox"){
             let url_img = lyr.legendURL+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' 
             legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + url_img+ "' onerror='showImageOnError(this);'></div>";
-        }/* else{
-            legendImg = (item.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + item.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
-        } */
-        let legend = lyr.servicio === 'wms' ? lyr.legendURL : lyr.legendURL +'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off';
+        }
+
+        if ( lyr.servicio === 'wms' && typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
+            lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.0&layer=' + lyr.nombre + '&Transparent=True'
+        }
+        let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL +'&Transparent=True&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' : lyr.legendURL ;
         
-        legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
+        let legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
         var activated = (item.visible == true) ? " active " : "";
         let btnhtml = ""
 
@@ -499,20 +500,16 @@ class LayersInfoWMS extends LayersInfo {
                 _gestorMenu.addLayerInfoCounter();
                 if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printMenu();
-                    
-                    //
+                
                     gestorMenu.allLayersAreLoaded = true;
                 }
             }
-
-            //console.log(`${thisObj.section} printed`);
             
             return;
         });
     }
 
     _parseRequest_without_print(_gestorMenu) {
-        console.log("_parseRequest_without_print(_gestorMenu)")
         const impresorGroup = this.itemGroupPrinter;
         const impresorItem = new ImpresorItemHTML();
         const nuevo_impresor = new Menu_UI
