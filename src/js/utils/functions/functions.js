@@ -614,7 +614,7 @@ function controlSeccionGeom(){
 
 function zoomEditableLayers(layername){
     let layer = mapa.groupLayers.hasOwnProperty(layername)
-   console.log(layer)
+   //console.log(layer)
    if (layer.type === 'marker' || layer.type === 'circlemarker') {
     mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
     } else {
