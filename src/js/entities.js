@@ -88,8 +88,12 @@ class ImpresorItemHTML extends Impresor {
             legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + url_img+ "' onerror='showImageOnError(this);'></div>";
         }
 
-        if ( lyr.servicio === 'wms' && typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
-            lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.0&layer=' + lyr.nombre + '&Transparent=True'
+        if ( typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
+            if (lyr.servicio === 'wms') {
+                lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.0&layer=' + lyr.nombre + '&Transparent=True'
+            } else {
+                lyr.legendURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+            }
         }
         let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL +'&Transparent=True&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' : lyr.legendURL ;
         
@@ -2601,7 +2605,7 @@ class Menu_UI{
             //add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options)
             let li_layer = this.add_btn_Layer_combobox(id_dom,title,url_img,descripcion, false)
             list.append(li_layer)
-            console.log("layers[property]");
+            //console.log("layers[property]");
           }
           contenedor.innerHTML = ""
           contenedor.append(list)
