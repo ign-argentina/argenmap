@@ -91,8 +91,8 @@ class ImpresorItemHTML extends Impresor {
             legendImg = (item.getLegendImg() == null) ? "" : "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img loading='lazy' src='" + item.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
         } */
         let legend = lyr.servicio === 'wms' ? lyr.legendURL : lyr.legendURL +'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off';
-        //console.log(item);
-        var legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
+        
+        legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
         var activated = (item.visible == true) ? " active " : "";
         let btnhtml = ""
 
@@ -357,7 +357,7 @@ class LayersInfoWMS extends LayersInfo {
 
     get_without_print(_gestorMenu) {
         console.log("get_without_print")
-                this._parseRequest_without_print(_gestorMenu);
+        this._parseRequest_without_print(_gestorMenu);
     }
 
     generateGroups(_gestorMenu) {
@@ -2604,7 +2604,7 @@ class Menu_UI{
             //add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options)
             let li_layer = this.add_btn_Layer_combobox(id_dom,title,url_img,descripcion, false)
             list.append(li_layer)
-            console.log(layers[property]);
+            console.log("layers[property]");
           }
           contenedor.innerHTML = ""
           contenedor.append(list)
