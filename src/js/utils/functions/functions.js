@@ -638,7 +638,7 @@ function zoomEditableLayers(layername){
                 if (this.childNodes[i].className == "fas fa-search-plus") {
                   this.childNodes[i].classList.remove('fa-search-plus');
                   this.childNodes[i].classList.add('fa-exclamation-triangle');
-                  this.childNodes[i].setAttribute('style', 'color: orange');
+                  //this.childNodes[i].setAttribute('style', 'color: orange');
                   this.childNodes[i].setAttribute('title', 'Invalid bbox in WMS response');
                   break;
                 }        
