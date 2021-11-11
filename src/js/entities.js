@@ -90,12 +90,12 @@ class ImpresorItemHTML extends Impresor {
 
         if ( typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
             if (lyr.servicio === 'wms') {
-                lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.0&layer=' + lyr.nombre + '&Transparent=True'
+                lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=' + lyr.nombre
             } else {
                 lyr.legendURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
             }
         }
-        let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL +'&Transparent=True&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' : lyr.legendURL ;
+        let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL +'&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' : lyr.legendURL ;
         
         let legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
         var activated = (item.visible == true) ? " active " : "";
