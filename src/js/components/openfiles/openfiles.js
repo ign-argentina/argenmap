@@ -327,7 +327,7 @@ let uimodalfs = new UImf();
 function addLayersfromFiles() {
   currentLayers.forEach((e)=>{
     // Draw the layer in the map
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer,e.id, false);
+    mapa.addGeoJsonLayerToDrawedLayers(e.layer,e.id, true, true);
     // Add the layer to the Menu
     menu_ui.addFileLayer("Archivos", e.name, e.id, e.file_name);
     // Save layer to check its existence in the next layer load

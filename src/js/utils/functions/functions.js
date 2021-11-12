@@ -575,21 +575,31 @@ let normalize = (function() {
    
   })();
 
-  function clickGeometryLayer(layer){
+  function clickGeometryLayer(layer,file){
     let aux = document.getElementById("flc-"+layer)
   
     if(aux.className === "file-layer active"){
-      aux.className = "file-layer" 
-      mapa.hideGroupLayer(layer)
+        aux.className = "file-layer" 
+        if(file==undefined || !file){
+            mapa.hideGroupLayer(layer)
+        }else {
+            mapa.hideGroupLayer(layer, true)
+            
+        }
     }
     else{
-      aux.className = "file-layer active"
-      mapa.showGroupLayer(layer)
+    aux.className = "file-layer active"
+        if(file==undefined || !file){
+            mapa.showGroupLayer(layer)
+        }else {
+            mapa.showGroupLayer(layer, true)
+            
+        }
     }
 }
 
-function deleteLayerGeometry(layer){
-    mapa.removeGroup(layer, true);
+function deleteLayerGeometry(layer,file){
+    mapa.removeGroup(layer, true, file);
     let id = "#fl-"+layer
     let parent = $(id).parent()[0]
     
@@ -603,11 +613,11 @@ function deleteLayerGeometry(layer){
 
 }
 
-function controlSeccionGeom(){
+function controlSeccionGeom(file){
 	let aux = mapa.groupLayers
 	for (n in aux){
 		if(aux[n].length===0){
-			deleteLayerGeometry(n)
+			deleteLayerGeometry(n,file)
 		}
 	}
 }
