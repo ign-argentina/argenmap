@@ -932,3 +932,11 @@ SideBar
     display: block;
   } */
 }
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  will-change: auto !important;
+}
+.leaflet-oldie .leaflet-popup-content-wrapper {
+  /* zoom: 1; */
+	transform: scale(1);
+	}
