@@ -73,6 +73,7 @@ class ImpresorItemHTML extends Impresor {
     imprimir(item) {
         var childId = item.getId();
         let lyr = item.capa,
+        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off',
         aux = {
             ...item,
             'childid': childId,
@@ -81,43 +82,33 @@ class ImpresorItemHTML extends Impresor {
         }; 
         app.setLayer(aux)
         app.layerNameByDomId[childId] = item.nombre;
-        
-        //if tab = combobox, img source from 
-        if(item.listType === "combobox"){
-            let url_img = lyr.legendURL+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' 
-            legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + url_img+ "' onerror='showImageOnError(this);'></div>";
-        }
 
         if ( typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
             if (lyr.servicio === 'wms') {
                 lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=' + lyr.nombre
             } else {
-                lyr.legendURL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+                lyr.legendURL = ERROR_IMG;
             }
         }
-        let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL +'&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off' : lyr.legendURL ;
+        let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL + legendParams : lyr.legendURL ;
         
-        let legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
-        var activated = (item.visible == true) ? " active " : "";
-        let btnhtml = ""
+        let legendImg = `<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"${childId}\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
+          let activated = item.visible == true ? " active " : "",
+          btnhtml = "";
+
+        //if tab = combobox, img source from 
+        /* if(item.listType === "combobox"){
+            //let url_img = lyr.legendURL + legendParams; 
+            legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
+        } */
 
         if (loadLayerOptions){
-            btnhtml =  "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" +
-            "<div class='capa-title'>" + legendImg +
-            "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" +
-            "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
-            "</a>" +"<div class='zoom-layer'  layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+item.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
-            "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" +
-            "</li>"
+            btnhtml =  "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" + "<div class='capa-title'>" + legendImg + "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" + "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" + "</a>" +"<div class='zoom-layer' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+item.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
+            "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" + "</li>"
         }
         else{
-            btnhtml = "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 10px 1px;' >" +
-            "<div class='capa-title'>" + legendImg +
-            "<div class='name-layer' style='align-self: center;' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" +
-            "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" +
-            "</a>" +"<div class='zoom-layer'  style='align-self: center;' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div>"+
-            "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" +
-            "</li>"
+            btnhtml = "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 10px 1px;' >" + "<div class='capa-title'>" + legendImg + "<div class='name-layer' style='align-self: center;' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" +
+            "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" + "</a>" +"<div class='zoom-layer'  style='align-self: center;' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div>" + "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" + "</li>"
         }
  
         return btnhtml;
@@ -361,7 +352,6 @@ class LayersInfoWMS extends LayersInfo {
     }
 
     get_without_print(_gestorMenu) {
-        console.log("get_without_print")
         this._parseRequest_without_print(_gestorMenu);
     }
 

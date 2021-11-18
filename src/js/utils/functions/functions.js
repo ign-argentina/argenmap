@@ -101,7 +101,7 @@ function getDarkerColorTone(hex, lum) {
 
 function showImageOnError(image) {
 	image.onerror = "";
-    image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+    image.src = ERROR_IMG;
     return true;
 }
 
@@ -502,6 +502,43 @@ function setSelectedBasemapAsActive(layerName, availableBasemaps) {
     gestorMenu.setLastBaseMapSelected(layerName);
     gestorMenu.setBasemapSelected(baseLayerId);
 };
+
+function adaptToImage(imgDiv) {
+  
+  let img = imgDiv.childNodes[0], item = imgDiv.closest("li");
+  if (img.naturalHeight > 22) {
+    let resize_img_icon = document.createElement("div");
+    resize_img_icon.className = "resize-legend-combobox";
+    resize_img_icon.style = "align-self: center;font-size: 14px";
+    resize_img_icon.innerHTML = '<i class="fas fa-angle-down" aria-hidden="true"></i>';
+
+    let container_expand_legend_grafic = document.createElement("div");
+    container_expand_legend_grafic.className = "expand_legend_grafic";
+    container_expand_legend_grafic.style = "overflow:hidden;";
+    container_expand_legend_grafic.setAttribute("load", false);
+
+    let max_url_img = img.src.replace("off", "on");
+    container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
+
+    resize_img_icon.onclick = () => {
+      if (container_expand_legend_grafic.getAttribute("load") === "true") {
+        container_expand_legend_grafic.className = "hidden";
+        container_expand_legend_grafic.setAttribute("load", false);
+        resize_img_icon.innerHTML = '<i class="fas fa-angle-down" aria-hidden="true"></i>';
+      } else {
+        container_expand_legend_grafic.classList.remove("hidden");
+        container_expand_legend_grafic.setAttribute("load", true);
+        container_expand_legend_grafic.style = "background-color: white;";
+        resize_img_icon.innerHTML = '<i class="fas fa-angle-up" aria-hidden="true"></i>';
+        item.append(container_expand_legend_grafic);
+      }
+    };
+
+    imgDiv.removeChild(img);
+    imgDiv.append(resize_img_icon);
+    imgDiv.title = "abrir leyenda";
+  }
+}
 
 //Orden de prioridad:
 //1. Declarado en url.
