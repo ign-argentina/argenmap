@@ -517,7 +517,7 @@ function adaptToImage(imgDiv) {
     container_expand_legend_grafic.style = "overflow:hidden;";
     container_expand_legend_grafic.setAttribute("load", false);
 
-    let max_url_img = img.src.replace("off", "on");
+    let max_url_img = img.src.replace(/off/g, "on");
     container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
 
     resize_img_icon.onclick = () => {
