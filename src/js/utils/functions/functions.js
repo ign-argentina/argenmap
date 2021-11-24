@@ -575,22 +575,32 @@ let normalize = (function() {
    
   })();
 
-  function clickGeometryLayer(layer){
-    let aux = document.getElementById("li-"+layer)
+  function clickGeometryLayer(layer,file){
+    let aux = document.getElementById("flc-"+layer)
   
-    if(aux.className === "capa list-group-item active"){
-      aux.className = "capa list-group-item" 
-      mapa.hideGroupLayer(layer)
+    if(aux.className === "file-layer active"){
+        aux.className = "file-layer" 
+        if(file==undefined || !file){
+            mapa.hideGroupLayer(layer)
+        }else {
+            mapa.hideGroupLayer(layer, true)
+            
+        }
     }
     else{
-      aux.className = "capa list-group-item active"
-      mapa.showGroupLayer(layer)
+    aux.className = "file-layer active"
+        if(file==undefined || !file){
+            mapa.showGroupLayer(layer)
+        }else {
+            mapa.showGroupLayer(layer, true)
+            
+        }
     }
 }
 
-function deleteLayerGeometry(layer){
-    mapa.removeGroup(layer, true);
-    let id = "#li-"+layer
+function deleteLayerGeometry(layer,file){
+    mapa.removeGroup(layer, true, file);
+    let id = "#fl-"+layer
     let parent = $(id).parent()[0]
     
     if(parent && parent.childElementCount<=1){
@@ -603,11 +613,11 @@ function deleteLayerGeometry(layer){
 
 }
 
-function controlSeccionGeom(){
+function controlSeccionGeom(file){
 	let aux = mapa.groupLayers
 	for (n in aux){
 		if(aux[n].length===0){
-			deleteLayerGeometry(n)
+			deleteLayerGeometry(n,file)
 		}
 	}
 }
@@ -669,6 +679,22 @@ function zoomEditableLayers(layername){
     }
 
   }
+
+
+    /**
+     * Recorta un string si su longitud es mayor a la longitud dada 
+     * agrega ".." al final en caso de realizar el recorte
+     * @param str es el string a recortar
+     * @param chars la longitud del string limite
+     * @return un string recortado o no
+     */
+    function stringShortener(str,chars,addDots){
+        if (str.length > chars) {
+            return (addDots) ? str.substr(0,chars) + '..' : str.substr(0,chars);
+        }else {
+            return str
+        }
+    }
 
 
   //add funcion with setTimeout 

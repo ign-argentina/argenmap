@@ -2348,32 +2348,89 @@ class Menu_UI{
         $('#sidebar div.menu5').first().prepend(itemnew)
     }
 
-    addLayer(groupname, layer){
+    addFileLayer(groupname, textName, id, fileName){
         let groupnamev= groupname.replace(/ /g, "_")
         let main = document.getElementById("lista-"+groupnamev)
-
-        let div = ` 
-        <div style="display:flex; flex-direction:row;">
-        <div style="cursor: pointer; width: 70%" onclick="clickGeometryLayer('${layer}')"><span style="user-select: none;">${layer}</span></div>
-        <div class="icon-layer-geo" onclick="mapa.downloadMultiLayerGeoJSON('${layer}')"><i class="fas fa-download" title="descargar"></i></div>
-        <div class="icon-layer-geo" onclick="deleteLayerGeometry('${layer}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
-        </div>
-        `
-       //<div class="layer-menu-ui" layername='${layer}'><i class="fas fa-search-plus"></i></div>
-        //si no existe contenedor
+        let id_options_container = "opt-c-"+id
         if(!main){this.addSection(groupnamev)}
-        
-            let content = document.getElementById(groupnamev+"-panel-body")
-            let aux = document.createElement("li")
-            aux.id = "li-"+layer 
-            aux.className = "capa list-group-item active"
-            aux.innerHTML = `<div class="capa-title"><span data-toggle2="tooltip" title="" data-original-title="">${div}</span><div class="legend-layer"></div></div>`
-            content.appendChild(aux)
+        let content = document.getElementById(groupnamev+"-panel-body")
+             let layer_container = document.createElement("div")
+             layer_container.id = "fl-" +id
+             layer_container.className = "file-layer-container"
+
+             let layer_item = document.createElement("div")
+             layer_item.id = "flc-" +id
+             layer_item.className = "file-layer active"
+              
+             let img_icon =document.createElement("div")
+             img_icon.className = "file-img"
+             img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
+             img_icon.onclick = function(){
+                clickGeometryLayer(id, true)
+             }
+
+            let layer_name = document.createElement("div")
+            layer_name.className = "file-layername"
+            layer_name.innerHTML= "<a>"+textName+"</a>"
+            layer_name.title = fileName
+            layer_name.onclick = function(){
+                clickGeometryLayer(id, true)
+            }
             
-           /* $('.layer-menu-ui').bind('click', function() {
-                let layername = this.getAttribute("layername")
-                zoomEditableLayers(layername)
-              });*/
+            let options = document.createElement("div")
+            options.style = "width:10$;padding-right:5px;cursor:pointer;"
+            options.className = "btn-group"
+            options.role ="group"
+            options.id = id_options_container
+
+            let fdiv = document.createElement("div")
+            fdiv.style = "border: 0px;"
+            fdiv.className = "dropdown-toggle"
+            fdiv.setAttribute('data-toggle', 'dropdown')
+            fdiv.setAttribute('aria-haspopup', 'true')
+            fdiv.setAttribute('aria-expanded', 'false')
+            fdiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16"> <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/> </svg>'
+            // fdiv.innerHTML = '<span class="caret"></span>'
+
+            let mainul = document.createElement("ul")
+            mainul.className = "dropdown-menu"
+            mainul.style = "right:0px !important;left:auto !important;"
+            mainul.id = "opt-c-"+id
+
+            let delete_opt = document.createElement("li")
+            delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
+            delete_opt.onclick = function(){
+                let menu = new Menu_UI
+                menu.modalEliminar(id)
+                //deleteLayerGeometry(layer)
+            }
+
+            let download_opt = document.createElement("li")
+            download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
+            download_opt.onclick = function(){
+                let index_file = getIndexFileLayerbyID(id)
+                let d_file_name = addedLayers[index_file].name
+                mapa.downloadMultiLayerGeoJSON(id,d_file_name,true)
+            }
+
+            let edit_name_opt = document.createElement("li")
+            edit_name_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar Nombre</a>`
+            edit_name_opt.onclick = function(){
+                menu_ui.editFileLayerName(id)
+            }
+            
+            mainul.append(edit_name_opt)
+            mainul.append(download_opt)
+            mainul.append(delete_opt)
+            
+            options.append(fdiv)
+            options.append(mainul)
+                      
+            layer_item.append(img_icon)
+            layer_item.append(layer_name)
+            layer_item.append(options)
+            layer_container.append(layer_item)
+            content.appendChild(layer_container)
     }
 
     addLayerOptions(layer){
@@ -2417,6 +2474,115 @@ class Menu_UI{
             el.setAttribute('class', 'display-none')
             el.innerHTML = ""
         }
+    }
+
+    modalEliminar(id){
+        let index_file= getIndexFileLayerbyID(id)
+        let textname = addedLayers[index_file].name
+        let fileName = addedLayers[index_file].file_name
+        $("#modal_layer_del").remove();
+        let modal =  document.createElement("div")
+        modal.id="modal_layer_del"
+        modal.className = "modal-file-delete"
+
+        let close_icon = document.createElement("div")
+        close_icon.style= "display:flex;flex-direction: row;padding-top:5px"
+        let c_empty = document.createElement("div")
+        c_empty.style.width = "90%"
+        let c_close = document.createElement("div")
+        c_close.style = 'width:10%;text-align: center;cursor:pointer;'
+        c_close.innerHTML ='<i style="color:grey;font-size:16px" class="fa fa-times" aria-hidden="true"></i>'
+        c_close.onclick = function(){
+            $("#modal_layer_del").remove();
+        }
+        close_icon.append(c_empty)
+        close_icon.append(c_close)
+
+        let modal_body = document.createElement("div")
+        modal_body.className = "modal-file-delete-body"
+        modal_body.innerHTML = `¿Eliminar Capa <strong>${textname}</strong>?`
+        modal_body.title = `¿Eliminar ${fileName}?`
+
+        let btn_container = document.createElement("div")
+        btn_container.style =   'display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;'
+        
+        let btn_si = document.createElement("button")
+        btn_si.className = "btn btn-info"
+        btn_si.innerHTML = "Eliminar"    
+        btn_si.onclick = function(){
+            delFileItembyID(id)
+            deleteLayerGeometry(id,true)
+            $("#modal_layer_del").remove();
+        }
+
+        let btn_no = document.createElement("button")
+        btn_no.className = "btn btn-default"
+        btn_no.style = 'border: 1px solid silver'
+        btn_no.innerHTML = "Cancelar"
+        btn_no.onclick = function(){
+            $("#modal_layer_del").remove();
+        }
+
+        btn_container.append(btn_si)
+        btn_container.append(btn_no)
+
+        modal.append(close_icon)
+        modal.append(modal_body)
+        modal.append(btn_container)
+        document.body.appendChild(modal)
+
+        $( "#modal_layer_del" ).draggable({
+            containment: "#mapa"})
+
+    }
+
+    editFileLayerName(id){
+        let index = getIndexFileLayerbyID(id)       
+        addedLayers[index].laodingname = false
+        let id_i = "flc-"+id
+        let container = document.getElementById(id_i)
+        let element = container.getElementsByClassName("file-layername")[0]
+        let name = element.innerText
+        let nodo_hijo = container.getElementsByClassName("btn-group")[0]
+        element.remove()
+
+        let input_name = document.createElement("input")
+        input_name.value = name
+        input_name.type = element.innerText
+        input_name.className = "input_newname form-control"
+        input_name.style = "width: 75% !important;"
+        input_name.id = "i-"+id
+        
+        input_name.autocomplete = "off"
+        input_name.style = "height:22px!important;"
+        input_name.onblur= function(e){
+            if(!addedLayers[index].laodingname){
+                $("#i-"+id).remove()
+                let a_new = document.createElement("div")
+                a_new.className = "file-layername"
+                a_new.innerHTML = `<a>${name}</a>`
+                container.insertBefore(a_new,nodo_hijo);
+            }
+        }
+
+        input_name.onkeyup = function(e){
+            if(e.key === 'Enter' || e.keyCode === 13){
+                addedLayers[index].laodingname = true
+                $("#i-"+id).remove()
+                let a_new = document.createElement("div")
+                a_new.className = "file-layername"
+                a_new.title = this.value
+                editDomNameofFileLayerbyID(id,this.value)
+                a_new.innerHTML = `<a>${this.value}</a>`
+                a_new.onclick = function(){
+                    clickGeometryLayer(id,true)
+                }
+                container.insertBefore(a_new,nodo_hijo);
+            }
+        }
+
+        container.insertBefore(input_name,nodo_hijo);
+        $(`#i-${id}`).focus()
     }
 
 }
