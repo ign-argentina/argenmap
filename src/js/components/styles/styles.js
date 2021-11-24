@@ -99,7 +99,7 @@ class StylesUI {
 
   if(app.referencias.show){
     let toprightlogo = document.getElementById("top-right-logo")
-    toprightlogo.src = app.referencias.icon
+    toprightlogo.src = app.referencias.src
     toprightlogo.alt = "Referencias"
     toprightlogo.title = "Referencias"
     toprightlogo.style.width = app.referencias.width
@@ -179,7 +179,7 @@ class StylesUI {
 function clickReferencias(){
     event.preventDefault();
     $.fancybox.open({
-        src : app.referencias.image,
+        src : 'src/styles/images/referencias.png',
         type : 'image',
         closeBtn: 'true'
     });
