@@ -120,10 +120,17 @@ class Geoprocessing {
         let layername = 'contourResult_' + results_counter
         results_counter++
 
-        mapa.contourLayer(result, layername, false);
         mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 })
-        //let item_GestorMenu = new Item_GestorMenu_UI
-        //item_GestorMenu.createElement("Curvas de Nivel", layername)
+        mapa.addGeoJsonLayerToDrawedLayers(result,layername, true, true);
+        addedLayers.push({
+          id: layername,
+          layer:result, 
+          name:layername,
+          file_name:layername,
+          kb:null
+        });
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+
         break;
       }
       case 'elevationProfile': {
@@ -133,10 +140,16 @@ class Geoprocessing {
       case 'waterRise': {
         let layername = 'waterRise_' + results_counter
         results_counter++
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, false);
-        //let item_GestorMenu = new Item_GestorMenu_UI
         mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 })
-        break;
+        mapa.addGeoJsonLayerToDrawedLayers(result,layername, true, true);
+        addedLayers.push({
+          id: layername,
+          layer:result, 
+          name:layername,
+          file_name:layername,
+          kb:null
+        });
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         break;
       }
     }
@@ -372,7 +385,7 @@ class Geoprocessing {
           .then((result) => {
             this.displayResult(result);
           })
-          .catch((ex) => {
+          .catch((error) => {
             new UserMessage(error.message, true, 'error');
           });
       }

@@ -1901,8 +1901,39 @@ $("body").on("pluginLoad", function(event, plugin){
 							break;
 							case 'linestring': {
 								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
-								layer = L.polyline(invertedCoords, options);
-								type = 'polyline';
+								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
+									let n = geoJSON.properties.value
+									let value = geoJSON.properties.value + 'm'
+									if (n % 100 === 0 ||n % 50 === 0) {
+										options = {color: '#7b7774',"weight":"3"}
+										}else{
+											options = {color: '#7b7774',"weight":"1"}
+										}
+									layer = L.polyline(invertedCoords, options);
+									type = 'polyline';
+									layer.value = geoJSON.properties.value
+									if (n % 100 === 0 ||n % 50 === 0) {
+										
+										/*layer.setText(value, {
+											repeat: false,
+											offset: 6,
+											center: true,
+											attributes: {fill: 'black'}})*/
+									}
+									layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
+									layer.on('mouseover', function (e) {
+										//layer.setText(geoJSON.properties.value + 'm', { center: true, orientation: 'flip' });
+										layer.openPopup();
+									});
+									layer.on('mouseout', function (e) {
+										//layer.setText(null);
+										layer.closePopup();
+									});
+								}else{
+									layer = L.polyline(invertedCoords, options);
+									type = 'polyline';
+								}
+								
 							}
 							break;
 							case 'polygon': {
@@ -2044,146 +2075,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						} else {
 							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
 						} */
-					}
-
-					mapa.contourLayer = (geoJSON, groupName, groupIsCreated) => {
-						if (!groupIsCreated)
-							mapa.groupLayers[groupName] = [];
-						if (geoJSON.type === 'FeatureCollection') {
-							geoJSON.features.forEach(feature => {
-								mapa.contourLayer(feature, groupName, true);
-							});
-							return;
-						}
-
-						let type = geoJSON.geometry.type.toLowerCase();
-						let layer = null;
-
-						let options = {};
-						
-
-						switch (type) {
-							case 'point': {
-								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
-
-								//Check if it is circle, circlemarker or marker
-								if (geoJSON.properties.hasOwnProperty('type')) {
-									switch (geoJSON.properties.type.toLowerCase()) {
-										case 'circle': {
-											layer = L.circle(invertedCoords, options);
-											type = 'circle';
-										}
-										break;
-										case 'circlemarker': {
-											layer = L.circlemarker(invertedCoords, options);
-											type = 'circlemarker';
-										};
-										break;
-										case 'marker': {
-											layer = L.marker(invertedCoords);
-											type = 'marker';
-										};
-										break;
-										default: {
-											layer = L.marker(invertedCoords);
-											type = 'marker';
-										}
-									}
-								} else {
-									layer = L.marker(invertedCoords);
-									type = 'marker';
-								}
-							}
-							break;
-							case 'linestring': {
-								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
-								
-
-								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
-									let n = geoJSON.properties.value
-									let value = geoJSON.properties.value + 'm'
-									if (n % 100 === 0 ||n % 50 === 0) {
-										options = {color: '#7b7774',"weight":"3"}
-										}else{
-											options = {color: '#7b7774',"weight":"1"}
-										}
-									layer = L.polyline(invertedCoords, options);
-									type = 'polyline';
-									layer.value = geoJSON.properties.value
-									if (n % 100 === 0 ||n % 50 === 0) {
-										
-										/*layer.setText(value, {
-											repeat: false,
-											offset: 6,
-											center: true,
-											attributes: {fill: 'black'}})*/
-									}
-									layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
-									layer.on('mouseover', function (e) {
-										//layer.setText(geoJSON.properties.value + 'm', { center: true, orientation: 'flip' });
-										layer.openPopup();
-									});
-									layer.on('mouseout', function (e) {
-										//layer.setText(null);
-										layer.closePopup();
-									});
-								}
-							}
-							break;
-							
-						}
-
-						let name = type + '_';
-						if (mapa.editableLayers[type].length === 0) {
-							name += '1';
-						} else {
-							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-							name += parseInt(lastLayerName.split('_')[1]) + 1;
-						}
-
-						layer.name = name;
-						layer.type = type;
-						layer.data = {};
-
-						mapa.groupLayers[groupName].push(name);
-
-						layer.getGeoJSON = () => {
-							return mapa.getLayerGeoJSON(layer.name);
-						}
-
-						layer.downloadGeoJSON = () => {
-							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
-						}
-
-						mapa.editableLayers[type].push(layer);
-						
-						if (layer.type === 'marker') {
-							//Default marker styles
-							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
-							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
-							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
-
-							if (geoJSON.properties.hasOwnProperty('styles') && geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
-								const borderWidth = geoJSON.properties.styles.borderWidth;
-								const borderColor = geoJSON.properties.styles.borderColor;
-								const fillColor = geoJSON.properties.styles.fillColor;
-
-								layer.options.borderWidth = borderWidth;
-								layer.options.borderColor = borderColor;
-								layer.options.fillColor = fillColor;
-								layer.options.customMarker = true;
-
-								mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
-							}
-						}
-
-						//Left-click
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
-							mapa.addSelectionLayersMenuToLayer(layer);
-						}
-						//Right-click
-						mapa.addContextMenuToLayer(layer);
-						drawnItems.addLayer(layer);
 					}
 
 					gestorMenu.plugins['Draw'].setStatus('visible');
