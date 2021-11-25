@@ -6,6 +6,7 @@ var loadCharts = false;
 var loadSearchbar = false;
 var loadLayerOptions = false;
 var currentlyDrawing = false;
+var loadGeoprocessing  = false;
 
 function setTableAsPopUp(cond) {
     loadTableAsPopUp = cond;
@@ -25,6 +26,10 @@ function setSearchbar(cond) {
 
  function setLayerOptions(cond) {
     loadLayerOptions = cond;
+ }
+
+ function setGeoprocessing(cond) {
+    loadGeoprocessing = cond;
  }
 
 const reverseCoords = (coords) => {

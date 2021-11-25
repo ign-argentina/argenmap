@@ -1,8 +1,8 @@
 var baseLayers = {};
-
 var baseLayersInfo = {};
 var selectedBasemap = null;
 let menu_ui = new Menu_UI;
+var geoProcessingManager =null;
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorBaseMap = new ImpresorCapasBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
@@ -48,6 +48,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
       if (app.hasOwnProperty('layer_options')) {
         setLayerOptions(app.layer_options.isActive);
+      }
+
+      if (app.hasOwnProperty('geoprocessing')) {
+        setGeoprocessing(app.geoprocessing.isActive);
       }
 
       await this._startModules();
@@ -404,6 +408,7 @@ async function loadTemplate(data, isDefaultTemplate) {
           if (Number.isInteger(mapa.getZoom())) {
             urlInteraction.zoom = mapa.getZoom();
             zoomLevel.zoom = mapa.getZoom();
+            geoProcessingManager.svgZoomStyle(mapa.getZoom())
           }
         });
 
@@ -425,7 +430,23 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         setProperStyleToCtrlBtns();
 
-        
+        if(loadGeoprocessing){
+          $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
+          $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
+          $('head').append('<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">');
+          $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
+            $.getScript("src/js/plugins/geoprocess-executor/geoprocess-executor.js").done(function(){
+              $.getScript("src/js/components/form-builder/form-builder.js").done(function(){
+                $.getScript("src/js/components/geoprocessing/geoprocessing.js").done(function(){
+                  geoProcessingManager = new Geoprocessing();
+                  geoProcessingManager.createIcon();
+                  geoProcessingManager.setAvailableGeoprocessingConfig(app.geoprocessing)
+                });
+              })
+            })
+
+        }
+
       }
     }, 100);
 

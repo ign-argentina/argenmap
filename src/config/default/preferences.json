@@ -82,5 +82,25 @@
   },
   "title": "IGN - ARGENMAP",
   "website": "https://www.ign.gob.ar/",
-  "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png"
+  "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
+  "geoprocessing": {
+    "isActive": true,
+    "availableProcesses": [
+      {
+        "name": "Curvas de Nivel",
+        "geoprocess": "contour",
+        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0"
+      },
+      {
+        "name": "Perfil de Elevacion",
+        "geoprocess": "elevationProfile",
+        "baseUrl": "http://.../geoprocess-backend/elevation-profile"
+      },
+      {
+        "name": "Zona de Inundacion",
+        "geoprocess": "waterRise",
+        "baseUrl": "http://..../geoserver/ows?service=WPS&version=1.0.0"
+      }
+    ]
+  }
 }
