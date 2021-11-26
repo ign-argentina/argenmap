@@ -85,9 +85,9 @@ class ImpresorItemHTML extends Impresor {
 
         if ( typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
             if (lyr.servicio === 'wms') {
-                lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=' + lyr.nombre
+                lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=' + lyr.nombre;
             } else {
-                lyr.legendURL = ERROR_IMG;
+                lyr.legendURL = item.legendImg || ERROR_IMG;
             }
         }
         let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL + legendParams : lyr.legendURL ;
@@ -287,7 +287,7 @@ class LayersInfo {
 
 class LayersInfoWMS extends LayersInfo {
 
-    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type, customizedLayers, itemGroupPrinter) {
+    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type, icons, customizedLayers, itemGroupPrinter) {
         super();
         this.host = host;
         this.service = service;
@@ -299,12 +299,14 @@ class LayersInfoWMS extends LayersInfo {
         this.short_abstract = short_abstract;
         this.feature_info_format = feature_info_format;
         this.type = type;
+        this.icons = icons || null;
         this.customizedLayers = (customizedLayers == "") ? null : customizedLayers;
         this.itemGroupPrinter = (itemGroupPrinter == "") ? new ImpresorGrupoHTML : itemGroupPrinter;
 
         this._executed = false;
     }
 
+    
     get(_gestorMenu) {
         if (this._executed == false) {
             this._executed = true; //Indicates that getCapabilities executed
@@ -315,22 +317,27 @@ class LayersInfoWMS extends LayersInfo {
                 var itemGroup = _gestorMenu.getItemGroupById(ItemGroupPrefix + this.section);
                 if (itemGroup != null) {
                     for (var key in this.customizedLayers) {
+                        
+                        let title = this.customizedLayers[key]["new_title"] || null, 
+                            legend = this.customizedLayers[key]["legend"] || null,
+                            keywords = this.customizedLayers[key]["new_keywords"],
+                            abstract = this.customizedLayers[key]["new_abstract"];
+
                         if (this.type == 'wmslayer_mapserver') {
-                            var capa = new CapaMapserver(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            var capa = new CapaMapserver(key, title, null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         } else {
-                            //var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null, null, null, null);
-                            var capa = new Capa(key,this.customizedLayers[key]["new_title"],this.srs,this.host,this.service,this.version,this.feature_info_format,null,this.minx,this.maxx,this.miny,this.maxy,this.attribution,this.customizedLayers[key]["legend"]);
+                            var capa = new Capa(key,title,this.srs,this.host,this.service,this.version,this.feature_info_format,null,this.minx,this.maxx,this.miny,this.maxy,this.attribution,legend);
                         }
                         //Generate keyword array
                         var keywordsAux = [];
-                        if (this.customizedLayers[key]["new_keywords"] != null && this.customizedLayers[key]["new_keywords"] != '') {
-                            keywordsAux = this.customizedLayers[key]["new_keywords"].split(',');
+                        if (keywords != null && keywords != '') {
+                            keywordsAux = keywords.split(',');
                             for (var keykeywordsAux in keywordsAux) {
                                 keywordsAux[keykeywordsAux] = keywordsAux[keykeywordsAux].trim();
                             }
                         }
 
-                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback(),null);
+                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, abstract, capa.titulo, capa, this.getCallback(),null);
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
@@ -423,11 +430,16 @@ class LayersInfoWMS extends LayersInfo {
                     var ilegendURLaux= $('Style', i).html()
                     let divi =  document.createElement("div")
                     let aux = null
-                    divi.innerHTML= ilegendURLaux
-                    if(divi.getElementsByTagName("onlineresource")){
-                    aux = divi.getElementsByTagName("onlineresource")[0].getAttribute('xlink:href')
+                    divi.innerHTML= ilegendURLaux;
+                    var ilegendURL;
+                    if (thisObj.icons) {
+                        ilegendURL = thisObj.icons[iName];
+                    } else {
+                        if(divi.getElementsByTagName("onlineresource")){
+                        aux = divi.getElementsByTagName("onlineresource")[0].getAttribute('xlink:href')
+                        }
+                        ilegendURL = aux
                     }
-                    var ilegendURL = aux
                     
                     if (iBoundingBox.length > 0) {
                         if (iBoundingBox[0].attributes.srs) {
@@ -686,22 +698,28 @@ class LayersInfoWMTS extends LayersInfoWMS {
                 var itemGroup = _gestorMenu.getItemGroupById(ItemGroupPrefix + this.section);
                 if (itemGroup != null) {
                     for (var key in this.customizedLayers) {
+
+                        let title = this.customizedLayers[key]["new_title"] || this.title, 
+                            legend = this.customizedLayers[key]["legend"] || null, 
+                            keywords = this.customizedLayers[key]["new_keywords"], 
+                            abstract = this.customizedLayers[key]["new_abstract"];
+
                         if (this.type == 'wmslayer_mapserver') {
-                            var capa = new CapaMapserver(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            var capa = new CapaMapserver(key, title, null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         } else {
-                            var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            var capa = new Capa(key,title,this.srs,this.host,this.service,this.version,this.feature_info_format,null,this.minx,this.maxx,this.miny,this.maxy,this.attribution,legend);
                         }
 
                         //Generate keyword array
                         var keywordsAux = [];
-                        if (this.customizedLayers[key]["new_keywords"] != null && this.customizedLayers[key]["new_keywords"] != '') {
-                            keywordsAux = this.customizedLayers[key]["new_keywords"].split(',');
+                        if (keywords != null && keywords != '') {
+                            keywordsAux = keywords.split(',');
                             for (var keykeywordsAux in keywordsAux) {
                                 keywordsAux[keykeywordsAux] = keywordsAux[keykeywordsAux].trim();
                             }
                         }
 
-                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback(), null);
+                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, abstract, capa.titulo, capa, this.getCallback(), null);
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
@@ -1144,13 +1162,13 @@ class ItemGroupWMSSelector extends ItemGroup {
 }
 
 class Item extends ItemComposite {
-	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback, listType) {
+	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback, legendImg, listType) {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.titulo = titulo;
 		this.capa = capa;
 		this.capas = [capa];
 		this.visible = false;
-        this.legendImg = null;
+        this.legendImg = legendImg;
         this.callback = callback;
         this.listType = null;
     }
