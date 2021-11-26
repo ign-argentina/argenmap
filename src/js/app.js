@@ -181,7 +181,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               item.tab = "";
             }
 
-            if (item.type === "wmslayer") { item.type = "wms" }
+            if (item.type === "wmslayer" || item.type === "wmslayer_mapserver") { item.type = "wms" }
 
             switch (item.type) {
               case "wms":
