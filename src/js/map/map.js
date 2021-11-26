@@ -8,6 +8,8 @@ var mapa = "";
 
 let currentBaseMap = null;
 
+let countour_styles = false;
+
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
 	for (const plugin in PLUGINS) {
 		if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(excluded_plugin => excluded_plugin === plugin)) {
@@ -1904,11 +1906,31 @@ $("body").on("pluginLoad", function(event, plugin){
 								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
 									let n = geoJSON.properties.value
 									let value = geoJSON.properties.value + 'm'
-									if (n % 100 === 0 ||n % 50 === 0) {
-										options = {color: '#7b7774',"weight":"3"}
-										}else{
-											options = {color: '#7b7774',"weight":"1"}
+									
+									if(!countour_styles) countour_styles = getStyleContour()
+									
+
+									if (n % countour_styles.d_line_m === 0) {
+										let colord = ""
+										if(countour_styles.d_line_color === "multi"){
+											colord = getMulticolorContour(n)
 										}
+										else{colord = countour_styles.d_line_color}
+
+										options = {color: colord,
+												   weight: countour_styles.d_weigth}
+									}else{
+										let colorc = ""
+										if(countour_styles.line_color === "multi"){
+											colorc = getMulticolorContour(n)
+										} else{ colorc = countour_styles.line_color}
+
+
+										options = { color: colorc,
+													weight: countour_styles.line_weight}
+									}
+									//if (n % 100 === 0 ||n % 50 === 0) 
+
 									layer = L.polyline(invertedCoords, options);
 									type = 'polyline';
 									layer.value = geoJSON.properties.value

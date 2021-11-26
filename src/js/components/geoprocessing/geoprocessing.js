@@ -22,7 +22,7 @@ class Geoprocessing {
   svgZoomStyle(zoom) {
     if (contour_result_active) {
       let aux = document.getElementById("fix-textpath")
-      if (zoom < 14) {
+      /*if (zoom < 14) {
         aux.innerHTML = `
         .leaflet-pane svg text {
           font-size: 0.1em !important;
@@ -30,7 +30,7 @@ class Geoprocessing {
         `
       } else {
         aux.innerHTML = ""
-      }
+      }*/
 
     }
   }

@@ -1,0 +1,17 @@
+"geoprocessing": {
+    "isActive": true,
+    "availableProcesses": [
+      {
+        "name": "Curvas de Nivel",
+        "geoprocess": "contour",
+        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0",
+        "styles" : {
+          "line_color": "multi",
+          "line_weight": 1,
+          "d_line_m": 50,
+          "d_line_color": "multi",
+          "d_weigth": 2
+        }
+      }
+    ]
+}
