@@ -506,7 +506,7 @@ function setSelectedBasemapAsActive(layerName, availableBasemaps) {
 function adaptToImage(imgDiv) {
   
   let img = imgDiv.childNodes[0], item = imgDiv.closest("li");
-  if (img.naturalHeight > 22) {
+  if (img.naturalHeight > 24) {
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
     resize_img_icon.style = "align-self: center;font-size: 14px";
@@ -523,11 +523,13 @@ function adaptToImage(imgDiv) {
 
     resize_img_icon.onclick = () => {
       if (container_expand_legend_grafic.getAttribute("load") === "true") {
-        container_expand_legend_grafic.className = "hidden";
+        //container_expand_legend_grafic.className = "hidden";
+        container_expand_legend_grafic.classList.toggle("hidden");
         container_expand_legend_grafic.setAttribute("load", false);
         resize_img_icon.innerHTML = '<i class="fas fa-angle-down" aria-hidden="true"></i>';
       } else {
         container_expand_legend_grafic.classList.remove("hidden");
+        //container_expand_legend_grafic.classList.toggle("hidden");
         container_expand_legend_grafic.setAttribute("load", true);
         container_expand_legend_grafic.style = "background-color: white;";
         resize_img_icon.innerHTML = '<i class="fas fa-angle-up" aria-hidden="true"></i>';
