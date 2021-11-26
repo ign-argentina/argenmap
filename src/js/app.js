@@ -181,8 +181,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               item.tab = "";
             }
 
+            if (item.type === "wmslayer") { item.type = "wms" }
+
             switch (item.type) {
-              case "wmslayer":
+              case "wms":
                 getGeoserverCounter++;
                 if (tab.listType == "combobox") {
                   impresorGroupTemp = impresorGroupWMSSelector;
