@@ -32,13 +32,16 @@
       "maxZoom": 21
     }
   },
-  "showSearchBar": false,
+  "showSearchBar": true,
   "searchbar":{
     "isActive": true,
     "top": "5px",
     "left": "40%",
     "color_focus": "#008dc9",
-    "background_color": "rgba(255, 255, 255, 0.7)"
+    "background_color": "rgba(255, 255, 255, 0.7)",
+    "strings": {
+      "placeholder": "Buscar lugar..."
+    }
   },
   "geocoder":{
     "url": "https://api.ign.gob.ar/buscador/",

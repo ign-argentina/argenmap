@@ -12,3 +12,7 @@
     left: 250px ;
   }
 }
+
+.active a{
+  color:white
+}
