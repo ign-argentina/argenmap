@@ -73,6 +73,7 @@ class ImpresorItemHTML extends Impresor {
     imprimir(item) {
         var childId = item.getId();
         let lyr = item.capa,
+        legend,
         legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off',
         aux = {
             ...item,
@@ -83,14 +84,14 @@ class ImpresorItemHTML extends Impresor {
         app.setLayer(aux)
         app.layerNameByDomId[childId] = item.nombre;
 
-        if ( typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
+        if ( lyr.legendURL === null || typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
             if (lyr.servicio === 'wms') {
                 lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=' + lyr.nombre;
             } else {
                 lyr.legendURL = item.legendImg || ERROR_IMG;
             }
         }
-        let legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL + legendParams : lyr.legendURL ;
+        legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL + legendParams : lyr.legendURL ;
         
         let legendImg = `<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"${childId}\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
           let activated = item.visible == true ? " active " : "",
@@ -320,13 +321,14 @@ class LayersInfoWMS extends LayersInfo {
                         
                         let title = this.customizedLayers[key]["new_title"] || null, 
                             legend = this.customizedLayers[key]["legend"] || null,
-                            keywords = this.customizedLayers[key]["new_keywords"],
-                            abstract = this.customizedLayers[key]["new_abstract"];
-
+                            keywords = this.customizedLayers[key]["new_keywords"] || null,
+                            abstract = this.customizedLayers[key]["new_abstract"] || null;
+                            
                         if (this.type == 'wmslayer_mapserver') {
                             var capa = new CapaMapserver(key, title, null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         } else {
-                            var capa = new Capa(key,title,this.srs,this.host,this.service,this.version,this.feature_info_format,null,this.minx,this.maxx,this.miny,this.maxy,this.attribution,legend);
+                            var capa = new Capa(key,title,this.srs,this.host,this.service,this.version,this.feature_info_format,keywords,this.minx,this.maxx,this.miny,this.maxy,this.attribution,legend);
+                            //var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
                         }
                         //Generate keyword array
                         var keywordsAux = [];
