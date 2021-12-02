@@ -8,6 +8,8 @@ var mapa = "";
 
 let currentBaseMap = null;
 
+let countour_styles = false;
+
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
 	for (const plugin in PLUGINS) {
 		if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(excluded_plugin => excluded_plugin === plugin)) {
@@ -451,6 +453,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.editableLayers[type].push(layer);
 
 						drawnItems.addLayer(layer);
+
+						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						
 						if (layer.type === 'marker') {
 							//Default marker styles
@@ -490,6 +494,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								}
 							}
 						})
+						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
 					mapa.on('draw:drawstop', (e) => {
@@ -580,6 +585,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.openPopup(contextPopup);
 					});
 
+					mapa.addMethodToEvent = (method, event) => {
+						mapa.methodsEvents[event].push(method);
+					};
+
 					mapa.addSelectionLayersMenuToLayer = (layer,file) => {
 						if (file==undefined || !file) {
 							const popUpDiv = mapa.createPopUp(layer);
@@ -600,6 +609,18 @@ $("body").on("pluginLoad", function(event, plugin){
 								layer.bindPopup(popUpDiv);
 							});
 
+						}
+					}
+
+					mapa.centerLayer = (layer) => {
+						if (!layer) {
+							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
+						}
+
+						if (layer.type === 'marker' || layer.type === 'circlemarker') {
+							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+						} else {
+							mapa.fitBounds(layer.getBounds());
 						}
 					}
 
@@ -1589,7 +1610,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									mapa.groupFileLayers[group].splice(lyrInGrpIdx, 1);
 							}
 						}
-
+						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers))
 						controlSeccionGeom()
 					}
 
@@ -1882,8 +1903,59 @@ $("body").on("pluginLoad", function(event, plugin){
 							break;
 							case 'linestring': {
 								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
-								layer = L.polyline(invertedCoords, options);
-								type = 'polyline';
+								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
+									let n = geoJSON.properties.value
+									let value = geoJSON.properties.value + 'm'
+									
+									if(!countour_styles) countour_styles = getStyleContour()
+									
+
+									if (n % countour_styles.d_line_m === 0) {
+										let colord = ""
+										if(countour_styles.d_line_color === "multi"){
+											colord = getMulticolorContour(n)
+										}
+										else{colord = countour_styles.d_line_color}
+
+										options = {color: colord,
+												   weight: countour_styles.d_weigth}
+									}else{
+										let colorc = ""
+										if(countour_styles.line_color === "multi"){
+											colorc = getMulticolorContour(n)
+										} else{ colorc = countour_styles.line_color}
+
+
+										options = { color: colorc,
+													weight: countour_styles.line_weight}
+									}
+									//if (n % 100 === 0 ||n % 50 === 0) 
+
+									layer = L.polyline(invertedCoords, options);
+									type = 'polyline';
+									layer.value = geoJSON.properties.value
+									if (n % 100 === 0 ||n % 50 === 0) {
+										
+										/*layer.setText(value, {
+											repeat: false,
+											offset: 6,
+											center: true,
+											attributes: {fill: 'black'}})*/
+									}
+									layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
+									layer.on('mouseover', function (e) {
+										//layer.setText(geoJSON.properties.value + 'm', { center: true, orientation: 'flip' });
+										layer.openPopup();
+									});
+									layer.on('mouseout', function (e) {
+										//layer.setText(null);
+										layer.closePopup();
+									});
+								}else{
+									layer = L.polyline(invertedCoords, options);
+									type = 'polyline';
+								}
+								
 							}
 							break;
 							case 'polygon': {
@@ -2070,6 +2142,13 @@ $("body").on("pluginLoad", function(event, plugin){
 				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
 				renderer: L.canvas()
 			});
+			
+
+			//Available events
+			mapa.methodsEvents = {
+				'add-layer': [],
+				'delete-layer': []
+			};
 
 			setValidZoomLevel(selectedBasemap.nombre);
 

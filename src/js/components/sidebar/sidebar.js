@@ -10,6 +10,7 @@ let leafletbottom = null;
 let drawb = null;
 let screenshot = null;
 let divbar = null;
+let icongeop = null;
 class SidebarTools {
   constructor() {
     locate = document.getElementsByClassName(
@@ -31,6 +32,7 @@ class SidebarTools {
     leafletbottom = document.getElementsByClassName("leaflet-bottom");
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
     screenshot = document.getElementById("screenshot");
+    icongeop = document.getElementById("geoprocesos-icon");
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
     this.component = `
     <span data-html2canvas-ignore="true" id="sidebar-toolbar-span"class="glyphicon glyphicon-option-vertical" aria-hidden="true">
@@ -66,6 +68,7 @@ class SidebarTools {
         abrirarchivo.style.display = "";
         screenshot.style.display = "";
         divbar[2].hidden = false;
+        icongeop.style.display = ""
       } else {
         this.style.left = "10px";
         areHiddenLeft = true;
@@ -77,6 +80,7 @@ class SidebarTools {
         abrirarchivo.style.display = "none";
         screenshot.style.display = "none";
         divbar[2].hidden = true;
+        icongeop.style.display = "none"
       }
     });
 

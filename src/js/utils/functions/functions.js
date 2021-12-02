@@ -6,6 +6,7 @@ var loadCharts = false;
 var loadSearchbar = false;
 var loadLayerOptions = false;
 var currentlyDrawing = false;
+var loadGeoprocessing  = false;
 
 function setTableAsPopUp(cond) {
     loadTableAsPopUp = cond;
@@ -25,6 +26,10 @@ function setSearchbar(cond) {
 
  function setLayerOptions(cond) {
     loadLayerOptions = cond;
+ }
+
+ function setGeoprocessing(cond) {
+    loadGeoprocessing = cond;
  }
 
 const reverseCoords = (coords) => {
@@ -751,6 +756,55 @@ function zoomEditableLayers(layername){
         }
     }
 
+function getStyleContour(){
+    console.log("ejecuto")
+    let styles = {
+        line_color: "#7b7774",
+        line_weight: 1,
+        d_line_m: 50,
+        d_line_color: "#7b7774",
+        d_weigth: 3
+    }
+
+    if(loadGeoprocessing){
+        let g = app.geoprocessing.availableProcesses
+        g.forEach(e => {
+            if(e.geoprocess=="contour"){
+                if(e.styles){
+                    console.log(e.styles)
+                    if(e.styles.line_color){styles.line_color = e.styles.line_color}
+                    if(e.styles.line_weight){styles.line_weight = e.styles.line_weight}
+                    if(e.styles.d_line_m){styles.d_line_m = e.styles.d_line_m}
+                    if(e.styles.d_line_color){styles.d_line_color = e.styles.d_line_color}
+                    if(e.styles.d_weigth){styles.d_weigth = e.styles.d_weigth}
+                }
+            }
+        })
+    }
+
+    return styles
+}
+
+function getMulticolorContour(n){
+    //TODO reemplazar por rampa
+    let color = ""
+    if(n>=6000){color = "#8E492D"}
+    else if(n<6000 && n>=5000){color = "#B5574E"}
+    else if(n<5000 && n>=4000){color = "#CA813D"}
+    else if(n<4000 && n>=3000){color = "#CB9550"}
+    else if(n<3000 && n>=2000){color = "#E2AE4E"}
+    else if(n<2000 && n>=1000){color = "#E4C47A"}
+    else if(n<1000 && n>=500){color = "#FAB24A"}
+    else if(n<500 && n>=400){color = "#FCCA78"}
+    else if(n<400 && n>=300){color = "#FEE3AC"}
+    else if(n<300 && n>=200){color = "#FFFDCC"}
+    else if(n<200 && n>=150){color = "#E6F6E5"}
+    else if(n<150 && n>=100){color = "#CCEBB5"}
+    else if(n<100 && n>=50){color = "#99D98C"}
+    else if(n<50 && n>0){color = "#80CF66"}
+    else if(n<=0){color = "#4DC070"}
+    return color
+}
 
   //add funcion with setTimeout 
   //fix bug--->  line 553 entities.js 
