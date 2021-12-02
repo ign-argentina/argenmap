@@ -13,10 +13,8 @@ const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
 
-
 //Default Services Values
 const DEFAULT_WMTS_MAX_ZOOM_LEVEL = 21;
-
 
 //Default Marker Styles
 const DEFAULT_MARKER_STYLES = {
@@ -73,3 +71,4 @@ const PROJECTIONS = {
     '22185': '+proj=tmerc +lat_0=-90 +lon_0=-60 +k=1 +x_0=5500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs'
 }
 
+const ERROR_IMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";

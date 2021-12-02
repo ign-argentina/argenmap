@@ -1,0 +1,118 @@
+{
+  "items": [
+    {
+      "type": "basemap",
+      "peso": 1,
+      "nombre": "Mapas base",
+      "short_abstract": "",
+      "class": "",
+      "seccion": "mapasbase",
+      "capas": [
+        {
+          "titulo": "Argenmap",
+          "nombre": "argenmap",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap.png",
+          "peso": 10,
+          "selected": true,
+          "zoom": {
+            "min": 3,
+            "max": 21,
+            "nativeMin": 3,
+            "nativeMax": 21
+          }
+        },
+        {
+          "titulo": "Argenmap gris",
+          "nombre": "argenmap_gris",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+          "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/mapabase_gris@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+          "legendImg": "src/styles/images/argenmap-gris.png",
+          "peso": 20,
+          "zoom": {
+            "min": 3,
+            "max": 21,
+            "nativeMin": 3,
+            "nativeMax": 21
+          }
+        },
+        {
+          "titulo": "Imágenes satelitales Esri",
+          "nombre": "esri_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © Esri",
+          "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+          "legendImg": "src/styles/images/esri.png",
+          "peso": 30,
+          "zoom": {
+            "min": 3,
+            "max": 17,
+            "nativeMin": 3,
+            "nativeMax": 17
+          }
+        },
+        {
+          "titulo": "Mapa topográfico Esri",
+          "nombre": "esri_imagery_t",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Mapa topográfico © Esri",
+          "host": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
+          "legendImg": "src/styles/images/esrit.png",
+          "peso": 40,
+          "zoom": {
+            "min": 3,
+            "max": 8,
+            "nativeMin": 3,
+            "nativeMax": 8
+          }
+        },
+        {
+          "titulo": "Imágenes satelitales Here",
+          "nombre": "here_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © here",
+          "host": "https://2.aerial.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=XiMlA4JwMurUFFYUWYe3&app_code=oTsmqovbl2YudG3E0UlxDA",
+          "legendImg": "src/styles/images/here.png",
+          "peso": 50,
+          "zoom": {
+            "min": 3,
+            "max": 20,
+            "nativeMin": 3,
+            "nativeMax": 20
+          }
+        }
+      ]
+    },
+    {
+      "type": "wmslayer",
+      "peso": 70,
+      "nombre": "Industria y servicios",
+      "short_abstract": "Industrias, producción agropecuaria, minería, energía, comunicaciones, etc.",
+      "class": "",
+      "seccion": "industria-servicios",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://wms.ign.gob.ar/geoserver/industria-servicios/wms"
+    },
+    {
+      "type": "wmslayer",
+      "peso": 120,
+      "nombre": "Modelos digitales de elevaciones",
+      "short_abstract": "Modelos digitales de elevaciones",
+      "class": "",
+      "seccion": "mde",
+      "servicio": "wms",
+      "version": "1.3.0",
+      "host": "https://wms.ign.gob.ar/geoserver/modelos-digitales-elevaciones/wms"
+    }
+  ],
+  "template": "ign-geoportal-basic"
+}

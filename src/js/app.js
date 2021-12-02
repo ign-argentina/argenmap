@@ -185,13 +185,15 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               item.tab = "";
             }
 
+            if (item.type === "wmslayer" || item.type === "wmslayer_mapserver") { item.type = "wms" }
+
             switch (item.type) {
-              case "wmslayer":
+              case "wms":
                 getGeoserverCounter++;
                 if (tab.listType == "combobox") {
                   impresorGroupTemp = impresorGroupWMSSelector;
                 }
-                let wmsLayerInfo = new LayersInfoWMS(item.host, item.servicio, item.version, tab, item.seccion, item.peso, item.nombre, item.short_abstract, featureInfoFormat, item.type, customizedLayers, impresorGroupTemp);
+                let wmsLayerInfo = new LayersInfoWMS(item.host, item.servicio, item.version, tab, item.seccion, item.peso, item.nombre, item.short_abstract, featureInfoFormat, item.type, item.icons, customizedLayers, impresorGroupTemp);
                 if (item.allowed_layers) {
                   wmsLayerInfo.setAllowebLayers(item.allowed_layers);
                 }
@@ -209,7 +211,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
                 if (tab.listType == "combobox") {
                   impresorGroupTemp = impresorGroupWMSSelector;
                 }
-                let wmtsLayerInfo = new LayersInfoWMTS(item.host, item.servicio, item.version, tab, item.seccion, item.peso, item.nombre, item.short_abstract, featureInfoFormat, item.type, customizedLayers, impresorGroupTemp);
+                let wmtsLayerInfo = new LayersInfoWMTS(item.host, item.servicio, item.version, tab, item.seccion, item.peso, item.nombre, item.short_abstract, featureInfoFormat, item.type, item.icons, customizedLayers, impresorGroupTemp);
                 if (item.allowed_layers) {
                   wmtsLayerInfo.setAllowebLayers(item.allowed_layers);
                 }
