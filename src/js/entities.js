@@ -2598,7 +2598,7 @@ class Menu_UI{
             download_opt.onclick = function(){
                 let index_file = getIndexFileLayerbyID(id)
                 let d_file_name = addedLayers[index_file].name
-                mapa.downloadMultiLayerGeoJSON(id,d_file_name,true)
+                mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
             }
 
             let edit_name_opt = document.createElement("li")

@@ -179,7 +179,7 @@ class StylesUI {
 function clickReferencias(){
     event.preventDefault();
     $.fancybox.open({
-        src : app.referencias.image,
+        src : 'src/styles/images/referencias.png',
         type : 'image',
         closeBtn: 'true'
     });

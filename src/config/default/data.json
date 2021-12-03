@@ -100,7 +100,7 @@
       "seccion": "industria-servicios",
       "servicio": "wms",
       "version": "1.3.0",
-      "host": "https://wms.ign.gob.ar/geoserver/industria-servicios"
+      "host": "https://wms.ign.gob.ar/geoserver/industria-servicios/wms"
     },
     {
       "type": "wmslayer",
@@ -111,7 +111,7 @@
       "seccion": "mde",
       "servicio": "wms",
       "version": "1.3.0",
-      "host": "https://wms.ign.gob.ar/geoserver/modelos-digitales-elevaciones"
+      "host": "https://wms.ign.gob.ar/geoserver/modelos-digitales-elevaciones/wms"
     }
   ],
   "template": "ign-geoportal-basic"

@@ -1,6 +1,6 @@
 {
   "table": {
-    "isActive": true,
+    "isActive": false,
     "rowsLimit": 5
   },
   "charts": {
@@ -54,7 +54,7 @@
   }, 
   "referencias": {
     "show": true,
-    "src": "src/config/default/styles/images/referencias.png",
+    "icon": "src/config/default/styles/images/referencias.png",
     "width":"25px",
     "height":"31px"
   },
@@ -82,5 +82,32 @@
   },
   "title": "IGN - ARGENMAP",
   "website": "https://www.ign.gob.ar/",
-  "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png"
+  "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
+  "geoprocessing": {
+    "isActive": false,
+    "availableProcesses": [
+      {
+        "name": "Curvas de Nivel",
+        "geoprocess": "contour",
+        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0",
+        "styles" : {
+          "line_color": "#E4C47A",
+          "line_weight": 1,
+          "d_line_m": 50,
+          "d_line_color": "#E4C47A",
+          "d_weigth": 3
+        }
+      },
+      {
+        "name": "Perfil de Elevacion",
+        "geoprocess": "elevationProfile",
+        "baseUrl": "http://.../geoprocess-backend/elevation-profile"
+      },
+      {
+        "name": "Zona de Inundacion",
+        "geoprocess": "waterRise",
+        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0"
+      }
+    ]
+  }
 }
