@@ -363,7 +363,10 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //Add Analytics
     if (app.analytics_ids) {
-      addAnalytics(app.analytics_ids);
+      // Check to fix a bug with ad blockers
+      if (typeof addAnalytics === "function") { 
+        addAnalytics(app.analytics_ids);
+      }
     }
 
     app.addBasemaps();
