@@ -77,7 +77,7 @@ class ImpresorItemHTML extends Impresor {
         var childId = item.getId();
         let lyr = item.capa,
         legend,
-        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off',
+        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;hideEmptyRules:true',
         aux = {
             ...item,
             'childid': childId,
