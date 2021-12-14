@@ -44,6 +44,9 @@ class Capa {
             if (this.servicio === "wms") { owsHost += "/wms?"};
             //if (this.servicio === "mapserver") { owsHost };
         } */
+        if (this.servicio === "wms" && owsHost.includes("/geoserver") && !owsHost.endsWith("/wms")) { 
+            owsHost += "/wms";
+         };
         if (this.servicio === "wmts") { owsHost += "/gwc/service/wmts" };
 
         return owsHost;
@@ -93,9 +96,10 @@ class ImpresorItemHTML extends Impresor {
         }
         legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL + legendParams : lyr.legendURL ;
         
-        let legendImg = `<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"${childId}\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
-          let activated = item.visible == true ? " active " : "",
-          btnhtml = "";
+        // following line adds layer when click is made
+        //let legendImg = `<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"${childId}\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
+        let legendImg = `<div class='legend-layer'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
+        let activated = item.visible == true ? " active " : "", btnhtml = "";
 
         //if tab = combobox, img source from 
         /* if(item.listType === "combobox"){
@@ -658,10 +662,14 @@ class LayersInfoWMS extends LayersInfo {
 
     getHostOWS() {
         //Define GetCapabilities host endpoint
-        var host = this.host + '/ows';
+        /* var host = this.host + '/ows';
         if (this.type == 'wmslayer_mapserver') {
             host = this.host;
-        }
+        } */
+        let host = this.host;
+        if (this.servicio === "wms" && host.includes("/geoserver") && !host.endsWith("/wms")) { 
+            owsHost += "/wms";
+         };
         return host;
     }
 
@@ -868,8 +876,12 @@ class LayersInfoWMTS extends LayersInfoWMS {
     }
 
     getHost() {
-        //Define GetCapabilities host endpoint
-        var host = this.host + '/gwc/service/wmts';
+        /* //Define GetCapabilities host endpoint
+        var host = this.host + '/gwc/service/wmts'; */
+        let host = this.host;
+        if (host.includes("/geoserver") && !host.endsWith("/wmts")) { 
+            host += '/gwc/service/wmts';
+         };
         return host;
     }
 
