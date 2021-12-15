@@ -574,6 +574,16 @@ function setBasemapToLoad(urlLayers, availableBasemaps) {
 };
 
 function setProperStyleToCtrlBtns() {
+
+    let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    let shadow_style = '0 1px 5px rgb(0 0 0 / 65%)'
+    let border_style = 'none'
+    let size = '26px'
+    if(!isChrome){
+        shadow_style = 'none'
+        border_style = '2px solid rgba(0, 0, 0, 0.2)'
+        size = '34px'
+    }
     const zoomhomeCtrlBtn = document.getElementsByClassName('leaflet-control-zoomhome-home');
     const interval = setInterval(() => {
         if (zoomhomeCtrlBtn.length > 0) {
@@ -589,10 +599,10 @@ function setProperStyleToCtrlBtns() {
             const screenshotCtrlBtn= document.getElementById('screenshot');
             btns.push(screenshotCtrlBtn);
             btns.forEach(btn => {
-                btn.style.width = width + 'px';
-                btn.style.height = width + 'px';
-                btn.style.border = 'none';
-                btn.style.boxShadow = '0 1px 5px rgb(0 0 0 / 65%)';
+                btn.style.width = size;
+                btn.style.height = size;
+                btn.style.border = border_style;
+                btn.style.boxShadow = shadow_style;
             });
         }
     }, 100);

@@ -33,7 +33,6 @@ class SidebarTools {
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
     screenshot = document.getElementById("screenshot");
     icongeop = document.getElementById("geoprocesos-icon");
-    console.log(icongeop)
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
     this.component = `
     <span data-html2canvas-ignore="true" id="sidebar-toolbar-span"class="glyphicon glyphicon-option-vertical" aria-hidden="true">
