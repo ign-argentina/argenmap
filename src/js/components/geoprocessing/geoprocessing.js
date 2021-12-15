@@ -1,5 +1,5 @@
 
-var controlElevation = null
+let controlElevation = null
 let g_modal_close = true
 let geoprocessing = {
   'contour': GeoserviceFactory.Contour,
@@ -46,8 +46,25 @@ class Geoprocessing {
     elem.title = "Geoprocesos"
     elem.innerHTML = modalicon
 
+    let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    let shadow_style = '0 1px 5px rgb(0 0 0 / 65%)'
+    let border_style = 'none'
+    let size = '26px'
+    if(!isChrome){
+        shadow_style = 'none'
+        border_style = '2px solid rgba(0, 0, 0, 0.2)'
+        size = '34px'
+    }
+    elem.style.width = size;
+    elem.style.height = size;
+    elem.style.border = border_style;
+    elem.style.boxShadow = shadow_style;
+
     elem.onclick = function () {
-      if (g_modal_close) geoProcessingManager.createModal()
+      if (g_modal_close) {
+        geoProcessingManager.createModal()
+        g_modal_close = false
+      }
     }
     document.getElementById("mapa").appendChild(elem);
 
@@ -72,6 +89,7 @@ class Geoprocessing {
     btnclose.innerHTML = '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = function () {
       divContainer.remove();
+      g_modal_close = true
     };
     s_sec.append(btnclose);
 
@@ -116,7 +134,7 @@ class Geoprocessing {
         }`
 
         document.head.appendChild(style_fix_textpath);
-
+        
         let layername = 'contourResult_' + results_counter
         results_counter++
 
@@ -134,6 +152,20 @@ class Geoprocessing {
         break;
       }
       case 'elevationProfile': {
+        let g_result = `{"type":"Feature","properties":{"type":"polyline"},"geometry":${JSON.stringify(result)}}`
+        let layername = 'elevationProfile_' + results_counter
+        results_counter++
+
+        mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 })
+        //mapa.addGeoJsonLayerToDrawedLayers(g_result,layername, true, true);
+        addedLayers.push({
+          id: layername,
+          layer:g_result, 
+          name:layername,
+          file_name:layername,
+          kb:null
+        });
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         this.elevationDiv(result)
         break;
       }
@@ -332,11 +364,14 @@ class Geoprocessing {
               break;
             }
             case 'elevationProfile': {
-              
-              const ca = layer.getLatLngs()[0];
-              const cb = layer.getLatLngs()[1];
-              
-              values = ca.lng + " " + ca.lat + "," + cb.lng + " " + cb.lat
+              let coords = layer.getLatLngs()
+              let coords_value = ""
+              coords.forEach((e,i) =>
+              { if(i!=(coords.length - 1)){coords_value += e.lng + " " + e.lat + ","}
+                else{coords_value += e.lng + " " + e.lat}
+              })
+
+              values = coords_value
               break;
             }
             case 'waterRise': {
@@ -483,6 +518,10 @@ class Geoprocessing {
       elevationDiv: '#elevation-div',
       zFollow: 12,
       legend: false,
+      followMarker: false,
+      autofitBounds: false,
+      autohide: false,
+      distance: false
     }
 
     controlElevation = L.control.elevation(options);

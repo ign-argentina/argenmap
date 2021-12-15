@@ -57,7 +57,7 @@ class FormBuilder {
         this.form.appendChild(label);
 
         const element = document.createElement(type);
-        element.className = 'form-element';
+        element.className = '';
         element.id = id;
         this.elements[id] = element;
         this.form.appendChild(element);

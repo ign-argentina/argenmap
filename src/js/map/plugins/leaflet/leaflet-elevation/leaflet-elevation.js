@@ -1208,19 +1208,22 @@
         };
 
         var focus = function focus(e) {
-          if (e.type == 'brush' && !e.sourceEvent) return;
+          if(e){
+            if (e.type == 'brush' && !e.sourceEvent) return;
 
-          var rect = _this2._chart.panes.brush.select('.overlay').node();
+            var rect = _this2._chart.panes.brush.select('.overlay').node();
+  
+            var coords = d3.pointers(e, rect)[0];
+            var xCoord = coords[0];
+  
+            var item = _this2._data[_this2._findIndexForXCoord(xCoord)];
+  
+            _this2.fire("mouse_move", {
+              item: item,
+              xCoord: xCoord
+            });
+          }
 
-          var coords = d3.pointers(e, rect)[0];
-          var xCoord = coords[0];
-
-          var item = _this2._data[_this2._findIndexForXCoord(xCoord)];
-
-          _this2.fire("mouse_move", {
-            item: item,
-            xCoord: xCoord
-          });
         };
 
         this._brush.filter(function (e) {
