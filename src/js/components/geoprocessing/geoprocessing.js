@@ -1,6 +1,8 @@
 
 let controlElevation = null
 let g_modal_close = true
+let ep_modal_close = true
+let btn_modal_loading = false
 let geoprocessing = {
   'contour': GeoserviceFactory.Contour,
   'elevationProfile': GeoserviceFactory.ElevationProfile,
@@ -125,6 +127,7 @@ class Geoprocessing {
   displayResult(result) {
     switch (this.geoprocessId) {
       case 'contour': {
+        btn_modal_loading = false
         contour_result_active = true
         let style_fix_textpath = document.createElement("style")
         style_fix_textpath.id = "fix-textpath"
@@ -148,10 +151,11 @@ class Geoprocessing {
           kb:null
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-
+        $("#btnclose-icon-modalfile").click()
         break;
       }
       case 'elevationProfile': {
+        btn_modal_loading = false
         let g_result = `{"type":"Feature","properties":{"type":"polyline"},"geometry":${JSON.stringify(result)}}`
         let layername = 'elevationProfile_' + results_counter
         results_counter++
@@ -166,10 +170,12 @@ class Geoprocessing {
           kb:null
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-        this.elevationDiv(result)
+        if(ep_modal_close)this.elevationDiv(result)
+        $("#btnclose-icon-modalfile").click()
         break;
       }
       case 'waterRise': {
+        btn_modal_loading = false
         let layername = 'waterRise_' + results_counter
         results_counter++
         mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 })
@@ -182,6 +188,7 @@ class Geoprocessing {
           kb:null
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        $("#btnclose-icon-modalfile").click()
         break;
       }
     }
@@ -343,89 +350,95 @@ class Geoprocessing {
     }
 
     this.optionsForm.addButton('Ejecutar', () => {
-      let values = [];
-      for (let i = 0; i < formFields.length; i++) {
-        if (!formFields[i].value) {
-          return new UserMessage(`El campo '${formFields[i].title}' está vacío.`, true, 'error');
-        }
-
-        if (formFields[i].hasAttribute('references') && formFields[i].getAttribute('references') === 'drawedLayers') {
-          const layer = mapa.getEditableLayer(formFields[i].value);
-          this.editableLayer_name = layer.name
-
-          switch (this.geoprocessId) {
-            case 'contour': {
-              const sw = layer.getBounds().getSouthWest();
-              values.push(sw.lng);
-              values.push(sw.lat);
-              const ne = layer.getBounds().getNorthEast();
-              values.push(ne.lng);
-              values.push(ne.lat);
-              break;
-            }
-            case 'elevationProfile': {
-              let coords = layer.getLatLngs()
-              let coords_value = ""
-              coords.forEach((e,i) =>
-              { if(i!=(coords.length - 1)){coords_value += e.lng + " " + e.lat + ","}
-                else{coords_value += e.lng + " " + e.lat}
-              })
-
-              values = coords_value
-              break;
-            }
-            case 'waterRise': {
-              const sw = layer.getBounds().getSouthWest();
-              values.push(sw.lng);
-              values.push(sw.lat);
-              const ne = layer.getBounds().getNorthEast();
-              values.push(ne.lng);
-              values.push(ne.lat);
-              break;
-            }
+      if (!btn_modal_loading){
+        let values = [];
+        for (let i = 0; i < formFields.length; i++) {
+          if (!formFields[i].value) {
+            return new UserMessage(`El campo '${formFields[i].title}' está vacío.`, true, 'error');
           }
 
-        } else {
-          values.push(+formFields[i].value);
+          if (formFields[i].hasAttribute('references') && formFields[i].getAttribute('references') === 'drawedLayers') {
+            const layer = mapa.getEditableLayer(formFields[i].value);
+            this.editableLayer_name = layer.name
+
+            switch (this.geoprocessId) {
+              case 'contour': {
+                const sw = layer.getBounds().getSouthWest();
+                values.push(sw.lng);
+                values.push(sw.lat);
+                const ne = layer.getBounds().getNorthEast();
+                values.push(ne.lng);
+                values.push(ne.lat);
+                break;
+              }
+              case 'elevationProfile': {
+                let coords = layer.getLatLngs()
+                let coords_value = ""
+                coords.forEach((e,i) =>
+                { if(i!=(coords.length - 1)){coords_value += e.lng + " " + e.lat + ","}
+                  else{coords_value += e.lng + " " + e.lat}
+                })
+
+                values = coords_value
+                break;
+              }
+              case 'waterRise': {
+                const sw = layer.getBounds().getSouthWest();
+                values.push(sw.lng);
+                values.push(sw.lat);
+                const ne = layer.getBounds().getNorthEast();
+                values.push(ne.lng);
+                values.push(ne.lat);
+                break;
+              }
+            }
+
+          } else {
+            values.push(+formFields[i].value);
+          }
+        }
+
+      
+        btn_modal_loading = true
+        this.loadingBtn("on")
+        if (this.geoprocessId === 'contour') {
+          this.geoprocessing.execute(...values)
+            .then(result => {
+              this.loadingBtn("off")
+              this.displayResult(result);
+            })
+            .catch(error => {
+              new UserMessage(error.message, true, 'error');
+            });
+        }
+        else if (this.geoprocessId === 'elevationProfile') {
+          this.loadingBtn("off")
+          this.geoprocessing.execute(values)
+            .then(result => {
+              this.displayResult(result);
+            })
+            .catch(error => {
+              //new UserMessage(error.message, true, 'error');
+              console.log(error)
+            });
+
+        }
+        else if (this.geoprocessId === 'waterRise') {
+          this.loadingBtn("off")
+          let waterRise = new GeoserviceFactory.WaterRise(
+            this.geoprocessing.host
+          );
+          waterRise
+            .execute(...values)
+            .then((result) => {
+              this.displayResult(result);
+            })
+            .catch((error) => {
+              new UserMessage(error.message, true, 'error');
+            });
         }
       }
-
-      if (this.geoprocessId === 'contour') {
-        this.geoprocessing.execute(...values)
-          .then(result => {
-            this.displayResult(result);
-          })
-          .catch(error => {
-            new UserMessage(error.message, true, 'error');
-          });
-      }
-      else if (this.geoprocessId === 'elevationProfile') {
-        this.geoprocessing.execute(values)
-          .then(result => {
-            this.displayResult(result);
-          })
-          .catch(error => {
-            //new UserMessage(error.message, true, 'error');
-            console.log(error)
-          });
-
-      }
-      else if (this.geoprocessId === 'waterRise') {
-
-        let waterRise = new GeoserviceFactory.WaterRise(
-          this.geoprocessing.host
-        );
-        waterRise
-          .execute(...values)
-          .then((result) => {
-            this.displayResult(result);
-          })
-          .catch((error) => {
-            new UserMessage(error.message, true, 'error');
-          });
-      }
-
-    });
+    },"ejec_gp");
   }
 
   buildForm() {
@@ -475,6 +488,7 @@ class Geoprocessing {
   }
 
   elevationDiv(result) {
+    ep_modal_close = false
     let mainmodal = document.createElement("div")
     mainmodal.id = "modal-perfil-elevacion"
     mainmodal.className = "modal-perfil-elevacion"
@@ -502,6 +516,7 @@ class Geoprocessing {
 
     let btnclose = document.getElementById("modal-perfil-elevacion")
     btnclose.onclick = function (){
+      ep_modal_close = true
       $("#modal-perfil-elevacion").remove();
       clearElevationProfile();
       controlElevation = null;
@@ -527,7 +542,17 @@ class Geoprocessing {
     controlElevation = L.control.elevation(options);
     controlElevation.addTo(mapa);
     controlElevation.load(otraresp);
-    
+  }
+
+  loadingBtn(status){
+    let btn_ejecutar =  document.getElementById("ejec_gp")
+
+    if (status === "on"){
+      btn_ejecutar.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>'
+    } else{
+      btn_ejecutar.innerHTML = "Ejecutar"
+    }
+
   }
 }
 
@@ -536,7 +561,7 @@ function clearElevationProfile(){
     if(mapa._layers[l].options && mapa._layers[l].options.pane && mapa._layers[l].options.pane === "elevationPane"){
       mapa._layers[l].remove()
     }
-    if(mapa._layers[l].feature && mapa._layers[l].feature.name && mapa._layers[l].feature.name === "elevation"){
+    if(mapa._layers[l] && mapa._layers[l].feature && mapa._layers[l].feature.name && mapa._layers[l].feature.name === "elevation"){
       mapa._layers[l].remove()
     }
   }

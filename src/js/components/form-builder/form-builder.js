@@ -3,7 +3,7 @@ class FormBuilder {
     elements = {};
 
     constructor(id) {
-        this.form = document.createElement('form');
+        this.form = document.createElement('div');
         this.form.className = 'form';
         if (id)
             this.form.id = id;
@@ -40,10 +40,11 @@ class FormBuilder {
         }
     }
 
-    addButton(name, onclick) {
+    addButton(name, onclick, id) {
         const button = document.createElement('div');
         button.className = 'form-button non-selectable-text';
         button.innerHTML = name;
+        button.id = id;
         button.onclick = () => {
             onclick();
         }
@@ -57,7 +58,7 @@ class FormBuilder {
         this.form.appendChild(label);
 
         const element = document.createElement(type);
-        element.className = '';
+        element.className = 'form-element';
         element.id = id;
         this.elements[id] = element;
         this.form.appendChild(element);
