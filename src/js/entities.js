@@ -578,9 +578,9 @@ class LayersInfoWMS extends LayersInfo {
                     let divi =  document.createElement("div")
                     let aux = null
                     divi.innerHTML= ilegendURLaux
-                    if(divi.getElementsByTagName("onlineresource")){
-                    aux = divi.getElementsByTagName("onlineresource")[0].getAttribute('xlink:href')
-                    }
+                    /* if (divi.getElementsByTagName("onlineresource")) { // makes an error in some services
+                      aux = divi.getElementsByTagName("onlineresource")[0].getAttribute("xlink:href");
+                    } */
                     var ilegendURL = aux
                     
                     if (iBoundingBox.length > 0) {
