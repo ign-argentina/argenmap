@@ -5,7 +5,7 @@ let zoomhome = null;
 let fullscreen = null;
 let customgraticule = null;
 let measure = null;
-let abrirarchivo = null;
+let loadLayersButton = null;
 let leafletbottom = null;
 let drawb = null;
 let screenshot = null;
@@ -28,7 +28,8 @@ class SidebarTools {
     measure = document.getElementsByClassName(
       "leaflet-control-measure leaflet-bar leaflet-control"
     );
-    abrirarchivo = document.getElementById("modalgeojson");
+    loadLayersButton = document.getElementById("loadLayersButton");
+
     leafletbottom = document.getElementsByClassName("leaflet-bottom");
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
     screenshot = document.getElementById("screenshot");
@@ -65,7 +66,7 @@ class SidebarTools {
         customgraticule[0].hidden = false;
         locate[0].hidden = false;
         measure[0].hidden = false;
-        abrirarchivo.style.display = "";
+        loadLayersButton.style.display = "";
         screenshot.style.display = "";
         divbar[2].hidden = false;
         icongeop.style.display = ""
@@ -77,7 +78,7 @@ class SidebarTools {
         customgraticule[0].hidden = true;
         locate[0].hidden = true;
         measure[0].hidden = true;
-        abrirarchivo.style.display = "none";
+        loadLayersButton.style.display = "none";
         screenshot.style.display = "none";
         divbar[2].hidden = true;
         icongeop.style.display = "none"

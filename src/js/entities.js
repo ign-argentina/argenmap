@@ -2510,6 +2510,8 @@ class Tab {
         return '';
     }
 }
+
+var serviceItems = [];
 /******************************************
 Menu_UI
 ******************************************/
@@ -2933,6 +2935,129 @@ class Menu_UI{
 
         container.insertBefore(input_name,nodo_hijo);
         $(`#i-${id}`).focus()
+    }
+
+      editGroupName(id,oldName,newName){
+        let el = document.getElementById(`${oldName.replace(/ /g, "_")}-a`);
+        if(el) el.innerText = newName;
+    }
+
+    removeLayerFromGroup(groupname, textName, id, fileName,layer){
+        if(serviceItems[id].layers[textName].L_layer != null){
+            serviceItems[id].layers[textName].L_layer.remove();
+        }
+
+        document.getElementById("srvcLyr-"+id+textName).remove();
+        
+        for (let i in serviceItems[id].layers) {
+            if (serviceItems[id].layers[i] === textName) {
+                serviceItems[id].layers.splice(i,1);
+                break;
+            }
+        }
+    }
+    
+    removeLayersGroup(groupname){
+        let el = document.getElementById(`lista-${groupname.replace(/ /g, "_")}`);
+        if(el) el.remove();
+    }
+
+    addLayerToGroup(groupname, textName, id, fileName, layer){
+        let newLayer = layer;
+        newLayer.active = false;
+        newLayer.L_layer = null;
+        let firstLayerAdded = false; // To simulate the click event
+        if (serviceItems[id]!=undefined) {
+            serviceItems[id].layers[textName] = newLayer;
+        }else {
+            serviceItems[id] = {
+                layers:[]
+            }
+            serviceItems[id].layers[textName] = newLayer;
+            firstLayerAdded = true; // Yes! First layer added
+        }
+
+
+        let groupnamev = groupname.replace(/ /g, "_")
+        let main = document.getElementById("lista-"+groupnamev)
+        let id_options_container = "opt-c-"+id
+        if(!main){this.addSection(groupname)}
+
+        let content = document.getElementById(groupnamev+"-panel-body")
+        let layer_container = document.createElement("div")
+        layer_container.id = "fl-" +id
+        layer_container.className = "file-layer-container"
+
+        let layer_item = document.createElement("div")
+        layer_item.id = "srvcLyr-"+id+textName
+        layer_item.className = "file-layer"
+        
+        let img_icon = document.createElement("div")
+        img_icon.className = "loadservice-layer-img"
+        img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`
+        img_icon.onclick = function(){
+            clickGeometryLayer(id, true)
+        }
+
+        let layer_name = document.createElement("div")
+        layer_name.className = "file-layername"
+        let capitalizedTitle = layer.title[0].toUpperCase() + layer.title.slice(1).toLowerCase();
+        layer_name.innerHTML= "<a>"+capitalizedTitle+"</a>"
+        layer_name.title = fileName;
+        layer_name.onclick = function(){
+            layer_item.classList.toggle('active');
+            
+            if (!layer.active) {
+                layer.L_layer = L.tileLayer.wms(layer.host, {
+                    layers: layer.name,
+                    format: 'image/png',
+                    transparent: true,
+                }).addTo(mapa);
+                layer.active = true;
+                
+                gestorMenu.layersDataForWfs[layer.name] = {
+                    name: layer.name,
+                    section: layer.title,
+                    host: layer.host
+                }
+            }else {
+                mapa.removeLayer(layer.L_layer);
+                layer.active = false;
+            }
+        }        
+        
+        let zoom_button = document.createElement("div")
+        zoom_button.className = "loadservice-layer-img"
+        zoom_button.innerHTML = `<i class="fas fa-search-plus" title="Zoom a capa"></i>`
+        zoom_button.onclick = function(){
+            
+            layer_item.classList.toggle('active');
+            
+            if (!layer.active) {
+                let bounds = [[layer.maxy, layer.maxx], [layer.miny, layer.minx]];
+                mapa.fitBounds(bounds);
+                layer.L_layer = L.tileLayer.wms(layer.host, {
+                    layers: layer.name,
+                    format: 'image/png',
+                    transparent: true,
+                }).addTo(mapa);
+                layer.active = true;
+            }else {
+                mapa.removeLayer(layer.L_layer);
+                layer.active = false;
+            }
+        }
+
+
+        layer_item.append(img_icon)
+        layer_item.append(layer_name)
+        layer_item.append(zoom_button)
+        layer_container.append(layer_item)
+        content.appendChild(layer_container)
+
+        // Open the tab
+        if(firstLayerAdded) $(`#${groupnamev}-a`).click();
+        
     }
 
 }

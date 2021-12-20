@@ -32,7 +32,6 @@
   flex: 3;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 3px;
-
 }
 
 #iconSC {
@@ -67,7 +66,7 @@
 
 @media (max-width: 600px) {
   #screenshot {
-    top: 299px;
+    top: 310px;
     left: 2px;
     /* border: 2px solid rgba(0, 0, 0, 0.2) !important; */
   }
