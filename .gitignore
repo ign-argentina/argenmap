@@ -1,0 +1,3 @@
+src/config
+!src/config/default
+.vscode
