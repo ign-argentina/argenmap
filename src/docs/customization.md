@@ -58,7 +58,7 @@ Capas
 }
 ```
 
-![cambio de color al menú desplegable](img/custom-color-sidebar-container.png)
+![cambio de color al menú desplegable](img/custom-color-menu-item.png)
 
 #### Cambio de color a las capas activas
 
