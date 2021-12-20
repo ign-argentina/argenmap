@@ -49,8 +49,14 @@ Para modificar el aspecto visual de la aplicación debe agregarse en  `src/confi
 - `src/config/styles/images` : logos y otras imágenes
 - `src/config/styles/images/legends` : la aplicación busca por defecto en esta ubicación imágenes con el mismo nombre que las capas y las agrega al panel usándolas como leyenda o previsualización
 
+
+- Se pueden encontrar [ejemplos][] para facilitar esta personalizacion
+
 ## Problemas posibles
 
 Si la sintaxis de los archivos JSON es incorrecta, la aplicación podría detener su ejecución o quedar cargada parcialmente.
 
 Si las secciones u orígenes de datos WMS / WMTS no tienen los atributos indicados en este artículo podrían quedar sin cargar en el panel, o con un orden o datos incorrectos.
+
+
+[ejemlos]: src/docs/customization.md
