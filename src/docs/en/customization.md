@@ -20,7 +20,7 @@ Barra superior
   background-color: rgb(46,142,11); //color verde}
 ```
 
-![cambio de color al menú lateral](img/custom-color-navbar.png)
+![cambio de color al menú lateral](../img/custom-color-navbar.png)
 
 ### Custom Menu bar style
 
@@ -39,7 +39,7 @@ Barra de menú
 }
 ```
 
-![cambio de color al menú lateral](img/custom-color-sidebar-container.png)
+![cambio de color al menú lateral](../img/custom-color-sidebar-container.png)
 
 ### Custom layer style
 
@@ -59,7 +59,7 @@ Capas
 }
 ```
 
-![cambio de color al menú desplegable](img/custom-color-menu-item.png)
+![cambio de color al menú desplegable](../img/custom-color-menu-item.png)
 
 #### Custom active layer style
 
@@ -74,4 +74,4 @@ Capas
 }
 ```
 
-![cambio de color a capas activas](img/custom-layers-color.png)
+![cambio de color a capas activas](../img/custom-layers-color.png)
