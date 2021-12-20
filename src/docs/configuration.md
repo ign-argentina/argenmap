@@ -59,4 +59,4 @@ Si la sintaxis de los archivos JSON es incorrecta, la aplicación podría detene
 Si las secciones u orígenes de datos WMS / WMTS no tienen los atributos indicados en este artículo podrían quedar sin cargar en el panel, o con un orden o datos incorrectos.
 
 
-[ejemplos]: src/docs/customization.md
+[ejemplos]: customization.md
