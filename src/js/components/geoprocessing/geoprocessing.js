@@ -114,10 +114,10 @@ class Geoprocessing {
     geoprocessingTabContent.innerHTML = '';
     geoprocessingTabContent.appendChild(geoProcessingManager.getForm());
 
-
     $("#mr").draggable({
       containment: "#mapa"
     })
+
   }
 
   setAvailableGeoprocessingConfig(geoprocessingConfig) {
@@ -446,10 +446,11 @@ class Geoprocessing {
     const container = document.createElement('div');
     container.className = 'geoprocessing-form-container';
 
-    container.appendChild(geoprocessingForm.form);
+
+    //container.appendChild(geoprocessingForm.form);
 
     const selectProcessId = 'select-process';
-    geoprocessingForm.addElement('select', selectProcessId, {
+    /*geoprocessingForm.addElement('select', selectProcessId, {
       title: 'Seleccione el geoproceso',
       events: {
         'change': (element) => {
@@ -459,18 +460,60 @@ class Geoprocessing {
           }
           this.geoprocessId = element.value;
           const item = this.geoprocessingConfig.availableProcesses.find(e => e.geoprocess === this.geoprocessId);
+          console.log(item)
           this.geoprocessing = new geoprocessing[this.geoprocessId](item.baseUrl);
           this.buildOptionForm(this.geoprocessing.getFields());
         }
       }
-    });
+    });*/
 
     const options = [];
-    options.push({ value: '', text: '' });
     this.geoprocessingConfig.availableProcesses.forEach(geoprocess => {
       options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
     });
     geoprocessingForm.setOptionsToSelect(selectProcessId, options);
+
+    let opt_c = document.createElement('ul')
+    opt_c.className = "dropdown-menu"
+    opt_c.setAttribute('role', 'menu')
+    opt_c.role = "menu"
+
+    let options_container =  document.createElement("div")
+    options_container.className = "btn-group"
+
+    let secdiv = document.createElement('div')
+    secdiv.className = "dropdown-toggle"
+    secdiv.setAttribute('data-toggle', 'dropdown')
+    secdiv.setAttribute('aria-haspopup', 'true')
+    secdiv.setAttribute('aria-expanded', 'false')
+    secdiv.style = 'border: 0px;'
+    secdiv.innerHTML = '<div id="geop_textselect" style="display:flex;flex-direction: row;width:170px;color:black;border-radius: 4px;border: 1px solid grey;padding:5px"><section style="width: 98%;">Seleccionar Geoproceso</section><section style="width: 2%;"><i class="fas fa-angle-down"></i></section></div>'
+
+    let ulsec = document.createElement('ul')
+    ulsec.className = "dropdown-menu"
+    ulsec.id = "list-geoprocess"
+    ulsec.style = "right: 0px !important; left: auto !important;"
+
+    options.forEach((e, i) =>{
+      let li = document.createElement('li')
+      li.innerHTML = `<a style="color:#1e1e1e;" href="#">${e.text}</a>`
+      
+      li.onclick = () => {
+        let element = `<div style="display:flex;flex-direction:row;width:100%"><section style="width: 95%;text-align: center;">${e.text}</section><section style="width: 5%;text-align: right;"><i class="fas fa-angle-down"></i></section></div>`
+        $("#geop_textselect").html(element)
+
+        this.geoprocessId = e.value;
+          const item = this.geoprocessingConfig.availableProcesses.find(e => e.geoprocess === this.geoprocessId);
+          this.geoprocessing = new geoprocessing[this.geoprocessId](item.baseUrl);
+          this.buildOptionForm(this.geoprocessing.getFields());
+      };
+
+      ulsec.append(li)
+    });
+
+    options_container.appendChild(secdiv)
+    options_container.appendChild(ulsec)
+    container.appendChild(options_container)
 
     this.optionsForm = new FormBuilder();
     container.appendChild(this.optionsForm.form);
