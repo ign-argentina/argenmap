@@ -52,3 +52,5 @@ Editar el archivo src/config/default/preferences.json y colocar el color en la s
     ...
     },
 ```
+
+![cambio de color a capas activas](img/custom-layers-color.png)
