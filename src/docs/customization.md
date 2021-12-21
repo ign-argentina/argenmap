@@ -9,6 +9,22 @@ Para modificar el aspecto visual de la aplicación lo mas recomendable es editar
 
 ### Cambios en la barra superior
 
+Para cambiar el color de la barra superior lo mejor es editar el archivo preferences.json
+
+Editar el archivo src/config/default/styles/preferences.json y colocar el color en la siguiente línea
+
+```json
+  "theme": {
+    ...
+    "headerBackground": "#37bbed",
+    "menuBackground": "#37bbed",
+    "activeLayer": "#33b560",
+    ...
+    },
+```
+
+![cambio de color al menú lateral](img/custom-color-navbar.png)
+
 Se puede realizar cualquier tipo de cambio css, en este ejemplo se cambia el color
 
 Agregar al archivo src/config/styles/css/main.css las siguientes líneas
@@ -24,6 +40,21 @@ Barra superior
 ![cambio de color al menú lateral](img/custom-color-navbar.png)
 
 ### Cambios en la barra de menú
+
+Para cambiar el color de la barra superior lo mejor es editar el archivo preferences.json
+
+Editar el archivo src/config/default/styles/preferences.json y colocar el color en la siguiente línea
+
+```json
+  "theme": {
+    ...
+    "headerBackground": "#37bbed",
+    "menuBackground": "#37bbed",
+    "activeLayer": "#33b560",
+    ...
+    },
+```
+![cambio de color al menú lateral](img/custom-color-sidebar-container.png)
 
 Se puede realizar cualquier tipo de cambio css, en este ejemplo se cambia el color
 
@@ -62,6 +93,20 @@ Capas
 ![cambio de color al menú desplegable](img/custom-color-menu-item.png)
 
 #### Cambio de color a las capas activas
+
+Para cambiar el color de las capas activas lo mejor es editar el archivo preferences.json
+
+Editar el archivo src/config/default/styles/preferences.json y colocar el color en la siguiente línea
+
+```json
+  "theme": {
+    ...
+    "activeLayer": "#33b560",
+    ...
+    },
+```
+
+![cambio de color a capas activas](img/custom-layers-color.png)
 
 Agregar al archivo src/config/styles/css/main.css las siguientes líneas
 
