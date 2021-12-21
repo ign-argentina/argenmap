@@ -1,7 +1,7 @@
 class LoadLayersModal {
 	constructor() {
 		this.component = `
-    <div id="loadLayersButton" title="Carga de capas">
+    <div id="loadLayersButton" title="Agregar capas">
         <div id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
             <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="18" height="18">
         </button>
@@ -34,6 +34,12 @@ class modalUI {
 				icon: 'src/js/components/openfiles/folder-open-solid.svg',
 				component: new IconModalGeojson
 			},
+			// {
+			// 	name: 'Archivos',
+			// 	id: 'files-action',
+			// 	icon: 'src/js/components/openfiles/folder-open-solid.svg',
+			// 	component: new IconModalGeojson
+			// },
 		];
 
 		this.selectedAction = 0;
@@ -61,7 +67,7 @@ class modalUI {
 		header.classList.add('modalHeader');
 
 		let modalTitle = document.createElement('h4');
-		modalTitle.innerText = 'Carga de capas';
+		modalTitle.innerText = 'Agregar capas';
 
 		let closeButton = document.createElement('button');
 		closeButton.classList.add('modalCloseButton');

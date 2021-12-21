@@ -37,6 +37,14 @@
   margin-right: 6px;
 }
 
+.modalNavButton img {
+  filter: none;
+}
+
+.modalNavButtonActive img {
+  filter: contrast(0%) brightness(200%);
+}
+
 .modalNavButtonActive {
   background: #37bbed;
   color: white;
@@ -140,6 +148,14 @@
   #loadLayersModal {
     width: 34%;
     left: calc(100% / 2.5);
+  }
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  #loadLayersModal {
+    width: 25%;
+    left: calc(100% / 2.3);
   }
 }
 
