@@ -447,10 +447,10 @@ class Geoprocessing {
     container.className = 'geoprocessing-form-container';
 
 
-    //container.appendChild(geoprocessingForm.form);
+    container.appendChild(geoprocessingForm.form);
 
     const selectProcessId = 'select-process';
-    /*geoprocessingForm.addElement('select', selectProcessId, {
+    geoprocessingForm.addElement('select', selectProcessId, {
       title: 'Seleccione el geoproceso',
       events: {
         'change': (element) => {
@@ -460,19 +460,19 @@ class Geoprocessing {
           }
           this.geoprocessId = element.value;
           const item = this.geoprocessingConfig.availableProcesses.find(e => e.geoprocess === this.geoprocessId);
-          console.log(item)
           this.geoprocessing = new geoprocessing[this.geoprocessId](item.baseUrl);
           this.buildOptionForm(this.geoprocessing.getFields());
         }
       }
-    });*/
+    });
 
     const options = [];
+    options.push({ value: '', text: '' });
     this.geoprocessingConfig.availableProcesses.forEach(geoprocess => {
       options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
     });
     geoprocessingForm.setOptionsToSelect(selectProcessId, options);
-
+/*
     let opt_c = document.createElement('ul')
     opt_c.className = "dropdown-menu"
     opt_c.setAttribute('role', 'menu')
@@ -514,7 +514,7 @@ class Geoprocessing {
     options_container.appendChild(secdiv)
     options_container.appendChild(ulsec)
     container.appendChild(options_container)
-
+*/
     this.optionsForm = new FormBuilder();
     container.appendChild(this.optionsForm.form);
 

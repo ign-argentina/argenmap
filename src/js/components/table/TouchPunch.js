@@ -85,8 +85,13 @@
       return;
     }
 
-    if (targetId === 'filter-field-d3' || targetId === 'filter-field') {
-      event.target.select();
+    if (targetId === 'filter-field-d3' || targetId === 'filter-field' || targetId === 'select-process') {
+      try {
+        event.target.select();
+      } catch (error) {
+          //console.log(error);
+      }
+
       return;
     }
 
