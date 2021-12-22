@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: 200px;
   align-items: center;
   width: 300px;
   overflow: hidden;

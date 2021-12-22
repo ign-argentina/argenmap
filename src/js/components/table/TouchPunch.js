@@ -85,7 +85,7 @@
       return;
     }
 
-    if (targetId === 'filter-field-d3' || targetId === 'filter-field' || targetId === 'select-process') {
+    if (targetId === 'filter-field-d3' || targetId === 'filter-field' || targetId === 'select-process' || targetId === 'select-capa') {
       try {
         event.target.select();
       } catch (error) {
