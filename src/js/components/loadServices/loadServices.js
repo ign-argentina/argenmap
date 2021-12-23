@@ -44,7 +44,7 @@ class ModalService {
 		let tab_div = document.createElement("div")
 		tab_div.className = "tabs_upload"
 		tab_div.innerHTML = `
-    <span style="font-size:12px;color:#37bbed;margin:0px 10px;text-align:center;width:100%">Carga de capas a través de WMS</span>`
+    <span style="font-size:12px;color:#37bbed;margin:0px 10px;text-align:center;width:100%">Agregar capas a través de WMS</span>`
 
 		let form = document.createElement("form")
 		form.className = "wms-form"
@@ -77,10 +77,6 @@ class ModalService {
 		modalContainer.append(form);
 		modalContainer.append(alert);
 		modalContainer.append(selectLayersContainer);
-
-
-
-
 
 		// Show previous layers and services loaded
 		if (selectedServiceLayers.length) {

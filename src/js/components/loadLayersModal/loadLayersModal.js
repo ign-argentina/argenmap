@@ -1,3 +1,5 @@
+var LOAD_LAYERS_MODAL_OPEN = false;
+
 class LoadLayersModal {
 	constructor() {
 		this.component = `
@@ -20,7 +22,7 @@ class LoadLayersModal {
 
 class modalUI {
 	constructor() {
-		// this.isOpen = false;
+		this.isOpen = false;
 		this.actions = [
 			{
 				name: 'WMS',
@@ -35,10 +37,10 @@ class modalUI {
 				component: new IconModalGeojson
 			},
 			// {
-			// 	name: 'Archivos',
-			// 	id: 'files-action',
-			// 	icon: 'src/js/components/openfiles/folder-open-solid.svg',
-			// 	component: new IconModalGeojson
+			// 	name: 'WMTS',
+			// 	id: 'wmts-action',
+			// 	icon: 'src/js/components/wmts/wmts-solid.svg',
+			// 	component: new WmtsLoadLayers
 			// },
 		];
 
@@ -75,9 +77,9 @@ class modalUI {
 
 		closeButton.innerHTML = '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
 		closeButton.onclick = function () {
-			// this.isOpen = false;
 			document.body.removeChild(loadLayersModal);
-			document.getElementById("loadLayersButton").disabled = false;
+			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+			LOAD_LAYERS_MODAL_OPEN = false;
 		};
 
 
@@ -139,11 +141,12 @@ class modalUI {
 
 
 	open() {
-		document.getElementById("loadLayersButton").disabled = true;
-		document.getElementById("loadLayersButtonContent").style.color = "red";
-		// this.isOpen = true;
-		modal.createModal();
-		modal.showActions(0);
+		if(!LOAD_LAYERS_MODAL_OPEN){
+			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
+			modal.createModal();
+			modal.showActions(0);
+			LOAD_LAYERS_MODAL_OPEN = true;
+		}
 	}
 
 	showActions(actionIndx) {
