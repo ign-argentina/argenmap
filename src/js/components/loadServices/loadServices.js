@@ -183,6 +183,7 @@ let modalService = new ModalService();
 function handleURLInput(e) {
 	e.preventDefault();
 	let url = document.getElementsByName('input-url')[0].value;
+	document.getElementsByName('input-url')[0].value = '';
 
 	const serviceLayer = new ServiceLayers();
 

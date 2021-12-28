@@ -2937,9 +2937,13 @@ class Menu_UI{
         $(`#i-${id}`).focus()
     }
 
-      editGroupName(id,oldName,newName){
+    editGroupName(id,oldName,newName){
         let el = document.getElementById(`${oldName.replace(/ /g, "_")}-a`);
-        if(el) el.innerText = newName;
+        if(el) {
+            el.innerText = newName;
+            document.getElementById(`lista-${oldName.replace(/ /g, "_")}`).id = `lista-${newName.replace(/ /g, "_")}`;
+            document.getElementById(oldName.replace(/ /g, "_")+"-panel-body").id = newName.replace(/ /g, "_")+"-panel-body";
+        };
     }
 
     removeLayerFromGroup(groupname, textName, id, fileName,layer){
@@ -2948,12 +2952,17 @@ class Menu_UI{
         }
 
         document.getElementById("srvcLyr-"+id+textName).remove();
+        serviceItems[id].layersInMenu--;
         
         for (let i in serviceItems[id].layers) {
             if (serviceItems[id].layers[i] === textName) {
                 serviceItems[id].layers.splice(i,1);
                 break;
             }
+        }
+
+        if(serviceItems[id].layersInMenu == 0 || serviceItems[id].layersInMenu == undefined){
+            this.removeLayersGroup(groupname);
         }
     }
     
@@ -2966,17 +2975,20 @@ class Menu_UI{
         let newLayer = layer;
         newLayer.active = false;
         newLayer.L_layer = null;
-        let firstLayerAdded = false; // To simulate the click event
+        // let firstLayerAdded = false; // To simulate the click event
         if (serviceItems[id]!=undefined) {
             serviceItems[id].layers[textName] = newLayer;
+            serviceItems[id].layersInMenu++;
         }else {
             serviceItems[id] = {
-                layers:[]
+                layers:[],
+                layersInMenu:0,
             }
             serviceItems[id].layers[textName] = newLayer;
-            firstLayerAdded = true; // Yes! First layer added
+            serviceItems[id].layersInMenu++;
+            // firstLayerAdded = true; // Yes! First layer added
         }
-
+        
 
         let groupnamev = groupname.replace(/ /g, "_")
         let main = document.getElementById("lista-"+groupnamev)
@@ -3056,7 +3068,8 @@ class Menu_UI{
         content.appendChild(layer_container)
 
         // Open the tab
-        if(firstLayerAdded) $(`#${groupnamev}-a`).click();
+
+        if(serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
         
     }
 
