@@ -180,16 +180,16 @@ class ModalService {
 let modalService = new ModalService();
 
 
-function handleURLInput(e) {
+async function handleURLInput(e) {
 	e.preventDefault();
 	let url = document.getElementsByName('input-url')[0].value;
 	document.getElementsByName('input-url')[0].value = '';
 
 	const serviceLayer = new ServiceLayers();
 
-	serviceLayer.loadWMS(url).then((layers) => {
-		document.getElementById('wrongURL').style.display = 'none';
-		// document.getElementById('buttonEnd').style.display = 'block';
+	serviceLayer.loadWMS(url).then((layers)=>{
+		if(document.getElementById('wrongURL')) document.getElementById('wrongURL').style.display = 'none';
+		if(document.getElementById('buttonEnd')) document.getElementById('buttonEnd').style.display = 'block';
 		// Add the service and layers to the array with loaded layers
 		servicesLoaded[serviceLayer.getId()] = {
 			title: serviceLayer.title,
@@ -205,11 +205,13 @@ function handleURLInput(e) {
 		let header = document.createElement('div');
 		header.classList.add("page-header");
 		header.innerHTML = `
-        <form class="title-service" submit="saveServiceTitle(${serviceID},event)">
-          <h5 id="title-text-${serviceID}">${title}</h5>
-          <input type="text" class="title-input-service" id="title-input-${serviceID}">
-        </form>
-        `;
+		
+		<form class="title-service" submit="saveServiceTitle(${serviceID},event)">
+			<div class="hide-section-button" onclick="hideSection(event,'${serviceID}')">▼</div>
+			<h5 id="title-text-${serviceID}">${title}</h5>
+			<input type="text" class="title-input-service" id="title-input-${serviceID}">
+		</form>
+		`;
 		let editButton = document.createElement('button');
 		editButton.classList.add('fas');
 		editButton.classList.add('fa-pen-square');
@@ -234,9 +236,10 @@ function handleURLInput(e) {
 
 		let checkLabel = document.createElement('label');
 		checkLabel.classList.add("all-layers-checkbox");
+		checkLabel.classList.add(`label-${serviceID}`);
 		checkLabel.innerHTML = `
-    <span class="tree-line">─</span><input type="checkbox" value="${serviceID}" onchange="handleAllLayersCheck(event)">&nbsp;Agregar todas <small>(${layers.length} capas)</small>
-    `;
+	<span class="tree-line">─</span><input type="checkbox" value="${serviceID}" onchange="handleAllLayersCheck(event)">&nbsp;Agregar todas <small>(${layers.length} capas)</small>
+	`;
 		wmsResultContainer.append(checkLabel);
 
 		// Show layers and checkboxes
@@ -245,18 +248,39 @@ function handleURLInput(e) {
 			servicesLoaded[serviceLayer.getId()].layers[layer.name] = layer;
 
 			let checkLabel = document.createElement('label');
+			checkLabel.classList.add(`label-${serviceID}`);
 			checkLabel.innerHTML = `
-      <span class="tree-line">──</span><input type="checkbox" value="${layer.name}" onchange="handleLayerCheck(event)">&nbsp;${capitalize(layer.title)}
-      `;
+		<span class="tree-line">──</span><input type="checkbox" value="${layer.name}" onchange="handleLayerCheck(event)">&nbsp;${capitalize(layer.title)}
+		`;
 			wmsResultContainer.append(checkLabel);
 		})
 		// Add the container to the modal
 		document.getElementById('select-layers-container').prepend(wmsResultContainer);
-
-	}).catch((error) => {
+	}).catch((error)=>{
 		console.error(error);
 		document.getElementById('wrongURL').style.display = 'block';
-	});
+		if(error.message.toLowerCase().includes('cors')){
+			new UserMessage('El servidor no permite el intercambio de recursos de origen cruzado o CORS', true, 'error');
+		}
+	})
+}
+
+function hideSection(e,id) {
+	let labels = document.getElementsByClassName(`label-${id}`);
+	let state;
+
+	if(labels[0].style.display=='none'){
+		state = 'block'
+		e.target.style.transform = "rotate(0deg)"
+	}else {
+		state = 'none'
+		e.target.style.transform = "rotate(-90deg)"
+	}
+	
+	for (let label of labels) {
+		label.style.display = state;
+	}
+	
 }
 
 function editServiceTitle(serviceID, event) {
