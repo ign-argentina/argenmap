@@ -187,6 +187,21 @@ async function handleURLInput(e) {
 
 	const serviceLayer = new ServiceLayers();
 
+
+	// check if the service was added 
+	let validHost = serviceLayer.validateUrl(url).host;
+	let exist;
+
+	for (let i in servicesLoaded) {
+		exist = servicesLoaded[i].host === validHost;
+	}
+	// if the service was added show alert and break execution
+	if (exist) {
+		new UserMessage('El servicio ya fué agregado', true, 'warning');
+		return null
+	};
+
+
 	serviceLayer.loadWMS(url).then((layers)=>{
 		if(document.getElementById('wrongURL')) document.getElementById('wrongURL').style.display = 'none';
 		if(document.getElementById('buttonEnd')) document.getElementById('buttonEnd').style.display = 'block';
@@ -195,7 +210,8 @@ async function handleURLInput(e) {
 			title: serviceLayer.title,
 			id: serviceLayer.id,
 			abstract: serviceLayer.abstract,
-			layers: []
+			layers: [],
+			host:serviceLayer.host,
 		}
 		// Create the container and show the data
 		let wmsResultContainer = document.createElement('div');

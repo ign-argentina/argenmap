@@ -29,7 +29,7 @@ class ServiceLayers{
     async handleRequest(url){
         if (!url || !url.length) throw new Error('url parameter is required');
         // Validate url returns an object with the host (www.google.com) and capability (...gle.com/wms?service=getCapa.)
-        let validatedUrl = validateUrl(url)
+        let validatedUrl = this.validateUrl(url)
         this.url = validatedUrl.capability;
         this.host = validatedUrl.host;
         
@@ -61,7 +61,7 @@ class ServiceLayers{
 
             this.rawData = data;
             this.title = this.rawData.Service.Title;
-            this.id = generateId(this.title);
+            this.id = this.generateId(this.title);
 
             return this.layers = this.rawData.Capability.Layer.Layer.map((layer) => {
                 // TODO Se deberia comprobar la existencia de CRS:84 
@@ -92,102 +92,24 @@ class ServiceLayers{
         } catch (error) { throw error }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    loadWMSx(url) {
-        return new Promise((res,rej)=>{
-            return this.handleURL(url).then((data)=>{
-                if (data.Capability == undefined) rej("Error al conectar con el servicio");
-                this.rawData = data;
-                this.title = this.rawData.Service.Title;
-                this.id = generateId(this.title);
-    
-                this.layers = this.rawData.Capability.Layer.Layer.map((layer) => {
-
-                    let bbox;
-                    // TODO Se deberia comprobar la existencia de CRS:84 realizar la asignación de minx,miny,etc acá dependiendo el sistema
-                    layer.BoundingBox.some((p) => {
-                        if (p.crs == 'CRS:84') {
-                            bbox = p.extent;
-                            return true;
-                        }
-                    })
-
-                    return {
-                        name: layer.Name,
-                        title: layer.Title,
-                        srs: layer.BoundingBox[0].crs,
-                        host: this.host,
-                        minx: bbox[0],
-                        miny: bbox[1],
-                        maxx: bbox[2],
-                        maxy: bbox[3],
-                        attribution: layer.Attribution,
-                        abstract: layer.Abstract,
-                        legend:layer.Style[0].LegendURL[0].OnlineResource,
-                        hostName:layer.Style[0].LegendURL[0].Name
-                    }
-                });
-                res(this.layers);
-    
-            }).catch((error)=>{rej(error)})
-        })
+    generateId() {
+        // A horrible but quickly way to parse String (+ "")
+        return 'wms-'+(new Date().getTime() + "").substr(6);
     }
-
-    handleURL(url){
-        return new Promise((resolve,reject)=>{
-            if (!url) {
-                reject('url parameter is required');
-            }
-            
-            let validatedUrl = validateUrl(url)
-            this.url = validatedUrl.capability;
-            this.host = validatedUrl.host;
-
-            // Get data
-            return fetch(this.url)
-            .then(function (response) {
-                return response.text();
-            })
-            .then(function (text) {
-                // Instantiate the capabilities Parser
-                const wmsParser = new WMSCapabilities();
-                // Parse and resolve
-                resolve(wmsParser.parse(text));
-            }).catch((error)=>{
-                reject(error);
-            })
-        })
-
-    }
-}
-
-function generateId() {
-    // A horrible but quickly way to parse String (+ "")
-    return 'wms-'+(new Date().getTime() + "").substr(6);
-}
-
-/**
- * Check and transform url if it necessary, adding service=wms, getCapabilities or http scheme
- * @param {String} url to getCapabilities
- * @returns {Object} capability url and host
- */
-function validateUrl(url) {
-    // create an element "a" to use its properties
-    var a = document.createElement('a');
-    a.href = url;
-
-    return {
-        host: a.origin + a.pathname,
-        capability: a.origin + a.pathname + '?service=wms&request=GetCapabilities'
+    
+    /**
+     * Check and transform url if it necessary, adding service=wms, getCapabilities or http scheme
+     * @param {String} url to getCapabilities
+     * @returns {Object} capability url and host
+     */
+    validateUrl(url) {
+        // create an element "a" to use its properties
+        var a = document.createElement('a');
+        a.href = url;
+    
+        return {
+            host: a.origin + a.pathname,
+            capability: a.origin + a.pathname + '?service=wms&request=GetCapabilities'
+        }
     }
 }
