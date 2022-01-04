@@ -161,7 +161,7 @@ class Geoprocessing {
         results_counter++
 
         mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 })
-        //mapa.addGeoJsonLayerToDrawedLayers(g_result,layername, true, true);
+        //mapa.addGeoJsonLayerToDrawedLayers(g_result,layername,true,true);
         addedLayers.push({
           id: layername,
           layer:g_result, 
@@ -404,27 +404,25 @@ class Geoprocessing {
         if (this.geoprocessId === 'contour') {
           this.geoprocessing.execute(...values)
             .then(result => {
-              this.loadingBtn("off")
               this.displayResult(result);
             })
             .catch(error => {
               new UserMessage(error.message, true, 'error');
+              this.loadingBtn("off")
             });
         }
         else if (this.geoprocessId === 'elevationProfile') {
-          this.loadingBtn("off")
           this.geoprocessing.execute(values)
             .then(result => {
               this.displayResult(result);
             })
             .catch(error => {
-              //new UserMessage(error.message, true, 'error');
-              console.log(error)
+              new UserMessage(error.message, true, 'error');
+              this.loadingBtn("off")
             });
 
         }
         else if (this.geoprocessId === 'waterRise') {
-          this.loadingBtn("off")
           let waterRise = new GeoserviceFactory.WaterRise(
             this.geoprocessing.host
           );
@@ -435,6 +433,7 @@ class Geoprocessing {
             })
             .catch((error) => {
               new UserMessage(error.message, true, 'error');
+              this.loadingBtn("off")
             });
         }
       }
