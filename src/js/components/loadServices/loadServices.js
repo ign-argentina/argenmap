@@ -79,7 +79,7 @@ class ModalService {
 		modalContainer.append(selectLayersContainer);
 
 		// Show previous layers and services loaded
-		if (selectedServiceLayers.length) {
+		if (Object.keys(servicesLoaded)) {
 			for (let sourceId in servicesLoaded) {
 				let service = servicesLoaded[sourceId];
 				let layers = service.layers;
@@ -95,6 +95,7 @@ class ModalService {
 				header.classList.add("page-header");
 				header.innerHTML = `
               <form class="title-service" submit="saveServiceTitle(${serviceID},event)">
+			  	<div class="hide-section-button" onclick="hideSection(event,'${serviceID}')">▼</div>
                 <h5 id="title-text-${serviceID}">${title}</h5>
                 <input type="text" class="title-input-service" id="title-input-${serviceID}">
               </form>
@@ -123,6 +124,7 @@ class ModalService {
 
 				let checkLabel = document.createElement('label');
 				checkLabel.classList.add("all-layers-checkbox");
+				checkLabel.classList.add(`label-${serviceID}`);
 				checkLabel.innerHTML = `
           <span class="tree-line">─</span><input type="checkbox" value="${serviceID}" onchange="handleAllLayersCheck(event)">&nbsp;Agregar todas <small>(${Object.keys(layers).length} capas)</small>
           `;
@@ -138,7 +140,7 @@ class ModalService {
 					// let selected = selectedServiceLayers.some(e => e == layer.name);
 
 					let checkLabel = document.createElement('label');
-
+					checkLabel.classList.add(`label-${serviceID}`);
 					let span = document.createElement('span');
 					span.classList.add('tree-line');
 					span.innerText = '──';
@@ -347,9 +349,12 @@ function saveServiceTitle(serviceID, event) {
 function handleAllLayersCheck(e) {
 	if (e.target.checked) {
 		for (let layer_name in servicesLoaded[e.target.value].layers) {
-			document.querySelector(`input[value='${layer_name}']`).checked = true
-			selectedServiceLayers.push(layer_name);
-			menu_ui.addLayerToGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name])
+			let exist = selectedServiceLayers.some(l=>l==layer_name);
+			if(!exist){
+				document.querySelector(`input[value='${layer_name}']`).checked = true
+				selectedServiceLayers.push(layer_name);
+				menu_ui.addLayerToGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name])
+			}
 		}
 	} else {
 		let groupName;

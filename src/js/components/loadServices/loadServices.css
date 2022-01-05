@@ -242,6 +242,11 @@
     top: 188px;
     border: 1px solid rgba(0, 0, 0, 0.2);
   }
+
+  #loadLayersButton {
+    top: 221px !important;
+    left: 0px !important;
+  }
 }
 
 @media (max-width: 600px) {
@@ -262,6 +267,11 @@
   .tabs_upload {
     margin-bottom: 2px;
   }
+
+  #loadLayersButton {
+      top: 221px;
+      left: 0px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -277,3 +287,4 @@
     max-height: 470px;
   }
 }
+
