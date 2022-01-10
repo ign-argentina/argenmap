@@ -325,7 +325,7 @@ function saveServiceTitle(serviceID, event) {
 
 	let text = document.getElementById(`title-text-${serviceID}`);
 	let input = document.getElementById(`title-input-${serviceID}`);
-	let value = input.value;
+	let value = (input.value.length) ? input.value : servicesLoaded[serviceID].title;
 
 	menu_ui.editGroupName(serviceID, text.innerText, value);
 	servicesLoaded[serviceID].title = value;
