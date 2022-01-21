@@ -44,10 +44,10 @@ class Capa {
             if (this.servicio === "wms") { owsHost += "/wms?"};
             //if (this.servicio === "mapserver") { owsHost };
         } */
-        if (this.service === "wms" && owsHost.includes("/geoserver") && !owsHost.endsWith("/wms")) { 
+        if (this.servicio === "wms" && owsHost.includes("/geoserver") && !owsHost.endsWith("/wms")) { 
             owsHost += "/wms";
          };
-        if (this.service === "wmts") { owsHost += "/gwc/service/wmts" };
+        if (this.servicio === "wmts") { owsHost += "/gwc/service/wmts" };
 
         return owsHost;
     }
