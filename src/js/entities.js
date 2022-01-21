@@ -44,10 +44,10 @@ class Capa {
             if (this.servicio === "wms") { owsHost += "/wms?"};
             //if (this.servicio === "mapserver") { owsHost };
         } */
-        if (this.servicio === "wms" && owsHost.includes("/geoserver") && !owsHost.endsWith("/wms")) { 
+        if (this.service === "wms" && owsHost.includes("/geoserver") && !owsHost.endsWith("/wms")) { 
             owsHost += "/wms";
          };
-        if (this.servicio === "wmts") { owsHost += "/gwc/service/wmts" };
+        if (this.service === "wmts") { owsHost += "/gwc/service/wmts" };
 
         return owsHost;
     }
@@ -667,8 +667,8 @@ class LayersInfoWMS extends LayersInfo {
             host = this.host;
         } */
         let host = this.host;
-        if (this.servicio === "wms" && host.includes("/geoserver") && !host.endsWith("/wms")) { 
-            owsHost += "/wms";
+        if (this.service === "wms" && host.includes("/geoserver") && !host.endsWith("/wms")) { 
+            host += "/wms";
          };
         return host;
     }
