@@ -523,7 +523,7 @@ function adaptToImage(imgDiv) {
         container_expand_legend_grafic.setAttribute("load", false);
 
         let max_url_img = img.src.replace(/off/g, "on");
-        max_url_img += ';fontAntiAliasing:true;wrap:true;wrap_limit:100;fontName:Verdana;'
+        max_url_img += ';fontAntiAliasing:true;wrap:true;fontName:Verdana;';
         container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
 
         resize_img_icon.onclick = () => {
