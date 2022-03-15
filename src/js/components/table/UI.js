@@ -69,6 +69,7 @@ class UI{
         btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
         btnsave.onclick = function(){
           table.download("csv", "data.csv", {bom:true});
+          //
         };
 
         //if charts is avaible in menu.json
