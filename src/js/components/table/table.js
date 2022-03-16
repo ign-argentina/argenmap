@@ -1,5 +1,5 @@
 let datatable = [];
-let tableData = [];//-----------
+let tableData = [];
 let table;
 let activedata = 0;
 let ui = new UI

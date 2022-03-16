@@ -65,17 +65,20 @@ class UI{
           datatable=[];
         };
 
-        let btnsave= this.createElement("a","btnsave","icon-table")
-        //btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
-        btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como geojson"></span>';
-        btnsave.onclick = function(){
-          //table.download("csv", "data.csv", {bom:true});//antigua forma de hacerlo. Fromato csv.
-          //console.log(tableData)
+        let btnsaveGJSON= this.createElement("a","btnsaveGJSON","icon-table")
+        btnsaveGJSON.innerHTML = '<span id="savegjson" class="icon-geo" aria-hidden="true" title="Guardar como geojson"></span>';
+        btnsaveGJSON.onclick = function(){
           const a = document.createElement("a");
           const file = new Blob([JSON.stringify(tableData)], { type: "text/plain" });
           a.href = URL.createObjectURL(file);
           a.download = "data.geojson";
           a.click();
+        };
+
+        let btnsaveCSV= this.createElement("a","btnsaveCSV","icon-table")
+        btnsaveCSV.innerHTML = '<span id="savecsv" class="icon-csv" aria-hidden="true" title="Guardar como CSV"></span>';
+        btnsaveCSV.onclick = function(){
+          table.download("csv", "data.csv", {bom:true});
         };
 
         //if charts is avaible in menu.json
@@ -89,7 +92,9 @@ class UI{
           document.getElementById("icons-table").append(btntd)
        }
         
-        document.getElementById("icons-table").append(btnsave)
+        //document.getElementById("icons-table").append(btnsave)
+        document.getElementById("icons-table").append(btnsaveGJSON)
+        document.getElementById("icons-table").append(btnsaveCSV)
         document.getElementById("icons-table").append(btnmax)
         document.getElementById("icons-table").append(btnmin)
         document.getElementById("icons-table").append(btnclose)
