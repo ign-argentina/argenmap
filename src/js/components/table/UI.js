@@ -66,10 +66,16 @@ class UI{
         };
 
         let btnsave= this.createElement("a","btnsave","icon-table")
-        btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
+        //btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
+        btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como geojson"></span>';
         btnsave.onclick = function(){
-          table.download("csv", "data.csv", {bom:true});
-          //
+          //table.download("csv", "data.csv", {bom:true});//antigua forma de hacerlo. Fromato csv.
+          //console.log(tableData)
+          const a = document.createElement("a");
+          const file = new Blob([JSON.stringify(tableData)], { type: "text/plain" });
+          a.href = URL.createObjectURL(file);
+          a.download = "data.geojson";
+          a.click();
         };
 
         //if charts is avaible in menu.json
