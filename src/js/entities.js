@@ -3149,7 +3149,7 @@ class Fechaimagen {
               url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/"+id+"/query?f=json&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A"+x+"%2C%22ymin%22%3A"+y+"%2C%22xmax%22%3A"+x+"%2C%22ymax%22%3A"+y+"%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%2C%22latestWkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=OBJECTID%2CSRC_DATE%2CSRC_RES%2CSRC_ACC%2CSAMP_RES%2CSRC_DESC%2CMinMapLevel%2CMaxMapLevel%2CNICE_NAME%2CDrawOrder%2CSRC_DATE2%2CNICE_DESC%2CShape_Length%2CShape_Area&outSR=102100",// mandatory
                async:false ,
               success: function (data) {
-                console.log(data)
+                
                  date_pic =new Date(data.features[0].attributes.SRC_DATE2)
                   
                 }
@@ -3187,20 +3187,19 @@ class QuehayAqui {
     getQuehayAqui() {
         
         var quehay = "";
-
-       
-
-          var x = this.long * 20037508.34 / 180;
-          var y = Math.log(Math.tan((90 + parseFloat(this.lat)) * Math.PI / 360)) / (Math.PI / 180);
-          y = y * 20037508.34 / 180;
-          
-
+            console.log("https://api.ign.gob.ar/buscador/search?q="+this.lat+","+this.long+"&limit=5")
             $.get({
-              url: "https://api.ign.gob.ar/buscador/search?q=-32.2267,-67.7966&limit=5",
+              url: "https://api.ign.gob.ar/buscador/search?q="+this.lat+","+this.long+"&limit=5",
                async:false ,// to make it synchronous
               success: function (data) {
+
+                 if (data[0].hasOwnProperty('row_to_json')) {
+                     quehay = data[0].row_to_json.properties;
+                 }else{
+                    quehay = data[0].place.name+","+data[0].place.depto+". Provincia de "+data[0].place.pcia;
+                 }
+                 
                 
-                 quehay = data[0].row_to_json.properties;
                   
                 }
                 

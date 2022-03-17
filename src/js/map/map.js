@@ -529,7 +529,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						
 						var imagen = ""
 						$.each(e.target._zoomBoundLayers[20]._tiles,function(clave,valor){
-							console.log(valor.el._leaflet_pos)
+							
 							if (count==0) {
 								
 								imagen = valor.el.currentSrc;
