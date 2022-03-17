@@ -523,19 +523,19 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.on('contextmenu', (e) => {
-						console.log(e)
+					
 						var zoom = e.target._zoom;
 						var count = 0;
 						
 						var imagen = ""
-						$.each(e.target._zoomBoundLayers[20]._tiles,function(clave,valor){
-							
-							if (count==0) {
-								
-								imagen = valor.el.currentSrc;
-							}
-							count++;
-							
+						$.each(e.target._zoomBoundLayers,function(clave,valor){
+							$.each(valor._tiles,function(key,value){
+								if (count==0) {
+									
+									imagen = value.el.currentSrc;
+								}
+								count++;
+							});
 						});
 
 
