@@ -522,8 +522,11 @@ $("body").on("pluginLoad", function(event, plugin){
 						$(".context-quehay").slideUp();
 					});
 
-					mapa.on('contextmenu', (e) => {
+
 					
+
+					mapa.on('contextmenu', (e) => {
+						console.log(mapa._layers)
 						var zoom = e.target._zoom;
 						var count = 0;
 						
@@ -605,9 +608,6 @@ $("body").on("pluginLoad", function(event, plugin){
 									$(".context-quehay").slideDown();
 									$(".context-quehay").html('<div><span style="cursor: pointer;position: absolute;right: 20px;top: 10px;font-size: 20px;" onclick="$(\'.context-quehay\').slideUp()"><b>X</b></span>'+new QuehayAqui(lat,lng).area+'</div>')
 
-								
-								
-								
 							}
 						});
 
