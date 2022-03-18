@@ -526,7 +526,18 @@ $("body").on("pluginLoad", function(event, plugin){
 					
 
 					mapa.on('contextmenu', (e) => {
-						console.log(mapa._layers)
+						
+						var capa = "";
+						$.each(mapa._layers, function (ml) {
+							$.each(mapa._layers[ml], function (v) {
+								if (mapa._layers[ml]._url!=undefined) {
+									capa = mapa._layers[ml]._url;
+								}
+								 
+						   	})
+						 })
+						
+
 						var zoom = e.target._zoom;
 						var count = 0;
 						
@@ -578,26 +589,26 @@ $("body").on("pluginLoad", function(event, plugin){
 
 
 						
-
-						contextMenu.createOption({
-							isDisabled: false,
-							text: 'Fecha de imagen satelital',
-							onclick: (option) => {
-								var imagenDato = "No existen datos a este nivel de zoom!"
-								if (new Fechaimagen(lat,lng,zoom).area!="") {
-									imagenDato = '<div class="context-imagen"><center><b>Imagen capturada</b></center><br>'+new Fechaimagen(lat,lng,zoom).area+'<br><img src="'+imagen+'"></div>';
-								}
+							if (capa.includes("World_Imagery")) {
 								contextMenu.createOption({
-										isDisabled: true,
-										text: imagenDato,
-										onclick: (option) => {
-											mapa.closePopup(contextPopup);
+									isDisabled: false,
+									text: 'Fecha de imagen satelital',
+									onclick: (option) => {
+										var imagenDato = "No existen datos a este nivel de zoom!"
+										if (new Fechaimagen(lat,lng,zoom).area!="") {
+											imagenDato = '<div class="context-imagen"><center><b>Imagen capturada</b></center><br>'+new Fechaimagen(lat,lng,zoom).area+'<br><img src="'+imagen+'"></div>';
 										}
+										contextMenu.createOption({
+												isDisabled: true,
+												text: imagenDato,
+												onclick: (option) => {
+													mapa.closePopup(contextPopup);
+												}
+										});
+										
+									}
 								});
-								
 							}
-						});
-
 
 						contextMenu.createOption({
 							isDisabled: false,
