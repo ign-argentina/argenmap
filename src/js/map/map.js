@@ -507,64 +507,70 @@ $("body").on("pluginLoad", function(event, plugin){
 						currentlyDrawing = false;
 					});
 
+					
+					mapa.on('zoomend', (e) => {
+						let contextPopup = null;
+						const contextMenu = new ContextMenu();
+						mapa.closePopup(contextPopup);
+						$(".context-quehay").slideUp();
+					});
+
+					mapa.on('dragend', (e) => {
+						let contextPopup = null;
+						const contextMenu = new ContextMenu();
+						mapa.closePopup(contextPopup);
+						$(".context-quehay").slideUp();
+					});
+
+
+					
+
 					mapa.on('contextmenu', (e) => {
+						
+						var capa = "";
+						$.each(mapa._layers, function (ml) {
+							$.each(mapa._layers[ml], function (v) {
+								if (mapa._layers[ml]._url!=undefined) {
+									capa = mapa._layers[ml]._url;
+								}
+								 
+						   	})
+						 })
+						
+
+						var zoom = e.target._zoom;
+						var count = 0;
+						
+						var imagen = ""
+						$.each(e.target._zoomBoundLayers,function(clave,valor){
+							$.each(valor._tiles,function(key,value){
+								if (count==0) {
+									
+									imagen = value.el.currentSrc;
+								}
+								count++;
+							});
+						});
+
+
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
 
-						const lat = e.latlng.lat.toFixed(5);
 						const lng = e.latlng.lng.toFixed(5);
+						const lat = e.latlng.lat.toFixed(5);
 
-						var coords = [e.latlng.lat,e.latlng.lng];
+						
 
-						// console.log(e.latlng.lat);
-
-						/* contextMenu.createSelect({
-							isDisabled: false,
-							options:[
-								{value:'4326',label:'EPSG:4326'},
-								{value:'22183',label:'EPSG:22183'},
-								{value:'22185',label:'EPSG:22185'}
-							],
-							selected:(value)=>{
-								coords = proj4(proj4(PROJECTIONS[value]),coords);
-								
-								// Remove the actual coords and the add marker option to replace
-								contextMenu.menu.removeChild(contextMenu.menu.lastElementChild)
-								contextMenu.menu.removeChild(contextMenu.menu.lastElementChild)
-
-								contextMenu.createOption({
-									isDisabled: false,
-									text: `<div title="Copiar" style="cursor: pointer"><span><b id="copycoords" class="non-selectable-text">${coords[0].toFixed(5)} , ${coords[1].toFixed(5)}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
-									onclick: (option) => {
-										mapa.closePopup(contextPopup);
-										copytoClipboard(`${coords.toString()}`);
-									}
-								});
-
-								contextMenu.createOption({
-									isDisabled: false,
-									text: 'Agregar marcador',
-									onclick: (option) => {
-										let geojsonMarker = {
-											type: "Feature",
-											properties: {
-											},
-											geometry: { type: "Point", coordinates: [lng,lat]},
-										}
-										mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "geojsonMarker", false)
-										mapa.closePopup(contextPopup);
-									}
-								});
-							},
-						}); */
 						contextMenu.createOption({
 							isDisabled: false,
-							text: `<div title="Copiar" style="cursor: pointer"><span><b id="copycoords" class="non-selectable-text">${coords[0].toFixed(5)} , ${coords[1].toFixed(5)}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
+							text: `<div title="Copiar" style="cursor: default"><span><b id="copycoords" class="non-selectable-text">${lat}, ${lng}</b></span> <i class="far fa-copy" aria-hidden="true"></i></div>`,
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
-								copytoClipboard(`${coords.toString()}`);
+								copytoClipboard(`${lat}, ${lng}`);
 							}
 						});
+						
+
 						contextMenu.createOption({
 							isDisabled: false,
 							text: 'Agregar marcador',
@@ -579,6 +585,45 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.closePopup(contextPopup);
 							}
 						});
+
+
+
+						
+							if (capa.includes("World_Imagery")) {
+								contextMenu.createOption({
+									isDisabled: false,
+									text: 'Fecha de imagen satelital',
+									onclick: (option) => {
+										var imagenDato = "No existen datos a este nivel de zoom!"
+										if (new Fechaimagen(lat,lng,zoom).area!="") {
+											imagenDato = '<div class="context-imagen"><center><b>Imagen capturada</b></center><br>'+new Fechaimagen(lat,lng,zoom).area+'<br><img src="'+imagen+'"></div>';
+										}
+										contextMenu.createOption({
+												isDisabled: true,
+												text: imagenDato,
+												onclick: (option) => {
+													mapa.closePopup(contextPopup);
+												}
+										});
+										
+									}
+								});
+							}
+
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Que hay aquí?',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								
+									$(".context-quehay").slideDown();
+									$(".context-quehay").html('<div><span style="cursor: pointer;position: absolute;right: 20px;top: 10px;font-size: 20px;" onclick="$(\'.context-quehay\').slideUp()"><b>X</b></span>'+new QuehayAqui(lat,lng).area+'</div>')
+
+							}
+						});
+
+
+
 						contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
 						.setLatLng(e.latlng)
 						.setContent(contextMenu.menu);
