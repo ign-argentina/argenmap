@@ -483,6 +483,16 @@ $("body").on("pluginLoad", function(event, plugin){
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 
+							Object.entries(mapa.groupLayers).forEach(([k, v]) => {
+								// Delete layers entries from menu if exists
+								// todo: fix canceled layer deletion
+								v.forEach(e => {
+									if(e === deletedLayer.name) {
+										menu_ui.modalEliminar(k);
+									}
+								});
+							});
+							
 							//Delete from groups
 							for (const group in mapa.groupLayers) {
 								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
