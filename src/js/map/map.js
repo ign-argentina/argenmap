@@ -475,36 +475,40 @@ $("body").on("pluginLoad", function(event, plugin){
 							//mapa.checkLayersInDrawedGeometry(layer, type);
 						});
 					});
-					
+
 					mapa.on('draw:deleted', function (e) {
 						var layers = e.layers;
 						Object.values(layers._layers).forEach(deletedLayer => {
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
+								deleteLayerFromMenu(deletedLayer);
+							// //Delete from groups
+							// for (const group in mapa.groupLayers) {
+							// 	const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
+							// 	if (lyrInGrpIdx >= 0) {
+							// 		mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+							// 		deleteLayerFromMenu(deletedLayer);
+							// 		console.log("t2")
 
-							Object.entries(mapa.groupLayers).forEach(([k, v]) => {
-								// Delete layers entries from menu if exists
-								// todo: fix canceled layer deletion
-								v.forEach(e => {
-									if(e === deletedLayer.name) {
-										menu_ui.modalEliminar(k);
-									}
-								});
-							});
-							
-							//Delete from groups
-							for (const group in mapa.groupLayers) {
-								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
-								if (lyrInGrpIdx >= 0) {
-									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
-									if (mapa.groupLayers[group].length === 0)
-										delete mapa.groupLayers[group];
-								}
-							}
+							// 		if (mapa.groupLayers[group].length === 0)
+							// 			delete mapa.groupLayers[group];
+							// 			console.log("t3")
+							// 	}
+							// }
 						})
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
+
+					deleteLayerFromMenu = (deletedLayer) => {// Delete layers entries from menu if exists
+						Object.entries(mapa.groupLayers).forEach(([k, v]) => {
+							v.forEach(e => {
+								if(e === deletedLayer.name) {
+									deleteLayerGeometry(k,true)
+								}
+							});
+						});
+					}
 
 					mapa.on('draw:drawstop', (e) => {
 						setTimeout(() => {
