@@ -625,7 +625,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						contextMenu.createOption({
 							isDisabled: false,
-							text: 'Que hay aquí?',
+							text: '¿Qué hay aquí?',
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								
