@@ -611,7 +611,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							if (capa.includes("World_Imagery")) {
 								contextMenu.createOption({
 									isDisabled: false,
-									text: 'Fecha de imagen satelital',
+									text: 'Datos de imagen satelital',
 									onclick: (option) => {
 										let imagenDato = "No existen datos a este nivel de zoom",
 										imgData = new Fechaimagen(lat,lng,zoom).area;
