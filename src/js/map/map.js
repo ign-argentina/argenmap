@@ -582,8 +582,17 @@ $("body").on("pluginLoad", function(event, plugin){
 								copytoClipboard(`${lat}, ${lng}`);
 							}
 						});
-						
 
+						contextMenu.createOption({
+							isDisabled: false,
+							text: '¿Qué hay aquí?',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);	
+									$(".context-quehay").slideDown();
+									$(".context-quehay").html('<div><span style="cursor: pointer;position: absolute;right: 20px;top: 10px;font-size: 20px;" onclick="$(\'.context-quehay\').slideUp()"><b>X</b></span>'+new QuehayAqui(lat,lng).area+'</div>');
+							}
+						});
+						
 						contextMenu.createOption({
 							isDisabled: false,
 							text: 'Agregar marcador',
@@ -599,17 +608,16 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						});
 
-
-
-						
 							if (capa.includes("World_Imagery")) {
 								contextMenu.createOption({
 									isDisabled: false,
 									text: 'Fecha de imagen satelital',
 									onclick: (option) => {
-										var imagenDato = "No existen datos a este nivel de zoom!"
-										if (new Fechaimagen(lat,lng,zoom).area!="") {
-											imagenDato = '<div class="context-imagen"><center><b>Imagen capturada</b></center><br>'+new Fechaimagen(lat,lng,zoom).area+'<br><img src="'+imagen+'"></div>';
+										let imagenDato = "No existen datos a este nivel de zoom",
+										imgData = new Fechaimagen(lat,lng,zoom).area;
+										if (imgData!="") {
+											let mdTable = `Fecha: ${imgData.date}<br>Resolución: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
+											imagenDato = `<div class="context-imagen"><center><b>Metadatos del fondo</b></center><br>${mdTable}<br><img src="${imagen}"></div>`;
 										}
 										contextMenu.createOption({
 												isDisabled: true,
@@ -622,18 +630,6 @@ $("body").on("pluginLoad", function(event, plugin){
 									}
 								});
 							}
-
-						contextMenu.createOption({
-							isDisabled: false,
-							text: '¿Qué hay aquí?',
-							onclick: (option) => {
-								mapa.closePopup(contextPopup);	
-									$(".context-quehay").slideDown();
-									$(".context-quehay").html('<div><span style="cursor: pointer;position: absolute;right: 20px;top: 10px;font-size: 20px;" onclick="$(\'.context-quehay\').slideUp()"><b>X</b></span>'+new QuehayAqui(lat,lng).area+'</div>');
-							}
-						});
-
-
 
 						contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
 						.setLatLng(e.latlng)
