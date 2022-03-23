@@ -80,8 +80,8 @@
     /* margin-left: -75px; */
     background-color: white;
     padding: 34px;
-    box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     -webkit-box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     -moz-box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     display: none;
 }
