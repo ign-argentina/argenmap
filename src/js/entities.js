@@ -3184,31 +3184,23 @@ class QuehayAqui {
      return this.getQuehayAqui();
    }
 
-    getQuehayAqui() {
-        
-        var quehay = "";
-            console.log("https://api.ign.gob.ar/buscador/search?q="+this.lat+","+this.long+"&limit=5")
-            $.get({
-              url: "https://api.ign.gob.ar/buscador/search?q="+this.lat+","+this.long+"&limit=5",
-               async:false ,// to make it synchronous
-              success: function (data) {
-
-                 if (data[0].hasOwnProperty('row_to_json')) {
-                     quehay = data[0].row_to_json.properties;
-                 }else{
-                    quehay = data[0].place.name+","+data[0].place.depto+". Provincia de "+data[0].place.pcia;
-                 }
-                 
-                
-                  
-                }
-                
-             
-            });
-
-        return quehay;
-          
-
-
-    }
+   getQuehayAqui() {
+    let quehay = "";
+    $.get({
+      url: `https://api.ign.gob.ar/buscador/search?q=${this.lat},${this.long}&limit=5`,
+      async: false, // to make it synchronous
+      success: function (data) {
+        if(!data.length){
+            quehay = 'No hay datos para esta ubicación.'
+            return quehay;
+        }
+        if (data[0].hasOwnProperty("row_to_json")) {
+          quehay = data[0].row_to_json.properties;
+        } else {
+          quehay = data[0].place.name + "," + data[0].place.depto + ". Provincia de " + data[0].place.pcia;
+        }
+      }
+    });
+    return quehay;
+  }
 }

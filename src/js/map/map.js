@@ -627,11 +627,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: '¿Qué hay aquí?',
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);
-								
+								mapa.closePopup(contextPopup);	
 									$(".context-quehay").slideDown();
-									$(".context-quehay").html('<div><span style="cursor: pointer;position: absolute;right: 20px;top: 10px;font-size: 20px;" onclick="$(\'.context-quehay\').slideUp()"><b>X</b></span>'+new QuehayAqui(lat,lng).area+'</div>')
-
+									$(".context-quehay").html('<div><span style="cursor: pointer;position: absolute;right: 20px;top: 10px;font-size: 20px;" onclick="$(\'.context-quehay\').slideUp()"><b>X</b></span>'+new QuehayAqui(lat,lng).area+'</div>');
 							}
 						});
 
