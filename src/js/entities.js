@@ -3134,7 +3134,7 @@ class Fechaimagen {
           if(data.features[0]){
               md = data.features[0].attributes;
               picMdata = {
-                  date: new Date(md.SRC_DATE2).toString(),
+                  date: new Date(md.SRC_DATE2).toLocaleString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
                   resolution: md.SRC_RES,
                   accuracy: md.SRC_ACC,
                   sensor: md.SRC_DESC,
