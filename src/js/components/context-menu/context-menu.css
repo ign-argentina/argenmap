@@ -85,3 +85,19 @@
     box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     display: none;
 }
+
+#md-table td {
+  padding: 3px;
+}
+
+#md-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#md-table td:nth-child(2) {
+  text-align: center;
+}
+
+#md-table tr:hover {
+  background-color: #ddd;
+}

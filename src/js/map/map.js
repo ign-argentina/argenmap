@@ -616,7 +616,8 @@ $("body").on("pluginLoad", function(event, plugin){
 										let imagenDato = "No existen datos a este nivel de zoom",
 										imgData = new Fechaimagen(lat,lng,zoom).area;
 										if (imgData!="") {
-											let mdTable = `Fecha: ${imgData.date}<br>Resolución: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
+											//let mdTable = `Fecha: ${imgData.date}<br>Resolución espacial: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
+											let mdTable = `<table id="md-table"><tr><td>Fecha</td><td>${imgData.date}</td></tr><tr><td>Resolución espacial</td><td>${imgData.resolution} m</td></tr><tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr><tr><td>Sensor</td><td>${imgData.sensor}</td></tr><tr><td>Proveedor</td><td>${imgData.provider}</td></tr><tr><td>Producto</td><td>${imgData.product}</td></tr></table>`;
 											imagenDato = `<div class="context-imagen"><center><b>Metadatos del fondo</b></center><br>${mdTable}<br><img src="${imagen}"></div>`;
 										}
 										contextMenu.createOption({
