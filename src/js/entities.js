@@ -3120,8 +3120,22 @@ class Fechaimagen {
       // available outFields : OBJECTID,SRC_DATE,SRC_RES,SRC_ACC,SAMP_RES,SRC_DESC,MinMapLevel,MaxMapLevel,NICE_NAME,DrawOrder,SRC_DATE2,NICE_DESC,Shape_Length,Shape_Area
       x = (this.long * 20037508.34) / 180,
       y = Math.log(Math.tan(((90 + parseFloat(this.lat)) * Math.PI) / 360)) / (Math.PI / 180),
-      metadataIndex = { 19: 9, 18: 10, 17: 11, 16: 12, 15: 13, 14: 14, 13: 15, 12: 16 };
-
+      metadataIndex = { 19: 9, 18: 10, 17: 11, 16: 12, 15: 13, 14: 14, 13: 15, 12: 16 },
+      sensorData = {
+          'WV01': { name: 'WorldView-1 (COSPAR: 2007-041A)', link: 'https://en.wikipedia.org/wiki/WorldView-1' },
+          'WV02': { name: 'WorldView-2 (COSPAR: 2009-055A)', link: 'https://www.maxar.com/constellation' },
+          'WV03': { name: 'WorldView-3 (COSPAR: 2014-048A)', link: 'http://worldview3.digitalglobe.com/' },
+          'WV04': { name: 'WorldView-4 (COSPAR: 2016-067A)', link: 'https://resources.maxar.com/data-sheets/worldview-4/' },
+          'GE01': { name: 'GeoEye-1 (COSPAR: 2008-042A)', link: 'https://en.wikipedia.org/wiki/GeoEye-1' },
+          'PNOA': { name: 'Plan Nacional de Ortofotografía Aérea', link: 'https://pnoa.ign.es/'},
+          'NYS ITS GIS Orthos': { name: 'Ortofotos del Estado de Nueva York', link: 'https://orthos.dhses.ny.gov/'},
+          'Madrid Orthos': { name: 'Ortofoto rápida 2019 de Madrid', link: 'https://geoportal.madrid.es/IDEAM_WBGEOPORTAL/dataset.iam?id=f44997dd-a1a9-11ea-a9ae-ecb1d753f6e8'}
+        },
+      providerData = {
+        'Maxar': { name: 'Maxar', link: 'https://www.maxar.com' },
+        'Ayuntamiento de Madrid': { name: 'IDE Ayuntamiento de Madrid', link: 'https://www.comunidad.madrid/servicios/mapas/geoportal-comunidad-madrid' } 
+        };
+        
     y = (y * 20037508.34) / 180;
     id = metadataIndex[this.zoom];
     esriUrl += `${id}/query?f=json&returnGeometry=false&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A${x}%2C%22ymin%22%3A${y}%2C%22xmax%22%3A${x}%2C%22ymax%22%3A${y}%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%2C%22latestWkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=${outFields}&outSR=102100`;
@@ -3131,15 +3145,17 @@ class Fechaimagen {
       async: false,
       success: function (data) {
           let md = ""; 
-          if(data.features[0]){
+          if(data.features && data.features.length){
               md = data.features[0].attributes;
               picMdata = {
                   date: new Date(md.SRC_DATE2).toLocaleString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
                   resolution: md.SRC_RES,
                   accuracy: md.SRC_ACC,
-                  sensor: md.SRC_DESC,
-                  provider: md.NICE_DESC,
-                  product: md.NICE_NAME
+                  sensor: (sensorData[md.SRC_DESC]) ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${sensorData[md.SRC_DESC].name}</a>` : md.SRC_DESC,
+                  provider: (providerData[md.NICE_DESC]) ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${providerData[md.NICE_DESC].name}</a>` : md.NICE_DESC,
+                  product: md.NICE_NAME,
+                  minZoom: md.MinMapLevel,
+                  maxZoom: md.MaxMapLevel,
                 };
           };
       },
