@@ -1721,13 +1721,16 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.downloadLayerGeoJSON = (layer) => {
-						const geoJSON = layer.toGeoJSON();
+						const geoJSON = {
+							type: "FeatureCollection",
+							features: [layer.toGeoJSON()]
+						};
 						const styleOptions = { ...layer.options };
-						geoJSON.properties.styles = { ...styleOptions };
-						geoJSON.properties.type = layer.type;
+						geoJSON.features[0].properties.styles = { ...styleOptions };
+						geoJSON.features[0].properties.type = layer.type;
 						if (layer.type === 'marker') {
-							if (geoJSON.properties.styles.hasOwnProperty('icon')) {
-								delete geoJSON.properties.styles.icon;
+							if (geoJSON.features[0].properties.styles.hasOwnProperty('icon')) {
+								delete geoJSON.features[0].properties.styles.icon;
 							}
 						}
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON));
