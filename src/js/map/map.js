@@ -617,8 +617,8 @@ $("body").on("pluginLoad", function(event, plugin){
 										imgData = new Fechaimagen(lat,lng,zoom).area;
 										if (imgData!="") {
 											//let mdTable = `Fecha: ${imgData.date}<br>Resolución espacial: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
-											let mdTable = `<table id="md-table"><tr><td>Fecha</td><td>${imgData.date}</td></tr><tr><td>Resolución espacial</td><td>${imgData.resolution} m</td></tr><tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr><tr><td>Sensor</td><td>${imgData.sensor}</td></tr><tr><td>Proveedor</td><td>${imgData.provider}</td></tr><tr><td>Producto</td><td>${imgData.product}</td></tr></table>`;
-											imagenDato = `<div class="context-imagen"><center><b>Metadatos del fondo</b></center><br>${mdTable}<br><img src="${imagen}"></div>`;
+											let mdTable = `<table id="md-table"><tr><td>Fecha</td><td>${imgData.date}</td></tr><tr><td title="Relación de metros por lado de pixel">Resolución espacial</td><td>${imgData.resolution} m</td></tr><tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr><tr><td title="Misión aérea o constelación satelital">Sensor</td><td>${imgData.sensor}</td></tr><tr><td>Proveedor</td><td>${imgData.provider}</td></tr><tr><td>Producto</td><td>${imgData.product}</td></tr><tr><td>Zoom mínimo</td><td>${imgData.minZoom}</td></tr><tr><td>Zoom máximo</td><td>${imgData.maxZoom}</td></tr></table>`;
+											imagenDato = `<div class="context-imagen"><!--<center><b>Metadatos del fondo</b></center><br>-->${mdTable}<br><img src="${imagen}"></div>`;
 										}
 										contextMenu.createOption({
 												isDisabled: true,
