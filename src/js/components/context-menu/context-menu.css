@@ -94,6 +94,10 @@
   background-color: #f2f2f2;
 }
 
+#md-table td:nth-child(1) {
+  font-weight: bold;
+}
+
 #md-table td:nth-child(2) {
   text-align: center;
 }
