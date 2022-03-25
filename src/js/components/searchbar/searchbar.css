@@ -56,9 +56,9 @@ overflow: hidden;
   transition: width 0.4s ease-in-out;
   border: 0px!important ;
   border-radius: 8px;
-  box-shadow: 0 0 3px grey !important;
   -moz-box-shadow: 0 0 3px grey !important;
   -webkit-box-shadow: 0 0 3px grey !important;
+  box-shadow: 0 0 3px grey !important;
 }
 
 
