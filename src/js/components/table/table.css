@@ -305,3 +305,15 @@
 			display: none;
 		}
 }
+
+.icon-geo {
+	content: url("icon-geo.png");
+	width: 20px;
+    height: 15px;
+}
+
+.icon-csv {
+	content: url("icon-csv.png");
+	width: 20px;
+    height: 15px;
+}

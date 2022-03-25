@@ -1,7 +1,7 @@
 .context-menu {
-    width: 250px;
-    background-color: white;
-    /* border-radius: 5px; */
+    width: 170px;
+    background-color: hsl(0, 0%, 100%);
+    border-radius: 5px;
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -11,17 +11,18 @@
     left: -20px;
     top: -15px;
     box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
+    cursor: pointer;
 }
 .context-menu-item {
     height: 30px;
     width: 100%;
-    text-align: left;
+    text-align: center;
     display: flex;
-    align-items: left;
-    justify-content: left;
+    align-items: center;
+    justify-content: center;
     transition: 0.2s;
-    padding: 20px;
-    padding-bottom: 40px;
+    /* padding: 15px 10px 5px 15px; */
+    /* padding-bottom: 40px; */
 }
 
 
@@ -65,7 +66,7 @@
     padding: 10px;
     text-align: left;
     margin-left: 240px;
-    height: 350px;
+    /* height: 350px; */
     margin-top: -200px;
 }
 
@@ -79,8 +80,28 @@
     /* margin-left: -75px; */
     background-color: white;
     padding: 34px;
-    box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     -webkit-box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     -moz-box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     display: none;
+}
+
+#md-table td {
+  padding: 3px;
+}
+
+#md-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#md-table td:nth-child(1) {
+  font-weight: bold;
+}
+
+#md-table td:nth-child(2) {
+  text-align: center;
+}
+
+#md-table tr:hover {
+  background-color: #ddd;
 }

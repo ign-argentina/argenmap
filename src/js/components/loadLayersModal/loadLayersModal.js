@@ -25,16 +25,16 @@ class modalUI {
 		this.isOpen = false;
 		this.actions = [
 			{
-				name: 'WMS',
-				id: 'wms-action',
-				icon: 'src/js/components/loadServices/icon-load-services.svg',
-				component: new IconModalLoadServices
-			},
-			{
 				name: 'Archivos',
 				id: 'files-action',
 				icon: 'src/js/components/openfiles/folder-open-solid.svg',
 				component: new IconModalGeojson
+			},
+			{
+				name: 'WMS',
+				id: 'wms-action',
+				icon: 'src/js/components/loadServices/icon-load-services.svg',
+				component: new IconModalLoadServices
 			},
 			// {
 			// 	name: 'WMTS',
@@ -43,7 +43,7 @@ class modalUI {
 			// 	component: new WmtsLoadLayers
 			// },
 		];
-
+		
 		this.selectedAction = 0;
 	}
 

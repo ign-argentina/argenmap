@@ -1,4 +1,5 @@
 let datatable = [];
+let tableData = [];
 let table;
 let activedata = 0;
 let ui = new UI
@@ -10,7 +11,8 @@ let ISCelular = (ISportrait &&ISmaxwidth) || (ISlandscape && ISmaxheight)
 
 function createTabulator(tableD, layername){
     if (tableD.data.features.length != 0){
-
+      
+        tableData = tableD.data;//Contiene el geojson.
         let datos = tableD.getDataForTabulator();
         datatable[datatable.length]=datos
 
@@ -43,7 +45,7 @@ function createTabulator(tableD, layername){
           }
           
         }
-      }
+    }
 }
 
 function newTable(data){
