@@ -374,6 +374,7 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //if charts is active in menu.json
     if (loadCharts) {
+     
       $.getScript("https://d3js.org/d3.v5.min.js");
       $.getScript("src/js/components/charts/charts.js");
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">');
