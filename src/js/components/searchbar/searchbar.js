@@ -151,7 +151,49 @@ class Searchbar_UI{
           
       }
     }
-    
+
+      /* ACTIVACION AUTOMATICA DE RESULTADO */
+      $("#search_bar").focusin(function(e) {
+
+            let items = $('.list-group-item-gc')
+            let q = e.target.value;
+            q = q.trim();
+            q = q.toLowerCase();
+              
+          
+
+             if(q.length ===0){
+              search_term = null
+              search_input.style.width = "130px"
+              icon_searchbar.style.display = "none"
+              results.innerHTML = ""
+              selected_item = false
+              }
+              else if(q.length <=2) {
+                results.innerHTML = ""
+                search_input.style.width = "300px"
+                icon_searchbar.style.display="block"
+                selected_item = false
+                }
+            else{
+                search_input.style.width = "300px"
+                icon_searchbar.style.display="block"
+                search_term = q
+                
+               
+                 
+                  
+                  results.innerHTML = ""
+                  selected_item = false
+                  //si contienen caracteres invalidos #$%#$% o es igual a url
+                  if (regexValidator(search_term) && !itsloading) {
+                    itsloading = true
+                    showGeocoderResults()
+                  }
+             }
+      });
+      /* CIERRA ACTIVACION AUTOMATICA DE RESULTADO */  
+
   }
 
   create_item_notfound(){

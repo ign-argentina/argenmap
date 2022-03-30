@@ -3153,6 +3153,8 @@ class Fechaimagen {
                   accuracy: md.SRC_ACC,
                   sensor: (sensorData[md.SRC_DESC]) ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${sensorData[md.SRC_DESC].name}</a>` : md.SRC_DESC,
                   provider: (providerData[md.NICE_DESC]) ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${providerData[md.NICE_DESC].name}</a>` : md.NICE_DESC,
+                  sensor_texto: sensorData[md.SRC_DESC].name,
+                  provider_texto: providerData[md.NICE_DESC].name,
                   product: md.NICE_NAME,
                   minZoom: md.MinMapLevel,
                   maxZoom: md.MaxMapLevel,
@@ -3167,38 +3169,4 @@ class Fechaimagen {
 
 
 
-/******************************************
-CAPTURAR DIRECCION Y DATOS DE COORDENADAS
-******************************************/
-class QuehayAqui {
-    constructor(lat,long) {
-        this.lat = lat;
-        this.long = long;
-       
-    }
 
-
-   get area() {
-     return this.getQuehayAqui();
-   }
-
-   getQuehayAqui() {
-    let quehay = "";
-    $.get({
-      url: `https://api.ign.gob.ar/buscador/search?q=${this.lat},${this.long}&limit=5`,
-      async: false, // to make it synchronous
-      success: function (data) {
-        if(!data.length){
-            quehay = 'No hay datos para esta ubicación.'
-            return quehay;
-        }
-        if (data[0].hasOwnProperty("row_to_json")) {
-          quehay = data[0].row_to_json.properties;
-        } else {
-          quehay = data[0].place.name + "," + data[0].place.depto + ". Provincia de " + data[0].place.pcia;
-        }
-      }
-    });
-    return quehay;
-  }
-}
