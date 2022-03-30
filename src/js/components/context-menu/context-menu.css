@@ -61,14 +61,6 @@
   border-radius: 0 0 5px 5px;
 }
 
-.context-imagen{
-    background-color: #fff;
-    padding: 10px;
-    text-align: left;
-    margin-left: 240px;
-    /* height: 350px; */
-    margin-top: -200px;
-}
 
 
 
@@ -76,12 +68,13 @@
     position: absolute;
     top: 251px;
     z-index: 9999;
-    /* text-align: center; */
-    width: 379px;
-    /* left: 50%; */
-    /* margin-left: -75px; */
-    background-color: white;
-    padding: 40px;
+     text-align: left;
+    
+    /* height: 350px; */
+    margin-top: -200px;
+     background-color: #fff;
+    padding: 10px;
+   
     -webkit-box-shadow: 0px 10px 16px 0px rgb(0 0 0 / 75%);
     -moz-box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
     box-shadow: 0px 10px 16px 0px rgb(0 0 0 / 75%);

@@ -181,7 +181,7 @@ class Searchbar_UI{
                 search_term = q
                 
                
-                  console.log(search_term)
+                 
                   
                   results.innerHTML = ""
                   selected_item = false
