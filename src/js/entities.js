@@ -1732,8 +1732,19 @@ class GestorMenu {
 		this._folders = folders;
 	}
 
+    /* 
     getBasemapSelected() {
         return this.basemapSelected;
+    } 
+    */
+    getActiveBasemap() {
+        let activeBasemap; 
+        Object.keys(baseLayers).forEach( bl => {
+            if(gestorMenu.getActiveLayers().includes(bl)) {
+                activeBasemap = bl;
+            }
+        });
+        return activeBasemap;
     }
 
     setBasemapSelected(basemapSelected) {
