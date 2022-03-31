@@ -612,7 +612,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						});
 
-							if (capa.includes("World_Imagery")) {
+							if (gestorMenu.getActiveBasemap() === "esri_imagery") {
 								contextMenu.createOption({
 									isDisabled: false,
 									text: 'Datos de imagen satelital',
