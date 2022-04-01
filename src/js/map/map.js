@@ -618,7 +618,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									text: 'Datos de imagen satelital',
 									onclick: (option) => {
 										mapa.closePopup(contextPopup);
-										let imagenDato = '<div><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span>No existen datos a este nivel de zoom</div>',
+										let imagenDato = '<div style="padding: 34px"><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span>No existen datos a este nivel de zoom</div>',
 										imgData = new Fechaimagen(lat,lng,zoom).area;
 										if (imgData!="") {
 											//let mdTable = `Fecha: ${imgData.date}<br>Resolución espacial: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
