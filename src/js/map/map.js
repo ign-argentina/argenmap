@@ -618,7 +618,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									text: 'Datos de imagen satelital',
 									onclick: (option) => {
 										mapa.closePopup(contextPopup);
-										let imagenDato = '<div style="padding: 34px"><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span>No existen datos a este nivel de zoom</div>',
+										let imagenDato = '<div><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span>No existen datos a este nivel de zoom</div>',
 										imgData = new Fechaimagen(lat,lng,zoom).area;
 										if (imgData!="") {
 											//let mdTable = `Fecha: ${imgData.date}<br>Resolución espacial: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
@@ -626,7 +626,7 @@ $("body").on("pluginLoad", function(event, plugin){
 											imagenDato = `<div><a onclick="copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. Una resolución espacial de ${imgData.resolution} m. La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. El proveedor es ${imgData.provider_texto} y el producto ${imgData.product} \');" href="#" style="position: absolute;top: 18px;left: 22px;"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span><!--<center><b>Metadatos del fondo</b></center><br>-->${mdTable}<hr></div>`;
 										}
 
-										$(".context-imagen").slideDown(5);
+										$(".context-imagen").slideDown();
 										$(".context-imagen").html(imagenDato);
 										
 										
@@ -1539,6 +1539,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 									//Load data in table
 									const table = new Datatable(data, coords);
+									//console.clear()
 									createTabulator(table, activeLayer.name);
 
 									//we can style the figure in case it can receive some information
