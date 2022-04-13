@@ -74,7 +74,8 @@ class UI{
 
           if( datatable.length > 1 ){
             const a = document.createElement("a");
-            const file = new Blob([JSON.stringify(tableArray[activeGeojson-1])], { type: "text/plain" });
+            activeGeojson = activeGeojson - 1;
+            const file = new Blob([JSON.stringify(tableArray[activeGeojson])], { type: "text/plain" });
             a.href = URL.createObjectURL(file);
             a.download = "data.geojson";
             a.click();
@@ -144,15 +145,14 @@ class UI{
     aux.innerHTML='<a class="tabEvent" style="height:38px; padding:10px !important; overflow:hidden; white-space: nowrap; direction: rtl;text-overflow: ellipsis;" data-toggle="tab" istabletab="true" aria-expanded="true" id ='+datatable.length+'>'+layername+' '+datatable.length+'</a>'
     aux.onclick =function(){
 
-      $(".tabEvent").on('click', function(event){
-        eventGeojson = $(event.target);
-        activeGeojson = eventGeojson[0].id
-    });
-      activedata=this.id-1
-      let data = datatable[this.id-1]
+      activedata=this.id-1;
+      let data = datatable[activedata];
       newTable(data)
     }
-    document.getElementById("indextabulator").appendChild(aux)
+    document.getElementById("indextabulator").appendChild(aux).addEventListener('click', function(e) {
+      eventGeojson = e.target.attributes.id.value;
+      activeGeojson = parseInt(eventGeojson);
+    });
   }
 
   cleanTable(){
