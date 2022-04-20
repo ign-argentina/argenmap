@@ -77,7 +77,7 @@ class ImpresorItemHTML extends Impresor {
         var childId = item.getId();
         let lyr = item.capa,
         legend,
-        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;hideEmptyRules:true',
+        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;hideEmptyRules:true;dpi:111',
         aux = {
             ...item,
             'childid': childId,
@@ -2782,12 +2782,12 @@ class Menu_UI{
             }else{li.className = "capa list-group-item active"}
             gestorMenu.muestraCapa(id_dom)*/
         };
-
+        
         let capa_title_div = document.createElement("div")
         capa_title_div.className = "name-layer"
         capa_title_div.style="align-self: center;"
         capa_title_div.onclick = function () {
-
+            
             if(li.className === "capa list-group-item active"){
                 //clase btn desactivada
                 li.className = "capa list-group-item"
