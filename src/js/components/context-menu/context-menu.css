@@ -1,26 +1,43 @@
 .context-menu {
-  width: 200px;
-  background-color: white;
-  border-radius: 5px;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  z-index: 2000;
-  left: -20px;
-  top: -15px;
-  box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
+    width: 170px;
+    background-color: hsl(0, 0%, 100%);
+    border-radius: 5px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    z-index: 2000;
+    left: -20px;
+    top: -15px;
+    box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
+    cursor: pointer;
 }
 .context-menu-item {
-  height: 30px;
-  width: 100%;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.2s;
+    height: 30px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    /* padding: 15px 10px 5px 15px; */
+    /* padding-bottom: 40px; */
 }
+
+/* following block shows copy link as button */
+/* .context-imagen > div:nth-child(1) > a:nth-child(1) { 
+  background-color: #008dc9;
+  margin-top: -8px;
+  margin-left: -8px;
+  color: white;
+  padding: 5px 10px;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+} */
+
 .context-menu-item-active {
   color: rgb(0, 92, 131);
 }
@@ -56,13 +73,41 @@
   border-radius: 0 0 5px 5px;
 }
 
-.context-menu-item-active select:hover {
-  color: #005c83;
+.context-imagen {
+    position: absolute;
+    display: none;
+    z-index: 1000;
+    text-align: left;    
+    background-color: #fff;
+    padding: 10px;
+    /* top: 251px; */
+    /* height: 350px; */
+    /* margin-top: -200px; */
+    -webkit-box-shadow: 0px 10px 16px 0px rgb(0 0 0 / 75%);
+    -moz-box-shadow: 0px 10px 16px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 10px 16px 0px rgb(0 0 0 / 75%);
 }
-.context-menu-item-active select {
-  color: #005c83;
-  border-radius: 5px !important;
-  border: 2px solid #005c83;
+
+#md-table {
+  margin-top: 10px;
+}
+
+#md-table td {
   padding: 3px;
+}
+
+#md-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#md-table td:nth-child(1) {
   font-weight: bold;
+}
+
+#md-table td:nth-child(2) {
+  text-align: left;
+}
+
+#md-table tr:hover {
+  background-color: #ddd;
 }

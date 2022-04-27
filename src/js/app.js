@@ -2,7 +2,7 @@ var baseLayers = {};
 var baseLayersInfo = {};
 var selectedBasemap = null;
 let menu_ui = new Menu_UI;
-var geoProcessingManager =null;
+var geoProcessingManager = null;
 const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
   impresorBaseMap = new ImpresorCapasBaseHTML(),
   impresorGroup = new ImpresorGrupoHTML(),
@@ -37,7 +37,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setTableAsPopUp(app.table.isActive);
         setTableFeatureCount(app.table.rowsLimit);
       }
-      
+
       if (app.hasOwnProperty('charts')) {
         setCharts(app.charts.isActive);
       }
@@ -62,7 +62,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         for (const module of app.profiles[app.profile].modules) {
           switch (module) {
             case "login":
-                await login.load();
+              await login.load();
               break;
             // Intialize here more modules defined in profile (config JSON)
             default:
@@ -254,49 +254,49 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       }
     },
 
-    setLayer: function (layer){
+    setLayer: function (layer) {
       this.layers[layer.capa.nombre] = layer
     },
 
-    getLayers: function (){
+    getLayers: function () {
       return this.layers;
     },
 
-    getSections: function(){
-    return gestorMenu.items;
+    getSections: function () {
+      return gestorMenu.items;
     },
 
-    getActiveLayers: function(){
+    getActiveLayers: function () {
       return overlayMaps;
     },
 
-    getBaseMapPane: function(){
+    getBaseMapPane: function () {
       return mapa.getPane("tilePane").firstChild;
     },
 
-    addMenuSection: function(name_section){
+    addMenuSection: function (name_section) {
       menu_ui.addSection(name_section)
     },
 
-    addLayerBtn: function (name_section,name_layer){
-      menu_ui.addLayer(name_section,name_layer)
+    addLayerBtn: function (name_section, name_layer) {
+      menu_ui.addLayer(name_section, name_layer)
     },
 
-    showLayer: function (layer_name){
+    showLayer: function (layer_name) {
       gestorMenu.muestraCapa(app.layers[layer_name].childid)
     },
 
-    argenmapDarkMode: function(){
+    argenmapDarkMode: function () {
       this.showLayer('argenmap')
-      mapa.getPane("tilePane").firstChild.style="filter:  invert(1) brightness(1.5) hue-rotate(180deg);"
+      mapa.getPane("tilePane").firstChild.style = "filter:  invert(1) brightness(1.5) hue-rotate(180deg);"
       let stylesui = new StylesUI;
       stylesui.createdarktheme()
       let oldstyle = document.getElementById("main-style-ui")
       //oldstyle.innerHTML=""
-      
+
     }
-     
-      
+
+
   }
 
 let getGeoserverCounter = 0,
@@ -307,30 +307,30 @@ let getGeoserverCounter = 0,
 
 $.getJSON("./src/config/data.json", async function (data) {
   $.getJSON("./src/config/preferences.json", async function (preferences) {
-      gestorMenu.setLegendImgPath('src/config/styles/images/legends/');
-      await loadTemplate({ ...data, ...preferences }, false);
+    gestorMenu.setLegendImgPath('src/config/styles/images/legends/');
+    await loadTemplate({ ...data, ...preferences }, false);
   })
-  .fail(async function( jqxhr, textStatus, error ) {
-    console.warn( "Template not found. Default configuration will be loaded.");
+    .fail(async function (jqxhr, textStatus, error) {
+      console.warn("Template not found. Default configuration will be loaded.");
+      await loadDefaultJson();
+    });
+})
+  .fail(async function (jqxhr, textStatus, error) {
+    console.warn("Template not found. Default configuration will be loaded.");
     await loadDefaultJson();
   });
-})
-.fail(async function( jqxhr, textStatus, error ) {
-  console.warn( "Template not found. Default configuration will be loaded.");
-  await loadDefaultJson();
-});
 
 async function loadDefaultJson() {
   $.getJSON("./src/config/default/data.json", async function (data) {
     $.getJSON("./src/config/default/preferences.json", async function (preferences) {
-        gestorMenu.setLegendImgPath('src/config/default/styles/images/legends/');
-        await loadTemplate({ ...data, ...preferences }, true);
+      gestorMenu.setLegendImgPath('src/config/default/styles/images/legends/');
+      await loadTemplate({ ...data, ...preferences }, true);
     });
   });
 };
 
 async function loadTemplate(data, isDefaultTemplate) {
-  $(document).ready( async function() {
+  $(document).ready(async function () {
     await app.init(data);
 
     //Template
@@ -364,7 +364,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     //Add Analytics
     if (app.analytics_ids) {
       // Check to fix a bug with ad blockers
-      if (typeof addAnalytics === "function") { 
+      if (typeof addAnalytics === "function") {
         addAnalytics(app.analytics_ids);
       }
     }
@@ -374,20 +374,21 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //if charts is active in menu.json
     if (loadCharts) {
+     
       $.getScript("https://d3js.org/d3.v5.min.js");
       $.getScript("src/js/components/charts/charts.js");
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">');
     }
 
     //if searchbar is active in menu.json
-    if(loadSearchbar){
-        $.getScript("src/js/components/searchbar/searchbar.js")
-        .done(function() {
-          var searchBar_ui =  new Searchbar_UI
+    if (loadSearchbar) {
+      $.getScript("src/js/components/searchbar/searchbar.js")
+        .done(function () {
+          var searchBar_ui = new Searchbar_UI
           searchBar_ui.create_sarchbar();
         })
-        $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
-      }
+      $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
+    }
 
 
     //Load dynamic mapa.js
@@ -413,7 +414,7 @@ async function loadTemplate(data, isDefaultTemplate) {
           if (Number.isInteger(mapa.getZoom())) {
             urlInteraction.zoom = mapa.getZoom();
             zoomLevel.zoom = mapa.getZoom();
-            //if(loadGeoprocessing){geoProcessingManager.svgZoomStyle(mapa.getZoom())}
+            if (loadGeoprocessing) { geoProcessingManager.svgZoomStyle(mapa.getZoom()) }
           }
         });
 
@@ -426,29 +427,36 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         const sc = new Screenshot;
         sc.createComponent();
-        
-        const modalgeojson = new IconModalGeojson;
-        modalgeojson.createComponent();
+
+        // const modalgeojson = new IconModalGeojson;
+        // modalgeojson.createComponent();
+
+        // const modalserviceLayers = new IconModalLoadServices;
+        // modalserviceLayers.createComponent();
+
+
+        const loadLayersModal = new LoadLayersModal;
+        loadLayersModal.createComponent();
 
         const sidebarTool = new SidebarTools;
         sidebarTool.createComponent();
 
         setProperStyleToCtrlBtns();
 
-        if(loadGeoprocessing){
+        if (loadGeoprocessing) {
           $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
           $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
           $('head').append('<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">');
           $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
-            $.getScript("src/js/plugins/geoprocess-executor/geoprocess-executor.js").done(function(){
-              $.getScript("src/js/components/form-builder/form-builder.js").done(function(){
-                $.getScript("src/js/components/geoprocessing/geoprocessing.js").done(function(){
-                  geoProcessingManager = new Geoprocessing();
-                  geoProcessingManager.createIcon();
-                  geoProcessingManager.setAvailableGeoprocessingConfig(app.geoprocessing)
-                });
-              })
+          $.getScript("src/js/plugins/geoprocess-executor/geoprocess-executor.js").done(function () {
+            $.getScript("src/js/components/form-builder/form-builder.js").done(function () {
+              $.getScript("src/js/components/geoprocessing/geoprocessing.js").done(function () {
+                geoProcessingManager = new Geoprocessing();
+                geoProcessingManager.createIcon();
+                geoProcessingManager.setAvailableGeoprocessingConfig(app.geoprocessing)
+              });
             })
+          })
 
         }
 

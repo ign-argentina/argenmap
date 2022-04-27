@@ -62,6 +62,10 @@ const MESSAGE_COLORS = {
     error: {
         background: 'rgba(255, 0, 0, 0.75)',
         text: 'white'
+    },
+    warning:{
+        text: "#856404",
+        background: "#f7e23a"
     }
 };
 

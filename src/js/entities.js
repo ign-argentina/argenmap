@@ -77,7 +77,7 @@ class ImpresorItemHTML extends Impresor {
         var childId = item.getId();
         let lyr = item.capa,
         legend,
-        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;hideEmptyRules:true',
+        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;hideEmptyRules:true;dpi:111',
         aux = {
             ...item,
             'childid': childId,
@@ -578,9 +578,9 @@ class LayersInfoWMS extends LayersInfo {
                     let divi =  document.createElement("div")
                     let aux = null
                     divi.innerHTML= ilegendURLaux
-                    if(divi.getElementsByTagName("onlineresource")){
-                    aux = divi.getElementsByTagName("onlineresource")[0].getAttribute('xlink:href')
-                    }
+                    /* if (divi.getElementsByTagName("onlineresource")) { // makes an error in some services
+                      aux = divi.getElementsByTagName("onlineresource")[0].getAttribute("xlink:href");
+                    } */
                     var ilegendURL = aux
                     
                     if (iBoundingBox.length > 0) {
@@ -667,8 +667,8 @@ class LayersInfoWMS extends LayersInfo {
             host = this.host;
         } */
         let host = this.host;
-        if (this.servicio === "wms" && host.includes("/geoserver") && !host.endsWith("/wms")) { 
-            owsHost += "/wms";
+        if (this.service === "wms" && host.includes("/geoserver") && !host.endsWith("/wms")) { 
+            host += "/wms";
          };
         return host;
     }
@@ -1732,8 +1732,19 @@ class GestorMenu {
 		this._folders = folders;
 	}
 
+    /* 
     getBasemapSelected() {
         return this.basemapSelected;
+    } 
+    */
+    getActiveBasemap() {
+        let activeBasemap; 
+        Object.keys(baseLayers).forEach( bl => {
+            if(gestorMenu.getActiveLayers().includes(bl)) {
+                activeBasemap = bl;
+            }
+        });
+        return activeBasemap;
     }
 
     setBasemapSelected(basemapSelected) {
@@ -2510,6 +2521,8 @@ class Tab {
         return '';
     }
 }
+
+var serviceItems = [];
 /******************************************
 Menu_UI
 ******************************************/
@@ -2769,12 +2782,12 @@ class Menu_UI{
             }else{li.className = "capa list-group-item active"}
             gestorMenu.muestraCapa(id_dom)*/
         };
-
+        
         let capa_title_div = document.createElement("div")
         capa_title_div.className = "name-layer"
         capa_title_div.style="align-self: center;"
         capa_title_div.onclick = function () {
-
+            
             if(li.className === "capa list-group-item active"){
                 //clase btn desactivada
                 li.className = "capa list-group-item"
@@ -2935,6 +2948,142 @@ class Menu_UI{
         $(`#i-${id}`).focus()
     }
 
+    editGroupName(id,oldName,newName){
+        let el = document.getElementById(`${oldName.replace(/ /g, "_")}-a`);
+        if(el) {
+            el.innerText = newName;
+            document.getElementById(`lista-${oldName.replace(/ /g, "_")}`).id = `lista-${newName.replace(/ /g, "_")}`;
+            document.getElementById(oldName.replace(/ /g, "_")+"-panel-body").id = newName.replace(/ /g, "_")+"-panel-body";
+        };
+    }
+
+    removeLayerFromGroup(groupname, textName, id, fileName,layer){
+        if(serviceItems[id].layers[textName].L_layer != null){
+            serviceItems[id].layers[textName].L_layer.remove();
+        }
+
+        document.getElementById("srvcLyr-"+id+textName).remove();
+        serviceItems[id].layersInMenu--;
+        
+        for (let i in serviceItems[id].layers) {
+            if (serviceItems[id].layers[i] === textName) {
+                serviceItems[id].layers.splice(i,1);
+                break;
+            }
+        }
+
+        if(serviceItems[id].layersInMenu == 0 || serviceItems[id].layersInMenu == undefined){
+            this.removeLayersGroup(groupname);
+        }
+    }
+    
+    removeLayersGroup(groupname){
+        let el = document.getElementById(`lista-${groupname.replace(/ /g, "_")}`);
+        if(el) el.remove();
+    }
+
+    addLayerToGroup(groupname, textName, id, fileName, layer){
+        let newLayer = layer;
+        newLayer.active = false;
+        newLayer.L_layer = null;
+        // let firstLayerAdded = false; // To simulate the click event
+        if (serviceItems[id]!=undefined) {
+            serviceItems[id].layers[textName] = newLayer;
+            serviceItems[id].layersInMenu++;
+        }else {
+            serviceItems[id] = {
+                layers:[],
+                layersInMenu:0,
+            }
+            serviceItems[id].layers[textName] = newLayer;
+            serviceItems[id].layersInMenu++;
+            // firstLayerAdded = true; // Yes! First layer added
+        }
+        
+
+        let groupnamev = groupname.replace(/ /g, "_")
+        let main = document.getElementById("lista-"+groupnamev)
+        let id_options_container = "opt-c-"+id
+        if(!main){this.addSection(groupname)}
+
+        let content = document.getElementById(groupnamev+"-panel-body")
+        let layer_container = document.createElement("div")
+        layer_container.id = "fl-" +id
+        layer_container.className = "file-layer-container"
+
+        let layer_item = document.createElement("div")
+        layer_item.id = "srvcLyr-"+id+textName
+        layer_item.className = "file-layer"
+        
+        let img_icon = document.createElement("div")
+        img_icon.className = "loadservice-layer-img"
+        img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`
+        img_icon.onclick = function(){
+            clickGeometryLayer(id, true)
+        }
+
+        let layer_name = document.createElement("div")
+        layer_name.className = "file-layername"
+        let capitalizedTitle = layer.title[0].toUpperCase() + layer.title.slice(1).toLowerCase();
+        layer_name.innerHTML= "<a>"+capitalizedTitle+"</a>"
+        layer_name.title = fileName;
+        layer_name.onclick = function(){
+            layer_item.classList.toggle('active');
+            
+            if (!layer.active) {
+                layer.L_layer = L.tileLayer.wms(layer.host, {
+                    layers: layer.name,
+                    format: 'image/png',
+                    transparent: true,
+                }).addTo(mapa);
+                layer.active = true;
+                
+                gestorMenu.layersDataForWfs[layer.name] = {
+                    name: layer.name,
+                    section: layer.title,
+                    host: layer.host
+                }
+            }else {
+                mapa.removeLayer(layer.L_layer);
+                layer.active = false;
+            }
+        }        
+        
+        let zoom_button = document.createElement("div")
+        zoom_button.className = "loadservice-layer-img"
+        zoom_button.innerHTML = `<i class="fas fa-search-plus" title="Zoom a capa"></i>`
+        zoom_button.onclick = function(){
+            
+            layer_item.classList.toggle('active');
+            
+            if (!layer.active) {
+                let bounds = [[layer.maxy, layer.maxx], [layer.miny, layer.minx]];
+                mapa.fitBounds(bounds);
+                layer.L_layer = L.tileLayer.wms(layer.host, {
+                    layers: layer.name,
+                    format: 'image/png',
+                    transparent: true,
+                }).addTo(mapa);
+                layer.active = true;
+            }else {
+                mapa.removeLayer(layer.L_layer);
+                layer.active = false;
+            }
+        }
+
+
+        layer_item.append(img_icon)
+        layer_item.append(layer_name)
+        layer_item.append(zoom_button)
+        layer_container.append(layer_item)
+        content.appendChild(layer_container)
+
+        // Open the tab
+
+        if(serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
+        
+    }
+
 }
 
 class Geometry {
@@ -2958,4 +3107,77 @@ class Geometry {
     }
   }
 }
+
+
+/******************************************
+CAPTURAR FECHA DE IMAGEN SATELITAL
+******************************************/
+class Fechaimagen {
+  constructor(lat, long, zoom) {
+    this.lat = lat;
+    this.long = long;
+    this.zoom = zoom;
+  }
+
+  get area() {
+    return this.getFechaImagen();
+  }
+
+  getFechaImagen() {
+    let picMdata = '',
+      id = '',
+      esriUrl = 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/',
+      outFields = ['SRC_RES','SRC_ACC','SRC_DESC','MinMapLevel','MaxMapLevel','NICE_NAME','SRC_DATE2','NICE_DESC'], 
+      // available outFields : OBJECTID,SRC_DATE,SRC_RES,SRC_ACC,SAMP_RES,SRC_DESC,MinMapLevel,MaxMapLevel,NICE_NAME,DrawOrder,SRC_DATE2,NICE_DESC,Shape_Length,Shape_Area
+      x = (this.long * 20037508.34) / 180,
+      y = Math.log(Math.tan(((90 + parseFloat(this.lat)) * Math.PI) / 360)) / (Math.PI / 180),
+      metadataIndex = { 19: 9, 18: 10, 17: 11, 16: 12, 15: 13, 14: 14, 13: 15, 12: 16 },
+      sensorData = {
+          'WV01': { name: 'WorldView-1 (COSPAR: 2007-041A)', link: 'https://en.wikipedia.org/wiki/WorldView-1' },
+          'WV02': { name: 'WorldView-2 (COSPAR: 2009-055A)', link: 'https://www.maxar.com/constellation' },
+          'WV03': { name: 'WorldView-3 (COSPAR: 2014-048A)', link: 'http://worldview3.digitalglobe.com/' },
+          'WV04': { name: 'WorldView-4 (COSPAR: 2016-067A)', link: 'https://resources.maxar.com/data-sheets/worldview-4/' },
+          'GE01': { name: 'GeoEye-1 (COSPAR: 2008-042A)', link: 'https://en.wikipedia.org/wiki/GeoEye-1' },
+          'PNOA': { name: 'Plan Nacional de Ortofotografía Aérea', link: 'https://pnoa.ign.es/'},
+          'NYS ITS GIS Orthos': { name: 'Ortofotos del Estado de Nueva York', link: 'https://orthos.dhses.ny.gov/'},
+          'Madrid Orthos': { name: 'Ortofoto rápida 2019 de Madrid', link: 'https://geoportal.madrid.es/IDEAM_WBGEOPORTAL/dataset.iam?id=f44997dd-a1a9-11ea-a9ae-ecb1d753f6e8'}
+        },
+      providerData = {
+        'Maxar': { name: 'Maxar', link: 'https://www.maxar.com' },
+        'Ayuntamiento de Madrid': { name: 'IDE Ayuntamiento de Madrid', link: 'https://www.comunidad.madrid/servicios/mapas/geoportal-comunidad-madrid' } 
+        };
+        
+    y = (y * 20037508.34) / 180;
+    id = metadataIndex[this.zoom];
+    esriUrl += `${id}/query?f=json&returnGeometry=false&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A${x}%2C%22ymin%22%3A${y}%2C%22xmax%22%3A${x}%2C%22ymax%22%3A${y}%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%2C%22latestWkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=${outFields}&outSR=102100`;
+
+    $.get({
+      url: esriUrl,
+      async: false,
+      success: function (data) {
+          let md = ""; 
+          if(data.features && data.features.length){
+              md = data.features[0].attributes;
+              picMdata = {
+                  date: new Date(md.SRC_DATE2).toLocaleString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+                  resolution: md.SRC_RES,
+                  accuracy: md.SRC_ACC,
+                  sensor: (sensorData[md.SRC_DESC]) ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${sensorData[md.SRC_DESC].name}</a>` : md.SRC_DESC,
+                  provider: (providerData[md.NICE_DESC]) ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${providerData[md.NICE_DESC].name}</a>` : md.NICE_DESC,
+                  sensor_texto: sensorData[md.SRC_DESC].name,
+                  provider_texto: providerData[md.NICE_DESC].name,
+                  product: md.NICE_NAME,
+                  minZoom: md.MinMapLevel,
+                  maxZoom: md.MaxMapLevel,
+                };
+          };
+      },
+    });
+
+    return picMdata;
+  }
+}
+
+
+
 

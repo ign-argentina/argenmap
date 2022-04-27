@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="src/styles/images/noimage.gif" type="image/x-icon">
-
+    
     <!-- metatags-->
   
     <!-- Bootstrap core CSS -->
@@ -64,6 +64,8 @@
     <script src="src/js/components/zoomLevel/ZoomLevel.js"></script>
     <script src="src/js/components/screenshot/screenshot.js"></script>
     <script src="src/js/components/openfiles/openfiles.js"></script>
+    <script src="src/js/components/loadServices/loadServices.js"></script>
+    <script src="src/js/components/loadLayersModal/loadLayersModal.js"></script>
     <script src="src/js/components/context-menu/context-menu.js"></script>
     <script src="src/js/components/user-message/user-message.js"></script>
     <script src="src/js/app.js"></script>
@@ -91,12 +93,18 @@
     <script src="src/js/plugins/FileLayer/shapefile/shp.min.js"></script>
     <script src="src/js/plugins/FileLayer/FileLayer.js"></script>
 
+    <!-- ServiceLayer and dependencies -->
+    <script src="src/js/plugins/ServiceLayers/wms-capabilities.min.js"></script>
+    <script src="src/js/plugins/ServiceLayers/ServiceLayers.js"></script>
+
     <!-- Main Styles -->
     <link rel="stylesheet" href="src/styles/css/main.css">
     <link href="src/styles/css/dashboard.css" rel="stylesheet">
     <link href="src/js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
     <link href="src/js/components/screenshot/screenshot.css" rel="stylesheet">
     <link href="src/js/components/openfiles/openfiles.css" rel="stylesheet">
+    <link href="src/js/components/loadServices/loadServices.css" rel="stylesheet">
+    <link href="src/js/components/loadLayersModal/loadLayersModal.css" rel="stylesheet">
     <link href="src/js/components/sidebar/sidebar.css" rel="stylesheet">
     <link href="src/js/components/context-menu/context-menu.css" rel="stylesheet">
     <link href="src/js/components/user-message/user-message.css" rel="stylesheet">
@@ -114,7 +122,7 @@
           </button>
           <a class="navbar-brand navbar-right">
             <span class="xxsmall-hide">
-              <a id="top-left-logo-link" href="#" target="_blank">
+              <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
                 <img id="top-left-logo" src="src/styles/images/noimage.gif" alt="" title="">
               </a>
             </span>
@@ -122,7 +130,7 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse"></div>
         <span class="xxsmall-hide">
-          <a id="top-right-logo-link" href="#" target="_blank">
+          <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
             <img id="top-right-logo" src="src/styles/images/noimage.gif" alt="" title="">
           </a>
         </span>
@@ -132,10 +140,11 @@
       <div class="row" style="height: 100%;">
         <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"
           aria-expanded="false">
-          <div class="loading"><img src="src/styles/images/loading.svg"></div>
+          <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
           <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
         </nav>
         <div class="map-container">
+          <div class="context-imagen"></div>
           <div id="mapa" class="col-xs-12 col-sm-12 col-md-10 col-md-offset-2 main"></div>
         </div>
       </div>

@@ -66,6 +66,8 @@
   padding: 10px 1px 10px 1px; 
   border:1px solid #ddd;
   background-color: white;
+  -ms-user-select: none;
+  -webkit-user-select: none;
   user-select:none;
   margin-bottom: -1px;
 }
@@ -312,6 +314,7 @@ cursor: pointer;
 #uploaded-area::-webkit-scrollbar-track
 {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 	background-color: #F5F5F5;
 }
 

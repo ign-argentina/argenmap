@@ -1,4 +1,8 @@
 let datatable = [];
+let tableData = [];//Contains the last geojson entered from map.js
+let tableArray = [];//Contains all entered geojson from map.js.
+let eventGeojson=[];//Contains the element with the necessary id to find the geojson in tableArray
+let activeGeojson = 1;//Position of actual geojson
 let table;
 let activedata = 0;
 let ui = new UI
@@ -10,7 +14,9 @@ let ISCelular = (ISportrait &&ISmaxwidth) || (ISlandscape && ISmaxheight)
 
 function createTabulator(tableD, layername){
     if (tableD.data.features.length != 0){
-
+      
+        tableData = tableD.data;
+        tableArray.push(tableData)
         let datos = tableD.getDataForTabulator();
         datatable[datatable.length]=datos
 
@@ -43,7 +49,7 @@ function createTabulator(tableD, layername){
           }
           
         }
-      }
+    }
 }
 
 function newTable(data){

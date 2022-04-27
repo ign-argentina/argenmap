@@ -61,13 +61,38 @@ class UI{
         let btnclose = this.createElement("a","btnclose","icon-table")
         btnclose.innerHTML = '<span id="remove" class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
         btnclose.onclick = function(){
+          activeGeojson = 1;
+          eventGeojson=[];
           document.body.removeChild(ContainerTable)
           datatable=[];
+          tableArray = []
         };
 
-        let btnsave= this.createElement("a","btnsave","icon-table")
-        btnsave.innerHTML = '<span id="save" class="glyphicon glyphicon-download-alt" aria-hidden="true" title="Guardar como CSV"></span>';
-        btnsave.onclick = function(){
+        let btnsaveGJSON= this.createElement("a","btnsaveGJSON","icon-table")
+        btnsaveGJSON.innerHTML = '<span id="savegjson" class="icon-geo" aria-hidden="true" title="Guardar como geojson"></span>';
+        btnsaveGJSON.onclick = function(){
+
+          if( datatable.length > 1 ){
+            const a = document.createElement("a");
+            activeGeojson = activeGeojson - 1;
+            const file = new Blob([JSON.stringify(tableArray[activeGeojson])], { type: "text/plain" });
+            a.href = URL.createObjectURL(file);
+            a.download = "data.geojson";
+            a.click();
+          }
+          else {
+            const a = document.createElement("a");
+            const file = new Blob([JSON.stringify(tableData)], { type: "text/plain" });
+            a.href = URL.createObjectURL(file);
+            a.download = "data.geojson";
+            a.click();
+          }
+
+        };
+
+        let btnsaveCSV= this.createElement("a","btnsaveCSV","icon-table")
+        btnsaveCSV.innerHTML = '<span id="savecsv" class="icon-csv" aria-hidden="true" title="Guardar como CSV"></span>';
+        btnsaveCSV.onclick = function(){
           table.download("csv", "data.csv", {bom:true});
         };
 
@@ -82,7 +107,9 @@ class UI{
           document.getElementById("icons-table").append(btntd)
        }
         
-        document.getElementById("icons-table").append(btnsave)
+        //document.getElementById("icons-table").append(btnsave)
+        document.getElementById("icons-table").append(btnsaveGJSON)
+        document.getElementById("icons-table").append(btnsaveCSV)
         document.getElementById("icons-table").append(btnmax)
         document.getElementById("icons-table").append(btnmin)
         document.getElementById("icons-table").append(btnclose)
@@ -108,19 +135,24 @@ class UI{
         document.getElementById("search-table").append(inputsearch)
         document.getElementById("search-table").append(filterclear)
   }
-
+  
   addTabs(layername){
     let aux 
     if(datatable.length==1){aux = this.createElement("li",datatable.length,"active")}
     else{aux = this.createElement("li",datatable.length)}
     aux.style = "border: 1px solid silver;border-top-right-radius: 8px;border-top-left-radius: 8px;"
     
-    aux.innerHTML='<a style="height:38px; padding:10px !important; overflow:hidden; white-space: nowrap; direction: rtl;text-overflow: ellipsis;" data-toggle="tab" istabletab="true" aria-expanded="true" id ='+datatable.length+'>'+layername+' '+datatable.length+'</a>'
+    aux.innerHTML='<a class="tabEvent" style="height:38px; padding:10px !important; overflow:hidden; white-space: nowrap; direction: rtl;text-overflow: ellipsis;" data-toggle="tab" istabletab="true" aria-expanded="true" id ='+datatable.length+'>'+layername+' '+datatable.length+'</a>'
     aux.onclick =function(){
-            activedata=this.id-1
-            let data = datatable[this.id-1]
-            newTable(data)}
-    document.getElementById("indextabulator").appendChild(aux)
+
+      activedata=this.id-1;
+      let data = datatable[activedata];
+      newTable(data)
+    }
+    document.getElementById("indextabulator").appendChild(aux).addEventListener('click', function(e) {
+      eventGeojson = e.target.attributes.id.value;
+      activeGeojson = parseInt(eventGeojson);
+    });
   }
 
   cleanTable(){
