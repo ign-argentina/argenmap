@@ -360,7 +360,6 @@ class Geoprocessing {
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
-        if (!btn_modal_loading) {
           let values = [];
           for (let i = 0; i < formFields.length; i++) {
             if (!formFields[i].value) {
@@ -453,7 +452,7 @@ class Geoprocessing {
                 this.loadingBtn("off");
               });
           }
-        }
+          this.loadingBtn("off");
       },
       "ejec_gp"
     );
