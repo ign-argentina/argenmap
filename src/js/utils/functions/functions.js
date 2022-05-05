@@ -912,10 +912,10 @@ function parseXml(str, lyr, sys) {
 }
 
 function makeRectangle({ lat, lng, area, map, color }) {
-  // makeRectangle({lat: -24.68695, lng:-64.83230, area: 100000, map: mapa, color: "#ff7800"});
-  // makeRectangle({lat: -31.537259036, lng:-68.525017206, area: 100000 map: mapa, color: "#007800"});
+  // makeRectangle({lat: -24.68695, lng:-64.83230, area: 10000, map: mapa, color: "#ff7800"});
+  // makeRectangle({lat: -31.537259036, lng:-68.525017206, area: 10000 map: mapa, color: "#007800"});
   const PROJ = L.CRS.EPSG3857;
-  let center, sw, ne, bounds, rectangle, halfDistance = (area - 100) / 2;
+  let center, sw, ne, bounds, rectangle, halfDistance = (area) / 2;
   center = PROJ.project(new L.LatLng(lat, lng));
   sw = L.latLng(
     PROJ.unproject(
@@ -929,4 +929,5 @@ function makeRectangle({ lat, lng, area, map, color }) {
   );
   bounds = L.latLngBounds(sw, ne);
   rectangle = L.rectangle(bounds, { color: color, weight: 1 }).addTo(map);
+  map.fitBounds(bounds);
 }
