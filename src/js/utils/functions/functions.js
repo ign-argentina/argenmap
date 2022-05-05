@@ -912,8 +912,8 @@ function parseXml(str, lyr, sys) {
 }
 
 function makeRectangle({ lat, lng, area, map, color }) {
-    // makeRectangle({lat: -24.68695, lng:-64.83230, area: 91408277, map: mapa, color: "#ff7800"});
-    // makeRectangle({lat: -31.537259036, lng:-68.525017206, area: 91408277 map: mapa, color: "#007800"});
+    // makeRectangle({lat: -24.68695, lng:-64.83230, area: 100000, map: mapa, color: "#ff7800"});
+    // makeRectangle({lat: -31.537259036, lng:-68.525017206, area: 100000 map: mapa, color: "#007800"});
     const PROJ = L.CRS.EPSG3857;
     let center, sw, ne, bounds, rectangle, halfDistance = ( area - 100 ) / 2;
     center = PROJ.project(new L.LatLng(lat, lng));
