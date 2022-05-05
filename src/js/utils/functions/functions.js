@@ -911,11 +911,23 @@ function parseXml(str, lyr, sys) {
     }
 }
 
-function makeRectangle({ lat, lng, area, map, color }) {
-  // makeRectangle({lat: -24.68695, lng:-64.83230, area: 10000, map: mapa, color: "#ff7800"});
-  // makeRectangle({lat: -31.537259036, lng:-68.525017206, area: 10000 map: mapa, color: "#007800"});
+// example passing custom arguments instead of default
+// makeRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
+function makeRectangle(arg) {
+  const {
+    map = mapa,
+    lat = map.getCenter().lat,
+    lng = map.getCenter().lng,
+    area = 10000,
+    color = "#007800",
+  } = arg || {};
   const PROJ = L.CRS.EPSG3857;
-  let center, sw, ne, bounds, rectangle, halfDistance = (area) / 2;
+  let center,
+    sw,
+    ne,
+    bounds,
+    rectangle,
+    halfDistance = area / 2;
   center = PROJ.project(new L.LatLng(lat, lng));
   sw = L.latLng(
     PROJ.unproject(
