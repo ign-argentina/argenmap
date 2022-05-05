@@ -149,7 +149,7 @@ class Geoprocessing {
           kb: null,
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-        $("#btnclose-icon-modalfile").click();
+        //$("#btnclose-icon-modalfile").click();
         break;
       }
       case "elevationProfile": {
@@ -173,7 +173,6 @@ class Geoprocessing {
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         if (ep_modal_close) this.elevationDiv(result);
-        $("#btnclose-icon-modalfile").click();
         break;
       }
       case "waterRise": {
@@ -192,7 +191,6 @@ class Geoprocessing {
           kb: null,
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-        $("#btnclose-icon-modalfile").click();
         break;
       }
     }
@@ -337,6 +335,8 @@ class Geoprocessing {
             title: field.name,
             extraProps: extraProps,
           });
+          let inputDefault = document.getElementById("input-equidistancia");
+          inputDefault.value = 100;
 
           formFields.push(input);
         }
