@@ -301,7 +301,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				case 'Draw':
 
 					/* calcular limites de area */
-/*
+
 				    var orgReadbleDistance = L.GeometryUtil.readableArea;
 					
 					L.GeometryUtil.readableArea = function (area, isMetric, precision) {
@@ -327,7 +327,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					        return L.GeometryUtil.formattedNumber(distance * 3, 0) + ' ft';
 					    }
 					};
-	*/
+	
 
 					/* calcular limites de area */
 

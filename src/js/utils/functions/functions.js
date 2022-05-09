@@ -949,7 +949,7 @@ function makeRectangle(arg) {
 
 function drawRectangle(arg){
 
-  var geojson = [{"id":"8787","layer":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"styles":{"stroke":true,"color":"#3388ff","weight":4,"opacity":0.5,"fill":true,"fillColor":"#3388ff","fillOpacity":0.2,"clickable":true,"_dashArray":null,"draggable": true},"type":"rectangle"},"geometry":{"type":"Polygon","coordinates":[[ [-61.467433,-34.393312],[-61.467433,-34.139088],[-61.07757,-34.139088],[-61.07757,-34.393312],[-61.467433,-34.393312] ]]}}]},"name":"Curva_de_nivel","file_name":"Curva_de_nivel.geojson","kb":0.417}];
+  var geojson = [{"id":"8787","layer":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"styles":{"stroke":true,"color":"#3388ff","weight":4,"opacity":0.5,"fill":true,"fillColor":"#3388ff","fillOpacity":0.2,"clickable":true,"_dashArray":null,"draggable": true},"type":"rectangle"},"geometry":{"type":"Polygon","coordinates":[[ [-69.582078,-34.397987],[-69.582078,-34.371637],[-69.545171,-34.371637],[-69.545171,-34.397987],[-69.582078,-34.397987] ]]}}]},"name":"Curva_de_nivel","file_name":"Curva_de_nivel.geojson","kb":0.417}];
 
   geojson.forEach((e) => {
    
@@ -961,7 +961,7 @@ function drawRectangle(arg){
   });
 
 
- mapa.setView([-34.2691,-61.3082], 11);
+ mapa.setView([-34.3848,-69.5636], 14);
 
 
 }
