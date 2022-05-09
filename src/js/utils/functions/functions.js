@@ -943,3 +943,25 @@ function makeRectangle(arg) {
   rectangle = L.rectangle(bounds, { color: color, weight: 1 }).addTo(map);
   map.fitBounds(bounds);
 }
+
+
+
+
+function drawRectangle(arg){
+
+  var geojson = [{"id":"8787","layer":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"styles":{"stroke":true,"color":"#3388ff","weight":4,"opacity":0.5,"fill":true,"fillColor":"#3388ff","fillOpacity":0.2,"clickable":true,"_dashArray":null,"draggable": true},"type":"rectangle"},"geometry":{"type":"Polygon","coordinates":[[ [-61.467433,-34.393312],[-61.467433,-34.139088],[-61.07757,-34.139088],[-61.07757,-34.393312],[-61.467433,-34.393312] ]]}}]},"name":"Curva_de_nivel","file_name":"Curva_de_nivel.geojson","kb":0.417}];
+
+  geojson.forEach((e) => {
+   
+    mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
+   
+    menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
+   
+    addedLayers.push(e);
+  });
+
+
+ mapa.setView([-34.2691,-61.3082], 11);
+
+
+}

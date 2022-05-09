@@ -33,7 +33,7 @@ class SidebarTools {
     leafletbottom = document.getElementsByClassName("leaflet-bottom");
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
     screenshot = document.getElementById("screenshot");
-    icongeop = document.getElementById("geoprocesos-icon");
+    
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
     this.component = `
     <span data-html2canvas-ignore="true" id="sidebar-toolbar-span"class="glyphicon glyphicon-option-vertical" aria-hidden="true">
@@ -42,6 +42,7 @@ class SidebarTools {
 
   createComponent() {
     const elem = document.createElement("div");
+
     elem.id = "sidebar-toolbar-icon-left";
     elem.innerHTML = this.component;
 
@@ -53,9 +54,13 @@ class SidebarTools {
     document.getElementById("mapa").appendChild(elemright);
 
     $("#sidebar-toolbar-icon-left").click(function () {
+     
+  
+
       if (areHiddenLeft) {
+       
         if (window.matchMedia("(max-width: 400px)").matches) {
-          this.style.left = "36px";
+          this.style.left = "40px";
         } else {
           this.style.left = "46px";
         }
@@ -69,11 +74,11 @@ class SidebarTools {
         loadLayersButton.style.display = "";
         screenshot.style.display = "";
         divbar[2].hidden = false;
-        icongeop.style.display = ""
+        $("#geoprocesos-icon").show();
       } else {
-        this.style.left = "10px";
+        //this.style.left = "10px";
         areHiddenLeft = true;
-        zoomhome[0].hidden = true;
+        //zoomhome[0].hidden = true;
         fullscreen[0].style.display = "none";
         customgraticule[0].hidden = true;
         locate[0].hidden = true;
@@ -81,8 +86,11 @@ class SidebarTools {
         loadLayersButton.style.display = "none";
         screenshot.style.display = "none";
         divbar[2].hidden = true;
-        icongeop.style.display = "none"
+        $("#geoprocesos-icon").hide();
       }
+
+
+
     });
 
     $("#sidebar-toolbar-icon-right").click(function () {

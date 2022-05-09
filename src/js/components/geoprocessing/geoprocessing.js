@@ -475,6 +475,17 @@ class Geoprocessing {
             return;
           }
           this.geoprocessId = element.value;
+
+          if (this.geoprocessId=="contour") {
+            
+            drawRectangle()
+           
+            setTimeout(function(){
+               $("#select-capa").val('rectangle_1').change();
+               $("#input-equidistancia").val(100)
+            },1000)
+          }
+
           const item = this.geoprocessingConfig.availableProcesses.find(
             (e) => e.geoprocess === this.geoprocessId
           );
@@ -484,14 +495,18 @@ class Geoprocessing {
           );
           this.buildOptionForm(this.geoprocessing.getFields());
         },
+
+
       },
     });
 
     const options = [];
     options.push({ value: "", text: "" });
     this.geoprocessingConfig.availableProcesses.forEach((geoprocess) => {
+
       options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
     });
+
     geoprocessingForm.setOptionsToSelect(selectProcessId, options);
     /*
     let opt_c = document.createElement('ul')
