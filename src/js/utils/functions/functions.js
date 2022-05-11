@@ -931,37 +931,70 @@ function makeRectangle(arg) {
   center = PROJ.project(new L.LatLng(lat, lng));
   sw = L.latLng(
     PROJ.unproject(
-      new L.Point(center.x - halfDistance, center.y - halfDistance)
+      new L.Point(center.x - halfDistance, center.y - halfDistance),
+      console.log(center.x - halfDistance, center.y - halfDistance)
     )
   );
   ne = L.latLng(
     PROJ.unproject(
-      new L.Point(center.x + halfDistance, center.y + halfDistance)
+      new L.Point(center.x + halfDistance, center.y + halfDistance),
+    console.log(center.x + halfDistance, center.y + halfDistance)
     )
   );
+  console.log(sw)
+  console.log(ne)
   bounds = L.latLngBounds(sw, ne);
   rectangle = L.rectangle(bounds, { color: color, weight: 1 }).addTo(map);
   map.fitBounds(bounds);
 }
 
-
-
-
+// example passing custom arguments instead of default
+// drawRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
 function drawRectangle(arg){
+    let type = 'rectangle'
+    let name = type + '_';
 
-  var geojson = [{"id":"8787","layer":{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"styles":{"stroke":true,"color":"#3388ff","weight":4,"opacity":0.5,"fill":true,"fillColor":"#3388ff","fillOpacity":0.2,"clickable":true,"_dashArray":null,"draggable": true},"type":"rectangle"},"geometry":{"type":"Polygon","coordinates":[[ [-69.582078,-34.397987],[-69.582078,-34.371637],[-69.545171,-34.371637],[-69.545171,-34.397987],[-69.582078,-34.397987] ]]}}]},"name":"Curva_de_nivel","file_name":"Curva_de_nivel.geojson","kb":0.417}];
+    if (mapa.editableLayers[type].length === 0) {
+        name += '1';
+    } else {
+        const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+        name += parseInt(lastLayerName.split('_')[1]) + 1;
+    }
 
-  geojson.forEach((e) => {
-   
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
-   
-    menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
-   
-    addedLayers.push(e);
-  });
+    const {
+        map = mapa,
+        lat = map.getCenter().lat,
+        lng = map.getCenter().lng,
+        area = 10000,
+        color = "#3388ff",
+    } = arg || {};
+    const PROJ = L.CRS.EPSG3857;
+    let center,
+        sw,
+        ne,
+        halfDistance = area / 2;
+    center = PROJ.project(new L.LatLng(lat, lng));
+    sw = L.latLng(
+      PROJ.unproject(
+        new L.Point(center.x - halfDistance, center.y - halfDistance),
+      )
+    );
+    ne = L.latLng(
+      PROJ.unproject(
+        new L.Point(center.x + halfDistance, center.y + halfDistance),
+      )
+    );
 
+    var geojson = [{"id":"8787","layer":{"type":"FeatureCollection","features":[{"type":"Feature","properties":
+    {"styles":{"stroke":true,"color":color,"weight":4,"opacity":0.5,"fill":true,"fillColor":color,"fillOpacity":0.2,"clickable":true,"_dashArray":null,"draggable": true},"type":"rectangle"},
+    "geometry":{ "type":"Polygon","coordinates":[[ [sw.lng,sw.lat],[sw.lng,ne.lat],[ne.lng,ne.lat],[ne.lng,sw.lat],[sw.lng,sw.lat] ]] }}]},
+    "name":name,"file_name":name+'.geojson',"kb":0.417}];
 
- mapa.setView([-34.3848,-69.5636], 14);
+    geojson.forEach((e) => {
+        mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
+        menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
+        addedLayers.push(e);
+    });
 
-
+    mapa.setView([lat,lng], 14);
 }
