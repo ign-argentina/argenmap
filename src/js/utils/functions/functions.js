@@ -983,6 +983,9 @@ function drawRectangle(arg){
         mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
         menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
         addedLayers.push(e);
+        setTimeout(function(){
+            $("#select-capa").val(e.name).change();
+        },1000);
     });
 
     mapa.setView([lat,lng], 14);
