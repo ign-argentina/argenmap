@@ -985,8 +985,10 @@ function drawRectangle(arg){
         addedLayers.push(e);
         setTimeout(function(){
             $("#select-capa").val(e.name).change();
-        },1000);
+        },500);
     });
+
+    map.fitBounds([sw,ne]);
 
     mapa.setView([lat,lng], 14);
 }

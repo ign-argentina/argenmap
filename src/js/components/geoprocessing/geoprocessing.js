@@ -477,10 +477,10 @@ class Geoprocessing {
           this.geoprocessId = element.value;
 
           if (this.geoprocessId=="contour") {
-            drawRectangle()
-          }
+            let bounds = drawRectangle();
+          } 
           if (this.geoprocessId=="waterRise") {
-            drawRectangle()
+            let bounds = drawRectangle();
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(
