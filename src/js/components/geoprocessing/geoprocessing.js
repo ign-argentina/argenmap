@@ -477,13 +477,10 @@ class Geoprocessing {
           this.geoprocessId = element.value;
 
           if (this.geoprocessId=="contour") {
-            
             drawRectangle()
-           
-            setTimeout(function(){
-               $("#select-capa").val('rectangle_1').change();
-               $("#input-equidistancia").val(100)
-            },1000)
+          }
+          if (this.geoprocessId=="waterRise") {
+            drawRectangle()
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(

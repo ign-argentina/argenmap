@@ -89,25 +89,25 @@
       {
         "name": "Curvas de Nivel",
         "geoprocess": "contour",
-        "baseUrl": "http://ip:port/geoserver/ows?service=WPS&version=1.0.0",
-        "layer": "layerName",
-        "styles" : {
+        "baseUrl": "http://172.20.205.70:8080/geoserver/ows?service=WPS&version=1.0.0",
+        "layer": "alos_mosaico",
+        "styles": {
           "line_color": "#E4C47A",
           "line_weight": 1,
-          "d_line_m": 50,
-          "d_line_color": "#E4C47A",
+          "d_line_m": 200,
+          "d_line_color": "#473710",
           "d_weigth": 3
         }
       },
       {
         "name": "Perfil de Elevacion",
         "geoprocess": "elevationProfile",
-        "baseUrl": "http://.../geoprocess-backend/elevation-profile"
+        "baseUrl": "http://172.20.201.37/geoprocess-backend/elevation-profile"
       },
       {
         "name": "Zona de Inundacion",
         "geoprocess": "waterRise",
-        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0"
+        "baseUrl": "http://172.20.205.70:8080/geoserver/ows?service=WPS&version=1.0.0"
       }
     ]
   }
