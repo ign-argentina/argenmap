@@ -478,12 +478,15 @@ class Geoprocessing {
 
           if (this.geoprocessId=="contour") {
             
-            drawRectangle()
+            let bounds = drawRectangle();
+
+            menu_ui.addFileLayer(app.geoprocessing.strings.bounds, bounds.name, bounds.id, bounds.file_name);
+            addedLayers.push(bounds);
            
             setTimeout(function(){
-               $("#select-capa").val('rectangle_1').change();
+               $("#select-capa").val(bounds.name).change();
                $("#input-equidistancia").val(100)
-            },1000)
+            },500)
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(

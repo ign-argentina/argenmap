@@ -767,7 +767,6 @@ function stringShortener(str, chars, addDots) {
 }
 
 function getStyleContour() {
-    console.log("ejecuto")
     let styles = {
         line_color: "#7b7774",
         line_weight: 1,
@@ -781,7 +780,6 @@ function getStyleContour() {
         g.forEach(e => {
             if (e.geoprocess == "contour") {
                 if (e.styles) {
-                    console.log(e.styles)
                     if (e.styles.line_color) { styles.line_color = e.styles.line_color }
                     if (e.styles.line_weight) { styles.line_weight = e.styles.line_weight }
                     if (e.styles.d_line_m) { styles.d_line_m = e.styles.d_line_m }
@@ -911,56 +909,8 @@ function parseXml(str, lyr, sys) {
     }
 }
 
-// example passing custom arguments instead of default
-// makeRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
-function makeRectangle(arg) {
-  const {
-    map = mapa,
-    lat = map.getCenter().lat,
-    lng = map.getCenter().lng,
-    area = 10000,
-    color = "#007800",
-  } = arg || {};
-  const PROJ = L.CRS.EPSG3857;
-  let center,
-    sw,
-    ne,
-    bounds,
-    rectangle,
-    halfDistance = area / 2;
-  center = PROJ.project(new L.LatLng(lat, lng));
-  sw = L.latLng(
-    PROJ.unproject(
-      new L.Point(center.x - halfDistance, center.y - halfDistance),
-      console.log(center.x - halfDistance, center.y - halfDistance)
-    )
-  );
-  ne = L.latLng(
-    PROJ.unproject(
-      new L.Point(center.x + halfDistance, center.y + halfDistance),
-    console.log(center.x + halfDistance, center.y + halfDistance)
-    )
-  );
-  console.log(sw)
-  console.log(ne)
-  bounds = L.latLngBounds(sw, ne);
-  rectangle = L.rectangle(bounds, { color: color, weight: 1 }).addTo(map);
-  map.fitBounds(bounds);
-}
-
-// example passing custom arguments instead of default
-// drawRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
 function drawRectangle(arg){
-    let type = 'rectangle'
-    let name = type + '_';
-
-    if (mapa.editableLayers[type].length === 0) {
-        name += '1';
-    } else {
-        const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-        name += parseInt(lastLayerName.split('_')[1]) + 1;
-    }
-
+    // drawRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
     const {
         map = mapa,
         lat = map.getCenter().lat,
@@ -969,10 +919,16 @@ function drawRectangle(arg){
         color = "#3388ff",
     } = arg || {};
     const PROJ = L.CRS.EPSG3857;
-    let center,
-        sw,
-        ne,
-        halfDistance = area / 2;
+    let center, sw, ne, halfDistance = area / 2,
+        type = 'rectangle', name = type + '_';
+
+    if (map.editableLayers[type].length === 0) {
+        name += '1';
+    } else {
+        const lastLayerName = map.editableLayers[type][map.editableLayers[type].length - 1].name;
+        name += parseInt(lastLayerName.split('_')[1]) + 1;
+    }
+
     center = PROJ.project(new L.LatLng(lat, lng));
     sw = L.latLng(
       PROJ.unproject(
@@ -985,16 +941,10 @@ function drawRectangle(arg){
       )
     );
 
-    var geojson = [{"id":"8787","layer":{"type":"FeatureCollection","features":[{"type":"Feature","properties":
-    {"styles":{"stroke":true,"color":color,"weight":4,"opacity":0.5,"fill":true,"fillColor":color,"fillOpacity":0.2,"clickable":true,"_dashArray":null,"draggable": true},"type":"rectangle"},
-    "geometry":{ "type":"Polygon","coordinates":[[ [sw.lng,sw.lat],[sw.lng,ne.lat],[ne.lng,ne.lat],[ne.lng,sw.lat],[sw.lng,sw.lat] ]] }}]},
-    "name":name,"file_name":name+'.geojson',"kb":0.417}];
+    let geojson={id:"8787",layer:{type:"FeatureCollection",features:[{type:"Feature",properties:{styles:{stroke:!0,color:color,weight:4,opacity:.5,fill:!0,fillColor:color,fillOpacity:.2,clickable:!0,_dashArray:null,draggable:!0},type:"rectangle"},geometry:{type:"Polygon",coordinates:[[[sw.lng,sw.lat],[sw.lng,ne.lat],[ne.lng,ne.lat],[ne.lng,sw.lat],[sw.lng,sw.lat]]]}}]},name:name,file_name:name+".geojson",kb:.417};
 
-    geojson.forEach((e) => {
-        mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
-        menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
-        addedLayers.push(e);
-    });
+    map.addGeoJsonLayerToDrawedLayers(geojson.layer, geojson.id, true, true);
+    map.fitBounds([sw,ne]);
 
-    mapa.setView([lat,lng], 14);
+    return geojson;
 }
