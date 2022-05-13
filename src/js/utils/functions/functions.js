@@ -767,7 +767,6 @@ function stringShortener(str, chars, addDots) {
 }
 
 function getStyleContour() {
-    console.log("ejecuto")
     let styles = {
         line_color: "#7b7774",
         line_weight: 1,
@@ -781,7 +780,6 @@ function getStyleContour() {
         g.forEach(e => {
             if (e.geoprocess == "contour") {
                 if (e.styles) {
-                    console.log(e.styles)
                     if (e.styles.line_color) { styles.line_color = e.styles.line_color }
                     if (e.styles.line_weight) { styles.line_weight = e.styles.line_weight }
                     if (e.styles.d_line_m) { styles.d_line_m = e.styles.d_line_m }
@@ -911,19 +909,8 @@ function parseXml(str, lyr, sys) {
     }
 }
 
-// example passing custom arguments instead of default
-// drawRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
 function drawRectangle(arg){
-    let type = 'rectangle'
-    let name = type + '_';
-
-    if (mapa.editableLayers[type].length === 0) {
-        name += '1';
-    } else {
-        const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-        name += parseInt(lastLayerName.split('_')[1]) + 1;
-    }
-
+    // drawRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
     const {
         map = mapa,
         lat = map.getCenter().lat,
@@ -932,10 +919,16 @@ function drawRectangle(arg){
         color = "#3388ff",
     } = arg || {};
     const PROJ = L.CRS.EPSG3857;
-    let center,
-        sw,
-        ne,
-        halfDistance = area / 2;
+    let center, sw, ne, halfDistance = area / 2,
+        type = 'rectangle', name = type + '_';
+
+    if (map.editableLayers[type].length === 0) {
+        name += '1';
+    } else {
+        const lastLayerName = map.editableLayers[type][map.editableLayers[type].length - 1].name;
+        name += parseInt(lastLayerName.split('_')[1]) + 1;
+    }
+
     center = PROJ.project(new L.LatLng(lat, lng));
     sw = L.latLng(
       PROJ.unproject(
@@ -990,5 +983,5 @@ function drawRectangle(arg){
 
     map.fitBounds([sw,ne]);
 
-    mapa.setView([lat,lng], 14);
+    return geojson;
 }
