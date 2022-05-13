@@ -477,16 +477,10 @@ class Geoprocessing {
           this.geoprocessId = element.value;
 
           if (this.geoprocessId=="contour") {
-            
             let bounds = drawRectangle();
-
-            menu_ui.addFileLayer(app.geoprocessing.strings.bounds, bounds.name, bounds.id, bounds.file_name);
-            addedLayers.push(bounds);
-           
-            setTimeout(function(){
-               $("#select-capa").val(bounds.name).change();
-               $("#input-equidistancia").val(100)
-            },500)
+          } 
+          if (this.geoprocessId=="waterRise") {
+            let bounds = drawRectangle();
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(

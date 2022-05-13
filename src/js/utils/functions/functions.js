@@ -941,9 +941,46 @@ function drawRectangle(arg){
       )
     );
 
-    let geojson={id:"8787",layer:{type:"FeatureCollection",features:[{type:"Feature",properties:{styles:{stroke:!0,color:color,weight:4,opacity:.5,fill:!0,fillColor:color,fillOpacity:.2,clickable:!0,_dashArray:null,draggable:!0},type:"rectangle"},geometry:{type:"Polygon",coordinates:[[[sw.lng,sw.lat],[sw.lng,ne.lat],[ne.lng,ne.lat],[ne.lng,sw.lat],[sw.lng,sw.lat]]]}}]},name:name,file_name:name+".geojson",kb:.417};
+    let geojson = [{
+        "id":name,
+        "layer":{
+            "type":"FeatureCollection",
+            "features":[{
+                "type":"Feature",
+                "properties":{
+                    "styles":{
+                        "stroke":true,
+                        "color":color,
+                        "weight":4,
+                        "opacity":0.5,
+                        "fill":true,
+                        "fillColor":color,
+                        "fillOpacity":0.2,
+                        "clickable":true,
+                        "_dashArray":null,
+                        "draggable": true
+                    },"type":"rectangle"
+                },
+                "geometry":{
+                    "type":"Polygon",
+                    "coordinates":[[ [sw.lng,sw.lat],[sw.lng,ne.lat],[ne.lng,ne.lat],[ne.lng,sw.lat],[sw.lng,sw.lat] ]]
+                }
+            }]
+        },
+        "name":name,
+        "file_name":name+'.geojson',
+        "kb":0.417,
+    }];
 
-    map.addGeoJsonLayerToDrawedLayers(geojson.layer, geojson.id, true, true);
+    geojson.forEach((e) => {
+        mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
+        menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
+        addedLayers.push(e);
+        setTimeout(function(){
+            $("#select-capa").val(e.name).change();
+        },500);
+    });
+
     map.fitBounds([sw,ne]);
 
     return geojson;
