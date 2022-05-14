@@ -121,7 +121,7 @@ function clearString(s) {
 }
 
 
-function sanatizeString(s) {
+function clearSpecialChars(s) {
     return clearString(s).replace(/ /g, '_');
 }
 
