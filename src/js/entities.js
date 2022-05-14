@@ -901,7 +901,7 @@ Composite para menu
 class ItemComposite {
     constructor(nombre, seccion, palabrasClave, descripcion) {
         this.nombre = nombre
-        this.seccion = sanatizeString(seccion)
+        this.seccion = clearSpecialChars(seccion)
         this.peso = null;
         this.palabrasClave = (palabrasClave == null || palabrasClave == '') ? [] : palabrasClave
         this.descripcion = descripcion
@@ -2534,7 +2534,7 @@ class Menu_UI{
     }
 
     addSection(name){
-        let groupnamev= name.replace(/ /g, "_")
+        let groupnamev= clearSpecialChars(name);
         let itemnew = document.createElement("div")
         itemnew.innerHTML =`
         <div id="lista-${groupnamev}" class="menu5 panel-default">
@@ -2553,7 +2553,7 @@ class Menu_UI{
     }
 
     addFileLayer(groupname, textName, id, fileName){
-        let groupnamev= groupname.replace(/ /g, "_")
+        let groupnamev= clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
 
         let div = ` 
@@ -2949,11 +2949,13 @@ class Menu_UI{
     }
 
     editGroupName(id,oldName,newName){
-        let el = document.getElementById(`${oldName.replace(/ /g, "_")}-a`);
+        clearSpecialChars(oldName);
+        clearSpecialChars(newName);
+        let el = document.getElementById(`${oldName}-a`);
         if(el) {
             el.innerText = newName;
-            document.getElementById(`lista-${oldName.replace(/ /g, "_")}`).id = `lista-${newName.replace(/ /g, "_")}`;
-            document.getElementById(oldName.replace(/ /g, "_")+"-panel-body").id = newName.replace(/ /g, "_")+"-panel-body";
+            document.getElementById(`lista-${oldName}`).id = `lista-${newName}`;
+            document.getElementById(oldName+"-panel-body").id = newName+"-panel-body";
         };
     }
 
@@ -2978,7 +2980,7 @@ class Menu_UI{
     }
     
     removeLayersGroup(groupname){
-        let el = document.getElementById(`lista-${groupname.replace(/ /g, "_")}`);
+        let el = document.getElementById(`lista-${clearSpecialChars(groupname)}`);
         if(el) el.remove();
     }
 
@@ -3001,7 +3003,7 @@ class Menu_UI{
         }
         
 
-        let groupnamev = groupname.replace(/ /g, "_")
+        let groupnamev = clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
         let id_options_container = "opt-c-"+id
         if(!main){this.addSection(groupname)}
