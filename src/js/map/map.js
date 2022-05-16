@@ -1774,6 +1774,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								const styleOptions = { ...layer.options };
 								geoJSON.properties.styles = styleOptions;
 								geoJSON.properties.type = layer.type;
+								(layer.value) ? geoJSON.properties.value = layer.value : 0;
 								jsonToDownload.features.push(geoJSON);
 							});
 						}
