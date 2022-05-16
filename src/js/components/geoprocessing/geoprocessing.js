@@ -111,6 +111,8 @@ class Geoprocessing {
     geoprocessingTabContent.innerHTML = "";
     geoprocessingTabContent.appendChild(geoProcessingManager.getForm());
 
+    document.getElementById("select-process").options[0].text="Seleccione una Opción"
+
     $("#mr").draggable({
       containment: "#mapa",
     });
@@ -337,6 +339,7 @@ class Geoprocessing {
           });
           let inputDefault = document.getElementById("input-equidistancia");
           inputDefault.value = 100;
+          $("label[for='input-equidistancia']").html("Equidistancia (m)");
 
           formFields.push(input);
         }
@@ -467,7 +470,7 @@ class Geoprocessing {
 
     const selectProcessId = "select-process";
     geoprocessingForm.addElement("select", selectProcessId, {
-      title: "Seleccione el geoproceso",
+      title: "Geoprocesos",
       events: {
         change: (element) => {
           if (!element.value) {
