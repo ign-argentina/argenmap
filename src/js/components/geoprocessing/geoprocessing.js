@@ -111,7 +111,7 @@ class Geoprocessing {
     geoprocessingTabContent.innerHTML = "";
     geoprocessingTabContent.appendChild(geoProcessingManager.getForm());
 
-    document.getElementById("select-process").options[0].text="Seleccione una Opción"
+    document.getElementById("select-process").options[0].text="Seleccione una Opción";
 
     $("#mr").draggable({
       containment: "#mapa",
@@ -196,6 +196,8 @@ class Geoprocessing {
         break;
       }
     }
+    this.optionsForm.clearForm();
+    document.getElementById("select-process").selectedIndex = 0;
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
   }
 
