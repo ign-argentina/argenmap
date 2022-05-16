@@ -1774,6 +1774,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								const styleOptions = { ...layer.options };
 								geoJSON.properties.styles = styleOptions;
 								geoJSON.properties.type = layer.type;
+								// TODO: include all properties fields to GeoJSON
 								(layer.value) ? geoJSON.properties.value = layer.value : 0;
 								jsonToDownload.features.push(geoJSON);
 							});
