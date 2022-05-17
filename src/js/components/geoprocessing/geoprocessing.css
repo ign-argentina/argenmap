@@ -187,3 +187,7 @@
     max-height: 50%;
   }
 }
+.disabledbutton {
+  pointer-events: none;
+  opacity: 0.4;
+}

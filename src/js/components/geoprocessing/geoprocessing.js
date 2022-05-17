@@ -362,6 +362,20 @@ class Geoprocessing {
       formFields.push(input);
     }
 
+    function checkExecuteBtn(){
+      //Check to see if there is any text entered
+      // If $('#select-capa').val is empty or if $('#input-equidistancia').val < 100 or > 10.000, then disable the button.
+      if( $('#select-capa').val() === '' || ( $('#input-equidistancia').val() < 100 || $('#input-equidistancia').val() > 10000 ) ) {
+        $("#ejec_gp").addClass("disabledbutton");
+      } else {
+        $("#ejec_gp").removeClass("disabledbutton");
+      }
+    }
+    $(document).ready(function(){
+      $("#select-capa").on("change",checkExecuteBtn);
+      $('#input-equidistancia').keyup(checkExecuteBtn);
+    });
+
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
