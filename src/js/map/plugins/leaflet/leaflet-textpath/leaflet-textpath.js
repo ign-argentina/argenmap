@@ -73,6 +73,7 @@
                 return this;
             }
     
+            console.log(this);
             text = text.replace(/ /g, '\u00A0');  // Non breakable spaces
             var id = 'pathdef-' + L.Util.stamp(this);
             var svg = this._map._renderer._container;

@@ -2004,21 +2004,24 @@ $("body").on("pluginLoad", function(event, plugin){
 									type = 'polyline';
 									layer.value = geoJSON.properties.value
 									if (n % 100 === 0 ||n % 50 === 0) {
-										
-										/*layer.setText(value, {
+										// textPath
+										layer.setText(value, {
 											repeat: false,
 											offset: 6,
 											center: true,
-											attributes: {fill: 'black'}})*/
+											attributes: {fill: 'black'}})
 									}
-									layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
+									//layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
 									layer.on('mouseover', function (e) {
-										//layer.setText(geoJSON.properties.value + 'm', { center: true, orientation: 'flip' });
-										layer.openPopup();
+										// textPath
+										let toText = geoJSON.properties.value.toString();
+										layer.setText(toText + 'm');
+										//layer.openPopup();
 									});
 									layer.on('mouseout', function (e) {
-										//layer.setText(null);
-										layer.closePopup();
+										// textPath
+										layer.setText(null);
+										//layer.closePopup();
 									});
 								}else{
 									layer = L.polyline(invertedCoords, options);
