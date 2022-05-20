@@ -1986,8 +1986,10 @@ $("body").on("pluginLoad", function(event, plugin){
 										}
 										else{colord = countour_styles.d_line_color}
 
-										options = {color: colord,
-												   weight: countour_styles.d_weigth}
+										options = {
+											color: colord,
+											weight: countour_styles.d_weigth
+												}
 									}else{
 										let colorc = ""
 										if(countour_styles.line_color === "multi"){
@@ -1996,7 +1998,8 @@ $("body").on("pluginLoad", function(event, plugin){
 
 
 										options = { color: colorc,
-													weight: countour_styles.line_weight}
+													weight: countour_styles.line_weight
+												}
 									}
 									//if (n % 100 === 0 ||n % 50 === 0) 
 
@@ -2009,7 +2012,13 @@ $("body").on("pluginLoad", function(event, plugin){
 											repeat: false,
 											offset: 6,
 											center: true,
-											attributes: {fill: 'black'}})
+											attributes: {
+												fill: options.color,
+												'font-weight': 'bold',
+												'font-family': 'sans-serif',
+												'font-size': '24px'
+											}
+										});
 									}
 									//layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
 									layer.on('mouseover', function (e) {
@@ -2212,7 +2221,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				zoomControl: false,
 				minZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
 				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
-				renderer: L.canvas()
+				/* renderer: L.svg() */
 			});
 			
 
