@@ -1208,23 +1208,27 @@
         };
 
         var focus = function focus(e) {
-          if (e.type == 'brush' && !e.sourceEvent) return;
+          if(e){
+            if (e.type == 'brush' && !e.sourceEvent) return;
 
-          var rect = _this2._chart.panes.brush.select('.overlay').node();
+            var rect = _this2._chart.panes.brush.select('.overlay').node();
+  
+            var coords = d3.pointers(e, rect)[0];
+            var xCoord = coords[0];
+  
+            var item = _this2._data[_this2._findIndexForXCoord(xCoord)];
+  
+            _this2.fire("mouse_move", {
+              item: item,
+              xCoord: xCoord
+            });
+          }
 
-          var coords = d3.pointers(e, rect)[0];
-          var xCoord = coords[0];
-
-          var item = _this2._data[_this2._findIndexForXCoord(xCoord)];
-
-          _this2.fire("mouse_move", {
-            item: item,
-            xCoord: xCoord
-          });
         };
 
         this._brush.filter(function (e) {
-          return _this2._brushEnabled && !e.shiftKey && !e.button;
+          if(e){return _this2._brushEnabled && !e.shiftKey && !e.button;}
+          
         }).on("end.update", brush).on("brush.update", focus);
 
         this._chart.panes.brush.on("mouseenter.focus touchstart.focus", this.fire.bind(this, "mouse_enter")).on("mouseout.focus touchend.focus", this.fire.bind(this, "mouse_out")).on("mousemove.focus touchmove.focus", focus);
@@ -1277,12 +1281,16 @@
 
           _this3.fire('zoom');
         };
-
+        
         zoom.scaleExtent([1, 10]).extent([[margin.left, 0], [this._width() - margin.right, this._height()]]).translateExtent([[margin.left, -Infinity], [this._width() - margin.right, Infinity]]).filter(function (e) {
-          return _this3._zoomEnabled && (e.shiftKey || e.buttons == 4);
+          if(e){
+            return _this3._zoomEnabled && (e.shiftKey || e.buttons == 4);
+          }
+          
         }).on("start", onStart).on("end", onEnd).on("zoom", onZoom);
         svg.call(zoom); // add zoom functionality to "svg" group
         // d3.select("body").on("keydown.grabzoom keyup.grabzoom", (e) => svg.style('cursor', e.shiftKey ? 'move' : ''));
+
       },
       _initInteractions: function _initInteractions() {
         this._initBrush();
