@@ -691,6 +691,10 @@ Popup geometría
   justify-content: flex-start;
   align-items: center;
 }
+.map-tooltip {
+  background-color: #000000;
+  color: #fafafa;
+}
 @media (max-width: 700px) {
   .zoom-info-icon {
     visibility: hidden;
