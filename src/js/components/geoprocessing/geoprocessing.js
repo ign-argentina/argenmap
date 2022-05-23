@@ -365,7 +365,7 @@ class Geoprocessing {
     function checkExecuteBtn(){
       //Check to see if there is any text entered
       // If $('#select-capa').val is empty or if $('#input-equidistancia').val < 100 or > 10.000, then disable the button.
-      if( $('#select-capa').val() === '' || ( $('#input-equidistancia').val() < 100 || $('#input-equidistancia').val() > 10000 ) ) {
+      if( $('#select-capa').val() === '' || ( $('#input-equidistancia').val() < 10 || $('#input-equidistancia').val() > 10000 ) ) {
         $("#ejec_gp").addClass("disabledbutton");
       } else {
         $("#ejec_gp").removeClass("disabledbutton");
