@@ -2017,7 +2017,7 @@ $("body").on("pluginLoad", function(event, plugin){
 											offset: -3,
 											center: true,
 											attributes: {
-												/* textLength: 10, */
+												textLength: 55,
 												fill: 'Maroon',
 												'font-weight': options['font-weight'],
 												'font-family': 'sans-serif',
