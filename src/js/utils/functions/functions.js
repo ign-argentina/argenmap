@@ -121,7 +121,7 @@ function clearString(s) {
 }
 
 
-function sanatizeString(s) {
+function clearSpecialChars(s) {
     return clearString(s).replace(/ /g, '_');
 }
 
@@ -184,7 +184,8 @@ function loadWmsTplAux(objLayer, param) {
 
             for (i in info.features) {
                 Object.keys(info.features[i].properties).forEach(function (k) {
-                    if (k != 'bbox') { //Do not show bbox property
+                    let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
+                    if (k != 'bbox' && !ignoredField ) { //Do not show bbox property
                         infoAux += '<li>';
                         infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
                         if (info.features[i].properties[k] != null) {
@@ -511,7 +512,7 @@ function setSelectedBasemapAsActive(layerName, availableBasemaps) {
 function adaptToImage(imgDiv) {
 
     let img = imgDiv.childNodes[0], item = imgDiv.closest("li");
-    if (img.naturalHeight > 24) {
+    if (img.naturalHeight > 24 ) {
         let resize_img_icon = document.createElement("div");
         resize_img_icon.className = "resize-legend-combobox";
         resize_img_icon.style = "align-self: center;font-size: 14px";
@@ -523,6 +524,8 @@ function adaptToImage(imgDiv) {
         container_expand_legend_grafic.setAttribute("load", false);
 
         let max_url_img = img.src.replace(/off/g, "on");
+        ( img.src.includes('svg') || img.src.includes('png') || img.src.includes('jpg') ) ? 
+        max_url_img :
         max_url_img += ';fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;';
         container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
 

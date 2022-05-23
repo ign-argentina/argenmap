@@ -61,6 +61,7 @@ class ServiceLayers{
 
             this.rawData = data;
             this.title = this.rawData.Service.Title;
+            this.title.replace(/[^a-zA-Z ]/g, "").replace(/ /g, "_");
             this.id = this.generateId(this.title);
 
             return this.layers = this.rawData.Capability.Layer.Layer.map((layer) => {
@@ -72,8 +73,11 @@ class ServiceLayers{
                         bbox = p.extent;
                         return true;
                     }
-                })
-
+                });
+                let style = "";
+                (layer.Style) ? 
+                    style = layer.Style[0].LegendURL[0] 
+                    : style;
                 return {
                     name: layer.Name,
                     title: layer.Title,
@@ -85,8 +89,8 @@ class ServiceLayers{
                     maxy: bbox[3],
                     attribution: layer.Attribution,
                     abstract: layer.Abstract,
-                    legend:layer.Style[0].LegendURL[0].OnlineResource,
-                    hostName:layer.Style[0].LegendURL[0].Name
+                    legend: style.OnlineResource,
+                    hostName: style.Name
                 }
             });
         } catch (error) { throw error }
