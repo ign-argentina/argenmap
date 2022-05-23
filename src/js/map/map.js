@@ -1974,7 +1974,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
 								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
 									let n = geoJSON.properties.value
-									let value = geoJSON.properties.value + 'm'
+									let value = geoJSON.properties.value + ' m'
 									
 									if(!countour_styles) countour_styles = getStyleContour()
 									
@@ -1988,7 +1988,9 @@ $("body").on("pluginLoad", function(event, plugin){
 
 										options = {
 											color: colord,
-											weight: countour_styles.d_weigth
+											weight: countour_styles.d_weigth,
+											smoothFactor: countour_styles.smoothFactor,
+											'font-weight': 'bold'
 												}
 									}else{
 										let colorc = ""
@@ -1998,7 +2000,9 @@ $("body").on("pluginLoad", function(event, plugin){
 
 
 										options = { color: colorc,
-													weight: countour_styles.line_weight
+													weight: countour_styles.line_weight,
+													smoothFactor: countour_styles.smoothFactor,
+													'font-weight': 'regular'
 												}
 									}
 									//if (n % 100 === 0 ||n % 50 === 0) 
@@ -2010,13 +2014,17 @@ $("body").on("pluginLoad", function(event, plugin){
 										// textPath
 										layer.setText(value, {
 											repeat: false,
-											offset: 6,
+											offset: -3,
 											center: true,
 											attributes: {
-												fill: options.color,
-												'font-weight': 'bold',
+												/* textLength: 10, */
+												fill: 'Maroon',
+												'font-weight': options['font-weight'],
 												'font-family': 'sans-serif',
-												'font-size': '24px'
+												stroke: 'white',
+												'stroke-opacity': '1',
+												'stroke-width': '0.5'
+												/* 'font-size': '24px' */
 											}
 										});
 									}
