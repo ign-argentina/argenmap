@@ -775,7 +775,8 @@ function getStyleContour() {
         line_weight: 1,
         d_line_m: 50,
         d_line_color: "#7b7774",
-        d_weigth: 3
+        d_weigth: 3,
+        smoothFactor: 1.5
     }
 
     if (loadGeoprocessing) {
@@ -788,6 +789,7 @@ function getStyleContour() {
                     if (e.styles.d_line_m) { styles.d_line_m = e.styles.d_line_m }
                     if (e.styles.d_line_color) { styles.d_line_color = e.styles.d_line_color }
                     if (e.styles.d_weigth) { styles.d_weigth = e.styles.d_weigth }
+                    if (e.styles.smoothFactor) { styles.smoothFactor = e.styles.smoothFactor }
                 }
             }
         })
