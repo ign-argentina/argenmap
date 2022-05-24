@@ -196,8 +196,9 @@ class Geoprocessing {
         break;
       }
     }
-    this.optionsForm.clearForm();
+    //this.optionsForm.clearForm();
     document.getElementById("select-process").selectedIndex = 0;
+    document.getElementsByClassName("form")[1].innerHTML = '';
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
   }
 

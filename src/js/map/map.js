@@ -2028,19 +2028,20 @@ $("body").on("pluginLoad", function(event, plugin){
 											}
 										});
 									}
-									//layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
 									layer.on('mouseover', function (e) {
-										// textPath
-										let toText = geoJSON.properties.value.toString();
-										layer.setText(toText + 'm');
-										//layer.openPopup();
+										let elevation = geoJSON.properties.value.toString() + " m";
+										let tooltipStyle = {
+											direction: 'right',
+											permanent: false,
+											sticky: true,
+											offset: [10, 0],
+											opacity: 0.75,
+											className: 'map-tooltip'
+										};
+										layer.bindTooltip(`<div><b>${elevation}</b></div>`,
+										 tooltipStyle);
 									});
-									layer.on('mouseout', function (e) {
-										// textPath
-										layer.setText(null);
-										//layer.closePopup();
-									});
-								}else{
+								} else {
 									layer = L.polyline(invertedCoords, options);
 									type = 'polyline';
 								}

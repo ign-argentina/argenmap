@@ -68,9 +68,10 @@ top: 0;
   .leaflet-control-customgraticule,
   #modalgeojson,
   #screenshot {
-    width: 26px !important;
-    height: 26px !important;
+    /* width: 26px !important;
+    height: 26px !important; 
     border: none !important;
+    */
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   }
 }
@@ -690,6 +691,10 @@ Popup geometría
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+}
+.map-tooltip {
+  background-color: #000000;
+  color: #fafafa;
 }
 @media (max-width: 700px) {
   .zoom-info-icon {
