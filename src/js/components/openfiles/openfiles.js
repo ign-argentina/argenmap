@@ -474,7 +474,7 @@ function delFileItembyID(id) {
   let del_index = null
 
   addedLayers.forEach((e, i) => {
-    if (e.id === id) index = i
+    if (e.id === id) del_index = i
   });
 
   addedLayers.splice(del_index, 1)
