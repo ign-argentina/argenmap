@@ -862,6 +862,12 @@ SideBar
     top: 156px !important;
     position: absolute;
   }
+  
+  div .leaflet-control-geo {
+    left: 34px !important;
+    top: 195px !important;
+    position: absolute;
+  }
 
   .leaflet-control-minimap {
     display: none;

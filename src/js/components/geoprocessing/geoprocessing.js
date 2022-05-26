@@ -40,7 +40,7 @@ class Geoprocessing {
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "center-flex";
+    elem.className = "leaflet-control-geo center-flex";
     elem.id = "geoprocesos-icon";
     elem.title = "Geoprocesos";
     elem.innerHTML = modalicon;
@@ -66,7 +66,7 @@ class Geoprocessing {
         g_modal_close = false;
       }
     };
-    document.getElementById("mapa").appendChild(elem);
+    document.getElementsByClassName("leaflet-top leaflet-left")[0].appendChild(elem);
   }
 
   createModal() {
