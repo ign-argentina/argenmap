@@ -297,43 +297,40 @@ $("body").on("pluginLoad", function(event, plugin){
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':
-                    /*
-					// Leaflet-Browser-Print plugin https://github.com/Igor-Vladyka/leaflet.browser.print
-                    mapa.on("browser-pre-print", function(e){
-                        // on print start we already have a print map and we can create new control and add it to the print map to be able to print custom information
-                        //console.log(overlayMaps);
-                        for (var xxx in overlayMaps) {
-                            //overlayMaps[xxx].addTo(mapa);
-                            L.Control.BrowserPrint.Utils.registerLayer(
-                                overlayMaps[xxx],
-                                xxx,
-                                function(layer, utils) {
-                                    // We need to clone options to properly handle multiple renderers.
-                                    return L.tileLayer.wms(layer._url, utils.cloneOptions(layer.options));
-                                }
-                            );
-                        }
-                    });
-					L.control.browserPrint({
-                        title: 'Just print me!',
-                        documentTitle: 'Map printed using leaflet.browser.print plugin',
-                        printLayer: L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
-                                        tms: true,
-                                        maxZoom: 21,
-                                        attribution: atrib_ign
-                                    }),
-                        closePopupsOnPrint: false,
-                        printModes: [
-                            L.control.browserPrint.mode.landscape(),
-                            "Portrait",
-                            L.control.browserPrint.mode.auto("Automatico", "B4"),
-                            L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
-                        ],
-                        manualMode: false
-                    }).addTo(mapa);
-                    */
-					break;
+               		break;
 				case 'Draw':
+
+					/* calcular limites de area */
+
+				    var orgReadbleDistance = L.GeometryUtil.readableArea;
+					
+					L.GeometryUtil.readableArea = function (area, isMetric, precision) {
+						if (L.GeometryUtil.formattedNumber(area / 100000, 2)>100) {
+							console.log('%cSUPERASTE LOS 100 KM2', 'color: white; background: red; font-size: 30px');
+						}else{
+							console.log('%cKM2 CORRECTO!', 'color: white; background: green; font-size: 30px');
+						}
+						return L.GeometryUtil.formattedNumber(area / 100000, 2) + ' Km2';
+						
+					};
+
+					
+
+					L.GeometryUtil.readableDistance = function (distance, isMetric, precision) {
+
+					
+					  distance *= 1.09361;
+					  console.log(distance)
+					    if (distance > 1760) {
+					        return L.GeometryUtil.formattedNumber(distance / 1760, 2) + ' millas';
+					    } else {
+					        return L.GeometryUtil.formattedNumber(distance * 3, 0) + ' ft';
+					    }
+					};
+	
+
+					/* calcular limites de area */
+
 				    drawnItems = L.featureGroup().addTo(mapa);
 
 					mapa.editableLayers = {
@@ -348,33 +345,27 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.groupLayers = {};
 
 
-					// File layers group and items
-					drawnItems = L.featureGroup().addTo(mapa);
-					mapa.editableLayers = {
-						marker: [],
-						circle: [],
-						circlemarker: [],
-						rectangle: [],
-						polygon: [],
-						polyline: []
-					};
-					mapa.groupLayers = {};
+				
+				
 
 					var drawControl = new L.Control.Draw({
 						edit: {
 							featureGroup: drawnItems,
 							poly: {
-								allowIntersection: false
+								allowIntersection: true
 							}
 						},
 						draw: {
-							polygon: {
-								allowIntersection: false,
-								showArea: true
-							}
+							polygon: {metric: false,feet: true},
+							circlemarker: {metric: false,feet: true},
+					        polyline: {metric: false,feet: true},
+					        circle:{metric: false,feet: true},
+					        rectangle: {metric: true,feet: true}
 						},
 						position: 'topright'
 					});
+
+
 					//Customizing language and text in Leaflet.draw
 					L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
 					L.drawLocal.draw.toolbar.finish.text = 'Finalizar';
@@ -416,18 +407,30 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
 					mapa.addControl(drawControl);
 
+
+				
+
 					mapa.on('draw:drawstart', (e) => {
-						currentlyDrawing = true;
+
+					currentlyDrawing = true;
+
 					});
 					
 					mapa.on('draw:editstart', (e) => {
 						currentlyDrawing = true;
+						
 					});
+
+					 
+				
 
 					mapa.on('draw:created', (e) => {
 						const layer = e.layer;
 						const type = e.layerType;
 
+						
+
+						
 						let name = type + '_';
 						if (mapa.editableLayers[type].length === 0) {
 							name += '1';
@@ -451,6 +454,8 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
+
+
 						drawnItems.addLayer(layer);
 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
@@ -469,6 +474,9 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.on('draw:edited', (e) => {
+
+
+
 						var layers = e.layers;
 						//Each layer recently edited..
 						layers.eachLayer(function (layer) {
@@ -1766,6 +1774,8 @@ $("body").on("pluginLoad", function(event, plugin){
 								const styleOptions = { ...layer.options };
 								geoJSON.properties.styles = styleOptions;
 								geoJSON.properties.type = layer.type;
+								// TODO: include all properties fields to GeoJSON
+								(layer.value) ? geoJSON.properties.value = layer.value : 0;
 								jsonToDownload.features.push(geoJSON);
 							});
 						}
@@ -1964,7 +1974,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
 								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
 									let n = geoJSON.properties.value
-									let value = geoJSON.properties.value + 'm'
+									let value = geoJSON.properties.value + ' m'
 									
 									if(!countour_styles) countour_styles = getStyleContour()
 									
@@ -1976,8 +1986,12 @@ $("body").on("pluginLoad", function(event, plugin){
 										}
 										else{colord = countour_styles.d_line_color}
 
-										options = {color: colord,
-												   weight: countour_styles.d_weigth}
+										options = {
+											color: colord,
+											weight: countour_styles.d_weigth,
+											smoothFactor: countour_styles.smoothFactor,
+											'font-weight': 'bold'
+												}
 									}else{
 										let colorc = ""
 										if(countour_styles.line_color === "multi"){
@@ -1986,7 +2000,10 @@ $("body").on("pluginLoad", function(event, plugin){
 
 
 										options = { color: colorc,
-													weight: countour_styles.line_weight}
+													weight: countour_styles.line_weight,
+													smoothFactor: countour_styles.smoothFactor,
+													'font-weight': 'regular'
+												}
 									}
 									//if (n % 100 === 0 ||n % 50 === 0) 
 
@@ -1994,23 +2011,37 @@ $("body").on("pluginLoad", function(event, plugin){
 									type = 'polyline';
 									layer.value = geoJSON.properties.value
 									if (n % 100 === 0 ||n % 50 === 0) {
-										
-										/*layer.setText(value, {
+										// textPath
+										layer.setText(value, {
 											repeat: false,
-											offset: 6,
+											offset: -3,
 											center: true,
-											attributes: {fill: 'black'}})*/
+											attributes: {
+												textLength: 55,
+												fill: 'Maroon',
+												'font-weight': options['font-weight'],
+												'font-family': 'sans-serif',
+												stroke: 'white',
+												'stroke-opacity': '1',
+												'stroke-width': '0.5'
+												/* 'font-size': '24px' */
+											}
+										});
 									}
-									layer.bindPopup('Elevación: ' + geoJSON.properties.value + 'm');
 									layer.on('mouseover', function (e) {
-										//layer.setText(geoJSON.properties.value + 'm', { center: true, orientation: 'flip' });
-										layer.openPopup();
+										let elevation = geoJSON.properties.value.toString() + " m";
+										let tooltipStyle = {
+											direction: 'right',
+											permanent: false,
+											sticky: true,
+											offset: [10, 0],
+											opacity: 0.75,
+											className: 'map-tooltip'
+										};
+										layer.bindTooltip(`<div><b>${elevation}</b></div>`,
+										 tooltipStyle);
 									});
-									layer.on('mouseout', function (e) {
-										//layer.setText(null);
-										layer.closePopup();
-									});
-								}else{
+								} else {
 									layer = L.polyline(invertedCoords, options);
 									type = 'polyline';
 								}
@@ -2199,7 +2230,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				zoomControl: false,
 				minZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
 				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
-				renderer: L.canvas()
+				/* renderer: L.svg() */
 			});
 			
 

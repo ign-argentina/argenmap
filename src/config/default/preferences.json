@@ -84,12 +84,13 @@
   "website": "https://www.ign.gob.ar/",
   "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
   "geoprocessing": {
-    "isActive": false,
+    "isActive": true,
     "availableProcesses": [
       {
         "name": "Curvas de Nivel",
         "geoprocess": "contour",
-        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0",
+        "baseUrl": "http://ip:port/geoserver/ows?service=WPS&version=1.0.0",
+        "layer": "layerName",
         "styles" : {
           "line_color": "#E4C47A",
           "line_weight": 1,

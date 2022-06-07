@@ -184,6 +184,7 @@ class UImf {
     btnCapa.style = "width:100%; margin:20px 0px 10px 0px"
     btnCapa.innerHTML = "Agregar Capa"
     btnCapa.onclick = function () {
+
       if (control_btn_add_layer) addLayersfromFiles()
     }
 
@@ -451,6 +452,7 @@ class UImf {
 let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
+
   currentLayers.forEach((e) => {
     // Draw the layer in the map
     mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
@@ -472,7 +474,7 @@ function delFileItembyID(id) {
   let del_index = null
 
   addedLayers.forEach((e, i) => {
-    if (e.id === id) index = i
+    if (e.id === id) del_index = i
   });
 
   addedLayers.splice(del_index, 1)

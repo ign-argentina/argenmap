@@ -85,6 +85,15 @@
       return;
     }
 
+    if (event.target.nodeName === 'SELECT' || event.target.nodeName === 'INPUT'){
+      try {
+        event.target.select();
+      } catch (error) {
+          //console.log(error);
+      }
+      return;
+    }
+
     if (targetId === 'filter-field-d3' || targetId === 'filter-field') {
       event.target.select();
       return;
