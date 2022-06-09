@@ -414,7 +414,9 @@ async function loadTemplate(data, isDefaultTemplate) {
           if (Number.isInteger(mapa.getZoom())) {
             urlInteraction.zoom = mapa.getZoom();
             zoomLevel.zoom = mapa.getZoom();
-            if (loadGeoprocessing) { geoProcessingManager.svgZoomStyle(mapa.getZoom()) }
+            if (geoProcessingManager) {
+              geoProcessingManager.svgZoomStyle(mapa.getZoom());
+            }
           }
         });
 
