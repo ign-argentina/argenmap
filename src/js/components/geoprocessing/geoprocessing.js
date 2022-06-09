@@ -299,9 +299,17 @@ class Geoprocessing {
                   options.push({ value: layer.name, text: layer.name });
                 });
               } else if (this.geoprocessId === "waterRise") {
-                editableLayers["rectangle"].forEach((layer) => {
-                  options.push({ value: layer.name, text: layer.name });
+                //Si exixsten curvas de nivel...las muestro
+                addedLayers.forEach((layer) => {
+                  if(layer.id.includes("contourResult_")){
+                    options.push({ value: layer.name, text: layer.name });
+                  }
                 });
+                // editableLayers["rectangle"].forEach((layer) => {
+                //   options.push({ value: layer.name, text: layer.name });
+                // });
+                //Si no existen curvas de nivel, debo crearlas...
+                
               } else if (this.geoprocessId === "elevationProfile") {
                 editableLayers["polyline"].forEach((layer) => {
                   options.push({ value: layer.name, text: layer.name });
@@ -313,9 +321,19 @@ class Geoprocessing {
               title: field.name,
               events: {
                 change: (element) => {
-                  if (!element.value) return;
-                  const layer = mapa.getEditableLayer(element.value);
-                  mapa.centerLayer(layer);
+                  if (this.geoprocessId === "contour") {
+                    if (!element.value) return;
+                    const layer = mapa.getEditableLayer(element.value);
+                    mapa.centerLayer(layer);
+                  }
+                  else if (this.geoprocessId === "waterRise") {
+                    if (!element.value) return;
+                    let selectedLayer = "";
+                    addedLayers.forEach(lyr => {
+                      lyr.id == element.value ? selectedLayer = lyr : null;
+                    });
+                    mapa.centerLayer(selectedLayer.layer);
+                  }       
                 },
               },
               extraProps: extraProps,
@@ -351,16 +369,33 @@ class Geoprocessing {
 
     //fix input
     if (this.geoprocessId === "waterRise") {
-      const extraProps = {};
-      extraProps.type = "input";
-      extraProps.title = "level";
-      const inputId = `input-level`;
-      const input = this.optionsForm.addElement("input", inputId, {
-        title: "level",
-        extraProps: extraProps,
-      });
+   
+      let contourBtn = document.createElement("button");
+      contourBtn.innerHTML = "CdN";
+      contourBtn.className = "contourButton";
+      contourBtn.id = "contourBtn";
+      document.getElementsByClassName("form")[1].appendChild(contourBtn);
 
-      formFields.push(input);
+      addedLayers.forEach((layer) => {
+        if(layer.id.includes("contourResult_")){
+          $("#ejec_gp").removeClass("disabledbutton");
+
+          let rangeSlider = document.createElement("input");
+          rangeSlider.type = "range";
+          rangeSlider.min = "1";
+          rangeSlider.max = "3";
+          rangeSlider.value = "1";
+          rangeSlider.title = "slider";
+          rangeSlider.className = "rangeSlider"
+          document.getElementsByClassName("form")[1].appendChild(rangeSlider);
+        }
+        else {
+          $("#contourBtn").addClass("disabledbutton");
+        }
+      });
+          
+      
+
     }
 
     function checkExecuteBtn(){
@@ -500,7 +535,13 @@ class Geoprocessing {
             let bounds = drawRectangle();
           } 
           if (this.geoprocessId=="waterRise") {
-            let bounds = drawRectangle();
+            addedLayers.forEach((layer) => {
+              if(layer.id.includes("contourResult_")){
+                setTimeout(function(){
+                  $("#select-capa").val(layer.name).change();
+                },500);              
+              }
+            });
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(

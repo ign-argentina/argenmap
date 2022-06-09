@@ -189,3 +189,19 @@
   pointer-events: none;
   opacity: 0.4;
 }
+
+.contourButton {
+  position: absolute;
+  height: px;
+  width: 39px;
+  left: 80%;
+  bottom: 46%;
+}
+/*.rangeSlider {
+  position: absolute;
+  height: px;
+  width: 39px;
+  left: 80%;
+  bottom: 46%;
+  
+}*/

@@ -679,12 +679,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (!layer) {
 							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
 						}
+						//console.log(layer)
+						let bbox = turf.bbox(layer);
+						mapa.fitBounds([[bbox[1],bbox[0]],[bbox[3],bbox[2]]]);
+					
 
-						if (layer.type === 'marker' || layer.type === 'circlemarker') {
-							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
-						} else {
-							mapa.fitBounds(layer.getBounds());
-						}
+						// if (layer.type === 'marker' || layer.type === 'circlemarker') {
+						// 	mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+						// } else {
+						// 	mapa.fitBounds(layer.getBounds());
+						// }
 					}
 
 					mapa.addContextMenuToLayer = (layer) => {
