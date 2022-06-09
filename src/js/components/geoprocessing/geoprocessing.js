@@ -22,7 +22,7 @@ class Geoprocessing {
   svgZoomStyle(zoom) {
     if (contour_result_active) {
       let aux = document.getElementById("fix-textpath");
-      /*if (zoom < 14) {
+      if (zoom < 14) {
         aux.innerHTML = `
         .leaflet-pane svg text {
           font-size: 0.1em !important;
@@ -30,7 +30,7 @@ class Geoprocessing {
         `
       } else {
         aux.innerHTML = ""
-      }*/
+      }
     }
   }
   createIcon() {
@@ -40,7 +40,7 @@ class Geoprocessing {
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "leaflet-control-geo leaflet-control center-flex";
+    elem.className = "center-flex";
     elem.id = "geoprocesos-icon";
     elem.title = "Geoprocesos";
     elem.innerHTML = modalicon;
@@ -66,7 +66,7 @@ class Geoprocessing {
         g_modal_close = false;
       }
     };
-    document.getElementsByClassName("leaflet-top leaflet-left")[0].appendChild(elem);
+    document.getElementById("mapa").appendChild(elem);
   }
 
   createModal() {
