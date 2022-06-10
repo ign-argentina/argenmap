@@ -270,6 +270,73 @@ class Geoprocessing {
     }
   }
 
+  targetLayerFromWaterRise(arraySlider) {
+
+  }
+
+  updateSliderForWaterRise(sliderLayer) {
+    let arraySlider = [];//Array that contains all unique values
+    console.log("Curva actual: ",sliderLayer)
+    console.log("Curva actual: ",sliderLayer.layer.features)
+
+    sliderLayer.layer.features.forEach((element) => {
+        if (!arraySlider.includes(element.properties.value)) {
+          arraySlider.push(element.properties.value);
+        }
+    });
+    console.log("arraySlider: ",arraySlider)
+
+    document.getElementById("rangeSlider").min = "1";
+    document.getElementById("rangeSlider").value = "1";
+    document.getElementById("rangeSlider").max = arraySlider.length;
+    document.getElementById("sliderValue").innerHTML = arraySlider[0]+" (m)";
+    //Update the current slider value (each time you drag the slider handle)
+    rangeSlider.oninput = function() {
+      sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";
+    }
+
+  }
+  
+  sliderForWaterRise(sliderLayer) {
+    //Contains all unique values
+    let arraySlider = [];//Array that contains all unique values
+    console.log("Curva actual: ",sliderLayer)
+    console.log("Curva actual: ",sliderLayer.layer.features)
+
+    sliderLayer.layer.features.forEach((element) => {
+        if (!arraySlider.includes(element.properties.value)) {
+          arraySlider.push(element.properties.value);
+        }
+    });
+    console.log("arraySlider: ",arraySlider)
+
+    //Create Slider Div
+    let containerSlider = document.createElement("div");
+    containerSlider.id = "containerSlider";
+    document.getElementsByClassName("form")[1].appendChild(containerSlider); 
+    //Create Slider
+    let rangeSlider = document.createElement("input");
+    rangeSlider.type = "range";
+    rangeSlider.min = "1";
+    rangeSlider.max = arraySlider.length;
+    rangeSlider.value = "1";
+    rangeSlider.title = "slider";
+    rangeSlider.className = "rangeSlider";
+    rangeSlider.id = "rangeSlider";
+    document.getElementById("containerSlider").appendChild(rangeSlider);      
+    //Create Slider value
+    let sliderValue = document.createElement("div");
+    sliderValue.id = "sliderValue";
+    document.getElementsByClassName("form")[1].appendChild(sliderValue); 
+    //Display the default slider value
+    sliderValue.innerHTML = arraySlider[0]+" (m)"; 
+    //Update the current slider value (each time you drag the slider handle)
+    rangeSlider.oninput = function() {
+      sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";
+    }
+    
+  }
+
   buildOptionForm(fields) {
     this.optionsForm.clearForm();
     this.fieldsToReferenceLayers = [];
@@ -332,6 +399,7 @@ class Geoprocessing {
                     });
                     mapa.centerLayer(selectedLayer.layer);
                     sliderLayer = selectedLayer;
+                    this.updateSliderForWaterRise(sliderLayer);
                     //console.log("Curva actual: ",sliderLayer)
                   }       
                 },
@@ -373,46 +441,7 @@ class Geoprocessing {
       // contourBtn.className = "contourButton";
       // contourBtn.id = "contourBtn";
       // document.getElementsByClassName("form")[1].appendChild(contourBtn);
-
-      //Contain all unique values
-      let arraySlider = [];//Array that contains all unique values
-      // console.log("Curva actual: ",sliderLayer)
-      // console.log("Curva actual: ",sliderLayer.layer.features)
-
-      sliderLayer.layer.features.forEach((element) => {
-          if (!arraySlider.includes(element.properties.value)) {
-            arraySlider.push(element.properties.value);
-          }
-      });
-      // console.log("arraySlider: ",arraySlider)
-
-      //Create Slider Div
-      let containerSlider = document.createElement("div");
-      containerSlider.id = "containerSlider";
-      document.getElementsByClassName("form")[1].appendChild(containerSlider); 
-      //Create Slider
-      let rangeSlider = document.createElement("input");
-      rangeSlider.type = "range";
-      rangeSlider.min = "1";
-      rangeSlider.max = arraySlider.length;
-      rangeSlider.value = "1";
-      rangeSlider.title = "slider";
-      rangeSlider.className = "rangeSlider";
-      rangeSlider.id = "rangeSlider";
-      document.getElementById("containerSlider").appendChild(rangeSlider);      
-      //Create Slider value
-      let sliderValue = document.createElement("div");
-      sliderValue.id = "sliderValue";
-      document.getElementsByClassName("form")[1].appendChild(sliderValue); 
-      // Display the default slider value
-      // let slider = document.getElementById("rangeSlider");
-      // let output = document.getElementById("sliderValue");
-      sliderValue.innerHTML = arraySlider[0]+" (m)"; 
-      // Update the current slider value (each time you drag the slider handle)
-      rangeSlider.oninput = function() {
-        sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";
-      }
-
+      this.sliderForWaterRise(sliderLayer);
     }
 
     function checkExecuteBtn(){
