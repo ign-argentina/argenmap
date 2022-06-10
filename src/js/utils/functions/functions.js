@@ -990,3 +990,25 @@ function drawRectangle(arg){
 
     return geojson;
 }
+
+function hillShade() {
+    if (app.hillshade) {
+        let _name = app.hillshade.name,
+        _url = app.hillshade.url,
+        _attribution = app.hillshade.attribution;
+    _map = mapa ? mapa : map;
+    if (overlayMaps.hasOwnProperty(_name)) {
+        overlayMaps[_name].removeFrom(mapa);
+        delete overlayMaps[_name];
+    } else {
+        overlayMaps[_name] = L.tileLayer(_url, {
+        attribution: _attribution,
+    });
+    overlayMaps[_name].addTo(mapa);
+      let pane = document.getElementsByClassName(
+        "leaflet-pane leaflet-tile-pane"
+      )[0].lastElementChild;
+      pane.style.setProperty("mix-blend-mode", "multiply");
+    }
+}
+}
