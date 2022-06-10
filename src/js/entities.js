@@ -149,13 +149,15 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
-        let hillshadeSwitch = "",
-            hillshadeIcon = app.hillshade.icon,
+        let hillshadeSwitch = "";
+        if (app.hillshade) {   
+            let hillshadeIcon = app.hillshade.icon,
             enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
-        if (app.hillshade && enableHillshade) {
-            hillshadeSwitch = `<div class="hillshade-icon" title="${itemComposite.capa.nombre}" onclick="switchHillShade(this.title);event.stopPropagation()"><img src="${hillshadeIcon}"><span class="tooltiptext">${app.hillshade.switchLabel}</span></div>`
+            if (enableHillshade) {
+                hillshadeSwitch = `<div class="hillshade-icon" title="${itemComposite.capa.nombre}" onclick="switchHillShade(this.title);event.stopPropagation()"><img src="${hillshadeIcon}"><span class="tooltiptext">${app.hillshade.switchLabel}</span></div>`
+            }
         }
-
+            
         const iconSvg = `
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 92 92" enable-background="new 0 0 92 92" xml:space="preserve">
                 <path fill="${DEFAULT_ZOOM_INFO_ICON_COLOR}" id="XMLID_89_" d="M43.3,73.8c-0.8,0-1.6-0.3-2.2-0.8c-1-0.8-1.5-2.1-1.2-3.4l4.9-25l-2.7,1.5c-1.7,0.9-3.8,0.4-4.8-1.3
