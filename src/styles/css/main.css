@@ -643,7 +643,7 @@ Popup geometría
   color: rgb(107, 109, 110);
   border-color: rgb(107, 109, 110);
 }
-.zoom-info-icon {
+.zoom-info-icon, .hillshade-icon {
   width: 20px;
   height: 20px;
   display: flex;
@@ -677,7 +677,7 @@ Popup geometría
   left: 150%;
   z-index: 50000;
 }
-.zoom-info-icon:hover .tooltiptext {
+.zoom-info-icon:hover .tooltiptext, .hillshade-icon:hover .tooltiptext {
   visibility: visible;
 }
 .base-layer-item {
