@@ -131,8 +131,7 @@
 
 @media (min-width: 769px) {
   #geoprocesos-icon {
-    top: 420px;
-    left: 10px;
+    top: 410px;
   }
 }
 @media (max-width: 768px) {
@@ -141,15 +140,14 @@
     max-width: 700px;
   }
   #geoprocesos-icon {
-    top: 90px;
-    left: 34px;
+    top: 410px;
     background-color: pink;
   }
 }
 
 @media (max-width: 600px) {
   #geoprocesos-icon {
-    top: 334px;
+    top: 350px;
     left: 2px;
     background-color: pink;
   }

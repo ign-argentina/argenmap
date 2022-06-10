@@ -1,7 +1,7 @@
 class Screenshot {
   constructor() {
     this.component = `
-    <div class="center-flex" id="screenshot" title="screenshot" onclick=saveImage('mapa') data-html2canvas-ignore="true">
+    <div class="leaflet-control-scrshot center-flex" id="screenshot" title="screenshot" onclick=saveImage('mapa') data-html2canvas-ignore="true">
         <div class="center-flex" id="iconSC-container">
           <div id="iconSC"><span class="fa fa-camera" aria-hidden="true"></span></div>
         </div>
