@@ -40,7 +40,7 @@ class Geoprocessing {
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "center-flex";
+    elem.className = "leaflet-control-geo leaflet-control center-flex";
     elem.id = "geoprocesos-icon";
     elem.title = "Geoprocesos";
     elem.innerHTML = modalicon;
@@ -66,7 +66,7 @@ class Geoprocessing {
         g_modal_close = false;
       }
     };
-    document.getElementById("mapa").appendChild(elem);
+    document.getElementsByClassName("leaflet-top leaflet-left")[0].appendChild(elem);
   }
 
   createModal() {
@@ -370,31 +370,57 @@ class Geoprocessing {
     //fix input
     if (this.geoprocessId === "waterRise") {
    
-      let contourBtn = document.createElement("button");
-      contourBtn.innerHTML = "CdN";
-      contourBtn.className = "contourButton";
-      contourBtn.id = "contourBtn";
-      document.getElementsByClassName("form")[1].appendChild(contourBtn);
+      // let contourBtn = document.createElement("button");
+      // contourBtn.innerHTML = "CdN";
+      // contourBtn.className = "contourButton";
+      // contourBtn.id = "contourBtn";
+      // document.getElementsByClassName("form")[1].appendChild(contourBtn);
 
-      addedLayers.forEach((layer) => {
-        if(layer.id.includes("contourResult_")){
-          $("#ejec_gp").removeClass("disabledbutton");
+      // addedLayers.forEach((layer) => {
+      //   if(layer.id.includes("contourResult_")){
+      //     $("#ejec_gp").removeClass("disabledbutton");
 
-          let rangeSlider = document.createElement("input");
-          rangeSlider.type = "range";
-          rangeSlider.min = "1";
-          rangeSlider.max = "3";
-          rangeSlider.value = "1";
-          rangeSlider.title = "slider";
-          rangeSlider.className = "rangeSlider"
-          document.getElementsByClassName("form")[1].appendChild(rangeSlider);
-        }
-        else {
-          $("#contourBtn").addClass("disabledbutton");
-        }
-      });
-          
+      //     let rangeSlider = document.createElement("input");
+      //     rangeSlider.type = "range";
+      //     rangeSlider.min = "1";
+      //     rangeSlider.max = "3";
+      //     rangeSlider.value = "1";
+      //     rangeSlider.title = "slider";
+      //     rangeSlider.className = "rangeSlider"
+      //     document.getElementsByClassName("form")[1].appendChild(rangeSlider);
+      //   }
+      //   else {
+      //     $("#contourBtn").addClass("disabledbutton");
+      //   }
+      // });
+
+      //Create Slider Div
+      let containerSlider = document.createElement("div");
+      containerSlider.id = "containerSlider";
+      document.getElementsByClassName("form")[1].appendChild(containerSlider); 
+      //Create Slider
+      let rangeSlider = document.createElement("input");
+      rangeSlider.type = "range";
+      rangeSlider.min = "1";
+      rangeSlider.max = "3";
+      rangeSlider.value = "1";
+      rangeSlider.title = "slider";
+      rangeSlider.className = "rangeSlider";
+      rangeSlider.id = "rangeSlider";
+      document.getElementById("containerSlider").appendChild(rangeSlider);      
+      //Create Slider value
+      let sliderValue = document.createElement("div");
+      sliderValue.id = "sliderValue";
+      document.getElementById("rangeSlider").appendChild(sliderValue);    
+
+      let slider = document.getElementById("rangeSlider");
+      let output = document.getElementById("sliderValue");
+      output.innerHTML = slider.value; // Display the default slider value
       
+      // Update the current slider value (each time you drag the slider handle)
+      slider.oninput = function() {
+        output.innerHTML = this.value;
+      }
 
     }
 
