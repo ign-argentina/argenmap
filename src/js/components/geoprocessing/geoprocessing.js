@@ -274,6 +274,7 @@ class Geoprocessing {
     this.optionsForm.clearForm();
     this.fieldsToReferenceLayers = [];
     const formFields = [];
+    let sliderLayer;
 
     fields.forEach((field) => {
       const id = field.name.toLowerCase().replace(/\s/g, "");
@@ -303,12 +304,9 @@ class Geoprocessing {
                 addedLayers.forEach((layer) => {
                   if(layer.id.includes("contourResult_")){
                     options.push({ value: layer.name, text: layer.name });
+                    sliderLayer = layer;
                   }
                 });
-                // editableLayers["rectangle"].forEach((layer) => {
-                //   options.push({ value: layer.name, text: layer.name });
-                // });
-                //Si no existen curvas de nivel, debo crearlas...
                 
               } else if (this.geoprocessId === "elevationProfile") {
                 editableLayers["polyline"].forEach((layer) => {
@@ -333,6 +331,8 @@ class Geoprocessing {
                       lyr.id == element.value ? selectedLayer = lyr : null;
                     });
                     mapa.centerLayer(selectedLayer.layer);
+                    sliderLayer = selectedLayer;
+                    //console.log("Curva actual: ",sliderLayer)
                   }       
                 },
               },
@@ -367,32 +367,24 @@ class Geoprocessing {
       }
     });
 
-    //fix input
     if (this.geoprocessId === "waterRise") {
-   
       // let contourBtn = document.createElement("button");
       // contourBtn.innerHTML = "CdN";
       // contourBtn.className = "contourButton";
       // contourBtn.id = "contourBtn";
       // document.getElementsByClassName("form")[1].appendChild(contourBtn);
 
-      // addedLayers.forEach((layer) => {
-      //   if(layer.id.includes("contourResult_")){
-      //     $("#ejec_gp").removeClass("disabledbutton");
+      //Contain all unique values
+      let arraySlider = [];//Array that contains all unique values
+      // console.log("Curva actual: ",sliderLayer)
+      // console.log("Curva actual: ",sliderLayer.layer.features)
 
-      //     let rangeSlider = document.createElement("input");
-      //     rangeSlider.type = "range";
-      //     rangeSlider.min = "1";
-      //     rangeSlider.max = "3";
-      //     rangeSlider.value = "1";
-      //     rangeSlider.title = "slider";
-      //     rangeSlider.className = "rangeSlider"
-      //     document.getElementsByClassName("form")[1].appendChild(rangeSlider);
-      //   }
-      //   else {
-      //     $("#contourBtn").addClass("disabledbutton");
-      //   }
-      // });
+      sliderLayer.layer.features.forEach((element) => {
+          if (!arraySlider.includes(element.properties.value)) {
+            arraySlider.push(element.properties.value);
+          }
+      });
+      // console.log("arraySlider: ",arraySlider)
 
       //Create Slider Div
       let containerSlider = document.createElement("div");
@@ -402,7 +394,7 @@ class Geoprocessing {
       let rangeSlider = document.createElement("input");
       rangeSlider.type = "range";
       rangeSlider.min = "1";
-      rangeSlider.max = "3";
+      rangeSlider.max = arraySlider.length;
       rangeSlider.value = "1";
       rangeSlider.title = "slider";
       rangeSlider.className = "rangeSlider";
@@ -411,15 +403,14 @@ class Geoprocessing {
       //Create Slider value
       let sliderValue = document.createElement("div");
       sliderValue.id = "sliderValue";
-      document.getElementById("rangeSlider").appendChild(sliderValue);    
-
-      let slider = document.getElementById("rangeSlider");
-      let output = document.getElementById("sliderValue");
-      output.innerHTML = slider.value; // Display the default slider value
-      
+      document.getElementsByClassName("form")[1].appendChild(sliderValue); 
+      // Display the default slider value
+      // let slider = document.getElementById("rangeSlider");
+      // let output = document.getElementById("sliderValue");
+      sliderValue.innerHTML = arraySlider[0]+" (m)"; 
       // Update the current slider value (each time you drag the slider handle)
-      slider.oninput = function() {
-        output.innerHTML = this.value;
+      rangeSlider.oninput = function() {
+        sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";
       }
 
     }
