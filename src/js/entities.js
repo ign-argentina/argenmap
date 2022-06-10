@@ -153,7 +153,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
             hillshadeIcon = app.hillshade.icon,
             enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
         if (app.hillshade && enableHillshade) {
-            hillshadeSwitch = `<div class="hillshade-icon" onclick="hillShade();event.stopPropagation()"><img src="${hillshadeIcon}"><span class="tooltiptext">${app.hillshade.switchLabel}</span></div>`
+            hillshadeSwitch = `<div class="hillshade-icon" title="${itemComposite.capa.nombre}" onclick="switchHillShade(this.title);event.stopPropagation()"><img src="${hillshadeIcon}"><span class="tooltiptext">${app.hillshade.switchLabel}</span></div>`
         }
 
         const iconSvg = `

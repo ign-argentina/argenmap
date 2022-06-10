@@ -991,6 +991,12 @@ function drawRectangle(arg){
     return geojson;
 }
 
+function switchHillShade(basemap) {
+    if(basemap === gestorMenu.getActiveBasemap()) {
+        hillShade();
+    }
+}
+
 function hillShade() {
     if (app.hillshade) {
         let _name = app.hillshade.name,
