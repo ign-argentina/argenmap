@@ -110,5 +110,13 @@
         "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0"
       }
     ]
+  },
+  "hillshade" : {
+    "name": "hillshade",
+    "attribution": "sombra de montaña <a target='_blank' href='https://www.arcgis.com/home/item.html?id=1b243539f4514b6ba35e7d995890db1d'>©Esri</a>",
+    "url": "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}.png",
+    "addTo": ["argenmap"],
+    "icon": "src/styles/images/mountains.svg",
+    "switchLabel": "Agregar sombra de montaña"
   }
 }
