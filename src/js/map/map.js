@@ -596,12 +596,17 @@ $("body").on("pluginLoad", function(event, plugin){
 							text: 'Mas información',
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);	
-									
-									 $("#search_bar").val(lat+","+lng).focus();
+									 $("#search_bar").val(lat+","+lng).focus();					              
+							}
+						});
 
-
-									   
-																              
+						contextMenu.createOption({
+						isDisabled: false,
+						text: "Abrir en...",
+						onclick: (option) => {
+							mapa.closePopup(contextPopup);
+							let _url = `geo:${lat},${lng}`;
+							window.open(_url);
 							}
 						});
 						
