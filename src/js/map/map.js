@@ -1926,6 +1926,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (geoJSON.type === 'FeatureCollection') {
 							geoJSON.features.forEach(feature => {
 								if(file==undefined || !file){
+									console.log("file undefined " + feature);
 									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, false);
 								}else {
 									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
@@ -2014,6 +2015,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 									layer = L.polyline(invertedCoords, options);
 									type = 'polyline';
+									layer.layer = groupName;
 									layer.value = geoJSON.properties.value
 									if (n % 100 === 0 ||n % 50 === 0) {
 										// textPath
