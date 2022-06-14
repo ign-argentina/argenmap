@@ -596,12 +596,17 @@ $("body").on("pluginLoad", function(event, plugin){
 							text: 'Mas información',
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);	
-									
-									 $("#search_bar").val(lat+","+lng).focus();
+									 $("#search_bar").val(lat+","+lng).focus();					              
+							}
+						});
 
-
-									   
-																              
+						contextMenu.createOption({
+						isDisabled: false,
+						text: "Abrir en...",
+						onclick: (option) => {
+							mapa.closePopup(contextPopup);
+							let _url = `geo:${lat},${lng}`;
+							window.open(_url);
 							}
 						});
 						
@@ -1921,6 +1926,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (geoJSON.type === 'FeatureCollection') {
 							geoJSON.features.forEach(feature => {
 								if(file==undefined || !file){
+									console.log("file undefined " + feature);
 									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, false);
 								}else {
 									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
@@ -2009,6 +2015,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 									layer = L.polyline(invertedCoords, options);
 									type = 'polyline';
+									layer.layer = groupName;
 									layer.value = geoJSON.properties.value
 									if (n % 100 === 0 ||n % 50 === 0) {
 										// textPath
