@@ -326,7 +326,12 @@ class Geoprocessing {
     sliderValue.id = "sliderValue";
     document.getElementsByClassName("form")[1].appendChild(sliderValue); 
     //Display the default slider value
-    sliderValue.innerHTML = arraySlider[0]+" (m)"; 
+    sliderValue.innerHTML = arraySlider[0]+" (m)";
+    mapa.editableLayers.polyline.forEach( (lyr) => {
+      if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[0]) {//Same id, spedific value
+        lyr.setStyle({color: '#ff1100'});
+      }
+    })
     //Update the current slider value (each time you drag the slider handle)
     this.sliderForWaterRise(sliderLayer, rangeSlider,sliderValue,arraySlider);
   }
