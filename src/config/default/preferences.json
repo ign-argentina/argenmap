@@ -89,8 +89,8 @@
       {
         "name": "Curvas de Nivel",
         "geoprocess": "contour",
-        "baseUrl": "http://ip:port/geoserver/ows?service=WPS&version=1.0.0",
-        "layer": "layerName",
+        "baseUrl": "http://172.20.205.70:8080/geoserver/ows?service=WPS&version=1.0.0",
+        "layer": "alos_mosaico",
         "styles" : {
           "line_color": "#E4C47A",
           "line_weight": 1,

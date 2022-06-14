@@ -291,13 +291,10 @@ class Geoprocessing {
     document.getElementById("rangeSlider").max = arraySlider.length;
     document.getElementById("sliderValue").innerHTML = arraySlider[0]+" (m)";
     //Update the current slider value (each time you drag the slider handle)
-    rangeSlider.oninput = function() {
-      sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";
-    }
-
+    this.sliderForWaterRise(sliderLayer, rangeSlider,sliderValue,arraySlider);
   }
   
-  sliderForWaterRise(sliderLayer) {
+  setSliderForWaterRise(sliderLayer) {
     //Contains all unique values
     let arraySlider = [];//Array that contains all unique values
     console.log("Curva actual: ",sliderLayer)
@@ -331,10 +328,30 @@ class Geoprocessing {
     //Display the default slider value
     sliderValue.innerHTML = arraySlider[0]+" (m)"; 
     //Update the current slider value (each time you drag the slider handle)
+    this.sliderForWaterRise(sliderLayer, rangeSlider,sliderValue,arraySlider);
+  }
+
+  sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider) {
     rangeSlider.oninput = function() {
-      sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";
+      sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";//valor de layers
+      //lyr.setStyle({color: '#E4C47A'});
+      //lyr.setStyle({color: '#ff1100'});
+      //if (lyr.layer == sliderLayer.id /*Misma Curva*/ && lyr.value == arraySlider[this.value-1] /*Misma Altura*/) {
+
+      mapa.editableLayers.polyline.forEach( (lyr) => {
+        if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[this.value-1]) {//Same id, same value
+          //Set all layers with normal colour
+          mapa.editableLayers.polyline.forEach( (lyr) => {
+            if (lyr.layer == sliderLayer.id && lyr.value !== arraySlider[this.value-1]) {//Same id, diferent value
+              lyr.setStyle({color: '#E4C47A'});
+            }
+          })
+          //Then, change specific layer
+          lyr.setStyle({color: '#ff1100'});
+        }
+      })
+
     }
-    
   }
 
   buildOptionForm(fields) {
@@ -441,7 +458,7 @@ class Geoprocessing {
       // contourBtn.className = "contourButton";
       // contourBtn.id = "contourBtn";
       // document.getElementsByClassName("form")[1].appendChild(contourBtn);
-      this.sliderForWaterRise(sliderLayer);
+      this.setSliderForWaterRise(sliderLayer);
     }
 
     function checkExecuteBtn(){
