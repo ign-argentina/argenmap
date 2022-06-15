@@ -173,10 +173,14 @@
   }
 }
 
-@media (max-height: 480px) {
+@media (max-height: 500px) {
   #mr {
     left: 45px;
     max-height: 50%;
+  }
+  #geoprocesos-icon {
+    top: 254px !important;
+    left: 0;
   }
 }
 
