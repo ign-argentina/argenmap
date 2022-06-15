@@ -85,6 +85,12 @@
   "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
   "geoprocessing": {
     "isActive": true,
+    "buttonTitle": "Curvas de nivel",
+    "buttonIcon": "fa fa-cog",
+    "dialogTitle": "Curvas de nivel",
+    "strings": {
+      "bounds": "Areas a procesar"
+    },
     "availableProcesses": [
       {
         "name": "Curvas de Nivel",
@@ -92,11 +98,12 @@
         "baseUrl": "http://ip:port/geoserver/ows?service=WPS&version=1.0.0",
         "layer": "layerName",
         "styles" : {
-          "line_color": "#E4C47A",
-          "line_weight": 1,
-          "d_line_m": 50,
-          "d_line_color": "#E4C47A",
-          "d_weigth": 3
+          "line_color": "#e0b44c",
+          "line_weight": 0.8,
+          "d_line_m": 500,
+          "d_line_color": "#967529",
+          "d_weigth": 1,
+          "smoothFactor": 1.7
         }
       },
       {
