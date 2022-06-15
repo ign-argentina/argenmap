@@ -36,13 +36,13 @@ class Geoprocessing {
   createIcon() {
     const modalicon = `
     <div class="center-flex" id="iconopenfile-container">
-        <span id="spanopenfolder" class="fa fa-cog" aria-hidden="true" ></span>
+        <span id="spanopenfolder" class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></span>
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "center-flex";
+    elem.className = "leaflet-control-locate leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
-    elem.title = "Geoprocesos";
+    elem.title = app.geoprocessing.buttonTitle;
     elem.innerHTML = modalicon;
 
     let isChrome =
@@ -66,7 +66,7 @@ class Geoprocessing {
         g_modal_close = false;
       }
     };
-    document.getElementById("mapa").appendChild(elem);
+    document.querySelector(".leaflet-top.leaflet-left").appendChild(elem);
   }
 
   createModal() {
@@ -487,7 +487,7 @@ class Geoprocessing {
 
     const selectProcessId = "select-process";
     geoprocessingForm.addElement("select", selectProcessId, {
-      title: "Geoprocesos",
+      title: app.geoprocessing.dialogTitle,
       events: {
         change: (element) => {
           if (!element.value) {
