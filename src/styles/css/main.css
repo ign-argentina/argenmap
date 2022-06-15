@@ -643,13 +643,56 @@ Popup geometría
   color: rgb(107, 109, 110);
   border-color: rgb(107, 109, 110);
 }
-.zoom-info-icon, .hillshade-icon {
+.zoom-info-icon {
   width: 20px;
   height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+}
+#switch {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+input:checked#switch + label {
+  background: #37bbed;
+}
+input:checked#switch + label:after {
+  left: calc(100% - 1px);
+  transform: translateX(-100%);
+}
+#switch + label:active:after {
+  width: 30px;
+}
+#switch + label {
+  cursor: pointer;
+  /* text-indent: -9999px; */
+  width: 35px;
+  height: 20px;
+  background: grey;
+  display: block;
+  border-radius: 100px;
+  position: relative;
+}
+#switch + label:after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 90px;
+  transition: 0.3s;
+  background-image: url('../images/mountains.svg');
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: center;
 }
 .a-base-layer {
   pointer-events: none;
@@ -677,7 +720,7 @@ Popup geometría
   left: 150%;
   z-index: 50000;
 }
-.zoom-info-icon:hover .tooltiptext, .hillshade-icon:hover .tooltiptext {
+.zoom-info-icon:hover .tooltiptext, #switch:hover + label .tooltiptext {
   visibility: visible;
 }
 .base-layer-item {
