@@ -270,10 +270,6 @@ class Geoprocessing {
     }
   }
 
-  targetLayerFromWaterRise(arraySlider) {
-
-  }
-
   updateSliderForWaterRise(sliderLayer) {
     let arraySlider = [];//Array that contains all unique values
     console.log("Curva actual: ",sliderLayer)
@@ -310,6 +306,7 @@ class Geoprocessing {
     //Create Slider Div
     let containerSlider = document.createElement("div");
     containerSlider.id = "containerSlider";
+    containerSlider.className = "containerSlider";
     document.getElementsByClassName("form")[1].appendChild(containerSlider); 
     //Create Slider
     let rangeSlider = document.createElement("input");
@@ -324,6 +321,7 @@ class Geoprocessing {
     //Create Slider value
     let sliderValue = document.createElement("div");
     sliderValue.id = "sliderValue";
+    sliderValue.className = "sliderValue";
     document.getElementsByClassName("form")[1].appendChild(sliderValue); 
     //Display the default slider value
     sliderValue.innerHTML = arraySlider[0]+" (m)";
@@ -463,7 +461,23 @@ class Geoprocessing {
       // contourBtn.className = "contourButton";
       // contourBtn.id = "contourBtn";
       // document.getElementsByClassName("form")[1].appendChild(contourBtn);
-      this.setSliderForWaterRise(sliderLayer);
+      
+      let message = document.createElement("div");
+      message.innerHTML = "No hay Curvas de Nivel";
+      message.className = "msgNoContour";
+      message.id = "msgNoContour";
+      message.style = "color: red";
+      document.getElementsByClassName("form")[1].appendChild(message);
+
+      for (let lyr of mapa.editableLayers.polyline) {
+        if (lyr.layer.includes("contourResult_")) {
+          this.setSliderForWaterRise(sliderLayer);
+          $("#ejec_gp").removeClass("disabledbutton");
+          $("#msgNoContour").addClass("hidden");
+          break;
+        }
+      }
+
     }
 
     function checkExecuteBtn(){
@@ -579,6 +593,8 @@ class Geoprocessing {
       },
       "ejec_gp"
     );
+    $("#ejec_gp").addClass("disabledbutton");
+
   }
 
   buildForm() {
