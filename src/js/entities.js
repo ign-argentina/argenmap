@@ -151,10 +151,9 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 
         let hillshadeSwitch = "";
         if (app.hillshade) {   
-            let hillshadeIcon = app.hillshade.icon,
-            enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
+            let enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
             if (enableHillshade) {
-                hillshadeSwitch = `<div class="hillshade-icon" title="${itemComposite.capa.nombre}" onclick="switchHillShade(this.title);event.stopPropagation()"><img src="${hillshadeIcon}"><span class="tooltiptext">${app.hillshade.switchLabel}</span></div>`
+                hillshadeSwitch = `<div onclick="event.stopPropagation()"><input type="checkbox" id="switch" title="${itemComposite.capa.nombre}" onclick="switchHillShade(this.title)"/><label for="switch"><span class="tooltiptext">${app.hillshade.switchLabel}</span></label></div>`
             }
         }
             
@@ -2345,19 +2344,19 @@ class GestorMenu {
             }, 500);
             return;
         }
-
+        
         const wmtsLayers = [];
-
+        
 		//Hide all if itemComposite selected is Base Map
         var isBaseLayer = false;
         let baseLayerName = '';
         
 		for (var key in this.items) {
-			var itemComposite = this.items[key];
+            var itemComposite = this.items[key];
 			for (var key2 in itemComposite.itemsComposite) {
-				var item = itemComposite.itemsComposite[key2];
+                var item = itemComposite.itemsComposite[key2];
                 if (item.getId() == itemSeccion) {
-					isBaseLayer = itemComposite.isBaseLayer();
+                    isBaseLayer = itemComposite.isBaseLayer();
                     baseLayerName = item.nombre;
 					break;
 				}
@@ -2418,7 +2417,7 @@ class GestorMenu {
             }
         }
 
-        if (isBaseLayer) {
+        if (isBaseLayer && this.lastBaseMapSelected !== baseLayerName) {
             this.setLastBaseMapSelected(baseLayerName);
 
             setValidZoomLevel(baseLayerName);
