@@ -656,6 +656,13 @@ function clickGeometryLayer(layer, file) {
     }
 }
 
+function checkIfGeoprocessingIsOpen() {
+    if (document.getElementById("select-process")) {
+        document.getElementById("select-process").selectedIndex = 0;
+        document.getElementsByClassName("form")[1].innerHTML = '';
+    }
+}
+
 function deleteLayerGeometry(layer, file) {
     mapa.removeGroup(layer, true, file);
     let id = "#fl-" + layer
@@ -665,10 +672,12 @@ function deleteLayerGeometry(layer, file) {
         let index = parent.id.indexOf("-panel-body")
         let lista = "#lista-" + parent.id.substr(0, index)
         $(lista).remove();
+        checkIfGeoprocessingIsOpen();
+
     } else {
         $(id).remove();
+        checkIfGeoprocessingIsOpen();
     }
-
 }
 
 function controlSeccionGeom(file) {
