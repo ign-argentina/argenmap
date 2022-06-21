@@ -7,7 +7,7 @@ const ItemGroupPrefix = 'lista-';
 Class Capa
 ******************************************/
 class Capa {
-    constructor(nombre, titulo, srs, host, servicio, version, featureInfoFormat, key, minx, maxx, miny, maxy, attribution) {
+    constructor(nombre, titulo, srs, host, servicio, version, featureInfoFormat, key, minx, maxx, miny, maxy,attribution,legendURL) {
         this.nombre = nombre
         this.titulo = titulo
         this.srs = srs
@@ -21,6 +21,7 @@ class Capa {
         this.miny = miny
         this.maxy = maxy
         this.attribution = attribution
+        this.legendURL = legendURL
     }
 
     getLegendURL() {
@@ -36,7 +37,18 @@ class Capa {
         if (this.host == null) {
             return '';
         }
-        let owsHost = (this.servicio == "wms") ? this.host + "/wms?" : this.host + "/gwc/service/wmts";
+        let owsHost = this.host;
+        /* isMapserver = this.host.includes('cgi-bin');
+        
+        if (!isMapserver) {   
+            if (this.servicio === "wms") { owsHost += "/wms?"};
+            //if (this.servicio === "mapserver") { owsHost };
+        } */
+        if (this.servicio === "wms" && owsHost.includes("/geoserver") && !owsHost.endsWith("/wms")) { 
+            owsHost += "/wms";
+         };
+        if (this.servicio === "wmts") { owsHost += "/gwc/service/wmts" };
+
         return owsHost;
     }
 }
@@ -59,25 +71,56 @@ class Impresor {
     }
 }
 
+
 class ImpresorItemHTML extends Impresor {
-    imprimir(itemComposite) {
+    imprimir(item) {
+        var childId = item.getId();
+        let lyr = item.capa,
+        legend,
+        legendParams = '&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;hideEmptyRules:true;dpi:111',
+        aux = {
+            ...item,
+            'childid': childId,
+            'display_options': false,
+            'type': lyr.servicio,
+        }; 
+        app.setLayer(aux)
+        app.layerNameByDomId[childId] = item.nombre;
 
-        var childId = itemComposite.getId();
+        if ( lyr.legendURL === null || typeof lyr.legendURL === "undefined" || lyr.legendURL === "" ){
+            if (lyr.servicio === 'wms') {
+                lyr.legendURL = lyr.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=' + lyr.nombre;
+            } else {
+                lyr.legendURL = item.legendImg || ERROR_IMG;
+            }
+        }
+        legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL + legendParams : lyr.legendURL ;
+        
+        // following line adds layer when click is made
+        //let legendImg = `<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"${childId}\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
+        let legendImg = `<div class='legend-layer'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
+        let activated = item.visible == true ? " active " : "", btnhtml = "";
 
-        var legendImg = (itemComposite.getLegendImg() == null) ? "" : "<div class='legend-layer'><img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);'></div>";
-        var activated = (itemComposite.visible == true) ? " active " : "";
+        //if tab = combobox, img source from 
+        /* if(item.listType === "combobox"){
+            //let url_img = lyr.legendURL + legendParams; 
+            legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
+        } */
 
-        return "<li id='" + childId + "' class='capa list-group-item" + activated + "' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" +
-            "<div class='capa-title'>" +
-            "<a nombre=" + itemComposite.nombre + " href='#'>" +
-            "<span data-toggle2='tooltip' title='" + itemComposite.descripcion + "'>" + (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span>" +
-            legendImg +
-            "</a>" +
-            "</div>" +
-            "</li>";
+        if (loadLayerOptions){
+            btnhtml =  "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" + "<div class='capa-title'>" + legendImg + "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" + "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" + "</a>" +"<div class='zoom-layer' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+item.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
+            "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" + "</li>"
+        }
+        else{
+            btnhtml = "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 10px 1px;' >" + "<div class='capa-title'>" + legendImg + "<div class='name-layer' style='align-self: center;' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" +
+            "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" + "</a>" +"<div class='zoom-layer'  style='align-self: center;' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div>" + "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" + "</li>"
+        }
+ 
+        return btnhtml;
 
     }
 }
+
 
 class ImpresorItemWMSSelector extends Impresor {
     imprimir(itemComposite) {
@@ -93,11 +136,27 @@ class ImpresorItemWMSSelector extends Impresor {
 
 class ImpresorItemCapaBaseHTML extends Impresor {
     imprimir(itemComposite) {
-
+        
         var childId = itemComposite.getId();
+        let aux = {
+            ...itemComposite,
+            'childid': childId,
+            'display_options': false,
+            'type': itemComposite.capa.servicio,
+        }
+        app.setLayer(aux)
+        app.layerNameByDomId[childId] = itemComposite.nombre
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
+        let hillshadeSwitch = "";
+        if (app.hillshade) {   
+            let enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
+            if (enableHillshade) {
+                hillshadeSwitch = `<div onclick="event.stopPropagation()"><input type="checkbox" id="switch" title="${itemComposite.capa.nombre}" onclick="switchHillShade(this.title)"/><label for="switch"><span class="tooltiptext">${app.hillshade.switchLabel}</span></label></div>`
+            }
+        }
+            
         const iconSvg = `
             <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 92 92" enable-background="new 0 0 92 92" xml:space="preserve">
                 <path fill="${DEFAULT_ZOOM_INFO_ICON_COLOR}" id="XMLID_89_" d="M43.3,73.8c-0.8,0-1.6-0.3-2.2-0.8c-1-0.8-1.5-2.1-1.2-3.4l4.9-25l-2.7,1.5c-1.7,0.9-3.8,0.4-4.8-1.3
@@ -122,9 +181,9 @@ class ImpresorItemCapaBaseHTML extends Impresor {
             "<div style='vertical-align:top'>" +
                 "<div class='base-layer-item' nombre=" + itemComposite.nombre + " href='#'>" +
                     "<div class='base-layer-item-info'>" +
-                        "<img src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
+                        "<img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
                         "<div class='non-selectable-text'><p style='margin: 0px;'>" + titulo + "</p></div>" +
-                    "</div>" +
+                    "</div>" + hillshadeSwitch +
                     "<div class='zoom-info-icon'>" + 
                         iconSvg + 
                         "<span class='tooltiptext'>" + "Zoom mínimo de " + "<b>" + minZoom + "</b>" + " y máximo de " + "<b>" + maxZoom + "</b>" + "</span>" +
@@ -137,10 +196,10 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 
 class ImpresorGrupoHTML extends Impresor {
     imprimir(itemComposite) {
-
+        
         var listaId = itemComposite.getId();
         var itemClass = 'menu5';
-
+        
         var active = (itemComposite.getActive() == true) ? ' in ' : '';
 
 		return '<div id="' + listaId + '" class="' + itemClass + ' panel-default">' + 
@@ -241,7 +300,7 @@ class LayersInfo {
 
 class LayersInfoWMS extends LayersInfo {
 
-    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type, customizedLayers, itemGroupPrinter) {
+    constructor(host, service, version, tab, section, weight, name, short_abstract, feature_info_format, type, icons, customizedLayers, itemGroupPrinter) {
         super();
         this.host = host;
         this.service = service;
@@ -253,12 +312,14 @@ class LayersInfoWMS extends LayersInfo {
         this.short_abstract = short_abstract;
         this.feature_info_format = feature_info_format;
         this.type = type;
+        this.icons = icons || null;
         this.customizedLayers = (customizedLayers == "") ? null : customizedLayers;
         this.itemGroupPrinter = (itemGroupPrinter == "") ? new ImpresorGrupoHTML : itemGroupPrinter;
 
         this._executed = false;
     }
 
+    
     get(_gestorMenu) {
         if (this._executed == false) {
             this._executed = true; //Indicates that getCapabilities executed
@@ -269,25 +330,31 @@ class LayersInfoWMS extends LayersInfo {
                 var itemGroup = _gestorMenu.getItemGroupById(ItemGroupPrefix + this.section);
                 if (itemGroup != null) {
                     for (var key in this.customizedLayers) {
+                        
+                        let title = this.customizedLayers[key]["new_title"] || null, 
+                            legend = this.customizedLayers[key]["legend"] || null,
+                            keywords = this.customizedLayers[key]["new_keywords"] || null,
+                            abstract = this.customizedLayers[key]["new_abstract"] || null;
+                            
                         if (this.type == 'wmslayer_mapserver') {
-                            var capa = new CapaMapserver(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            var capa = new CapaMapserver(key, title, null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         } else {
-                            var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            var capa = new Capa(key,title,this.srs,this.host,this.service,this.version,this.feature_info_format,keywords,this.minx,this.maxx,this.miny,this.maxy,this.attribution,legend);
+                            //var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
                         }
                         //Generate keyword array
                         var keywordsAux = [];
-                        if (this.customizedLayers[key]["new_keywords"] != null && this.customizedLayers[key]["new_keywords"] != '') {
-                            keywordsAux = this.customizedLayers[key]["new_keywords"].split(',');
+                        if (keywords != null && keywords != '') {
+                            keywordsAux = keywords.split(',');
                             for (var keykeywordsAux in keywordsAux) {
                                 keywordsAux[keykeywordsAux] = keywordsAux[keykeywordsAux].trim();
                             }
                         }
 
-                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, abstract, capa.titulo, capa, this.getCallback(),null);
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
-                        
                         item.setImpresor(impresorItem);
                         if (itemGroup.getItemByName(this.section + capa.nombre) == null) {
                             itemGroup.setItem(item);
@@ -303,6 +370,10 @@ class LayersInfoWMS extends LayersInfo {
             }
 
         }
+    }
+
+    get_without_print(_gestorMenu) {
+        this._parseRequest_without_print(_gestorMenu);
     }
 
     generateGroups(_gestorMenu) {
@@ -323,6 +394,11 @@ class LayersInfoWMS extends LayersInfo {
         const impresorItem = new ImpresorItemHTML();
 
         var thisObj = this;
+
+        var ilistType = null
+        if(this.tab.listType){
+            ilistType = this.tab.listType
+        }
 
         if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
 
@@ -347,7 +423,6 @@ class LayersInfoWMS extends LayersInfo {
             // create an object with all layer info for each layer
             capas_info.each(function (index, b) {
                 var i = $(this);
-
                 var iName = $('name', i).html();
                 if (thisObj.isAllowebLayer(iName)) {
 
@@ -366,6 +441,20 @@ class LayersInfoWMS extends LayersInfo {
                     var iMinY = null;
                     var iMinX = null;
                     var iMaxX = null;
+                    var ilegendURLaux= $('Style', i).html()
+                    let divi =  document.createElement("div")
+                    let aux = null
+                    divi.innerHTML= ilegendURLaux;
+                    var ilegendURL;
+                    if (thisObj.icons) {
+                        ilegendURL = thisObj.icons[iName];
+                    } else {
+                        if(divi.getElementsByTagName("onlineresource")){
+                        aux = divi.getElementsByTagName("onlineresource")[0].getAttribute('xlink:href')
+                        }
+                        ilegendURL = aux
+                    }
+                    
                     if (iBoundingBox.length > 0) {
                         if (iBoundingBox[0].attributes.srs) {
                             var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
@@ -378,12 +467,154 @@ class LayersInfoWMS extends LayersInfo {
                         var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
                     }
 
+
                     if (thisObj.type == 'wmslayer_mapserver') {
                         var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
                     } else {
-                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
+                        gestorMenu.layersDataForWfs[capa.nombre] = {
+                            name: capa.nombre,
+                            section: capa.titulo,
+                            host: capa.host
+                        }
                     }
-                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
+                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(), ilistType);
+                    item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
+                    item.setImpresor(impresorItem);
+                    items.push(item);
+                    gestorMenu.setAvailableLayer(iName);
+                }
+            });
+
+            var groupAux;
+            try {
+                var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
+                groupAux.setImpresor(impresorGroup);
+                groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
+                for (var i = 0; i < items.length; i++) {
+                    groupAux.setItem(items[i]);
+                }
+            }
+            catch (err) {
+                if (err.name == "ReferenceError") {
+                    var groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
+                    groupAux.setImpresor(impresorGroup);
+                    groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
+                    for (var i = 0; i < items.length; i++) {
+                        groupAux.setItem(items[i]);
+                    }
+                }
+            }
+
+            _gestorMenu.addItemGroup(groupAux);
+
+            if (_gestorMenu.getLazyInitialization() == true) {
+                _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
+                if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) { //Si ya cargó todas las capas solicitadas
+                    _gestorMenu.printOnlySection(thisObj.section);
+
+                    //
+                    gestorMenu.allLayersAreLoaded = true;
+                }
+            } else {
+                _gestorMenu.addLayerInfoCounter();
+                if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
+                    _gestorMenu.printMenu();
+                
+                    gestorMenu.allLayersAreLoaded = true;
+                }
+            }
+            
+            return;
+        });
+    }
+
+    _parseRequest_without_print(_gestorMenu) {
+        const impresorGroup = this.itemGroupPrinter;
+        const impresorItem = new ImpresorItemHTML();
+        const nuevo_impresor = new Menu_UI
+
+        var thisObj = this;
+
+        var ilistType = null
+        if(this.tab.listType){
+            ilistType = this.tab.listType
+        }
+
+        if (!$('#temp-menu').hasClass('temp')) { $('body').append('<div id="temp-menu" class="temp" style="display:none"></div>'); }
+
+        // Load geoserver Capabilities, if success Create menu and append to DOM
+        $('#temp-menu').load(thisObj.getHostOWS() + '?service=' + thisObj.service + '&version=' + thisObj.version + '&request=GetCapabilities', function () {
+            var capability = $('#temp-menu').find("capability");
+            var keywordHtml = $('#temp-menu').find("Keyword");
+            var keyword = '';
+            if (keywordHtml.length > 0) {
+                keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+            }
+            var abstractHtml = $('#temp-menu').find("Abstract");
+            var abstract = '';
+            if (abstractHtml.length > 0) {
+                abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+            }
+            var capas_layer = $('layer', capability);
+            var capas_info = $('layer', capas_layer);
+
+            var items = new Array();
+
+            // create an object with all layer info for each layer
+            capas_info.each(function (index, b) {
+                var i = $(this);
+                var iName = $('name', i).html();
+                if (thisObj.isAllowebLayer(iName)) {
+
+                    var iTitle = $('title', i).html();
+                    iTitle = thisObj.formatLayerTitle(iName, iTitle);
+                    var iAbstract = $('abstract', i).html();
+                    iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
+                    var keywordsHTMLList = $('keywordlist', i).find("keyword");
+                    var keywords = [];
+                    $.each(keywordsHTMLList, function (i, el) {
+                        keywords.push(el.innerText);
+                    });
+                    var iBoundingBox = $('boundingbox', i);
+                    var iSrs = null;
+                    var iMaxY = null;
+                    var iMinY = null;
+                    var iMinX = null;
+                    var iMaxX = null;
+                    var ilegendURLaux= $('Style', i).html()
+                    let divi =  document.createElement("div")
+                    let aux = null
+                    divi.innerHTML= ilegendURLaux
+                    /* if (divi.getElementsByTagName("onlineresource")) { // makes an error in some services
+                      aux = divi.getElementsByTagName("onlineresource")[0].getAttribute("xlink:href");
+                    } */
+                    var ilegendURL = aux
+                    
+                    if (iBoundingBox.length > 0) {
+                        if (iBoundingBox[0].attributes.srs) {
+                            var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
+                        } else {
+                            var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
+                        }
+                        var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
+                        var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
+                        var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
+                        var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
+                    }
+
+
+                    if (thisObj.type == 'wmslayer_mapserver') {
+                        var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                    } else {
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
+                        gestorMenu.layersDataForWfs[capa.nombre] = {
+                            name: capa.nombre,
+                            section: capa.titulo,
+                            host: capa.host
+                        }
+                    }
+                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(), ilistType);
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
                     item.setImpresor(impresorItem);
                     items.push(item);
@@ -426,21 +657,27 @@ class LayersInfoWMS extends LayersInfo {
                 if (_gestorMenu.finishLayerInfo()) { //Si ya cargó todas las capas solicitadas
                     _gestorMenu.printMenu();
                     
-                    //
                     gestorMenu.allLayersAreLoaded = true;
                 }
             }
 
+            //console.log(`${thisObj.section} printed`);
+            //prueba
+             nuevo_impresor.addLayers_combobox(groupAux)
             return;
         });
     }
 
     getHostOWS() {
         //Define GetCapabilities host endpoint
-        var host = this.host + '/ows';
+        /* var host = this.host + '/ows';
         if (this.type == 'wmslayer_mapserver') {
             host = this.host;
-        }
+        } */
+        let host = this.host;
+        if (this.service === "wms" && host.includes("/geoserver") && !host.endsWith("/wms")) { 
+            host += "/wms";
+         };
         return host;
     }
 
@@ -479,22 +716,28 @@ class LayersInfoWMTS extends LayersInfoWMS {
                 var itemGroup = _gestorMenu.getItemGroupById(ItemGroupPrefix + this.section);
                 if (itemGroup != null) {
                     for (var key in this.customizedLayers) {
+
+                        let title = this.customizedLayers[key]["new_title"] || this.title, 
+                            legend = this.customizedLayers[key]["legend"] || null, 
+                            keywords = this.customizedLayers[key]["new_keywords"], 
+                            abstract = this.customizedLayers[key]["new_abstract"];
+
                         if (this.type == 'wmslayer_mapserver') {
-                            var capa = new CapaMapserver(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            var capa = new CapaMapserver(key, title, null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
                         } else {
-                            var capa = new Capa(key, this.customizedLayers[key]["new_title"], null, this.host, this.service, this.version, this.feature_info_format, null, null, null, null);
+                            var capa = new Capa(key,title,this.srs,this.host,this.service,this.version,this.feature_info_format,null,this.minx,this.maxx,this.miny,this.maxy,this.attribution,legend);
                         }
 
                         //Generate keyword array
                         var keywordsAux = [];
-                        if (this.customizedLayers[key]["new_keywords"] != null && this.customizedLayers[key]["new_keywords"] != '') {
-                            keywordsAux = this.customizedLayers[key]["new_keywords"].split(',');
+                        if (keywords != null && keywords != '') {
+                            keywordsAux = keywords.split(',');
                             for (var keykeywordsAux in keywordsAux) {
                                 keywordsAux[keykeywordsAux] = keywordsAux[keykeywordsAux].trim();
                             }
                         }
 
-                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, this.customizedLayers[key]["new_abstract"], capa.titulo, capa, this.getCallback());
+                        var item = new Item(capa.nombre, this.section + clearString(capa.nombre), keywordsAux, abstract, capa.titulo, capa, this.getCallback(), null);
                         
                         gestorMenu.setAllLayersAreDeclaredInJson(true);
                         gestorMenu.setAvailableLayer(capa.nombre);
@@ -512,9 +755,13 @@ class LayersInfoWMTS extends LayersInfoWMS {
                 }
             } else {
                 this._parseRequest(_gestorMenu);
+                
             }
-
+            
         }
+        //console.log("//termina de imprimir el menu")
+        bindZoomLayer()
+        bindLayerOptions()
     }
 
     generateGroups(_gestorMenu) {
@@ -555,6 +802,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
             
             capas_layer.each(function (index, b) {
                 var i = $(this);
+
                 
                 var iName = $('ows\\:identifier', i).html();
                 if (thisObj.isAllowebLayer(iName)) {
@@ -567,30 +815,21 @@ class LayersInfoWMTS extends LayersInfoWMS {
                     $.each(keywordsHTMLList, function (i, el) {
                         keywords.push(el.innerText);
                     });
-                    var iBoundingBox = $('ows:wgs84boundingbox', i);
-                    var iSrs = null;
-                    var iMaxY = null;
-                    var iMinY = null;
-                    var iMinX = null;
-                    var iMaxX = null;
-                    if (iBoundingBox.length > 0) {
-                        if (iBoundingBox[0].attributes.srs) {
-                            var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
-                        } else {
-                            var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
-                        }
-                        var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
-                        var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
-                        var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
-                        var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
-                    }
+                    let iBoundingBox = $('ows\\:wgs84boundingbox', i), 
+                        iSrs = null, 
+                        lowerCorner = iBoundingBox[0].firstElementChild.innerText.split(' '),
+                        upperCorner = iBoundingBox[0].lastElementChild.innerText.split(' '),
+                        iMaxY = lowerCorner[1],
+                        iMaxX = lowerCorner[0],
+                        iMinY = upperCorner[1],
+                        iMinX = upperCorner[0];
 
                     if (thisObj.type == 'wmslayer_mapserver') {
                         var capa = new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
                     } else {
-                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY);
+                        var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY);
                     }
-                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback());
+                    var item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(),null);
                     item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
                     item.setImpresor(impresorItem);
                     items.push(item);
@@ -645,8 +884,12 @@ class LayersInfoWMTS extends LayersInfoWMS {
     }
 
     getHost() {
-        //Define GetCapabilities host endpoint
-        var host = this.host + '/gwc/service/wmts';
+        /* //Define GetCapabilities host endpoint
+        var host = this.host + '/gwc/service/wmts'; */
+        let host = this.host;
+        if (host.includes("/geoserver") && !host.endsWith("/wmts")) { 
+            host += '/gwc/service/wmts';
+         };
         return host;
     }
 
@@ -666,7 +909,7 @@ Composite para menu
 class ItemComposite {
     constructor(nombre, seccion, palabrasClave, descripcion) {
         this.nombre = nombre
-        this.seccion = sanatizeString(seccion)
+        this.seccion = clearSpecialChars(seccion)
         this.peso = null;
         this.palabrasClave = (palabrasClave == null || palabrasClave == '') ? [] : palabrasClave
         this.descripcion = descripcion
@@ -941,14 +1184,15 @@ class ItemGroupWMSSelector extends ItemGroup {
 }
 
 class Item extends ItemComposite {
-	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback) {
+	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback, legendImg, listType) {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.titulo = titulo;
 		this.capa = capa;
 		this.capas = [capa];
 		this.visible = false;
-        this.legendImg = null;
+        this.legendImg = legendImg;
         this.callback = callback;
+        this.listType = null;
     }
 
     getId() {
@@ -1496,8 +1740,19 @@ class GestorMenu {
 		this._folders = folders;
 	}
 
+    /* 
     getBasemapSelected() {
         return this.basemapSelected;
+    } 
+    */
+    getActiveBasemap() {
+        let activeBasemap; 
+        Object.keys(baseLayers).forEach( bl => {
+            if(gestorMenu.getActiveLayers().includes(bl)) {
+                activeBasemap = bl;
+            }
+        });
+        return activeBasemap;
     }
 
     setBasemapSelected(basemapSelected) {
@@ -1561,10 +1816,12 @@ class GestorMenu {
         for (var key in itemGroup.itemsComposite) {
             if (this._existsIndexes[itemGroup.seccion] > 0) { //Para modificar item.seccion para no duplicar el contenido
                 itemGroup.itemsComposite[key].seccion += this._existsIndexes[itemGroup.seccion];
+                
             }
             itemAux.setItem(itemGroup.itemsComposite[key]);
         }
         this.items[itemGroup.seccion] = itemAux;
+        
     }
 
     addPlugin(pluginName, url, callback) {
@@ -2078,7 +2335,6 @@ class GestorMenu {
     }
 
     muestraCapa(itemSeccion) {
-
         if (!mapa.hasOwnProperty('activeLayerHasChanged')) {
             const intervalId = setInterval(() => {
                 if (mapa.hasOwnProperty('activeLayerHasChanged')) {
@@ -2088,19 +2344,19 @@ class GestorMenu {
             }, 500);
             return;
         }
-
+        
         const wmtsLayers = [];
-
+        
 		//Hide all if itemComposite selected is Base Map
         var isBaseLayer = false;
         let baseLayerName = '';
         
 		for (var key in this.items) {
-			var itemComposite = this.items[key];
+            var itemComposite = this.items[key];
 			for (var key2 in itemComposite.itemsComposite) {
-				var item = itemComposite.itemsComposite[key2];
+                var item = itemComposite.itemsComposite[key2];
                 if (item.getId() == itemSeccion) {
-					isBaseLayer = itemComposite.isBaseLayer();
+                    isBaseLayer = itemComposite.isBaseLayer();
                     baseLayerName = item.nombre;
 					break;
 				}
@@ -2144,6 +2400,15 @@ class GestorMenu {
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, true);
                         }
+                        /*
+                        let bbox = item.capa;
+                        let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
+                        //console.log(bounds);
+                        try {
+                            mapa.fitBounds(bounds);
+                        } catch (error) {
+                            //console.log(bounds);
+                        }*/
                         item.showHide();
                         itemComposite.muestraCantidadCapasVisibles();
                         break;
@@ -2152,7 +2417,7 @@ class GestorMenu {
             }
         }
 
-        if (isBaseLayer) {
+        if (isBaseLayer && this.lastBaseMapSelected !== baseLayerName) {
             this.setLastBaseMapSelected(baseLayerName);
 
             setValidZoomLevel(baseLayerName);
@@ -2181,28 +2446,24 @@ class GestorMenu {
     }
 
     showWMSLayerCombobox(itemSeccion) {
-
-
-        //Loader gif
-        $('#wms-combo-list').html('<div class="loading"><img src="src/styles/images/loading.svg"></div>');
-
+        let nuevo_impresor = new Menu_UI
+        nuevo_impresor.addLoadingAnimation("NEW-wms-combo-list")
         //Realiza el GET de las capas
+
         var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, '');
         for (var key in this.layersInfo) {
+            
             if (this.layersInfo[key].section == itemSeccionAux) {
                 this.addLazyInitLayerInfoCounter(itemSeccion);
-                this.layersInfo[key].get(this);
+                //nueva opcion crea un objeto para cada btn 
+                this.layersInfo[key].get_without_print(this);
+                //this.layersInfo[key].get(this)
+
+             
             }
         }
 
-        //Reimprime menu
-        for (var key in this.items) {
-            var itemComposite = this.items[key];
-            if (itemComposite.getId() == itemSeccion && Object.keys(itemComposite.itemsComposite).length > 0) {
-                itemComposite.imprimir();
-                $('#wms-combo-list').html(itemComposite.itemsStr);
-            }
-        }
+        bindLayerOptionsIdera();
 
     }
 
@@ -2262,8 +2523,670 @@ class Tab {
 
     getEndPrint() {
         if (this.listType == "combobox") {
-            return '</select><div id="wms-combo-list"></div>';
+            return '</select><div id="wms-combo-list"></div><div id="NEW-wms-combo-list"></div>';
         }
         return '';
     }
 }
+
+var serviceItems = [];
+/******************************************
+Menu_UI
+******************************************/
+class Menu_UI{
+
+    constructor() {
+        this.layer_active_options = null
+        this.available_options = ["download","filter","trash"]
+    }
+
+    addSection(name){
+        let groupnamev= clearSpecialChars(name);
+        let itemnew = document.createElement("div")
+        itemnew.innerHTML =`
+        <div id="lista-${groupnamev}" class="menu5 panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a id="${groupnamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${groupnamev}-content" class="item-group-title">${name}</a>
+            </h4>
+        </div>
+        <div id='${groupnamev}-content' class="panel-collapse collapse">
+            <div class="panel-body" id ="${groupnamev}-panel-body"></div>
+        </div>
+        </div>`
+
+        //add before first child of: div .menu5
+        $('#sidebar div.menu5').first().prepend(itemnew)
+    }
+
+    addFileLayer(groupname, textName, id, fileName){
+        let groupnamev= clearSpecialChars(groupname);
+        let main = document.getElementById("lista-"+groupnamev)
+
+        let div = ` 
+        <div style="display:flex; flex-direction:row;">
+        <div style="cursor: pointer; width: 70%" onclick="clickGeometryLayer('${id}')"><span style="user-select: none;">${id}</span></div>
+        <div class="icon-layer-geo" onclick="mapa.downloadMultiLayerGeoJSON('${id}')"><i class="fas fa-download" title="descargar"></i></div>
+        <div class="icon-layer-geo" onclick="deleteLayerGeometry('${id}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
+        </div>
+        `
+        //si no existe contenedor
+        let id_options_container = "opt-c-"+id
+        if(!main){this.addSection(groupnamev)}
+        let content = document.getElementById(groupnamev+"-panel-body")
+             let layer_container = document.createElement("div")
+             layer_container.id = "fl-" +id
+             layer_container.className = "file-layer-container"
+
+             let layer_item = document.createElement("div")
+             layer_item.id = "flc-" +id
+             layer_item.className = "file-layer active"
+              
+             let img_icon =document.createElement("div")
+             img_icon.className = "file-img"
+             img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
+             img_icon.onclick = function(){
+                clickGeometryLayer(id, true)
+             }
+
+            let layer_name = document.createElement("div")
+            layer_name.className = "file-layername"
+            layer_name.innerHTML= "<a>"+textName+"</a>"
+            layer_name.title = fileName
+            layer_name.onclick = function(){
+                clickGeometryLayer(id, true)
+            }
+            
+            let options = document.createElement("div")
+            options.style = "width:10$;padding-right:5px;cursor:pointer;"
+            options.className = "btn-group"
+            options.role ="group"
+            options.id = id_options_container
+
+            let fdiv = document.createElement("div")
+            fdiv.style = "border: 0px;"
+            fdiv.className = "dropdown-toggle"
+            fdiv.setAttribute('data-toggle', 'dropdown')
+            fdiv.setAttribute('aria-haspopup', 'true')
+            fdiv.setAttribute('aria-expanded', 'false')
+            fdiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16"> <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/> </svg>'
+            // fdiv.innerHTML = '<span class="caret"></span>'
+
+            let mainul = document.createElement("ul")
+            mainul.className = "dropdown-menu"
+            mainul.style = "right:0px !important;left:auto !important;"
+            mainul.id = "opt-c-"+id
+
+            let delete_opt = document.createElement("li")
+            delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
+            delete_opt.onclick = function(){
+                let menu = new Menu_UI
+                menu.modalEliminar(id)
+                //deleteLayerGeometry(layer)
+            }
+
+            let download_opt = document.createElement("li")
+            download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
+            download_opt.onclick = function(){
+                let index_file = getIndexFileLayerbyID(id)
+                let d_file_name = addedLayers[index_file].name
+                mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
+            }
+
+            let edit_name_opt = document.createElement("li")
+            edit_name_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar Nombre</a>`
+            edit_name_opt.onclick = function(){
+                menu_ui.editFileLayerName(id)
+            }
+            
+            mainul.append(edit_name_opt)
+            mainul.append(download_opt)
+            mainul.append(delete_opt)
+            
+            options.append(fdiv)
+            options.append(mainul)
+                      
+            layer_item.append(img_icon)
+            layer_item.append(layer_name)
+            layer_item.append(options)
+            layer_container.append(layer_item)
+            content.appendChild(layer_container)
+    }
+
+    addLayerOptions(layer){
+        //display options true
+        app.layers[layer].display_options = true
+        this.layer_active_options = layer
+
+        let id = "layer-options-" + layer
+        let el = document.getElementById(id)
+
+
+            el.setAttribute('class', 'layer-options-active')
+            let options_container = document.createElement("div")
+            options_container.className = "options-container"
+
+            let options_tabs = document.createElement("div")
+            options_tabs.className = "options-tabs"
+            options_tabs.innerHTML=`
+            <div class="option-tab-icon-active" title="descargar capa"><i class="fa fa-download" aria-hidden="true"></i></div>
+            <div class="option-tab-icon" title="filtros"><i class="fa fa-filter" aria-hidden="true"></i></div>
+            <div class="option-tab-icon" title="borrar capa"><i class="fa fa-trash" aria-hidden="true"></i></div>
+            `
+
+            let options_panel = document.createElement("div")
+            options_panel.className = "options-panel"
+            options_panel.innerHTML=`
+            <div class="panel-download"></div>
+            <div class="panel-filter"></div>
+            <div class="panel-trash"></div>
+            `
+            options_container.append(options_tabs)
+            options_container.append(options_panel)
+            el.append(options_container)
+
+    }
+
+    closeLayerOptions(layer){
+        let el = document.getElementById("layer-options-"+layer)
+        app.layers[layer].display_options = false
+        if(el){
+            el.setAttribute('class', 'display-none')
+            el.innerHTML = ""
+        }
+    }
+
+    addLoadingAnimation(id_dom){
+        let contenedor = document.getElementById(id_dom)
+        contenedor.innerHTML= ""
+        contenedor.innerHTML = '<div class="loading"><img src="src/styles/images/loading.svg"></div>'
+    }
+
+    async addLayers_combobox(items){
+        let contenedor = document.getElementById("NEW-wms-combo-list")
+        let list = document.createElement("div")
+        let layers = items.itemsComposite
+        for (const property in layers) {
+            let id_dom = "child-"+layers[property].seccion
+            let title = layers[property].capa.titulo
+            let url_img = layers[property].capa.legendURL
+            let descripcion = layers[property].capa.descripcion
+            //add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options)
+            let li_layer = this.add_btn_Layer_combobox(id_dom,title,url_img,descripcion, false)
+            list.append(li_layer)
+            //console.log("layers[property]");
+          }
+          contenedor.innerHTML = ""
+          contenedor.append(list)
+
+    }
+
+    add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options){
+        // reemplazar =title 
+        let min_url_img = url_img+'&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off'
+        let max_url_img = url_img+'&scale=1&&LEGEND_OPTIONS=forceTitles:on;forceLabels:on'
+        let li = document.createElement("li")
+        li.id= id_dom
+        li.className = "capa list-group-item"
+        li.style = "padding: 10px 1px 10px 1px;"
+
+        if(options){
+            //pendiente crear objeto 
+            options_layer = "<div class='display-none' id=layer-options-"+title+"></div>"
+        }
+
+        let capa_info = document.createElement("div")
+        capa_info.className = "capa-info"
+
+        let container_expand_legend_grafic = document.createElement("div")
+        container_expand_legend_grafic.className="expand_legend_grafic"
+        container_expand_legend_grafic.style = "overflow:hidden;"
+        container_expand_legend_grafic.setAttribute('load', false);
+
+        let capa_legend_div = document.createElement("div")
+        capa_legend_div.className = "legend-layer"
+
+        let img_legend = document.createElement("img")
+        img_legend.className="legend-img"
+        img_legend.style = "width:22px;height:22px"
+        img_legend.loading="lazy"
+        img_legend.src=min_url_img
+        img_legend.onerror = showImageOnError(this);
+        capa_legend_div.append(img_legend) 
+
+        let resize_img_icon = document.createElement("div")
+        resize_img_icon.className = "resize-legend-combobox"
+        resize_img_icon.style = "align-self: center;font-size: 14px"
+        resize_img_icon.innerHTML = '<i class="fas fa-angle-down" aria-hidden="true"></i>'
+        resize_img_icon.onclick = () => {
+            if(container_expand_legend_grafic.getAttribute('load')==="true"){
+                container_expand_legend_grafic.innerHTML=""
+                container_expand_legend_grafic.setAttribute('load', false);
+                resize_img_icon.innerHTML = '<i class="fas fa-angle-down" aria-hidden="true"></i>'
+            }
+            else{
+                container_expand_legend_grafic.innerHTML="<img class='legend-img-max' loading='lazy'  src='" + max_url_img+ "' onerror='showImageOnError(this);'></img>"
+                container_expand_legend_grafic.setAttribute('load', true);
+                resize_img_icon.innerHTML = '<i class="fas fa-angle-up" aria-hidden="true"></i>'
+            }
+            
+        }
+
+        img_legend.addEventListener("load", event => {
+            if(img_legend.naturalHeight>22){
+                capa_legend_div.removeChild(img_legend);
+                capa_legend_div.append(resize_img_icon)
+                capa_legend_div.title="abrir leyenda"
+                img_legend.src=""
+            }
+
+          });
+
+        capa_legend_div.onclick = () => {
+            /*
+            if(li.className === "capa list-group-item active"){
+                li.className = "capa list-group-item"
+            }else{li.className = "capa list-group-item active"}
+            gestorMenu.muestraCapa(id_dom)*/
+        };
+        
+        let capa_title_div = document.createElement("div")
+        capa_title_div.className = "name-layer"
+        capa_title_div.style="align-self: center;"
+        capa_title_div.onclick = function () {
+            
+            if(li.className === "capa list-group-item active"){
+                //clase btn desactivada
+                li.className = "capa list-group-item"
+                //desactivar capa en mapa
+                gestorMenu.muestraCapa(id_dom)
+                //si tiene opcion a expand legend grafic y esta abierta cerrar.
+                if(li.getElementsByClassName("legend-img").length==0){
+                    if(container_expand_legend_grafic.getAttribute('load')==="true")resize_img_icon.click()
+                }
+
+            }else{
+                //activar capa
+                li.className = "capa list-group-item active"
+                gestorMenu.muestraCapa(id_dom)
+                if(li.getElementsByClassName("legend-img").length==0){
+                    resize_img_icon.click()
+                }
+            }
+
+          };
+
+
+        let capa_description_a = document.createElement("a")
+        capa_description_a.nombre = title
+        capa_description_a.href="#"
+        capa_description_a.innerHTML = "<span data-toggle2='tooltip' title='" + descripcion + "'>" + title+ "</span>"
+        capa_title_div.append(capa_description_a)
+
+        let btn_zoom_layer = document.createElement("div")
+        btn_zoom_layer.className = "zoom-layer-combobox"
+        btn_zoom_layer.style = "align-self: center;"
+        btn_zoom_layer.layername = title
+        btn_zoom_layer.innerHTML = "<i class='fas fa-search-plus' title='Zoom a capa'></i>"
+        btn_zoom_layer.addEventListener("click", function(){
+            if(li.className === "capa list-group-item"){
+                li.className = "capa list-group-item active"
+            }
+            if(li.getElementsByClassName("legend-img").length==0){
+                if(container_expand_legend_grafic.getAttribute('load')==="false")resize_img_icon.click()
+            }
+            zoomLayer(id_dom)
+        })
+
+        capa_info.append(capa_legend_div)
+        capa_info.append(capa_title_div)
+        capa_info.append(btn_zoom_layer)
+        li.append(capa_info)
+        li.append(container_expand_legend_grafic)
+        return li
+    }
+    
+    modalEliminar(id){
+        let index_file= getIndexFileLayerbyID(id)
+        let textname = addedLayers[index_file].name
+        let fileName = addedLayers[index_file].file_name
+        $("#modal_layer_del").remove();
+        let modal =  document.createElement("div")
+        modal.id="modal_layer_del"
+        modal.className = "modal-file-delete"
+
+        let close_icon = document.createElement("div")
+        close_icon.style= "display:flex;flex-direction: row;padding-top:5px"
+        let c_empty = document.createElement("div")
+        c_empty.style.width = "90%"
+        let c_close = document.createElement("div")
+        c_close.style = 'width:10%;text-align: center;cursor:pointer;'
+        c_close.innerHTML ='<i style="color:grey;font-size:16px" class="fa fa-times" aria-hidden="true"></i>'
+        c_close.onclick = function(){
+            $("#modal_layer_del").remove();
+        }
+        close_icon.append(c_empty)
+        close_icon.append(c_close)
+
+        let modal_body = document.createElement("div")
+        modal_body.className = "modal-file-delete-body"
+        modal_body.innerHTML = `¿Eliminar Capa <strong>${textname}</strong>?`
+        modal_body.title = `¿Eliminar ${fileName}?`
+
+        let btn_container = document.createElement("div")
+        btn_container.style =   'display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;'
+        
+        let btn_si = document.createElement("button")
+        btn_si.className = "btn btn-info"
+        btn_si.innerHTML = "Eliminar"    
+        btn_si.onclick = function(){
+            delFileItembyID(id)
+            deleteLayerGeometry(id,true)
+            $("#modal_layer_del").remove();
+        }
+
+        let btn_no = document.createElement("button")
+        btn_no.className = "btn btn-default"
+        btn_no.style = 'border: 1px solid silver'
+        btn_no.innerHTML = "Cancelar"
+        btn_no.onclick = function(){
+            $("#modal_layer_del").remove();
+        }
+
+        btn_container.append(btn_si)
+        btn_container.append(btn_no)
+
+        modal.append(close_icon)
+        modal.append(modal_body)
+        modal.append(btn_container)
+        document.body.appendChild(modal)
+
+        $( "#modal_layer_del" ).draggable({
+            containment: "#mapa"})
+
+    }
+
+    editFileLayerName(id){
+        let index = getIndexFileLayerbyID(id)       
+        addedLayers[index].laodingname = false
+        let id_i = "flc-"+id
+        let container = document.getElementById(id_i)
+        let element = container.getElementsByClassName("file-layername")[0]
+        let name = element.innerText
+        let nodo_hijo = container.getElementsByClassName("btn-group")[0]
+        element.remove()
+
+        let input_name = document.createElement("input")
+        input_name.value = name
+        input_name.type = element.innerText
+        input_name.className = "input_newname form-control"
+        input_name.style = "width: 75% !important;"
+        input_name.id = "i-"+id
+        
+        input_name.autocomplete = "off"
+        input_name.style = "height:22px!important;"
+        input_name.onblur= function(e){
+            if(!addedLayers[index].laodingname){
+                $("#i-"+id).remove()
+                let a_new = document.createElement("div")
+                a_new.className = "file-layername"
+                a_new.innerHTML = `<a>${name}</a>`
+                container.insertBefore(a_new,nodo_hijo);
+            }
+        }
+
+        input_name.onkeyup = function(e){
+            if(e.key === 'Enter' || e.keyCode === 13){
+                addedLayers[index].laodingname = true
+                $("#i-"+id).remove()
+                let a_new = document.createElement("div")
+                a_new.className = "file-layername"
+                a_new.title = this.value
+                editDomNameofFileLayerbyID(id,this.value)
+                a_new.innerHTML = `<a>${this.value}</a>`
+                a_new.onclick = function(){
+                    clickGeometryLayer(id,true)
+                }
+                container.insertBefore(a_new,nodo_hijo);
+            }
+        }
+
+        container.insertBefore(input_name,nodo_hijo);
+        $(`#i-${id}`).focus()
+    }
+
+    editGroupName(id,oldName,newName){
+        clearSpecialChars(oldName);
+        clearSpecialChars(newName);
+        let el = document.getElementById(`${oldName}-a`);
+        if(el) {
+            el.innerText = newName;
+            document.getElementById(`lista-${oldName}`).id = `lista-${newName}`;
+            document.getElementById(oldName+"-panel-body").id = newName+"-panel-body";
+        };
+    }
+
+    removeLayerFromGroup(groupname, textName, id, fileName,layer){
+        if(serviceItems[id].layers[textName].L_layer != null){
+            serviceItems[id].layers[textName].L_layer.remove();
+        }
+
+        document.getElementById("srvcLyr-"+id+textName).remove();
+        serviceItems[id].layersInMenu--;
+        
+        for (let i in serviceItems[id].layers) {
+            if (serviceItems[id].layers[i] === textName) {
+                serviceItems[id].layers.splice(i,1);
+                break;
+            }
+        }
+
+        if(serviceItems[id].layersInMenu == 0 || serviceItems[id].layersInMenu == undefined){
+            this.removeLayersGroup(groupname);
+        }
+    }
+    
+    removeLayersGroup(groupname){
+        let el = document.getElementById(`lista-${clearSpecialChars(groupname)}`);
+        if(el) el.remove();
+    }
+
+    addLayerToGroup(groupname, textName, id, fileName, layer){
+        let newLayer = layer;
+        newLayer.active = false;
+        newLayer.L_layer = null;
+        // let firstLayerAdded = false; // To simulate the click event
+        if (serviceItems[id]!=undefined) {
+            serviceItems[id].layers[textName] = newLayer;
+            serviceItems[id].layersInMenu++;
+        }else {
+            serviceItems[id] = {
+                layers:[],
+                layersInMenu:0,
+            }
+            serviceItems[id].layers[textName] = newLayer;
+            serviceItems[id].layersInMenu++;
+            // firstLayerAdded = true; // Yes! First layer added
+        }
+        
+
+        let groupnamev = clearSpecialChars(groupname);
+        let main = document.getElementById("lista-"+groupnamev)
+        let id_options_container = "opt-c-"+id
+        if(!main){this.addSection(groupname)}
+
+        let content = document.getElementById(groupnamev+"-panel-body")
+        let layer_container = document.createElement("div")
+        layer_container.id = "fl-" +id
+        layer_container.className = "file-layer-container"
+
+        let layer_item = document.createElement("div")
+        layer_item.id = "srvcLyr-"+id+textName
+        layer_item.className = "file-layer"
+        
+        let img_icon = document.createElement("div")
+        img_icon.className = "loadservice-layer-img"
+        img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`
+        img_icon.onclick = function(){
+            clickGeometryLayer(id, true)
+        }
+
+        let layer_name = document.createElement("div")
+        layer_name.className = "file-layername"
+        let capitalizedTitle = layer.title[0].toUpperCase() + layer.title.slice(1).toLowerCase();
+        layer_name.innerHTML= "<a>"+capitalizedTitle+"</a>"
+        layer_name.title = fileName;
+        layer_name.onclick = function(){
+            layer_item.classList.toggle('active');
+            
+            if (!layer.active) {
+                layer.L_layer = L.tileLayer.wms(layer.host, {
+                    layers: layer.name,
+                    format: 'image/png',
+                    transparent: true,
+                }).addTo(mapa);
+                layer.active = true;
+                
+                gestorMenu.layersDataForWfs[layer.name] = {
+                    name: layer.name,
+                    section: layer.title,
+                    host: layer.host
+                }
+            }else {
+                mapa.removeLayer(layer.L_layer);
+                layer.active = false;
+            }
+        }        
+        
+        let zoom_button = document.createElement("div")
+        zoom_button.className = "loadservice-layer-img"
+        zoom_button.innerHTML = `<i class="fas fa-search-plus" title="Zoom a capa"></i>`
+        zoom_button.onclick = function(){
+            
+            layer_item.classList.toggle('active');
+            
+            if (!layer.active) {
+                let bounds = [[layer.maxy, layer.maxx], [layer.miny, layer.minx]];
+                mapa.fitBounds(bounds);
+                layer.L_layer = L.tileLayer.wms(layer.host, {
+                    layers: layer.name,
+                    format: 'image/png',
+                    transparent: true,
+                }).addTo(mapa);
+                layer.active = true;
+            }else {
+                mapa.removeLayer(layer.L_layer);
+                layer.active = false;
+            }
+        }
+
+
+        layer_item.append(img_icon)
+        layer_item.append(layer_name)
+        layer_item.append(zoom_button)
+        layer_container.append(layer_item)
+        content.appendChild(layer_container)
+
+        // Open the tab
+
+        if(serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
+        
+    }
+
+}
+
+class Geometry {
+  constructor() {
+    this._types = [
+      "Geometry",
+      "Point",
+      "MultiPoint",
+      "LineString",
+      "MultilineString",
+      "Polygon",
+      'MultiPolygon'
+    ];
+  }
+
+  isValidType(geom) {
+    if(this._types.filter((type) => type === geom)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
+
+/******************************************
+CAPTURAR FECHA DE IMAGEN SATELITAL
+******************************************/
+class Fechaimagen {
+  constructor(lat, long, zoom) {
+    this.lat = lat;
+    this.long = long;
+    this.zoom = zoom;
+  }
+
+  get area() {
+    return this.getFechaImagen();
+  }
+
+  getFechaImagen() {
+    let picMdata = '',
+      id = '',
+      esriUrl = 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/',
+      outFields = ['SRC_RES','SRC_ACC','SRC_DESC','MinMapLevel','MaxMapLevel','NICE_NAME','SRC_DATE2','NICE_DESC'], 
+      // available outFields : OBJECTID,SRC_DATE,SRC_RES,SRC_ACC,SAMP_RES,SRC_DESC,MinMapLevel,MaxMapLevel,NICE_NAME,DrawOrder,SRC_DATE2,NICE_DESC,Shape_Length,Shape_Area
+      x = (this.long * 20037508.34) / 180,
+      y = Math.log(Math.tan(((90 + parseFloat(this.lat)) * Math.PI) / 360)) / (Math.PI / 180),
+      metadataIndex = { 19: 9, 18: 10, 17: 11, 16: 12, 15: 13, 14: 14, 13: 15, 12: 16 },
+      sensorData = {
+          'WV01': { name: 'WorldView-1 (COSPAR: 2007-041A)', link: 'https://en.wikipedia.org/wiki/WorldView-1' },
+          'WV02': { name: 'WorldView-2 (COSPAR: 2009-055A)', link: 'https://www.maxar.com/constellation' },
+          'WV03': { name: 'WorldView-3 (COSPAR: 2014-048A)', link: 'http://worldview3.digitalglobe.com/' },
+          'WV04': { name: 'WorldView-4 (COSPAR: 2016-067A)', link: 'https://resources.maxar.com/data-sheets/worldview-4/' },
+          'GE01': { name: 'GeoEye-1 (COSPAR: 2008-042A)', link: 'https://en.wikipedia.org/wiki/GeoEye-1' },
+          'PNOA': { name: 'Plan Nacional de Ortofotografía Aérea', link: 'https://pnoa.ign.es/'},
+          'NYS ITS GIS Orthos': { name: 'Ortofotos del Estado de Nueva York', link: 'https://orthos.dhses.ny.gov/'},
+          'Madrid Orthos': { name: 'Ortofoto rápida 2019 de Madrid', link: 'https://geoportal.madrid.es/IDEAM_WBGEOPORTAL/dataset.iam?id=f44997dd-a1a9-11ea-a9ae-ecb1d753f6e8'}
+        },
+      providerData = {
+        'Maxar': { name: 'Maxar', link: 'https://www.maxar.com' },
+        'Ayuntamiento de Madrid': { name: 'IDE Ayuntamiento de Madrid', link: 'https://www.comunidad.madrid/servicios/mapas/geoportal-comunidad-madrid' } 
+        };
+        
+    y = (y * 20037508.34) / 180;
+    id = metadataIndex[this.zoom];
+    esriUrl += `${id}/query?f=json&returnGeometry=false&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A${x}%2C%22ymin%22%3A${y}%2C%22xmax%22%3A${x}%2C%22ymax%22%3A${y}%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%2C%22latestWkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=${outFields}&outSR=102100`;
+
+    $.get({
+      url: esriUrl,
+      async: false,
+      success: function (data) {
+          let md = ""; 
+          if(data.features && data.features.length){
+              md = data.features[0].attributes;
+              picMdata = {
+                  date: new Date(md.SRC_DATE2).toLocaleString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+                  resolution: md.SRC_RES,
+                  accuracy: md.SRC_ACC,
+                  sensor: (sensorData[md.SRC_DESC]) ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${sensorData[md.SRC_DESC].name}</a>` : md.SRC_DESC,
+                  provider: (providerData[md.NICE_DESC]) ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${providerData[md.NICE_DESC].name}</a>` : md.NICE_DESC,
+                  sensor_texto: sensorData[md.SRC_DESC].name,
+                  provider_texto: providerData[md.NICE_DESC].name,
+                  product: md.NICE_NAME,
+                  minZoom: md.MinMapLevel,
+                  maxZoom: md.MaxMapLevel,
+                };
+          };
+      },
+    });
+
+    return picMdata;
+  }
+}
+
+
+
+

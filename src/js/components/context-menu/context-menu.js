@@ -21,4 +21,32 @@ class ContextMenu {
         };
         this.menu.appendChild(option);
     }
+
+    createSelect(optionData) {
+        const option = document.createElement('div');
+        option.className = 'context-menu-item' + (optionData.isDisabled ? ' context-menu-item-disabled' : ' context-menu-item-active');
+        option.innerHTML = '<b>Reproyectar coordenadas en</b>&nbsp;&nbsp;';
+        // Create the select html element
+        const selectElm = option.appendChild(document.createElement('select'));
+        // add html options via given options
+        optionData.options.forEach(op => {
+            let optionElm = selectElm.appendChild(document.createElement('option'))
+            optionElm.value = op.value;
+            optionElm.innerText = op.label;
+        });
+        
+
+        option.disabled = optionData.isDisabled;
+
+        selectElm.onchange = () => {
+            // console.log('cambio');
+            optionData.selected(selectElm.value)
+        }
+        
+        // option.onclick = (e) => {
+        //     // Return the selected value
+        //     optionData.onclick(selectElm.value);
+        // };
+        this.menu.appendChild(option);
+    }
 }

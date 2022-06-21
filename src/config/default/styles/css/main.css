@@ -1,6 +1,18 @@
-/*******************************
-Personalizado
-*******************************/
-.leaflet-container {
-	font: 12px/1.5 Roboto, sans-serif !important;
+@media (max-width: 768px) and (orientation: portrait){
+ #top-left-logo {
+  left: 50px;
+  background-size: 180px;
+ }
+  
+}
+
+@media (max-width: 768px) and (orientation: landscape){
+
+  #top-left-logo {
+    left: 250px ;
+  }
+}
+
+.active a{
+  color:white
 }

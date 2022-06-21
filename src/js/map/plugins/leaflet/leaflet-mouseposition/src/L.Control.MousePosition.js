@@ -4,17 +4,43 @@ L.Control.MousePosition = L.Control.extend({
     separator: ' : ',
     emptyString: 'Unavailable',
     lngFirst: false,
-    numDigits: 5,
-    lngFormatter: undefined,
-    latFormatter: undefined,
-    prefix: ""
+    numDigits: 6,
+    lngFormatter: function(num) {
+      var direction = (num < 0) ? 'O' : 'E';
+      return deg_to_dms(Math.abs(num)) + direction; 
+    },
+    latFormatter: function(num) {
+      var direction = (num < 0) ? 'S' : 'N';
+      return deg_to_dms(Math.abs(num)) + direction; 
+    },
+    prefix: "",
   },
 
   onAdd: function (map) {
     this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
-    L.DomEvent.disableClickPropagation(this._container);
+    // L.DomEvent.disableClickPropagation(this._container);
     map.on('mousemove', this._onMouseMove, this);
     this._container.innerHTML=this.options.emptyString;
+
+    this._container.onclick = function(){
+      if (L.Control.MousePosition.prototype.options.lngFormatter == undefined) {
+        L.Control.MousePosition.prototype.options.lngFormatter = function(num) {
+          var direction = (num < 0) ? 'O' : 'E';
+          return deg_to_dms(Math.abs(num)) + direction; 
+        }
+        L.Control.MousePosition.prototype.options.latFormatter = function(num) {
+          var direction = (num < 0) ? 'S' : 'N';
+          return deg_to_dms(Math.abs(num)) + direction; 
+        }
+        document.getElementsByClassName('leaflet-control-mouseposition')[0].style.width = '142px';
+      }else {
+        document.getElementsByClassName('leaflet-control-mouseposition')[0].style.width = '128px';
+        L.Control.MousePosition.prototype.options.lngFormatter = undefined;
+        L.Control.MousePosition.prototype.options.latFormatter = undefined;
+      }
+
+      L.Control.MousePosition.prototype._onMouseMove
+    };
     return this._container;
   },
 

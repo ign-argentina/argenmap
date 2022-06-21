@@ -1,0 +1,109 @@
+.list-group-gc{
+  padding-left: 0;
+}
+
+.list-group-item-gc{
+position: relative;
+display: block;
+padding: 10px 5px;
+margin-bottom: -1px;
+background-color: #fff;
+border: 1px solid #ddd;
+text-overflow: ellipsis;
+height: 36px;
+width: 100%;
+overflow: hidden;
+}
+
+.itemgc-focus{
+  background-color: #ececec ;
+}
+
+
+
+.closebtn {
+  -webkit-appearance: none;
+  padding: 0;
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  float: right;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  filter: alpha(opacity=20);
+  opacity: .2;
+}
+
+.list-group-item-heading-gc{
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+#search_bar {
+  outline: none !important;
+  height: 35px;
+  width: 130px;
+  overflow: auto;
+  box-sizing: border-box;
+  padding-left: 10px;
+  font-size: 14px;
+  font-family: FrutigerLTStd45Light,Helvetica,Arial,sans-serif;
+  background-color: white;
+  -webkit-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+  border: 0px!important ;
+  border-radius: 8px;
+  -moz-box-shadow: 0 0 3px grey !important;
+  -webkit-box-shadow: 0 0 3px grey !important;
+  box-shadow: 0 0 3px grey !important;
+}
+
+
+#search_bar:focus {
+  outline: none !important;
+  border: 0px!important; 
+  border-radius: 8px !important;}
+
+  #searchbar {
+    z-index: 1500;
+    position: absolute;
+    border-radius: 8px;
+    
+    -moz-box-shadow: inset 0 0 10px #000000;
+    -webkit-box-shadow: inset 0 0 10px #000000;
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+
+
+
+  @media (max-width: 768px) and (orientation: portrait){
+    #searchbar  {
+      left: 50px;
+      top: 5px;
+      max-width: 250px;
+      max-height: 300px ;
+    }
+  }
+
+  @media (max-width: 768px) and (orientation: landscape){
+    #searchbar  {
+      left: 50px ;
+      top: 5px ;
+      max-width: 300px ;
+      max-height: 340px ;
+    }
+    .list-group-gc{
+      max-width: 300px ;
+      max-height: 270px ;
+    }
+
+  }
+
+  @media (min-width: 769px) {
+    #searchbar {
+      max-width: 300px;
+    }
+  }

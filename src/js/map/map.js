@@ -8,6 +8,8 @@ var mapa = "";
 
 let currentBaseMap = null;
 
+let countour_styles = false;
+
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
 	for (const plugin in PLUGINS) {
 		if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(excluded_plugin => excluded_plugin === plugin)) {
@@ -137,7 +139,9 @@ $("body").on("pluginLoad", function(event, plugin){
 					var zoomHome = L.Control.zoomHome({
 						zoomHomeTitle: 'Inicio',
 						zoomInTitle: 'Acercarse',
-						zoomOutTitle: 'Alejarse'
+						zoomOutTitle: 'Alejarse',
+						homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
+						homeZoom: app.mapConfig.zoom.initial
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
@@ -293,44 +297,41 @@ $("body").on("pluginLoad", function(event, plugin){
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':
-                    /*
-					// Leaflet-Browser-Print plugin https://github.com/Igor-Vladyka/leaflet.browser.print
-                    mapa.on("browser-pre-print", function(e){
-                        // on print start we already have a print map and we can create new control and add it to the print map to be able to print custom information
-                        //console.log(overlayMaps);
-                        for (var xxx in overlayMaps) {
-                            //overlayMaps[xxx].addTo(mapa);
-                            L.Control.BrowserPrint.Utils.registerLayer(
-                                overlayMaps[xxx],
-                                xxx,
-                                function(layer, utils) {
-                                    // We need to clone options to properly handle multiple renderers.
-                                    return L.tileLayer.wms(layer._url, utils.cloneOptions(layer.options));
-                                }
-                            );
-                        }
-                    });
-					L.control.browserPrint({
-                        title: 'Just print me!',
-                        documentTitle: 'Map printed using leaflet.browser.print plugin',
-                        printLayer: L.tileLayer('https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png', {
-                                        tms: true,
-                                        maxZoom: 21,
-                                        attribution: atrib_ign
-                                    }),
-                        closePopupsOnPrint: false,
-                        printModes: [
-                            L.control.browserPrint.mode.landscape(),
-                            "Portrait",
-                            L.control.browserPrint.mode.auto("Automatico", "B4"),
-                            L.control.browserPrint.mode.custom("Séléctionnez la zone", "B5")
-                        ],
-                        manualMode: false
-                    }).addTo(mapa);
-                    */
-					break;
+               		break;
 				case 'Draw':
-				    var drawnItems = L.featureGroup().addTo(mapa);
+
+					/* calcular limites de area */
+
+				    var orgReadbleDistance = L.GeometryUtil.readableArea;
+					
+					L.GeometryUtil.readableArea = function (area, isMetric, precision) {
+						if (L.GeometryUtil.formattedNumber(area / 100000, 2)>100) {
+							console.log('%cSUPERASTE LOS 100 KM2', 'color: white; background: red; font-size: 30px');
+						}else{
+							console.log('%cKM2 CORRECTO!', 'color: white; background: green; font-size: 30px');
+						}
+						return L.GeometryUtil.formattedNumber(area / 100000, 2) + ' Km2';
+						
+					};
+
+					
+
+					L.GeometryUtil.readableDistance = function (distance, isMetric, precision) {
+
+					
+					  distance *= 1.09361;
+					  console.log(distance)
+					    if (distance > 1760) {
+					        return L.GeometryUtil.formattedNumber(distance / 1760, 2) + ' millas';
+					    } else {
+					        return L.GeometryUtil.formattedNumber(distance * 3, 0) + ' ft';
+					    }
+					};
+	
+
+					/* calcular limites de area */
+
+				    drawnItems = L.featureGroup().addTo(mapa);
 
 					mapa.editableLayers = {
 						marker: [],
@@ -340,24 +341,31 @@ $("body").on("pluginLoad", function(event, plugin){
 						polygon: [],
 						polyline: []
 					};
-
+					
 					mapa.groupLayers = {};
+
+
+				
+				
 
 					var drawControl = new L.Control.Draw({
 						edit: {
 							featureGroup: drawnItems,
 							poly: {
-								allowIntersection: false
+								allowIntersection: true
 							}
 						},
 						draw: {
-							polygon: {
-								allowIntersection: false,
-								showArea: true
-							}
+							polygon: {metric: false,feet: true},
+							circlemarker: {metric: false,feet: true},
+					        polyline: {metric: false,feet: true},
+					        circle:{metric: false,feet: true},
+					        rectangle: {metric: true,feet: true}
 						},
 						position: 'topright'
 					});
+
+
 					//Customizing language and text in Leaflet.draw
 					L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
 					L.drawLocal.draw.toolbar.finish.text = 'Finalizar';
@@ -399,18 +407,30 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
 					mapa.addControl(drawControl);
 
+
+				
+
 					mapa.on('draw:drawstart', (e) => {
-						currentlyDrawing = true;
+
+					currentlyDrawing = true;
+
 					});
 					
 					mapa.on('draw:editstart', (e) => {
 						currentlyDrawing = true;
+						
 					});
+
+					 
+				
 
 					mapa.on('draw:created', (e) => {
 						const layer = e.layer;
 						const type = e.layerType;
 
+						
+
+						
 						let name = type + '_';
 						if (mapa.editableLayers[type].length === 0) {
 							name += '1';
@@ -418,7 +438,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
 							name += parseInt(lastLayerName.split('_')[1]) + 1;
 						}
-
+						
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
@@ -434,7 +454,11 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
+
+
 						drawnItems.addLayer(layer);
+
+						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						
 						if (layer.type === 'marker') {
 							//Default marker styles
@@ -450,31 +474,49 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.on('draw:edited', (e) => {
+
+
+
 						var layers = e.layers;
 						//Each layer recently edited..
 						layers.eachLayer(function (layer) {
 							//mapa.checkLayersInDrawedGeometry(layer, type);
 						});
 					});
-					
+
 					mapa.on('draw:deleted', function (e) {
 						var layers = e.layers;
 						Object.values(layers._layers).forEach(deletedLayer => {
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
+								deleteLayerFromMenu(deletedLayer);
+							// //Delete from groups
+							// for (const group in mapa.groupLayers) {
+							// 	const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
+							// 	if (lyrInGrpIdx >= 0) {
+							// 		mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+							// 		deleteLayerFromMenu(deletedLayer);
+							// 		console.log("t2")
 
-							//Delete from groups
-							for (const group in mapa.groupLayers) {
-								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
-								if (lyrInGrpIdx >= 0) {
-									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
-									if (mapa.groupLayers[group].length === 0)
-										delete mapa.groupLayers[group];
-								}
-							}
+							// 		if (mapa.groupLayers[group].length === 0)
+							// 			delete mapa.groupLayers[group];
+							// 			console.log("t3")
+							// 	}
+							// }
 						})
+						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
+
+					deleteLayerFromMenu = (deletedLayer) => {// Delete layers entries from menu if exists
+						Object.entries(mapa.groupLayers).forEach(([k, v]) => {
+							v.forEach(e => {
+								if(e === deletedLayer.name) {
+									deleteLayerGeometry(k,true)
+								}
+							});
+						});
+					}
 
 					mapa.on('draw:drawstop', (e) => {
 						setTimeout(() => {
@@ -486,12 +528,59 @@ $("body").on("pluginLoad", function(event, plugin){
 						currentlyDrawing = false;
 					});
 
+					
+					mapa.on('zoomend', (e) => {
+						let contextPopup = null;
+						const contextMenu = new ContextMenu();
+						mapa.closePopup(contextPopup);
+						$(".context-quehay").slideUp();
+					});
+
+					mapa.on('dragend', (e) => {
+						let contextPopup = null;
+						const contextMenu = new ContextMenu();
+						mapa.closePopup(contextPopup);
+						$(".context-quehay").slideUp();
+					});
+
+
+					
+
 					mapa.on('contextmenu', (e) => {
+						
+						var capa = "";
+						$.each(mapa._layers, function (ml) {
+							$.each(mapa._layers[ml], function (v) {
+								if (mapa._layers[ml]._url!=undefined) {
+									capa = mapa._layers[ml]._url;
+								}
+								 
+						   	})
+						 })
+						
+
+						var zoom = e.target._zoom;
+						var count = 0;
+						
+						var imagen = ""
+						$.each(e.target._zoomBoundLayers,function(clave,valor){
+							$.each(valor._tiles,function(key,value){
+								if (count==0) {
+									
+									imagen = value.el.currentSrc;
+								}
+								count++;
+							});
+						});
+
+
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
 
 						const lng = e.latlng.lng.toFixed(5);
 						const lat = e.latlng.lat.toFixed(5);
+
+						
 
 						contextMenu.createOption({
 							isDisabled: false,
@@ -501,6 +590,26 @@ $("body").on("pluginLoad", function(event, plugin){
 								copytoClipboard(`${lat}, ${lng}`);
 							}
 						});
+
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Mas información',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);	
+									 $("#search_bar").val(lat+","+lng).focus();					              
+							}
+						});
+
+						contextMenu.createOption({
+						isDisabled: false,
+						text: "Abrir en...",
+						onclick: (option) => {
+							mapa.closePopup(contextPopup);
+							let _url = `geo:${lat},${lng}`;
+							window.open(_url);
+							}
+						});
+						
 						contextMenu.createOption({
 							isDisabled: false,
 							text: 'Agregar marcador',
@@ -515,21 +624,72 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.closePopup(contextPopup);
 							}
 						});
+
+							if (gestorMenu.getActiveBasemap() === "esri_imagery") {
+								contextMenu.createOption({
+									isDisabled: false,
+									text: 'Datos de imagen satelital',
+									onclick: (option) => {
+										mapa.closePopup(contextPopup);
+										let imagenDato = '<div><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span>No existen datos a este nivel de zoom</div>',
+										imgData = new Fechaimagen(lat,lng,zoom).area;
+										if (imgData!="") {
+											//let mdTable = `Fecha: ${imgData.date}<br>Resolución espacial: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
+											let mdTable = `<table id="md-table" style="width: 300px;text-align:left;" align="left"><tr><td>Fecha</td><td>${imgData.date}</td></tr><tr><td title="Relación de metros por lado de pixel">Resolución espacial</td><td>${imgData.resolution} m</td></tr><tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr><tr><td title="Misión aérea o constelación satelital">Sensor</td><td>${imgData.sensor}</td></tr><tr><td>Proveedor</td><td>${imgData.provider}</td></tr><tr><td>Producto</td><td>${imgData.product}</td></tr><tr><td>Zoom mínimo</td><td>${imgData.minZoom}</td></tr><tr><td>Zoom máximo</td><td>${imgData.maxZoom}</td></tr></table>`;
+											imagenDato = `<div><a onclick="copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. Una resolución espacial de ${imgData.resolution} m. La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. El proveedor es ${imgData.provider_texto} y el producto ${imgData.product} \');" href="#" style="position: absolute;top: 18px;left: 22px;"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span><!--<center><b>Metadatos del fondo</b></center><br>-->${mdTable}<hr></div>`;
+										}
+
+										$(".context-imagen").slideDown();
+										$(".context-imagen").html(imagenDato);
+										
+										
+									}
+								});
+							}
+
 						contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
 						.setLatLng(e.latlng)
 						.setContent(contextMenu.menu);
 						mapa.openPopup(contextPopup);
 					});
 
-					mapa.addSelectionLayersMenuToLayer = (layer) => {
-						const popUpDiv = mapa.createPopUp(layer);
-						layer.bindPopup(popUpDiv);
+					mapa.addMethodToEvent = (method, event) => {
+						mapa.methodsEvents[event].push(method);
+					};
 
-						layer.on('click', (e) => {
-							const layer = e.target;
-							const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+					mapa.addSelectionLayersMenuToLayer = (layer,file) => {
+						if (file==undefined || !file) {
+							const popUpDiv = mapa.createPopUp(layer);
 							layer.bindPopup(popUpDiv);
-						});
+	
+							layer.on('click', (e) => {
+								const layer = e.target;
+								const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+								layer.bindPopup(popUpDiv);
+							});
+						}else {
+							const popUpDiv = mapa.createPopUp(layer);
+							layer.bindPopup(popUpDiv);
+	
+							layer.on('click', (e) => {
+								const layer = e.target;
+								const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+								layer.bindPopup(popUpDiv);
+							});
+
+						}
+					}
+
+					mapa.centerLayer = (layer) => {
+						if (!layer) {
+							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
+						}
+
+						if (layer.type === 'marker' || layer.type === 'circlemarker') {
+							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+						} else {
+							mapa.fitBounds(layer.getBounds());
+						}
 					}
 
 					mapa.addContextMenuToLayer = (layer) => {
@@ -1337,9 +1497,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type] : mapa.editableLayers;
 					}
 
-					mapa.getEditableLayer = (name) => {
+					mapa.getEditableLayer = (name,file) => {
 						const type = name.split('_')[0];
-						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
+
+						if (file==undefined || !file) {
+							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
+						}else {
+							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
+							
+						}					
+						
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
@@ -1373,7 +1540,6 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
-								//console.log(coords, layer.type, activeLayer)
 								getLayerDataByWFS(coords, layer.type, activeLayer)
 								.then(data => {
 
@@ -1386,6 +1552,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 									//Load data in table
 									const table = new Datatable(data, coords);
+									//console.clear()
 									createTabulator(table, activeLayer.name);
 
 									//we can style the figure in case it can receive some information
@@ -1405,93 +1572,181 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 					
-					mapa.getLayerGeoJSON = (layer) => {
+					mapa.getLayerGeoJSON = (layer,file) => {
 						const type = layer.split('_')[0];
-						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
+						if (file==undefined || !file) {
+							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
+							
+						}else {
+							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
+
+						}
 					}
 					
-					mapa.showLayer = (layer) => {
-						const type = layer.split('_')[0];
-						if (mapa.editableLayers.hasOwnProperty(type)) {
-							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
-							if (lyr)
-								drawnItems.addLayer(lyr);
-						}
-					}
 
-					mapa.hideLayer = (layer) => {
-						Object.values(drawnItems._layers).forEach(lyr => {
-							if (layer === lyr.name) {
-								drawnItems.removeLayer(lyr);
-								return;
+					mapa.showLayer = (layer,file) => {
+						const type = layer.split('_')[0];
+						if (file==undefined || !file) {
+							if (mapa.editableLayers.hasOwnProperty(type)) {
+								const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
+								if (lyr)
+									drawnItems.addLayer(lyr);
 							}
-						});
+						}else {
+							if (mapa.editableLayers.hasOwnProperty(type)) {
+								const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
+								if (lyr)
+									drawnItems.addLayer(lyr);
+							}
+						}
 					}
 
-					mapa.showGroupLayer = (group) => {
-						if (mapa.groupLayers.hasOwnProperty(group))
-							mapa.groupLayers[group].forEach(layer => {
-								mapa.showLayer(layer);
+					mapa.hideLayer = (layer,file) => {
+						if (file==undefined || !file) {
+							Object.values(drawnItems._layers).forEach(lyr => {
+								if (layer === lyr.name) {
+									drawnItems.removeLayer(lyr);
+									return;
+								}
 							});
-					}
-
-					mapa.hideGroupLayer = (group) => {
-						if (mapa.groupLayers.hasOwnProperty(group))
-						mapa.groupLayers[group].forEach(layer => {
-							mapa.hideLayer(layer);
-						});
-					}
-
-					mapa.deleteLayer = (layer) => {
-						const type = layer.split('_')[0];
-						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
-						if (lyrIdx >= 0) {
-							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
-							mapa.editableLayers[type].splice(lyrIdx, 1);
-						}
-
-						//Delete from groups
-						for (const group in mapa.groupLayers) {
-							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
-							if (lyrInGrpIdx >= 0)
-								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+						}else {
+							Object.values(drawnItems._layers).forEach(lyr => {
+								if (layer === lyr.name) {
+									drawnItems.removeLayer(lyr);
+									return;
+								}
+							});
 						}
 					}
 
-					mapa.removeGroup = (group, deleteLayers) => {
-						if (mapa.groupLayers.hasOwnProperty(group)) {
-							if (deleteLayers) {
-								const layersArr = [...mapa.groupLayers[group]];
-								layersArr.forEach(layer => {
-									mapa.deleteLayer(layer);
+					
+					mapa.showGroupLayer = (group,file) => {
+						if (file==undefined || !file) {
+							if (mapa.groupLayers.hasOwnProperty(group)){
+								mapa.groupLayers[group].forEach(layer => {
+									mapa.showLayer(layer);
 								});
 							}
-							delete mapa.groupLayers[group];
+						}else {
+							if (mapa.groupLayers.hasOwnProperty(group)){
+								mapa.groupLayers[group].forEach(layer => {
+									mapa.showLayer(layer, true);
+								});
+							}
 						}
 					}
 
-					mapa.addLayerToGroup = (layer, group) => {
-						if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
-							mapa.groupLayers[group].push(layer);
+					mapa.hideGroupLayer = (group,file) => {
+						if (file==undefined || !file) {
+							if (mapa.groupLayers.hasOwnProperty(group))
+								mapa.groupLayers[group].forEach(layer => {
+									mapa.hideLayer(layer);
+							});
+						}else{
+							if (mapa.groupLayers.hasOwnProperty(group))
+								mapa.groupLayers[group].forEach(layer => {
+									mapa.hideLayer(layer,true);
+							});
 						}
 					}
 
-					mapa.removeLayerFromGroup = (layer, group) => {
-						if (mapa.groupLayers.hasOwnProperty(group)) {
-							const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
-							if (layerIdx >= 0)
-								mapa.groupLayers[group].splice(layerIdx, 1);
+					mapa.deleteLayer = (layer, file) => {
+						const type = layer.split('_')[0];
+						if (file==undefined || !file) {
+							const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
+							if (lyrIdx >= 0) {
+								drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
+								mapa.editableLayers[type].splice(lyrIdx, 1);
+							}
+	
+							//Delete from groups
+							for (const group in mapa.groupLayers) {
+								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
+								if (lyrInGrpIdx >= 0)
+									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+							}
+						}else {
+							const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
+							if (lyrIdx >= 0) {
+								drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
+								mapa.editableLayers[type].splice(lyrIdx, 1);
+							}
+	
+							//Delete from groups
+							for (const group in mapa.groupLayers) {
+								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
+								if (lyrInGrpIdx >= 0)
+									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+							}
+						}
+						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers))
+						controlSeccionGeom()
+					}
+
+					mapa.removeGroup = (group, deleteLayers,file) => {
+						// console.log('file',file);
+						if (file==undefined || !file) {
+							if (mapa.groupLayers.hasOwnProperty(group)) {
+								if (deleteLayers) {
+									const layersArr = [...mapa.groupLayers[group]];
+									layersArr.forEach(layer => {
+										mapa.deleteLayer(layer);
+									});
+								}
+								delete mapa.groupLayers[group];
+							}
+						}else {
+							if (mapa.groupLayers.hasOwnProperty(group)) {
+								if (deleteLayers) {
+									const layersArr = [...mapa.groupLayers[group]];
+									layersArr.forEach(layer => {
+										mapa.deleteLayer(layer,true);
+									});
+								}
+								delete mapa.groupLayers[group];
+							}
+						}
+					}
+
+					mapa.addLayerToGroup = (layer, group, file) => {
+						if (file==undefined || !file) {
+							if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
+								mapa.groupLayers[group].push(layer);
+							}
+						}else {
+							if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
+								mapa.groupLayers[group].push(layer);
+							}
+						}
+					}
+
+					mapa.removeLayerFromGroup = (layer, group, file) => {
+						if (file==undefined || !file) {
+							if (mapa.groupLayers.hasOwnProperty(group)) {
+								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
+								if (layerIdx >= 0)
+									mapa.groupLayers[group].splice(layerIdx, 1);
+							}
+						}else {
+							if (mapa.groupLayers.hasOwnProperty(group)) {
+								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
+								if (layerIdx >= 0)
+									mapa.groupLayers[group].splice(layerIdx, 1);
+							}
 						}
 					}
 
 					mapa.downloadLayerGeoJSON = (layer) => {
-						const geoJSON = layer.toGeoJSON();
+						const geoJSON = {
+							type: "FeatureCollection",
+							features: [layer.toGeoJSON()]
+						};
 						const styleOptions = { ...layer.options };
-						geoJSON.properties.styles = { ...styleOptions };
-						geoJSON.properties.type = layer.type;
+						geoJSON.features[0].properties.styles = { ...styleOptions };
+						geoJSON.features[0].properties.type = layer.type;
 						if (layer.type === 'marker') {
-							if (geoJSON.properties.styles.hasOwnProperty('icon')) {
-								delete geoJSON.properties.styles.icon;
+							if (geoJSON.features[0].properties.styles.hasOwnProperty('icon')) {
+								delete geoJSON.features[0].properties.styles.icon;
 							}
 						}
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON));
@@ -1502,21 +1757,33 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.click();
 						downloadANode.remove();
 					}
-
-					mapa.downloadMultiLayerGeoJSON = (groupLayer) => {
+					
+					mapa.downloadMultiLayerGeoJSON = (groupLayer,file) => {
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []
 						};
-
-						mapa.groupLayers[groupLayer].forEach(layerName => {
-							const layer = mapa.getEditableLayer(layerName);
-							const geoJSON = layer.toGeoJSON();
-							const styleOptions = { ...layer.options };
-							geoJSON.properties.styles = styleOptions;
-							geoJSON.properties.type = layer.type;
-							jsonToDownload.features.push(geoJSON);
-						});
+						if (file==undefined || !file){
+							mapa.groupLayers[groupLayer].forEach(layerName => {
+								const layer = mapa.getEditableLayer(layerName);
+								const geoJSON = layer.toGeoJSON();
+								const styleOptions = { ...layer.options };
+								geoJSON.properties.styles = styleOptions;
+								geoJSON.properties.type = layer.type;
+								jsonToDownload.features.push(geoJSON);
+							});
+						}else{
+							mapa.groupLayers[groupLayer].forEach(layerName => {
+								const layer = mapa.getEditableLayer(layerName,true);
+								const geoJSON = layer.toGeoJSON();
+								const styleOptions = { ...layer.options };
+								geoJSON.properties.styles = styleOptions;
+								geoJSON.properties.type = layer.type;
+								// TODO: include all properties fields to GeoJSON
+								(layer.value) ? geoJSON.properties.value = layer.value : 0;
+								jsonToDownload.features.push(geoJSON);
+							});
+						}
 
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
@@ -1647,13 +1914,23 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.setIcon(icon);
 					};
 
-					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, groupIsCreated) => {
-						if (!groupIsCreated)
+					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, groupIsCreated, file) => {
+						if (file==undefined || !file && mapa.groupLayers[groupName] === undefined){
 							mapa.groupLayers[groupName] = [];
-
+						}else{
+							if(mapa.groupLayers[groupName] == undefined){
+								mapa.groupLayers[groupName] = [];
+							}
+						}
+						
 						if (geoJSON.type === 'FeatureCollection') {
 							geoJSON.features.forEach(feature => {
-								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true);
+								if(file==undefined || !file){
+									console.log("file undefined " + feature);
+									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, false);
+								}else {
+									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
+								}
 							});
 							return;
 						}
@@ -1701,8 +1978,81 @@ $("body").on("pluginLoad", function(event, plugin){
 							break;
 							case 'linestring': {
 								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
-								layer = L.polyline(invertedCoords, options);
-								type = 'polyline';
+								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
+									let n = geoJSON.properties.value
+									let value = geoJSON.properties.value + ' m'
+									
+									if(!countour_styles) countour_styles = getStyleContour()
+									
+
+									if (n % countour_styles.d_line_m === 0) {
+										let colord = ""
+										if(countour_styles.d_line_color === "multi"){
+											colord = getMulticolorContour(n)
+										}
+										else{colord = countour_styles.d_line_color}
+
+										options = {
+											color: colord,
+											weight: countour_styles.d_weigth,
+											smoothFactor: countour_styles.smoothFactor,
+											'font-weight': 'bold'
+												}
+									}else{
+										let colorc = ""
+										if(countour_styles.line_color === "multi"){
+											colorc = getMulticolorContour(n)
+										} else{ colorc = countour_styles.line_color}
+
+
+										options = { color: colorc,
+													weight: countour_styles.line_weight,
+													smoothFactor: countour_styles.smoothFactor,
+													'font-weight': 'regular'
+												}
+									}
+									//if (n % 100 === 0 ||n % 50 === 0) 
+
+									layer = L.polyline(invertedCoords, options);
+									type = 'polyline';
+									layer.layer = groupName;
+									layer.value = geoJSON.properties.value
+									if (n % 100 === 0 ||n % 50 === 0) {
+										// textPath
+										layer.setText(value, {
+											repeat: false,
+											offset: -3,
+											center: true,
+											attributes: {
+												textLength: 55,
+												fill: 'Maroon',
+												'font-weight': options['font-weight'],
+												'font-family': 'sans-serif',
+												stroke: 'white',
+												'stroke-opacity': '1',
+												'stroke-width': '0.5'
+												/* 'font-size': '24px' */
+											}
+										});
+									}
+									layer.on('mouseover', function (e) {
+										let elevation = geoJSON.properties.value.toString() + " m";
+										let tooltipStyle = {
+											direction: 'right',
+											permanent: false,
+											sticky: true,
+											offset: [10, 0],
+											opacity: 0.75,
+											className: 'map-tooltip'
+										};
+										layer.bindTooltip(`<div><b>${elevation}</b></div>`,
+										 tooltipStyle);
+									});
+								} else {
+									layer = L.polyline(invertedCoords, options);
+									type = 'polyline';
+								}
+								
 							}
 							break;
 							case 'polygon': {
@@ -1726,7 +2076,11 @@ $("body").on("pluginLoad", function(event, plugin){
 										},
 										properties: geoJSON.properties
 									};
-									mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true);
+									if(file==undefined || !file){
+										mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, false);
+									}else {
+										mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, true);
+									}
 								});
 								return;
 							}
@@ -1740,7 +2094,11 @@ $("body").on("pluginLoad", function(event, plugin){
 										},
 										properties: geoJSON.properties
 									};
-									mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true);
+									if(file==undefined || !file){
+										mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, false);
+									}else {
+										mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, true);
+									}
 								});
 								return;
 							}
@@ -1753,28 +2111,50 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						let name = type + '_';
-						if (mapa.editableLayers[type].length === 0) {
-							name += '1';
-						} else {
-							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-							name += parseInt(lastLayerName.split('_')[1]) + 1;
+						
+						if(file==undefined || !file){
+							if (mapa.editableLayers[type].length === 0) {
+								name += '1';
+							} else {
+								const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+								name += parseInt(lastLayerName.split('_')[1]) + 1;
+							}
+						}else {
+							if (mapa.editableLayers[type].length === 0) {
+								name += '1';
+							} else {
+								const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+								name += parseInt(lastLayerName.split('_')[1]) + 1;
+							}
 						}
 
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
 
-						mapa.groupLayers[groupName].push(name);
+						if(file==undefined || !file){
+							mapa.groupLayers[groupName].push(name);
+						}else {
+							mapa.groupLayers[groupName].push(name);
+						}
 
 						layer.getGeoJSON = () => {
-							return mapa.getLayerGeoJSON(layer.name);
+							return mapa.getLayerGeoJSON(layer.name, file);
 						}
-
+						
 						layer.downloadGeoJSON = () => {
-							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+							if(file==undefined || !file){
+								mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+							}else {
+								mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+							}
 						}
 
-						mapa.editableLayers[type].push(layer);
+						if(file==undefined || !file){
+							mapa.editableLayers[type].push(layer);
+						}else {
+							mapa.editableLayers[type].push(layer);
+						}
 						
 						if (layer.type === 'marker') {
 							//Default marker styles
@@ -1798,12 +2178,16 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						//Left-click
 						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
-							mapa.addSelectionLayersMenuToLayer(layer);
+							mapa.addSelectionLayersMenuToLayer(layer, file);
 						}
 						//Right-click
-						mapa.addContextMenuToLayer(layer);
-
-						drawnItems.addLayer(layer);
+						mapa.addContextMenuToLayer(layer, file);
+						
+						if(file==undefined || !file){
+							drawnItems.addLayer(layer);
+						}else {
+							drawnItems.addLayer(layer);
+						}
 
 						/* if (type !== 'marker' && type !== 'circlemarker') {
 							mapa.fitBounds(layer.getBounds());
@@ -1852,8 +2236,16 @@ $("body").on("pluginLoad", function(event, plugin){
 				layers: currentBaseMap ? [currentBaseMap] : undefined,
 				zoomControl: false,
 				minZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
-				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL
+				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
+				/* renderer: L.svg() */
 			});
+			
+
+			//Available events
+			mapa.methodsEvents = {
+				'add-layer': [],
+				'delete-layer': []
+			};
 
 			setValidZoomLevel(selectedBasemap.nombre);
 
@@ -2238,6 +2630,7 @@ function loadWmsTpl (objLayer) {
 
     function createWmtsLayer(objLayer) {
 		// tilematrix, style and format should be set by a method
+		let wmts_maxZoom = app.hasOwnProperty('service') ? app.service.wmts.maxZoom : DEFAULT_WMTS_MAX_ZOOM_LEVEL
 		let _style = "", _tilematrixSet = "EPSG:3857", _format = "image/png";
 		var wmtsSource = new L.TileLayer.WMTS(objLayer.capa.getHostWMS(),
 			{
@@ -2245,7 +2638,8 @@ function loadWmsTpl (objLayer) {
 				style: _style,
 				tilematrixSet: _tilematrixSet,
 				format: _format,
-				attribution: objLayer.nombre
+				attribution: objLayer.nombre,
+				maxZoom: wmts_maxZoom
 			}
 		);
 		overlayMaps[objLayer.nombre] = wmtsSource;
@@ -2348,3 +2742,7 @@ function copytoClipboard(coords){
 	document.body.removeChild(aux);
 	new UserMessage('Las coordenadas se copiaron al portapapeles', true, 'information');
 }
+
+
+
+

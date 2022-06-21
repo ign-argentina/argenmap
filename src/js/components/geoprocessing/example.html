@@ -1,0 +1,75 @@
+<!-- 
+Contour:
+input 1: coordenadas de rectangulo (4 valores)
+input 2: Equidistancia
+execute [int,int,int,int,int]
+ -->
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Document</title>
+ </head>
+ <body>
+   
+ </body>
+ </html>
+
+<script>
+    let contour = new GeoserviceFactory.Contour(       
+      "http://127.0.0.1:8080/geoserver/ows?service=WPS&version=1.0.0"
+    );
+    console.log(contour.getFields());
+    contour
+      .execute(-69.8151, -34.1526, -69.8061, -34.1410, 100)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((ex) => {
+        console.log(ex.message);
+      });
+</script>
+
+<!-- 
+elevationProfile:
+input 1: coordenadas de linea (2 valores)
+execute [string]
+-->
+-69.74525310103932 -33.54329042505865,-69.7406624828408 -33.54081341468674
+<script>
+    let elevationProfile = new GeoserviceFactory.ElevationProfile(       
+      "http://127.0.0.1/geoprocess-backend/elevation-profile"
+    );
+    console.log(elevationProfile.getFields());
+    elevationProfile
+      .execute("-69.74525310103932 -33.54329042505865,-69.7406624828408 -33.54081341468674")
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((ex) => {
+        console.log(ex.message);
+      });
+</script>
+
+<!-- 
+waterRise:
+input 1: coordenadas de linea
+input 2: level: number
+execute [int,int,int,int,int]
+ -->
+<script>
+    let waterRise = new GeoserviceFactory.WaterRise(       
+      "http://127.0.0.1:8080/geoserver/ows?service=WPS&version=1.0.0"
+    );
+    console.log(waterRise.getFields());
+    waterRise
+      .execute(-69.8151, -34.1526, -69.8061, -34.1410, 4000)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((ex) => {
+        console.log(ex.message);
+      });
+</script>

@@ -1,59 +1,29 @@
-let geojsonfile = "";
-
-const modalicon = `
-<div data-html2canvas-ignore="true" class="center-flex" id="modalgeojson" title="Abrir Archivo">
-    <div class="center-flex" id="iconopenfile-container" onClick=uimodalfs.clickOpenFileIcon()>
-        <span id="spanopenfolder" class="fa fa-folder-open" aria-hidden="true" ></span>
-    </button>
-</div>
-`;
-
-const bootstraptabs = `
-<ul class="nav nav-tabs" id="ul-modalfies" style="background-color: white">
-  <li class="active"><a style="background-color: white !important; color:black !important" data-toggle="tab" href="#geoJSON-openfile">geoJSON</a></li>
-  <li class="disabled"><a style="background-color: white !important; color:grey !important"  href="#KML-openfile">KML</a></li>
-  <li class="disabled"><a style="background-color: white !important; color:grey !important"  href="#Shapefile-openfile">Shapefile</a></li>
-  <li class="disabled"><a style="background-color: white !important; color:grey !important"  href="#CSV-openfile">CSV</a></li>
-  </ul>
-  <div class="tab-content" style="border:white" >
-      <form id="geoJSON-openfile" class="tab-pane fade in active" style="background-color: white !important">
-      </form>
-      <div id="KML-openfile" class="tab-pane fade" style="background-color: white !important">
-        <h3>kml</h3>
-      </div>
-      <div id="Shapefile-openfile" class="tab-pane fade" style="background-color: white !important">
-        <h3>Shapefile</h3>
-      </div>
-      <div id="CSV-openfile" class="tab-pane fade" style="background-color: white !important">
-      <h3>CSV</h3>
-    </div>
-  </div>
-`;
-
-const htmlopenfile = `
-<input type="file" id="files" name="file" />
-<button onclick="abortRead();">Cancel read</button>
-<div id="progress_bar"><div class="percent">0%</div></div>
-`;
-
-let divalert = document.createElement("div");
-divalert.className = "alert alert-danger";
-divalert.role = "alert";
-divalert.style = "padding:8px !important; margin:0px";
+let upload_files = null;
+let currentLayers = [];
+let addedLayers = [];
+let open = false;
+let control_btn_add_layer = false;
 
 class IconModalGeojson {
-  constructor() {
-    this.component = modalicon;
-  }
+  // constructor() {
+  //   // this.component = `
+  //   // <div data-html2canvas-ignore="true" class="center-flex" id="modalgeojson" title="Abrir Archivos">
+  //   //     <div class="center-flex" id="iconopenfile-container" onClick=uimodalfs.clickOpenFileIcon()>
+  //   //         <span id="spanopenfolder" class="fa fa-folder-open" aria-hidden="true" ></span>
+  //   //     </button>
+  //   // </div>
+  //   // `;
+  // }
 
   createComponent() {
-    const elem = document.createElement("div");
-    elem.innerHTML = this.component;
-    document.getElementById("mapa").appendChild(elem);
+    // const elem = document.createElement("div");
+    // elem.innerHTML = this.component;
+    // document.getElementById("mapa").appendChild(elem);
+
+    return uimodalfs.clickOpenFileIcon();
   }
 }
 
-//modal
 class UImf {
   createElement(element, id, className) {
     let aux = document.createElement(element);
@@ -67,172 +37,469 @@ class UImf {
   }
 
   createModal() {
-    let divContainer = this.createElement(
-      "div",
-      "modalOpenFile",
-      "modalOpenFile"
-    );
-    divContainer.appendChild(this.createElement("div", "icons-modalfile"));
-    let divtabs = this.createElement("div", "tabsfile", "tabsfile");
-    //for disabled remove: data-toggle="tab"
-    divtabs.innerHTML = bootstraptabs;
-    divContainer.append(divtabs);
-    document.body.appendChild(divContainer);
 
-    let btnclose = this.createElement(
-      "a",
-      "btnclose-icon-modalfile",
-      "icon-modalfile"
-    );
-    btnclose.innerHTML =
-      '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>';
+    let divContainer = document.createElement("div")
+    divContainer.id = "modalOpenFile"
+    divContainer.className = "modalOpenFile"
+
+    let mainIcons = document.createElement("div")
+    mainIcons.className = "icons-modalfile"
+
+    let f_sec = document.createElement("section")
+    f_sec.style = "width:95%"
+
+    let s_sec = document.createElement("section")
+    s_sec.style = "width:5%"
+    let btnclose = document.createElement("a")
+    btnclose.id = "btnclose-icon-modalfile"
+    btnclose.className = "icon-modalfile"
+    btnclose.innerHTML = '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = function () {
       document.body.removeChild(modalOpenFile);
       document.getElementById("iconopenfile-container").disabled = false;
       document.getElementById("modalgeojson").style.color = "black";
-      geojsonfile = "";
+      open = false;
+      currentLayers = [];
     };
+    s_sec.append(btnclose);
 
-    let spantitle = this.createElement(
-      "span",
-      "title-icon-modalfile",
-      "icon-modalfile"
-    );
-    spantitle.innerHTML = "Abrir Archivo";
-    document.getElementById("icons-modalfile").append(spantitle);
-    document.getElementById("icons-modalfile").append(btnclose);
+    mainIcons.append(f_sec)
+    mainIcons.append(s_sec)
 
-    let alerts = this.createElement("div", "alert-message-modalfile");
-    document.getElementById("modalOpenFile").append(alerts);
+
+    let tab_div = document.createElement("div")
+    tab_div.className = "tabs_upload"
+    tab_div.innerHTML = `
+    <span style="font-size:12px;color:#37bbed;margin:0px 10px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX, SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
+
+
+    let mainContainerFile = document.createElement("div")
+    mainContainerFile.id = "file_gestor"
+    mainContainerFile.style = "width:80%;margin:0 auto"
+
+
+
+
+    // Add from
+
+    // let mainContainerFile = document.getElementById("file_gestor")
+
+    let logo_upload = document.createElement("div")
+    logo_upload.className = "wrapper"
+
+    let divaux = document.createElement("div")
+    divaux.id = "logo_upload_container"
+    divaux.className = "upload"
+
+    let main_inputfile = document.createElement("input")
+    main_inputfile.accept = ".txt,.json,.geojson,.wkt,.kml,.zip,.gpx"
+    main_inputfile.id = "input_uploadfile"
+    main_inputfile.name = "file"
+    main_inputfile.type = "file"
+    main_inputfile.className = "file-input"
+    main_inputfile.style = "opacity: 0.0;top: 0; left: 0; bottom: 0;right: 0;"
+    main_inputfile.addEventListener("change", function (e) {
+      // Fix Chrome bug: change event fires on cancel when previous file was uploaded
+      if (!e.target.files[0]) return;
+
+      let ui_upload = new UImf();
+
+      //FileReader.onload --->ui_upload.logoAnimation()
+      ui_upload.logoAnimation()
+
+      // Initialize File Layer
+      let fileLayer = new FileLayer();
+      // Give uploaded file to fileLayer
+      fileLayer.handleFile(e.target.files[0]).then(() => {
+        //active btn add layer
+        ui_upload.enabledbtnCapa()
+        // Stop load animation
+        ui_upload.reload_logo();
+        // Show the uploaded file
+
+        // Check if the file was loaded in the current dialog
+        let existsInCurrent = currentLayers.filter((e) => {
+          return e.file_name == fileLayer.getFileName()
+        })
+        // Check if the file was load previously
+        let existsInAdded = addedLayers.filter((e) => {
+          return e.file_name == fileLayer.getFileName()
+        })
+
+        // Set the name, short or add number of ocurrencies
+        let name;
+        if (existsInCurrent.length || existsInAdded.length) {
+          let exists = existsInCurrent.length + existsInAdded.length;
+          name = stringShortener(fileLayer.getFileName(), 13, false) + `..(${exists})`;
+        } else {
+          name = stringShortener(fileLayer.getFileName(), 16, true);
+        }
+
+
+        // Add to current layers to add to the layers menu later
+        currentLayers.push({
+          id: fileLayer.getId(),
+          layer: fileLayer.getGeoJSON(),
+          name: name,
+          file_name: fileLayer.getFileName(),
+          kb: fileLayer.getFileSize('kb')
+        });
+
+        // Show in the dialog
+        ui_upload.addFileItem(fileLayer.getId());
+
+
+      }).catch((error) => {
+        console.warn('Hay error: ', error);
+        new UserMessage(error, true, 'error');
+        ui_upload.reload_logo();
+      })
+
+    });
+
+    let faicon = document.createElement("i")
+    faicon.id = "logo_up"
+    faicon.className = "fas fa-arrow-circle-up"
+
+    let ptitle = document.createElement("p")
+    ptitle.innerHTML = "Abrir Archivo"
+
+    divaux.append(main_inputfile)
+    divaux.append(faicon)
+    divaux.append(ptitle)
+    divaux.onclick = function () {
+      let aux = document.getElementById("input_uploadfile")
+      aux.click();
+    }
+
+    logo_upload.append(divaux)
+
+    let section_load = document.createElement("section")
+    section_load.className = "uploaded-area"
+    section_load.id = "uploaded-area"
+
+    let btnCapa = document.createElement("button")
+    btnCapa.id = "btn-upload-agregar-capa"
+    btnCapa.className = "btn btn-info disabled"
+    btnCapa.style = "width:100%; margin:20px 0px 10px 0px"
+    btnCapa.innerHTML = "Agregar Capa"
+    btnCapa.onclick = function () {
+
+      if (control_btn_add_layer) addLayersfromFiles()
+    }
+
+    // mainIcons
+    // tab_div
+    // mainContainerFile
+
+    mainContainerFile.append(tab_div)
+    mainContainerFile.append(logo_upload)
+    mainContainerFile.append(section_load)
+    mainContainerFile.append(btnCapa)
+
+
+
+
+    return mainContainerFile;
+    // document.body.appendChild(divContainer);
+
+
+    // $( "#modalOpenFile" ).draggable({
+    //   containment: "#mapa"})
   }
 
-  addForm() {
-    var name = this.createElement("input", "capaname", "form-control");
-    name.type = "text";
-    name.placeholder = "Nombre de capa";
-    name.style = "margin-bottom:10px; margin-top:10px";
 
-    document.getElementById("geoJSON-openfile").append(name);
 
-    let divdialog = this.createElement("div");
-    let firsinput = this.createElement(
-      "input",
-      "inputfile",
-      "form-control form-control-sm"
-    );
-    firsinput.type = "file";
-    firsinput.name = "inputfile";
-    firsinput.accept = ".geojson";
-    let out = this.createElement("pre", "output", "preoutputfile");
-    divdialog.append(firsinput);
-    divdialog.append(out);
-    document.getElementById("geoJSON-openfile").append(divdialog);
-    //agrego archivo
-    document
-      .getElementById("inputfile")
-      .addEventListener("change", function () {
-        var fr = new FileReader();
-        fr.onload = function () {
-          document.getElementById("output").textContent = fr.result;
-          geojsonfile = JSON.parse(fr.result);
-        };
-        fr.readAsText(this.files[0]);
-      });
-    uimodalfs.submitbtn();
+  // addForm() {
+
+  //   let contenedor_principal = document.getElementById("file_gestor")
+
+  //   let logo_upload = document.createElement("div")
+  //   logo_upload.className = "wrapper"
+
+  //   let divaux = document.createElement("div")
+  //   divaux.id = "logo_upload_container"
+  //   divaux.className = "upload"
+
+  //   let main_inputfile = document.createElement("input")
+  //   main_inputfile.accept = ".txt,.json,.geojson,.wkt,.kml,.zip,.gpx"
+  //   main_inputfile.id = "input_uploadfile"
+  //   main_inputfile.name = "file"
+  //   main_inputfile.type = "file"
+  //   main_inputfile.className = "file-input"
+  //   main_inputfile.style = "opacity: 0.0;top: 0; left: 0; bottom: 0;right: 0;"
+  //   main_inputfile.addEventListener("change", function (e) {
+  //     // Fix Chrome bug: change event fires on cancel when previous file was uploaded
+  //     if (!e.target.files[0]) return;
+
+  //     let ui_upload = new UImf();
+
+  //     //FileReader.onload --->ui_upload.logoAnimation()
+  //     ui_upload.logoAnimation()
+
+  //     // Initialize File Layer
+  //     let fileLayer = new FileLayer();
+  //     // Give uploaded file to fileLayer
+  //     fileLayer.handleFile(e.target.files[0]).then(() => {
+  //       //active btn add layer
+  //       ui_upload.enabledbtnCapa()
+  //       // Stop load animation
+  //       ui_upload.reload_logo();
+  //       // Show the uploaded file
+
+  //       // Check if the file was loaded in the current dialog
+  //       let existsInCurrent = currentLayers.filter((e) => {
+  //         return e.file_name == fileLayer.getFileName()
+  //       })
+  //       // Check if the file was load previously
+  //       let existsInAdded = addedLayers.filter((e) => {
+  //         return e.file_name == fileLayer.getFileName()
+  //       })
+
+  //       // Set the name, short or add number of ocurrencies
+  //       let name;
+  //       if (existsInCurrent.length || existsInAdded.length) {
+  //         let exists = existsInCurrent.length + existsInAdded.length;
+  //         name = stringShortener(fileLayer.getFileName(), 13, false) + `..(${exists})`;
+  //       } else {
+  //         name = stringShortener(fileLayer.getFileName(), 16, true);
+  //       }
+
+
+  //       // Add to current layers to add to the layers menu later
+  //       currentLayers.push({
+  //         id: fileLayer.getId(),
+  //         layer: fileLayer.getGeoJSON(),
+  //         name: name,
+  //         file_name: fileLayer.getFileName(),
+  //         kb: fileLayer.getFileSize('kb')
+  //       });
+
+  //       // Show in the dialog
+  //       ui_upload.addFileItem(fileLayer.getId());
+
+
+  //     }).catch((error) => {
+  //       console.warn('Hay error: ', error);
+  //       new UserMessage(error, true, 'error');
+  //       ui_upload.reload_logo();
+  //     })
+
+  //   });
+
+  //   let faicon = document.createElement("i")
+  //   faicon.id = "logo_up"
+  //   faicon.className = "fas fa-arrow-circle-up"
+
+  //   let ptitle = document.createElement("p")
+  //   ptitle.innerHTML = "Abrir Archivo"
+
+  //   divaux.append(main_inputfile)
+  //   divaux.append(faicon)
+  //   divaux.append(ptitle)
+  //   divaux.onclick = function () {
+  //     let aux = document.getElementById("input_uploadfile")
+  //     aux.click();
+  //   }
+
+  //   logo_upload.append(divaux)
+
+  //   let section_load = document.createElement("section")
+  //   section_load.className = "uploaded-area"
+  //   section_load.id = "uploaded-area"
+
+  //   let btnCapa = document.createElement("button")
+  //   btnCapa.id = "btn-upload-agregar-capa"
+  //   btnCapa.className = "btn btn-info disabled"
+  //   btnCapa.style = "width:100%; margin:20px 0px 10px 0px"
+  //   btnCapa.innerHTML = "Agregar Capa"
+  //   btnCapa.onclick = function () {
+  //     if (control_btn_add_layer) addLayersfromFiles()
+  //   }
+
+  //   contenedor_principal.append(logo_upload)
+  //   contenedor_principal.append(section_load)
+  //   contenedor_principal.append(btnCapa)
+
+  // }
+
+  logoAnimation() {
+    let logo = document.getElementById("logo_up")
+    logo.className = "fas fa-circle-notch fa-spin"
   }
 
-  submitbtn() {
-    let sub = this.createElement(
-      "button",
-      "submitfile",
-      "btn btn-lg btn-primary btn-block"
-    );
-    sub.type = "button";
-    sub.style = "margin-top:15px";
-    sub.innerHTML = "agregar capa";
-    sub.onclick = function () {};
-    document.getElementById("geoJSON-openfile").append(sub);
-    document
-      .getElementById("submitfile")
-      .addEventListener("click", controlFormLoadFile);
+  reload_logo() {
+    let logo = document.getElementById("logo_up")
+    logo.className = "fas fa-arrow-circle-up"
   }
 
-  addmenu(layername) {
-    let menuitem = `
-    <div id="sidebar"
-    <div id="geoJSON" class="nav nav-sidebar">
-    <li id="li${layername}" class="capa list-group-item"><span>geoJSON: ${layername}</span>
-    <button aria-hidden="true" onClick=uimodalfs.removegeojsonfile("${layername}")>X</button>
-    </li>
-    </div>
-   </div>
-    `;
-    let divmenu = document.createElement("div");
-    divmenu.innerHTML = menuitem;
-    document.getElementById("sidebar").append(divmenu);
+  addFileItem(id) {
+    let i_id = getIndexCurrentFileLayerbyID(id)
+    let kb = currentLayers[i_id].kb
+    let del_index = i_id
+
+    let id_item = "item_uf_" + id
+    let contenedor = document.getElementById("uploaded-area")
+    let file_item = document.createElement("li")
+    file_item.id = id_item
+    file_item.className = "row"
+
+    let content_upload = document.createElement("div")
+    content_upload.className = "content upload"
+
+    let i_file_alt = document.createElement("i")
+    i_file_alt.style = "width: 20%;"
+    i_file_alt.className = "fas fa-file-alt"
+
+    let div_details = document.createElement("div")
+    div_details.className = "details"
+    div_details.style = "width: 70%;"
+
+    let span_name = document.createElement("span")
+    span_name.className = "name"
+    span_name.title = "Editar Nombre de Capa"
+    span_name.innerHTML = currentLayers[i_id].name
+    span_name.onclick = function () {
+      span_name.style = "display:none;"
+      finput_name.value = currentLayers[i_id].name
+      finput_name.style = "display:block"
+      finput_name.focus()
+    }
+
+    let finput_name = document.createElement("input")
+    finput_name.className = "form-control"
+    finput_name.style = "display:none"
+    finput_name.onkeyup = function (e) {
+      if (e.key === 'Enter' || e.keyCode === 13) {
+        currentLayers[i_id].name = finput_name.value
+        finput_name.style = "display:none"
+        span_name.innerHTML = currentLayers[i_id].name
+        span_name.style = "display:block;"
+      }
+    }
+    finput_name.onblur = function () {
+      finput_name.style = "display:none"
+      span_name.innerHTML = currentLayers[i_id].name
+      span_name.style = "display:block;"
+    }
+
+    let span_size = document.createElement("span")
+    span_size.className = "size"
+    span_size.innerHTML = kb + " KB"
+
+    div_details.append(span_name)
+    div_details.append(finput_name)
+    div_details.append(span_size)
+    content_upload.append(i_file_alt)
+    content_upload.append(div_details)
+
+    let icon_file = document.createElement("div")
+    icon_file.innerHTML = '<i style="width: 10%;" title="eliminar archivo" class="fa fa-times-circle"></i>'
+    icon_file.onclick = function () {
+      $("#" + id_item).remove()
+      currentLayers.splice(del_index, 1)
+    }
+
+    content_upload.append(icon_file)
+    file_item.append(content_upload)
+
+    contenedor.append(file_item)
+
   }
+
 
   clickOpenFileIcon() {
-    document.getElementById("iconopenfile-container").disabled = true;
-    document.getElementById("modalgeojson").style.color = "grey";
-    uimodalfs.createModal();
-    uimodalfs.addForm();
+    // let component = uimodalfs.createModal();
+    // uimodalfs.addForm();
+    // console.log(component);
+    return uimodalfs.createModal();
+    // if (!open) {
+    //   open = true;
+    //   // document.getElementById("iconopenfile-container").disabled = true;
+    //   // document.getElementById("modalgeojson").style.color = "grey";
+    //   let component = uimodalfs.createModal();
+    //   // uimodalfs.addForm();
+    //   console.log(component);
+    //   return component;
+    // }
   }
 
-  removegeojsonfile(value) {
-    mapa.removeGroup(value, true);
-    mapa.eachLayer(function (layer) {
-      if (layer.myTag && layer.myTag === value) {
-        //mapa.removeLayer(layer);
+  enabledbtnCapa() {
+    control_btn_add_layer = true
+    let btn = document.getElementById("btn-upload-agregar-capa")
+    btn.className = "btn btn-info"
+
+    $('#uploaded-area').bind('DOMSubtreeModified', function () {
+
+      let cont = document.getElementById("uploaded-area")
+      let txt = document.getElementById("btn-upload-agregar-capa")
+      if (cont.children.length > 1) {
+        txt.innerHTML = "Agregar Capas"
+      } else {
+        txt.innerHTML = "Agregar Capa"
+      }
+
+      if ($('#uploaded-area')[0].childElementCount == 0) {
+        control_btn_add_layer = false;
+        let btn = document.getElementById("btn-upload-agregar-capa")
+        btn.className = "btn btn-info disabled"
       }
     });
-    let auxname = "li" + value;
-    $("#" + auxname + "").remove();
   }
+
 }
 
 let uimodalfs = new UImf();
 
-function controlFormLoadFile() {
-  let val = document.getElementById("capaname").value;
-  if (val && geojsonfile != "") {
-    //control for name of layer
-    function onEachFeature(feature, layer) {
-      layer.feature.properties.highlight = true;
-      layer.myTag = val;
-      if (feature.properties && feature.properties.popupContent) {
-        layer.bindPopup(feature.properties.popupContent);
-      }
-    }
+function addLayersfromFiles() {
 
-    // Define your style object
-    var myStyle = {
-      color: "#ff0000",
-    };
+  currentLayers.forEach((e) => {
+    // Draw the layer in the map
+    mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
+    // Add the layer to the Menu
+    menu_ui.addFileLayer("Archivos", e.name, e.id, e.file_name);
+    // Save layer to check its existence in the next layer load
+    addedLayers.push(e);
+  });
 
-    //add layer to map
-    /* let aux = L.geoJSON(geojsonfile, {
-      style: myStyle,
-      onEachFeature: onEachFeature,
-    }).addTo(mapa); */
+  // let close = document.getElementById("modalOpenFile")
+  // document.getElementById("modalgeojson").style.color = "black";
+  // document.body.removeChild(close);
+  currentLayers = [];
+  // open = false;
+}
 
-    const geoJSON = L.geoJSON(geojsonfile, {
-      style: myStyle,
-      onEachFeature: onEachFeature,
-    });
-    let layerId = mapa.addGeoJsonLayerToDrawedLayers(geojsonfile, document.getElementById('capaname').value, false);
+function delFileItembyID(id) {
 
-    //add layer in menu
-    uimodalfs.addmenu(val);
+  let del_index = null
 
-    //finish and close modal
-    document.body.removeChild(modalOpenFile);
-    document.getElementById("iconopenfile-container").disabled = false;
-    document.getElementById("modalgeojson").style.color = "black";
-    geojsonfile = "";
-  } else {
-    document.getElementById("alert-message-modalfile").innerHTML = "";
-    divalert.innerHTML = "formulario incompleto";
-    document.getElementById("alert-message-modalfile").append(divalert);
-  }
+  addedLayers.forEach((e, i) => {
+    if (e.id === id) del_index = i
+  });
+
+  addedLayers.splice(del_index, 1)
+}
+
+function editDomNameofFileLayerbyID(id, name) {
+  let edit_index = null
+  addedLayers.forEach((e, i) => {
+    if (e.id === id) edit_index = i
+  });
+  addedLayers[edit_index].name = name
+}
+
+function getIndexFileLayerbyID(id) {
+  let edit_index = null
+  addedLayers.forEach((e, i) => {
+    if (e.id === id) edit_index = i
+  });
+  return edit_index
+}
+
+function getIndexCurrentFileLayerbyID(id) {
+  let index = null
+  currentLayers.forEach((e, i) => {
+    if (e.id === id) index = i
+  });
+  return index
 }

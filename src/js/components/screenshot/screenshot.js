@@ -1,9 +1,9 @@
 class Screenshot {
   constructor() {
     this.component = `
-    <div class="center-flex" id="screenshot" title="screenshot" onclick=capturetoPNG('mapa') data-html2canvas-ignore="true">
+    <div class="leaflet-control-scrshot center-flex" id="screenshot" title="screenshot" onclick=saveImage('mapa') data-html2canvas-ignore="true">
         <div class="center-flex" id="iconSC-container">
-            <span class="fa fa-camera" aria-hidden="true"  ></span>
+          <div id="iconSC"><span class="fa fa-camera" aria-hidden="true"></span></div>
         </div>
     </div>
     `;
@@ -16,25 +16,39 @@ class Screenshot {
   }
 }
 
-function capturetoPNG(el) {
-  //ignore elements
-  let auxleft = document.getElementsByClassName("leaflet-top leaflet-left");
-  auxleft[0].setAttribute("data-html2canvas-ignore", "true");
-  let auxright = document.getElementsByClassName("leaflet-top leaflet-right");
-  auxright[0].setAttribute("data-html2canvas-ignore", "true");
-  let auxbleft = document.getElementsByClassName("leaflet-bottom leaflet-left");
-  auxbleft[0].setAttribute("data-html2canvas-ignore", "true");
-  let mapa =  document.getElementById("mapa")
-  if(mapa.querySelectorAll('svg.leaflet-zoom-animated')[0]){
-    mapa.querySelectorAll('svg.leaflet-zoom-animated')[0].setAttribute("data-html2canvas-ignore", "true");
-  }
+const saveImage = async (el) => {
+  // Change icon state
+  var icon = document.querySelector('#iconSC .fa');
+  icon.classList.remove("fa-camera");
+  icon.classList.add('fa-spinner');
+  // Animate the icon with the CSS animation property
+  document.getElementById('iconSC').style.animation = 'spin 1s linear infinite';
 
-  let id = "#" + el;
-  html2canvas(document.querySelector(id), {
-    allowTaint: true,
-    logging: false, //consola off
-    useCORS: true,
-  }).then((canvas) => {
+  // Get the map element
+  let mapElm = document.getElementById(el);
+  // Get map sizes
+  let width = mapElm.offsetWidth;
+  let height = mapElm.offsetHeight;
+
+  leafletImage(mapa, function(err,canvas) {
+    if(err){
+      alert('Ocurrio un error al descargar la imagen');
+      console.warn(err);
+
+      document.getElementById('iconSC').style.animation = 'none';
+      icon.classList.remove('fa-spinner');
+      icon.classList.add("fa-camera");
+
+      return null;
+    }
+
+    // Create an img element where set the image
+    var img = document.createElement('img');
+    img.width = width;
+    img.height = height;
+    // Set the src with the obtained canvas
+    img.src = canvas.toDataURL();
+    // Put into an a element to automatic download
     let a = document.createElement("a");
     a.id = "saveAsSC";
     let data = canvas.toDataURL("image/png");
@@ -42,6 +56,13 @@ function capturetoPNG(el) {
     let d = new Date();
     let n = d.getTime();
     a.setAttribute("download", "mapaIGN" + n + ".png");
+    // Simulate the event
     a.click();
-  });
+
+    // Leave the icon as it was initially
+    document.getElementById('iconSC').style.animation = 'none';
+    icon.classList.remove('fa-spinner');
+    icon.classList.add("fa-camera");
+  })
+
 }

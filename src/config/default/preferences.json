@@ -1,10 +1,13 @@
 {
   "table": {
-    "isActive": true,
+    "isActive": false,
     "rowsLimit": 5
   },
   "charts": {
     "isActive": true
+  },
+  "layer_options":{
+    "isActive": false
   },
   "metaTags": {
     "title": "",
@@ -24,5 +27,103 @@
       "max": 21
     }
   },
-  "showSearchBar": false
+  "service":{
+    "wmts": {
+      "maxZoom": 21
+    }
+  },
+  "showSearchBar": true,
+  "searchbar":{
+    "isActive": true,
+    "top": "5px",
+    "left": "40%",
+    "color_focus": "#008dc9",
+    "background_color": "rgba(255, 255, 255, 0.7)",
+    "strings": {
+      "placeholder": "Buscar lugar..."
+    }
+  },
+  "geocoder":{
+    "url": "https://api.ign.gob.ar/buscador/",
+    "search": "search",
+    "url_by_id": "places",
+    "query": "q",
+    "lang": "es",
+    "limit":5,
+    "key": ""
+  }, 
+  "referencias": {
+    "show": true,
+    "icon": "src/config/default/styles/images/referencias.png",
+    "width":"25px",
+    "height":"31px"
+  },
+  "theme": {
+    "bodyBackground": "#37bbed",
+    "headerBackground": "#37bbed",
+    "menuBackground": "#37bbed",
+    "activeLayer": "#33b560",
+    "textMenu":"white",
+    "textMenuStyle":"text-shadow: #103847 1px 1px 15px",
+    "textLegendMenu":"#dddddd",
+    "textLegendMenuStyle":"text-shadow: #103847 1px 1px 15px",
+    "iconBar":"#4f4f4f"
+    },
+  "logo": {
+    "title":"Instituto Geográfico Nacional",
+    "src": "src/config/default/styles/images/logo2.png",
+    "height": "",
+    "width": "",
+    "style": "",
+    "srcLogoMini": "src/config/default/styles/images/logo_RESPONSIVE.png",
+    "miniHeight": "",
+    "miniWidth": "",
+    "ministyle": ";"
+  },
+  "title": "IGN - ARGENMAP",
+  "website": "https://www.ign.gob.ar/",
+  "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
+  "geoprocessing": {
+    "isActive": true,
+    "buttonTitle": "Curvas de nivel",
+    "buttonIcon": "fa fa-cog",
+    "dialogTitle": "Curvas de nivel",
+    "strings": {
+      "bounds": "Areas a procesar"
+    },
+    "availableProcesses": [
+      {
+        "name": "Curvas de Nivel",
+        "geoprocess": "contour",
+        "baseUrl": "http://ip:port/geoserver/ows?service=WPS&version=1.0.0",
+        "layer": "layerName",
+        "styles" : {
+          "line_color": "#e0b44c",
+          "line_weight": 0.8,
+          "d_line_m": 500,
+          "d_line_color": "#967529",
+          "d_weigth": 1,
+          "smoothFactor": 1.7
+        }
+      },
+      {
+        "name": "Perfil de Elevacion",
+        "geoprocess": "elevationProfile",
+        "baseUrl": "http://.../geoprocess-backend/elevation-profile"
+      },
+      {
+        "name": "Zona de Inundacion",
+        "geoprocess": "waterRise",
+        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0"
+      }
+    ]
+  },
+  "hillshade" : {
+    "name": "hillshade",
+    "attribution": "sombra de montaña <a target='_blank' href='https://www.arcgis.com/home/item.html?id=1b243539f4514b6ba35e7d995890db1d'>©Esri</a>",
+    "url": "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}.png",
+    "addTo": ["argenmap"],
+    "icon": "src/styles/images/mountains.svg",
+    "switchLabel": "Agregar sombra de montaña"
+  }
 }

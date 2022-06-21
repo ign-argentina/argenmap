@@ -7,7 +7,6 @@ html {
 
 body {
   font-family: Roboto, sans-serif;
-  background-color: #008dc9;
   overflow: hidden;
   height: 100% !important;
 }
@@ -16,6 +15,16 @@ body {
   body {
     overflow-y: scroll;
   }
+}
+
+#wms-combo-list{
+  display: none;
+}
+.capa-info {
+  vertical-align: top;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
 .map-container {
@@ -30,6 +39,18 @@ body {
   position: relative;
   height: 100%;
   background-color: white;
+}
+
+#top-left-logo{
+  width: 490px;
+  height: 50px;
+}
+
+#top-right-logo{
+position:absolute;
+right:10px;
+float:right;
+top: 0;
 }
 
 @media (max-width: 800px) {
@@ -47,9 +68,10 @@ body {
   .leaflet-control-customgraticule,
   #modalgeojson,
   #screenshot {
-    width: 26px !important;
-    height: 26px !important;
+    /* width: 26px !important;
+    height: 26px !important; 
     border: none !important;
+    */
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   }
 }
@@ -80,7 +102,6 @@ Menu principal
 }
 
 .panel-default > .panel-heading {
-  background-color: #008dc9;
   color: white;
   font-size: 15px;
   font-weight: bold;
@@ -91,21 +112,15 @@ Menu principal
 }
 #sidebar-container {
   z-index: 1500;
-  background-color: #008dc9;
 }
 #sidebar .nav {
   border: 1px;
 }
 
-.navbar-toggle .icon-bar {
-  border: 1px solid #337ab7;
-}
 .navbar-header > button {
   display: block;
 }
-.navbar {
-  background-color: #008dc9;
-}
+
 .navbar-brand {
   padding-top: 7px;
 }
@@ -115,11 +130,10 @@ Menu principal
 }
 .navbar-header > a > img {
   width: 50px;
-  top: 7px;
+  /*top: 7px;*/
   position: absolute;
 }
 .nav-tabs {
-  background-color: #008dc9;
   border-bottom: 1px solid #ddd;
 }
 .nav-tabs > .active {
@@ -176,8 +190,7 @@ li.active > div > a {
   font-size: 15px;
 }
 .legend-layer {
-  height: 20px;
-  width: 0px;
+  width: 15%;
   display: table-cell;
   font-size: 10px;
   font-weight: bolder;
@@ -187,10 +200,134 @@ li.active > div > a {
   padding-top: 2px;
   padding-right: 2px;
 }
+.expand-legend-graphic {
+  overflow-x: auto;
+}
+.name-layer{
+  padding-left: 5px;
+  width: 80%;
+  overflow: hidden;
+}
 .capa-title {
   vertical-align: top;
-  width: 96%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
 }
+
+.icon-layer-geo{
+  color:silver;
+  margin-left:  15px;
+}
+
+.icon-layer-geo :hover{
+  color: black
+}
+
+.layer-menu-ui{
+  color:silver;
+  margin-left:  15px;
+}
+
+.layer-menu-ui :hover{
+  color: black
+}
+
+.zoom-layer {  
+  cursor:pointer;
+  width: 10%;
+  color:silver;
+  margin-left:  5%;}
+  
+.zoom-layer:hover{
+    color: black
+  }
+
+  .zoom-layer-combobox {  
+    cursor:pointer;
+    width: 10%;
+    color:silver;
+    margin-left:  5%;}
+    
+  .zoom-layer-combobox:hover{
+      color: black
+    }
+
+    .resize-legend-combobox {  
+      cursor:pointer;
+      color:silver;
+      }
+      
+    .resize-legend-combobox:hover{
+        color: black
+      }
+
+  .layer-options-icon{
+
+    cursor:pointer;
+    width: 10%;
+    color:silver;
+    margin-left:  5%;
+  }
+  .layer-options-icon:hover{
+    color: black
+  }
+
+  .option-tab-icon:hover{
+    color: grey
+  }
+  .display-none{
+    display: none;
+  }
+
+  .layer-options-active{
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+  }
+
+
+  .options-container{
+    background-color: white;
+    display: flex;
+    flex-direction: initial;
+  }
+
+  .options-tabs{
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center
+  }
+
+  .options-panel{
+    width: 80%;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+  }
+
+  .option-tab-icon{
+    height: 30px;
+    text-align: center;
+    width: 100%;
+    color:silver;
+    padding: 2px;
+    border: 1px solid #ddd;
+  }
+
+  .option-tab-icon-active{
+    height: 40px;
+    text-align: center;
+    width: 100%;
+    color:grey;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    padding: 2px;
+  }
+  option-panel-active{
+    background-color: yellowgreen;
+  }
 @media (max-width: 390px) {
   /*.tooltip {
 		display: none !important;
@@ -309,6 +446,7 @@ Leaflet
 }
 .leaflet-control-minimap {
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   box-shadow: none;
   border-radius: 4px;
@@ -333,17 +471,9 @@ Leaflet popup featureInfo
 }
 
 .featureInfo h4 {
-  border-bottom: 3px solid #085183;
   margin: 2em;
 }
 
-.featuresGroup {
-  border-bottom: 2px solid #085183;
-}
-
-.individualFeature {
-  border-bottom: 1px dashed #085183;
-}
 .individualFeature h4 {
   margin: 9px 0px !important;
 }
@@ -521,6 +651,49 @@ Popup geometría
   align-items: center;
   position: relative;
 }
+#switch {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+input:checked#switch + label {
+  background: #37bbed;
+}
+input:checked#switch + label:after {
+  left: calc(100% - 1px);
+  transform: translateX(-100%);
+}
+#switch + label:active:after {
+  width: 30px;
+}
+#switch + label {
+  cursor: pointer;
+  /* text-indent: -9999px; */
+  width: 35px;
+  height: 20px;
+  background: grey;
+  display: block;
+  border-radius: 100px;
+  position: relative;
+}
+#switch + label:after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 90px;
+  transition: 0.3s;
+  background-image: url('../images/mountains.svg');
+  background-repeat: no-repeat;
+  background-size: 75%;
+  background-position: center;
+}
 .a-base-layer {
   pointer-events: none;
   cursor: default;
@@ -547,7 +720,7 @@ Popup geometría
   left: 150%;
   z-index: 50000;
 }
-.zoom-info-icon:hover .tooltiptext {
+.zoom-info-icon:hover .tooltiptext, #switch:hover + label .tooltiptext {
   visibility: visible;
 }
 .base-layer-item {
@@ -561,6 +734,10 @@ Popup geometría
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+}
+.map-tooltip {
+  background-color: #000000;
+  color: #fafafa;
 }
 @media (max-width: 700px) {
   .zoom-info-icon {
@@ -584,6 +761,7 @@ Control mapa base
   border-radius: 4px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: white;
   background-image: none;
@@ -626,6 +804,7 @@ Control mapa base
   border-radius: 4px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: white;
   text-align: center;
@@ -659,6 +838,7 @@ Control graticula
   border-radius: 2px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: white;
   background-image: none;
@@ -702,6 +882,11 @@ SideBar
 }
 
 @media (max-height: 500px) {
+
+    .leaflet-bottom {
+        display: none;
+    }
+  
   #collapseBaseMapLayers .list-group-item {
     padding: 0px !important;
   }
@@ -718,6 +903,18 @@ SideBar
   div .leaflet-control-measure {
     left: 34px !important;
     top: 156px !important;
+    position: absolute;
+  }
+  
+  div .leaflet-control-geo {
+    left: 34px !important;
+    top: 195px !important;
+    position: absolute;
+  }
+
+  div .leaflet-control-scrshot {
+    left: 0px !important;
+    top: 195px !important;
     position: absolute;
   }
 
@@ -781,3 +978,28 @@ SideBar
     margin-right: 40px !important;
   }
 }
+
+@media print{
+  .navbar,
+  .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n+2)),
+  #sidebar,
+  #zoom-level,
+  #screenshot,
+  #spanopenfolder,
+  div[id^="sidebar-toolbar-icon-"] {
+      display:none;
+  }
+
+  /* .leaflet-control-attribution > a:nth-child(n+2) {
+		content: ' (' attr(href) ')';
+    display: block;
+  } */
+}
+
+/* .leaflet-zoom-anim .leaflet-zoom-animated {
+  will-change: auto !important;
+} */
+.leaflet-oldie .leaflet-popup-content-wrapper {
+  /* zoom: 1; */
+	transform: scale(1);
+	}
