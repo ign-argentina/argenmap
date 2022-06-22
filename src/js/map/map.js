@@ -300,36 +300,29 @@ $("body").on("pluginLoad", function(event, plugin){
                		break;
 				case 'Draw':
 
-					/* calcular limites de area */
-
-				    var orgReadbleDistance = L.GeometryUtil.readableArea;
+					// /* calcular limites de area */
+				    // var orgReadbleDistance = L.GeometryUtil.readableArea;
 					
 					L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-						if (L.GeometryUtil.formattedNumber(area / 100000, 2)>100) {
-							console.log('%cSUPERASTE LOS 100 KM2', 'color: white; background: red; font-size: 30px');
-						}else{
-							console.log('%cKM2 CORRECTO!', 'color: white; background: green; font-size: 30px');
-						}
-						return L.GeometryUtil.formattedNumber(area / 100000, 2) + ' Km2';
+						// if (L.GeometryUtil.formattedNumber(area / 100000, 2)>100) {
+						// 	console.log('%cSUPERASTE LOS 100 KM2', 'color: white; background: red; font-size: 30px');
+						// }else{
+						// 	console.log('%cKM2 CORRECTO!', 'color: white; background: green; font-size: 30px');
+						// }
+						return L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' Km2';	
 						
 					};
 
-					
-
-					L.GeometryUtil.readableDistance = function (distance, isMetric, precision) {
-
-					
-					  distance *= 1.09361;
-					  console.log(distance)
-					    if (distance > 1760) {
-					        return L.GeometryUtil.formattedNumber(distance / 1760, 2) + ' millas';
-					    } else {
-					        return L.GeometryUtil.formattedNumber(distance * 3, 0) + ' ft';
-					    }
-					};
-	
-
-					/* calcular limites de area */
+					// L.GeometryUtil.readableDistance = function (distance, isMetric, precision) {
+					//   distance *= 1.09361;
+					//   console.log(distance)
+					//     if (distance > 1760) {
+					//         return L.GeometryUtil.formattedNumber(distance / 1760, 2) + ' millas';
+					//     } else {
+					//         return L.GeometryUtil.formattedNumber(distance * 3, 0) + ' ft';
+					//     }
+					// };
+					// /* calcular limites de area */
 
 				    drawnItems = L.featureGroup().addTo(mapa);
 
@@ -344,10 +337,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					
 					mapa.groupLayers = {};
 
-
-				
-				
-
 					var drawControl = new L.Control.Draw({
 						edit: {
 							featureGroup: drawnItems,
@@ -356,11 +345,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						},
 						draw: {
-							polygon: {metric: false,feet: true},
-							circlemarker: {metric: false,feet: true},
-					        polyline: {metric: false,feet: true},
-					        circle:{metric: false,feet: true},
-					        rectangle: {metric: true,feet: true}
+							polygon: {metric: true,feet: false},
+							circlemarker: {metric: true,feet: false},
+					        polyline: {metric: true,feet: false},
+					        circle:{metric: true,feet: false},
+					        rectangle: {metric: false,feet: false}
 						},
 						position: 'topright'
 					});
@@ -407,9 +396,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
 					mapa.addControl(drawControl);
 
-
-				
-
+					
 					mapa.on('draw:drawstart', (e) => {
 
 					currentlyDrawing = true;
@@ -421,15 +408,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						
 					});
 
-					 
-				
-
 					mapa.on('draw:created', (e) => {
 						const layer = e.layer;
 						const type = e.layerType;
-
-						
-
 						
 						let name = type + '_';
 						if (mapa.editableLayers[type].length === 0) {
@@ -454,8 +435,6 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
-
-
 						drawnItems.addLayer(layer);
 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
@@ -474,9 +453,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.on('draw:edited', (e) => {
-
-
-
 						var layers = e.layers;
 						//Each layer recently edited..
 						layers.eachLayer(function (layer) {
@@ -544,8 +520,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 
-					
-
 					mapa.on('contextmenu', (e) => {
 						
 						var capa = "";
@@ -579,8 +553,6 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						const lng = e.latlng.lng.toFixed(5);
 						const lat = e.latlng.lat.toFixed(5);
-
-						
 
 						contextMenu.createOption({
 							isDisabled: false,
