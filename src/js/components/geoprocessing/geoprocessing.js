@@ -270,10 +270,98 @@ class Geoprocessing {
     }
   }
 
+  updateSliderForWaterRise(sliderLayer) {
+    let arraySlider = [];//Array that contains all unique values
+    console.log("Curva actual: ",sliderLayer)
+    console.log("Curva actual: ",sliderLayer.layer.features)
+
+    sliderLayer.layer.features.forEach((element) => {
+        if (!arraySlider.includes(element.properties.value)) {
+          arraySlider.push(element.properties.value);
+        }
+    });
+    console.log("arraySlider: ",arraySlider)
+
+    document.getElementById("rangeSlider").min = "1";
+    document.getElementById("rangeSlider").value = "1";
+    document.getElementById("rangeSlider").max = arraySlider.length;
+    document.getElementById("sliderValue").innerHTML = arraySlider[0]+" (m)";
+    //Update the current slider value (each time you drag the slider handle)
+    this.sliderForWaterRise(sliderLayer, rangeSlider,sliderValue,arraySlider);
+  }
+  
+  setSliderForWaterRise(sliderLayer) {
+    //Contains all unique values
+    let arraySlider = [];//Array that contains all unique values
+    console.log("Curva actual: ",sliderLayer)
+    console.log("Curva actual: ",sliderLayer.layer.features)
+
+    sliderLayer.layer.features.forEach((element) => {
+        if (!arraySlider.includes(element.properties.value)) {
+          arraySlider.push(element.properties.value);
+        }
+    });
+    console.log("arraySlider: ",arraySlider)
+
+    //Create Slider Div
+    let containerSlider = document.createElement("div");
+    containerSlider.id = "containerSlider";
+    containerSlider.className = "containerSlider";
+    document.getElementsByClassName("form")[1].appendChild(containerSlider); 
+    //Create Slider
+    let rangeSlider = document.createElement("input");
+    rangeSlider.type = "range";
+    rangeSlider.min = "1";
+    rangeSlider.max = arraySlider.length;
+    rangeSlider.value = "1";
+    rangeSlider.title = "slider";
+    rangeSlider.className = "rangeSlider";
+    rangeSlider.id = "rangeSlider";
+    document.getElementById("containerSlider").appendChild(rangeSlider);      
+    //Create Slider value
+    let sliderValue = document.createElement("div");
+    sliderValue.id = "sliderValue";
+    sliderValue.className = "sliderValue";
+    document.getElementsByClassName("form")[1].appendChild(sliderValue); 
+    //Display the default slider value
+    sliderValue.innerHTML = arraySlider[0]+" (m)";
+    mapa.editableLayers.polyline.forEach( (lyr) => {
+      if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[0]) {//Same id, spedific value
+        lyr.setStyle({color: '#ff1100'});
+      }
+    })
+    //Update the current slider value (each time you drag the slider handle)
+    this.sliderForWaterRise(sliderLayer, rangeSlider,sliderValue,arraySlider);
+  }
+
+  sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider) {
+    rangeSlider.oninput = function() {
+      sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";//valor de layers
+      //lyr.setStyle({color: '#E4C47A'});
+      //lyr.setStyle({color: '#ff1100'});
+      //if (lyr.layer == sliderLayer.id /*Misma Curva*/ && lyr.value == arraySlider[this.value-1] /*Misma Altura*/) {
+
+      mapa.editableLayers.polyline.forEach( (lyr) => {
+        if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[this.value-1]) {//Same id, same value
+          //Set all layers with normal colour
+          mapa.editableLayers.polyline.forEach( (lyr) => {
+            if (lyr.layer == sliderLayer.id && lyr.value !== arraySlider[this.value-1]) {//Same id, diferent value
+              lyr.setStyle({color: '#E4C47A'});
+            }
+          })
+          //Then, change specific layer
+          lyr.setStyle({color: '#ff1100'});
+        }
+      })
+
+    }
+  }
+
   buildOptionForm(fields) {
     this.optionsForm.clearForm();
     this.fieldsToReferenceLayers = [];
     const formFields = [];
+    let sliderLayer;
 
     fields.forEach((field) => {
       const id = field.name.toLowerCase().replace(/\s/g, "");
@@ -299,9 +387,14 @@ class Geoprocessing {
                   options.push({ value: layer.name, text: layer.name });
                 });
               } else if (this.geoprocessId === "waterRise") {
-                editableLayers["rectangle"].forEach((layer) => {
-                  options.push({ value: layer.name, text: layer.name });
+                //Si exixsten curvas de nivel...las muestro
+                addedLayers.forEach((layer) => {
+                  if(layer.id.includes("contourResult_")){
+                    options.push({ value: layer.name, text: layer.name });
+                    sliderLayer = layer;
+                  }
                 });
+                
               } else if (this.geoprocessId === "elevationProfile") {
                 editableLayers["polyline"].forEach((layer) => {
                   options.push({ value: layer.name, text: layer.name });
@@ -313,9 +406,22 @@ class Geoprocessing {
               title: field.name,
               events: {
                 change: (element) => {
-                  if (!element.value) return;
-                  const layer = mapa.getEditableLayer(element.value);
-                  mapa.centerLayer(layer);
+                  if (this.geoprocessId === "contour") {
+                    if (!element.value) return;
+                    const layer = mapa.getEditableLayer(element.value);
+                    mapa.centerLayer(layer);
+                  }
+                  else if (this.geoprocessId === "waterRise") {
+                    if (!element.value) return;
+                    let selectedLayer = "";
+                    addedLayers.forEach(lyr => {
+                      lyr.id == element.value ? selectedLayer = lyr : null;
+                    });
+                    mapa.centerLayer(selectedLayer.layer);
+                    sliderLayer = selectedLayer;
+                    this.updateSliderForWaterRise(sliderLayer);
+                    //console.log("Curva actual: ",sliderLayer)
+                  }       
                 },
               },
               extraProps: extraProps,
@@ -349,18 +455,29 @@ class Geoprocessing {
       }
     });
 
-    //fix input
     if (this.geoprocessId === "waterRise") {
-      const extraProps = {};
-      extraProps.type = "input";
-      extraProps.title = "level";
-      const inputId = `input-level`;
-      const input = this.optionsForm.addElement("input", inputId, {
-        title: "level",
-        extraProps: extraProps,
-      });
+      // let contourBtn = document.createElement("button");
+      // contourBtn.innerHTML = "CdN";
+      // contourBtn.className = "contourButton";
+      // contourBtn.id = "contourBtn";
+      // document.getElementsByClassName("form")[1].appendChild(contourBtn);
+      
+      let message = document.createElement("div");
+      message.innerHTML = "No hay Curvas de Nivel";
+      message.className = "msgNoContour";
+      message.id = "msgNoContour";
+      message.style = "color: red";
+      document.getElementsByClassName("form")[1].appendChild(message);
 
-      formFields.push(input);
+      for (let lyr of mapa.editableLayers.polyline) {
+        if (lyr.layer.includes("contourResult_")) {
+          this.setSliderForWaterRise(sliderLayer);
+          $("#ejec_gp").removeClass("disabledbutton");
+          $("#msgNoContour").addClass("hidden");
+          break;
+        }
+      }
+
     }
 
     function checkExecuteBtn(){
@@ -476,6 +593,8 @@ class Geoprocessing {
       },
       "ejec_gp"
     );
+    $("#ejec_gp").addClass("disabledbutton");
+
   }
 
   buildForm() {
@@ -500,7 +619,13 @@ class Geoprocessing {
             let bounds = drawRectangle();
           } 
           if (this.geoprocessId=="waterRise") {
-            let bounds = drawRectangle();
+            addedLayers.forEach((layer) => {
+              if(layer.id.includes("contourResult_")){
+                setTimeout(function(){
+                  $("#select-capa").val(layer.name).change();
+                },500);              
+              }
+            });
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(
