@@ -95,9 +95,9 @@
       {
         "name": "Curvas de Nivel",
         "geoprocess": "contour",
-        "baseUrl": "http://ip:port/geoserver/ows?service=WPS&version=1.0.0",
-        "layer": "layerName",
-        "styles" : {
+        "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0",
+        "layer": "alos_unificado",
+        "styles": {
           "line_color": "#e0b44c",
           "line_weight": 0.8,
           "d_line_m": 500,
@@ -107,14 +107,14 @@
         }
       },
       {
+        "name": "Cota",
+        "geoprocess": "waterRise",
+        "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
+      },
+      {
         "name": "Perfil de Elevacion",
         "geoprocess": "elevationProfile",
         "baseUrl": "http://.../geoprocess-backend/elevation-profile"
-      },
-      {
-        "name": "Zona de Inundacion",
-        "geoprocess": "waterRise",
-        "baseUrl": "http://.../geoserver/ows?service=WPS&version=1.0.0"
       }
     ]
   },
