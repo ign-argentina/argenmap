@@ -143,13 +143,22 @@ class Geoprocessing {
           .getEditableLayer(this.editableLayer_name)
           .setStyle({ fillOpacity: 0 });
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+
+        let rectangleSelected;
+        addedLayers.forEach( (layer) => {
+          if(layer.id == document.getElementById("select-capa").value) {
+            rectangleSelected = layer;
+          }
+        });
         addedLayers.push({
           id: layername,
           layer: result,
+          rectangle: rectangleSelected,
           name: layername,
           file_name: layername,
           kb: null,
         });
+
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         //$("#btnclose-icon-modalfile").click();
         break;
@@ -272,15 +281,15 @@ class Geoprocessing {
 
   updateSliderForWaterRise(sliderLayer) {
     let arraySlider = [];//Array that contains all unique values
-    console.log("Curva actual: ",sliderLayer)
-    console.log("Curva actual: ",sliderLayer.layer.features)
+    //console.log("Curva actual: ",sliderLayer)
+    //console.log("Curva actual: ",sliderLayer.layer.features)
 
     sliderLayer.layer.features.forEach((element) => {
         if (!arraySlider.includes(element.properties.value)) {
           arraySlider.push(element.properties.value);
         }
     });
-    console.log("arraySlider: ",arraySlider)
+    //console.log("arraySlider: ",arraySlider)
 
     document.getElementById("rangeSlider").min = "1";
     document.getElementById("rangeSlider").value = "1";
@@ -293,15 +302,15 @@ class Geoprocessing {
   setSliderForWaterRise(sliderLayer) {
     //Contains all unique values
     let arraySlider = [];//Array that contains all unique values
-    console.log("Curva actual: ",sliderLayer)
-    console.log("Curva actual: ",sliderLayer.layer.features)
+    //console.log("Curva actual: ",sliderLayer)
+    //console.log("Curva actual: ",sliderLayer.layer.features)
 
     sliderLayer.layer.features.forEach((element) => {
         if (!arraySlider.includes(element.properties.value)) {
           arraySlider.push(element.properties.value);
         }
     });
-    console.log("arraySlider: ",arraySlider)
+    //console.log("arraySlider: ",arraySlider)
 
     //Create Slider Div
     let containerSlider = document.createElement("div");
@@ -337,10 +346,6 @@ class Geoprocessing {
   sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider) {
     rangeSlider.oninput = function() {
       sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";//valor de layers
-      //lyr.setStyle({color: '#E4C47A'});
-      //lyr.setStyle({color: '#ff1100'});
-      //if (lyr.layer == sliderLayer.id /*Misma Curva*/ && lyr.value == arraySlider[this.value-1] /*Misma Altura*/) {
-
       mapa.editableLayers.polyline.forEach( (lyr) => {
         if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[this.value-1]) {//Same id, same value
           //Set all layers with normal colour
@@ -498,6 +503,9 @@ class Geoprocessing {
       "Ejecutar",
       () => {
           let values = [];
+          let arrayWaterRise = "";
+          let valueOfWaterRise;
+
           for (let i = 0; i < formFields.length; i++) {
             if (!formFields[i].value) {
               return new UserMessage(
@@ -511,8 +519,15 @@ class Geoprocessing {
               formFields[i].hasAttribute("references") &&
               formFields[i].getAttribute("references") === "drawedLayers"
             ) {
+              //Original
               const layer = mapa.getEditableLayer(formFields[i].value);
               this.editableLayer_name = layer.name;
+              
+              // let layer;
+              // if (this.geoprocessId === "contour" || this.geoprocessId === "elevationProfile") {
+              //   layer = mapa.getEditableLayer(formFields[i].value);
+              //   this.editableLayer_name = layer.name;
+              // }
 
               switch (this.geoprocessId) {
                 case "contour": {
@@ -539,12 +554,22 @@ class Geoprocessing {
                   break;
                 }
                 case "waterRise": {
-                  const sw = layer.getBounds().getSouthWest();
-                  values.push(sw.lng);
-                  values.push(sw.lat);
-                  const ne = layer.getBounds().getNorthEast();
-                  values.push(ne.lng);
-                  values.push(ne.lat);
+                  addedLayers.forEach( (contourLineSelected) => {
+                    if(contourLineSelected.id == document.getElementById("select-capa").value) {
+                      contourLineSelected.rectangle.layer.features[0].geometry.coordinates[0].forEach( (coord) => {
+                        arrayWaterRise += coord[0].toString() + " " + coord[1].toString()+ ",";
+                      })
+                    }
+                  });
+      
+                  arrayWaterRise = arrayWaterRise.substring(0, arrayWaterRise.length - 1);
+                  console.log(arrayWaterRise)
+      
+                  let waterRiseValue = document.getElementById("sliderValue").innerHTML;
+                  waterRiseValue = waterRiseValue.substring(0, waterRiseValue.length - 4);
+                  
+                  valueOfWaterRise = parseInt(waterRiseValue);
+                  console.log(valueOfWaterRise)
                   break;
                 }
               }
@@ -580,7 +605,7 @@ class Geoprocessing {
               this.geoprocessing.host
             );
             waterRise
-              .execute(...values)
+              .execute(arrayWaterRise,valueOfWaterRise)
               .then((result) => {
                 this.displayResult(result);
               })
