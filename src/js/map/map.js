@@ -609,6 +609,38 @@ $("body").on("pluginLoad", function(event, plugin){
 							window.open(_url);
 							}
 						});
+
+						/* contextMenu.createOption({
+							isDisabled: false,
+							text: "Share",
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								let _url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}`;
+								window.open(_url);
+								}
+							}); */
+						
+						/* contextMenu.createOption({
+							isDisabled: false,
+							text: "Save",
+							onclick: () => {
+								mapa.closePopup(contextPopup);
+								let markedId = 0;
+								(!app.markers) ? app.markers = {} : markedId = Object.keys(app.markers).length++;
+								
+								let marker = window.prompt("Set marker name","name...");
+								let _markerName;
+								(marker == null || marker == "")
+								? _markerName = `${lat},${lng}`
+								: _markerName = marker;
+
+								app.markers[markedId] = { 
+									name: _markerName,
+									location: [lat,lng] 
+								};
+								new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
+							},
+							}); */
 						
 						contextMenu.createOption({
 							isDisabled: false,
