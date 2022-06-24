@@ -502,7 +502,7 @@ class Geoprocessing {
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
-          let values = [];
+        let values = [];
           let arrayWaterRise = "";
           let valueOfWaterRise;
 
@@ -521,13 +521,8 @@ class Geoprocessing {
             ) {
               //Original
               const layer = mapa.getEditableLayer(formFields[i].value);
-              this.editableLayer_name = layer.name;
-              
-              // let layer;
-              // if (this.geoprocessId === "contour" || this.geoprocessId === "elevationProfile") {
-              //   layer = mapa.getEditableLayer(formFields[i].value);
-              //   this.editableLayer_name = layer.name;
-              // }
+              ( layer != null ) ? 
+                this.editableLayer_name = layer.name : null ;
 
               switch (this.geoprocessId) {
                 case "contour": {
