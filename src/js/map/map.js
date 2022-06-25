@@ -300,36 +300,18 @@ $("body").on("pluginLoad", function(event, plugin){
                		break;
 				case 'Draw':
 
-					/* calcular limites de area */
-
 				    var orgReadbleDistance = L.GeometryUtil.readableArea;
 					
-					L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-						if (L.GeometryUtil.formattedNumber(area / 100000, 2)>100) {
-							console.log('%cSUPERASTE LOS 100 KM2', 'color: white; background: red; font-size: 30px');
-						}else{
-							console.log('%cKM2 CORRECTO!', 'color: white; background: green; font-size: 30px');
+					L.GeometryUtil.readableArea = function (area, isMetric, precision) { // adapts area unit from m2 to ha to km2 based on its size
+						let _area = L.GeometryUtil.formattedNumber(area, 2) + ' m²';
+						if(area >= 10000 && area < 1000000){
+							_area = L.GeometryUtil.formattedNumber(area / 10000, 2) + ' ha';
 						}
-						return L.GeometryUtil.formattedNumber(area / 100000, 2) + ' Km2';
-						
+						if(area >= 1000000){
+							_area = L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' km²';
+						}
+						return _area;	
 					};
-
-					
-
-					L.GeometryUtil.readableDistance = function (distance, isMetric, precision) {
-
-					
-					  distance *= 1.09361;
-					  console.log(distance)
-					    if (distance > 1760) {
-					        return L.GeometryUtil.formattedNumber(distance / 1760, 2) + ' millas';
-					    } else {
-					        return L.GeometryUtil.formattedNumber(distance * 3, 0) + ' ft';
-					    }
-					};
-	
-
-					/* calcular limites de area */
 
 				    drawnItems = L.featureGroup().addTo(mapa);
 
@@ -356,11 +338,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						},
 						draw: {
-							polygon: {metric: false,feet: true},
-							circlemarker: {metric: false,feet: true},
-					        polyline: {metric: false,feet: true},
-					        circle:{metric: false,feet: true},
-					        rectangle: {metric: true,feet: true}
+							polygon: {metric: true},
+							circlemarker: {metric: true},
+					        polyline: {metric: true},
+					        circle:{metric: true},
+					        rectangle: {metric: true}
 						},
 						position: 'topright'
 					});
