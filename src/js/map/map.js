@@ -300,29 +300,18 @@ $("body").on("pluginLoad", function(event, plugin){
                		break;
 				case 'Draw':
 
-					// /* calcular limites de area */
-				    // var orgReadbleDistance = L.GeometryUtil.readableArea;
+				    var orgReadbleDistance = L.GeometryUtil.readableArea;
 					
-					L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-						// if (L.GeometryUtil.formattedNumber(area / 100000, 2)>100) {
-						// 	console.log('%cSUPERASTE LOS 100 KM2', 'color: white; background: red; font-size: 30px');
-						// }else{
-						// 	console.log('%cKM2 CORRECTO!', 'color: white; background: green; font-size: 30px');
-						// }
-						return L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' Km2';	
-						
+					L.GeometryUtil.readableArea = function (area, isMetric, precision) { // adapts area unit from m2 to ha to km2 based on its size
+						let _area = L.GeometryUtil.formattedNumber(area, 2) + ' m²';
+						if(area >= 10000 && area < 1000000){
+							_area = L.GeometryUtil.formattedNumber(area / 10000, 2) + ' ha';
+						}
+						if(area >= 1000000){
+							_area = L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' km²';
+						}
+						return _area;	
 					};
-
-					// L.GeometryUtil.readableDistance = function (distance, isMetric, precision) {
-					//   distance *= 1.09361;
-					//   console.log(distance)
-					//     if (distance > 1760) {
-					//         return L.GeometryUtil.formattedNumber(distance / 1760, 2) + ' millas';
-					//     } else {
-					//         return L.GeometryUtil.formattedNumber(distance * 3, 0) + ' ft';
-					//     }
-					// };
-					// /* calcular limites de area */
 
 				    drawnItems = L.featureGroup().addTo(mapa);
 
@@ -345,11 +334,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						},
 						draw: {
-							polygon: {metric: true,feet: false},
-							circlemarker: {metric: true,feet: false},
-					        polyline: {metric: true,feet: false},
-					        circle:{metric: true,feet: false},
-					        rectangle: {metric: false,feet: false}
+							polygon: {metric: true},
+							circlemarker: {metric: true},
+					        polyline: {metric: true},
+					        circle:{metric: true},
+					        rectangle: {metric: true}
 						},
 						position: 'topright'
 					});
@@ -581,6 +570,38 @@ $("body").on("pluginLoad", function(event, plugin){
 							window.open(_url);
 							}
 						});
+
+						/* contextMenu.createOption({
+							isDisabled: false,
+							text: "Share",
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								let _url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}`;
+								window.open(_url);
+								}
+							}); */
+						
+						/* contextMenu.createOption({
+							isDisabled: false,
+							text: "Save",
+							onclick: () => {
+								mapa.closePopup(contextPopup);
+								let markedId = 0;
+								(!app.markers) ? app.markers = {} : markedId = Object.keys(app.markers).length++;
+								
+								let marker = window.prompt("Set marker name","name...");
+								let _markerName;
+								(marker == null || marker == "")
+								? _markerName = `${lat},${lng}`
+								: _markerName = marker;
+
+								app.markers[markedId] = { 
+									name: _markerName,
+									location: [lat,lng] 
+								};
+								new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
+							},
+							}); */
 						
 						contextMenu.createOption({
 							isDisabled: false,

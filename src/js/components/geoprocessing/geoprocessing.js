@@ -619,6 +619,7 @@ class Geoprocessing {
       "ejec_gp"
     );
     $("#ejec_gp").addClass("disabledbutton");
+    //if (this.geoprocessId === "waterRise") { $("#ejec_gp").addClass("hidden") };
   }
 
   buildForm() {
