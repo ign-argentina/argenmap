@@ -40,7 +40,7 @@ body {
 	padding: 0 15px;
 }
 /* Hide for mobile, show later */
-@media (min-width: 768px) {
+@media (min-width: 1000px) {
   .sidebar {
     position: fixed;
     top: 51px;
