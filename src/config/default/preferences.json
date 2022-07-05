@@ -95,6 +95,7 @@
       {
         "name": "Curvas de Nivel",
         "geoprocess": "contour",
+        "namePrefix": "Curvas_de_Nivel_",
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0",
         "layer": "alos_unificado",
         "styles": {
@@ -109,12 +110,8 @@
       {
         "name": "Cota",
         "geoprocess": "waterRise",
+        "namePrefix": "Cota_",
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
-      },
-      {
-        "name": "Perfil de Elevacion",
-        "geoprocess": "elevationProfile",
-        "baseUrl": "http://.../geoprocess-backend/elevation-profile"
       }
     ]
   },

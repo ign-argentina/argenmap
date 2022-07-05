@@ -137,7 +137,7 @@ class Geoprocessing {
 
         document.head.appendChild(style_fix_textpath);
 
-        let layername = "contourResult_" + results_counter;
+        let layername = app.geoprocessing.availableProcesses[0].namePrefix + results_counter;
         results_counter++;
 
         mapa
@@ -168,7 +168,7 @@ class Geoprocessing {
         let g_result = `{"type":"Feature","properties":{"type":"polyline"},"geometry":${JSON.stringify(
           result
         )}}`;
-        let layername = "elevationProfile_" + results_counter;
+        let layername = app.geoprocessing.availableProcesses[2].namePrefix + results_counter;
         results_counter++;
 
         mapa
@@ -187,7 +187,7 @@ class Geoprocessing {
       }
       case "waterRise": {
         btn_modal_loading = false;
-        let layername = "waterRise_" + results_counter;
+        let layername = app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
         results_counter++;
         mapa
           .getEditableLayer(this.editableLayer_name)
@@ -280,7 +280,6 @@ class Geoprocessing {
 
   updateSliderForWaterRise(sliderLayer) {
     let arraySlider = []; //Array that contains all unique values
-
     sliderLayer.layer.features.forEach((element) => {
       if (!arraySlider.includes(element.properties.value)) {
         arraySlider.push(element.properties.value);
@@ -387,26 +386,28 @@ class Geoprocessing {
               extraProps.references = "drawedLayers";
               extraProps.layerTypes = field.allowedTypes;
               const editableLayers = mapa.getEditableLayers();
-
+              //show values in "Capa"
               if (this.geoprocessId === "contour") {
-                editableLayers["rectangle"].forEach((layer) => {
-                  options.push({ value: layer.name, text: layer.name });
-                });
+                addedLayers.forEach( (layer) => {
+                  if(layer.id.includes("rectangle")) {
+                    options.push({ value: layer.id, text: layer.name });
+                  }
+                })
               } else if (this.geoprocessId === "waterRise") {
-                //Si exixsten curvas de nivel...las muestro
                 addedLayers.forEach((layer) => {
-                  if (layer.id.includes("contourResult_")) {
-                    options.push({ value: layer.name, text: layer.name });
+                  if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
+                    options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
                 });
               } else if (this.geoprocessId === "elevationProfile") {
                 editableLayers["polyline"].forEach((layer) => {
-                  options.push({ value: layer.name, text: layer.name });
+                  options.push({ value: layer.id, text: layer.name });
                 });
               }
             }
 
+            //Select element in "Capa"
             const select = this.optionsForm.addElement("select", selectId, {
               title: field.name,
               events: {
@@ -419,18 +420,20 @@ class Geoprocessing {
                     if (!element.value) return;
                     let selectedLayer = "";
                     addedLayers.forEach((lyr) => {
-                      lyr.id == element.value ? (selectedLayer = lyr) : null;
+                      lyr.file_name == element.value ? (selectedLayer = lyr) : null;
                     });
-                    mapa.centerLayer(selectedLayer.layer);
-                    sliderLayer = selectedLayer;
-                    this.updateSliderForWaterRise(sliderLayer);
+                    if (selectedLayer.layer.features.length != 0) {
+                      mapa.centerLayer(selectedLayer.layer);
+                      sliderLayer = selectedLayer;
+                      this.updateSliderForWaterRise(sliderLayer);
+                    }
                   }
                 },
               },
               extraProps: extraProps,
             });
+            
             this.optionsForm.setOptionsToSelect(selectId, options);
-
             formFields.push(select);
           }
           break;
@@ -467,7 +470,7 @@ class Geoprocessing {
       document.getElementsByClassName("form")[1].appendChild(message);
 
       for (let lyr of mapa.editableLayers.polyline) {
-        if (lyr.layer.includes("contourResult_")) {
+        if (lyr.layer.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
           this.setSliderForWaterRise(sliderLayer);
           $("#ejec_gp").removeClass("disabledbutton");
           $("#msgNoContour").addClass("hidden");
@@ -645,7 +648,7 @@ class Geoprocessing {
           }
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if (layer.id.includes("contourResult_")) {
+              if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
