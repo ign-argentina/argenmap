@@ -85,9 +85,9 @@
   "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
   "geoprocessing": {
     "isActive": true,
-    "buttonTitle": "Curvas de nivel",
+    "buttonTitle": "Geoprocesos",
     "buttonIcon": "fa fa-cog",
-    "dialogTitle": "Curvas de nivel",
+    "dialogTitle": "Geoprocesos",
     "strings": {
       "bounds": "Areas a procesar"
     },
