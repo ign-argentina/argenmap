@@ -137,7 +137,9 @@ class Geoprocessing {
 
         document.head.appendChild(style_fix_textpath);
 
-        let layername = app.geoprocessing.availableProcesses[0].namePrefix + results_counter;
+        let namePrefix = app.geoprocessing.availableProcesses[0].namePrefix || 'process';
+
+        let layername = namePrefix + '_' + results_counter;
         results_counter++;
 
         mapa
@@ -543,18 +545,12 @@ class Geoprocessing {
   }
 
   executeRectangle(formFields) {
-    //document.querySelector(".leaflet-draw-draw-rectangle").click();
     new L.Draw.Rectangle(mapa).enable()
-    mapa.on('draw:created', (e) => this.testing(e) 
-    );
-  }
-  
-  testing(e) {
-    console.log(e)
+    mapa.on('draw:created', (e) => this.execute(formFields));
+    /* mapa.off('draw:created', (e) => this.execute(formFields)); */
   }
 
-  execute(layer, formFields) {
-      console.log(this);
+  execute(formFields) {
       let values = [];
       let arrayWaterRise = "";
       let valueOfWaterRise;
