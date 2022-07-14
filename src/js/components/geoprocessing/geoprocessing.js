@@ -362,10 +362,10 @@ class Geoprocessing {
       $("#ejec_gp").addClass("disabledbutton");
       let _area = L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' km²';
       if(L.GeometryUtil.formattedNumber(area / 1000000, 2)>100) { //Check limit of 100km²
-        //$("#ejec_gp").addClass("disabledbutton");
+        $("#ejec_gp").addClass("disabledbutton");
         $("#invalidRect").removeClass("hidden");
       }else {
-        //$("#ejec_gp").removeClass("disabledbutton");
+        $("#ejec_gp").removeClass("disabledbutton");
         $("#msgRectangle").addClass("hidden");
         $("#invalidRect").addClass("hidden");
       }
@@ -529,13 +529,24 @@ class Geoprocessing {
     this.optionsForm.addButton(
       "Dibujar Rectángulo",
       () => {
-        this.executeRectangle(formFields)
+        new L.Draw.Rectangle(mapa).enable()
+      },
+      "drawRectangleBtn"
+    );
+
+    this.optionsForm.addButton(
+      "Ejecutar",
+      () => {
+        this.executeGeoprocess(formFields)
       },
       "ejec_gp"
     );
 
+    $("#ejec_gp").addClass("disabledbutton");
+
     if (this.geoprocessId === "waterRise") { 
       $('label[for="select-capa"]').show();
+      document.getElementById("drawRectangleBtn").classList.add("hidden")
       document.getElementById("select-capa").classList.remove("hidden")
     }else {
       //Hide Capa
@@ -544,13 +555,7 @@ class Geoprocessing {
     }
   }
 
-  executeRectangle(formFields) {
-    new L.Draw.Rectangle(mapa).enable()
-    mapa.on('draw:created', (e) => this.execute(formFields));
-    /* mapa.off('draw:created', (e) => this.execute(formFields)); */
-  }
-
-  execute(formFields) {
+  executeGeoprocess(formFields) {
       let values = [];
       let arrayWaterRise = "";
       let valueOfWaterRise;
@@ -587,7 +592,6 @@ class Geoprocessing {
                   coords_value += e.lng + " " + e.lat;
                 }
               });
-
               values = coords_value;
               break;
             }
