@@ -199,9 +199,9 @@ class Geoprocessing {
         break;
       }
     }
-    //this.optionsForm.clearForm();
-    // document.getElementById("select-process").selectedIndex = 0;
-    // document.getElementsByClassName("form")[1].innerHTML = "";
+    this.optionsForm.clearForm();
+    document.getElementById("select-process").selectedIndex = 0;
+    document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
   }
 
@@ -511,6 +511,7 @@ class Geoprocessing {
     //----------
 
     this.checkRectangleSize();
+
     function checkExecuteBtn() {
       //Check to see if there is any text entered
       if (
@@ -526,32 +527,34 @@ class Geoprocessing {
       $("#input-equidistancia").keyup(checkExecuteBtn);
     });
 
+    //Draw Rectangle Button
     this.optionsForm.addButton(
       "Dibujar Rectángulo",
       () => {
-        new L.Draw.Rectangle(mapa).enable()
+        new L.Draw.Rectangle(mapa).enable();
       },
       "drawRectangleBtn"
     );
 
+    //Execute Button
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
-        this.executeGeoprocess(formFields)
+        this.executeGeoprocess(formFields);
       },
       "ejec_gp"
     );
 
-    $("#ejec_gp").addClass("disabledbutton");
+    $("#ejec_gp").addClass("disabledbutton");//Execute Button disable from the start
 
     if (this.geoprocessId === "waterRise") { 
       $('label[for="select-capa"]').show();
-      document.getElementById("drawRectangleBtn").classList.add("hidden")
-      document.getElementById("select-capa").classList.remove("hidden")
+      document.getElementById("drawRectangleBtn").classList.add("hidden");
+      document.getElementById("select-capa").classList.remove("hidden");
     }else {
-      //Hide Capa
+      //Hide Capa for Contour Lines
       $('label[for="select-capa"]').hide ();
-      document.getElementById("select-capa").classList.add("hidden")
+      document.getElementById("select-capa").classList.add("hidden");
     }
   }
 
@@ -668,9 +671,6 @@ class Geoprocessing {
           });
       }
       this.loadingBtn("off");
-      document.getElementById("select-process").selectedIndex = 0;
-      document.getElementsByClassName("form")[1].innerHTML = "";
-
   }
 
 
@@ -805,14 +805,13 @@ class Geoprocessing {
   }
 
   loadingBtn(status) {
-    // let btn_ejecutar = document.getElementById("ejec_gp");
-
-    // if (status === "on") {
-    //   btn_ejecutar.innerHTML =
-    //     '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    // } else {
-    //   btn_ejecutar.innerHTML = "Ejecutar";
-    // }
+    let btn_ejecutar = document.getElementById("ejec_gp");
+    if (status === "on") {
+      btn_ejecutar.innerHTML =
+        '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
+    } else {
+      btn_ejecutar.innerHTML = "Ejecutar";
+    }
   }
 }
 

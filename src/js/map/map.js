@@ -450,8 +450,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.on('draw:deleted', function (e) {
+						//console.log("e: ",e)
 						var layers = e.layers;
 						Object.values(layers._layers).forEach(deletedLayer => {
+							//console.log("deletedLayer: ",deletedLayer)
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
