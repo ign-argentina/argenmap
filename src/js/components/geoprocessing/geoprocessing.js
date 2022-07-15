@@ -670,7 +670,7 @@ class Geoprocessing {
             this.loadingBtn("off");
           });
       }
-      this.loadingBtn("off");
+      //this.loadingBtn("off");
   }
 
 
@@ -809,10 +809,13 @@ class Geoprocessing {
     if (status === "on") {
       btn_ejecutar.innerHTML =
         '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    } else {
+      $("#ejec_gp").addClass("disabledbutton");
+    } else if (status === "off") {
       btn_ejecutar.innerHTML = "Ejecutar";
+      $("#ejec_gp").removeClass("disabledbutton");
     }
   }
+  
 }
 
 function clearElevationProfile() {
