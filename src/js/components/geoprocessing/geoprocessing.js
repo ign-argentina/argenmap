@@ -87,7 +87,9 @@ class Geoprocessing {
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
       '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
-    btnclose.onclick = function () {
+    btnclose.onclick = function () {//Close geoprocess window and clear
+      document.getElementById("select-process").selectedIndex = 0;
+      document.getElementsByClassName("form")[1].innerHTML = "";
       divContainer.remove();
       g_modal_close = true;
     };
@@ -139,7 +141,7 @@ class Geoprocessing {
 
         let namePrefix = app.geoprocessing.availableProcesses[0].namePrefix || 'process';
 
-        let layername = namePrefix + '_' + results_counter;
+        let layername = namePrefix + results_counter;
         results_counter++;
 
         mapa
@@ -199,7 +201,6 @@ class Geoprocessing {
         break;
       }
     }
-    this.optionsForm.clearForm();
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
@@ -333,7 +334,7 @@ class Geoprocessing {
 
   sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider) {
     rangeSlider.oninput = function () {
-      sliderValue.innerHTML = arraySlider[this.value - 1] + " (m)"; //valor de layers
+      sliderValue.innerHTML = arraySlider[this.value - 1] + " (m)"; //layers value
       mapa.editableLayers.polyline.forEach((lyr) => {
         if (
           lyr.layer == sliderLayer.id &&
@@ -361,7 +362,7 @@ class Geoprocessing {
     L.GeometryUtil.readableArea = function (area, isMetric, precision) {
       $("#ejec_gp").addClass("disabledbutton");
       let _area = L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' km²';
-      if(L.GeometryUtil.formattedNumber(area / 1000000, 2)>100) { //Check limit of 100km²
+      if(L.GeometryUtil.formattedNumber(area / 1000000, 2)>100) { //Check limit bigger than 100km²
         $("#ejec_gp").addClass("disabledbutton");
         $("#invalidRect").removeClass("hidden");
       }else {
@@ -510,10 +511,7 @@ class Geoprocessing {
     }
     //----------
 
-    this.checkRectangleSize();
-
-    function checkExecuteBtn() {
-      //Check to see if there is any text entered
+    function checkExecuteBtn() {//Check to see if there is any text entered
       if (
         $("#input-equidistancia").val() < 10 ||
         $("#input-equidistancia").val() > 10000
@@ -531,7 +529,9 @@ class Geoprocessing {
     this.optionsForm.addButton(
       "Dibujar Rectángulo",
       () => {
-        new L.Draw.Rectangle(mapa).enable();
+        let drawingRectangle = new L.Draw.Rectangle(mapa)
+        drawingRectangle.enable();
+        this.checkRectangleSize();
       },
       "drawRectangleBtn"
     );
@@ -553,8 +553,8 @@ class Geoprocessing {
       document.getElementById("select-capa").classList.remove("hidden");
     }else {
       //Hide Capa for Contour Lines
-      $('label[for="select-capa"]').hide ();
-      document.getElementById("select-capa").classList.add("hidden");
+      // $('label[for="select-capa"]').hide ();
+      // document.getElementById("select-capa").classList.add("hidden");
     }
   }
 
@@ -670,7 +670,6 @@ class Geoprocessing {
             this.loadingBtn("off");
           });
       }
-      //this.loadingBtn("off");
   }
 
 
@@ -691,10 +690,7 @@ class Geoprocessing {
             return;
           }
           this.geoprocessId = element.value;
-
-          // if (this.geoprocessId == "contour") {
-          //   let bounds = drawRectangle();
-          // }
+          
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
               if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
@@ -819,7 +815,7 @@ class Geoprocessing {
 }
 
 function clearElevationProfile() {
-  for (var l in mapa._layers) {
+  for (let l in mapa._layers) {
     if (
       mapa._layers[l].options &&
       mapa._layers[l].options.pane &&
