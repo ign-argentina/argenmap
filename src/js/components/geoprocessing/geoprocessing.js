@@ -553,8 +553,8 @@ class Geoprocessing {
       document.getElementById("select-capa").classList.remove("hidden");
     }else {
       //Hide Capa for Contour Lines
-      // $('label[for="select-capa"]').hide ();
-      // document.getElementById("select-capa").classList.add("hidden");
+      $('label[for="select-capa"]').hide ();
+      document.getElementById("select-capa").classList.add("hidden");
     }
   }
 
