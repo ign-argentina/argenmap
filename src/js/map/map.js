@@ -445,8 +445,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						var layers = e.layers;
 						//Each layer recently edited..
 						layers.eachLayer(function (layer) {
-							//mapa.checkLayersInDrawedGeometry(layer, type);
+							mapa.checkLayersInDrawedGeometry(layer, layer.type);
 						});
+						mapa.methodsEvents['edit-layer'].forEach(method => method(mapa.editableLayers));
+
 					});
 
 					mapa.on('draw:deleted', function (e) {
@@ -2243,7 +2245,8 @@ $("body").on("pluginLoad", function(event, plugin){
 			//Available events
 			mapa.methodsEvents = {
 				'add-layer': [],
-				'delete-layer': []
+				'delete-layer': [],
+				'edit-layer': []
 			};
 
 			setValidZoomLevel(selectedBasemap.nombre);

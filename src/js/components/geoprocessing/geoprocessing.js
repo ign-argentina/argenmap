@@ -9,6 +9,7 @@ let geoprocessing = {
 };
 let results_counter = 0;
 let contour_result_active = false;
+let contourRectangles = [];
 
 class Geoprocessing {
   formContainer = null;
@@ -206,9 +207,10 @@ class Geoprocessing {
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
   }
 
-  updateReferencedDrawedLayers(layers) {
+  updateReferencedDrawedLayers(event, layers) {
     if (!this.optionsForm) return;
     if (this.geoprocessId === "contour") {
+      this.checkRectangleArea(event);
       this.fieldsToReferenceLayers.forEach((fieldId) => {
         const element = this.optionsForm.getElement(fieldId);
         if (
@@ -358,20 +360,65 @@ class Geoprocessing {
     };
   }
 
-  checkRectangleSize() {
+  checkRectangleDrawingSize() {
     L.GeometryUtil.readableArea = function (area, isMetric, precision) {
       $("#ejec_gp").addClass("disabledbutton");
       let _area = L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' km²';
       if(L.GeometryUtil.formattedNumber(area / 1000000, 2)>100) { //Check limit bigger than 100km²
         $("#ejec_gp").addClass("disabledbutton");
         $("#invalidRect").removeClass("hidden");
+        $("#invalidRect2").removeClass("hidden");
       }else {
-        $("#ejec_gp").removeClass("disabledbutton");
         $("#msgRectangle").addClass("hidden");
         $("#invalidRect").addClass("hidden");
+        $("#invalidRect2").addClass("hidden");
+        $("#ejec_gp").removeClass("disabledbutton");
       }
       return _area;	
     };
+  }
+
+  checkRectangleArea(event) {
+    let rectPos, rectangleArea, formattedArea;
+    switch (event) {
+      case "add-layer":
+        this.calculateRectangleArea(rectPos, rectangleArea, formattedArea);
+        break;
+
+      case "edit-layer":
+        this.calculateRectangleArea(rectPos, rectangleArea, formattedArea);
+        break;
+
+      case "delete-layer":
+        contourRectangles = [];
+        $("#invalidRect").addClass("hidden");
+        $("#invalidRect2").addClass("hidden");
+        $("#ejec_gp").addClass("disabledbutton");
+        $("#drawRectangleBtn").removeClass("disabledbutton");
+        $("#msgRectangle").removeClass("hidden");
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  calculateRectangleArea(rectPos, rectangleArea, formattedArea) {
+    rectPos = mapa.editableLayers.rectangle;
+    contourRectangles.push(rectPos[rectPos.length-1]);
+    rectangleArea = L.GeometryUtil.geodesicArea(contourRectangles[contourRectangles.length-1].getLatLngs()[0]);
+    formattedArea = L.GeometryUtil.formattedNumber(rectangleArea / 1000000, 2);
+
+    if (formattedArea > 100) {
+      $("#ejec_gp").addClass("disabledbutton");
+      $("#invalidRect").removeClass("hidden");
+      $("#invalidRect2").removeClass("hidden");
+    } else if (formattedArea < 100) {
+      $("#invalidRect").addClass("hidden");
+      $("#invalidRect2").addClass("hidden");
+      $("#ejec_gp").removeClass("disabledbutton");
+    } 
+    contourRectangles = [];
   }
 
   buildOptionForm(fields) {
@@ -482,13 +529,21 @@ class Geoprocessing {
     rectangleMessage.style = "color: #37bbed; font-weight: bolder; font-size: 13px";
     document.getElementsByClassName("form")[1].appendChild(rectangleMessage);
 
-    let rectSizeMsg = document.createElement("div");
-    rectSizeMsg.innerHTML = "Se superó el limite";
-    rectSizeMsg.className = "invalidRect";
-    rectSizeMsg.id = "invalidRect";
-    rectSizeMsg.style = "color: #ff1100; font-weight: bolder;";
-    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg);
+    let rectSizeMsg1 = document.createElement("div");
+    rectSizeMsg1.innerHTML = "Se superó el limite.";
+    rectSizeMsg1.className = "invalidRect";
+    rectSizeMsg1.id = "invalidRect";
+    rectSizeMsg1.style = "color: #ff1100; font-weight: bolder;";
+    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg1);
     $("#invalidRect").addClass("hidden");
+
+    let rectSizeMsg2 = document.createElement("div");
+    rectSizeMsg2.innerHTML = "Edite o elimine el rectángulo.";
+    rectSizeMsg2.className = "invalidRect";
+    rectSizeMsg2.id = "invalidRect2";
+    rectSizeMsg2.style = "color: #ff1100; font-weight: bolder;";
+    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg2);
+    $("#invalidRect2").addClass("hidden");
     //----------
 
     //Cota Messages
@@ -529,9 +584,10 @@ class Geoprocessing {
     this.optionsForm.addButton(
       "Dibujar Rectángulo",
       () => {
-        let drawingRectangle = new L.Draw.Rectangle(mapa)
+        let drawingRectangle = new L.Draw.Rectangle(mapa);
+        $("#drawRectangleBtn").addClass("disabledbutton");
         drawingRectangle.enable();
-        this.checkRectangleSize();
+        this.checkRectangleDrawingSize();
       },
       "drawRectangleBtn"
     );
@@ -562,7 +618,7 @@ class Geoprocessing {
       let values = [];
       let arrayWaterRise = "";
       let valueOfWaterRise;
-
+      contourRectangles = [];
       for (let i = 0; i < formFields.length; i++) {
         if (
           formFields[i].hasAttribute("references") &&
@@ -731,12 +787,16 @@ class Geoprocessing {
     if (!this.formContainer) {
       this.formContainer = this.buildForm();
       mapa.addMethodToEvent(
-        this.updateReferencedDrawedLayers.bind(this),
+        this.updateReferencedDrawedLayers.bind(this,"add-layer"),
         "add-layer"
       );
       mapa.addMethodToEvent(
-        this.updateReferencedDrawedLayers.bind(this),
+        this.updateReferencedDrawedLayers.bind(this,"delete-layer"),
         "delete-layer"
+      );
+      mapa.addMethodToEvent(
+        this.updateReferencedDrawedLayers.bind(this,"edit-layer"),
+        "edit-layer"
       );
     }
     return this.formContainer;
