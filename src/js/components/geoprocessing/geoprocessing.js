@@ -6,6 +6,7 @@ let geoprocessing = {
   contour: GeoserviceFactory.Contour,
   elevationProfile: GeoserviceFactory.ElevationProfile,
   waterRise: GeoserviceFactory.ElevationProfile,
+  buffer: GeoserviceFactory.Contour //temporal
 };
 let results_counter = 0;
 let contour_result_active = false;
@@ -452,12 +453,18 @@ class Geoprocessing {
                   if(layer.id.includes("rectangle")) {
                     options.push({ value: layer.id, text: layer.name });
                   }
-                })
+                });
               } else if (this.geoprocessId === "waterRise") {
                 addedLayers.forEach((layer) => {
                   if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
                     options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
+                  }
+                });
+              } else if (this.geoprocessId === "buffer") {
+                gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+                  if (layer) {
+                    options.push({ value: layer.name, text: layer.name });
                   }
                 });
               } else if (this.geoprocessId === "elevationProfile") {
@@ -512,9 +519,12 @@ class Geoprocessing {
             title: field.name,
             extraProps: extraProps,
           });
-          let inputDefault = document.getElementById("input-equidistancia");
-          inputDefault.value = 100;
-          $("label[for='input-equidistancia']").html("Equidistancia (m)");
+          //Different inputs depending on active geoprocess
+          if (inputId == "input-equidistancia") {//Contour
+            let inputDefault = document.getElementById("input-equidistancia");
+            inputDefault.value = 100;
+            $("label[for='input-equidistancia']").html("Equidistancia (m)");
+          }
 
           formFields.push(input);
         }
@@ -603,11 +613,17 @@ class Geoprocessing {
 
     $("#ejec_gp").addClass("disabledbutton");//Execute Button disable from the start
 
+    //Different forms depending on active geoprocesses
     if (this.geoprocessId === "waterRise") { 
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
-    }else {
+    }
+    else if (this.geoprocessId === "buffer") {
+      $('label[for="select-capa"]').show();
+      document.getElementById("select-capa").classList.remove("hidden");
+    }
+    else if (this.geoprocessId === "contour") {
       //Hide Capa for Contour Lines
       $('label[for="select-capa"]').hide ();
       document.getElementById("select-capa").classList.add("hidden");
@@ -747,6 +763,7 @@ class Geoprocessing {
           }
           this.geoprocessId = element.value;
           
+          //Auto show layer for waterRise and buffer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
               if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
@@ -755,6 +772,11 @@ class Geoprocessing {
                 }, 500);
               }
             });
+          }
+          if (this.geoprocessId == "buffer") {
+            setTimeout(function () {
+              $("#select-capa").val(gestorMenu.getActiveLayersWithoutBasemap()[0].name).change();
+            }, 500);
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(

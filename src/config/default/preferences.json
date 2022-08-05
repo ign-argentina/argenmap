@@ -112,6 +112,12 @@
         "geoprocess": "waterRise",
         "namePrefix": "Cota_",
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
+      },
+      {
+        "name": "Buffer",
+        "geoprocess": "buffer",
+        "namePrefix": "Buffer_",
+        "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
       }
     ]
   },
