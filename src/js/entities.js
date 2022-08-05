@@ -2467,6 +2467,47 @@ class GestorMenu {
 
     }
 
+    getLayerData(layerName, sectionName) {
+        
+        let sectionLayers, sections, layersArr = [], layerData = {};
+        
+        sectionName ? (
+            sectionLayers = gestorMenu.items[sectionName].itemsComposite,
+            layersArr.push(...Object.values(sectionLayers))
+        ) : (
+            sections = gestorMenu.items,
+            Object.values(sections).forEach( section => { 
+                section.seccion !== 'mapasbase' ? 
+                layersArr.push(...Object.values(section.itemsComposite))
+                : '' ;
+            })
+        )
+
+        layersArr.forEach(layer => {
+            let lyr = layer.capa;
+            lyr.nombre === layerName ?
+            layerData = {
+                name: lyr.nombre,
+                title: lyr.titulo,
+                url: lyr.host.substring(0, lyr.host.lastIndexOf('/')),
+                keywords: lyr.keywords ?? [],
+                icon: lyr.legendURL,
+                bbox: {
+                    sw: { 
+                        lng: lyr.minx, 
+                        lat: lyr.miny 
+                    },
+                    ne: {
+                        lng: lyr.maxx, 
+                        lat: lyr.maxy
+                    }
+                }
+            }
+            : '' ;
+        });
+        return layerData ?? {} ;
+    }
+
 }
 
 /******************************************
