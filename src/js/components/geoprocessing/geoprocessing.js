@@ -574,8 +574,8 @@ class Geoprocessing {
     $("#invalidRect2").addClass("hidden");
     //----------
 
-    //Cota & Buffer Messages
-    if (this.geoprocessId === "waterRise") {
+    //Cota Messages & Slider
+    if (this.geoprocessId === "waterRise") { 
       let message = document.createElement("div");
       message.innerHTML = "No hay Curvas de Nivel";
       message.className = "msgNoContour";
@@ -583,7 +583,6 @@ class Geoprocessing {
       message.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(message);
       $("#msgRectangle").addClass("hidden");
-
       for (let lyr of mapa.editableLayers.polyline) {
         if (lyr.layer.includes(this.namePrefix)) {
           this.setSliderForWaterRise(sliderLayer);
@@ -592,7 +591,8 @@ class Geoprocessing {
         }
       }
     }
-    if (this.geoprocessId === "buffer") {
+    //Buffer Messages
+    else if (this.geoprocessId === "buffer") {
       let messageBuffer = document.createElement("div");
       messageBuffer.innerHTML = "Active una Capa";
       messageBuffer.className = "msgNoLayer";
@@ -600,15 +600,7 @@ class Geoprocessing {
       messageBuffer.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(messageBuffer);
       $("#msgRectangle").addClass("hidden");
-
-      gestorMenu.getActiveLayersWithoutBasemap().forEach( layer => {
-        if (layer) {
-          $("#msgNoLayer").addClass("hidden");
-          $("#msgRectangle").removeClass("hidden");
-        }
-      });
     }
-    //----------
 
     function checkExecuteBtn() {//Check to see if there is any text entered
       if (
@@ -653,8 +645,7 @@ class Geoprocessing {
       },
       "ejec_gp"
     );
-
-    $("#ejec_gp").addClass("disabledbutton");//Execute Button disable from the start
+    $("#ejec_gp").addClass("disabledbutton");//Execute Button disabled from the start
 
     //Different forms depending on active geoprocesses
     if (this.geoprocessId === "waterRise") { 
@@ -662,10 +653,25 @@ class Geoprocessing {
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
     }
+
     else if (this.geoprocessId === "buffer") {
       $('label[for="select-capa"]').show();
+      $('label[for="input-equidistancia"]').hide();
+      $("#drawRectangleBtn").addClass("disabledbutton");
+      document.getElementById("input-equidistancia").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
+
+      gestorMenu.getActiveLayersWithoutBasemap().forEach( layer => {
+        if (layer) {
+          $("#msgNoLayer").addClass("hidden");
+          $("#msgRectangle").removeClass("hidden");
+          $("#drawRectangleBtn").removeClass("disabledbutton");
+          $('label[for="input-equidistancia"]').show();
+          document.getElementById("input-equidistancia").classList.remove("hidden");
+        }
+      });
     }
+
     else if (this.geoprocessId === "contour") {
       //Hide Capa for Contour Lines
       $('label[for="select-capa"]').hide ();
