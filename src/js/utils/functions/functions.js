@@ -793,12 +793,12 @@ function getStyleContour() {
         g.forEach(e => {
             if (e.geoprocess == "contour") {
                 if (e.styles) {
-                    if (e.styles.line_color) { styles.line_color = e.styles.line_color }
-                    if (e.styles.line_weight) { styles.line_weight = e.styles.line_weight }
-                    if (e.styles.d_line_m) { styles.d_line_m = e.styles.d_line_m }
-                    if (e.styles.d_line_color) { styles.d_line_color = e.styles.d_line_color }
-                    if (e.styles.d_weigth) { styles.d_weigth = e.styles.d_weigth }
-                    if (e.styles.smoothFactor) { styles.smoothFactor = e.styles.smoothFactor }
+                    styles.line_color = e.styles.line_color ?? styles.line_color;
+                    styles.line_weight = e.styles.line_weight ?? styles.line_weight;
+                    styles.d_line_m = e.styles.d_line_m ?? styles.d_line_m;
+                    styles.d_line_color = e.styles.d_line_color ?? styles.d_line_color;
+                    styles.d_weigth = e.styles.d_weigth ?? styles.d_weigth;
+                    styles.smoothFactor = e.styles.smoothFactor ?? styles.smoothFactor;
                 }
             }
         })
