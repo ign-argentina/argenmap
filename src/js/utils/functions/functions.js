@@ -633,26 +633,17 @@ let normalize = (function () {
 
 })();
 
-function clickGeometryLayer(layer, file) {
+function clickGeometryLayer(layer) {
     let aux = document.getElementById("flc-" + layer)
 
     if (aux.className === "file-layer active") {
         aux.className = "file-layer"
-        if (file == undefined || !file) {
-            mapa.hideGroupLayer(layer)
-        } else {
-            mapa.hideGroupLayer(layer, true)
+        mapa.hideGroupLayer(layer)
 
-        }
     }
     else {
         aux.className = "file-layer active"
-        if (file == undefined || !file) {
-            mapa.showGroupLayer(layer)
-        } else {
-            mapa.showGroupLayer(layer, true)
-
-        }
+         mapa.showGroupLayer(layer)
     }
 }
 

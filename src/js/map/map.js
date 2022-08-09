@@ -2665,4 +2665,3 @@ function copytoClipboard(coords){
 
 
 
-
