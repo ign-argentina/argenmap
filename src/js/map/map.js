@@ -1587,68 +1587,36 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.showLayer = (layer,file) => {
 						const type = layer.split('_')[0];
-						if (file==undefined || !file) {
-							if (mapa.editableLayers.hasOwnProperty(type)) {
-								const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
-								if (lyr)
-									drawnItems.addLayer(lyr);
-							}
-						}else {
-							if (mapa.editableLayers.hasOwnProperty(type)) {
-								const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
-								if (lyr)
-									drawnItems.addLayer(lyr);
-							}
+						if (mapa.editableLayers.hasOwnProperty(type)) {
+							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
+							if (lyr)
+								drawnItems.addLayer(lyr);
 						}
 					}
 
 					mapa.hideLayer = (layer,file) => {
-						if (file==undefined || !file) {
-							Object.values(drawnItems._layers).forEach(lyr => {
-								if (layer === lyr.name) {
-									drawnItems.removeLayer(lyr);
-									return;
-								}
-							});
-						}else {
-							Object.values(drawnItems._layers).forEach(lyr => {
-								if (layer === lyr.name) {
-									drawnItems.removeLayer(lyr);
-									return;
-								}
-							});
-						}
+						Object.values(drawnItems._layers).forEach(lyr => {
+							if (layer === lyr.name) {
+								drawnItems.removeLayer(lyr);
+								return;
+							}
+						});
 					}
 
 					
 					mapa.showGroupLayer = (group,file) => {
-						if (file==undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group)){
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.showLayer(layer);
-								});
-							}
-						}else {
-							if (mapa.groupLayers.hasOwnProperty(group)){
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.showLayer(layer, true);
-								});
-							}
+						if (mapa.groupLayers.hasOwnProperty(group)){
+							mapa.groupLayers[group].forEach(layer => {
+								mapa.showLayer(layer);
+							});
 						}
 					}
 
 					mapa.hideGroupLayer = (group,file) => {
-						if (file==undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group))
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.hideLayer(layer);
-							});
-						}else{
-							if (mapa.groupLayers.hasOwnProperty(group))
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.hideLayer(layer,true);
-							});
-						}
+						if (mapa.groupLayers.hasOwnProperty(group))
+							mapa.groupLayers[group].forEach(layer => {
+								mapa.hideLayer(layer);
+						});
 					}
 
 					mapa.deleteLayer = (layer, file) => {
@@ -2113,31 +2081,18 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						let name = type + '_';
 						
-						if(file==undefined || !file){
-							if (mapa.editableLayers[type].length === 0) {
-								name += '1';
-							} else {
-								const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-								name += parseInt(lastLayerName.split('_')[1]) + 1;
-							}
-						}else {
-							if (mapa.editableLayers[type].length === 0) {
-								name += '1';
-							} else {
-								const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-								name += parseInt(lastLayerName.split('_')[1]) + 1;
-							}
+						if (mapa.editableLayers[type].length === 0) {
+							name += '1';
+						} else {
+							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+							name += parseInt(lastLayerName.split('_')[1]) + 1;
 						}
-
+						
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
 
-						if(file==undefined || !file){
-							mapa.groupLayers[groupName].push(name);
-						}else {
-							mapa.groupLayers[groupName].push(name);
-						}
+						mapa.groupLayers[groupName].push(name);
 
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name, file);
@@ -2183,18 +2138,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 						//Right-click
 						mapa.addContextMenuToLayer(layer, file);
-						
-						if(file==undefined || !file){
-							drawnItems.addLayer(layer);
-						}else {
-							drawnItems.addLayer(layer);
-						}
 
-						/* if (type !== 'marker' && type !== 'circlemarker') {
-							mapa.fitBounds(layer.getBounds());
-						} else {
-							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
-						} */
+						drawnItems.addLayer(layer);
 					}
 
 					gestorMenu.plugins['Draw'].setStatus('visible');
