@@ -639,15 +639,7 @@ class Geoprocessing {
       "Ejecutar",
       () => {
         if (this.geoprocessId === "buffer") {
-          let drawnRectangle
-          mapa.editableLayers.rectangle.forEach((lyr) => {
-            drawnRectangle = lyr
-          })
-          let layerSelected = [];
-          layerSelected.push(document.getElementById("select-capa").value);
-
-          mapa.checkLayersInDrawedGeometry(drawnRectangle, layerSelected);
-          console.log("Rectangulo Dibujado: ", drawnRectangle, " Capa Activa: ",layerSelected);
+          this.executeBuffer();
         }
         else {
           this.executeGeoprocess(formFields);
@@ -687,6 +679,18 @@ class Geoprocessing {
       $('label[for="select-capa"]').hide ();
       document.getElementById("select-capa").classList.add("hidden");
     }
+  }
+
+  executeBuffer(){
+    let drawnRectangle
+    mapa.editableLayers.rectangle.forEach((lyr) => {
+      drawnRectangle = lyr
+    })
+    let layerSelected = [];
+    layerSelected.push(document.getElementById("select-capa").value);
+
+    mapa.checkLayersInDrawedGeometry(drawnRectangle, layerSelected);
+    console.log("Rectangulo Dibujado: ", drawnRectangle, " Capa Activa: ",layerSelected);
   }
 
   executeGeoprocess(formFields) {
