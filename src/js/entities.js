@@ -199,7 +199,8 @@ class ImpresorGrupoHTML extends Impresor {
         
         var listaId = itemComposite.getId();
         var itemClass = 'menu5';
-        
+        let seccion = itemComposite.seccion;
+
         var active = (itemComposite.getActive() == true) ? ' in ' : '';
 
 		return '<div id="' + listaId + '" class="' + itemClass + ' panel-default">' + 
@@ -1647,6 +1648,10 @@ class GestorMenu {
         }, 500)
     }
 
+    cleanAllLayers() {//Desactiva TODOS los layers activos.
+        this.toggleLayers(Object.keys(overlayMaps))
+    }
+
     toggleLayers(layers) {
         layers.forEach(layer => {
             if (this.layerIsValid(layer))
@@ -1982,16 +1987,14 @@ class GestorMenu {
     _printSearcher() {
         if (this.getShowSearcher() == true) {
             return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" +
-                "<div class='input-group'>" +
-                "<div class='form-group has-feedback has-clear'>" +
-                "<input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='buscar capas...'>" +
-                "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>" +
-                "</div>" +
-                "<span class='input-group-btn'>" +
-                "<button class='btn btn-default' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>" +
-                "</span>" +
-                "</div>" +
-                "</form>";
+                    "<div style='display: flex;'>" +
+                        "<div class='has-feedback has-clear'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capas...'>" +
+                            "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>"+
+                        "</div>" +
+                        "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
+                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
+                    "</div>" +
+                    "</form>";
         }
 
         return '';
@@ -3227,6 +3230,3 @@ class Fechaimagen {
     return picMdata;
   }
 }
-
-
-
