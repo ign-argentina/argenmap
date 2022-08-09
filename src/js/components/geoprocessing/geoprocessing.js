@@ -160,6 +160,19 @@ class Geoprocessing {
           kb: null,
         });
 
+        // ** Avoiding Leaflet Draw object test **
+        // first comment addGeoJsonLayerToDrawedLayers() call
+         
+        // makes a Leaflet featureGroup object and add it to the map
+        //mapa.featureGroups = L.featureGroup().addTo(mapa);
+
+        // adds an arbitrary layer to the featureGroup
+        //mapa.featureGroups.addLayer(L.geoJSON(addedLayers[0].layer)); 
+
+        // set style for all layers in the featureGroup
+        //mapa.featureGroups.setStyle({color: '#876508'});
+        // **
+
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         break;
       }
@@ -428,8 +441,6 @@ class Geoprocessing {
     this.fieldsToReferenceLayers = [];
     const formFields = [];
     let sliderLayer;
-
-    console.log(app.geoprocessing.availableProcesses[0]);
 
     fields.forEach((field) => {
       const id = field.name.toLowerCase().replace(/\s/g, "");
