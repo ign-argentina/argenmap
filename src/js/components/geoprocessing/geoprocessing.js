@@ -639,11 +639,15 @@ class Geoprocessing {
       "Ejecutar",
       () => {
         if (this.geoprocessId === "buffer") {
-          let layer
+          let drawnRectangle
           mapa.editableLayers.rectangle.forEach((lyr) => {
-            layer = lyr
+            drawnRectangle = lyr
           })
-          console.log("Layer: ", layer, " Capa Activa: ", document.getElementById("select-capa").value)
+          let layerSelected = [];
+          layerSelected.push(document.getElementById("select-capa").value);
+
+          mapa.checkLayersInDrawedGeometry(drawnRectangle, layerSelected);
+          console.log("Rectangulo Dibujado: ", drawnRectangle, " Capa Activa: ",layerSelected);
         }
         else {
           this.executeGeoprocess(formFields);

@@ -1496,6 +1496,8 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
+						console.log("layer: ",layer)
+						console.log("selectedLayers: ",selectedLayers)
 						const filteredActiveLayers = gestorMenu.getActiveLayersWithoutBasemap().filter(activeLayer => {
 							return selectedLayers.find(selectedLayer => selectedLayer === activeLayer.name) ? true : false;
 						});
@@ -1523,7 +1525,6 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						//Clear all old data
 						layer.data = {};
-
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
 								getLayerDataByWFS(coords, layer.type, activeLayer)
