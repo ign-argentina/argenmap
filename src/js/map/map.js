@@ -444,9 +444,9 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('draw:edited', (e) => {
 						var layers = e.layers;
 						//Each layer recently edited..
-						layers.eachLayer(function (layer) {
+						/* layers.eachLayer(function (layer) {
 							mapa.checkLayersInDrawedGeometry(layer, layer.type);
-						});
+						}); */
 						mapa.methodsEvents['edit-layer'].forEach(method => method(mapa.editableLayers));
 
 					});
