@@ -452,27 +452,12 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.on('draw:deleted', function (e) {
-						//console.log("e: ",e)
 						var layers = e.layers;
 						Object.values(layers._layers).forEach(deletedLayer => {
-							//console.log("deletedLayer: ",deletedLayer)
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
-							// //Delete from groups
-							// for (const group in mapa.groupLayers) {
-							// 	const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
-							// 	if (lyrInGrpIdx >= 0) {
-							// 		mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
-							// 		deleteLayerFromMenu(deletedLayer);
-							// 		console.log("t2")
-
-							// 		if (mapa.groupLayers[group].length === 0)
-							// 			delete mapa.groupLayers[group];
-							// 			console.log("t3")
-							// 	}
-							// }
 						})
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
@@ -1553,21 +1538,10 @@ $("body").on("pluginLoad", function(event, plugin){
 
 									//Load data in table
 									const table = new Datatable(data, coords);
-									//console.clear()
 									createTabulator(table, activeLayer.name);
-
-									//we can style the figure in case it can receive some information
-									/* if (layer.type !== 'marker')
-										layer.setStyle({
-											color: '#33b560'
-										}); */
 								})
 								.catch(error => {
 									console.log(error);
-									/* if (layer.type !== 'marker')
-										layer.setStyle({
-											color: 'red'
-										}); */
 								});
 							});
 						}
@@ -1653,7 +1627,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.removeGroup = (group, deleteLayers,file) => {
-						// console.log('file',file);
 						if (file==undefined || !file) {
 							if (mapa.groupLayers.hasOwnProperty(group)) {
 								if (deleteLayers) {
