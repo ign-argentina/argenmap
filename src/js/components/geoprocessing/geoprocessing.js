@@ -20,6 +20,7 @@ class Geoprocessing {
   optionsForm = null;
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
+  namePrefix = app.geoprocessing.availableProcesses[0].namePrefix ?? 'result_';
 
   svgZoomStyle(zoom) {
     if (contour_result_active) {
@@ -141,7 +142,7 @@ class Geoprocessing {
 
         document.head.appendChild(style_fix_textpath);
 
-        let namePrefix = app.geoprocessing.availableProcesses[0].namePrefix || 'process';
+        let namePrefix = this.namePrefix;
 
         let layername = namePrefix + results_counter;
         results_counter++;
@@ -469,7 +470,7 @@ class Geoprocessing {
                 });
               } else if (this.geoprocessId === "waterRise") {
                 addedLayers.forEach((layer) => {
-                  if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
+                  if (layer.id.includes(this.namePrefix)) {
                     options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
@@ -580,7 +581,7 @@ class Geoprocessing {
       $("#msgRectangle").addClass("hidden");
 
       for (let lyr of mapa.editableLayers.polyline) {
-        if (lyr.layer.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
+        if (lyr.layer.includes(this.namePrefix)) {
           this.setSliderForWaterRise(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
@@ -779,7 +780,7 @@ class Geoprocessing {
           //Auto show layer for waterRise and buffer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix)) {
+              if (layer.id.includes(this.namePrefix)) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);

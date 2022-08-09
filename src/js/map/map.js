@@ -452,27 +452,12 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 
 					mapa.on('draw:deleted', function (e) {
-						//console.log("e: ",e)
 						var layers = e.layers;
 						Object.values(layers._layers).forEach(deletedLayer => {
-							//console.log("deletedLayer: ",deletedLayer)
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
-							// //Delete from groups
-							// for (const group in mapa.groupLayers) {
-							// 	const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr = deletedLayer.name);
-							// 	if (lyrInGrpIdx >= 0) {
-							// 		mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
-							// 		deleteLayerFromMenu(deletedLayer);
-							// 		console.log("t2")
-
-							// 		if (mapa.groupLayers[group].length === 0)
-							// 			delete mapa.groupLayers[group];
-							// 			console.log("t3")
-							// 	}
-							// }
 						})
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
@@ -1553,21 +1538,10 @@ $("body").on("pluginLoad", function(event, plugin){
 
 									//Load data in table
 									const table = new Datatable(data, coords);
-									//console.clear()
 									createTabulator(table, activeLayer.name);
-
-									//we can style the figure in case it can receive some information
-									/* if (layer.type !== 'marker')
-										layer.setStyle({
-											color: '#33b560'
-										}); */
 								})
 								.catch(error => {
 									console.log(error);
-									/* if (layer.type !== 'marker')
-										layer.setStyle({
-											color: 'red'
-										}); */
 								});
 							});
 						}
@@ -1580,11 +1554,12 @@ $("body").on("pluginLoad", function(event, plugin){
 							
 						}else {
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
+
 						}
 					}
 					
 
-					mapa.showLayer = (layer) => {
+					mapa.showLayer = (layer,file) => {
 						const type = layer.split('_')[0];
 						if (mapa.editableLayers.hasOwnProperty(type)) {
 							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
@@ -1593,7 +1568,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.hideLayer = (layer) => {
+					mapa.hideLayer = (layer,file) => {
 						Object.values(drawnItems._layers).forEach(lyr => {
 							if (layer === lyr.name) {
 								drawnItems.removeLayer(lyr);
@@ -1603,7 +1578,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					
-					mapa.showGroupLayer = (group) => {
+					mapa.showGroupLayer = (group,file) => {
 						if (mapa.groupLayers.hasOwnProperty(group)){
 							mapa.groupLayers[group].forEach(layer => {
 								mapa.showLayer(layer);
@@ -1611,7 +1586,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.hideGroupLayer = (group) => {
+					mapa.hideGroupLayer = (group,file) => {
 						if (mapa.groupLayers.hasOwnProperty(group))
 							mapa.groupLayers[group].forEach(layer => {
 								mapa.hideLayer(layer);
@@ -1652,7 +1627,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.removeGroup = (group, deleteLayers,file) => {
-						// console.log('file',file);
 						if (file==undefined || !file) {
 							if (mapa.groupLayers.hasOwnProperty(group)) {
 								if (deleteLayers) {
@@ -2080,31 +2054,18 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						let name = type + '_';
 						
-						if(file==undefined || !file){
-							if (mapa.editableLayers[type].length === 0) {
-								name += '1';
-							} else {
-								const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-								name += parseInt(lastLayerName.split('_')[1]) + 1;
-							}
-						}else {
-							if (mapa.editableLayers[type].length === 0) {
-								name += '1';
-							} else {
-								const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-								name += parseInt(lastLayerName.split('_')[1]) + 1;
-							}
+						if (mapa.editableLayers[type].length === 0) {
+							name += '1';
+						} else {
+							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+							name += parseInt(lastLayerName.split('_')[1]) + 1;
 						}
-
+						
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
 
-						if(file==undefined || !file){
-							mapa.groupLayers[groupName].push(name);
-						}else {
-							mapa.groupLayers[groupName].push(name);
-						}
+						mapa.groupLayers[groupName].push(name);
 
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name, file);
@@ -2150,18 +2111,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 						//Right-click
 						mapa.addContextMenuToLayer(layer, file);
-						
-						if(file==undefined || !file){
-							drawnItems.addLayer(layer);
-						}else {
-							drawnItems.addLayer(layer);
-						}
 
-						/* if (type !== 'marker' && type !== 'circlemarker') {
-							mapa.fitBounds(layer.getBounds());
-						} else {
-							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
-						} */
+						drawnItems.addLayer(layer);
 					}
 
 					gestorMenu.plugins['Draw'].setStatus('visible');
@@ -2711,7 +2662,6 @@ function copytoClipboard(coords){
 	document.body.removeChild(aux);
 	new UserMessage('Las coordenadas se copiaron al portapapeles', true, 'information');
 }
-
 
 
 

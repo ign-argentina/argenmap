@@ -2627,7 +2627,7 @@ class Menu_UI{
              img_icon.className = "file-img"
              img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
              img_icon.onclick = function(){
-                clickGeometryLayer(id)
+                clickGeometryLayer(id, true)
              }
 
             let layer_name = document.createElement("div")
@@ -2635,7 +2635,7 @@ class Menu_UI{
             layer_name.innerHTML= "<a>"+textName+"</a>"
             layer_name.title = fileName
             layer_name.onclick = function(){
-                clickGeometryLayer(id)
+                clickGeometryLayer(id, true)
             }
             
             let options = document.createElement("div")
@@ -2986,7 +2986,7 @@ class Menu_UI{
                 editDomNameofFileLayerbyID(id,this.value)
                 a_new.innerHTML = `<a>${this.value}</a>`
                 a_new.onclick = function(){
-                    clickGeometryLayer(id)
+                    clickGeometryLayer(id,true)
                 }
                 container.insertBefore(a_new,nodo_hijo);
             }
@@ -3069,7 +3069,7 @@ class Menu_UI{
         img_icon.className = "loadservice-layer-img"
         img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`
         img_icon.onclick = function(){
-            clickGeometryLayer(id)
+            clickGeometryLayer(id, true)
         }
 
         let layer_name = document.createElement("div")
@@ -3227,7 +3227,6 @@ class Fechaimagen {
     return picMdata;
   }
 }
-
 
 
 
