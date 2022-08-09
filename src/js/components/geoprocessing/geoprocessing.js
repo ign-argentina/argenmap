@@ -296,6 +296,8 @@ class Geoprocessing {
   }
 
   updateSliderForWaterRise(sliderLayer) {
+    document.getElementById("rangeSlider").classList.remove("hidden");
+    document.getElementById("sliderValue").classList.remove("hidden");
     let arraySlider = []; //Array that contains all unique values
     sliderLayer.layer.features.forEach((element) => {
       if (!arraySlider.includes(element.properties.value)) {
@@ -499,13 +501,17 @@ class Geoprocessing {
                 change: (element) => {
                   if (this.geoprocessId === "contour") {
                     if (!element.value) return;
-                    const layer = mapa.getEditableLayer(element.value);
-                    mapa.centerLayer(layer);
+                      const layer = mapa.getEditableLayer(element.value);
+                      mapa.centerLayer(layer);
                   } else if (this.geoprocessId === "waterRise") {
-                    if (!element.value) return;
-                    let selectedLayer = "";
-                    addedLayers.forEach((lyr) => {
-                      lyr.file_name == element.value ? (selectedLayer = lyr) : null;
+                    if (!element.value) {
+                      document.getElementById("rangeSlider").classList.add("hidden");
+                      document.getElementById("sliderValue").classList.add("hidden");
+                      return;
+                    }
+                      let selectedLayer = "";
+                      addedLayers.forEach((lyr) => {
+                        lyr.file_name == element.value ? (selectedLayer = lyr) : null;
                     });
                     if (selectedLayer.layer.features.length != 0) {
                       mapa.centerLayer(selectedLayer.layer);
