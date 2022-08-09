@@ -289,6 +289,10 @@ class Geoprocessing {
         }
       });
     }
+
+    if (this.geoprocessId === "buffer") {
+      this.checkRectangleArea(event);
+    }
   }
 
   updateSliderForWaterRise(sliderLayer) {
@@ -570,7 +574,7 @@ class Geoprocessing {
     $("#invalidRect2").addClass("hidden");
     //----------
 
-    //Cota Messages
+    //Cota & Buffer Messages
     if (this.geoprocessId === "waterRise") {
       let message = document.createElement("div");
       message.innerHTML = "No hay Curvas de Nivel";
@@ -587,6 +591,22 @@ class Geoprocessing {
           break;
         }
       }
+    }
+    if (this.geoprocessId === "buffer") {
+      let messageBuffer = document.createElement("div");
+      messageBuffer.innerHTML = "Active una Capa";
+      messageBuffer.className = "msgNoLayer";
+      messageBuffer.id = "msgNoLayer";
+      messageBuffer.style = "color: red; font-weight: bolder;";
+      document.getElementsByClassName("form")[1].appendChild(messageBuffer);
+      $("#msgRectangle").addClass("hidden");
+
+      gestorMenu.getActiveLayersWithoutBasemap().forEach( layer => {
+        if (layer) {
+          $("#msgNoLayer").addClass("hidden");
+          $("#msgRectangle").removeClass("hidden");
+        }
+      });
     }
     //----------
 
@@ -620,7 +640,16 @@ class Geoprocessing {
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
-        this.executeGeoprocess(formFields);
+        if (this.geoprocessId === "buffer") {
+          let layer
+          mapa.editableLayers.rectangle.forEach((lyr) => {
+            layer = lyr
+          })
+          console.log("Layer: ", layer, " Capa Activa: ", document.getElementById("select-capa").value)
+        }
+        else {
+          this.executeGeoprocess(formFields);
+        }
       },
       "ejec_gp"
     );
@@ -788,9 +817,12 @@ class Geoprocessing {
             });
           }
           if (this.geoprocessId == "buffer") {
-            setTimeout(function () {
-              $("#select-capa").val(gestorMenu.getActiveLayersWithoutBasemap()[0].name).change();
-            }, 500);
+            let layerForBuffer = gestorMenu.getActiveLayersWithoutBasemap()[0];
+            if (layerForBuffer) {
+              setTimeout(function () {
+                $("#select-capa").val(layerForBuffer.name).change();
+              }, 500);
+            }
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(
