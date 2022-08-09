@@ -289,9 +289,15 @@ class Geoprocessing {
         }
       });
     }
+
+    if (this.geoprocessId === "buffer") {
+      this.checkRectangleArea(event);
+    }
   }
 
   updateSliderForWaterRise(sliderLayer) {
+    document.getElementById("rangeSlider").classList.remove("hidden");
+    document.getElementById("sliderValue").classList.remove("hidden");
     let arraySlider = []; //Array that contains all unique values
     sliderLayer.layer.features.forEach((element) => {
       if (!arraySlider.includes(element.properties.value)) {
@@ -495,13 +501,17 @@ class Geoprocessing {
                 change: (element) => {
                   if (this.geoprocessId === "contour") {
                     if (!element.value) return;
-                    const layer = mapa.getEditableLayer(element.value);
-                    mapa.centerLayer(layer);
+                      const layer = mapa.getEditableLayer(element.value);
+                      mapa.centerLayer(layer);
                   } else if (this.geoprocessId === "waterRise") {
-                    if (!element.value) return;
-                    let selectedLayer = "";
-                    addedLayers.forEach((lyr) => {
-                      lyr.file_name == element.value ? (selectedLayer = lyr) : null;
+                    if (!element.value) {
+                      document.getElementById("rangeSlider").classList.add("hidden");
+                      document.getElementById("sliderValue").classList.add("hidden");
+                      return;
+                    }
+                      let selectedLayer = "";
+                      addedLayers.forEach((lyr) => {
+                        lyr.file_name == element.value ? (selectedLayer = lyr) : null;
                     });
                     if (selectedLayer.layer.features.length != 0) {
                       mapa.centerLayer(selectedLayer.layer);
@@ -570,8 +580,8 @@ class Geoprocessing {
     $("#invalidRect2").addClass("hidden");
     //----------
 
-    //Cota Messages
-    if (this.geoprocessId === "waterRise") {
+    //Cota Messages & Slider
+    if (this.geoprocessId === "waterRise") { 
       let message = document.createElement("div");
       message.innerHTML = "No hay Curvas de Nivel";
       message.className = "msgNoContour";
@@ -579,7 +589,6 @@ class Geoprocessing {
       message.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(message);
       $("#msgRectangle").addClass("hidden");
-
       for (let lyr of mapa.editableLayers.polyline) {
         if (lyr.layer.includes(this.namePrefix)) {
           this.setSliderForWaterRise(sliderLayer);
@@ -588,7 +597,16 @@ class Geoprocessing {
         }
       }
     }
-    //----------
+    //Buffer Messages
+    else if (this.geoprocessId === "buffer") {
+      let messageBuffer = document.createElement("div");
+      messageBuffer.innerHTML = "Active una Capa";
+      messageBuffer.className = "msgNoLayer";
+      messageBuffer.id = "msgNoLayer";
+      messageBuffer.style = "color: red; font-weight: bolder;";
+      document.getElementsByClassName("form")[1].appendChild(messageBuffer);
+      $("#msgRectangle").addClass("hidden");
+    }
 
     function checkExecuteBtn() {//Check to see if there is any text entered
       if (
@@ -620,12 +638,16 @@ class Geoprocessing {
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
-        this.executeGeoprocess(formFields);
+        if (this.geoprocessId === "buffer") {
+          this.executeBuffer();
+        }
+        else {
+          this.executeGeoprocess(formFields);
+        }
       },
       "ejec_gp"
     );
-
-    $("#ejec_gp").addClass("disabledbutton");//Execute Button disable from the start
+    $("#ejec_gp").addClass("disabledbutton");//Execute Button disabled from the start
 
     //Different forms depending on active geoprocesses
     if (this.geoprocessId === "waterRise") { 
@@ -633,15 +655,42 @@ class Geoprocessing {
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
     }
+
     else if (this.geoprocessId === "buffer") {
       $('label[for="select-capa"]').show();
+      $('label[for="input-equidistancia"]').hide();
+      $("#drawRectangleBtn").addClass("disabledbutton");
+      document.getElementById("input-equidistancia").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
+
+      gestorMenu.getActiveLayersWithoutBasemap().forEach( layer => {
+        if (layer) {
+          $("#msgNoLayer").addClass("hidden");
+          $("#msgRectangle").removeClass("hidden");
+          $("#drawRectangleBtn").removeClass("disabledbutton");
+          $('label[for="input-equidistancia"]').show();
+          document.getElementById("input-equidistancia").classList.remove("hidden");
+        }
+      });
     }
+
     else if (this.geoprocessId === "contour") {
       //Hide Capa for Contour Lines
       $('label[for="select-capa"]').hide ();
       document.getElementById("select-capa").classList.add("hidden");
     }
+  }
+
+  executeBuffer(){
+    let drawnRectangle
+    mapa.editableLayers.rectangle.forEach((lyr) => {
+      drawnRectangle = lyr
+    })
+    let layerSelected = [];
+    layerSelected.push(document.getElementById("select-capa").value);
+
+    mapa.checkLayersInDrawedGeometry(drawnRectangle, layerSelected);
+    console.log("Rectangulo Dibujado: ", drawnRectangle, " Capa Activa: ",layerSelected);
   }
 
   executeGeoprocess(formFields) {
@@ -788,9 +837,12 @@ class Geoprocessing {
             });
           }
           if (this.geoprocessId == "buffer") {
-            setTimeout(function () {
-              $("#select-capa").val(gestorMenu.getActiveLayersWithoutBasemap()[0].name).change();
-            }, 500);
+            let layerForBuffer = gestorMenu.getActiveLayersWithoutBasemap()[0];
+            if (layerForBuffer) {
+              setTimeout(function () {
+                $("#select-capa").val(layerForBuffer.name).change();
+              }, 500);
+            }
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(
