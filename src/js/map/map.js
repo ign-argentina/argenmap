@@ -1580,75 +1580,42 @@ $("body").on("pluginLoad", function(event, plugin){
 							
 						}else {
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
-
 						}
 					}
 					
 
-					mapa.showLayer = (layer,file) => {
+					mapa.showLayer = (layer) => {
 						const type = layer.split('_')[0];
-						if (file==undefined || !file) {
-							if (mapa.editableLayers.hasOwnProperty(type)) {
-								const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
-								if (lyr)
-									drawnItems.addLayer(lyr);
-							}
-						}else {
-							if (mapa.editableLayers.hasOwnProperty(type)) {
-								const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
-								if (lyr)
-									drawnItems.addLayer(lyr);
-							}
+						if (mapa.editableLayers.hasOwnProperty(type)) {
+							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
+							if (lyr)
+								drawnItems.addLayer(lyr);
 						}
 					}
 
-					mapa.hideLayer = (layer,file) => {
-						if (file==undefined || !file) {
-							Object.values(drawnItems._layers).forEach(lyr => {
-								if (layer === lyr.name) {
-									drawnItems.removeLayer(lyr);
-									return;
-								}
-							});
-						}else {
-							Object.values(drawnItems._layers).forEach(lyr => {
-								if (layer === lyr.name) {
-									drawnItems.removeLayer(lyr);
-									return;
-								}
-							});
-						}
+					mapa.hideLayer = (layer) => {
+						Object.values(drawnItems._layers).forEach(lyr => {
+							if (layer === lyr.name) {
+								drawnItems.removeLayer(lyr);
+								return;
+							}
+						});
 					}
 
 					
-					mapa.showGroupLayer = (group,file) => {
-						if (file==undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group)){
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.showLayer(layer);
-								});
-							}
-						}else {
-							if (mapa.groupLayers.hasOwnProperty(group)){
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.showLayer(layer, true);
-								});
-							}
+					mapa.showGroupLayer = (group) => {
+						if (mapa.groupLayers.hasOwnProperty(group)){
+							mapa.groupLayers[group].forEach(layer => {
+								mapa.showLayer(layer);
+							});
 						}
 					}
 
-					mapa.hideGroupLayer = (group,file) => {
-						if (file==undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group))
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.hideLayer(layer);
-							});
-						}else{
-							if (mapa.groupLayers.hasOwnProperty(group))
-								mapa.groupLayers[group].forEach(layer => {
-									mapa.hideLayer(layer,true);
-							});
-						}
+					mapa.hideGroupLayer = (group) => {
+						if (mapa.groupLayers.hasOwnProperty(group))
+							mapa.groupLayers[group].forEach(layer => {
+								mapa.hideLayer(layer);
+						});
 					}
 
 					mapa.deleteLayer = (layer, file) => {
