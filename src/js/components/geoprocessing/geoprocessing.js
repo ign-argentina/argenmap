@@ -5,7 +5,7 @@ let btn_modal_loading = false;
 let geoprocessing = {
   contour: GeoserviceFactory.Contour,
   elevationProfile: GeoserviceFactory.ElevationProfile,
-  waterRise: GeoserviceFactory.ElevationProfile,
+  waterRise: GeoserviceFactory.WaterRise,
   buffer: GeoserviceFactory.Contour //temporal
 };
 let results_counter = 0;
