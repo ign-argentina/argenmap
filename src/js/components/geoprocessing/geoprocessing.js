@@ -543,11 +543,15 @@ class Geoprocessing {
             title: field.name,
             extraProps: extraProps,
           });
+          let inputDefault = document.getElementById("input-equidistancia");
+
           //Different inputs depending on active geoprocess
-          if (inputId == "input-equidistancia") {//Contour
-            let inputDefault = document.getElementById("input-equidistancia");
+          if (this.geoprocessId == "contour") {
             inputDefault.value = 100;
             $("label[for='input-equidistancia']").html("Equidistancia (m)");
+          } else if (this.geoprocessId == "buffer") {
+            inputDefault.value = 1000;
+            $("label[for='input-equidistancia']").html("Distancia (m)");
           }
 
           formFields.push(input);
@@ -692,22 +696,25 @@ class Geoprocessing {
       layer.name === selctedLayerName ?
       layerSelected = layer
       : console.info('Layer not found.');
-    })
+    });
 
     let coords = getGeometryCoords(drawnRectangle);
 
-    getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+    let distanceBuffer = document.getElementById("input-equidistancia").value / 1000;
+
+    let buffer, layerData = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
       .then((data) => {
         if (!data) {
           throw new Error("Error fetching to server");
         }
-        return data;
+        buffer = turf.buffer(data, distanceBuffer);
+        mapa.addGeoJsonLayerToDrawedLayers(buffer, "buffer");
       })
       .catch((err) => {
         console.error(err);
       });
 
-    //console.log("Rectangulo Dibujado: ", drawnRectangle, " Capa Activa: ",layerSelected);
+      console.log(layerData);
   }
 
   executeGeoprocess(formFields) {
