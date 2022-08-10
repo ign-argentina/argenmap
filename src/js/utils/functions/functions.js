@@ -345,7 +345,7 @@ function getLayerDataByWFS(coords, type, layerData) {
         // If the host has the / wms parameter it is replaced by an empty string
         const fixHost = layerData.host.replace(/\/wms$/, '');
         const capabilitiesUrl = `${fixHost}/${layerData.name}/ows?service=wfs&request=GetCapabilities`; // Where to save the reprojection
-
+        
         let reprojectedCoords = [];
         // Get the CRS
         getCRSByWFSCapabilities(capabilitiesUrl).then((crs) => {
