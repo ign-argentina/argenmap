@@ -1500,26 +1500,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							return selectedLayers.find(selectedLayer => selectedLayer === activeLayer.name) ? true : false;
 						});
 
-						let coords = null;
-
-						if (layer.type === 'polygon' || layer.type === 'rectangle') {
-							coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
-							layer.coords = coords;
-						} else if (layer.type === 'circle') {
-							coords = {
-								lat: layer._latlng.lat,
-								lng: layer._latlng.lng,
-								r: layer._mRadius
-							};
-						} else if (layer.type === 'marker') {
-							coords = {
-								lat: layer._latlng.lat,
-								lng: layer._latlng.lng,
-							};
-						} else if (layer.type === 'polyline') {
-							coords = layer._latlngs.map((coords) => [coords.lng, coords.lat]);
-							layer.coords = coords;
-						}
+						let coords = getGeometryCoords(layer);
 
 						//Clear all old data
 						layer.data = {};
@@ -1536,6 +1517,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									layer.coords = coords;
 
 									//Load data in table
+									console.log(data)
 									const table = new Datatable(data, coords);
 									createTabulator(table, activeLayer.name);
 								})
@@ -2217,6 +2199,30 @@ $("body").on("pluginLoad", function(event, plugin){
 			break;
 	}
 });
+
+function getGeometryCoords(layer) {
+	let coords = null;
+
+	if (layer.type === 'polygon' || layer.type === 'rectangle') {
+		coords = layer._latlngs[0].map((coords) => [coords.lng, coords.lat]);
+		layer.coords = coords;
+	} else if (layer.type === 'circle') {
+		coords = {
+			lat: layer._latlng.lat,
+			lng: layer._latlng.lng,
+			r: layer._mRadius
+		};
+	} else if (layer.type === 'marker') {
+		coords = {
+			lat: layer._latlng.lat,
+			lng: layer._latlng.lng,
+		};
+	} else if (layer.type === 'polyline') {
+		coords = layer._latlngs.map((coords) => [coords.lng, coords.lat]);
+		layer.coords = coords;
+	}
+	return coords;
+}
 
 // -- Plugins
 function onEachFeature(feature, layer) {
