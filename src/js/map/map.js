@@ -1496,8 +1496,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
-						console.log("layer: ",layer)
-						console.log("selectedLayers: ",selectedLayers)
 						const filteredActiveLayers = gestorMenu.getActiveLayersWithoutBasemap().filter(activeLayer => {
 							return selectedLayers.find(selectedLayer => selectedLayer === activeLayer.name) ? true : false;
 						});
@@ -1541,8 +1539,8 @@ $("body").on("pluginLoad", function(event, plugin){
 									const table = new Datatable(data, coords);
 									createTabulator(table, activeLayer.name);
 								})
-								.catch(error => {
-									console.log(error);
+								.catch(err => {
+									console.error(err);
 								});
 							});
 						}
