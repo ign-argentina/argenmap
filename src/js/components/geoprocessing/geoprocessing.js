@@ -686,11 +686,28 @@ class Geoprocessing {
     mapa.editableLayers.rectangle.forEach((lyr) => {
       drawnRectangle = lyr
     })
-    let layerSelected = [];
-    layerSelected.push(document.getElementById("select-capa").value);
+    let layerSelected;
+    gestorMenu.getActiveLayersWithoutBasemap().forEach(layer => {
+      let selctedLayerName = document.getElementById("select-capa").value;
+      layer.name === selctedLayerName ?
+      layerSelected = layer
+      : console.info('Layer not found.');
+    })
 
-    mapa.checkLayersInDrawedGeometry(drawnRectangle, layerSelected);
-    console.log("Rectangulo Dibujado: ", drawnRectangle, " Capa Activa: ",layerSelected);
+    let coords = getGeometryCoords(drawnRectangle);
+
+    getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+      .then((data) => {
+        if (!data) {
+          throw new Error("Error fetching to server");
+        }
+        return data;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    //console.log("Rectangulo Dibujado: ", drawnRectangle, " Capa Activa: ",layerSelected);
   }
 
   executeGeoprocess(formFields) {
