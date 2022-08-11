@@ -404,11 +404,9 @@ class Geoprocessing {
       if(L.GeometryUtil.formattedNumber(area / 1000000, 2)>100) { //Check limit bigger than 100km²
         $("#ejec_gp").addClass("disabledbutton");
         $("#invalidRect").removeClass("hidden");
-        $("#invalidRect2").removeClass("hidden");
       }else {
         $("#msgRectangle").addClass("hidden");
         $("#invalidRect").addClass("hidden");
-        $("#invalidRect2").addClass("hidden");
         $("#ejec_gp").removeClass("disabledbutton");
       }
       return _area;	
@@ -429,7 +427,6 @@ class Geoprocessing {
       case "delete-layer":
         contourRectangles = [];
         $("#invalidRect").addClass("hidden");
-        $("#invalidRect2").addClass("hidden");
         $("#ejec_gp").addClass("disabledbutton");
         $("#drawRectangleBtn").removeClass("disabledbutton");
         $("#msgRectangle").removeClass("hidden");
@@ -449,10 +446,8 @@ class Geoprocessing {
     if (formattedArea > 100) {
       $("#ejec_gp").addClass("disabledbutton");
       $("#invalidRect").removeClass("hidden");
-      $("#invalidRect2").removeClass("hidden");
     } else if (formattedArea < 100) {
       $("#invalidRect").addClass("hidden");
-      $("#invalidRect2").addClass("hidden");
       $("#ejec_gp").removeClass("disabledbutton");
     } 
     contourRectangles = [];
@@ -467,18 +462,11 @@ class Geoprocessing {
     document.getElementsByClassName("form")[1].appendChild(rectangleMessage);
 
     let rectSizeMsg1 = document.createElement("div");
-    rectSizeMsg1.innerHTML = "Se superó el limite.";
+    rectSizeMsg1.innerHTML = "Se superó el limite. <br> Edite o elimine el rectángulo.";
     rectSizeMsg1.id = "invalidRect";
     rectSizeMsg1.style = "color: #ff1100; font-weight: bolder;";
     document.getElementsByClassName("form")[1].appendChild(rectSizeMsg1);
     $("#invalidRect").addClass("hidden");
-
-    let rectSizeMsg2 = document.createElement("div");
-    rectSizeMsg2.innerHTML = "Edite o elimine el rectángulo.";
-    rectSizeMsg2.id = "invalidRect2";
-    rectSizeMsg2.style = "color: #ff1100; font-weight: bolder;";
-    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg2);
-    $("#invalidRect2").addClass("hidden");
     
     //Contour Messages
     if (this.geoprocessId === "contour") {
