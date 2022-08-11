@@ -216,6 +216,22 @@ class Geoprocessing {
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         break;
       }
+      case "buffer": {
+        btn_modal_loading = false;
+        let layername = app.geoprocessing.availableProcesses[2].namePrefix + results_counter;
+        results_counter++;
+        
+        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        addedLayers.push({
+          id: layername,
+          layer: result,
+          name: layername,
+          file_name: layername,
+          kb: null,
+        });
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        break;
+      }
     }
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
@@ -552,8 +568,10 @@ class Geoprocessing {
           } else if (this.geoprocessId == "buffer") {
             inputDefault.value = 1000;
             $("label[for='input-equidistancia']").html("Distancia (m)");
+          } else if (this.geoprocessId == "waterRise") {
+            $("label[for='input-cota']").hide();
+            document.getElementById("input-cota").classList.add("hidden");
           }
-
           formFields.push(input);
         }
       }
@@ -702,19 +720,20 @@ class Geoprocessing {
 
     let distanceBuffer = document.getElementById("input-equidistancia").value / 1000;
 
-    let buffer, layerData = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+    this.loadingBtn("on");
+    let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
       .then((data) => {
         if (!data) {
           throw new Error("Error fetching to server");
         }
         buffer = turf.buffer(data, distanceBuffer);
-        mapa.addGeoJsonLayerToDrawedLayers(buffer, "buffer");
+        this.displayResult(buffer);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch((error) => {
+        console.error(error)
+        new UserMessage(error.message, true, "error");
+        this.loadingBtn("off");
       });
-
-      console.log(layerData);
   }
 
   executeGeoprocess(formFields) {

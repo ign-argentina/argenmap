@@ -114,9 +114,9 @@
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
       },
       {
-        "name": "Buffer",
+        "name": "Área de Influencia",
         "geoprocess": "buffer",
-        "namePrefix": "Buffer_",
+        "namePrefix": "Area_de_Influencia_",
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
       }
     ]

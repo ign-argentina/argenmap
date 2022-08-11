@@ -1517,7 +1517,6 @@ $("body").on("pluginLoad", function(event, plugin){
 									layer.coords = coords;
 
 									//Load data in table
-									console.log(data)
 									const table = new Datatable(data, coords);
 									createTabulator(table, activeLayer.name);
 								})
@@ -1849,7 +1848,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (geoJSON.type === 'FeatureCollection') {
 							geoJSON.features.forEach(feature => {
 								if(file==undefined || !file){
-									console.log("file undefined " + feature);
 									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, false);
 								}else {
 									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
