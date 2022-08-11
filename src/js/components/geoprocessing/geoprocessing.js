@@ -307,7 +307,7 @@ class Geoprocessing {
     }
 
     if (this.geoprocessId === "buffer") {
-      //this.checkRectangleArea(event);
+      this.checkRectangleArea(event);
     }
   }
 
@@ -396,13 +396,14 @@ class Geoprocessing {
       });
     };
   }
-  
+
   calculateRectangleArea(event) {
     let _area, rectPos, rectangleArea, formattedArea;
-    $("#ejec_gp").addClass("disabledbutton");
-
+    
     if(event === "add-layer") {
       L.GeometryUtil.readableArea = function (area, isMetric, precision) {
+        
+        $("#ejec_gp").addClass("disabledbutton");
         rectPos = mapa.editableLayers.rectangle;
         formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
         _area = formattedArea + ' km²';
@@ -415,11 +416,15 @@ class Geoprocessing {
           $("#invalidRect").addClass("hidden");
           $("#ejec_gp").removeClass("disabledbutton");
         } 
+        contourRectangles = [];
         return _area;	
       }
     }
+
     else if(event === "edit-layer") {
+      $("#ejec_gp").addClass("disabledbutton");
       rectPos = mapa.editableLayers.rectangle;
+
       contourRectangles.push(rectPos[rectPos.length-1]);
       rectangleArea = L.GeometryUtil.geodesicArea(contourRectangles[contourRectangles.length-1].getLatLngs()[0]);
       formattedArea = L.GeometryUtil.formattedNumber(rectangleArea / 1000000, 2);
