@@ -11,6 +11,7 @@ let geoprocessing = {
 let results_counter = 0;
 let contour_result_active = false;
 let contourRectangles = [];
+let isValidRectangle = false;
 
 class Geoprocessing {
   formContainer = null;
@@ -409,12 +410,19 @@ class Geoprocessing {
         _area = formattedArea + ' km²';
         
         if (formattedArea > 100) {
+          isValidRectangle = false;
           $("#ejec_gp").addClass("disabledbutton");
           $("#invalidRect").removeClass("hidden");
         } else if (formattedArea < 100) {
+          isValidRectangle = true;
           $("#msgRectangle").addClass("hidden");
           $("#invalidRect").addClass("hidden");
-          $("#ejec_gp").removeClass("disabledbutton");
+          if(
+            ($("#input-equidistancia").val() >= 10 &&
+            $("#input-equidistancia").val() <= 10000)
+            ){
+              $("#ejec_gp").removeClass("disabledbutton");
+          }
         } 
         contourRectangles = [];
         return _area;	
@@ -430,12 +438,19 @@ class Geoprocessing {
       formattedArea = L.GeometryUtil.formattedNumber(rectangleArea / 1000000, 2);
         
       if (formattedArea > 100) {
+        isValidRectangle = false;
         $("#ejec_gp").addClass("disabledbutton");
         $("#invalidRect").removeClass("hidden");
       } else if (formattedArea < 100) {
+        isValidRectangle = true;
         $("#msgRectangle").addClass("hidden");
         $("#invalidRect").addClass("hidden");
-        $("#ejec_gp").removeClass("disabledbutton");
+        if(
+          ($("#input-equidistancia").val() >= 10 &&
+          $("#input-equidistancia").val() <= 10000)
+          ){
+            $("#ejec_gp").removeClass("disabledbutton");
+        }
       } 
       contourRectangles = [];
     }
@@ -656,12 +671,17 @@ class Geoprocessing {
 
     function checkExecuteBtn() {//Check to see if there is any text entered
       if (
-        $("#input-equidistancia").val() < 10 ||
-        $("#input-equidistancia").val() > 10000
+        ($("#input-equidistancia").val() >= 10 &&
+        $("#input-equidistancia").val() <= 10000) &&
+        isValidRectangle == true
       ) {
-        $("#ejec_gp").addClass("disabledbutton");
-      } else {
         $("#ejec_gp").removeClass("disabledbutton");
+      } 
+      else if (
+        ($("#input-equidistancia").val() < 10 ||
+        $("#input-equidistancia").val() > 10000)
+        ) {
+        $("#ejec_gp").addClass("disabledbutton");
       }
     }
     $(document).ready(function () {
