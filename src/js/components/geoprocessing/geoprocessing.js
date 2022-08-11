@@ -307,7 +307,7 @@ class Geoprocessing {
     }
 
     if (this.geoprocessId === "buffer") {
-      this.checkRectangleArea(event);
+      //this.checkRectangleArea(event);
     }
   }
 
@@ -458,6 +458,84 @@ class Geoprocessing {
     contourRectangles = [];
   }
 
+  buildOptionFormMessages(sliderLayer) {
+    //Contour & Buffer Rectangle Messages
+    let rectangleMessage = document.createElement("div");
+    rectangleMessage.innerHTML = "Dibuje Rectángulo hasta 100km²";
+    rectangleMessage.id = "msgRectangle";
+    rectangleMessage.style = "color: #37bbed; font-weight: bolder; font-size: 13px";
+    document.getElementsByClassName("form")[1].appendChild(rectangleMessage);
+
+    let rectSizeMsg1 = document.createElement("div");
+    rectSizeMsg1.innerHTML = "Se superó el limite.";
+    rectSizeMsg1.id = "invalidRect";
+    rectSizeMsg1.style = "color: #ff1100; font-weight: bolder;";
+    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg1);
+    $("#invalidRect").addClass("hidden");
+
+    let rectSizeMsg2 = document.createElement("div");
+    rectSizeMsg2.innerHTML = "Edite o elimine el rectángulo.";
+    rectSizeMsg2.id = "invalidRect2";
+    rectSizeMsg2.style = "color: #ff1100; font-weight: bolder;";
+    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg2);
+    $("#invalidRect2").addClass("hidden");
+    
+    //Contour Messages
+    if (this.geoprocessId === "contour") {
+      //Hide Capa for Contour Lines
+      $('label[for="select-capa"]').hide ();
+      document.getElementById("select-capa").classList.add("hidden");
+    }
+
+    //Cota Messages & Slider
+    else if (this.geoprocessId === "waterRise") { 
+      let message = document.createElement("div");
+      message.innerHTML = "No hay Curvas de Nivel";
+      message.id = "msgNoContour";
+      message.style = "color: red; font-weight: bolder;";
+      document.getElementsByClassName("form")[1].appendChild(message);
+      $("#msgRectangle").addClass("hidden");
+      for (let lyr of mapa.editableLayers.polyline) {
+        if (lyr.layer.includes(this.namePrefix)) {
+          this.setSliderForWaterRise(sliderLayer);
+          $("#msgNoContour").addClass("hidden");
+          break;
+        }
+      }
+
+      $('label[for="select-capa"]').show();
+      document.getElementById("drawRectangleBtn").classList.add("hidden");
+      document.getElementById("select-capa").classList.remove("hidden");
+    }
+
+    //Buffer Messages
+    else if (this.geoprocessId === "buffer") {
+      let messageBuffer = document.createElement("div");
+      messageBuffer.innerHTML = "Active una Capa";
+      messageBuffer.id = "msgNoLayer";
+      messageBuffer.style = "color: red; font-weight: bolder;";
+      document.getElementsByClassName("form")[1].appendChild(messageBuffer);
+      $("#msgRectangle").addClass("hidden");
+
+      $('label[for="select-capa"]').show();
+      $('label[for="input-equidistancia"]').hide();
+      $("#drawRectangleBtn").addClass("disabledbutton");
+      document.getElementById("input-equidistancia").classList.add("hidden");
+      document.getElementById("select-capa").classList.remove("hidden");
+
+      gestorMenu.getActiveLayersWithoutBasemap().forEach( layer => {
+        if (layer) {
+          $("#msgNoLayer").addClass("hidden");
+          $("#msgRectangle").removeClass("hidden");
+          $("#drawRectangleBtn").removeClass("disabledbutton");
+          $('label[for="input-equidistancia"]').show();
+          document.getElementById("input-equidistancia").classList.remove("hidden");
+        }
+      });
+    }
+
+  }
+
   buildOptionForm(fields) {
     this.optionsForm.clearForm();
     this.fieldsToReferenceLayers = [];
@@ -577,59 +655,6 @@ class Geoprocessing {
       }
     });
 
-    //Rectangle Messages
-    let rectangleMessage = document.createElement("div");
-    rectangleMessage.innerHTML = "Dibuje Rectángulo hasta 100km²";
-    rectangleMessage.className = "msgRectangle";
-    rectangleMessage.id = "msgRectangle";
-    rectangleMessage.style = "color: #37bbed; font-weight: bolder; font-size: 13px";
-    document.getElementsByClassName("form")[1].appendChild(rectangleMessage);
-
-    let rectSizeMsg1 = document.createElement("div");
-    rectSizeMsg1.innerHTML = "Se superó el limite.";
-    rectSizeMsg1.className = "invalidRect";
-    rectSizeMsg1.id = "invalidRect";
-    rectSizeMsg1.style = "color: #ff1100; font-weight: bolder;";
-    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg1);
-    $("#invalidRect").addClass("hidden");
-
-    let rectSizeMsg2 = document.createElement("div");
-    rectSizeMsg2.innerHTML = "Edite o elimine el rectángulo.";
-    rectSizeMsg2.className = "invalidRect";
-    rectSizeMsg2.id = "invalidRect2";
-    rectSizeMsg2.style = "color: #ff1100; font-weight: bolder;";
-    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg2);
-    $("#invalidRect2").addClass("hidden");
-    //----------
-
-    //Cota Messages & Slider
-    if (this.geoprocessId === "waterRise") { 
-      let message = document.createElement("div");
-      message.innerHTML = "No hay Curvas de Nivel";
-      message.className = "msgNoContour";
-      message.id = "msgNoContour";
-      message.style = "color: red; font-weight: bolder;";
-      document.getElementsByClassName("form")[1].appendChild(message);
-      $("#msgRectangle").addClass("hidden");
-      for (let lyr of mapa.editableLayers.polyline) {
-        if (lyr.layer.includes(this.namePrefix)) {
-          this.setSliderForWaterRise(sliderLayer);
-          $("#msgNoContour").addClass("hidden");
-          break;
-        }
-      }
-    }
-    //Buffer Messages
-    else if (this.geoprocessId === "buffer") {
-      let messageBuffer = document.createElement("div");
-      messageBuffer.innerHTML = "Active una Capa";
-      messageBuffer.className = "msgNoLayer";
-      messageBuffer.id = "msgNoLayer";
-      messageBuffer.style = "color: red; font-weight: bolder;";
-      document.getElementsByClassName("form")[1].appendChild(messageBuffer);
-      $("#msgRectangle").addClass("hidden");
-    }
-
     function checkExecuteBtn() {//Check to see if there is any text entered
       if (
         $("#input-equidistancia").val() < 10 ||
@@ -645,8 +670,14 @@ class Geoprocessing {
     });
 
     //Draw Rectangle Button
+    let rectangleBtn;
+    if (this.geoprocessId === "contour") {
+      rectangleBtn = "Dibujar Rectángulo";
+    } else if (this.geoprocessId === "buffer") {
+      rectangleBtn = "Selección de Área";
+    }
     this.optionsForm.addButton(
-      "Dibujar Rectángulo",
+      rectangleBtn,
       () => {
         let drawingRectangle = new L.Draw.Rectangle(mapa);
         $("#drawRectangleBtn").addClass("disabledbutton");
@@ -671,36 +702,8 @@ class Geoprocessing {
     );
     $("#ejec_gp").addClass("disabledbutton");//Execute Button disabled from the start
 
-    //Different forms depending on active geoprocesses
-    if (this.geoprocessId === "waterRise") { 
-      $('label[for="select-capa"]').show();
-      document.getElementById("drawRectangleBtn").classList.add("hidden");
-      document.getElementById("select-capa").classList.remove("hidden");
-    }
+    this.buildOptionFormMessages(sliderLayer);//Form Messages & Slider
 
-    else if (this.geoprocessId === "buffer") {
-      $('label[for="select-capa"]').show();
-      $('label[for="input-equidistancia"]').hide();
-      $("#drawRectangleBtn").addClass("disabledbutton");
-      document.getElementById("input-equidistancia").classList.add("hidden");
-      document.getElementById("select-capa").classList.remove("hidden");
-
-      gestorMenu.getActiveLayersWithoutBasemap().forEach( layer => {
-        if (layer) {
-          $("#msgNoLayer").addClass("hidden");
-          $("#msgRectangle").removeClass("hidden");
-          $("#drawRectangleBtn").removeClass("disabledbutton");
-          $('label[for="input-equidistancia"]').show();
-          document.getElementById("input-equidistancia").classList.remove("hidden");
-        }
-      });
-    }
-
-    else if (this.geoprocessId === "contour") {
-      //Hide Capa for Contour Lines
-      $('label[for="select-capa"]').hide ();
-      document.getElementById("select-capa").classList.add("hidden");
-    }
   }
 
   executeBuffer(){
