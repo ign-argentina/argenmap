@@ -396,32 +396,54 @@ class Geoprocessing {
       });
     };
   }
+  
+  calculateRectangleArea(event) {
+    let _area, rectPos, rectangleArea, formattedArea;
+    $("#ejec_gp").addClass("disabledbutton");
 
-  checkRectangleDrawingSize() {
-    L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-      $("#ejec_gp").addClass("disabledbutton");
-      let _area = L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' km²';
-      if(L.GeometryUtil.formattedNumber(area / 1000000, 2)>100) { //Check limit bigger than 100km²
+    if(event === "add-layer") {
+      L.GeometryUtil.readableArea = function (area, isMetric, precision) {
+        rectPos = mapa.editableLayers.rectangle;
+        formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
+        _area = formattedArea + ' km²';
+        
+        if (formattedArea > 100) {
+          $("#ejec_gp").addClass("disabledbutton");
+          $("#invalidRect").removeClass("hidden");
+        } else if (formattedArea < 100) {
+          $("#msgRectangle").addClass("hidden");
+          $("#invalidRect").addClass("hidden");
+          $("#ejec_gp").removeClass("disabledbutton");
+        } 
+        return _area;	
+      }
+    }
+    else if(event === "edit-layer") {
+      rectPos = mapa.editableLayers.rectangle;
+      contourRectangles.push(rectPos[rectPos.length-1]);
+      rectangleArea = L.GeometryUtil.geodesicArea(contourRectangles[contourRectangles.length-1].getLatLngs()[0]);
+      formattedArea = L.GeometryUtil.formattedNumber(rectangleArea / 1000000, 2);
+        
+      if (formattedArea > 100) {
         $("#ejec_gp").addClass("disabledbutton");
         $("#invalidRect").removeClass("hidden");
-      }else {
+      } else if (formattedArea < 100) {
         $("#msgRectangle").addClass("hidden");
         $("#invalidRect").addClass("hidden");
         $("#ejec_gp").removeClass("disabledbutton");
-      }
-      return _area;	
-    };
+      } 
+      contourRectangles = [];
+    }
   }
 
   checkRectangleArea(event) {
-    let rectPos, rectangleArea, formattedArea;
     switch (event) {
       case "add-layer":
-        this.calculateRectangleArea(rectPos, rectangleArea, formattedArea);
+        this.calculateRectangleArea(event);
         break;
 
       case "edit-layer":
-        this.calculateRectangleArea(rectPos, rectangleArea, formattedArea);
+        this.calculateRectangleArea(event);
         break;
 
       case "delete-layer":
@@ -436,23 +458,7 @@ class Geoprocessing {
         break;
     }
   }
-
-  calculateRectangleArea(rectPos, rectangleArea, formattedArea) {
-    rectPos = mapa.editableLayers.rectangle;
-    contourRectangles.push(rectPos[rectPos.length-1]);
-    rectangleArea = L.GeometryUtil.geodesicArea(contourRectangles[contourRectangles.length-1].getLatLngs()[0]);
-    formattedArea = L.GeometryUtil.formattedNumber(rectangleArea / 1000000, 2);
-
-    if (formattedArea > 100) {
-      $("#ejec_gp").addClass("disabledbutton");
-      $("#invalidRect").removeClass("hidden");
-    } else if (formattedArea < 100) {
-      $("#invalidRect").addClass("hidden");
-      $("#ejec_gp").removeClass("disabledbutton");
-    } 
-    contourRectangles = [];
-  }
-
+  
   buildOptionFormMessages(sliderLayer) {
     //Contour & Buffer Rectangle Messages
     let rectangleMessage = document.createElement("div");
@@ -670,7 +676,7 @@ class Geoprocessing {
         let drawingRectangle = new L.Draw.Rectangle(mapa);
         $("#drawRectangleBtn").addClass("disabledbutton");
         drawingRectangle.enable();
-        this.checkRectangleDrawingSize();
+        this.checkRectangleArea("add-layer");
       },
       "drawRectangleBtn"
     );
