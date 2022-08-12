@@ -1338,7 +1338,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (containerIdx >= 0 && !addToList) {
 							activeLayersDiv.removeChild(activeLayersDivChilds[containerIdx]);
 						} else if (containerIdx === -1 && addToList) {
-							mapa.addLayerToPopUp(activeLayersDiv, layer);	
+							mapa.addLayerToPopUp(activeLayersDiv, layer);
+							//geoProcessingManager.updateLayerSelect(layer);
 						}
 					
 						const showInfoBtn = document.getElementById('btn-show-info');
