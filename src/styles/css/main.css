@@ -46,12 +46,12 @@ body {
   height: 50px;
 }
 
-#top-right-logo{
+/* #top-right-logo{
 position:absolute;
 right:10px;
 float:right;
 top: 0;
-}
+} */
 
 @media (max-width: 800px) {
   .map-container {
@@ -1011,7 +1011,6 @@ SideBar
   width: 100%;
   flex-wrap: nowrap;
   justify-content: space-between;
-  background-color: #37bbed;
   overflow: hidden;
 }
 .navbar-test-content {
@@ -1028,6 +1027,7 @@ SideBar
 #logo-help {
   background-repeat: no-repeat;
   background-position-y: center;
+  align-self: center;
 }
 #logo-navbar > div > a, #logo-help > a {
   display: block;
@@ -1042,6 +1042,7 @@ SideBar
   font-family: Roboto, sans-serif;
   font-weight: bold;
   text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+  -webkit-user-select: none;
   user-select: none;
   white-space: nowrap;
 }
