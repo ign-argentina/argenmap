@@ -110,9 +110,11 @@
     <link href="src/js/components/user-message/user-message.css" rel="stylesheet">
   </head>
   <body>
+
     <nav class="navbar _navbar-inverse navbar-fixed-top">
       <div class="container-fluid col-12 col-xs-12 col-sm-12 col-md-12" style="height: 100%;">
-        <div class="navbar-header">
+
+        <div class="navbar-test">
           <button type="button" class="hidden-lg hidden-md navbar-toggle collapsed pull-left" data-toggle="collapse"
             data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
             <span class="sr-only">Toggle navigation</span>
@@ -120,22 +122,34 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand navbar-right">
+
+          <div id="logo-navbar" class="navbar-test-content">
+            <a>
+              <span class="xxsmall-hide">
+                <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
+                  <img id="top-left-logo" src="src/styles/images/noimage.gif" alt="" title="">
+                </a>
+              </span>
+            </a>
+            <div id="logoText">Visor Gestión Local</div>
+
+          </div>
+
+          <div id="search-navbar" class="navbar-test-content"></div>
+
+          <div id="logo-help" class="navbar-test-content">
             <span class="xxsmall-hide">
-              <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
-                <img id="top-left-logo" src="src/styles/images/noimage.gif" alt="" title="">
+              <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
+                <img id="top-right-logo" src="src/styles/images/noimage.gif" alt="" title="">
               </a>
             </span>
-          </a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse"></div>
-        <span class="xxsmall-hide">
-          <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
-            <img id="top-right-logo" src="src/styles/images/noimage.gif" alt="" title="">
-          </a>
-        </span>
+          </div>
+       </div>     
+
       </div>
     </nav>
+
+
     <div class="container-fluid" style="height: 100%;">
       <div class="row" style="height: 100%;">
         <nav id="sidebar-container" class="col-12 col-xs-12 col-sm-12 col-md-2 collapse sidebar _panel-group"

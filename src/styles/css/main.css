@@ -42,7 +42,7 @@ body {
 }
 
 #top-left-logo{
-  width: 490px;
+  width: 180px;
   height: 50px;
 }
 
@@ -1002,4 +1002,51 @@ SideBar
 .leaflet-oldie .leaflet-popup-content-wrapper {
   /* zoom: 1; */
 	transform: scale(1);
-	}
+}
+
+/*New navbar*/
+
+.navbar-test {
+  display: flex;
+  width: 100%;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  background-color: #37bbed;
+  overflow: hidden;
+}
+.navbar-test-content {
+  flex: inherit;
+  margin: 0.1rem 1.5rem;
+  text-align: center;
+}
+
+#logo-navbar {
+  display: flex;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+#logo-help {
+  background-repeat: no-repeat;
+  background-position-y: center;
+}
+#logo-navbar > div > a, #logo-help > a {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+#logoText {
+  align-self: center;
+  text-align: right;
+  color: white;
+  font-size: 20px;
+  font-family: Roboto, sans-serif;
+  font-weight: bold;
+  text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+  user-select: none;
+  white-space: nowrap;
+}
+#search-navbar {
+  align-self: center;
+}
+
+/*End New navbar*/

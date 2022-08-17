@@ -35,8 +35,6 @@ class Searchbar_UI{
     style.innerHTML = `
     @media (min-width: 769px) {
     #searchbar {
-      left: ${this.style_left};
-      top: ${this.style_top};
       background-color: ${this.style_background_color};
     }}
     #search_bar:focus {
@@ -77,8 +75,9 @@ class Searchbar_UI{
     divsearch.append(maininput)
     divsearch.append(res)
     
-    document.body.appendChild(divsearch)
-    
+    //document.body.appendChild(divsearch)
+    document.getElementById("search-navbar").appendChild(divsearch)
+
     let textinput = document.getElementById("search_bar")
     let results = document.getElementById("results_search_bar")
     const search_input = document.getElementById('search_bar');
