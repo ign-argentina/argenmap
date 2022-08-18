@@ -71,6 +71,7 @@ class Searchbar_UI{
     let res = document.createElement("div")
     res.id = "results_search_bar"
     res.style.maxWidth = "330px"
+    res.style.position = "absolute"
 
     divsearch.append(maininput)
     divsearch.append(res)

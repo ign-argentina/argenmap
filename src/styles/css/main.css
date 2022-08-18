@@ -1006,17 +1006,17 @@ SideBar
 
 /*New navbar*/
 
-.navbar-test {
+.navbar-new {
   display: flex;
   width: 100%;
   flex-wrap: nowrap;
   justify-content: space-between;
   overflow: hidden;
 }
-.navbar-test-content {
+.navbar-new-content {
   flex: inherit;
   margin: 0.1rem 1.5rem;
-  text-align: center;
+  text-align: inherit;
 }
 
 #logo-navbar {
