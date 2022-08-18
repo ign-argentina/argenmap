@@ -1649,7 +1649,8 @@ class GestorMenu {
     }
 
     cleanAllLayers() {//Desactiva TODOS los layers activos.
-        this.toggleLayers(Object.keys(overlayMaps))
+        let layers = this.getActiveLayersWithoutBasemap().map((item) => { return item.name });
+        this.toggleLayers(layers);
     }
 
     toggleLayers(layers) {
