@@ -64,7 +64,6 @@ class StylesUI {
         background-image: url("${app.logo.srcLogoMini}");
         background-size: ${app.logo.miniHeight} ${app.logo.miniWidth};
         background-position: left 1px center;
-        width: 70%;
         ${app.logo.ministyle}
       }
     }
@@ -109,6 +108,10 @@ class StylesUI {
     toprightlogo.onclick = function () {
       clickReferencias()
     };
+  } 
+  else {
+    let toprightlogo = document.getElementById("logo-help")
+    toprightlogo.style.display= "none"
   }
  }
 

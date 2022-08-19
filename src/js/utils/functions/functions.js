@@ -272,7 +272,6 @@ function loadWmts(callbackFunction, objLayer) {
 function setCoordinatesFormat(coords) {
     let coordsFormatted = '';
     coords.forEach(coord => {
-        //console.log(`${coord[0]}%20${coord[1]},`)
         coordsFormatted += `${coord[0]}%20${coord[1]},`;
     });
     //Add first point again
@@ -344,72 +343,21 @@ function getLayerDataByWFS(coords, type, layerData) {
     return new Promise((resolve) => {
         // Make the url to retrieve the request
         // If the host has the / wms parameter it is replaced by an empty string
-        let fixHost = layerData.host.replace('/wms', '');
-        let capabilitiesUrl = `${fixHost}/${layerData.name}/ows?service=wfs&request=GetCapabilities`;        // Where to save the reprojection
-
+        const fixHost = layerData.host.replace(/\/wms$/, '');
+        const capabilitiesUrl = `${fixHost}/${layerData.name}/ows?service=wfs&request=GetCapabilities`; // Where to save the reprojection
+        
         let reprojectedCoords = [];
         // Get the CRS
         getCRSByWFSCapabilities(capabilitiesUrl).then((crs) => {
-            if (crs != '84') {
-                // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
-                // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
-                // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
-
-                // If the CRS is not 84, reproject the coords
-                coords.forEach((coordsPair, i) => {
-                    let result = proj4(proj4('WGS84'), proj4(PROJECTIONS[crs]), coordsPair);
-                    // coords[i] = result;
-                    reprojectedCoords[i] = result;
-                });
-
-                // Make the url to retrive WFS data
-                let url = layerData.host, params = {
-                    service: 'wfs',
-                    request: 'GetFeature',
-                    version: '',
-                    outputFormat: 'application%2Fjson',
-                    typeName: layerData.name,
-                    cql_filter: ''
-                }
-                let paramsStr = [];
-                getWfsLayerFields(url, params).then((geom) => {
-                    if (type === 'polygon' || type === 'rectangle') {
-                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
-                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
-                    }
-                    if (type === 'circle') {
-                        params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}),${reprojectedCoords.r},meters)`;
-                    }
-                    if (type === 'marker') {
-                        params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}))`;
-                    }
-                    if (type === 'polyline') {
-                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
-                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
-                    }
-
-                    Object.entries(params).forEach(p => {
-                        paramsStr.push(p.join('='));
-                    });
-                    url += '/ows?' + paramsStr.join('&');
-
-                    fetch(url).then((response) => {
-                        if (response.status !== 200)
-                            resolve(null);
-                        resolve(response.json());
-                    });
-                })
-            }
-        }).catch(() => {
-            console.info('The host does not provide capabilities for the WFS service');
-            //Test
+            isWgs84 = crs === "4326" || crs === "84";
+            if (isWgs84) {
             // TODO Obtener el CRS a través del get capabilities del servicio WMS (gestorMenu.items[k].itemComposite.capa)
             // coords.forEach((coordsPair,i) => {
             //     let result = proj4(proj4('WGS84'),proj4(PROJECTIONS['22185']),coordsPair);
-            //     // coords[i] = result;
             //     coords[i] = result;
             // });
-            let url = layerData.host, params = {
+            let url = fixHost, 
+            params = {
                 service: 'wfs',
                 request: 'GetFeature',
                 version: '',
@@ -445,6 +393,60 @@ function getLayerDataByWFS(coords, type, layerData) {
                     resolve(response.json());
                 })
             })
+            }
+            if(!isWgs84) {
+                // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
+                // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
+                // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+
+                // If the CRS is not 84, reproject the coords
+                coords.forEach((coordsPair, i) => {
+                    let result = proj4(proj4('WGS84'), proj4(PROJECTIONS[crs]), coordsPair);
+                    // coords[i] = result;
+                    reprojectedCoords[i] = result;
+                });
+                // Make the url to retrive WFS data
+                let url = fixHost, 
+                params = {
+                    service: 'wfs',
+                    request: 'GetFeature',
+                    version: '',
+                    outputFormat: 'application%2Fjson',
+                    typeName: layerData.name,
+                    cql_filter: ''
+                }
+                let paramsStr = [];
+
+                getWfsLayerFields(url, params).then((geom) => {
+                    if (type === 'polygon' || type === 'rectangle') {
+                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
+                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
+                    }
+                    if (type === 'circle') {
+                        params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}),${reprojectedCoords.r},meters)`;
+                    }
+                    if (type === 'marker') {
+                        params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}))`;
+                    }
+                    if (type === 'polyline') {
+                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
+                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
+                    }
+
+                    Object.entries(params).forEach(p => {
+                        paramsStr.push(p.join('='));
+                    });
+                    url += '/ows?' + paramsStr.join('&');
+
+                    fetch(url).then((response) => {
+                        if (response.status !== 200)
+                            resolve(null);
+                        resolve(response.json());
+                    });
+                })
+            }
+        }).catch((e) => {
+            console.error('The host does not provide capabilities for the WFS service');
         })
     })
 }
@@ -633,26 +635,17 @@ let normalize = (function () {
 
 })();
 
-function clickGeometryLayer(layer, file) {
+function clickGeometryLayer(layer) {
     let aux = document.getElementById("flc-" + layer)
 
     if (aux.className === "file-layer active") {
         aux.className = "file-layer"
-        if (file == undefined || !file) {
-            mapa.hideGroupLayer(layer)
-        } else {
-            mapa.hideGroupLayer(layer, true)
+        mapa.hideGroupLayer(layer)
 
-        }
     }
     else {
         aux.className = "file-layer active"
-        if (file == undefined || !file) {
-            mapa.showGroupLayer(layer)
-        } else {
-            mapa.showGroupLayer(layer, true)
-
-        }
+         mapa.showGroupLayer(layer)
     }
 }
 
@@ -691,7 +684,6 @@ function controlSeccionGeom(file) {
 
 function zoomEditableLayers(layername) {
     let layer = mapa.groupLayers.hasOwnProperty(layername)
-    //console.log(layer)
     if (layer.type === 'marker' || layer.type === 'circlemarker') {
         mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
     } else {
@@ -793,12 +785,12 @@ function getStyleContour() {
         g.forEach(e => {
             if (e.geoprocess == "contour") {
                 if (e.styles) {
-                    if (e.styles.line_color) { styles.line_color = e.styles.line_color }
-                    if (e.styles.line_weight) { styles.line_weight = e.styles.line_weight }
-                    if (e.styles.d_line_m) { styles.d_line_m = e.styles.d_line_m }
-                    if (e.styles.d_line_color) { styles.d_line_color = e.styles.d_line_color }
-                    if (e.styles.d_weigth) { styles.d_weigth = e.styles.d_weigth }
-                    if (e.styles.smoothFactor) { styles.smoothFactor = e.styles.smoothFactor }
+                    styles.line_color = e.styles.line_color ?? styles.line_color;
+                    styles.line_weight = e.styles.line_weight ?? styles.line_weight;
+                    styles.d_line_m = e.styles.d_line_m ?? styles.d_line_m;
+                    styles.d_line_color = e.styles.d_line_color ?? styles.d_line_color;
+                    styles.d_weigth = e.styles.d_weigth ?? styles.d_weigth;
+                    styles.smoothFactor = e.styles.smoothFactor ?? styles.smoothFactor;
                 }
             }
         })
@@ -864,8 +856,8 @@ function zoomLayer(id_dom) {
     ];
     try {
         mapa.fitBounds(bounds);
-    } catch (error) {
-        //console.log(bounds);
+    } catch (err) {
+        console.error(err);
     }
 }
 

@@ -85,9 +85,9 @@
   "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
   "geoprocessing": {
     "isActive": true,
-    "buttonTitle": "Curvas de nivel",
+    "buttonTitle": "Geoprocesos",
     "buttonIcon": "fa fa-cog",
-    "dialogTitle": "Curvas de nivel",
+    "dialogTitle": "Geoprocesos",
     "strings": {
       "bounds": "Areas a procesar"
     },
@@ -95,6 +95,7 @@
       {
         "name": "Curvas de Nivel",
         "geoprocess": "contour",
+        "namePrefix": "Curvas_de_Nivel_",
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0",
         "layer": "alos_unificado",
         "styles": {
@@ -109,12 +110,14 @@
       {
         "name": "Cota",
         "geoprocess": "waterRise",
+        "namePrefix": "Cota_",
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
       },
       {
-        "name": "Perfil de Elevacion",
-        "geoprocess": "elevationProfile",
-        "baseUrl": "http://.../geoprocess-backend/elevation-profile"
+        "name": "Área de Influencia",
+        "geoprocess": "buffer",
+        "namePrefix": "Area_de_Influencia_",
+        "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
       }
     ]
   },

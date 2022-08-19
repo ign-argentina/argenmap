@@ -35,8 +35,6 @@ class Searchbar_UI{
     style.innerHTML = `
     @media (min-width: 769px) {
     #searchbar {
-      left: ${this.style_left};
-      top: ${this.style_top};
       background-color: ${this.style_background_color};
     }}
     #search_bar:focus {
@@ -73,12 +71,14 @@ class Searchbar_UI{
     let res = document.createElement("div")
     res.id = "results_search_bar"
     res.style.maxWidth = "330px"
+    res.style.position = "absolute"
 
     divsearch.append(maininput)
     divsearch.append(res)
     
-    document.body.appendChild(divsearch)
-    
+    //document.body.appendChild(divsearch)
+    document.getElementById("search-navbar").appendChild(divsearch)
+
     let textinput = document.getElementById("search_bar")
     let results = document.getElementById("results_search_bar")
     const search_input = document.getElementById('search_bar');
@@ -218,7 +218,8 @@ class Searchbar_UI{
     let ul = document.createElement("ul");
     ul.className = "list-group-gc"
     ul.style.margin = "5px"
-
+    ul.style.position = "absolute"
+    ul.style.width = "300px"
     let li = document.createElement("li")
     li.innerHTML = 'Carácter no válido'
     li.className = "list-group-item-gc"
@@ -227,6 +228,8 @@ class Searchbar_UI{
     ul.append(li)
     container.innerHTML = "";  
     container.append(ul)
+    container.style.position = "absolute"
+    container.style.width = "300px"
   }
 
   create_items(items){
@@ -234,8 +237,12 @@ class Searchbar_UI{
     const ul = document.createElement("ul");
     ul.className = "list-group-gc"
     ul.style.margin = "5px"
+    ul.style.position = "absolute"
+    ul.style.width = "300px"
     ul.id = "ul-results"
     container.innerHTML = "";  
+    container.style.position = "absolute"
+    container.style.width = "300px"
 
     items.forEach((el) => {
       container.innerHTML = ""; 
@@ -303,6 +310,8 @@ class Searchbar_UI{
   create_card(data){
     let container = document.getElementById("results_search_bar")
     container.style="margin: 5px"
+    container.style.position="absolute"
+    container.style.width="300px"
     container.innerHTML=""
     let card = document.createElement("div")
     card.className = "card"

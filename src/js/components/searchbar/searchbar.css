@@ -69,7 +69,6 @@ overflow: hidden;
 
   #searchbar {
     z-index: 1500;
-    position: absolute;
     border-radius: 8px;
     
     -moz-box-shadow: inset 0 0 10px #000000;
@@ -86,7 +85,12 @@ overflow: hidden;
       max-width: 250px;
       max-height: 300px ;
     }
+
+    #logoText {
+      display: none;
+    }
   }
+  
 
   @media (max-width: 768px) and (orientation: landscape){
     #searchbar  {
