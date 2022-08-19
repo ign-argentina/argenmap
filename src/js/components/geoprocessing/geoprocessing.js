@@ -485,6 +485,20 @@ class Geoprocessing {
     }
   }
 
+  checkLayersForBuffer() {
+    gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+      if (layer) {
+        $("#msgNoLayer").addClass("hidden");
+        $("#msgRectangle").removeClass("hidden");
+        //$("#drawRectangleBtn").removeClass("disabledbutton");
+        $('label[for="input-equidistancia"]').show();
+        document
+          .getElementById("input-equidistancia")
+          .classList.remove("hidden");
+      }
+    });
+  }
+
   buildOptionFormMessages(sliderLayer) {
     //Contour & Buffer Rectangle Messages
     let rectangleMessage = document.createElement("div");
@@ -545,17 +559,7 @@ class Geoprocessing {
       document.getElementById("input-equidistancia").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
 
-      gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
-        if (layer) {
-          $("#msgNoLayer").addClass("hidden");
-          $("#msgRectangle").removeClass("hidden");
-          $("#drawRectangleBtn").removeClass("disabledbutton");
-          $('label[for="input-equidistancia"]').show();
-          document
-            .getElementById("input-equidistancia")
-            .classList.remove("hidden");
-        }
-      });
+      this.checkLayersForBuffer();
     }
   }
 
@@ -640,6 +644,13 @@ class Geoprocessing {
                       mapa.centerLayer(selectedLayer.layer);
                       sliderLayer = selectedLayer;
                       this.updateSliderForWaterRise(sliderLayer);
+                    }
+                  } else if (this.geoprocessId === "buffer") {
+                    if (!element.value) {
+                      $("#drawRectangleBtn").addClass("disabledbutton");
+                      $("#ejec_gp").addClass("disabledbutton");
+                    }else {
+                      $("#drawRectangleBtn").removeClass("disabledbutton");
                     }
                   }
                 },
@@ -1038,13 +1049,31 @@ class Geoprocessing {
     }
   }
 
-/*   updateLayerSelect(layer) {
+  updateLayerSelect(layerName, addToList) {
     let select = document.getElementById('select-capa'),
      option = document.createElement("option");
-    option.value = layer;
-    option.innerHTML = layer;
-    select.appendChild(option);
-  } */
+    option.value = layerName;
+    option.innerHTML = layerName;
+
+    if (select && this.geoprocessId === "buffer") {
+      if(addToList) {
+        for(let i=0;i<select.length;i++) {
+          if (select[i].value !== layerName) {
+            select.appendChild(option);
+            this.checkLayersForBuffer();
+          }
+        }
+      }
+      else if (!addToList) {
+        for(let i=0;i<select.length;i++) {
+          if (select[i].value === layerName) {
+            select[i].remove();
+          }
+        }
+      }
+    }
+
+  }
 }
 
 function clearElevationProfile() {

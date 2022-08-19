@@ -2399,10 +2399,14 @@ class GestorMenu {
                             this.removeActiveLayer(item.nombre);
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, false);
+                                geoProcessingManager.updateLayerSelect(item.nombre, false);
                         } else {
                             this.addActiveLayer(item.nombre);
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, true);
+                                geoProcessingManager.updateLayerSelect(item.nombre, true);
+
+
                         }
                         /*
                         let bbox = item.capa;
