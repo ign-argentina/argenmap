@@ -80,7 +80,7 @@ class StylesUI {
     `;
 
   let logoText = document.getElementById("logoText");
-  logoText.innerHTML=app.logoText.content;
+  logoText.innerHTML= app.logoText ? app.logoText.content : "";
 
   document.head.appendChild(style);
   let linkicon =  document.createElement("link")
