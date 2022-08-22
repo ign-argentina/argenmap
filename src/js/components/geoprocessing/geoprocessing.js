@@ -922,6 +922,7 @@ class Geoprocessing {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
+                
               }
             });
           }
@@ -930,6 +931,7 @@ class Geoprocessing {
             if (layerForBuffer) {
               setTimeout(function () {
                 $("#select-capa").val(layerForBuffer.name).change();
+                $("#drawRectangleBtn").removeClass("disabledbutton");
               }, 500);
             }
           }
@@ -1068,6 +1070,10 @@ class Geoprocessing {
         for(let i=0;i<select.length;i++) {
           if (select[i].value === layerName) {
             select[i].remove();
+          }
+          if (!document.getElementById('select-capa')[1]) {
+            $("#drawRectangleBtn").addClass("disabledbutton");
+            $("#ejec_gp").addClass("disabledbutton");
           }
         }
       }
