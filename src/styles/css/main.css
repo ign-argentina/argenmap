@@ -42,16 +42,16 @@ body {
 }
 
 #top-left-logo{
-  width: 490px;
+  width: 170px;
   height: 50px;
 }
 
-#top-right-logo{
+/* #top-right-logo{
 position:absolute;
 right:10px;
 float:right;
 top: 0;
-}
+} */
 
 @media (max-width: 800px) {
   .map-container {
@@ -1002,4 +1002,55 @@ SideBar
 .leaflet-oldie .leaflet-popup-content-wrapper {
   /* zoom: 1; */
 	transform: scale(1);
-	}
+}
+
+/*New navbar*/
+
+.navbar-new {
+  display: flex;
+  width: 100%;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.navbar-new-content {
+  flex: inherit;
+  margin: 0.1rem 1.5rem;
+  text-align: inherit;
+}
+.navbar-button {
+  margin-right: -20px;
+}
+
+#logo-navbar {
+  display: flex;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+#logo-help {
+  background-repeat: no-repeat;
+  background-position-y: center;
+  align-self: center;
+}
+#logo-navbar > div > a, #logo-help > a {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+#logoText {
+  align-self: center;
+  text-align: right;
+  color: white;
+  font-size: 20px;
+  font-family: Roboto, sans-serif;
+  font-weight: bold;
+  text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+  -webkit-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+}
+#search-navbar {
+  align-self: center;
+}
+
+/*End New navbar*/

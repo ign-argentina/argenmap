@@ -64,7 +64,6 @@ class StylesUI {
         background-image: url("${app.logo.srcLogoMini}");
         background-size: ${app.logo.miniHeight} ${app.logo.miniWidth};
         background-position: left 1px center;
-        width: 70%;
         ${app.logo.ministyle}
       }
     }
@@ -79,6 +78,9 @@ class StylesUI {
 
     }
     `;
+
+  let logoText = document.getElementById("logoText");
+  logoText.innerHTML= app.logoText ? app.logoText.content : "";
 
   document.head.appendChild(style);
   let linkicon =  document.createElement("link")
@@ -109,6 +111,10 @@ class StylesUI {
     toprightlogo.onclick = function () {
       clickReferencias()
     };
+  } 
+  else {
+    let toprightlogo = document.getElementById("logo-help")
+    toprightlogo.style.display= "none"
   }
  }
 
