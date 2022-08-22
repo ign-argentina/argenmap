@@ -283,6 +283,8 @@ class Searchbar_UI{
 
     let container = document.getElementById("results_search_bar")
     container.style="margin: 5px"
+    container.style.position="absolute"
+    container.style.width="300px"
     container.innerHTML=""
     let card = document.createElement("div")
     card.className = "card"
