@@ -42,7 +42,7 @@ body {
 }
 
 #top-left-logo{
-  width: 180px;
+  width: 170px;
   height: 50px;
 }
 
@@ -1017,6 +1017,9 @@ SideBar
   flex: inherit;
   margin: 0.1rem 1.5rem;
   text-align: inherit;
+}
+.navbar-button {
+  margin-right: -20px;
 }
 
 #logo-navbar {
