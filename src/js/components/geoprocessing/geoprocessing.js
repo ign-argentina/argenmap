@@ -604,7 +604,7 @@ class Geoprocessing {
                 });
               } else if (this.geoprocessId === "buffer") {
                 gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
-                  if (layer) {
+                  if (layer && gestorMenu.layerIsWmts(layer.name) == false) {
                     options.push({ value: layer.name, text: layer.name });
                   }
                 });
@@ -927,7 +927,7 @@ class Geoprocessing {
           }
           if (this.geoprocessId == "buffer") {
             let layerForBuffer = gestorMenu.getActiveLayersWithoutBasemap()[0];
-            if (layerForBuffer) {
+            if (layerForBuffer && gestorMenu.layerIsWmts(layerForBuffer.name) == false) {
               setTimeout(function () {
                 $("#select-capa").val(layerForBuffer.name).change();
                 $("#drawRectangleBtn").removeClass("disabledbutton");
