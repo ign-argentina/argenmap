@@ -2405,8 +2405,6 @@ class GestorMenu {
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, true);
                                 geoProcessingManager.updateLayerSelect(item.nombre, true);
-
-
                         }
                         /*
                         let bbox = item.capa;

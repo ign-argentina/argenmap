@@ -922,7 +922,6 @@ class Geoprocessing {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
-                
               }
             });
           }
@@ -1058,7 +1057,8 @@ class Geoprocessing {
     option.innerHTML = layerName;
 
     if (select && this.geoprocessId === "buffer") {
-      if(addToList) {
+
+      if(addToList && gestorMenu.layerIsWmts(layerName) == false) {
         for(let i=0;i<select.length;i++) {
           if (select[i].value !== layerName) {
             select.appendChild(option);
