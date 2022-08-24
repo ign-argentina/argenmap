@@ -403,7 +403,12 @@ class Geoprocessing {
   }
 
   calculateRectangleArea(event) {
-    let _area, rectPos, rectangleArea, formattedArea;
+    let _area, rectPos, rectangleArea, formattedArea, maxSize;
+    if (this.geoprocessId === "contour") {
+      maxSize =  100;
+    } else if (this.geoprocessId === "buffer") {
+      maxSize = 1000;
+    }
 
     if (event === "add-layer") {
       L.GeometryUtil.readableArea = function (area, isMetric, precision) {
@@ -412,11 +417,11 @@ class Geoprocessing {
         formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
         _area = formattedArea + " km²";
 
-        if (formattedArea > 100) {
+        if (formattedArea > maxSize) {
           isValidRectangle = false;
           $("#ejec_gp").addClass("disabledbutton");
           $("#invalidRect").removeClass("hidden");
-        } else if (formattedArea < 100) {
+        } else if (formattedArea < maxSize) {
           isValidRectangle = true;
           $("#msgRectangle").addClass("hidden");
           $("#invalidRect").addClass("hidden");
@@ -443,11 +448,11 @@ class Geoprocessing {
         2
       );
 
-      if (formattedArea > 100) {
+      if (formattedArea > maxSize) {
         isValidRectangle = false;
         $("#ejec_gp").addClass("disabledbutton");
         $("#invalidRect").removeClass("hidden");
-      } else if (formattedArea < 100) {
+      } else if (formattedArea < maxSize) {
         isValidRectangle = true;
         $("#msgRectangle").addClass("hidden");
         $("#invalidRect").addClass("hidden");
@@ -503,6 +508,9 @@ class Geoprocessing {
     //Contour & Buffer Rectangle Messages
     let rectangleMessage = document.createElement("div");
     rectangleMessage.innerHTML = "Dibuje Rectángulo hasta 100km²";
+    if (this.geoprocessId === "buffer")
+      rectangleMessage.innerHTML = "Dibuje Rectángulo hasta 1000km²";
+      
     rectangleMessage.id = "msgRectangle";
     rectangleMessage.style =
       "color: #37bbed; font-weight: bolder; font-size: 13px";
