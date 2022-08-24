@@ -112,8 +112,10 @@ function showImageOnError(image) {
 
 function mainMenuSearch(e) {
     e.preventDefault();
-    gestorMenu.setQuerySearch($("#q").val());
-    gestorMenu.printMenu();
+    if ($("#q").val().length != 0 ) {
+        gestorMenu.setQuerySearch($("#q").val());
+        gestorMenu.printMenu();
+    }
 }
 
 function clearString(s) {
