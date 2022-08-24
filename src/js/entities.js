@@ -1993,7 +1993,7 @@ class GestorMenu {
                             "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>"+
                         "</div>" +
                         "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
+                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
                     "</div>" +
                     "</form>";
         }
