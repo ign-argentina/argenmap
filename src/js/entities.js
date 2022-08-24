@@ -149,11 +149,27 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 
         var titulo = (itemComposite.titulo ? itemComposite.titulo.replace(/_/g, " ") : "por favor ingrese un nombre");
 
-        let hillshadeSwitch = "";
+        const OVERLAY_SWITCH = document.createElement("div");
         if (app.hillshade) {   
             let enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
             if (enableHillshade) {
-                hillshadeSwitch = `<div onclick="event.stopPropagation()"><input type="checkbox" id="switch" title="${itemComposite.capa.nombre}" onclick="switchHillShade(this.title)"/><label for="switch"><span class="tooltiptext">${app.hillshade.switchLabel}</span></label></div>`
+                const OVERLAY_CHECKBOX = document.createElement("input");
+                OVERLAY_CHECKBOX.type = "checkbox";
+                OVERLAY_CHECKBOX.id = "switch";
+                OVERLAY_CHECKBOX.title = itemComposite.capa.nombre;
+                OVERLAY_CHECKBOX.setAttribute("onclick", "switchHillShade(this.title)");
+
+                const OVERLAY_TOOLTIP = document.createElement("span");
+                OVERLAY_TOOLTIP.classList.add("tooltiptext");
+                OVERLAY_TOOLTIP.innerHTML = app.hillshade.switchLabel ?? 'add Esri hillshade';
+                
+                const OVERLAY_LABEL = document.createElement("label");
+                OVERLAY_LABEL.setAttribute("for", OVERLAY_CHECKBOX.id);
+                OVERLAY_LABEL.appendChild(OVERLAY_TOOLTIP);
+                
+                OVERLAY_SWITCH.setAttribute("onclick", "event.stopPropagation()");
+                OVERLAY_SWITCH.appendChild(OVERLAY_CHECKBOX);
+                OVERLAY_SWITCH.appendChild(OVERLAY_LABEL);
             }
         }
             
@@ -177,20 +193,60 @@ class ImpresorItemCapaBaseHTML extends Impresor {
             maxZoom = layer.zoom.max;
         }
 
-        return "<li id='" + childId + "' class='list-group-item' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'>" +
-            "<div style='vertical-align:top'>" +
-                "<div class='base-layer-item' nombre=" + itemComposite.nombre + " href='#'>" +
-                    "<div class='base-layer-item-info'>" +
-                        "<img loading='lazy' src='" + itemComposite.getLegendImg() + "' onerror='showImageOnError(this);' alt='" + titulo + "' class='img-rounded'>" +
-                        "<div class='non-selectable-text'><p style='margin: 0px;'>" + titulo + "</p></div>" +
-                    "</div>" + hillshadeSwitch +
-                    "<div class='zoom-info-icon'>" + 
-                        iconSvg + 
-                        "<span class='tooltiptext'>" + "Zoom mínimo de " + "<b>" + minZoom + "</b>" + " y máximo de " + "<b>" + maxZoom + "</b>" + "</span>" +
-                    "</div>" +
-                "</div>" +
-            "</div>" +
-        "</li>";
+        const BASEMAP_THUMBNAIL = document.createElement('img');
+        BASEMAP_THUMBNAIL.classList.add('img-rounded');
+        BASEMAP_THUMBNAIL.loading = 'lazy';
+        BASEMAP_THUMBNAIL.src = itemComposite.getLegendImg();
+        BASEMAP_THUMBNAIL.onerror = showImageOnError(this);
+        BASEMAP_THUMBNAIL.alt = titulo;
+
+        const TITLE_PARAGRAPH = document.createElement('p');
+        TITLE_PARAGRAPH.style.margin = 0;
+        TITLE_PARAGRAPH.innerText = titulo;
+
+        const BASEMAP_TITLE = document.createElement('div');
+        BASEMAP_TITLE.classList.add('non-selectable-text');
+        BASEMAP_TITLE.appendChild(TITLE_PARAGRAPH);
+
+        const BASEMAP_INFO = document.createElement('div');
+        BASEMAP_INFO.classList.add('base-layer-item-info');
+        BASEMAP_INFO.appendChild(BASEMAP_THUMBNAIL);
+        BASEMAP_INFO.appendChild(BASEMAP_TITLE);
+
+        let str = {
+            _bm_min_zoom: app.strings ? app.strings.basemap_min_zoom : "Min zoom ", 
+            _bm_max_zoom: app.strings ? app.strings.basemap_max_zoom : " to max zoom "
+        };
+
+        const BASEMAP_TOOLTIP = document.createElement('span');
+        BASEMAP_TOOLTIP.classList.add('tooltiptext');
+        BASEMAP_TOOLTIP.innerHTML = `${str._bm_min_zoom}<b>${minZoom}</b>${str._bm_max_zoom}<b>${maxZoom}</b>`;
+        
+        const INFO_ICON = document.createElement('div'); 
+        INFO_ICON.classList.add('zoom-info-icon');
+        INFO_ICON.innerHTML = iconSvg;
+        INFO_ICON.appendChild(BASEMAP_TOOLTIP);
+        
+        const SECOND_DIV = document.createElement('div');
+        SECOND_DIV.classList.add('base-layer-item');
+        SECOND_DIV.setAttribute('nombre', itemComposite.nombre);
+        SECOND_DIV.href = '#';
+        SECOND_DIV.appendChild(BASEMAP_INFO);
+        SECOND_DIV.appendChild(OVERLAY_SWITCH);
+        SECOND_DIV.appendChild(INFO_ICON);
+
+        const FIRST_DIV = document.createElement('div');
+        FIRST_DIV.style.verticalAlign = 'top';
+        FIRST_DIV.appendChild(SECOND_DIV);
+
+        const BASEMAP_ITEM = document.createElement('li');
+        BASEMAP_ITEM.classList.add('list-group-item');
+        BASEMAP_ITEM.id = childId;
+        BASEMAP_ITEM.setAttribute("onclick", `gestorMenu.muestraCapa("${childId}")`);
+        BASEMAP_ITEM.appendChild(FIRST_DIV);
+
+        return BASEMAP_ITEM.outerHTML; // TODO: change reference fn for expect an object instead string
+
     }
 }
 
