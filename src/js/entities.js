@@ -214,13 +214,18 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         BASEMAP_INFO.appendChild(BASEMAP_THUMBNAIL);
         BASEMAP_INFO.appendChild(BASEMAP_TITLE);
 
-        let str = {
-            _bm_min_zoom: app.strings ? app.strings.basemap_min_zoom : "Min zoom ", 
-            _bm_max_zoom: app.strings ? app.strings.basemap_max_zoom : " to max zoom "
-        };
+        let str;
+        if (app.strings){
+            str = {
+                _bm_min_zoom: app.strings.basemap_min_zoom ?? "Min zoom ", 
+                _bm_max_zoom: app.strings.basemap_max_zoom ?? " to max zoom ",
+                _bm_legend_button_txt: app.strings.basemap_legend_button_text ?? "View basemap legend",
+                _bm_max_zoom: app.strings.basemap_max_zoom ?? " to max zoom "
+            };
+        }
 
         const BASEMAP_LEGEND_IMG = itemComposite.legend ?? null;
-        const LEGEND_BTN_TEXT = app.strings.basemap_legend_button_text ?? 'View basemap legend';
+        const LEGEND_BTN_TEXT = str._bm_legend_button_txt ;
 
         const BASEMAP_LEGEND = document.createElement('button');
         BASEMAP_LEGEND.innerHTML = LEGEND_BTN_TEXT;
