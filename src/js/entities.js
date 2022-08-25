@@ -168,7 +168,6 @@ class ImpresorItemCapaBaseHTML extends Impresor {
                 OVERLAY_LABEL.setAttribute("for", OVERLAY_CHECKBOX.id);
                 OVERLAY_LABEL.appendChild(OVERLAY_TOOLTIP);
                 
-                OVERLAY_SWITCH.setAttribute("onclick", "event.stopPropagation()");
                 OVERLAY_SWITCH.appendChild(OVERLAY_CHECKBOX);
                 OVERLAY_SWITCH.appendChild(OVERLAY_LABEL);
             }
@@ -241,7 +240,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         INFO_ICON.classList.add('zoom-info-icon');
         INFO_ICON.innerHTML = iconSvg;
         INFO_ICON.appendChild(BASEMAP_TOOLTIP);
-        INFO_ICON.setAttribute("onclick", `event.stopPropagation(); toggleVisibility(this.lastElementChild.id);`);
+        INFO_ICON.setAttribute("onclick", `toggleVisibility(this.lastElementChild.id);`);
         
         const SECOND_DIV = document.createElement('div');
         SECOND_DIV.classList.add('base-layer-item');

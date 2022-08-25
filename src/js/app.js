@@ -446,6 +446,10 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         setProperStyleToCtrlBtns();
 
+        let bm = document.getElementById('collapseBaseMapLayers');
+        bm.addEventListener('dblclick', function(){event.stopPropagation()});
+        bm.addEventListener('click', function(){event.stopPropagation()});
+
         if (loadGeoprocessing) {
           $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
           $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
