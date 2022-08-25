@@ -362,6 +362,13 @@ li.active > div > a {
   height: 35px;
   margin: 10px 0px 10px 0px;
 }
+.visible {
+  visibility: visible !important;
+}
+.hidden {
+  visibility: hidden !important;
+}
+
 
 /*******************************
 Searcher
@@ -651,7 +658,7 @@ Popup geometría
   align-items: center;
   position: relative;
 }
-#switch {
+.switch {
   height: 0;
   width: 0;
   visibility: hidden;
@@ -659,17 +666,17 @@ Popup geometría
   justify-content: center;
   align-items: center;
 }
-input:checked#switch + label {
+input:checked.switch + label {
   background: #37bbed;
 }
-input:checked#switch + label:after {
+input:checked.switch + label:after {
   left: calc(100% - 1px);
   transform: translateX(-100%);
 }
-#switch + label:active:after {
+.switch + label:active:after {
   width: 30px;
 }
-#switch + label {
+.switch + label {
   cursor: pointer;
   /* text-indent: -9999px; */
   width: 35px;
@@ -679,7 +686,7 @@ input:checked#switch + label:after {
   border-radius: 100px;
   position: relative;
 }
-#switch + label:after {
+.switch + label:after {
   content: '';
   position: absolute;
   top: 1px;
@@ -720,7 +727,7 @@ input:checked#switch + label:after {
   left: 150%;
   z-index: 50000;
 }
-.zoom-info-icon:hover .tooltiptext, #switch:hover + label .tooltiptext {
+/* .zoom-info-icon:hover .tooltiptext,  */.switch:hover + label .tooltiptext {
   visibility: visible;
 }
 .base-layer-item {
