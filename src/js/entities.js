@@ -237,7 +237,6 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         INFO_ICON.classList.add('zoom-info-icon');
         INFO_ICON.innerHTML = iconSvg;
         INFO_ICON.appendChild(BASEMAP_TOOLTIP);
-        //this.getElementsByClassName('tooltiptext')
         INFO_ICON.setAttribute("onclick", `event.stopPropagation(); toggleVisibility(this.lastElementChild.id);`);
         
         const SECOND_DIV = document.createElement('div');
@@ -303,8 +302,8 @@ class ImpresorCapasBaseHTML extends Impresor {
         var listaId = itemComposite.getId();
         // Only one basemap-selector
         if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
-            return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="true" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-                '<div class="collapse pull-right in" id="collapseBaseMapLayers">' +
+            return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
+                '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
                 '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
                 '</div>';
         }
@@ -731,8 +730,6 @@ class LayersInfoWMS extends LayersInfo {
                 }
             }
 
-            //console.log(`${thisObj.section} printed`);
-            //prueba
              nuevo_impresor.addLayers_combobox(groupAux)
             return;
         });
@@ -829,7 +826,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
             }
             
         }
-        //console.log("//termina de imprimir el menu")
+        
         bindZoomLayer()
         bindLayerOptions()
     }
@@ -2482,15 +2479,7 @@ class GestorMenu {
 
 
                         }
-                        /*
-                        let bbox = item.capa;
-                        let bounds = [[bbox.maxy, bbox.maxx], [bbox.miny, bbox.minx]];
-                        //console.log(bounds);
-                        try {
-                            mapa.fitBounds(bounds);
-                        } catch (error) {
-                            //console.log(bounds);
-                        }*/
+                        
                         item.showHide();
                         itemComposite.muestraCantidadCapasVisibles();
                         break;
@@ -2834,10 +2823,8 @@ class Menu_UI{
             let title = layers[property].capa.titulo
             let url_img = layers[property].capa.legendURL
             let descripcion = layers[property].capa.descripcion
-            //add_btn_Layer_combobox(id_dom,title,url_img,descripcion,options)
             let li_layer = this.add_btn_Layer_combobox(id_dom,title,url_img,descripcion, false)
             list.append(li_layer)
-            //console.log("layers[property]");
           }
           contenedor.innerHTML = ""
           contenedor.append(list)
