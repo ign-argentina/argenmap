@@ -37,6 +37,10 @@ body {
   }
 }
 
+.container-fluid, .row {
+  height: 100%;
+}
+
 #wms-combo-list{
   display: none;
 }
@@ -377,9 +381,15 @@ li.active > div > a {
     display: none !important;
   }
 }
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   #sidebar-container.collapse {
     height: 93% !important;
+  }
+}
+@media (max-width: 768px) {
+  #sidebar-container.collapse {
+    height: 50% !important;
+    overflow-y: auto;
   }
 }
 .wms-combobox-selector {
@@ -461,6 +471,12 @@ Login
 /*******************************
 Leaflet
 *******************************/
+@media (max-width: 600px) {
+  .leaflet-top {
+    top: 5px;
+  }
+}
+
 .leaflet-container {
   /* font: 12px/1.5 "Titillium Web", sans-serif; */
   font-family: 'Encode Sans', sans-serif ;
