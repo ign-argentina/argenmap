@@ -657,6 +657,7 @@ Popup geometría
   justify-content: center;
   align-items: center;
   position: relative;
+  cursor: pointer;
 }
 .switch {
   height: 0;
