@@ -168,6 +168,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
                 OVERLAY_LABEL.setAttribute("for", OVERLAY_CHECKBOX.id);
                 OVERLAY_LABEL.appendChild(OVERLAY_TOOLTIP);
                 
+                OVERLAY_SWITCH.setAttribute("onclick", "event.stopPropagation()");
                 OVERLAY_SWITCH.appendChild(OVERLAY_CHECKBOX);
                 OVERLAY_SWITCH.appendChild(OVERLAY_LABEL);
             }
