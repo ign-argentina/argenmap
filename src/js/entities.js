@@ -151,12 +151,13 @@ class ImpresorItemCapaBaseHTML extends Impresor {
 
         const OVERLAY_SWITCH = document.createElement("div");
         if (app.hillshade) {   
-            let enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
+            const enableHillshade = app.hillshade.addTo.find(el => el === itemComposite.capa.nombre);
             if (enableHillshade) {
                 const OVERLAY_CHECKBOX = document.createElement("input");
                 OVERLAY_CHECKBOX.type = "checkbox";
-                OVERLAY_CHECKBOX.id = "switch";
+                OVERLAY_CHECKBOX.id = "switch-" + itemComposite.capa.nombre;
                 OVERLAY_CHECKBOX.title = itemComposite.capa.nombre;
+                OVERLAY_CHECKBOX.classList.add('switch');
                 OVERLAY_CHECKBOX.setAttribute("onclick", "switchHillShade(this.title)");
 
                 const OVERLAY_TOOLTIP = document.createElement("span");
@@ -218,14 +219,26 @@ class ImpresorItemCapaBaseHTML extends Impresor {
             _bm_max_zoom: app.strings ? app.strings.basemap_max_zoom : " to max zoom "
         };
 
+        const BASEMAP_LEGEND_IMG = itemComposite.legend ?? null;
+        const LEGEND_BTN_TEXT = app.strings.basemap_legend_button_text ?? 'View basemap legend';
+
+        const BASEMAP_LEGEND = document.createElement('button');
+        BASEMAP_LEGEND.innerHTML = LEGEND_BTN_TEXT;
+        BASEMAP_LEGEND.setAttribute("onclick", `clickReferencias("${BASEMAP_LEGEND_IMG}");`);
+        
         const BASEMAP_TOOLTIP = document.createElement('span');
+        BASEMAP_TOOLTIP.id = itemComposite.nombre + '-tooltip';
         BASEMAP_TOOLTIP.classList.add('tooltiptext');
-        BASEMAP_TOOLTIP.innerHTML = `${str._bm_min_zoom}<b>${minZoom}</b>${str._bm_max_zoom}<b>${maxZoom}</b>`;
+        BASEMAP_TOOLTIP.innerHTML = `<span>${str._bm_min_zoom}<b>${minZoom}</b>${str._bm_max_zoom}<b>${maxZoom}</b></span>`;
+        BASEMAP_TOOLTIP.style = '-webkit-flex-direction: column; flex-direction: column; width: fit-content; height: fit-content; flex: 1 1 auto; padding: 5px;';
+        BASEMAP_LEGEND_IMG ? BASEMAP_TOOLTIP.append(BASEMAP_LEGEND) : '';
         
         const INFO_ICON = document.createElement('div'); 
         INFO_ICON.classList.add('zoom-info-icon');
         INFO_ICON.innerHTML = iconSvg;
         INFO_ICON.appendChild(BASEMAP_TOOLTIP);
+        //this.getElementsByClassName('tooltiptext')
+        INFO_ICON.setAttribute("onclick", `event.stopPropagation(); toggleVisibility(this.lastElementChild.id);`);
         
         const SECOND_DIV = document.createElement('div');
         SECOND_DIV.classList.add('base-layer-item');
@@ -290,8 +303,8 @@ class ImpresorCapasBaseHTML extends Impresor {
         var listaId = itemComposite.getId();
         // Only one basemap-selector
         if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
-            return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-                '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
+            return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="true" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
+                '<div class="collapse pull-right in" id="collapseBaseMapLayers">' +
                 '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
                 '</div>';
         }
@@ -1241,13 +1254,14 @@ class ItemGroupWMSSelector extends ItemGroup {
 }
 
 class Item extends ItemComposite {
-	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback, legendImg, listType) {
+	constructor(nombre, seccion, palabrasClave, descripcion, titulo, capa, callback, legendImg, legend, listType) {
 		super(nombre, seccion, palabrasClave, descripcion);
 		this.titulo = titulo;
 		this.capa = capa;
 		this.capas = [capa];
 		this.visible = false;
         this.legendImg = legendImg;
+        this.legend = legend;
         this.callback = callback;
         this.listType = null;
     }
@@ -1271,6 +1285,10 @@ class Item extends ItemComposite {
 
     setLegendImg(img) {
         this.legendImg = img;
+    }
+
+    setLegend(img) {
+        this.legend = img;
     }
 
     getLegendImg() {
