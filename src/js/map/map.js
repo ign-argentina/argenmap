@@ -2188,6 +2188,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				emptyString: '&nbsp;'
 			}).addTo(mapa);
 			gestorMenu.plugins['MousePosition'].setStatus('visible');
+			loadDeveloperLogo();
 			break;
 		case 'BingLayer':
 			if(gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready' ){	
