@@ -219,8 +219,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
             str = {
                 _bm_min_zoom: app.strings.basemap_min_zoom ?? "Min zoom ", 
                 _bm_max_zoom: app.strings.basemap_max_zoom ?? " to max zoom ",
-                _bm_legend_button_txt: app.strings.basemap_legend_button_text ?? "View basemap legend",
-                _bm_max_zoom: app.strings.basemap_max_zoom ?? " to max zoom "
+                _bm_legend_button_txt: app.strings.basemap_legend_button_text ?? "View basemap legend"
             };
         }
 
