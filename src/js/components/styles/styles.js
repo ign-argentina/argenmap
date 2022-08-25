@@ -109,7 +109,7 @@ class StylesUI {
     toprightlogo.style.top = "7px"
 
     toprightlogo.onclick = function () {
-      clickReferencias()
+      clickReferencias('')
     };
   } 
   else {
@@ -182,10 +182,10 @@ class StylesUI {
  }
 }
 
-function clickReferencias(){
+function clickReferencias(img){
     event.preventDefault();
     $.fancybox.open({
-        src : 'src/styles/images/referencias.png',
+        src : img,
         type : 'image',
         closeBtn: 'true'
     });

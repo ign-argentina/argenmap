@@ -1021,3 +1021,14 @@ function hillShade() {
     }
 }
 }
+
+function toggleVisibility(elementId) {
+  try {
+    let el = document.getElementById(elementId);
+    el.classList.contains("visible")
+      ? (el.classList.remove("visible"), el.classList.add("hidden"))
+      : (el.classList.remove("hidden"), el.classList.add("visible"));
+  } catch (e) {
+    console.error(e);
+  }
+}
