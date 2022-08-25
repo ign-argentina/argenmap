@@ -50,7 +50,7 @@ overflow: hidden;
   box-sizing: border-box;
   padding-left: 10px;
   font-size: 14px;
-  font-family: FrutigerLTStd45Light,Helvetica,Arial,sans-serif;
+  /* font-family: FrutigerLTStd45Light,Helvetica,Arial,sans-serif; */
   background-color: white;
   -webkit-transition: width 0.4s ease-in-out;
   transition: width 0.4s ease-in-out;
