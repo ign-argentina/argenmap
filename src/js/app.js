@@ -134,7 +134,8 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               capa,
               null
             );
-            basemap.setLegendImg(item.capas[key2].legendImg);
+            basemap.setLegendImg(item.capas[key2].legendImg); // basemap thumbnail, not a legend
+            item.capas[key2].legend ? basemap.setLegend(item.capas[key2].legend) : basemap.setLegend(null); // basemap legend
             if (item.capas[key2].peso) {
               basemap.setPeso(item.capas[key2].peso);
             }
