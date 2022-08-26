@@ -93,6 +93,7 @@ class Geoprocessing {
       '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = function () {
       //Close geoprocess window and clear
+      document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style = ""
       document.getElementById("select-process").selectedIndex = 0;
       document.getElementsByClassName("form")[1].innerHTML = "";
       divContainer.remove();
@@ -124,6 +125,10 @@ class Geoprocessing {
     $("#mr").draggable({
       containment: "#mapa",
     });
+
+    if (document.getElementById("mr")) {
+      document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style = "filter: contrast(22%) brightness(157%);pointer-events:none;"
+    }
   }
 
   setAvailableGeoprocessingConfig(geoprocessingConfig) {
@@ -789,6 +794,9 @@ class Geoprocessing {
         new UserMessage(error.message, true, "error");
         this.loadingBtn("off");
       });
+
+    let lastRectangle = mapa.getEditableLayers().rectangle.length-1;
+    mapa.deleteLayer(mapa.getEditableLayers().rectangle[lastRectangle].name)
   }
 
   executeGeoprocess(formFields) {
