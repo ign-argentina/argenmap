@@ -1021,3 +1021,30 @@ function hillShade() {
     }
 }
 }
+
+function toggleVisibility(elementId) {
+  try {
+    let el = document.getElementById(elementId);
+    el.classList.contains("visible")
+      ? (el.classList.remove("visible"), el.classList.add("hidden"))
+      : (el.classList.remove("hidden"), el.classList.add("visible"));
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function loadDeveloperLogo() {
+    L.Control.DeveloperLogo = L.Control.extend({
+        onAdd: function(map) {
+            let img = L.DomUtil.create('img');
+            img.src = APP_IMG;
+            img.alt = 'Instituto Geográfico Nacional de la República Argentina';
+            img.style = 'margin-right: 48px !important;';
+            return img;
+        }
+    });
+    L.control.developerLogo = function(opts) {
+        return new L.Control.DeveloperLogo(opts);
+    }
+    L.control.developerLogo({ position: 'bottomright'}).addTo(mapa);
+}

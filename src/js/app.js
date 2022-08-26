@@ -134,7 +134,8 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               capa,
               null
             );
-            basemap.setLegendImg(item.capas[key2].legendImg);
+            basemap.setLegendImg(item.capas[key2].legendImg); // basemap thumbnail, not a legend
+            item.capas[key2].legend ? basemap.setLegend(item.capas[key2].legend) : basemap.setLegend(null); // basemap legend
             if (item.capas[key2].peso) {
               basemap.setPeso(item.capas[key2].peso);
             }
@@ -444,6 +445,10 @@ async function loadTemplate(data, isDefaultTemplate) {
         sidebarTool.createComponent();
 
         setProperStyleToCtrlBtns();
+
+        let bm = document.getElementById('collapseBaseMapLayers');
+        bm.addEventListener('dblclick', function(){event.stopPropagation()});
+        bm.addEventListener('click', function(){event.stopPropagation()});
 
         if (loadGeoprocessing) {
           $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');

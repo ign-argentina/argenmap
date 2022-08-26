@@ -5,8 +5,28 @@ html {
   height: 100%;
 }
 
+@font-face {
+  font-family: 'Encode Sans';
+  src: url('../../../dist/fonts/EncodeSans-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Encode Sans Medium';
+  src: url('../../../dist/fonts/EncodeSans-Medium.ttf');
+}
+
+@font-face {
+  font-family: 'Encode Sans Semi Bold';
+  src: url('../../../dist/fonts/EncodeSans-SemiBold.ttf');
+}
+
+@font-face {
+  font-family: 'Encode Sans Bold';
+  src: url('../../../dist/fonts/EncodeSans-Bold.ttf');
+}
+
 body {
-  font-family: Roboto, sans-serif;
+  font-family: 'Encode Sans', sans-serif;
   overflow: hidden;
   height: 100% !important;
 }
@@ -15,6 +35,10 @@ body {
   body {
     overflow-y: scroll;
   }
+}
+
+.container-fluid, .row {
+  height: 100%;
 }
 
 #wms-combo-list{
@@ -104,11 +128,11 @@ Menu principal
 .panel-default > .panel-heading {
   color: white;
   font-size: 15px;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 .panel-default > .panel-heading > .panel-title > a {
   font-size: 15px;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 #sidebar-container {
   z-index: 1500;
@@ -156,12 +180,16 @@ Menu principal
 }
 .panel-heading {
   border-bottom: 1px solid white;
+  font-family: "Encode Sans", sans-serif;
 }
 .active {
   background-color: #33b560 !important;
 }
 li.active > div > a {
   color: white !important;
+}
+.list-group-item {
+  font-family: "Encode Sans Medium", sans-serif;
 }
 .list-group-item.active {
   border-color: white;
@@ -186,7 +214,8 @@ li.active > div > a {
   color: #dddddd;
 }
 .item-group-title {
-  font-weight: bold;
+  font-family: "Encode Sans Semi Bold", sans-serif;
+  /* font-weight: bold; */
   font-size: 15px;
 }
 .legend-layer {
@@ -352,9 +381,15 @@ li.active > div > a {
     display: none !important;
   }
 }
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   #sidebar-container.collapse {
     height: 93% !important;
+  }
+}
+@media (max-width: 768px) {
+  #sidebar-container.collapse {
+    height: 50% !important;
+    overflow-y: auto;
   }
 }
 .wms-combobox-selector {
@@ -362,6 +397,13 @@ li.active > div > a {
   height: 35px;
   margin: 10px 0px 10px 0px;
 }
+.visible {
+  visibility: visible !important;
+}
+.hidden {
+  visibility: hidden !important;
+}
+
 
 /*******************************
 Searcher
@@ -429,8 +471,15 @@ Login
 /*******************************
 Leaflet
 *******************************/
+@media (max-width: 600px) {
+  .leaflet-top {
+    top: 5px;
+  }
+}
+
 .leaflet-container {
-  font: 12px/1.5 "Titillium Web", sans-serif !important;
+  /* font: 12px/1.5 "Titillium Web", sans-serif; */
+  font-family: 'Encode Sans', sans-serif ;
 }
 .leaflet-control-measure-interaction h3 {
   font-size: 17px !important;
@@ -457,9 +506,13 @@ Leaflet
 Leaflet popup featureInfo
 *******************************/
 .featureInfo {
-  font-family: Tahoma;
-  font-size: 10px;
+  /* font-family: Tahoma; */
+  font-family: inherit;
+  font-size: 12px;
   width: 100%;
+}
+.featureInfo > li > b {
+  font-weight: 500;
 }
 .featureInfo img {
   display: block;
@@ -471,7 +524,7 @@ Leaflet popup featureInfo
 }
 
 .featureInfo h4 {
-  margin: 2em;
+  margin: 1em;
 }
 
 .individualFeature h4 {
@@ -483,6 +536,8 @@ Leaflet popup featureInfo
 }
 .leaflet-popup-content {
   max-width: 250px;
+  font-family: 'Encode Sans', sans-serif ;
+  letter-spacing: 0.02em;
 }
 #popupPageSeeker {
   float: left;
@@ -650,8 +705,9 @@ Popup geometría
   justify-content: center;
   align-items: center;
   position: relative;
+  cursor: pointer;
 }
-#switch {
+.switch {
   height: 0;
   width: 0;
   visibility: hidden;
@@ -659,17 +715,17 @@ Popup geometría
   justify-content: center;
   align-items: center;
 }
-input:checked#switch + label {
+input:checked.switch + label {
   background: #37bbed;
 }
-input:checked#switch + label:after {
+input:checked.switch + label:after {
   left: calc(100% - 1px);
   transform: translateX(-100%);
 }
-#switch + label:active:after {
+.switch + label:active:after {
   width: 30px;
 }
-#switch + label {
+.switch + label {
   cursor: pointer;
   /* text-indent: -9999px; */
   width: 35px;
@@ -679,7 +735,7 @@ input:checked#switch + label:after {
   border-radius: 100px;
   position: relative;
 }
-#switch + label:after {
+.switch + label:after {
   content: '';
   position: absolute;
   top: 1px;
@@ -720,7 +776,7 @@ input:checked#switch + label:after {
   left: 150%;
   z-index: 50000;
 }
-.zoom-info-icon:hover .tooltiptext, #switch:hover + label .tooltiptext {
+/* .zoom-info-icon:hover .tooltiptext,  */.switch:hover + label .tooltiptext {
   visibility: visible;
 }
 .base-layer-item {
@@ -1041,10 +1097,10 @@ SideBar
   align-self: center;
   text-align: right;
   color: white;
-  font-size: 20px;
-  font-family: Roboto, sans-serif;
-  font-weight: bold;
-  text-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+  font-size: 18px;
+  font-family: "Encode Sans Bold", sans-serif;
+  /* font-weight: bold; */
+  /* text-shadow: 2px 2px 3px rgba(0,0,0,0.3); */
   -webkit-user-select: none;
   user-select: none;
   white-space: nowrap;
