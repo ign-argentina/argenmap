@@ -1060,8 +1060,8 @@ SideBar
 	transform: scale(1);
 }
 
-/*New navbar*/
 
+/*New navbar*/
 .navbar-new {
   display: flex;
   width: 100%;
@@ -1108,5 +1108,17 @@ SideBar
 #search-navbar {
   align-self: center;
 }
-
 /*End New navbar*/
+
+
+/* SearchForm & Buttons*/
+.searchFormBtn {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-evenly;
+}
+
+.formBtns {
+  width: 100%;
+}
+/* End of SearchForm & Buttons*/
