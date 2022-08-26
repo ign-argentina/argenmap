@@ -2064,9 +2064,9 @@ class GestorMenu {
 
     _printSearcher() {
         if (this.getShowSearcher() == true) {
-            return "<form id='searchForm' onSubmit='mainMenuSearch(event)'>" +
+            return "<form id='searchForm' class='searchFormBtn' onSubmit='mainMenuSearch(event)'>" +
                     "<div style='display: flex;'>" +
-                        "<div class='has-feedback has-clear'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capas...'>" +
+                        "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capas...'>" +
                             "<span class='form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></span>"+
                         "</div>" +
                         "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
