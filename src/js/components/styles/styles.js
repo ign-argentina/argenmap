@@ -90,9 +90,7 @@ class StylesUI {
   linkicon.href = app.favicon
   document.head.appendChild(linkicon);
 
-  let title = document.createElement("title")
-  title.innerHTML = app.title
-  document.head.appendChild(title);
+  if (app.title !== "") { document.title = app.title };
 
   let topleftlogolink = document.getElementById("top-left-logo-link")
   topleftlogolink.href = app.website
