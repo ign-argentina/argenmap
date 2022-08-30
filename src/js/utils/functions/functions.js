@@ -112,10 +112,15 @@ function showImageOnError(image) {
 
 function mainMenuSearch(e) {
     e.preventDefault();
-    // if ($("#q").val().length != 0 ) {
+    if ($("#q").val().length != 0 ) {
         gestorMenu.setQuerySearch($("#q").val());
         gestorMenu.printMenu();
-    // }
+    }
+}
+
+function reloadMenu() {
+    gestorMenu.setQuerySearch("");
+    gestorMenu.printMenu();
 }
 
 function clearString(s) {
