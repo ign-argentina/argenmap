@@ -2,6 +2,7 @@ class StylesUI {
 
  createstyles(){
   const style = document.createElement('style');
+  let minBgSize = app.logo.miniHeight !== '' ? app.logo.miniHeight + ' ' + app.logo.miniWidth : 'contain !important';
   style.id="main-style-ui"
   style.innerHTML = `
     .navbar{
@@ -63,7 +64,7 @@ class StylesUI {
       #top-left-logo {
         background-repeat: no-repeat;
         background-image: url("${app.logo.srcLogoMini}");
-        background-size: ${app.logo.miniHeight} ${app.logo.miniWidth};
+        background-size: ${minBgSize};
         background-position: left 1px center;
         ${app.logo.ministyle}
       }
