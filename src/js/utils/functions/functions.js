@@ -1039,7 +1039,7 @@ function loadDeveloperLogo() {
             let img = L.DomUtil.create('img');
             img.src = APP_IMG;
             img.alt = 'Instituto Geográfico Nacional de la República Argentina';
-            img.style = 'margin-right: 48px !important;';
+            img.style = 'margin-right: 48px !important; width: 64px;';
             return img;
         }
     });
