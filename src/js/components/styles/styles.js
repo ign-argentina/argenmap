@@ -54,6 +54,7 @@ class StylesUI {
     }
     .navbar-toggle .icon-bar {
       border: 1px solid ${app.theme.iconBar};
+      border-radius: 5px;
     }
     #sidebar-container{
       background-color:${app.theme.menuBackground};
