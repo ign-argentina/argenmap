@@ -386,7 +386,7 @@ li.active > div > a {
     height: 93% !important;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   #sidebar-container.collapse {
     height: 50% !important;
     overflow-y: auto;
