@@ -1037,9 +1037,10 @@ function loadDeveloperLogo() {
     L.Control.DeveloperLogo = L.Control.extend({
         onAdd: function(map) {
             let img = L.DomUtil.create('img');
-            img.src = APP_IMG;
+            img.src = 'src/styles/images/noimage.gif';
             img.alt = 'Instituto Geográfico Nacional de la República Argentina';
-            img.style = 'margin-right: 48px !important; width: 64px;';
+            img.style = 'margin-right: 48px !important; width: 64px; background-size: cover';
+            img.style.backgroundImage = `url('${APP_IMG}')`;
             return img;
         }
     });
