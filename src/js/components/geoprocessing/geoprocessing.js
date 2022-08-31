@@ -555,6 +555,7 @@ class Geoprocessing {
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
+      $("#ejec_gp").removeClass("disabledbutton");
     }
 
     //Buffer Messages
@@ -840,33 +841,33 @@ class Geoprocessing {
             break;
           }
           case "waterRise": {
-            addedLayers.forEach((contourLineSelected) => {
-              if (
-                contourLineSelected.id ==
-                document.getElementById("select-capa").value
-              ) {
-                contourLineSelected.rectangle.layer.features[0].geometry.coordinates[0].forEach(
-                  (coord) => {
-                    arrayWaterRise +=
-                      coord[0].toString() + " " + coord[1].toString() + ",";
-                  }
-                );
-              }
-            });
+            // addedLayers.forEach((contourLineSelected) => {
+            //   if (
+            //     contourLineSelected.id ==
+            //     document.getElementById("select-capa").value
+            //   ) {
+            //     contourLineSelected.rectangle.layer.features[0].geometry.coordinates[0].forEach(
+            //       (coord) => {
+            //         arrayWaterRise +=
+            //           coord[0].toString() + " " + coord[1].toString() + ",";
+            //       }
+            //     );
+            //   }
+            // });
 
-            arrayWaterRise = arrayWaterRise.substring(
-              0,
-              arrayWaterRise.length - 1
-            );
+            // arrayWaterRise = arrayWaterRise.substring(
+            //   0,
+            //   arrayWaterRise.length - 1
+            // );
 
-            let waterRiseValue =
-              document.getElementById("sliderValue").innerHTML;
-            waterRiseValue = waterRiseValue.substring(
-              0,
-              waterRiseValue.length - 4
-            );
-            valueOfWaterRise = parseInt(waterRiseValue);
-            break;
+            // let waterRiseValue =
+            //   document.getElementById("sliderValue").innerHTML;
+            // waterRiseValue = waterRiseValue.substring(
+            //   0,
+            //   waterRiseValue.length - 4
+            // );
+            // valueOfWaterRise = parseInt(waterRiseValue);
+            // break;
           }
         }
       } else {
@@ -902,14 +903,33 @@ class Geoprocessing {
         this.geoprocessing.mdeLayerFullname
       );
       waterRise
-        .execute(arrayWaterRise, valueOfWaterRise)
-        .then((result) => {
-          this.displayResult(result);
-        })
-        .catch((error) => {
-          new UserMessage(error.message, true, "error");
-          this.loadingBtn("off");
-        });
+        // .execute(arrayWaterRise, valueOfWaterRise)
+        // .then((result) => {
+        //   this.displayResult(result);
+        // })
+        // .catch((error) => {
+        //   new UserMessage(error.message, true, "error");
+        //   this.loadingBtn("off");
+        // });
+
+      waterRise
+      .execute(
+        `-69.696212581553127 -34.207204894110262,
+         -69.799409776448044 -34.220104543472132,
+         -69.799789090436576 -34.110482800785661,
+         -69.717829710947697 -34.13467138556318,
+         -69.696212581553127 -34.207204894110262`,
+        3316,
+        "image/png"
+      )
+      .then((result) => {
+        console.log(result);
+        this.displayResult(result);
+      })
+      .catch((error) => {
+        new UserMessage(error.message, true, "error");
+        this.loadingBtn("off");
+      });
     }
   }
 
