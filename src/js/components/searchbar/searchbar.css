@@ -56,9 +56,6 @@ overflow: hidden;
   transition: width 0.4s ease-in-out;
   border: 0px!important ;
   border-radius: 8px;
-  -moz-box-shadow: 0 0 3px grey !important;
-  -webkit-box-shadow: 0 0 3px grey !important;
-  box-shadow: 0 0 3px grey !important;
 }
 
 
@@ -71,9 +68,7 @@ overflow: hidden;
     z-index: 1500;
     border-radius: 8px;
     
-    -moz-box-shadow: inset 0 0 10px #000000;
-    -webkit-box-shadow: inset 0 0 10px #000000;
-    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2),0 -1px 0px rgba(0,0,0,0.02);
   }
 
 

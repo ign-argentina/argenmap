@@ -2,6 +2,7 @@ class StylesUI {
 
  createstyles(){
   const style = document.createElement('style');
+  let minBgSize = app.logo.miniHeight !== '' ? app.logo.miniHeight + ' ' + app.logo.miniWidth : 'contain !important';
   style.id="main-style-ui"
   style.innerHTML = `
     .navbar{
@@ -54,6 +55,7 @@ class StylesUI {
     }
     .navbar-toggle .icon-bar {
       border: 1px solid ${app.theme.iconBar};
+      border-radius: 5px;
     }
     #sidebar-container{
       background-color:${app.theme.menuBackground};
@@ -62,7 +64,7 @@ class StylesUI {
       #top-left-logo {
         background-repeat: no-repeat;
         background-image: url("${app.logo.srcLogoMini}");
-        background-size: ${app.logo.miniHeight} ${app.logo.miniWidth};
+        background-size: ${minBgSize};
         background-position: left 1px center;
         ${app.logo.ministyle}
       }
@@ -88,9 +90,7 @@ class StylesUI {
   linkicon.href = app.favicon
   document.head.appendChild(linkicon);
 
-  let title = document.createElement("title")
-  title.innerHTML = app.title
-  document.head.appendChild(title);
+  if (app.title !== "") { document.title = app.title };
 
   let topleftlogolink = document.getElementById("top-left-logo-link")
   topleftlogolink.href = app.website
