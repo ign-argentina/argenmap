@@ -182,6 +182,8 @@ li.active > div > a {
   color: #dddddd;
 }
 .item-group-title {
+  cursor: pointer;
+  user-select: none;
   font-family: "Encode Sans Semi Bold", sans-serif;
   font-size: 15px;
 }
@@ -203,6 +205,8 @@ li.active > div > a {
   padding-left: 5px;
   width: 80%;
   overflow: hidden;
+  user-select: none;
+  cursor: pointer;
 }
 .capa-title {
   vertical-align: top;

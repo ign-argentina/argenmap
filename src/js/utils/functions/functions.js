@@ -118,6 +118,11 @@ function mainMenuSearch(e) {
     }
 }
 
+function reloadMenu() {
+    gestorMenu.setQuerySearch("");
+    gestorMenu.printMenu();
+}
+
 function clearString(s) {
     return s.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
 }
