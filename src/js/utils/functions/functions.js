@@ -121,6 +121,22 @@ function mainMenuSearch(e) {
 function reloadMenu() {
     gestorMenu.setQuerySearch("");
     gestorMenu.printMenu();
+    recoverSections();
+}
+
+function recoverSections() {
+    addedLayers.forEach((layer) => {
+        //if (layer.id.includes(Geoprocessing.namePrefix)) {
+        if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix) ||
+            layer.id.includes(app.geoprocessing.availableProcesses[1].namePrefix) ||
+            layer.id.includes(app.geoprocessing.availableProcesses[2].namePrefix) ||
+            layer.id.includes("result_")
+        ) {
+            menu_ui.addFileLayer("Geoprocesos",layer.id,layer.id,layer.id);
+        } else {
+            menu_ui.addFileLayer("Archivos",layer.id,layer.id,layer.id);
+        }
+    });
 }
 
 function clearString(s) {
