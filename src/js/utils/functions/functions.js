@@ -124,6 +124,18 @@ function reloadMenu() {
     recoverSections();
 }
 
+function hideAddedLayers() {
+    addedLayers.forEach((layer) => {
+        if (!layer.groupname) {
+            let aux = document.getElementById("flc-" + layer.id)
+            if (aux.className === "file-layer active") {
+                aux.className = "file-layer"
+                mapa.hideGroupLayer(layer.id);
+            }
+        }
+    });
+}
+
 function recoverSections() {
     addedLayers.forEach((layer) => {
         //if (layer.id.includes(Geoprocessing.namePrefix)) {

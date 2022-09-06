@@ -1728,6 +1728,7 @@ class GestorMenu {
     cleanAllLayers() {//Desactiva TODOS los layers activos.
         let layers = this.getActiveLayersWithoutBasemap().map((item) => { return item.name });
         this.toggleLayers(layers);
+        hideAddedLayers();
     }
 
     toggleLayers(layers) {
@@ -2070,11 +2071,10 @@ class GestorMenu {
                             "<button onClick='reloadMenu()' class='btn btn-capa form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+
                         "</div>" +
                         "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
+                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash' type='button'><span class='glyphicon glyphicon-th-list' title='Desactivar Capas' ></span></button></div>" +
                     "</div>" +
                     "</form>";
         }
-        
         return '';
     }
 
