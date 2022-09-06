@@ -3086,7 +3086,11 @@ class Menu_UI{
             serviceItems[id].layers[textName].L_layer.remove();
         }
 
-        document.getElementById("srvcLyr-"+id+textName).remove();
+        let el = document.getElementById("srvcLyr-"+id+textName);
+        if(el) {
+            el.parentElement.remove();
+            el.remove();
+        }
         serviceItems[id].layersInMenu--;
         
         for (let i in serviceItems[id].layers) {
@@ -3095,7 +3099,6 @@ class Menu_UI{
                 break;
             }
         }
-
         if(serviceItems[id].layersInMenu == 0 || serviceItems[id].layersInMenu == undefined){
             this.removeLayersGroup(groupname);
         }
@@ -3103,7 +3106,10 @@ class Menu_UI{
     
     removeLayersGroup(groupname){
         let el = document.getElementById(`lista-${clearSpecialChars(groupname)}`);
-        if(el) el.remove();
+        if(el) {
+            el.parentElement.remove();
+            el.remove();
+        }
     }
 
     addLayerToGroup(groupname, textName, id, fileName, layer){
