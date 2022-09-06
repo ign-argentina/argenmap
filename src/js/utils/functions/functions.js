@@ -133,8 +133,15 @@ function recoverSections() {
             layer.id.includes("result_")
         ) {
             menu_ui.addFileLayer("Geoprocesos",layer.id,layer.id,layer.id);
-        } else {
+        } else if (layer.file == true) {
             menu_ui.addFileLayer("Archivos",layer.id,layer.id,layer.id);
+        } else if (layer.groupname) {
+            menu_ui.addLayerToGroup(
+                layer.groupname,
+                layer.name,
+                layer.id,
+                layer.layer.title,
+                layer.layer);
         }
     });
 }
