@@ -214,15 +214,32 @@ class Geoprocessing {
         let layername =
           app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
         results_counter++;
-        mapa
-          .getEditableLayer(this.editableLayer_name)
-          .setStyle({ fillOpacity: 0 });
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        
+        let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+
+       const urlCreator = window.URL || window.webkitURL;
+       const imageUrl = urlCreator.createObjectURL(result);
+
+        let imageBounds = [
+          [
+            selectedRectangle._bounds._southWest.lat,
+            selectedRectangle._bounds._southWest.lng
+          ],
+          [
+            selectedRectangle._bounds._northEast.lat,
+            selectedRectangle._bounds._northEast.lng
+          ]
+        ];
+        
+        let imageLayer =  L.imageOverlay(imageUrl, imageBounds);
+        imageLayer.addTo(mapa);
+
         addedLayers.push({
           id: layername,
           layer: result,
           name: layername,
           file_name: layername,
+          rectangle: selectedRectangle,
           kb: null,
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
