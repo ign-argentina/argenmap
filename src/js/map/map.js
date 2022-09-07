@@ -1320,7 +1320,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						};
 
 						const label = document.createElement('label');
-						label.innerHTML = activeLayer;
+						label.innerHTML = gestorMenu.getLayerData(activeLayer).title;
 						label.className = 'active-layer-label';
 						label.setAttribute("for", activeLayer);
 						label.style.marginBottom = '0px';
