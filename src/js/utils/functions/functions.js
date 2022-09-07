@@ -66,7 +66,7 @@ function deg_to_dms(deg) {
     var minfloat = (deg - d) * 60;
     var m = Math.floor(minfloat);
     var secfloat = (minfloat - m) * 60;
-    var s = Math.round(secfloat);
+    var s = secfloat.toFixed(2); //Math.round(secfloat);
     // After rounding, the seconds might become 60. These two
     // if-tests are not necessary if no rounding is done.
     if (s == 60) {
