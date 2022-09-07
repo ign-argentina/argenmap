@@ -243,7 +243,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         INFO_ICON.classList.add('zoom-info-icon');
         INFO_ICON.innerHTML = iconSvg;
         INFO_ICON.appendChild(BASEMAP_TOOLTIP);
-        INFO_ICON.setAttribute("onclick", `toggleVisibility(this.lastElementChild.id);`);
+        INFO_ICON.setAttribute("onclick", `toggleVisibility(this.lastElementChild.id),event.stopPropagation();`);
         
         const SECOND_DIV = document.createElement('div');
         SECOND_DIV.classList.add('base-layer-item');
@@ -260,7 +260,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         const BASEMAP_ITEM = document.createElement('li');
         BASEMAP_ITEM.classList.add('list-group-item');
         BASEMAP_ITEM.id = childId;
-        BASEMAP_ITEM.setAttribute("onclick", `gestorMenu.muestraCapa("${childId}")`);
+        BASEMAP_ITEM.setAttribute("onclick", `gestorMenu.muestraCapa("${childId}"),document.getElementById('collapseBaseMapLayers').classList.toggle('in')`); // 2nd sentence hides basemaps menu after click
         BASEMAP_ITEM.appendChild(FIRST_DIV);
 
         return BASEMAP_ITEM.outerHTML; // TODO: change reference fn for expect an object instead string
@@ -308,10 +308,40 @@ class ImpresorCapasBaseHTML extends Impresor {
         var listaId = itemComposite.getId();
         // Only one basemap-selector
         if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
-            return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
+            const baseMapsMenu = document.createElement('a');
+            baseMapsMenu.classList = 'leaflet-control-layers-toggle pull-left';
+            baseMapsMenu.title = itemComposite.nombre;
+            baseMapsMenu.setAttribute('role', 'button');
+            baseMapsMenu.setAttribute('data-toggle', 'collapse');
+            baseMapsMenu.setAttribute('aria-expanded', 'false');
+            //baseMapsMenu.setAttribute('aria-controls', 'collapseExample');
+            //baseMapsMenu.href = '#collapseBaseMapLayers';
+
+            const baseMapsContainer = document.createElement('ul');
+            baseMapsContainer.id = 'collapseBaseMapLayers';
+            baseMapsContainer.classList = 'collapse pull-right';
+
+            const baseMapsList = document.createElement('ul');
+            baseMapsList.classList = 'list-inline';
+            baseMapsList.innerHTML = itemComposite.itemsStr;
+
+            baseMapsContainer.appendChild(baseMapsList);
+            baseMapsMenu.appendChild(baseMapsContainer);
+
+            baseMapsMenu.addEventListener("click", function(event){
+                event.preventDefault();
+                baseMapsContainer.classList.toggle('in');
+            });
+            baseMapsMenu.addEventListener("dblclick", function(event){
+                event.stopPropagation();
+            });
+
+            return baseMapsMenu;
+            
+            /* return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
                 '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
                 '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-                '</div>';
+                '</div>'; */
         }
 
     }
