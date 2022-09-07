@@ -2071,7 +2071,7 @@ class GestorMenu {
                             "<button onClick='reloadMenu()' class='btn btn-capa form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+
                         "</div>" +
                         "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash' type='button'><span class='glyphicon glyphicon-th-list' title='Desactivar Capas' ></span></button></div>" +
+                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash' type='button'></button></div>" +
                     "</div>" +
                     "</form>";
         }
@@ -2332,6 +2332,7 @@ class GestorMenu {
         //Show visible layers count in class (to save state after refresh menu)
         for (var key in this.items) {
             this.items[key].muestraCantidadCapasVisibles();
+            showTotalNumberofLayers();
         }
 
         //Tabs
@@ -2486,6 +2487,7 @@ class GestorMenu {
                         
                         item.showHide();
                         itemComposite.muestraCantidadCapasVisibles();
+                        showTotalNumberofLayers();
                         break;
                     }
                 }

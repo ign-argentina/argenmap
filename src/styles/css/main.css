@@ -173,6 +173,14 @@ li.active > div > a {
   border-radius: 50%;
   background: #33b560;
 }
+.total-active-layers-counter {
+  display: inherit;
+  font-size: 12px;
+  font-weight: bolder;
+  width: 18px;
+  border-radius: 50%;
+  background: #33b560;
+}
 .item-group-short-desc {
   font-size: 11px;
   line-height: 11px;

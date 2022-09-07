@@ -136,9 +136,18 @@ function hideAddedLayers() {
     });
 }
 
+function showTotalNumberofLayers() {
+    let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
+    if (activeLayers > 0) {
+        $("#cleanTrash").html("<div class='glyphicon glyphicon-th-list'></div>"+
+        "<span class='total-active-layers-counter'>" + activeLayers + "</span>")
+    } else {
+        $("#cleanTrash").html("<span class='glyphicon glyphicon-th-list'></span>")
+    }
+}
+
 function recoverSections() {
     addedLayers.forEach((layer) => {
-        //if (layer.id.includes(Geoprocessing.namePrefix)) {
         if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix) ||
             layer.id.includes(app.geoprocessing.availableProcesses[1].namePrefix) ||
             layer.id.includes(app.geoprocessing.availableProcesses[2].namePrefix) ||
