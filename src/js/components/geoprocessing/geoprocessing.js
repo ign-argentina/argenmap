@@ -1070,7 +1070,6 @@ class Geoprocessing {
     let select = document.getElementById('select-capa'),
      option = document.createElement("option");
     option.value = layerName;
-    console.log(layerName)
     option.innerHTML = gestorMenu.getLayerData(layerName).title;
 
     if (select && this.geoprocessId === "buffer") {
