@@ -536,8 +536,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
 
-						const lng = e.latlng.lng.toFixed(5);
-						const lat = e.latlng.lat.toFixed(5);
+						const lng = e.latlng.lng.toFixed(6);
+						const lat = e.latlng.lat.toFixed(6);
 
 						contextMenu.createOption({
 							isDisabled: false,
