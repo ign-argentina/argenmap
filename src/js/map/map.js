@@ -292,8 +292,15 @@ $("body").on("pluginLoad", function(event, plugin){
 					break;
 				case 'Measure':
 					// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares' });
+					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed:true });
 					measureControl.addTo(mapa);
+					if (!L.Browser.android) {
+						// replaces event listener for Measure icon in favor of click
+						L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
+						L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
+						L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
+						L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
+					}
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':
@@ -2176,6 +2183,9 @@ $("body").on("pluginLoad", function(event, plugin){
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
 			L.control.mousePosition({
 				position: 'bottomright', 
+				separator: ' , ',
+				emptyString: '&nbsp;',
+				numDigits: 10,
 				lngFormatter: function(num) {
 					var direction = (num < 0) ? 'O' : 'E';
 					return deg_to_dms(Math.abs(num)) + direction; 
@@ -2183,9 +2193,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				latFormatter: function(num) {
 					var direction = (num < 0) ? 'S' : 'N';
 					return deg_to_dms(Math.abs(num)) + direction; 
-				},
-				separator: '  ',
-				emptyString: '&nbsp;'
+				}
 			}).addTo(mapa);
 			gestorMenu.plugins['MousePosition'].setStatus('visible');
 			loadDeveloperLogo();
