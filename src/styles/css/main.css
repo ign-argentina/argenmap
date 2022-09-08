@@ -113,14 +113,6 @@ body {
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   }
 }
-@media (max-width: 600px) {
-  .leaflet-control-customgraticule {
-    left: 2px;
-  }
-  .leaflet-control-layers-toggle {
-    margin-left: 2px;
-  }
-}
 /*******************************
 Menu principal
 *******************************/
