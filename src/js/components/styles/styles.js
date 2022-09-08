@@ -83,6 +83,10 @@ class StylesUI {
 
   let logoText = document.getElementById("logoText");
   logoText.innerHTML= app.logoText ? app.logoText.content : "";
+  logoText.href = app.logoText.link ?? '';
+  logoText.title = app.logoText.title ?? '';
+  logoText.target = '_blank';
+  
 
   document.head.appendChild(style);
   let linkicon =  document.createElement("link")
@@ -93,7 +97,7 @@ class StylesUI {
   if (app.title !== "") { document.title = app.title };
 
   let topleftlogolink = document.getElementById("top-left-logo-link")
-  topleftlogolink.href = app.website
+  topleftlogolink.href = app.logo.link ?? '';
 
   let topleftlogo = document.getElementById("top-left-logo")
   topleftlogo.alt = app.logo.title

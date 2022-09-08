@@ -1021,6 +1021,7 @@ SideBar
   -webkit-user-select: none;
   user-select: none;
   white-space: nowrap;
+  text-decoration: none;
 }
 #search-navbar {
   align-self: center;
