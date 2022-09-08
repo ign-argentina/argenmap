@@ -2097,10 +2097,10 @@ class GestorMenu {
             return "<form id='searchForm' class='searchFormBtn' onSubmit='mainMenuSearch(event)'>" +
                     "<div style='display: flex;'>" +
                         "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capas...'>" +
-                            "<button onClick='reloadMenu()' class='btn btn-capa form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+
+                            "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+
                         "</div>" +
                         "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
+                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
                     "</div>" +
                     "</form>";
         }

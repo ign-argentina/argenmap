@@ -391,6 +391,12 @@ Searcher
   pointer-events: auto;
   cursor: pointer;
 }
+.btn-search {
+  background-color: #ffffff;
+}
+.btn-search:hover {
+  background-color: rgba(60, 64, 67, 0.15);
+}
 /*******************************
 JQuery Autocomplete
 *******************************/
@@ -1025,6 +1031,12 @@ SideBar
 }
 #search-navbar {
   align-self: center;
+}
+.btn-reset-layers {
+  background-color: #ffffff;
+}
+.btn-reset-layers:hover {
+  background-color: rgba(60, 64, 67, 0.15);
 }
 /*End New navbar*/
 /* SearchForm & Buttons*/
