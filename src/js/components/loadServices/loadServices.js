@@ -353,6 +353,14 @@ function handleAllLayersCheck(e) {
 			if(!exist){
 				document.querySelector(`input[value='${layer_name}']`).checked = true
 				selectedServiceLayers.push(layer_name);
+
+				addedLayers.push({
+					id: layersIndex[layer_name],
+					layer: servicesLoaded[layersIndex[layer_name]].layers[layer_name],
+					name: layer_name,
+					file_name: layer_name,
+					groupname: servicesLoaded[layersIndex[layer_name]].title
+				});
 				menu_ui.addLayerToGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name])
 			}
 		}
@@ -360,7 +368,13 @@ function handleAllLayersCheck(e) {
 		let groupName;
 		for (let layer_name in servicesLoaded[e.target.value].layers) {
 			groupName = servicesLoaded[layersIndex[layer_name]].title;
-			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name])
+
+			addedLayers.forEach((layer) => {
+				if (layer.groupname == groupName) {
+					addedLayers.splice(layer,1);
+				}
+			});
+			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 			document.querySelector(`input[value='${layer_name}']`).checked = false
 			for (let i in selectedServiceLayers) {
 				if (selectedServiceLayers[i] === layer_name) {
@@ -376,10 +390,24 @@ function handleAllLayersCheck(e) {
 function handleLayerCheck(e) {
 	if (e.target.checked) {
 		selectedServiceLayers.push(e.target.value);
-		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value])
-	} else {
-		menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value])
 
+		addedLayers.push({
+			id: layersIndex[e.target.value],
+			layer: servicesLoaded[layersIndex[e.target.value]].layers[e.target.value],
+			name: e.target.value,
+			file_name: e.target.value,
+			groupname: servicesLoaded[layersIndex[e.target.value]].title
+		});
+		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
+
+	} else {
+		addedLayers.forEach((layer) => {
+			if (layer.id == layersIndex[e.target.value]) {
+				addedLayers.splice(layer,1);
+			}
+		});
+		
+		menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 		for (let i in selectedServiceLayers) {
 			if (selectedServiceLayers[i] === e.target.value) {
 				selectedServiceLayers.splice(i, 1);

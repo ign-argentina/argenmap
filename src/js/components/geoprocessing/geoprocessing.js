@@ -159,11 +159,14 @@ class Geoprocessing {
           .setStyle({ fillOpacity: 0 });
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
 
+        let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+
         addedLayers.push({
           id: layername,
           layer: result,
           name: layername,
           file_name: layername,
+          rectangle: selectedRectangle,
           kb: null,
         });
 
@@ -211,15 +214,32 @@ class Geoprocessing {
         let layername =
           app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
         results_counter++;
-        mapa
-          .getEditableLayer(this.editableLayer_name)
-          .setStyle({ fillOpacity: 0 });
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        
+        let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+
+       const urlCreator = window.URL || window.webkitURL;
+       const imageUrl = urlCreator.createObjectURL(result);
+
+        let imageBounds = [
+          [
+            selectedRectangle._bounds._southWest.lat,
+            selectedRectangle._bounds._southWest.lng
+          ],
+          [
+            selectedRectangle._bounds._northEast.lat,
+            selectedRectangle._bounds._northEast.lng
+          ]
+        ];
+        
+        let imageLayer =  L.imageOverlay(imageUrl, imageBounds);
+        imageLayer.addTo(mapa);
+
         addedLayers.push({
           id: layername,
           layer: result,
           name: layername,
           file_name: layername,
+          rectangle: selectedRectangle,
           kb: null,
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
@@ -555,6 +575,7 @@ class Geoprocessing {
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
+      $("#ejec_gp").removeClass("disabledbutton");
     }
 
     //Buffer Messages
@@ -840,24 +861,21 @@ class Geoprocessing {
             break;
           }
           case "waterRise": {
-            addedLayers.forEach((contourLineSelected) => {
+            addedLayers.forEach((layer) => {
               if (
-                contourLineSelected.id ==
+                layer.id ==
                 document.getElementById("select-capa").value
               ) {
-                contourLineSelected.rectangle.layer.features[0].geometry.coordinates[0].forEach(
-                  (coord) => {
-                    arrayWaterRise +=
-                      coord[0].toString() + " " + coord[1].toString() + ",";
-                  }
-                );
+                layer.rectangle._latlngs[0].forEach((coord) => {
+                  arrayWaterRise +=
+                    coord.lng  + " " + coord.lat + ",";
+                });
+                arrayWaterRise +=
+                  layer.rectangle._latlngs[0][0].lng
+                  + " " +
+                  layer.rectangle._latlngs[0][0].lat
               }
             });
-
-            arrayWaterRise = arrayWaterRise.substring(
-              0,
-              arrayWaterRise.length - 1
-            );
 
             let waterRiseValue =
               document.getElementById("sliderValue").innerHTML;
@@ -866,6 +884,10 @@ class Geoprocessing {
               waterRiseValue.length - 4
             );
             valueOfWaterRise = parseInt(waterRiseValue);
+
+            console.log("arrayWaterRise",arrayWaterRise)
+            console.log("valueOfWaterRise",valueOfWaterRise)
+
             break;
           }
         }

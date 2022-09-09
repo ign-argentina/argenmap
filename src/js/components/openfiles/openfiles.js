@@ -459,7 +459,14 @@ function addLayersfromFiles() {
     // Add the layer to the Menu
     menu_ui.addFileLayer("Archivos", e.name, e.id, e.file_name);
     // Save layer to check its existence in the next layer load
-    addedLayers.push(e);
+    addedLayers.push({
+      id: e.id,
+      layer: e.layer,
+      name: e.name,
+      file_name: e.file_name,
+      file: true,
+      kb: e.kb
+    });
   });
 
   // let close = document.getElementById("modalOpenFile")

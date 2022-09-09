@@ -121,6 +121,50 @@ function mainMenuSearch(e) {
 function reloadMenu() {
     gestorMenu.setQuerySearch("");
     gestorMenu.printMenu();
+    recoverSections();
+}
+
+function hideAddedLayers() {
+    addedLayers.forEach((layer) => {
+        if (!layer.groupname) {
+            let aux = document.getElementById("flc-" + layer.id)
+            if (aux.className === "file-layer active") {
+                aux.className = "file-layer"
+                mapa.hideGroupLayer(layer.id);
+            }
+        }
+    });
+}
+
+function showTotalNumberofLayers() {
+    let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
+    if (activeLayers > 0) {
+        $("#cleanTrash").html("<div class='glyphicon glyphicon-th-list'></div>"+
+        "<span class='total-active-layers-counter'>" + activeLayers + "</span>")
+    } else {
+        $("#cleanTrash").html("<span class='glyphicon glyphicon-th-list'></span>")
+    }
+}
+
+function recoverSections() {
+    addedLayers.forEach((layer) => {
+        if (layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix) ||
+            layer.id.includes(app.geoprocessing.availableProcesses[1].namePrefix) ||
+            layer.id.includes(app.geoprocessing.availableProcesses[2].namePrefix) ||
+            layer.id.includes("result_")
+        ) {
+            menu_ui.addFileLayer("Geoprocesos",layer.id,layer.id,layer.id);
+        } else if (layer.file == true) {
+            menu_ui.addFileLayer("Archivos",layer.id,layer.id,layer.id);
+        } else if (layer.groupname) {
+            menu_ui.addLayerToGroup(
+                layer.groupname,
+                layer.name,
+                layer.id,
+                layer.layer.title,
+                layer.layer);
+        }
+    });
 }
 
 function clearString(s) {

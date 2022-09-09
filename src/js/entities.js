@@ -1758,6 +1758,7 @@ class GestorMenu {
     cleanAllLayers() {//Desactiva TODOS los layers activos.
         let layers = this.getActiveLayersWithoutBasemap().map((item) => { return item.name });
         this.toggleLayers(layers);
+        hideAddedLayers();
     }
 
     toggleLayers(layers) {
@@ -2146,7 +2147,6 @@ class GestorMenu {
             "</div>" +
             "</form>";
         }
-        
         return '';
     }
 
@@ -2404,6 +2404,7 @@ class GestorMenu {
         //Show visible layers count in class (to save state after refresh menu)
         for (var key in this.items) {
             this.items[key].muestraCantidadCapasVisibles();
+            showTotalNumberofLayers();
         }
 
         //Tabs
@@ -2558,6 +2559,7 @@ class GestorMenu {
                         
                         item.showHide();
                         itemComposite.muestraCantidadCapasVisibles();
+                        showTotalNumberofLayers();
                         break;
                     }
                 }
@@ -3158,7 +3160,11 @@ class Menu_UI{
             serviceItems[id].layers[textName].L_layer.remove();
         }
 
-        document.getElementById("srvcLyr-"+id+textName).remove();
+        let el = document.getElementById("srvcLyr-"+id+textName);
+        if(el) {
+            el.parentElement.remove();
+            el.remove();
+        }
         serviceItems[id].layersInMenu--;
         
         for (let i in serviceItems[id].layers) {
@@ -3167,7 +3173,6 @@ class Menu_UI{
                 break;
             }
         }
-
         if(serviceItems[id].layersInMenu == 0 || serviceItems[id].layersInMenu == undefined){
             this.removeLayersGroup(groupname);
         }
@@ -3175,7 +3180,10 @@ class Menu_UI{
     
     removeLayersGroup(groupname){
         let el = document.getElementById(`lista-${clearSpecialChars(groupname)}`);
-        if(el) el.remove();
+        if(el) {
+            el.parentElement.remove();
+            el.remove();
+        }
     }
 
     addLayerToGroup(groupname, textName, id, fileName, layer){
