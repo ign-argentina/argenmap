@@ -78,6 +78,20 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       }
     },
 
+    loading: function (placement = '') {
+      const loading = document.getElementsByClassName('loader-line')[0];
+      loading.classList.toggle('visible');
+      loading.classList.toggle('hidden');
+      if (placement === 'top') {
+        loading.style.bottom = '';
+        loading.style.top = '0';
+      }
+      if (placement === 'bottom') { 
+        loading.style.top = '';
+        loading.style.bottom = '0';
+      }
+    },
+
     _save: function (d) {
       let fileName = 'config.json',
         e = document.createEvent('MouseEvents'),

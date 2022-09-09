@@ -243,7 +243,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         INFO_ICON.classList.add('zoom-info-icon');
         INFO_ICON.innerHTML = iconSvg;
         INFO_ICON.appendChild(BASEMAP_TOOLTIP);
-        INFO_ICON.setAttribute("onclick", `toggleVisibility(this.lastElementChild.id);`);
+        INFO_ICON.setAttribute("onclick", `toggleVisibility(this.lastElementChild.id),event.stopPropagation();`);
         
         const SECOND_DIV = document.createElement('div');
         SECOND_DIV.classList.add('base-layer-item');
@@ -260,7 +260,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         const BASEMAP_ITEM = document.createElement('li');
         BASEMAP_ITEM.classList.add('list-group-item');
         BASEMAP_ITEM.id = childId;
-        BASEMAP_ITEM.setAttribute("onclick", `gestorMenu.muestraCapa("${childId}")`);
+        BASEMAP_ITEM.setAttribute("onclick", `gestorMenu.muestraCapa("${childId}"),document.getElementById('collapseBaseMapLayers').classList.toggle('in')`); // 2nd sentence hides basemaps menu after click
         BASEMAP_ITEM.appendChild(FIRST_DIV);
 
         return BASEMAP_ITEM.outerHTML; // TODO: change reference fn for expect an object instead string
@@ -308,10 +308,40 @@ class ImpresorCapasBaseHTML extends Impresor {
         var listaId = itemComposite.getId();
         // Only one basemap-selector
         if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
-            return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
+            const baseMapsMenu = document.createElement('a');
+            baseMapsMenu.classList = 'leaflet-control-layers-toggle pull-left';
+            baseMapsMenu.title = itemComposite.nombre;
+            baseMapsMenu.setAttribute('role', 'button');
+            baseMapsMenu.setAttribute('data-toggle', 'collapse');
+            baseMapsMenu.setAttribute('aria-expanded', 'false');
+            //baseMapsMenu.setAttribute('aria-controls', 'collapseExample');
+            //baseMapsMenu.href = '#collapseBaseMapLayers';
+
+            const baseMapsContainer = document.createElement('ul');
+            baseMapsContainer.id = 'collapseBaseMapLayers';
+            baseMapsContainer.classList = 'collapse pull-right';
+
+            const baseMapsList = document.createElement('ul');
+            baseMapsList.classList = 'list-inline';
+            baseMapsList.innerHTML = itemComposite.itemsStr;
+
+            baseMapsContainer.appendChild(baseMapsList);
+            baseMapsMenu.appendChild(baseMapsContainer);
+
+            baseMapsMenu.addEventListener("click", function(event){
+                event.preventDefault();
+                baseMapsContainer.classList.toggle('in');
+            });
+            baseMapsMenu.addEventListener("dblclick", function(event){
+                event.stopPropagation();
+            });
+
+            return baseMapsMenu;
+            
+            /* return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
                 '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
                 '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-                '</div>';
+                '</div>'; */
         }
 
     }
@@ -2065,15 +2095,57 @@ class GestorMenu {
 
     _printSearcher() {
         if (this.getShowSearcher() == true) {
+            /*             
+            let placeholder = app.config ? app.config.searchLayers ?? 'Search layer' : 'Search layer';
+            const searchForm = document.createElement('form');
+                searchForm.id = 'searchForm';
+                searchForm.classList.add = 'searchFormBtn';
+                searchForm.setAttribute('onSubmit', 'mainMenuSearch(event)');
+            const searchFlexContainer = document.createElement('div');
+                searchFlexContainer.style = 'display: flex;';
+            const searchInput = document.createElement('input');
+                searchInput.id = 'q';
+                searchInput.name ='q';
+                searchInput.type ='text';
+                searchInput.placeholder = placeholder;
+                searchInput.classList.add('form-control');
+                searchInput.value = this.getQuerySearch(); 
+            const searchReset = document.createElement('button');
+                searchReset.classList = 'btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden';
+                searchForm.setAttribute('onClick', 'reloadMenu()');
+            const searchBtn = document.createElement('button');
+                searchBtn.classList = 'btn btn-search';
+                searchBtn.type = 'submit';
+            const searchBtnIcon = document.createElement('span');
+                searchBtn.classList = 'glyphicon glyphicon-search';
+                searchBtn.setAttribute('aria-hidden', 'true');
+            const resetLayersBtn = document.createElement('button');
+                searchBtn.id = 'cleanTrash';
+                searchBtn.type = 'button'
+                searchBtn.classList = 'btn btn-reset-layers'
+                searchBtn.setAttribute('onClick','gestorMenu.cleanAllLayers()');
+            const resetLayersBtnIcon = document.createElement('span');
+                resetLayersBtnIcon.title = 'Desactivar Capas';
+                resetLayersBtnIcon.classList = 'glyphicon glyphicon-trash';
+
+            searchBtn.appendChild(searchBtnIcon);
+            resetLayersBtn.appendChild(resetLayersBtnIcon);
+
+            searchFlexContainer.append(searchInput, searchReset, searchBtn, resetLayersBtn);
+            searchForm.appendChild(searchFlexContainer);
+            
+            return searchForm; 
+            */
+
             return "<form id='searchForm' class='searchFormBtn' onSubmit='mainMenuSearch(event)'>" +
-                    "<div style='display: flex;'>" +
-                        "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capas...'>" +
-                            "<button onClick='reloadMenu()' class='btn btn-capa form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+
-                        "</div>" +
-                        "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-capa' id='cleanTrash' type='button'></button></div>" +
-                    "</div>" +
-                    "</form>";
+            "<div style='display: flex;'>" +
+                "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capa'>" +
+                    "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+
+                "</div>" +
+                "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
+                "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
+            "</div>" +
+            "</form>";
         }
         return '';
     }

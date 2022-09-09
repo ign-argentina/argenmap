@@ -639,7 +639,7 @@ class Geoprocessing {
               } else if (this.geoprocessId === "buffer") {
                 gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
                   if (layer && gestorMenu.layerIsWmts(layer.name) == false) {
-                    options.push({ value: layer.name, text: layer.name });
+                    options.push({ value: layer.name, text: gestorMenu.getLayerData(layer.name).title });
                   }
                 });
               } else if (this.geoprocessId === "elevationProfile") {
@@ -1092,7 +1092,7 @@ class Geoprocessing {
     let select = document.getElementById('select-capa'),
      option = document.createElement("option");
     option.value = layerName;
-    option.innerHTML = layerName;
+    option.innerHTML = gestorMenu.getLayerData(layerName).title;
 
     if (select && this.geoprocessId === "buffer") {
 

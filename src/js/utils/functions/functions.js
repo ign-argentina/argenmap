@@ -66,7 +66,7 @@ function deg_to_dms(deg) {
     var minfloat = (deg - d) * 60;
     var m = Math.floor(minfloat);
     var secfloat = (minfloat - m) * 60;
-    var s = Math.round(secfloat);
+    var s = secfloat.toFixed(2); //Math.round(secfloat);
     // After rounding, the seconds might become 60. These two
     // if-tests are not necessary if no rounding is done.
     if (s == 60) {
@@ -1085,12 +1085,18 @@ function toggleVisibility(elementId) {
 function loadDeveloperLogo() {
     L.Control.DeveloperLogo = L.Control.extend({
         onAdd: function(map) {
+            let link = L.DomUtil.create('a');
+            link.href = 'https://www.ign.gob.ar/';
+            link.target = '_blank';
+            link.title = 'desarrollado por el Instituto Geográfico Nacional de la República Argentina';
+            link.style.cursor = 'pointer';
             let img = L.DomUtil.create('img');
             img.src = 'src/styles/images/noimage.gif';
             img.alt = 'Instituto Geográfico Nacional de la República Argentina';
-            img.style = 'margin-right: 48px !important; width: 64px; background-size: cover';
+            img.style = 'width: 64px; background-size: cover';
             img.style.backgroundImage = `url('${APP_IMG}')`;
-            return img;
+            link.appendChild(img);
+            return link;
         }
     });
     L.control.developerLogo = function(opts) {
