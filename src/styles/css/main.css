@@ -392,10 +392,11 @@ Searcher
   cursor: pointer;
 }
 .btn-search {
-  background-color: #ffffff;
+  background-color: rgb(255, 255, 255);
 }
 .btn-search:hover {
-  background-color: rgba(60, 64, 67, 0.15);
+  background-color: rgb(97, 202, 134);
+  color: rgb(255, 255, 255);
 }
 /*******************************
 JQuery Autocomplete
@@ -1033,10 +1034,11 @@ SideBar
   align-self: center;
 }
 .btn-reset-layers {
-  background-color: #ffffff;
+  background-color: rgb(255, 255, 255);
 }
 .btn-reset-layers:hover {
-  background-color: rgba(60, 64, 67, 0.15);
+  background-color: rgb(97, 202, 134);
+  color: rgb(255, 255, 255);
 }
 /*End New navbar*/
 /* SearchForm & Buttons*/

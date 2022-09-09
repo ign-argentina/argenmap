@@ -2094,15 +2094,63 @@ class GestorMenu {
 
     _printSearcher() {
         if (this.getShowSearcher() == true) {
-            return "<form id='searchForm' class='searchFormBtn' onSubmit='mainMenuSearch(event)'>" +
-                    "<div style='display: flex;'>" +
-                        "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capas...'>" +
-                            "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+
-                        "</div>" +
-                        "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-                        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
-                    "</div>" +
-                    "</form>";
+            let placeholder = app.config ? app.config.searchLayers ?? 'Search layer' : 'Search layer';
+/*             const searchForm = document.createElement('form');
+                searchForm.id = 'searchForm';
+                searchForm.classList.add = 'searchFormBtn';
+                searchForm.setAttribute('onSubmit', 'mainMenuSearch(event)');
+            const searchFlexContainer = document.createElement('div');
+                searchFlexContainer.style = 'display: flex;';
+            const searchInput = document.createElement('input');
+                searchInput.id = 'q';
+                searchInput.name ='q';
+                searchInput.type ='text';
+                searchInput.placeholder = placeholder;
+                searchInput.classList.add('form-control');
+                searchInput.value = this.getQuerySearch(); 
+            const searchReset = document.createElement('button');
+                searchReset.classList = 'btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden';
+                searchForm.setAttribute('onClick', 'reloadMenu()');
+            const searchBtn = document.createElement('button');
+                searchBtn.classList = 'btn btn-search';
+                searchBtn.type = 'submit';
+            const searchBtnIcon = document.createElement('span');
+                searchBtn.classList = 'glyphicon glyphicon-search';
+                searchBtn.setAttribute('aria-hidden', 'true');
+            const resetLayersBtn = document.createElement('button');
+                searchBtn.id = 'cleanTrash';
+                searchBtn.type = 'button'
+                searchBtn.classList = 'btn btn-reset-layers'
+                searchBtn.setAttribute('onClick','gestorMenu.cleanAllLayers()');
+            const resetLayersBtnIcon = document.createElement('span');
+                resetLayersBtnIcon.title = 'Desactivar Capas';
+                resetLayersBtnIcon.classList = 'glyphicon glyphicon-trash';
+
+            searchBtn.appendChild(searchBtnIcon);
+            resetLayersBtn.appendChild(resetLayersBtnIcon);
+
+            searchFlexContainer.append(searchInput, searchReset, searchBtn, resetLayersBtn);
+            searchForm.appendChild(searchFlexContainer);
+            
+
+            return searchForm; */
+
+            return `<form id='searchForm' class='searchFormBtn' onSubmit='mainMenuSearch(event)'>
+                        <div style='display: flex;'>
+                            <!--<div class='has-feedback has-clear formBtns'>-->
+                                <input type='text' class='form-control' id='q' name='q' value='${this.getQuerySearch()}' placeholder='${placeholder}'>
+                                <button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
+                            <!--</div>-->
+                            <button class='btn btn-search' type='submit'>
+                                <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
+                            </button>
+                            <!--<div onClick='gestorMenu.cleanAllLayers()'>-->
+                            <button class='btn btn-reset-layers' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()'>
+                                <span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span>
+                            </button>
+                            <!--</div>-->
+                        </div>
+                    </form>`;
         }
         
         return '';
