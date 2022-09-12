@@ -431,7 +431,23 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
-						drawnItems.addLayer(layer);
+						//drawnItems.addLayer(layer);
+
+						//<---PERFIL TOPOGRAFICO
+						if ($('div.leaflet-top ul.leaflet-draw-actions').is(':visible')) {
+
+                            drawnItems.addLayer(layer);
+
+                        } else {
+
+                            mapa.capaPerfilTopografico.clearLayers();
+
+                            mapa.capaPerfilTopografico.addLayer(layer);
+							console.log(layer)
+
+                            perfilTopografico.process(layer.getGeoJSON());
+                        }
+						//PERFIL TOPOGRAFICO--->
 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						

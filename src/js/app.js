@@ -495,12 +495,12 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     // console.log(getCookie("autologin"));
 
-    // perfilTopografico = new cls_perfiltopografico();
-    // perfilTopografico.init();
+    perfilTopografico = new cls_perfiltopografico();
+    perfilTopografico.init();
 
-    la = new loginatic();
-    la.init();
-    la.check();
+    // la = new loginatic();
+    // la.init();
+    // la.check();
 
   }, 1500);
 };
