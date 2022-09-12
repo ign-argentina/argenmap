@@ -435,16 +435,11 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						//<---PERFIL TOPOGRAFICO
 						if ($('div.leaflet-top ul.leaflet-draw-actions').is(':visible')) {
-
-                            drawnItems.addLayer(layer);
-
-                        } else {
-
-                            mapa.capaPerfilTopografico.clearLayers();
-
+                            drawnItems.addLayer(layer);		
+                        } 
+						else {
+                          	mapa.capaPerfilTopografico.clearLayers();
                             mapa.capaPerfilTopografico.addLayer(layer);
-							console.log(layer)
-
                             perfilTopografico.process(layer.getGeoJSON());
                         }
 						//PERFIL TOPOGRAFICO--->

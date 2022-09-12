@@ -1,19 +1,14 @@
 cls_perfiltopografico = function() {
-
     this.control = null;
     this.drawItems = null;
 
     this.init = () => {
-
         mapa.markerPerfilTopografico = null;
         mapa.capaPerfilTopografico = new L.FeatureGroup().addTo(mapa);
 
         if (!L.Control.Draw) {
-
             setTimeout(this.init, 1000);
-
         } else {
-
             this.control = new L.Control.Draw({
                 position: 'bottomright',
                 draw: {
@@ -44,9 +39,7 @@ cls_perfiltopografico = function() {
 
             $("#pt-wrapper").draggable();
             $("#pt-wrapper").css("top", $("body").height() - 420);
-
         }
-
     }
 
     this.process = (geoJSON) => {
@@ -63,16 +56,12 @@ cls_perfiltopografico = function() {
         document.getElementById("pt-wrapper").style.display = "flex";
 
         let c = geoJSON.geometry.coordinates;
-
         let points_txt = "",
             comma = "";
 
         for (let i = 0; i < c.length; i++) {
-
             points_txt += `${comma}${c[i][0]} ${c[i][1]}`;
-
             comma = ",";
-
         }
 
         let elevationProfile = new GeoserviceFactory.ElevationProfileGetFeatureInfo(
@@ -88,11 +77,9 @@ cls_perfiltopografico = function() {
             .then((result) => {
                 let data = [];
                 let altura;
-                console.log(result)
                 for (let i = 0; i < result.coordinates.length; i++) {
-
-                    altura = String(result.coordinates[i][2]).split(".");
-                    altura = altura[0] + "." + altura[1].substring(0, 2);
+         
+                    altura = result.coordinates[i][2].toFixed(2).toString();
 
                     data.push({
                         i: (i + 1),
@@ -121,28 +108,22 @@ cls_perfiltopografico = function() {
                         //text: 'Perfil Topográfico',
                         text: '',
                         style: {
-
                             fontSize: "15px",
                             color: '#FFFFFF'
-
-
                         }
                     },
                     subtitle: {
                         //text: 'Distancia Total: ' + data.distancia_total + "Km.",
                         text: '',
                         style: {
-
                             //color:'#FFFFFF'
                             color: '#000000'
-
                         }
                     },
                     xAxis: {
                         //type: 'distancia',
                         title: {
                             text: 'Muestra',
-
                         }
                     },
                     yAxis: {
@@ -186,22 +167,14 @@ cls_perfiltopografico = function() {
                         name: 'Altura',
                         data: data,
                         point: {
-
                             events: {
-
                                 mouseOver: function(event) {
-
                                     mapa.markerPerfilTopografico = L.marker([event.target.lng, event.target.lat]).addTo(mapa);
-
                                 },
                                 mouseOut: function() {
-
                                     mapa.markerPerfilTopografico.remove();
-
                                 }
-
                             }
-
                         }
                     }]
                 });
@@ -211,23 +184,16 @@ cls_perfiltopografico = function() {
                 console.log('Hay error: ', error);
                 new UserMessage(error, true, 'error');
             });
-
     }
 
     this.toggleControl = (node) => {
 
         if ($(node).hasClass("active")) {
-
             $(node).removeClass("active");
-
         } else {
-
             $(node).addClass("active");
-
         }
 
     }
-
     return this;
-
 }
