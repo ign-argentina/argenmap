@@ -72,7 +72,6 @@ cls_perfiltopografico = function() {
         elevationProfile
             .execute(
                 points_txt,
-                GeoserviceFactory.ElevationProfileResponseType.FeatureCollectionOfLines
             )
             .then((result) => {
                 let data = [];

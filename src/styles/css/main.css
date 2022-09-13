@@ -1049,6 +1049,7 @@ SideBar
   color: rgb(255, 255, 255);
 }
 /*End New navbar*/
+
 /* SearchForm & Buttons*/
 .searchFormBtn {
   display: flex;
@@ -1059,3 +1060,30 @@ SideBar
   width: 100%;
 }
 /* End of SearchForm & Buttons*/
+
+/*******************************
+Perfil Topografico
+*******************************/
+#pt-wrapper {
+  position: absolute;
+  right: 20px;
+  /* background: RGBA(255, 255, 255, .95); */
+  z-index: 99999;
+  display: none;
+}
+
+.pt {
+  padding: 2rem;
+  background: RGBA(255, 255, 255, .95);
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  color: white;
+}
+
+#pt-inner {
+  width: 100%;
+  min-height: 400px;
+}

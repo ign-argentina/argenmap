@@ -486,14 +486,10 @@ async function loadTemplate(data, isDefaultTemplate) {
 
   });
 
-    // ATIC
-
+  // ATIC
   setTimeout(function() {
-
     //perfiltopografico.init();
     //buffer.init();
-
-    // console.log(getCookie("autologin"));
 
     perfilTopografico = new cls_perfiltopografico();
     perfilTopografico.init();
@@ -501,7 +497,6 @@ async function loadTemplate(data, isDefaultTemplate) {
     // la = new loginatic();
     // la.init();
     // la.check();
-
   }, 1500);
 };
 
