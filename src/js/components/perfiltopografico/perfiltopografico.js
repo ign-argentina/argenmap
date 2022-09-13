@@ -31,7 +31,6 @@ cls_perfiltopografico = function() {
             
             const controlButton = this.control._toolbars.draw._toolbarContainer.firstChild;
             controlButton.addEventListener('click', function(){
-                console.log(this);
                 perfilTopografico.isActive = true;
                 event.stopPropagation()
             });
@@ -76,7 +75,7 @@ cls_perfiltopografico = function() {
             "https://imagenes.ign.gob.ar/geoserver/ows?service=WMS&version=1.1.1",
             "geoprocesos:alos_unificado"
         );
-        //console.log(elevationProfile.getFields());
+        
         elevationProfile
             .execute(
                 points_txt,

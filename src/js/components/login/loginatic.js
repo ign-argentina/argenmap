@@ -18,8 +18,6 @@ loginatic = function() {
 
     this.check = () => {
 
-        console.log(getCookie("autologin"));
-
         //setCookie("autologin", 0);
 
         if (getCookie("autologin") == 1) {
@@ -29,7 +27,6 @@ loginatic = function() {
             let zoom = getCookie("zoom");
 
             setTimeout(function() {
-                console.log(mapa);
                 if (mapa.setView) { mapa.setView([lat, lon], zoom); }
 
             }, 500);
