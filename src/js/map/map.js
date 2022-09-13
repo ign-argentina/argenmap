@@ -431,18 +431,14 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
-						//drawnItems.addLayer(layer);
-
-						//<---PERFIL TOPOGRAFICO
-						if ($('div.leaflet-top ul.leaflet-draw-actions').is(':visible')) {
-                            drawnItems.addLayer(layer);		
-                        } 
-						else {
-                          	mapa.capaPerfilTopografico.clearLayers();
-                            mapa.capaPerfilTopografico.addLayer(layer);
-                            perfilTopografico.process(layer.getGeoJSON());
+						if (perfilTopografico.isActive) {
+							// check if profile was clicked
+							mapa.capaPerfilTopografico.clearLayers();
+							mapa.capaPerfilTopografico.addLayer(layer);
+							perfilTopografico.process(layer.getGeoJSON());
+                        } else {
+							drawnItems.addLayer(layer);		
                         }
-						//PERFIL TOPOGRAFICO--->
 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						
@@ -493,6 +489,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('draw:drawstop', (e) => {
 						setTimeout(() => {
 							currentlyDrawing = false;
+							if(perfilTopografico.isActive){
+								// reset profile status
+								perfilTopografico.isActive = false;
+							}
 						}, 300);
 					});
 

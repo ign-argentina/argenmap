@@ -28,6 +28,14 @@ cls_perfiltopografico = function() {
             });
 
             mapa.addControl(this.control);
+            
+            const controlButton = this.control._toolbars.draw._toolbarContainer.firstChild;
+            controlButton.addEventListener('click', function(){
+                console.log(this);
+                perfilTopografico.isActive = true;
+                event.stopPropagation()
+            });
+            controlButton.id = 'elevationProfileBtn';
 
             $(".leaflet-draw-draw-polyline").last().css("background-image", "url('./src/styles/images/perfil_topo.png')");
             $(".leaflet-draw-draw-polyline").last().css("background-size", "24px 24px");
