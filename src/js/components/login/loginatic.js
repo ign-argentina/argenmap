@@ -60,7 +60,7 @@ loginatic = function() {
 
         let request = $.ajax({
             async: false,
-            url: './users.json',
+            url: 'src/config/users.json',
             type: 'POST',
             success: function(d) {}
         })
