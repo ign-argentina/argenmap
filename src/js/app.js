@@ -488,15 +488,13 @@ async function loadTemplate(data, isDefaultTemplate) {
 
   // ATIC
   setTimeout(function() {
-    //perfiltopografico.init();
-    //buffer.init();
 
     perfilTopografico = new cls_perfiltopografico();
     perfilTopografico.init();
 
-    // la = new loginatic();
-    // la.init();
-    // la.check();
+    la = new loginatic();
+    la.init();
+    la.check();
   }, 1500);
 };
 
