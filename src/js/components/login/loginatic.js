@@ -11,19 +11,7 @@ loginatic = function() {
         }
 
         if (getCookie("autologin") == "1") {
-
-            $("#mapa").append( 
-                `
-                <div>
-                    <div class="center-flex" id="btn-logout" title="cerrar sesión" onclick="la.logout();" style="width: 30px; height: 30px; border: medium none; box-shadow: rgba(0, 0, 0, 0.65) 0px 1px 5px;">
-                        <div class="center-flex" id="iconSC-container">
-                            <span class="fa fa-sign-out-alt" aria-hidden="true"></span>
-                        </div>
-                    </div>
-                </div>
-                `
-            );
-
+            this._addLogoutButton();
         }
 
     }
@@ -81,6 +69,10 @@ loginatic = function() {
                 let lon = json[i].lon_4326;
                 let zoom = 10;
 
+                /* document.title += ' - ' + json[i].nombregobiernolocal;
+                let logoTitle = document.getElementById('logoText');
+                logoTitle.innerText += ' - ' + json[i].nombregobiernolocal; */
+
                 mapa.setView([lat, lon], zoom);
 
                 document.getElementById("login-wrapper").style.display = "none";
@@ -88,19 +80,7 @@ loginatic = function() {
                 logged = true;
 
                 if ($("#btn-logout").length == 0) {
-
-                    $("#mapa").append(
-                        `
-                        <div>
-                            <div class="center-flex" id="btn-logout" title="cerrar sesión" onclick="la.logout();" style="width: 30px; height: 30px; border: medium none; box-shadow: rgba(0, 0, 0, 0.65) 0px 1px 5px;">
-                                <div class="center-flex" id="iconSC-container">
-                                    <span class="fa fa-sign-out-alt" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                        </div>
-                        `
-                    );
-
+                    this._addLogoutButton();                    
                 }
 
                 if (recuerdame == 1) {
@@ -144,6 +124,10 @@ loginatic = function() {
 
         location.reload();
 
+    }
+
+    this._addLogoutButton = () => {
+        $("#mapa").append(`<div class="center-flex btn-logout" id="btn-logout" title="cerrar sesión" onclick="la.logout();" style="width: 30px; height: 30px; border: medium none; box-shadow: rgba(0, 0, 0, 0.65) 0px 1px 5px;"><div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div></div>`);
     }
 
 }

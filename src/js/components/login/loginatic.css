@@ -4,29 +4,29 @@
     justify-content: center;
 }
 
-#btn-logout {
+.btn-logout {
     position: absolute;
     flex-direction: column;
     width: 34px;
     height: 34px;
     color: black;
     font-size: 1.1em;
-    top: 450px;
+    bottom: 100px;
     left: 10px;
-    z-index: 999;
+    z-index: 99999;
     border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
 
-#btn-logout :hover {
+.btn-logout :hover {
     background-color: #f5f4f4;
 }
 
-#btn-logout :active {
+.btn-logout :active {
     background-color: grey;
 }
 
-#iconSC-container {
+#icon-container {
     height: 100%;
     width: 100%;
     flex: 3;
@@ -35,13 +35,13 @@
 }
 
 @media (max-width: 600px) {
-    #btn-logout {
+    .btn-logout {
         right: 1px;
     }
 }
 
 @media (max-height: 500px) {
-    #btn-logout {
+    .btn-logout {
         top: 124px;
         left: 34px;
         border: 1px solid rgba(0, 0, 0, 0.2) !important;
@@ -51,8 +51,8 @@
 }
 
 @media (max-width: 600px) {
-    #btn-logout {
-        top: 299px;
+    .btn-logout {
+        bottom: 200px;
         left: 2px;
         /* border: 2px solid rgba(0, 0, 0, 0.2) !important; */
     }
