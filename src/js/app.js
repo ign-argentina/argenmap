@@ -411,7 +411,7 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //load loginatic
     if (loadLogin) {
-      $('head').append('<link rel="stylesheet" type="text/css" href="src/styles/css/login.css">');
+      $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">');
       $.getScript("src/js/components/cookies/cookies.js")
 
       $.getScript("src/js/components/login/loginatic.js")
@@ -421,7 +421,6 @@ async function loadTemplate(data, isDefaultTemplate) {
           loginatic.init();
           loginatic.check();
         });
-      $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">');
     }
 
     //Load dynamic mapa.js
