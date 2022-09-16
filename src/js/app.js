@@ -46,6 +46,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setSearchbar(app.searchbar.isActive);
       }
 
+      if (app.hasOwnProperty('login')) {
+        setLogin(app.login.isActive);
+      }
+
       if (app.hasOwnProperty('layer_options')) {
         setLayerOptions(app.layer_options.isActive);
       }
@@ -405,6 +409,19 @@ async function loadTemplate(data, isDefaultTemplate) {
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
     }
 
+    //load login
+    if (loadLogin) {
+      $('head').append('<link rel="stylesheet" type="text/css" href="src/styles/css/login.css">');
+      $.getScript("src/js/components/cookies/cookies.js")
+
+      $.getScript("src/js/components/login/loginatic.js")
+        .done(function () {
+          loginatic = new loginatic();
+          loginatic.init();
+          loginatic.check();
+        });
+      $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">');
+    }
 
     //Load dynamic mapa.js
     app.template_id = template;
@@ -491,10 +508,6 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     perfilTopografico = new cls_perfiltopografico();
     perfilTopografico.init();
-
-    la = new loginatic();
-    la.init();
-    la.check();
   }, 1500);
 };
 

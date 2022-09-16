@@ -47,11 +47,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha384-Q8BgkilbsFGYNNiDqJm69hvDS7NCJWOodvfK/cwTyQD4VQA0qKzuPpvqNER1UC0F" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha384-Zm+UU4tdcfAm29vg+MTbfu//q5B/lInMbMCr4T8c9rQFyOv6PlfQYpB5wItcXWe7" crossorigin="anonymous"></script>
 
-    <!-- LOGIN SCRIPT -->
-    <link href="src/styles/css/login.css" rel="stylesheet">
-    <script src="src/js/components/cookies/cookies.js"></script>
-    <link href="src/js/components/login/loginatic.css" rel="stylesheet">
-    <script src="src/js/components/login/loginatic.js "></script>
 
     <!-- PERFIL TOPO SCRIPT -->
     <script src="src/js/components/perfiltopografico/perfiltopografico.js"></script>
@@ -181,12 +176,12 @@
                   <span class="input-group-addon" id="basic-addon1">
                     <i class="fas fa-lock"></i>
                   </span>
-                  <input type="password" onkeyup="if (event.keyCode == 13) la.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';">
+                  <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';">
               </div>
               <div class="checkbox">
                   <label><input type="checkbox" id="inp-recuerdame" name="recuerdame">Recuérdame</label>
               </div>
-              <a href="javascript:void(0);" class="btn btn-primary outline" onclick="la.process();">Ingresar</a>
+              <a href="javascript:void(0);" class="btn btn-primary outline" onclick="loginatic.process();">Ingresar</a>
 
               <hr>
               <a href="javascript:void(0);" onclick="document.getElementById('advice-wrapper').style.display = 'flex';" class="btn btn-primary filled">No poseo clave de acceso</a>
