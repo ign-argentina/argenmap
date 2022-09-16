@@ -409,7 +409,7 @@ async function loadTemplate(data, isDefaultTemplate) {
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
     }
 
-    //load login
+    //load loginatic
     if (loadLogin) {
       $('head').append('<link rel="stylesheet" type="text/css" href="src/styles/css/login.css">');
       $.getScript("src/js/components/cookies/cookies.js")
@@ -417,6 +417,7 @@ async function loadTemplate(data, isDefaultTemplate) {
       $.getScript("src/js/components/login/loginatic.js")
         .done(function () {
           loginatic = new loginatic();
+          loginatic._addLoginWrapper();
           loginatic.init();
           loginatic.check();
         });

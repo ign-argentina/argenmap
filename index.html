@@ -165,29 +165,8 @@
     <div id="basemap-selector"></div>
     <div id="template"></div>
 
-
     <!-- LOGIN SCRIPT -->
-    <div id="login-wrapper" class="justify-content-center">
-      <div class="container-fluid col-12 col-xs-12 col-sm-6 col-md-3 mt-5 text-center" style="display: flex;align-items: center;">
-          <div class="login">
-              <img src="src/styles/images/lupa.png" width="10%">
-              <h4>Acceso al Visor de mapas</h4>
-              <div class="input-group">
-                  <span class="input-group-addon" id="basic-addon1">
-                    <i class="fas fa-lock"></i>
-                  </span>
-                  <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';">
-              </div>
-              <div class="checkbox">
-                  <label><input type="checkbox" id="inp-recuerdame" name="recuerdame">Recuérdame</label>
-              </div>
-              <a href="javascript:void(0);" class="btn btn-primary outline" onclick="loginatic.process();">Ingresar</a>
-
-              <hr>
-              <a href="javascript:void(0);" onclick="document.getElementById('advice-wrapper').style.display = 'flex';" class="btn btn-primary filled">No poseo clave de acceso</a>
-          </div>
-      </div>
-  </div>
+    <div id="login-wrapper" class="justify-content-center"></div>
 
   <div id="advice-wrapper" class="justify-content-center">
       <div class="container-fluid col-12 col-xs-12 col-sm-6 col-md-6 mt-5 text-center" style="display: flex;align-items: center;">
