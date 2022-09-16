@@ -49,6 +49,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       if (app.hasOwnProperty('login')) {
         setLogin(app.login.isActive);
       }
+      
+      if (app.hasOwnProperty('elevationProfile')) {
+        setElevationProfile(app.elevationProfile.isActive);
+      }
 
       if (app.hasOwnProperty('layer_options')) {
         setLayerOptions(app.layer_options.isActive);
@@ -409,19 +413,17 @@ async function loadTemplate(data, isDefaultTemplate) {
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
     }
 
-    //load loginatic
-    if (loadLogin) {
-      $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">');
-      $.getScript("src/js/components/cookies/cookies.js")
 
-      $.getScript("src/js/components/login/loginatic.js")
-        .done(function () {
-          loginatic = new loginatic();
-          loginatic._addLoginWrapper();
-          loginatic.init();
-          loginatic.check();
-        });
-    }
+
+    // //load elevationProfile
+    // if (loadElevationProfile) {
+    //   $.getScript("src/js/components/perfiltopografico/perfiltopografico.js")
+    //     .done(function () {
+    //       perfilTopografico = new cls_perfiltopografico();
+    //       perfilTopografico.init();
+    //       perfilTopografico._addElevationProfile();
+    //     });
+    // }
 
     //Load dynamic mapa.js
     app.template_id = template;
@@ -501,13 +503,34 @@ async function loadTemplate(data, isDefaultTemplate) {
       }
     }, 100);
 
+
   });
 
-  // ATIC
   setTimeout(function() {
+    //load loginatic
+    if (loadLogin) {
+      $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">');
+      $.getScript("src/js/components/cookies/cookies.js")
 
-    perfilTopografico = new cls_perfiltopografico();
-    perfilTopografico.init();
+      $.getScript("src/js/components/login/loginatic.js")
+        .done(function () {
+          loginatic = new loginatic();
+          loginatic._addLoginWrapper();
+          loginatic.init();
+          loginatic.check();
+        });
+    }
+
+    //load elevationProfile
+    if (loadElevationProfile) {
+      $.getScript("src/js/components/perfiltopografico/perfiltopografico.js")
+        .done(function () {
+          perfilTopografico = new cls_perfiltopografico();
+          perfilTopografico.init();
+          perfilTopografico._addElevationProfile();
+        });
+    }
+
   }, 1500);
 };
 
