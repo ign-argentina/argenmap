@@ -56,7 +56,11 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
       if (app.hasOwnProperty('geoprocessing')) {
         setGeoprocessing(app.geoprocessing.isActive);
-        setElevationProfile(app.geoprocessing.availableProcesses[3].isActive);
+        app.geoprocessing.availableProcesses.forEach((geoprocess) => {
+          if (geoprocess.name === "Perfíl de Elevación") {
+            setElevationProfile(true);
+          }
+        });
       }
 
       await this._startModules();
