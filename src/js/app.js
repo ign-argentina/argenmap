@@ -50,16 +50,13 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setLogin(app.login.isActive);
       }
       
-      if (app.hasOwnProperty('elevationProfile')) {
-        setElevationProfile(app.elevationProfile.isActive);
-      }
-
       if (app.hasOwnProperty('layer_options')) {
         setLayerOptions(app.layer_options.isActive);
       }
 
       if (app.hasOwnProperty('geoprocessing')) {
         setGeoprocessing(app.geoprocessing.isActive);
+        setElevationProfile(app.geoprocessing.availableProcesses[3].isActive);
       }
 
       await this._startModules();
@@ -413,18 +410,6 @@ async function loadTemplate(data, isDefaultTemplate) {
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
     }
 
-
-
-    // //load elevationProfile
-    // if (loadElevationProfile) {
-    //   $.getScript("src/js/components/perfiltopografico/perfiltopografico.js")
-    //     .done(function () {
-    //       perfilTopografico = new cls_perfiltopografico();
-    //       perfilTopografico.init();
-    //       perfilTopografico._addElevationProfile();
-    //     });
-    // }
-
     //Load dynamic mapa.js
     app.template_id = template;
     $.getScript(`src/js/map/map.js`, (res) => {
@@ -502,7 +487,6 @@ async function loadTemplate(data, isDefaultTemplate) {
 
       }
     }, 100);
-
 
   });
 
