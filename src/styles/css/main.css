@@ -191,6 +191,7 @@ li.active > div > a {
   color: white !important;
 }
 .list-group-item {
+  position: initial;
   font-family: "Encode Sans Medium", sans-serif;
 }
 .list-group-item.active {
