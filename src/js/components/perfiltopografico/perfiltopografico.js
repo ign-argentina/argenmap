@@ -28,7 +28,7 @@ cls_perfiltopografico = function() {
             });
 
             mapa.addControl(this.control);
-            
+
             const controlButton = this.control._toolbars.draw._toolbarContainer.firstChild;
             controlButton.addEventListener('click', function(){
                 perfilTopografico.isActive = true;
@@ -83,19 +83,34 @@ cls_perfiltopografico = function() {
             .then((result) => {
                 let data = [];
                 let altura;
+                let distancia = 0.0;
+                let desde =  null;
+                let hasta =  null;
+
                 for (let i = 0; i < result.coordinates.length; i++) {
-         
+
                     altura = result.coordinates[i][2].toFixed(2).toString();
 
                     data.push({
-                        i: (i + 1),
+						x: Math.floor(distancia * 100) / 100,
+                        /*i: (i + 1),*/
                         lat: result.coordinates[i][0],
                         lng: result.coordinates[i][1],
-                        y: parseFloat(altura)
+                        y: parseFloat(altura),
+                        dist:'Distancia: '+(distancia)+' (km)'
                     });
+                    
+                    if((i+1)<result.coordinates.length)/* Este fue el último elemento */
+                    {
+						desde = turf.point([result.coordinates[i][0], result.coordinates[i][1]]);
+						hasta = turf.point([result.coordinates[i+1][0], result.coordinates[i+1][1]]);
+                    
+						distancia = distancia + turf.distance(desde, hasta, {units: 'kilometers'});
+					};
                 }
 
                 $('#pt-inner').highcharts({
+					credits: { enabled:false },
                     lang: {
                         viewFullscreen: "Pantalla Completa",
                         printChart: "Imprimir",
@@ -128,19 +143,28 @@ cls_perfiltopografico = function() {
                     },
                     xAxis: {
                         //type: 'distancia',
-                        title: {
-                            text: 'Muestra',
+                        title: 
+                        {
+                            text: 'Distancia (km)'
                         }
                     },
                     yAxis: {
                         //type: 'altura',
                         title: {
-                            text: 'Altura'
+                            text: 'Altura (m)'
                         }
                     },
                     legend: {
                         enabled: true
                     },
+                    tooltip: 
+                    {
+						formatter: function () 
+							{
+								return 'Altura '+this.y + ' (m) <br>Distancia ' + this.x +' (Km)';
+							},
+						shared: true
+					},
                     plotOptions: {
                         area: {
                             fillColor: {
@@ -213,7 +237,7 @@ cls_perfiltopografico = function() {
                 </div>
             </div>
         `);
-    }
+}
 
     return this;
 }
