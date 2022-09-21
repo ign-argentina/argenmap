@@ -1,4 +1,4 @@
-cls_perfiltopografico = function() {
+elevationProfile = function() {
     this.control = null;
     this.drawItems = null;
 

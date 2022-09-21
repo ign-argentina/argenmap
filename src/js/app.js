@@ -511,9 +511,9 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //load elevationProfile
     if (loadElevationProfile) {
-      $.getScript("src/js/components/perfiltopografico/perfiltopografico.js")
+      $.getScript("src/js/components/elevation-profile/elevation-profile.js")
         .done(function () {
-          perfilTopografico = new cls_perfiltopografico();
+          perfilTopografico = new elevationProfile();
           perfilTopografico.init();
           perfilTopografico._addElevationProfile();
         });
