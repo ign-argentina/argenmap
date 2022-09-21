@@ -4,7 +4,7 @@ let ep_modal_close = true;
 let btn_modal_loading = false;
 let geoprocessing = {
   contour: GeoserviceFactory.Contour,
-  elevationProfile: GeoserviceFactory.ElevationProfile,
+  /* elevationProfile: GeoserviceFactory.ElevationProfile, */
   waterRise: GeoserviceFactory.WaterRise,
   buffer: GeoserviceFactory.Contour //temporal
 };
@@ -186,29 +186,6 @@ class Geoprocessing {
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         break;
       }
-      case "elevationProfile": {
-        btn_modal_loading = false;
-        let g_result = `{"type":"Feature","properties":{"type":"polyline"},"geometry":${JSON.stringify(
-          result
-        )}}`;
-        let layername =
-          app.geoprocessing.availableProcesses[2].namePrefix + results_counter;
-        results_counter++;
-
-        mapa
-          .getEditableLayer(this.editableLayer_name)
-          .setStyle({ fillOpacity: 0 });
-        addedLayers.push({
-          id: layername,
-          layer: g_result,
-          name: layername,
-          file_name: layername,
-          kb: null,
-        });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-        if (ep_modal_close) this.elevationDiv(result);
-        break;
-      }
       case "waterRise": {
         btn_modal_loading = false;
         let layername =
@@ -281,27 +258,6 @@ class Geoprocessing {
           const options = [];
           options.push({ value: "", text: "" });
           const layerTypes = element.getAttribute("layerTypes").split(",");
-          layerTypes.forEach((type) => {
-            if (layers.hasOwnProperty(type)) {
-              layers[type].forEach((layer) => {
-                options.push({ value: layer.name, text: layer.name });
-              });
-            }
-          });
-          this.optionsForm.setOptionsToSelect(fieldId, options);
-        }
-      });
-    }
-    if (this.geoprocessId === "elevationProfile") {
-      this.fieldsToReferenceLayers.forEach((fieldId) => {
-        const element = this.optionsForm.getElement(fieldId);
-        if (
-          element.hasAttribute("references") &&
-          element.getAttribute("references") === "drawedLayers"
-        ) {
-          const options = [];
-          options.push({ value: "", text: "" });
-          const layerTypes = ["polyline"];
           layerTypes.forEach((type) => {
             if (layers.hasOwnProperty(type)) {
               layers[type].forEach((layer) => {
@@ -642,10 +598,6 @@ class Geoprocessing {
                     options.push({ value: layer.name, text: gestorMenu.getLayerData(layer.name).title });
                   }
                 });
-              } else if (this.geoprocessId === "elevationProfile") {
-                editableLayers["polyline"].forEach((layer) => {
-                  options.push({ value: layer.id, text: layer.name });
-                });
               }
             }
 
@@ -847,19 +799,6 @@ class Geoprocessing {
             values.push(ne.lat);
             break;
           }
-          case "elevationProfile": {
-            let coords = layer.getLatLngs();
-            let coords_value = "";
-            coords.forEach((e, i) => {
-              if (i != coords.length - 1) {
-                coords_value += e.lng + " " + e.lat + ",";
-              } else {
-                coords_value += e.lng + " " + e.lat;
-              }
-            });
-            values = coords_value;
-            break;
-          }
           case "waterRise": {
             addedLayers.forEach((layer) => {
               if (
@@ -884,10 +823,6 @@ class Geoprocessing {
               waterRiseValue.length - 4
             );
             valueOfWaterRise = parseInt(waterRiseValue);
-
-            console.log("arrayWaterRise",arrayWaterRise)
-            console.log("valueOfWaterRise",valueOfWaterRise)
-
             break;
           }
         }
@@ -901,16 +836,6 @@ class Geoprocessing {
     if (this.geoprocessId === "contour") {
       this.geoprocessing
         .execute(...values)
-        .then((result) => {
-          this.displayResult(result);
-        })
-        .catch((error) => {
-          new UserMessage(error.message, true, "error");
-          this.loadingBtn("off");
-        });
-    } else if (this.geoprocessId === "elevationProfile") {
-      this.geoprocessing
-        .execute(values)
         .then((result) => {
           this.displayResult(result);
         })
@@ -988,7 +913,9 @@ class Geoprocessing {
     const options = [];
     options.push({ value: "", text: "" });
     this.geoprocessingConfig.availableProcesses.forEach((geoprocess) => {
-      options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
+      if(geoprocess.geoprocess !== 'elevationProfile') {
+        options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
+      }
     });
 
     geoprocessingForm.setOptionsToSelect(selectProcessId, options);
@@ -1016,64 +943,6 @@ class Geoprocessing {
       );
     }
     return this.formContainer;
-  }
-
-  elevationDiv(result) {
-    ep_modal_close = false;
-    let mainmodal = document.createElement("div");
-    mainmodal.id = "modal-perfil-elevacion";
-    mainmodal.className = "modal-perfil-elevacion";
-
-    let dive = document.createElement("div");
-    dive.id = "elevation-div";
-    dive.className = "elevation-div";
-    let modal = document.createElement("div");
-    modal.innerHTML = `
-        <div id="ContainerER" >
-        <div id="icons-table" style="display:flex">
-        <div style="width:95%"></div>
-        <div style="width:5%"><a id="btnclose" class="icon-table"><span id="removeEP" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div>
-        </div>
-        <div id="elevation-div-results"></div>
-        </div>`;
-
-    mainmodal.append(modal);
-    document.body.appendChild(mainmodal);
-    $("#modal-perfil-elevacion").draggable({
-      containment: "#mapa",
-      scroll: false,
-    });
-
-    let btnclose = document.getElementById("modal-perfil-elevacion");
-    btnclose.onclick = function () {
-      ep_modal_close = true;
-      $("#modal-perfil-elevacion").remove();
-      clearElevationProfile();
-      controlElevation = null;
-    };
-
-    let aux = document.getElementById("elevation-div-results");
-    aux.innerHTML = "";
-    aux.append(dive);
-
-    let otraresp = `{"name":"response","type":"FeatureCollection","features":[{"type":"Feature","name":"elevation","geometry":${JSON.stringify(
-      result
-    )},"properties":null}]}`;
-    let options = {
-      summary: "inline",
-      detachedView: false,
-      elevationDiv: "#elevation-div",
-      zFollow: 12,
-      legend: false,
-      followMarker: false,
-      autofitBounds: false,
-      autohide: false,
-      distance: false,
-    };
-
-    controlElevation = L.control.elevation(options);
-    controlElevation.addTo(mapa);
-    controlElevation.load(otraresp);
   }
 
   loadingBtn(status) {
@@ -1117,25 +986,5 @@ class Geoprocessing {
       }
     }
 
-  }
-}
-
-function clearElevationProfile() {
-  for (let l in mapa._layers) {
-    if (
-      mapa._layers[l].options &&
-      mapa._layers[l].options.pane &&
-      mapa._layers[l].options.pane === "elevationPane"
-    ) {
-      mapa._layers[l].remove();
-    }
-    if (
-      mapa._layers[l] &&
-      mapa._layers[l].feature &&
-      mapa._layers[l].feature.name &&
-      mapa._layers[l].feature.name === "elevation"
-    ) {
-      mapa._layers[l].remove();
-    }
   }
 }
