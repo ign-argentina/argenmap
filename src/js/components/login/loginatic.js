@@ -46,7 +46,7 @@ loginatic = function() {
 
                 let lat = json[i].lat_4326;
                 let lon = json[i].lon_4326;
-                let zoom = 10;
+                let zoom = json[i].zoom ?? 10;
 
                 /* document.title += ' - ' + json[i].nombregobiernolocal;
                 let logoTitle = document.getElementById('logoText');
@@ -80,17 +80,18 @@ loginatic = function() {
     this.logout = () => {
         this.currentLogin = false;
         setCookie("autologin", 0);
-
+        /* 
         let lat = -40;
         let lon = -59;
-        let zoom = 4;
-
+        let zoom = 4; 
         mapa.setView([lat, lon], zoom);
+        */
+        mapa.resetView();
         location.reload();
     }
 
     this._addLoginWrapper = () => {
-        $("#login-wrapper").append(`
+        const wrapperHtml = `
             <div class="container-fluid col-12 col-xs-12 col-sm-6 col-md-3 mt-5 text-center" style="display: flex;align-items: center;">
                 <div class="login">
                     <img src="src/styles/images/lupa.png" width="10%">
@@ -123,7 +124,8 @@ loginatic = function() {
                     </div>
                 </div>
             </div>
-        `);
+        `;
+        $("#login-wrapper").append(wrapperHtml);
     }
 
     this._addLogoutButton = () => {
