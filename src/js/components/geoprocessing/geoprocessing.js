@@ -531,7 +531,7 @@ class Geoprocessing {
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
-      $("#ejec_gp").removeClass("disabledbutton");
+      $("#ejec_gp").addClass("disabledbutton");
     }
 
     //Buffer Messages
