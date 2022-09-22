@@ -2164,6 +2164,13 @@ $("body").on("pluginLoad", function(event, plugin){
 				'edit-layer': []
 			};
 
+			mapa.resetView = () => {
+				mapa.setView(
+					[app.mapConfig.center.latitude, app.mapConfig.center.longitude], 
+					app.mapConfig.zoom.initial
+					);
+			}
+
 			setValidZoomLevel(selectedBasemap.nombre);
 
 			gestorMenu.plugins['leaflet'].setStatus('visible');
