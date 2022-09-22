@@ -1,4 +1,4 @@
-elevationProfile = function() {
+elevationProfile = function () {
     this.control = null;
     this.drawItems = null;
 
@@ -30,7 +30,7 @@ elevationProfile = function() {
             mapa.addControl(this.control);
 
             const controlButton = this.control._toolbars.draw._toolbarContainer.firstChild;
-            controlButton.addEventListener('click', function(){
+            controlButton.addEventListener('click', function () {
                 perfilTopografico.isActive = true;
                 event.stopPropagation()
             });
@@ -75,7 +75,7 @@ elevationProfile = function() {
             "https://imagenes.ign.gob.ar/geoserver/ows?service=WMS&version=1.1.1",
             "geoprocesos:alos_unificado"
         );
-        
+
         elevationProfile
             .execute(
                 points_txt,
@@ -84,146 +84,35 @@ elevationProfile = function() {
                 let data = [];
                 let altura;
                 let distancia = 0.0;
-                let desde =  null;
-                let hasta =  null;
+                let desde = null;
+                let hasta = null;
 
                 for (let i = 0; i < result.coordinates.length; i++) {
 
                     altura = result.coordinates[i][2].toFixed(2).toString();
 
                     data.push({
-						x: Math.floor(distancia * 100) / 100,
-                        /*i: (i + 1),*/
+                        x: Math.floor(distancia * 100) / 100,
                         lat: result.coordinates[i][0],
                         lng: result.coordinates[i][1],
                         y: parseFloat(altura),
-                        dist:'Distancia: '+(distancia)+' (km)'
+                        dist: 'Distancia: ' + (distancia) + ' (km)'
                     });
-                    
-                    if((i+1)<result.coordinates.length)/* Este fue el último elemento */
-                    {
-						desde = turf.point([result.coordinates[i][0], result.coordinates[i][1]]);
-						hasta = turf.point([result.coordinates[i+1][0], result.coordinates[i+1][1]]);
-                    
-						distancia = distancia + turf.distance(desde, hasta, {units: 'kilometers'});
-					};
+
+                    if ((i + 1) < result.coordinates.length) {
+                        desde = turf.point([result.coordinates[i][0], result.coordinates[i][1]]);
+                        hasta = turf.point([result.coordinates[i + 1][0], result.coordinates[i + 1][1]]);
+
+                        distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
+                    };
                 }
 
-                $('#pt-inner').highcharts({
-					credits: { enabled:false },
-                    lang: {
-                        viewFullscreen: "Pantalla Completa",
-                        printChart: "Imprimir",
-                        downloadCSV: "Descargar en CSV",
-                        downloadJPEG: "Descargar en JPG",
-                        downloadPDF: "Descargar en PDF",
-                        downloadPNG: "Descargar en PNG",
-                        downloadSVG: "Descargar en SVG",
-                        downloadXLS: "Descargar en XLS"
-                    },
-                    chart: {
-                        zoomType: 'x',
-                        backgroundColor: 'rgba(255, 255, 255, 0.0)',
-                    },
-                    title: {
-                        //text: 'Perfil Topográfico',
-                        text: '',
-                        style: {
-                            fontSize: "15px",
-                            color: '#FFFFFF'
-                        }
-                    },
-                    subtitle: {
-                        //text: 'Distancia Total: ' + data.distancia_total + "Km.",
-                        text: '',
-                        style: {
-                            //color:'#FFFFFF'
-                            color: '#000000'
-                        }
-                    },
-                    xAxis: {
-                        //type: 'distancia',
-                        title: 
-                        {
-                            text: 'Distancia (km)'
-                        }
-                    },
-                    yAxis: {
-                        //type: 'altura',
-                        title: {
-                            text: 'Altura (m)'
-                        }
-                    },
-                    legend: {
-                        enabled: true
-                    },
-                    tooltip: 
-                    {
-						formatter: function () 
-							{
-								return 'Altura '+this.y + ' (m) <br>Distancia ' + this.x +' (Km)';
-							},
-						shared: true
-					},
-                    plotOptions: {
-                        area: {
-                            fillColor: {
-                                linearGradient: {
-                                    x1: 0,
-                                    y1: 0,
-                                    x2: 0,
-                                    y2: 1
-                                },
-                                stops: [
-                                    [0, Highcharts.getOptions().colors[0]],
-                                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                                ]
-                            },
-                            marker: {
-                                radius: 2
-                            },
-                            lineWidth: 1,
-                            states: {
-                                hover: {
-                                    lineWidth: 1
-                                }
-                            },
-                            threshold: null
-                        }
-                    },
-
-                    series: [{
-                        type: 'area',
-                        name: 'Altura',
-                        data: data,
-                        point: {
-                            events: {
-                                mouseOver: function(event) {
-                                    mapa.markerPerfilTopografico = L.marker([event.target.lng, event.target.lat]).addTo(mapa);
-                                },
-                                mouseOut: function() {
-                                    mapa.markerPerfilTopografico.remove();
-                                }
-                            }
-                        }
-                    }]
-                });
-
+                this.plot(data);
             })
             .catch((error) => {
                 console.log('Hay error: ', error);
                 new UserMessage(error, true, 'error');
             });
-    }
-
-    this.toggleControl = (node) => {
-
-        if ($(node).hasClass("active")) {
-            $(node).removeClass("active");
-        } else {
-            $(node).addClass("active");
-        }
-
     }
 
     this._addElevationProfile = () => {
@@ -237,7 +126,106 @@ elevationProfile = function() {
                 </div>
             </div>
         `);
-}
+    }
+
+    this.plot = (data) => {
+        $('#pt-inner').highcharts({
+            credits: { enabled: false },
+            lang: {
+                viewFullscreen: "Pantalla Completa",
+                printChart: "Imprimir",
+                downloadCSV: "Descargar en CSV",
+                downloadJPEG: "Descargar en JPG",
+                downloadPDF: "Descargar en PDF",
+                downloadPNG: "Descargar en PNG",
+                downloadSVG: "Descargar en SVG",
+                downloadXLS: "Descargar en XLS"
+            },
+            chart: {
+                zoomType: 'x',
+                backgroundColor: 'rgba(255, 255, 255, 0.0)',
+            },
+            title: {
+                //text: 'Perfil Topográfico',
+                text: '',
+                style: {
+                    fontSize: "15px",
+                    color: '#FFFFFF'
+                }
+            },
+            subtitle: {
+                //text: 'Distancia Total: ' + data.distancia_total + "Km.",
+                text: '',
+                style: {
+                    //color:'#FFFFFF'
+                    color: '#000000'
+                }
+            },
+            xAxis: {
+                //type: 'distancia',
+                title: {
+                    text: 'Distancia (km)'
+                }
+            },
+            yAxis: {
+                //type: 'altura',
+                title: {
+                    text: 'Altura (m)'
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            tooltip: {
+                formatter: function () {
+                    return 'Altura ' + this.y + ' (m) <br>Distancia ' + this.x + ' (Km)';
+                },
+                shared: true
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    marker: {
+                        radius: 2
+                    },
+                    lineWidth: 1,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+
+            series: [{
+                type: 'area',
+                name: 'Altura',
+                data: data,
+                point: {
+                    events: {
+                        mouseOver: function (event) {
+                            mapa.markerPerfilTopografico = L.marker([event.target.lng, event.target.lat]).addTo(mapa);
+                        },
+                        mouseOut: function () {
+                            mapa.markerPerfilTopografico.remove();
+                        }
+                    }
+                }
+            }]
+        });
+    }
 
     return this;
 }
