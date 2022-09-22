@@ -127,7 +127,7 @@ loginatic = function() {
     }
 
     this._addLogoutButton = () => {
-        $("#mapa").append(`<div class="center-flex btn-logout" id="btn-logout" title="cerrar sesión" onclick="la.logout();" style="width: 30px; height: 30px; border: medium none; box-shadow: rgba(0, 0, 0, 0.65) 0px 1px 5px;"><div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div></div>`);
+        $("#mapa").append(`<div class="center-flex btn-logout" id="btn-logout" title="cerrar sesión" onclick="loginatic.logout();" style="width: 30px; height: 30px; border: medium none; box-shadow: rgba(0, 0, 0, 0.65) 0px 1px 5px;"><div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div></div>`);
     }
 
 }
