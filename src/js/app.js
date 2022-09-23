@@ -511,6 +511,15 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //load elevationProfile
     if (loadElevationProfile) {
+      $.getScript("https://code.highcharts.com/highcharts.js").done(() => {
+        $.getScript("https://code.highcharts.com/highcharts-more.js");
+        $.getScript("https://code.highcharts.com/modules/windbarb.js");
+        $.getScript("https://code.highcharts.com/modules/funnel.js");
+        $.getScript("https://code.highcharts.com/modules/exporting.js");
+        $.getScript("https://code.highcharts.com/modules/timeline.js");
+        $.getScript("src/js/plugins/highcharts.theme.js");
+      });
+
       $.getScript("src/js/components/elevation-profile/elevation-profile.js")
         .done(function () {
           perfilTopografico = new elevationProfile();
