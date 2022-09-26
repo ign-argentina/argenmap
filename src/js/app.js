@@ -498,15 +498,15 @@ async function loadTemplate(data, isDefaultTemplate) {
     //load loginatic
     if (loadLogin) {
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">');
-      $.getScript("src/js/components/cookies/cookies.js")
-
-      $.getScript("src/js/components/login/loginatic.js")
+      $.getScript("src/js/components/cookies/cookies.js").done(() => {
+        $.getScript("src/js/components/login/loginatic.js")
         .done(function () {
           loginatic = new loginatic();
           loginatic._addLoginWrapper();
           loginatic.init();
           loginatic.check();
         });
+      });
     }
 
     //load elevationProfile
