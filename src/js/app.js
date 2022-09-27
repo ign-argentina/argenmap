@@ -527,7 +527,15 @@ async function loadTemplate(data, isDefaultTemplate) {
           perfilTopografico._addElevationProfile();
         });
     }
-
   }, 1500);
 };
 
+let conaeCheck = setInterval(() => { // patch to force conae layers into menu
+  let conaeLayers = gestorMenu.items.conae;
+  if ( conaeLayers ) {
+    if( Object.entries(gestorMenu.items.conae.itemsComposite).length === 12 ) {
+			gestorMenu.printMenu();
+      clearInterval(conaeCheck);
+    }
+  }
+}, 1000);
