@@ -522,9 +522,10 @@ async function loadTemplate(data, isDefaultTemplate) {
 
       $.getScript("src/js/components/elevation-profile/elevation-profile.js")
         .done(function () {
-          perfilTopografico = new elevationProfile();
-          perfilTopografico.init();
-          perfilTopografico._addElevationProfile();
+          // perfilTopografico = new elevationProfile();
+          // perfilTopografico.init();
+          // perfilTopografico._addElevationProfile();
+          perfilTopografico = new IElevationProfile();
         });
     }
   }, 1500);

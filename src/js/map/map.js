@@ -431,14 +431,14 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
-						if (perfilTopografico.isActive) {
-							// check if profile was clicked
-							mapa.capaPerfilTopografico.clearLayers();
-							mapa.capaPerfilTopografico.addLayer(layer);
-							perfilTopografico.process(layer.getGeoJSON());
-                        } else {
+						// if (perfilTopografico.isActive) {
+						// 	// check if profile was clicked
+						// 	mapa.capaPerfilTopografico.clearLayers();
+						// 	mapa.capaPerfilTopografico.addLayer(layer);
+						// 	perfilTopografico.process(layer.getGeoJSON());
+                        // } else {
 							drawnItems.addLayer(layer);		
-                        }
+                        // }
 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						
