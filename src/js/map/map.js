@@ -294,13 +294,13 @@ $("body").on("pluginLoad", function(event, plugin){
 					// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
 					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed:true });
 					measureControl.addTo(mapa);
-					if (!L.Browser.android) {
+					/* if (!L.Browser.android) {
 						// replaces event listener for Measure icon in favor of click
 						L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
 						L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
 						L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
 						L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
-					}
+					} */
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':
