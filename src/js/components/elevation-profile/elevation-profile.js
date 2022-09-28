@@ -6,20 +6,6 @@ class IElevationProfile {
         this.data = [];
     }
 
-
-    _addElevationProfile() {
-        $("#pt-wrapper").append(`
-            <div class="pt">
-                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); mapa.capaPerfilTopografico.clearLayers();">
-                    <i class="fa fa-times"></i>
-                </a>
-                <div id="pt-inner">
-
-                </div>
-            </div>
-        `);
-    }
-
     _processLayer(geoJSON) {
         this.values = [];
         let c = geoJSON.geometry.coordinates;
