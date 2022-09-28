@@ -75,8 +75,8 @@ class IElevationProfile {
 
     _displayResult() {
         $("#pt-wrapper").append(`
-            <div class="pt">
-                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); mapa.capaPerfilTopografico.clearLayers();">
+            <div class="pt" id="elevationProfile">
+                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); document.getElementById('elevationProfile').remove();">
                     <i class="fa fa-times"></i>
                 </a>
                 <div id="pt-inner">
