@@ -7,18 +7,18 @@ class IElevationProfile {
     }
 
 
-    // _addElevationProfile() {
-    //     $("#pt-wrapper").append(`
-    //         <div class="pt">
-    //             <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); mapa.capaPerfilTopografico.clearLayers();">
-    //                 <i class="fa fa-times"></i>
-    //             </a>
-    //             <div id="pt-inner">
+    _addElevationProfile() {
+        $("#pt-wrapper").append(`
+            <div class="pt">
+                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); mapa.capaPerfilTopografico.clearLayers();">
+                    <i class="fa fa-times"></i>
+                </a>
+                <div id="pt-inner">
 
-    //             </div>
-    //         </div>
-    //     `);
-    // }
+                </div>
+            </div>
+        `);
+    }
 
     _processLayer(geoJSON) {
         this.values = [];
@@ -65,7 +65,7 @@ class IElevationProfile {
                 };
             }
             console.log(this.data)
-            //this._displayResult();
+            this._displayResult();
         })
         .catch((error) => {
             console.log('Hay error: ', error);
@@ -199,7 +199,29 @@ class IElevationProfile {
     
     }
 
+    getGeoJSON() { // would be moved to the Layer class as part of export method
+        const geoJSON = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "LineString",
+                coordinates: [],
+              },
+            },
+          ],
+        };
+    
+        let coords = [];
+        this.data.forEach(point => {
+           let coord = [ point.lat, point.lng, point.y ];
+            geoJSON.features[0].geometry.coordinates.push(coord);
+        });
 
+        console.log(geoJSON);
+    }
 }
 
 
