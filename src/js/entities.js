@@ -2137,7 +2137,7 @@ class GestorMenu {
             return searchForm; 
             */
 
-            return "<form id='searchForm' class='searchFormBtn' onSubmit='mainMenuSearch(event)'>" +
+            return "<form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>" +
             "<div style='display: flex;'>" +
                 "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" + this.getQuerySearch() + "' placeholder='Buscar capa'>" +
                     "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>"+

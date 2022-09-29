@@ -113,6 +113,11 @@ body {
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   }
 }
+.sticky {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+}
 /*******************************
 Menu principal
 *******************************/
@@ -186,6 +191,7 @@ li.active > div > a {
   color: white !important;
 }
 .list-group-item {
+  position: initial;
   font-family: "Encode Sans Medium", sans-serif;
 }
 .list-group-item.active {
