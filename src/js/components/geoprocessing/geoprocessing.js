@@ -2,12 +2,13 @@ let controlElevation = null;
 let g_modal_close = true;
 let ep_modal_close = true;
 let btn_modal_loading = false;
-let geoprocessing = {
+/* let geoprocessing = {
   contour: GeoserviceFactory.Contour,
-  /* elevationProfile: GeoserviceFactory.ElevationProfile, */
+  elevationProfile: GeoserviceFactory.ElevationProfile,
   waterRise: GeoserviceFactory.WaterRise,
   buffer: GeoserviceFactory.Contour //temporal
-};
+}; */
+let process = {};
 let results_counter = 0;
 let contour_result_active = false;
 let contourRectangles = [];
@@ -555,6 +556,7 @@ class Geoprocessing {
 
   buildOptionForm(fields) {
     this.optionsForm.clearForm();
+    //console.log(fields);
     this.fieldsToReferenceLayers = [];
     const formFields = [];
     let sliderLayer;
@@ -598,6 +600,13 @@ class Geoprocessing {
                     options.push({ value: layer.name, text: gestorMenu.getLayerData(layer.name).title });
                   }
                 });
+              } else if (this.geoprocessId === "elevationProfile") {
+                const polylines = mapa.editableLayers.polyline;
+                if (polylines.length > 1 ) {
+                  polylines.forEach(polyline => {
+                    options.push({ value: polyline.name, text: polyline.name });
+                  });
+                }
               }
             }
 
@@ -637,6 +646,20 @@ class Geoprocessing {
                       $("#ejec_gp").addClass("disabledbutton");
                     }else {
                       $("#drawRectangleBtn").removeClass("disabledbutton");
+                    }
+                  } else if (this.geoprocessId === "elevationProfile") {
+                    if (!element.value) {
+                      return;
+                    }
+                    let selectedLayer = "";
+                    const polylines = mapa.editableLayers.polyline;
+                    if ( polylines.length > 1 ) {
+                      polylines.forEach( polyline => {
+                        polyline.name === element.value
+                        ? (selectedLayer = polyline)
+                        : null;
+                      });
+                      mapa.centerLayer(selectedLayer.getGeoJSON());
                     }
                   }
                 },
@@ -678,6 +701,13 @@ class Geoprocessing {
           }
           formFields.push(input);
         }
+        break;
+        case "button": {
+          this.optionsForm.addButton(field.name, field.onclick, field.id);
+        }
+        break;
+        default:
+          break;
       }
     });
 
@@ -901,7 +931,15 @@ class Geoprocessing {
           const item = this.geoprocessingConfig.availableProcesses.find(
             (e) => e.geoprocess === this.geoprocessId
           );
-          this.geoprocessing = new geoprocessing[this.geoprocessId](
+
+          this.process = {
+            contour: GeoserviceFactory.Contour,
+            elevationProfile: IElevationProfile,
+            waterRise: GeoserviceFactory.WaterRise,
+            buffer: GeoserviceFactory.Contour
+          };
+
+          this.geoprocessing = new this.process[this.geoprocessId](
             item.baseUrl,
             item.layer
           );
@@ -913,9 +951,9 @@ class Geoprocessing {
     const options = [];
     options.push({ value: "", text: "" });
     this.geoprocessingConfig.availableProcesses.forEach((geoprocess) => {
-      if(geoprocess.geoprocess !== 'elevationProfile') {
+      //if(geoprocess.geoprocess !== 'elevationProfile') {
         options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
-      }
+      //}
     });
 
     geoprocessingForm.setOptionsToSelect(selectProcessId, options);

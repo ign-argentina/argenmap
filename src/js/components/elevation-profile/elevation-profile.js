@@ -208,6 +208,54 @@ class IElevationProfile {
 
         console.log(geoJSON);
     }
+
+    drawPolyline() {
+        const drawPolyline = new L.Draw.Polyline(mapa);
+        drawPolyline.enable();
+    }
+
+    getFields() {
+        
+        const inputs = [
+          {
+            name: "Capa",
+            element: "select",
+            references: "drawedLayers",
+            allowedTypes: ["polyline"],
+            points: ["ne", "sw"],
+          },
+          {
+            name: "Dibujar línea",
+            element: "button",
+            id: "drawBtn",
+            onclick: this.drawPolyline
+        }
+        ];
+        /* 
+            [
+            {
+                "name": "Capa",
+                "element": "select",
+                "references": "drawedLayers",
+                "allowedTypes": [
+                "rectangle"
+                ],
+                "points": [
+                "ne",
+                "sw"
+                ]
+            },
+            {
+                "name": "Cota",
+                "element": "input",
+                "type": "number",
+                "min": 0,
+                "max": 10000
+            }
+            ]
+        */
+        return inputs;
+    }
 }
 
 
