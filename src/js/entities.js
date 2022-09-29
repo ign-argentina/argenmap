@@ -2829,9 +2829,48 @@ class Menu_UI{
             edit_name_opt.onclick = function(){
                 menu_ui.editFileLayerName(id)
             }
+
+            let zoom_layer_opt = document.createElement("li")
+            zoom_layer_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-search-plus" aria-hidden="true" style="width:20px;"></i>Zoom a capa</a>`
+            zoom_layer_opt.onclick = function(){
+                addedLayers.forEach( lyr => {
+                    if( lyr.id === id ) {
+                        mapa.centerLayer(lyr.layer);
+                    }
+                });
+            }
+
+            /* let query_opt = document.createElement("li")
+            query_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="far fa-question-circle" aria-hidden="true" style="width:20px;"></i>Ver datos</a>`
+            query_opt.onclick = function(){
+                console.log('add a popup here!')
+                addedLayers.forEach( lyr => {
+                    if( lyr.id === id ) {
+                        //addedLayers[0].id
+                        lyr.bindPopup(lyr.layer.features[0].properties);
+                        mapa.editableLayers.polygon[0].bindPopup
+                    }
+                });
+            } */
+
+            /* let style_opt = document.createElement("li")
+            style_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-paint-brush" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
+            style_opt.onclick = function(){
+                console.log('edit style!');
+            } */
+
+            /* let chart_opt = document.createElement("li")
+            chart_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-chart-pie" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
+            chart_opt.onclick = function(){
+                console.log('add a popup here!');
+            } */
             
+            mainul.append(zoom_layer_opt)
             mainul.append(edit_name_opt)
             mainul.append(download_opt)
+            //mainul.append(query_opt)
+            //mainul.append(style_opt)
+            //mainul.append(chart_opt)
             mainul.append(delete_opt)
             
             options.append(fdiv)
