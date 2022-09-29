@@ -591,7 +591,7 @@ class Geoprocessing {
               extraProps.layerTypes = field.allowedTypes;
               const editableLayers = mapa.getEditableLayers();
 
-              //show values in "Capa"
+              //show elements in "Capa"
               if (this.geoprocessId === "contour") {
                 addedLayers.forEach((layer) => {
                   if (layer.id.includes("rectangle")) {
@@ -613,7 +613,7 @@ class Geoprocessing {
                 });
               } else if (this.geoprocessId === "elevationProfile") {
                 const polylines = mapa.editableLayers.polyline;
-                if (polylines.length > 1 ) {
+                if (polylines.length > 0 ) {
                   polylines.forEach(polyline => {
                     options.push({ value: polyline.name, text: polyline.name });
                   });
