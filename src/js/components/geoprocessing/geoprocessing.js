@@ -487,30 +487,49 @@ class Geoprocessing {
   }
 
   buildOptionFormMessages(sliderLayer) {
-    //Contour & Buffer Rectangle Messages
-    let rectangleMessage = document.createElement("div");
-    rectangleMessage.innerHTML = "Dibuje Rectángulo hasta 100km²";
-    if (this.geoprocessId === "buffer")
-      rectangleMessage.innerHTML = "Dibuje Rectángulo hasta 1000km²";
-      
-    rectangleMessage.id = "msgRectangle";
-    rectangleMessage.style =
-      "color: #37bbed; font-weight: bolder; font-size: 13px";
-    document.getElementsByClassName("form")[1].appendChild(rectangleMessage);
-
-    let rectSizeMsg1 = document.createElement("div");
-    rectSizeMsg1.innerHTML =
+    //Contour & Buffer Rectangle Message
+    let rectSizeMsg = document.createElement("div");
+    rectSizeMsg.innerHTML =
       "Se superó el limite. <br> Edite o elimine el rectángulo.";
-    rectSizeMsg1.id = "invalidRect";
-    rectSizeMsg1.style = "color: #ff1100; font-weight: bolder;";
-    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg1);
+      rectSizeMsg.id = "invalidRect";
+      rectSizeMsg.style = "color: #ff1100; font-weight: bolder;";
+    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg);
     $("#invalidRect").addClass("hidden");
+
+    let layerMessage = document.createElement("div");
+    layerMessage.id = "msgRectangle";
+    layerMessage.style =
+      "color: #37bbed; font-weight: bolder; font-size: 13px";
 
     //Contour Messages
     if (this.geoprocessId === "contour") {
+      layerMessage.innerHTML = "Dibuje Rectángulo hasta 100km²";
+      document.getElementsByClassName("form")[1].appendChild(layerMessage);
+
       //Hide Capa for Contour Lines
       $('label[for="select-capa"]').hide();
       document.getElementById("select-capa").classList.add("hidden");
+    }
+
+    //Buffer Messages
+    else if (this.geoprocessId === "buffer") {
+      layerMessage.innerHTML = "Dibuje Rectángulo hasta 1000km²";
+      document.getElementsByClassName("form")[1].appendChild(layerMessage);
+
+      let messageBuffer = document.createElement("div");
+      messageBuffer.innerHTML = "Active una Capa";
+      messageBuffer.id = "msgNoLayer";
+      messageBuffer.style = "color: red; font-weight: bolder;";
+      document.getElementsByClassName("form")[1].appendChild(messageBuffer);
+      $("#msgRectangle").addClass("hidden");
+
+      $('label[for="select-capa"]').show();
+      $('label[for="input-equidistancia"]').hide();
+      $("#drawRectangleBtn").addClass("disabledbutton");
+      document.getElementById("input-equidistancia").classList.add("hidden");
+      document.getElementById("select-capa").classList.remove("hidden");
+
+      this.checkLayersForBuffer();
     }
 
     //Cota Messages & Slider
@@ -535,23 +554,15 @@ class Geoprocessing {
       $("#ejec_gp").addClass("disabledbutton");
     }
 
-    //Buffer Messages
-    else if (this.geoprocessId === "buffer") {
-      let messageBuffer = document.createElement("div");
-      messageBuffer.innerHTML = "Active una Capa";
-      messageBuffer.id = "msgNoLayer";
-      messageBuffer.style = "color: red; font-weight: bolder;";
-      document.getElementsByClassName("form")[1].appendChild(messageBuffer);
-      $("#msgRectangle").addClass("hidden");
+    //elevationProfile
+    else if (this.geoprocessId === "elevationProfile") {
+      layerMessage.innerHTML = "Dibuje una Línea";
+      document.getElementsByClassName("form")[1].appendChild(layerMessage);
 
-      $('label[for="select-capa"]').show();
-      $('label[for="input-equidistancia"]').hide();
-      $("#drawRectangleBtn").addClass("disabledbutton");
-      document.getElementById("input-equidistancia").classList.add("hidden");
-      document.getElementById("select-capa").classList.remove("hidden");
-
-      this.checkLayersForBuffer();
+      //Hide drawRectangle for elevationProfile
+      document.getElementById("drawRectangleBtn").classList.add("hidden");
     }
+    
   }
 
   buildOptionForm(fields) {
