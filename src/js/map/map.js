@@ -687,7 +687,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (layer.type === 'marker' || layer.type === 'circlemarker') {
 							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
 						} 
-						else if (layer.type === "FeatureCollection") {
+						else if (layer.type === "FeatureCollection" || layer.type === "Feature") {
 							let bbox = turf.bbox(layer);
 							mapa.fitBounds([[bbox[1],bbox[0]],[bbox[3],bbox[2]]]);
 						}
