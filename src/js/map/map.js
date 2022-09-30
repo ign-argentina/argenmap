@@ -453,6 +453,10 @@ $("body").on("pluginLoad", function(event, plugin){
 							mapa.addSelectionLayersMenuToLayer(layer);
 						}
 						mapa.addContextMenuToLayer(layer);
+
+						if(geoProcessingManager){
+							geoProcessingManager.updateLayerSelect(layer.name, true);
+						}
 					});
 
 					mapa.on('draw:edited', (e) => {
