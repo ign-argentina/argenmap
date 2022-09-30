@@ -520,13 +520,7 @@ async function loadTemplate(data, isDefaultTemplate) {
         $.getScript("src/js/plugins/highcharts.theme.js");
       });
 
-      $.getScript("src/js/components/elevation-profile/elevation-profile.js")
-        .done(function () {
-          // perfilTopografico = new elevationProfile();
-          // perfilTopografico.init();
-          // perfilTopografico._addElevationProfile();
-          //perfilTopografico = new IElevationProfile();
-        });
+      $.getScript("src/js/components/elevation-profile/elevation-profile.js");
     }
   }, 1500);
 };
