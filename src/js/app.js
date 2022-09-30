@@ -525,7 +525,7 @@ async function loadTemplate(data, isDefaultTemplate) {
           // perfilTopografico = new elevationProfile();
           // perfilTopografico.init();
           // perfilTopografico._addElevationProfile();
-          perfilTopografico = new IElevationProfile();
+          //perfilTopografico = new IElevationProfile();
         });
     }
   }, 1500);

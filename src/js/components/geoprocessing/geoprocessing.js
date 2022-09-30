@@ -765,16 +765,29 @@ class Geoprocessing {
       () => {
         if (this.geoprocessId === "buffer") {
           this.executeBuffer();
+        } else if (this.geoprocessId === "elevationProfile") {
+          //this.executeElevationProfile();
+          let perfilTopografico = new IElevationProfile();
+          perfilTopografico.executeElevationProfile();
         } else {
           this.executeGeoprocess(formFields);
         }
       },
       "ejec_gp"
     );
-    $("#ejec_gp").addClass("disabledbutton"); //Execute Button disabled from the start
 
+    //$("#ejec_gp").addClass("disabledbutton"); //Execute Button disabled from the start
     this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
   }
+
+  // executeElevationProfile() {
+  //   this.loadingBtn("on");
+  //   let lastPolyline = mapa.editableLayers.polyline.at(-1);
+  //   let perfilTopografico = new IElevationProfile();
+  //   perfilTopografico._processLayer(lastPolyline.getGeoJSON());
+  //   perfilTopografico._executeProcess();
+    
+  // }
 
   executeBuffer() {
     let drawnRectangle;
@@ -923,6 +936,15 @@ class Geoprocessing {
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
               if (layer.id.includes(this.namePrefix)) {
+                setTimeout(function () {
+                  $("#select-capa").val(layer.name).change();
+                }, 500);
+              }
+            });
+          }
+          if (this.geoprocessId == "elevationProfile") {
+            mapa.editableLayers.polyline.forEach((layer) => {
+              if (layer.name.includes("polyline")) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);

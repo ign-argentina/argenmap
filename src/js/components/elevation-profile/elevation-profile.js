@@ -32,6 +32,7 @@ class IElevationProfile {
 
     drawPolyline() {
         const drawPolyline = new L.Draw.Polyline(mapa);
+        $("#drawBtn").addClass("disabledbutton");
         drawPolyline.enable();
     }
 
@@ -76,6 +77,22 @@ class IElevationProfile {
             ]
         */
         return inputs;
+    }
+
+    executeElevationProfile() {
+        let layerSelected;
+        mapa.editableLayers.polyline.forEach((polyline) => {
+            let selctedLayerName = document.getElementById("select-capa").value;
+            if (polyline.name === selctedLayerName) {
+                layerSelected = polyline;
+            }
+        });
+
+        geoProcessingManager.loadingBtn("on")
+        //let lastPolyline = mapa.editableLayers.polyline.at(-1);
+        this._processLayer(layerSelected.getGeoJSON());
+        this._executeProcess();
+        
     }
         
     _processLayer(geoJSON) {
@@ -128,6 +145,7 @@ class IElevationProfile {
         .catch((error) => {
             console.log('Hay error: ', error);
             new UserMessage(error, true, 'error');
+            //geoProcessingManager.loadingBtn("off")
         });
     }
 

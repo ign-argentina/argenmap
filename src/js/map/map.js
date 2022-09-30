@@ -489,10 +489,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('draw:drawstop', (e) => {
 						setTimeout(() => {
 							currentlyDrawing = false;
-							if(perfilTopografico.isActive){
-								// reset profile status
-								perfilTopografico.isActive = false;
-							}
+							// if(perfilTopografico.isActive){
+							// 	// reset profile status
+							// 	perfilTopografico.isActive = false;
+							// }
 						}, 300);
 					});
 
