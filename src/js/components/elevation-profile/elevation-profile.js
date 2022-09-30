@@ -139,8 +139,9 @@ class IElevationProfile {
                     distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
                 };
             }
-            console.log(this.data)
+            //console.log(this.data)
             this._displayResult();
+            menu_ui.addFileLayer("Geoprocesos", "elevation-profile", "elevation-profile", "elevation-profile");
         })
         .catch((error) => {
             console.log('Hay error: ', error);
