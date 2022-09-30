@@ -2750,6 +2750,13 @@ class Menu_UI{
         //$('#sidebar div.menu5').first().prepend(itemnew)
     }
 
+    addLayerOption({ color = "#474b4e", classList = "far fa-question-circle", title = "Layer option", onclick = callback }) {
+        const layerOption = document.createElement("li");
+        layerOption.innerHTML = `<a style="color:${color};" href="#"><i class="${classList}" aria-hidden="true" style="width:20px;"></i>${title}</a>`;
+        layerOption.onclick = function(){ callback };
+        return layerOption;    
+    }
+
     addFileLayer(groupname, textName, id, fileName){
         let groupnamev= clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
@@ -2864,11 +2871,18 @@ class Menu_UI{
             chart_opt.onclick = function(){
                 console.log('add a popup here!');
             } */
+
+            /* let copy_opt = document.createElement("li")
+            copy_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-copy" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
+            copy_opt.onclick = function(){
+                console.log('add a popup here!');
+            } */
             
             mainul.append(zoom_layer_opt)
             mainul.append(edit_name_opt)
             mainul.append(download_opt)
             //mainul.append(query_opt)
+            //mainul.append(copy_opt)
             //mainul.append(style_opt)
             //mainul.append(chart_opt)
             mainul.append(delete_opt)
@@ -3075,6 +3089,7 @@ class Menu_UI{
     }
     
     modalEliminar(id){
+        console.log(id);
         let index_file= getIndexFileLayerbyID(id)
         let textname = addedLayers[index_file].name
         let fileName = addedLayers[index_file].file_name
