@@ -33,6 +33,7 @@ class IElevationProfile {
     drawPolyline() {
         const drawPolyline = new L.Draw.Polyline(mapa);
         $("#drawBtn").addClass("disabledbutton");
+        $("#msgRectangle").addClass("hidden");
         drawPolyline.enable();
     }
 
@@ -139,14 +140,18 @@ class IElevationProfile {
                     distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
                 };
             }
-            //console.log(this.data)
+            geoProcessingManager.loadingBtn("off")
             this._displayResult();
             menu_ui.addFileLayer("Geoprocesos", "elevation-profile", "elevation-profile", "elevation-profile");
+
+            document.getElementById("select-process").selectedIndex = 0;
+            document.getElementsByClassName("form")[1].innerHTML = "";
+            new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
         })
         .catch((error) => {
             console.log('Hay error: ', error);
             new UserMessage(error, true, 'error');
-            //geoProcessingManager.loadingBtn("off")
+            geoProcessingManager.loadingBtn("off")
         });
     }
 

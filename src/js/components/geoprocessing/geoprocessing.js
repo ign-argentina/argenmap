@@ -1046,7 +1046,6 @@ class Geoprocessing {
     option.value = layerName;
     option.innerHTML = gestorMenu.getLayerData(layerName).title;
 
-    console.log(layerName);
     if(layerName.includes('polyline') && select !== null){
       if (addToList) {
         for (let i = 0; i < select.length; i++) {
