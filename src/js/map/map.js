@@ -476,7 +476,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
-						})
+						});
+						if(geoProcessingManager){
+							let layerName = Object.values(layers._layers)[0].name;
+							geoProcessingManager.updateLayerSelect(layerName, false);
+						}
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
