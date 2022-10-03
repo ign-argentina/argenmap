@@ -4,6 +4,7 @@ class IElevationProfile {
         this.serviceLayer = "geoprocesos:alos_unificado";
         this.values = "";
         this.data = [];
+        this.namePrefix = "elevation_profile_";
     }
 
     getGeoJSON() { // would be moved to the Layer class as part of export method
@@ -116,6 +117,7 @@ class IElevationProfile {
         elevationProfile
         .execute(this.values)
         .then((result) => {
+            console.log(result)
             let altura;
             let distancia = 0.0;
             let desde = null;
@@ -140,9 +142,23 @@ class IElevationProfile {
                     distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
                 };
             }
+            let layername = this.namePrefix + results_counter;
+            results_counter++;
+            let dataForDisplay = this.data;
+            let selectedPolyline = mapa.editableLayers.polyline.at(-1);
+
+            menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+            addedLayers.push({
+                id: layername,
+                name: layername,
+                file_name: layername,
+                layer: result,
+                data: dataForDisplay,
+                polyline: selectedPolyline,
+              });
+
+            this._displayResult(dataForDisplay);
             geoProcessingManager.loadingBtn("off")
-            this._displayResult();
-            menu_ui.addFileLayer("Geoprocesos", "elevation-profile", "elevation-profile", "elevation-profile");
 
             document.getElementById("select-process").selectedIndex = 0;
             document.getElementsByClassName("form")[1].innerHTML = "";
@@ -155,7 +171,7 @@ class IElevationProfile {
         });
     }
 
-    _displayResult() {
+    _displayResult(dataForDisplay) {
         $("#pt-wrapper").append(`
             <div class="pt" id="elevationProfile">
                 <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); document.getElementById('elevationProfile').remove();">
@@ -265,7 +281,7 @@ class IElevationProfile {
             series: [{
                 type: 'area',
                 name: 'Altura',
-                data: this.data,
+                data: dataForDisplay,
                 point: {
                     events: {
                         mouseOver: function (event) {
