@@ -88,6 +88,8 @@ class Geoprocessing {
       //Close geoprocess window and clear
       document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
         "";
+      document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
+        "";
       document.getElementById("select-process").selectedIndex = 0;
       document.getElementsByClassName("form")[1].innerHTML = "";
       divContainer.remove();
@@ -122,6 +124,8 @@ class Geoprocessing {
 
     if (document.getElementById("mr")) {
       document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
+        "filter: contrast(22%) brightness(157%);pointer-events:none;";
+      document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
         "filter: contrast(22%) brightness(157%);pointer-events:none;";
     }
   }
@@ -289,6 +293,9 @@ class Geoprocessing {
 
     if (this.geoprocessId === "buffer") {
       this.checkRectangleArea(event);
+    }
+    if (this.geoprocessId === "elevationProfile") {
+      this.checkPolyline(event);
     }
   }
 
@@ -465,6 +472,21 @@ class Geoprocessing {
         break;
     }
   }
+
+  checkPolyline(event) {
+    switch (event) {
+      case "delete-layer":
+        //contourRectangles = [];
+        $("#ejec_gp").addClass("disabledbutton");
+        $("#drawBtn").removeClass("disabledbutton");
+        $("#msgRectangle").removeClass("hidden");
+        break;
+
+      default:
+        break;
+    }
+  }
+
 
   checkLayersForBuffer() {
     gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
@@ -655,17 +677,19 @@ class Geoprocessing {
                     }
                   } else if (this.geoprocessId === "elevationProfile") {
                     if (!element.value) {
+                      $("#ejec_gp").addClass("disabledbutton");
                       return;
                     }
                     let selectedLayer = "";
                     const polylines = mapa.editableLayers.polyline;
-                    if (polylines.length > 1) {
+                    if (polylines.length > 0) {
                       polylines.forEach((polyline) => {
                         polyline.name === element.value
                           ? (selectedLayer = polyline)
                           : null;
                       });
                       mapa.centerLayer(selectedLayer.getGeoJSON());
+                      $("#ejec_gp").removeClass("disabledbutton");
                     }
                   }
                 },
@@ -773,18 +797,10 @@ class Geoprocessing {
       "ejec_gp"
     );
 
-    //$("#ejec_gp").addClass("disabledbutton"); //Execute Button disabled from the start
+    $("#ejec_gp").addClass("disabledbutton"); //Execute Button disabled from the start
     this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
   }
 
-  // executeElevationProfile() {
-  //   this.loadingBtn("on");
-  //   let lastPolyline = mapa.editableLayers.polyline.at(-1);
-  //   let perfilTopografico = new IElevationProfile();
-  //   perfilTopografico._processLayer(lastPolyline.getGeoJSON());
-  //   perfilTopografico._executeProcess();
-
-  // }
 
   executeBuffer() {
     let drawnRectangle;
