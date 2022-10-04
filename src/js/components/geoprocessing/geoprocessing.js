@@ -952,13 +952,13 @@ class Geoprocessing {
             });
           }
           if (this.geoprocessId == "elevationProfile") {
-            mapa.editableLayers.polyline.forEach((layer) => {
-              if (layer.name.includes("polyline")) {
-                setTimeout(function () {
-                  $("#select-capa").val(layer.name).change();
-                }, 500);
-              }
-            });
+            // mapa.editableLayers.polyline.forEach((layer) => {
+            //   if (layer.name.includes("polyline")) {
+            //     setTimeout(function () {
+            //       $("#select-capa").val(layer.name).change();
+            //     }, 500);
+            //   }
+            // });
           }
           if (this.geoprocessId == "buffer") {
             let layerForBuffer = gestorMenu.getActiveLayersWithoutBasemap()[0];

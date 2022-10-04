@@ -7,30 +7,6 @@ class IElevationProfile {
         this.namePrefix = "elevation_profile_";
     }
 
-    getGeoJSON() { // would be moved to the Layer class as part of export method
-        const geoJSON = {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: [],
-              },
-            },
-          ],
-        };
-    
-        let coords = [];
-        this.data.forEach(point => {
-           let coord = [ point.lat, point.lng, point.y ];
-            geoJSON.features[0].geometry.coordinates.push(coord);
-        });
-
-        console.log(geoJSON);
-    }
-
     drawPolyline() {
         const drawPolyline = new L.Draw.Polyline(mapa);
         $("#drawBtn").addClass("disabledbutton");
@@ -117,7 +93,6 @@ class IElevationProfile {
         elevationProfile
         .execute(this.values)
         .then((result) => {
-            console.log(result)
             let altura;
             let distancia = 0.0;
             let desde = null;
@@ -147,7 +122,8 @@ class IElevationProfile {
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1);
 
-            menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+            //menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+            this.addGeoprocessLayer("Geoprocesos", layername, layername, layername);
             addedLayers.push({
                 id: layername,
                 name: layername,
@@ -171,34 +147,63 @@ class IElevationProfile {
         });
     }
 
+    clickDisplayResult(id) {
+        let aux = document.getElementById("flc-" + id)
+
+        if (aux.className === "file-layer active") {
+            aux.className = "file-layer"
+            let elevProfile = document.getElementById('elevationProfile');
+            if (elevProfile) {
+                elevProfile.remove();
+                $('#'+ptWrapper.id).hide(); 
+            }
+        }
+        else {
+            aux.className = "file-layer active"
+            addedLayers.forEach(layer => {
+                if (layer.id === id) {
+                    this._displayResult(layer.data);
+                }
+            });
+        }
+
+    }
+
     _displayResult(dataForDisplay) {
-        $("#pt-wrapper").append(`
+
+        let ptWrapper = document.createElement('div');
+        let ptInnerId = "pt-inner" + results_counter;
+        ptWrapper.id = "elev-wrapper" + results_counter;
+        ptWrapper.className = "justify-content-center col-12 col-xs-12 col-sm-6 col-md-6";
+        document.body.appendChild(ptWrapper);
+
+
+        $('#'+ptWrapper.id).append(`
             <div class="pt" id="elevationProfile">
-                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); document.getElementById('elevationProfile').remove();">
+                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$(${'#'+ptWrapper.id}).hide(); document.getElementById('elevationProfile').remove();">
                     <i class="fa fa-times"></i>
                 </a>
-                <div id="pt-inner">
+                <div id=${ptInnerId}>
 
                 </div>
             </div>
         `);
 
-        let tplLoad = `
-            <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center;">
-                <div>
-                    <p class="text-center" style="color:#464542">Cargando Perfil Topográfico</p>
-                    <p class="text-center" style="color:#464542"><i class="fas fa-spinner fa-spin"></i></p>
-                </div>
-            </div>
-        `;
+        // let tplLoad = `
+        //     <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center;">
+        //         <div>
+        //             <p class="text-center" style="color:#464542">Cargando Perfil Topográfico</p>
+        //             <p class="text-center" style="color:#464542"><i class="fas fa-spinner fa-spin"></i></p>
+        //         </div>
+        //     </div>
+        // `;
 
-        document.getElementById("pt-inner").innerHTML = tplLoad;
-        document.getElementById("pt-wrapper").style.display = "flex";
-
-        $("#pt-wrapper").draggable();
-        $("#pt-wrapper").css("top", $("body").height() - 420);
-
-        $('#pt-inner').highcharts({
+        document.getElementById(ptWrapper.id).style.display = "flex";
+        $('#'+ptWrapper.id).draggable();
+        $('#'+ptWrapper.id).css("top", $("body").height() - 420);
+        
+        //document.getElementById("pt-inner").innerHTML = tplLoad;
+        $('#'+ptInnerId).highcharts({
             credits: { enabled: false },
             lang: {
                 viewFullscreen: "Pantalla Completa",
@@ -295,6 +300,258 @@ class IElevationProfile {
             }]
         });
     
+    }
+
+    // Original_displayResult(dataForDisplay) {
+    //     $("#pt-wrapper").append(`
+    //         <div class="pt" id="elevationProfile">
+    //             <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); document.getElementById('elevationProfile').remove();">
+    //                 <i class="fa fa-times"></i>
+    //             </a>
+    //             <div id="pt-inner">
+
+    //             </div>
+    //         </div>
+    //     `);
+
+    //     // let tplLoad = `
+    //     //     <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center;">
+    //     //         <div>
+    //     //             <p class="text-center" style="color:#464542">Cargando Perfil Topográfico</p>
+    //     //             <p class="text-center" style="color:#464542"><i class="fas fa-spinner fa-spin"></i></p>
+    //     //         </div>
+    //     //     </div>
+    //     // `;
+
+    //     document.getElementById("pt-wrapper").style.display = "flex";
+    //     $("#pt-wrapper").draggable();
+    //     $("#pt-wrapper").css("top", $("body").height() - 420);
+        
+    //     //document.getElementById("pt-inner").innerHTML = tplLoad;
+    //     $('#pt-inner').highcharts({
+    //         credits: { enabled: false },
+    //         lang: {
+    //             viewFullscreen: "Pantalla Completa",
+    //             printChart: "Imprimir",
+    //             downloadCSV: "Descargar en CSV",
+    //             downloadJPEG: "Descargar en JPG",
+    //             downloadPDF: "Descargar en PDF",
+    //             downloadPNG: "Descargar en PNG",
+    //             downloadSVG: "Descargar en SVG",
+    //             downloadXLS: "Descargar en XLS"
+    //         },
+    //         chart: {
+    //             zoomType: 'x',
+    //             backgroundColor: 'rgba(255, 255, 255, 0.0)',
+    //         },
+    //         title: {
+    //             //text: 'Perfil Topográfico',
+    //             text: '',
+    //             style: {
+    //                 fontSize: "15px",
+    //                 color: '#FFFFFF'
+    //             }
+    //         },
+    //         subtitle: {
+    //             //text: 'Distancia Total: ' + data.distancia_total + "Km.",
+    //             text: '',
+    //             style: {
+    //                 //color:'#FFFFFF'
+    //                 color: '#000000'
+    //             }
+    //         },
+    //         xAxis: {
+    //             //type: 'distancia',
+    //             title: {
+    //                 text: 'Distancia (km)'
+    //             }
+    //         },
+    //         yAxis: {
+    //             //type: 'altura',
+    //             title: {
+    //                 text: 'Altura (m)'
+    //             }
+    //         },
+    //         legend: {
+    //             enabled: true
+    //         },
+    //         tooltip: {
+    //             formatter: function () {
+    //                 return 'Altura ' + this.y + ' (m) <br>Distancia ' + this.x + ' (Km)';
+    //             },
+    //             shared: true
+    //         },
+    //         plotOptions: {
+    //             area: {
+    //                 fillColor: {
+    //                     linearGradient: {
+    //                         x1: 0,
+    //                         y1: 0,
+    //                         x2: 0,
+    //                         y2: 1
+    //                     },
+    //                     stops: [
+    //                         [0, Highcharts.getOptions().colors[0]],
+    //                         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+    //                     ]
+    //                 },
+    //                 marker: {
+    //                     radius: 2
+    //                 },
+    //                 lineWidth: 1,
+    //                 states: {
+    //                     hover: {
+    //                         lineWidth: 1
+    //                     }
+    //                 },
+    //                 threshold: null
+    //             }
+    //         },
+
+    //         series: [{
+    //             type: 'area',
+    //             name: 'Altura',
+    //             data: dataForDisplay,
+    //             point: {
+    //                 events: {
+    //                     mouseOver: function (event) {
+    //                         mapa.markerPerfilTopografico = L.marker([event.target.lng, event.target.lat]).addTo(mapa);
+    //                     },
+    //                     mouseOut: function () {
+    //                         mapa.markerPerfilTopografico.remove();
+    //                     }
+    //                 }
+    //             }
+    //         }]
+    //     });
+    
+    // }
+
+    getGeoJSON() { // would be moved to the Layer class as part of export method
+        const geoJSON = {
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "LineString",
+                coordinates: [],
+              },
+            },
+          ],
+        };
+    
+        let coords = [];
+        this.data.forEach(point => {
+           let coord = [ point.lat, point.lng, point.y ];
+            geoJSON.features[0].geometry.coordinates.push(coord);
+        });
+
+        console.log(geoJSON);
+    }
+
+    addGeoprocessLayer(groupname, textName, id, fileName){
+        let groupnamev= clearSpecialChars(groupname);
+        let main = document.getElementById("lista-"+groupnamev)
+
+        let div = ` 
+        <div style="display:flex; flex-direction:row;">
+        <div style="cursor: pointer; width: 70%" onclick="clickDisplayResult('${id}')"><span style="user-select: none;">${id}</span></div>
+        <div class="icon-layer-geo" onclick="mapa.downloadMultiLayerGeoJSON('${id}')"><i class="fas fa-download" title="descargar"></i></div>
+        <div class="icon-layer-geo" onclick="deleteLayerGeometry('${id}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
+        </div>
+        `
+        //si no existe contenedor
+        let id_options_container = "opt-c-"+id
+        if(!main){menu_ui.addSection(groupnamev)}
+        let content = document.getElementById(groupnamev+"-panel-body")
+             let layer_container = document.createElement("div")
+             layer_container.id = "fl-" +id
+             layer_container.className = "file-layer-container"
+
+             let layer_item = document.createElement("div")
+             layer_item.id = "flc-" +id
+             layer_item.className = "file-layer active"
+              
+             let img_icon =document.createElement("div")
+             img_icon.className = "file-img"
+             img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
+             img_icon.onclick = ()=> {
+                this.clickDisplayResult(id);
+             }
+
+            let layer_name = document.createElement("div")
+            layer_name.className = "file-layername"
+            layer_name.innerHTML= "<a>"+textName+"</a>"
+            layer_name.title = fileName
+            layer_name.onclick = ()=> {
+                this.clickDisplayResult(id);
+             }
+            
+            let options = document.createElement("div")
+            options.style = "width:10$;padding-right:5px;cursor:pointer;"
+            options.className = "btn-group"
+            options.role ="group"
+            options.id = id_options_container
+
+            let fdiv = document.createElement("div")
+            fdiv.style = "border: 0px;"
+            fdiv.className = "dropdown-toggle"
+            fdiv.setAttribute('data-toggle', 'dropdown')
+            fdiv.setAttribute('aria-haspopup', 'true')
+            fdiv.setAttribute('aria-expanded', 'false')
+            fdiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16"> <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/> </svg>'
+
+            let mainul = document.createElement("ul")
+            mainul.className = "dropdown-menu"
+            mainul.style = "right:0px !important;left:auto !important;"
+            mainul.id = "opt-c-"+id
+
+            let delete_opt = document.createElement("li")
+            delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
+            delete_opt.onclick = function(){
+                let menu = new Menu_UI
+                menu.modalEliminar(id)
+            }
+
+            let download_opt = document.createElement("li")
+            download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
+            download_opt.onclick = function(){
+                let index_file = getIndexFileLayerbyID(id)
+                let d_file_name = addedLayers[index_file].name
+                mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
+            }
+
+            let edit_name_opt = document.createElement("li")
+            edit_name_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar Nombre</a>`
+            edit_name_opt.onclick = function(){
+                menu_ui.editFileLayerName(id)
+            }
+
+            let zoom_layer_opt = document.createElement("li")
+            zoom_layer_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-search-plus" aria-hidden="true" style="width:20px;"></i>Zoom a capa</a>`
+            zoom_layer_opt.onclick = function(){
+                addedLayers.forEach( lyr => {
+                    if( lyr.id === id ) {
+                        mapa.centerLayer(lyr.layer);
+                    }
+                });
+            }
+
+            mainul.append(zoom_layer_opt)
+            mainul.append(edit_name_opt)
+            mainul.append(download_opt)
+            mainul.append(delete_opt)
+            
+            options.append(fdiv)
+            options.append(mainul)
+                      
+            layer_item.append(img_icon)
+            layer_item.append(layer_name)
+            layer_item.append(options)
+            layer_container.append(layer_item)
+            content.appendChild(layer_container)
     }
 
     
