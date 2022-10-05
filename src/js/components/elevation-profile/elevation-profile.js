@@ -31,29 +31,7 @@ class IElevationProfile {
             onclick: this.drawPolyline
         }
         ];
-        /* 
-            [
-            {
-                "name": "Capa",
-                "element": "select",
-                "references": "drawedLayers",
-                "allowedTypes": [
-                "rectangle"
-                ],
-                "points": [
-                "ne",
-                "sw"
-                ]
-            },
-            {
-                "name": "Cota",
-                "element": "input",
-                "type": "number",
-                "min": 0,
-                "max": 10000
-            }
-            ]
-        */
+        this.addWrapper();
         return inputs;
     }
 
@@ -120,10 +98,10 @@ class IElevationProfile {
             let layername = this.namePrefix + results_counter;
             results_counter++;
             let dataForDisplay = this.data;
-            let selectedPolyline = mapa.editableLayers.polyline.at(-1);
+            let selectedPolyline = mapa.editableLayers.polyline.at(-1).name;
 
             //menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-            this.addGeoprocessLayer("Geoprocesos", layername, layername, layername);
+            this.addGeoprocessLayer("Geoprocesos", layername, selectedPolyline, layername);
             addedLayers.push({
                 id: layername,
                 name: layername,
@@ -148,62 +126,67 @@ class IElevationProfile {
     }
 
     clickDisplayResult(id) {
-        let aux = document.getElementById("flc-" + id)
+        let aux = document.getElementById("flc-" + id),
+        selectedLayer,
+        wrapper =  document.getElementById("pt-wrapper"),
+        inner =  document.getElementById("pt-inner");
 
-        if (aux.className === "file-layer active") {
-            aux.className = "file-layer"
-            let elevProfile = document.getElementById('elevationProfile');
-            if (elevProfile) {
-                elevProfile.remove();
-                $('#'+ptWrapper.id).hide(); 
+        mapa.editableLayers.polyline.forEach(polyline => {
+            if (polyline.name === id) {
+                selectedLayer = polyline;
             }
+        });
+        
+        if (aux.classList.contains("active")) {
+            if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
+                wrapper.classList.toggle("hidden");
+            }
+            else {
+                aux.classList.remove("active")
+                selectedLayer.remove();
+                wrapper.classList.toggle("hidden");
+            }
+       
         }
         else {
-            aux.className = "file-layer active"
-            addedLayers.forEach(layer => {
-                if (layer.id === id) {
-                    this._displayResult(layer.data);
-                }
-            });
+            aux.classList.add("active");
+            selectedLayer.addTo(mapa);
+            wrapper.classList.toggle("hidden");
         }
+        //Preguntar si el wrapper quedó vacio
 
     }
 
-    _displayResult(dataForDisplay) {
 
-        let ptWrapper = document.createElement('div');
-        let ptInnerId = "pt-inner" + results_counter;
-        ptWrapper.id = "elev-wrapper" + results_counter;
-        ptWrapper.className = "justify-content-center col-12 col-xs-12 col-sm-6 col-md-6";
-        document.body.appendChild(ptWrapper);
+    addWrapper() {
+        const wrapper = document.createElement("div");
+        wrapper.id="pt-wrapper";
+        wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-6 col-md-6 hidden"
+        
+        document.body.appendChild(wrapper);
 
-
-        $('#'+ptWrapper.id).append(`
+        $("#pt-wrapper").append(`
             <div class="pt" id="elevationProfile">
-                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$(${'#'+ptWrapper.id}).hide(); document.getElementById('elevationProfile').remove();">
+                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick=" document.getElementById('pt-wrapper').classList.toggle('hidden');">
                     <i class="fa fa-times"></i>
                 </a>
-                <div id=${ptInnerId}>
+                <div id="pt-inner">
 
                 </div>
             </div>
         `);
 
-        // let tplLoad = `
-        //     <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center;">
-        //         <div>
-        //             <p class="text-center" style="color:#464542">Cargando Perfil Topográfico</p>
-        //             <p class="text-center" style="color:#464542"><i class="fas fa-spinner fa-spin"></i></p>
-        //         </div>
-        //     </div>
-        // `;
+        document.getElementById("pt-wrapper").style.display = "flex";
+        $("#pt-wrapper").draggable();
+        $("#pt-wrapper").css("top", $("body").height() - 420);
+    
+    }
 
-        document.getElementById(ptWrapper.id).style.display = "flex";
-        $('#'+ptWrapper.id).draggable();
-        $('#'+ptWrapper.id).css("top", $("body").height() - 420);
-        
-        //document.getElementById("pt-inner").innerHTML = tplLoad;
-        $('#'+ptInnerId).highcharts({
+
+    _displayResult(dataForDisplay) {
+        document.getElementById("pt-wrapper").classList.toggle("hidden");
+
+        $('#pt-inner').highcharts({
             credits: { enabled: false },
             lang: {
                 viewFullscreen: "Pantalla Completa",
@@ -301,131 +284,6 @@ class IElevationProfile {
         });
     
     }
-
-    // Original_displayResult(dataForDisplay) {
-    //     $("#pt-wrapper").append(`
-    //         <div class="pt" id="elevationProfile">
-    //             <a href="javascript:void(0)" style="float:right; color:#676767;" onclick="$('#pt-wrapper').hide(); document.getElementById('elevationProfile').remove();">
-    //                 <i class="fa fa-times"></i>
-    //             </a>
-    //             <div id="pt-inner">
-
-    //             </div>
-    //         </div>
-    //     `);
-
-    //     // let tplLoad = `
-    //     //     <div style="width:100%; height:400px; display:flex; justify-content:center; align-items:center;">
-    //     //         <div>
-    //     //             <p class="text-center" style="color:#464542">Cargando Perfil Topográfico</p>
-    //     //             <p class="text-center" style="color:#464542"><i class="fas fa-spinner fa-spin"></i></p>
-    //     //         </div>
-    //     //     </div>
-    //     // `;
-
-    //     document.getElementById("pt-wrapper").style.display = "flex";
-    //     $("#pt-wrapper").draggable();
-    //     $("#pt-wrapper").css("top", $("body").height() - 420);
-        
-    //     //document.getElementById("pt-inner").innerHTML = tplLoad;
-    //     $('#pt-inner').highcharts({
-    //         credits: { enabled: false },
-    //         lang: {
-    //             viewFullscreen: "Pantalla Completa",
-    //             printChart: "Imprimir",
-    //             downloadCSV: "Descargar en CSV",
-    //             downloadJPEG: "Descargar en JPG",
-    //             downloadPDF: "Descargar en PDF",
-    //             downloadPNG: "Descargar en PNG",
-    //             downloadSVG: "Descargar en SVG",
-    //             downloadXLS: "Descargar en XLS"
-    //         },
-    //         chart: {
-    //             zoomType: 'x',
-    //             backgroundColor: 'rgba(255, 255, 255, 0.0)',
-    //         },
-    //         title: {
-    //             //text: 'Perfil Topográfico',
-    //             text: '',
-    //             style: {
-    //                 fontSize: "15px",
-    //                 color: '#FFFFFF'
-    //             }
-    //         },
-    //         subtitle: {
-    //             //text: 'Distancia Total: ' + data.distancia_total + "Km.",
-    //             text: '',
-    //             style: {
-    //                 //color:'#FFFFFF'
-    //                 color: '#000000'
-    //             }
-    //         },
-    //         xAxis: {
-    //             //type: 'distancia',
-    //             title: {
-    //                 text: 'Distancia (km)'
-    //             }
-    //         },
-    //         yAxis: {
-    //             //type: 'altura',
-    //             title: {
-    //                 text: 'Altura (m)'
-    //             }
-    //         },
-    //         legend: {
-    //             enabled: true
-    //         },
-    //         tooltip: {
-    //             formatter: function () {
-    //                 return 'Altura ' + this.y + ' (m) <br>Distancia ' + this.x + ' (Km)';
-    //             },
-    //             shared: true
-    //         },
-    //         plotOptions: {
-    //             area: {
-    //                 fillColor: {
-    //                     linearGradient: {
-    //                         x1: 0,
-    //                         y1: 0,
-    //                         x2: 0,
-    //                         y2: 1
-    //                     },
-    //                     stops: [
-    //                         [0, Highcharts.getOptions().colors[0]],
-    //                         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-    //                     ]
-    //                 },
-    //                 marker: {
-    //                     radius: 2
-    //                 },
-    //                 lineWidth: 1,
-    //                 states: {
-    //                     hover: {
-    //                         lineWidth: 1
-    //                     }
-    //                 },
-    //                 threshold: null
-    //             }
-    //         },
-
-    //         series: [{
-    //             type: 'area',
-    //             name: 'Altura',
-    //             data: dataForDisplay,
-    //             point: {
-    //                 events: {
-    //                     mouseOver: function (event) {
-    //                         mapa.markerPerfilTopografico = L.marker([event.target.lng, event.target.lat]).addTo(mapa);
-    //                     },
-    //                     mouseOut: function () {
-    //                         mapa.markerPerfilTopografico.remove();
-    //                     }
-    //                 }
-    //             }
-    //         }]
-    //     });
-    
-    // }
 
     getGeoJSON() { // would be moved to the Layer class as part of export method
         const geoJSON = {
