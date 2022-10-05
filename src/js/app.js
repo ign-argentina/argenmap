@@ -87,6 +87,15 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       }
     },
 
+    _loadScript: function ( scriptUrl, type = "application/javascript", inBody = true ) {
+      const script = document.createElement('script');
+      script.src = scriptUrl;
+      script.type = type;
+      let target = null;
+      inBody ? target = "body" : target = "head"; 
+      document[target].appendChild(script);
+    },
+
     loading: function (placement = '') {
       const loading = document.getElementsByClassName('loader-line')[0];
       loading.classList.toggle('visible');
@@ -323,6 +332,15 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
   }
 
+class Module {
+  constructor(scriptUrl, type, target) {
+    this.scriptUrl = scriptUrl,
+    this.type = type,
+    this.target = target
+  }
+
+}
+
 let getGeoserverCounter = 0,
   keywordFilter = 'dato-basico-y-fundamental',
   template = "",
@@ -520,7 +538,10 @@ async function loadTemplate(data, isDefaultTemplate) {
         $.getScript("src/js/plugins/highcharts.theme.js");
       });
 
+      // TODO: replace script loads by ES modules architecture
       $.getScript("src/js/components/elevation-profile/elevation-profile.js");
+      
+      app._loadScript("./src/js/components/geoprocessing/IHeight.js"); // script loading test without jQuery
     }
   }, 1500);
 };
