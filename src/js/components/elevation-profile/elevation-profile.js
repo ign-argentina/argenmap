@@ -136,7 +136,7 @@ class IElevationProfile {
                 selectedLayer = polyline;
             }
         });
-        
+
         if (aux.classList.contains("active")) {
             if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
                 wrapper.classList.toggle("hidden");
@@ -149,14 +149,24 @@ class IElevationProfile {
        
         }
         else if (!aux.classList.contains("active")) {
+            if (wrapper.classList.contains("hidden")) { //if wrapper is  hidden & all layers are deactivated
+                wrapper.classList.toggle("hidden");
+            }
             aux.classList.add("active");
             selectedLayer.addTo(mapa);
             ptInner.classList.toggle("hidden");
         }
-        //Preguntar si el wrapper quedó vacio
-        // else if () {
         
-        // }
+        //Is wrapper empty?
+        let count = 0; 
+        addedLayers.forEach(layer => {
+            if (layer.id.includes("elevation_profile")) {
+                count++;
+            }
+        });
+        if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
+            wrapper.classList.toggle("hidden");
+        }
     }
 
 
