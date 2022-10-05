@@ -111,7 +111,7 @@ class IElevationProfile {
                 polyline: selectedPolyline,
               });
 
-            this._displayResult(dataForDisplay);
+            this._displayResult(dataForDisplay, selectedPolyline);
             geoProcessingManager.loadingBtn("off")
 
             document.getElementById("select-process").selectedIndex = 0;
@@ -129,7 +129,7 @@ class IElevationProfile {
         let aux = document.getElementById("flc-" + id),
         selectedLayer,
         wrapper =  document.getElementById("pt-wrapper"),
-        inner =  document.getElementById("pt-inner");
+        ptInner =  document.getElementById(id);
 
         mapa.editableLayers.polyline.forEach(polyline => {
             if (polyline.name === id) {
@@ -144,49 +144,62 @@ class IElevationProfile {
             else {
                 aux.classList.remove("active")
                 selectedLayer.remove();
-                wrapper.classList.toggle("hidden");
+                ptInner.classList.toggle("hidden");
             }
        
         }
-        else {
+        else if (!aux.classList.contains("active")) {
             aux.classList.add("active");
             selectedLayer.addTo(mapa);
-            wrapper.classList.toggle("hidden");
+            ptInner.classList.toggle("hidden");
         }
         //Preguntar si el wrapper quedó vacio
-
+        // else if () {
+        
+        // }
     }
 
 
     addWrapper() {
-        const wrapper = document.createElement("div");
-        wrapper.id="pt-wrapper";
-        wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-6 col-md-6 hidden"
-        
-        document.body.appendChild(wrapper);
-
-        $("#pt-wrapper").append(`
-            <div class="pt" id="elevationProfile">
-                <a href="javascript:void(0)" style="float:right; color:#676767;" onclick=" document.getElementById('pt-wrapper').classList.toggle('hidden');">
-                    <i class="fa fa-times"></i>
-                </a>
-                <div id="pt-inner">
-
+        if (document.getElementById("pt-wrapper")) {
+            return 0
+        }
+        else {
+            const wrapper = document.createElement("div");
+            wrapper.id="pt-wrapper";
+            wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-6 col-md-6 hidden"
+            
+            document.body.appendChild(wrapper);
+    
+            $("#pt-wrapper").append(`
+                <div class="pt" id="elevationProfile">
+                    <a href="javascript:void(0)" style="float:right; color:#676767;" onclick=" document.getElementById('pt-wrapper').classList.toggle('hidden');">
+                        <i class="fa fa-times"></i>
+                    </a>
+    
+                    </div>
                 </div>
-            </div>
-        `);
-
-        document.getElementById("pt-wrapper").style.display = "flex";
-        $("#pt-wrapper").draggable();
-        $("#pt-wrapper").css("top", $("body").height() - 420);
+            `);
+    
+            document.getElementById("pt-wrapper").style.display = "flex";
+            $("#pt-wrapper").draggable();
+            $("#pt-wrapper").css("top", $("body").height() - 420);
+        
+        }
     
     }
 
 
-    _displayResult(dataForDisplay) {
-        document.getElementById("pt-wrapper").classList.toggle("hidden");
+    _displayResult(dataForDisplay, selectedPolyline) {
+        if (document.getElementById("pt-wrapper").classList.contains("hidden")) {
+            document.getElementById("pt-wrapper").classList.toggle("hidden");
+        }
 
-        $('#pt-inner').highcharts({
+        const inner = document.createElement("div");
+        inner.id = selectedPolyline;
+
+        document.getElementById("elevationProfile").appendChild(inner);
+        $('#'+inner.id).highcharts({
             credits: { enabled: false },
             lang: {
                 viewFullscreen: "Pantalla Completa",
