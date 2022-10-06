@@ -316,8 +316,27 @@ class IElevationProfile {
             }
         });
         
-        const dataForDownload = this.getGeoJSON(layerData);
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataForDownload));
+        //dataForDownload = this.getGeoJSON(layerData);
+        let geoJSON = {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "LineString",
+                  coordinates: [],
+                },
+              },
+            ],
+        };
+      
+        layerData.forEach(point => {
+            let coord = [ point.lat, point.lng, point.y ];
+            geoJSON.features[0].geometry.coordinates.push(coord);
+        });
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON));
         const downloadANode = document.createElement('a');
         downloadANode.setAttribute("href", dataStr);
         downloadANode.setAttribute("download", id + ".geojson");
@@ -327,7 +346,8 @@ class IElevationProfile {
     }
 
     getGeoJSON(data) { // would be moved to the Layer class as part of export method
-        const geoJSON = {
+        
+        let geoJSON = {
           type: "FeatureCollection",
           features: [
             {
