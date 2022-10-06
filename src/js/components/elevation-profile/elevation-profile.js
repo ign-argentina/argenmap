@@ -182,8 +182,8 @@ class IElevationProfile {
             document.body.appendChild(wrapper);
     
             $("#pt-wrapper").append(`
-                <div class="pt" id="elevationProfile">
-                    <a href="javascript:void(0)" style="float:right; color:#676767;" onclick=" document.getElementById('pt-wrapper').classList.toggle('hidden');">
+                <div class="pt" id="elevationProfile" style="overflow-y: scroll; height: 420px;">
+                    <a href="javascript:void(0)" style="float:right; color:#676767; overflow-y:auto;" onclick=" document.getElementById('pt-wrapper').classList.toggle('hidden');">
                         <i class="fa fa-times"></i>
                     </a>
     
