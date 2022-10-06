@@ -98,10 +98,10 @@ class IElevationProfile {
             let layername = this.namePrefix + results_counter;
             results_counter++;
             let dataForDisplay = this.data;
-            let selectedPolyline = mapa.editableLayers.polyline.at(-1).name;
+            let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
 
             //menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-            this.addGeoprocessLayer("Geoprocesos", layername, selectedPolyline, layername);
+            this.addGeoprocessLayer("Geoprocesos", layername, layername, layername);
             addedLayers.push({
                 id: layername,
                 name: layername,
@@ -132,7 +132,7 @@ class IElevationProfile {
         ptInner =  document.getElementById(id);
 
         mapa.editableLayers.polyline.forEach(polyline => {
-            if (polyline.name === id) {
+            if (polyline.idElevProfile === id) {
                 selectedLayer = polyline;
             }
         });
@@ -308,7 +308,25 @@ class IElevationProfile {
     
     }
 
-    getGeoJSON() { // would be moved to the Layer class as part of export method
+    downloadPolyline(id) {
+        let layerData;
+        addedLayers.forEach(layer => {
+            if (layer.id == id) {
+                layerData = layer.data; 
+            }
+        });
+        
+        const dataForDownload = this.getGeoJSON(layerData);
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataForDownload));
+        const downloadANode = document.createElement('a');
+        downloadANode.setAttribute("href", dataStr);
+        downloadANode.setAttribute("download", id + ".geojson");
+        document.body.appendChild(downloadANode);
+        downloadANode.click();
+        downloadANode.remove();
+    }
+
+    getGeoJSON(data) { // would be moved to the Layer class as part of export method
         const geoJSON = {
           type: "FeatureCollection",
           features: [
@@ -324,7 +342,7 @@ class IElevationProfile {
         };
     
         let coords = [];
-        this.data.forEach(point => {
+        data.forEach(point => {
            let coord = [ point.lat, point.lng, point.y ];
             geoJSON.features[0].geometry.coordinates.push(coord);
         });
@@ -339,7 +357,7 @@ class IElevationProfile {
         let div = ` 
         <div style="display:flex; flex-direction:row;">
         <div style="cursor: pointer; width: 70%" onclick="clickDisplayResult('${id}')"><span style="user-select: none;">${id}</span></div>
-        <div class="icon-layer-geo" onclick="mapa.downloadMultiLayerGeoJSON('${id}')"><i class="fas fa-download" title="descargar"></i></div>
+        <div class="icon-layer-geo" onclick="downloadPolyline('${id}')"><i class="fas fa-download" title="descargar"></i></div>
         <div class="icon-layer-geo" onclick="deleteLayerGeometry('${id}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
         </div>
         `
@@ -398,10 +416,11 @@ class IElevationProfile {
 
             let download_opt = document.createElement("li")
             download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
-            download_opt.onclick = function(){
-                let index_file = getIndexFileLayerbyID(id)
-                let d_file_name = addedLayers[index_file].name
-                mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
+            download_opt.onclick = ()=> {
+                // let index_file = getIndexFileLayerbyID(id)
+                // let d_file_name = addedLayers[index_file].name
+                //mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
+                this.downloadPolyline(id)
             }
 
             let edit_name_opt = document.createElement("li")
