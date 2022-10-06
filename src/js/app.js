@@ -541,7 +541,12 @@ async function loadTemplate(data, isDefaultTemplate) {
       // TODO: replace script loads by ES modules architecture
       $.getScript("src/js/components/elevation-profile/elevation-profile.js");
       
-      app._loadScript("./src/js/components/geoprocessing/IHeight.js"); // script loading test without jQuery
+      geoProcessingManager.getProcesses().forEach( process => {
+        if(process.geoprocess === "waterRise"){
+          // script loading test without jQuery
+          app._loadScript("./src/js/components/geoprocessing/IHeight.js"); 
+        }
+      });
     }
   }, 1500);
 };
