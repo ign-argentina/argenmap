@@ -3089,7 +3089,6 @@ class Menu_UI{
     }
     
     modalEliminar(id){
-        console.log(id);
         let index_file= getIndexFileLayerbyID(id)
         let textname = addedLayers[index_file].name
         let fileName = addedLayers[index_file].file_name
@@ -3126,6 +3125,13 @@ class Menu_UI{
             delFileItembyID(id)
             deleteLayerGeometry(id,true)
             $("#modal_layer_del").remove();
+
+            //ElevationProfile
+            if (id.includes("elevation_profile")) {
+                let perfilDelete = new IElevationProfile();
+                perfilDelete.removeElevationProfile(id);
+            }
+
         }
 
         let btn_no = document.createElement("button")

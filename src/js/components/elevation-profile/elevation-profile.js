@@ -45,7 +45,6 @@ class IElevationProfile {
         });
 
         geoProcessingManager.loadingBtn("on")
-        //let lastPolyline = mapa.editableLayers.polyline.at(-1);
         this._processLayer(layerSelected.getGeoJSON());
         this._executeProcess();
         
@@ -317,7 +316,7 @@ class IElevationProfile {
         });
         
         //dataForDownload = this.getGeoJSON(layerData);
-        let geoJSON = {
+        let geoJSON = {   //copia de getGeoJSON
             type: "FeatureCollection",
             features: [
               {
@@ -368,6 +367,89 @@ class IElevationProfile {
         });
 
         console.log(geoJSON);
+    }
+
+    editElevProfileName(id){
+        let index = getIndexFileLayerbyID(id)       
+        addedLayers[index].laodingname = false
+        let id_i = "flc-"+id
+        let container = document.getElementById(id_i)
+        let element = container.getElementsByClassName("file-layername")[0]
+        let name = element.innerText
+        let nodo_hijo = container.getElementsByClassName("btn-group")[0]
+        element.remove()
+
+        let input_name = document.createElement("input")
+        input_name.value = name
+        input_name.type = element.innerText
+        input_name.className = "input_newname form-control"
+        input_name.style = "width: 75% !important;"
+        input_name.id = "i-"+id
+        
+        input_name.autocomplete = "off"
+        input_name.style = "height:22px!important;"
+        input_name.onblur= function(e){
+            if(!addedLayers[index].laodingname){
+                $("#i-"+id).remove()
+                let a_new = document.createElement("div")
+                a_new.className = "file-layername"
+                a_new.innerHTML = `<a>${name}</a>`
+                container.insertBefore(a_new,nodo_hijo);
+            }
+        }
+
+        input_name.onkeyup = function(e) {
+            if(e.key === 'Enter' || e.keyCode === 13){
+                addedLayers[index].laodingname = true
+                $("#i-"+id).remove()
+                let a_new = document.createElement("div")
+                a_new.className = "file-layername"
+                a_new.title = this.value
+                editDomNameofFileLayerbyID(id,this.value)
+                a_new.innerHTML = `<a>${this.value}</a>`
+                a_new.onclick = () => {
+                    let perfilEdit = new IElevationProfile();
+                    perfilEdit.clickDisplayResult(id)
+                }
+                container.insertBefore(a_new,nodo_hijo);
+            }
+        }
+
+        container.insertBefore(input_name,nodo_hijo);
+        $(`#i-${id}`).focus()
+    }
+
+    removeElevationProfile(id) {
+        Object.values(drawnItems._layers).forEach(lyr => { //Removes Drawed Layer
+
+            if (id === lyr.idElevProfile) {
+                drawnItems.removeLayer(lyr);
+                return;
+            }
+        });
+
+        mapa.editableLayers.polyline.forEach( lyr => {  //Removes Editable Layer
+            if (id === lyr.idElevProfile) {
+                mapa.editableLayers.polyline.splice(lyr,1)
+            }
+        });
+
+        let highchartsGraph = document.getElementById(id);  //Removes Highcharts
+        highchartsGraph.remove();
+
+        //Is wrapper empty?
+        let count = 0,
+        wrapper =  document.getElementById("pt-wrapper");
+
+        addedLayers.forEach(layer => {
+            if (layer.id.includes("elevation_profile")) {
+                count++;
+            }
+        });
+        if (count == 0) {
+            wrapper.classList.toggle("hidden"); //Hides Wrapper
+        }
+
     }
 
     addGeoprocessLayer(groupname, textName, id, fileName){
@@ -429,7 +511,7 @@ class IElevationProfile {
 
             let delete_opt = document.createElement("li")
             delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
-            delete_opt.onclick = function(){
+            delete_opt.onclick = () => {
                 let menu = new Menu_UI
                 menu.modalEliminar(id)
             }
@@ -437,24 +519,21 @@ class IElevationProfile {
             let download_opt = document.createElement("li")
             download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
             download_opt.onclick = ()=> {
-                // let index_file = getIndexFileLayerbyID(id)
-                // let d_file_name = addedLayers[index_file].name
-                //mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
                 this.downloadPolyline(id)
             }
 
             let edit_name_opt = document.createElement("li")
             edit_name_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar Nombre</a>`
-            edit_name_opt.onclick = function(){
-                menu_ui.editFileLayerName(id)
+            edit_name_opt.onclick = () => {
+                this.editElevProfileName(id);
             }
 
             let zoom_layer_opt = document.createElement("li")
             zoom_layer_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-search-plus" aria-hidden="true" style="width:20px;"></i>Zoom a capa</a>`
             zoom_layer_opt.onclick = function(){
-                addedLayers.forEach( lyr => {
-                    if( lyr.id === id ) {
-                        mapa.centerLayer(lyr.layer);
+                mapa.editableLayers.polyline.forEach( lyr => {
+                    if( lyr.idElevProfile === id ) {
+                        mapa.centerLayer(lyr);
                     }
                 });
             }
