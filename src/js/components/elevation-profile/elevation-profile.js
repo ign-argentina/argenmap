@@ -94,7 +94,7 @@ class IElevationProfile {
                     distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
                 };
             }
-            let layername = this.namePrefix + results_counter;
+            let layername = "elevation_profile_" + results_counter;
             results_counter++;
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
@@ -121,6 +121,14 @@ class IElevationProfile {
             console.log('Hay error: ', error);
             new UserMessage(error, true, 'error');
             geoProcessingManager.loadingBtn("off")
+        });
+    }
+
+    hideAllElevationProfile() {
+        addedLayers.forEach((layer) => {
+            if (layer.id.includes("elevation_profile_")) {
+                this.clickDisplayResult(layer.id);
+            }
         });
     }
 
@@ -182,14 +190,18 @@ class IElevationProfile {
     
             $("#pt-wrapper").append(`
                 <div class="pt" id="elevationProfile" style="overflow-y: scroll; height: 420px;">
-                    <a href="javascript:void(0)" style="float:right; color:#676767; overflow-y:auto;" onclick=" document.getElementById('pt-wrapper').classList.toggle('hidden');">
+                    <a href="javascript:void(0)" style="float:right; color:#676767; overflow-y:auto;">
                         <i class="fa fa-times"></i>
                     </a>
     
                     </div>
                 </div>
             `);
-    
+
+            let ptElement = document.getElementById("elevationProfile");
+            ptElement.addEventListener("click", () => {
+                this.hideAllElevationProfile();
+            });
             document.getElementById("pt-wrapper").style.display = "flex";
             $("#pt-wrapper").draggable();
             $("#pt-wrapper").css("top", $("body").height() - 420);
@@ -456,13 +468,6 @@ class IElevationProfile {
         let groupnamev= clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
 
-        let div = ` 
-        <div style="display:flex; flex-direction:row;">
-        <div style="cursor: pointer; width: 70%" onclick="clickDisplayResult('${id}')"><span style="user-select: none;">${id}</span></div>
-        <div class="icon-layer-geo" onclick="downloadPolyline('${id}')"><i class="fas fa-download" title="descargar"></i></div>
-        <div class="icon-layer-geo" onclick="deleteLayerGeometry('${id}')"><i class="far fa-trash-alt" title="eliminar"></i></div>
-        </div>
-        `
         //si no existe contenedor
         let id_options_container = "opt-c-"+id
         if(!main){menu_ui.addSection(groupnamev)}
