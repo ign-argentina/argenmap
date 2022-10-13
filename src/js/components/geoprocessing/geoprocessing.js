@@ -555,13 +555,14 @@ class Geoprocessing {
       message.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(message);
       $("#msgRectangle").addClass("hidden");
-      for (let lyr of mapa.editableLayers.polyline) {
-        if (lyr.layer.includes(this.namePrefix)) {
+
+      for (let polyline of mapa.editableLayers.polyline) {
+        if (polyline.layer && polyline.layer.includes(this.namePrefix)) {
           this.setSliderForWaterRise(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
         }
-      }
+      };
 
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
