@@ -15,6 +15,7 @@ class Geoprocessing {
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
   namePrefix = app.geoprocessing.availableProcesses[0].namePrefix ?? "result_";
+  namePrefixBuffer = app.geoprocessing.availableProcesses[2].namePrefix ?? "result_";
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -223,8 +224,8 @@ class Geoprocessing {
       }
       case "buffer": {
         btn_modal_loading = false;
-        let layername =
-          app.geoprocessing.availableProcesses[2].namePrefix + results_counter;
+        let namePrefixBuffer = this.namePrefixBuffer;
+        let layername = namePrefixBuffer + results_counter;
         results_counter++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
