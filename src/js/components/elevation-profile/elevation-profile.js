@@ -99,7 +99,6 @@ class IElevationProfile {
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
 
-            //menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
             this.addGeoprocessLayer("Geoprocesos", layername, layername, layername);
             addedLayers.push({
                 id: layername,
@@ -327,8 +326,7 @@ class IElevationProfile {
             }
         });
         
-        //dataForDownload = this.getGeoJSON(layerData);
-        let geoJSON = {   //copia de getGeoJSON
+        let geoJSON = {
             type: "FeatureCollection",
             features: [
               {
@@ -372,7 +370,6 @@ class IElevationProfile {
           ],
         };
     
-        let coords = [];
         data.forEach(point => {
            let coord = [ point.lat, point.lng, point.y ];
             geoJSON.features[0].geometry.coordinates.push(coord);
@@ -468,7 +465,6 @@ class IElevationProfile {
         let groupnamev= clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
 
-        //si no existe contenedor
         let id_options_container = "opt-c-"+id
         if(!main){menu_ui.addSection(groupnamev)}
         let content = document.getElementById(groupnamev+"-panel-body")
