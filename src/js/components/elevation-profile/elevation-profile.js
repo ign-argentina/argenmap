@@ -124,11 +124,39 @@ class IElevationProfile {
     }
 
     hideAllElevationProfile() {
+        let wrapper =  document.getElementById("pt-wrapper"),
+        selectedLayer
+    
         addedLayers.forEach((layer) => {
             if (layer.id.includes("elevation_profile_")) {
-                this.clickDisplayResult(layer.id);
+                let aux = document.getElementById("flc-" + layer.id),
+                ptInner =  document.getElementById(layer.id);
+                
+                if (aux.classList.contains("active")) {
+                    mapa.editableLayers.polyline.forEach(polyline => {
+                        if (polyline.idElevProfile === layer.id) {
+                            selectedLayer = polyline;
+                        }
+                    });
+                    aux.classList.remove("active")
+                    selectedLayer.remove();
+                    ptInner.classList.toggle("hidden");
+                }
+
             }
         });
+
+        //Is wrapper empty?
+        let count = 0; 
+        addedLayers.forEach(layer => {
+            if (layer.id.includes("elevation_profile")) {
+                count++;
+            }
+        });
+        if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
+            wrapper.classList.toggle("hidden");
+        }
+
     }
 
     clickDisplayResult(id) {
@@ -189,18 +217,22 @@ class IElevationProfile {
     
             $("#pt-wrapper").append(`
                 <div class="pt" id="elevationProfile" style="overflow-y: scroll; height: 420px;">
-                    <a href="javascript:void(0)" style="float:right; color:#676767; overflow-y:auto;">
-                        <i class="fa fa-times"></i>
-                    </a>
-    
                     </div>
                 </div>
             `);
 
-            let ptElement = document.getElementById("elevationProfile");
-            ptElement.addEventListener("click", () => {
+            let btncloseWrapper = document.createElement("a");
+            btncloseWrapper.id = "btnclose-wrapper";
+            btncloseWrapper.href = "javascript:void(0)";
+            btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
+            btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
+                
+            btncloseWrapper.onclick = () => {
                 this.hideAllElevationProfile();
-            });
+            };
+
+            document.getElementById("elevationProfile").append(btncloseWrapper);
+
             document.getElementById("pt-wrapper").style.display = "flex";
             $("#pt-wrapper").draggable();
             $("#pt-wrapper").css("top", $("body").height() - 420);
