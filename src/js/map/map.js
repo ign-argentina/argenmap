@@ -775,6 +775,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								mapa.deleteLayer(layer.name);
+								if(geoProcessingManager){
+									geoProcessingManager.updateLayerSelect(layer.name, false);
+								}
 							}
 						});
 
