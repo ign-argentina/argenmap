@@ -15,6 +15,7 @@ class Geoprocessing {
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
   namePrefix = app.geoprocessing.availableProcesses[0].namePrefix ?? "result_";
+  namePrefixBuffer = app.geoprocessing.availableProcesses[2].namePrefix ?? "result_";
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -227,8 +228,8 @@ class Geoprocessing {
       }
       case "buffer": {
         btn_modal_loading = false;
-        let layername =
-          app.geoprocessing.availableProcesses[2].namePrefix + results_counter;
+        let namePrefixBuffer = this.namePrefixBuffer;
+        let layername = namePrefixBuffer + results_counter;
         results_counter++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
@@ -559,13 +560,14 @@ class Geoprocessing {
       message.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(message);
       $("#msgRectangle").addClass("hidden");
-      for (let lyr of mapa.editableLayers.polyline) {
-        if (lyr.layer.includes(this.namePrefix)) {
+
+      for (let polyline of mapa.editableLayers.polyline) {
+        if (polyline.layer && polyline.layer.includes(this.namePrefix)) {
           this.setSliderForWaterRise(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
         }
-      }
+      };
 
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
