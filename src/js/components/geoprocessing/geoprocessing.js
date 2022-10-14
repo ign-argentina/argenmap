@@ -135,6 +135,10 @@ class Geoprocessing {
     this.geoprocessingConfig = geoprocessingConfig;
   }
 
+  getProcesses() {
+    return this.geoprocessingConfig.availableProcesses;
+  }
+
   displayResult(result) {
     switch (this.geoprocessId) {
       case "contour": {
@@ -651,12 +655,8 @@ class Geoprocessing {
                     mapa.centerLayer(layer);
                   } else if (this.geoprocessId === "waterRise") {
                     if (!element.value) {
-                      document
-                        .getElementById("rangeSlider")
-                        .classList.add("hidden");
-                      document
-                        .getElementById("sliderValue")
-                        .classList.add("hidden");
+                      document.getElementById("rangeSlider").classList.add("hidden");
+                      document.getElementById("sliderValue").classList.add("hidden");
                       return;
                     }
                     let selectedLayer = "";
