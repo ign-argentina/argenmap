@@ -455,7 +455,7 @@ class IElevationProfile {
                 count++;
             }
         });
-        if (count == 0) {
+        if (count == 0 && !wrapper.classList.contains("hidden")) {
             wrapper.classList.toggle("hidden"); //Hides Wrapper
         }
 
