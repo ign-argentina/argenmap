@@ -479,15 +479,18 @@ class IElevationProfile {
         highchartsGraph.remove();
 
         //Is wrapper empty?
-        let count = 0,
+        let layersCount = 0,
+        hiddenCount = 0,
         wrapper =  document.getElementById("pt-wrapper");
 
         addedLayers.forEach(layer => {
             if (layer.id.includes("elevation_profile")) {
-                count++;
+                layersCount++;
             }
         });
-        if (count == 0 && !wrapper.classList.contains("hidden")) {
+        hiddenCount = document.getElementById("elevationProfile").querySelectorAll('.hidden').length;
+
+        if (layersCount == hiddenCount && !wrapper.classList.contains("hidden")) {
             wrapper.classList.toggle("hidden"); //Hides Wrapper
         }
 
