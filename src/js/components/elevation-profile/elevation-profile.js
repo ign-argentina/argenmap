@@ -462,16 +462,17 @@ class IElevationProfile {
 
     removeElevationProfile(id) {
         Object.values(drawnItems._layers).forEach(lyr => { //Removes Drawed Layer
-
             if (id === lyr.idElevProfile) {
                 drawnItems.removeLayer(lyr);
                 return;
             }
         });
 
-        mapa.editableLayers.polyline.forEach( lyr => {  //Removes Editable Layer
+        let polylines = mapa.editableLayers.polyline; //Removes Editable Layer
+        polylines.forEach( lyr => {
             if (id === lyr.idElevProfile) {
-                mapa.editableLayers.polyline.splice(lyr,1)
+                polylines.indexOf(lyr) !== -1 && 
+                polylines.splice(polylines.indexOf(lyr), 1);
             }
         });
 
