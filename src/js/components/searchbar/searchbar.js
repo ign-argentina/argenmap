@@ -59,6 +59,7 @@ class Searchbar_UI{
     input.id = "search_bar"
     input.spellcheck = false
     input.autocomplete = "off"
+    input.type = "search"
     
     let icon = document.createElement("div")
     icon.id = "div-icon-close-searchbar"
