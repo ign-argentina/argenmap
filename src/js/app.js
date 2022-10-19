@@ -500,7 +500,13 @@ async function loadTemplate(data, isDefaultTemplate) {
               $.getScript("src/js/components/geoprocessing/geoprocessing.js").done(function () {
                 geoProcessingManager = new Geoprocessing();
                 geoProcessingManager.createIcon();
-                geoProcessingManager.setAvailableGeoprocessingConfig(app.geoprocessing)
+                geoProcessingManager.setAvailableGeoprocessingConfig(app.geoprocessing);
+                geoProcessingManager.getProcesses().forEach( process => {
+                  if(process.geoprocess === "waterRise"){
+                    // script loading test without jQuery
+                    app._loadScript("./src/js/components/geoprocessing/IHeight.js"); 
+                  }
+                });
               });
             })
           })
@@ -540,13 +546,6 @@ async function loadTemplate(data, isDefaultTemplate) {
 
       // TODO: replace script loads by ES modules architecture
       $.getScript("src/js/components/elevation-profile/elevation-profile.js");
-      
-      geoProcessingManager.getProcesses().forEach( process => {
-        if(process.geoprocess === "waterRise"){
-          // script loading test without jQuery
-          app._loadScript("./src/js/components/geoprocessing/IHeight.js"); 
-        }
-      });
     }
   }, 1500);
 };
