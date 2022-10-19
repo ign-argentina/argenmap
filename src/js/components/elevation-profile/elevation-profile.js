@@ -5,6 +5,8 @@ class IElevationProfile {
         this.values = "";
         this.data = [];
         this.namePrefix = "elevation_profile_";
+        this.verticesLimit = 100;
+        this.verticesLimitMsg = `Selected line has too much vertices. Simplifiy the geometry to execute the process or select a line with less than `;
     }
 
     drawPolyline() {
@@ -43,6 +45,11 @@ class IElevationProfile {
                 layerSelected = polyline;
             }
         });
+
+        if(layerSelected.getLatLngs().length > this.verticesLimit) {
+            const tooMuchVertices = this.verticesLimitMsg + this.verticesLimit;
+            return new UserMessage(tooMuchVertices, true, "error");
+        }
 
         geoProcessingManager.loadingBtn("on")
         this._processLayer(layerSelected.getGeoJSON());
