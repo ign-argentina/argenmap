@@ -46,7 +46,7 @@ loginatic = function() {
 
                 let lat = json[i].lat_4326;
                 let lon = json[i].lon_4326;
-                let zoom = json[i].zoom ?? 10;
+                let zoom = json[i].zoom ?? 13;
 
                 /* document.title += ' - ' + json[i].nombregobiernolocal;
                 let logoTitle = document.getElementById('logoText');
