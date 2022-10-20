@@ -637,8 +637,10 @@ class Geoprocessing {
               } else if (this.geoprocessId === "elevationProfile") {
                 const polylines = mapa.editableLayers.polyline;
                 if (polylines.length > 0) {
-                  polylines.forEach((polyline) => {
-                    options.push({ value: polyline.name, text: polyline.name });
+                  polylines.forEach((poly) => {
+                    if (!poly.layer) {
+                      options.push({ value: poly.name, text: poly.name });
+                    }
                   });
                 }
               }
