@@ -191,16 +191,15 @@ class Geoprocessing {
         break;
       }
       case "waterRise": {
-        btn_modal_loading = false;
-        let layername =
-          app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
+        btn_modal_loading = true;
+        let layername = app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
         results_counter++;
 
         let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
 
         const urlCreator = window.URL || window.webkitURL;
         const imageUrl = urlCreator.createObjectURL(result);
-
+        
         let imageBounds = [
           [
             selectedRectangle._bounds._southWest.lat,
@@ -212,7 +211,15 @@ class Geoprocessing {
           ],
         ];
 
-        let imageLayer = L.imageOverlay(imageUrl, imageBounds);
+        let hasPane = mapa.getPanes().hasOwnProperty("heightPane");
+
+        if (!hasPane) {
+          mapa.createPane("heightPane");
+        }
+
+        const options = {opacity: 0.3, pane: "heightPane"}
+
+        let imageLayer = L.imageOverlay(imageUrl, imageBounds, options);
         imageLayer.addTo(mapa);
 
         addedLayers.push({
@@ -385,6 +392,8 @@ class Geoprocessing {
           });
           //Then, change specific layer
           lyr.setStyle({ color: "#ff1100" });
+          let execute = document.getElementById("ejec_gp");
+          execute.classList.toggle("disabledbutton") 
         }
       });
     };
