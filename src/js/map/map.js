@@ -333,7 +333,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					
 					mapa.groupLayers = {};
 
-					var drawControl = new L.Control.Draw({
+					mapa.drawControl = new L.Control.Draw({
 						edit: {
 							featureGroup: drawnItems,
 							poly: {
@@ -390,7 +390,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.edit.tooltip.text = 'Arrastrar polígonos o marcadores para editar sus características';
 					L.drawLocal.edit.handlers.edit.tooltip.subtext = 'Click en cancelar para deshacer los cambios';
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
-					mapa.addControl(drawControl);
+					mapa.addControl(mapa.drawControl);
 
 					
 					mapa.on('draw:drawstart', (e) => {
