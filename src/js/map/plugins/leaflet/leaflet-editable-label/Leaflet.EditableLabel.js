@@ -5,6 +5,7 @@ class EditableLabel {
     this.activated = false;
     this.control = null;
     this.title = "Agregar etiqueta";
+    this.text = "Click aquí para escribir";
   }
 
   _initialize = () => {
@@ -48,7 +49,7 @@ class EditableLabel {
 
   _getTextDiv = () => {
     let textDiv = document.createElement("div");
-    textDiv.innerHTML = "¡Hola mapa!";
+    textDiv.innerHTML = this.text;
     textDiv.contentEditable = true;
     textDiv.focus();
     return textDiv;
@@ -56,13 +57,13 @@ class EditableLabel {
 
   _addLayerGroup = () => {
     this.labelsLayer = L.layerGroup().addTo(this._map);
-    addedLayers.push({
+    /* addedLayers.push({
       id: "labels",
       layer: this.labelsLayer,
       name: "Etiquetas",
       file_name: "labels",
     });
-    menu_ui.addFileLayer("Etiquetas", "Etiquetas", "labels", "labels")
+    menu_ui.addFileLayer("Etiquetas", "Etiquetas", "labels", "labels") */
   };
 
   _removeLayerGroup = () => {
