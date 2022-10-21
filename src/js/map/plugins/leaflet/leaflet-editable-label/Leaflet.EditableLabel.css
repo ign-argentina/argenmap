@@ -1,0 +1,44 @@
+.textbox > div, .textbox .leaflet-popup-tip-container .leaflet-popup-tip {
+    background: transparent !important;
+    box-shadow: none;
+    /* -webkit-user-drag: element; */
+}
+.textbox {
+    background: transparent;
+    font-weight: bold;
+    color: blue;
+    font-family: inherit;
+    font-size: medium;
+}
+.textbox:focus {
+    background-color: #fafafa91;
+    -webkit-user-select: none;
+    user-select: none;
+    border-style: dotted;
+    border-color: #e98fe191;
+}
+.textbox:hover {
+    cursor: text;
+}
+.leaflet-editable-label-interior {
+    /* background-image: url(favicon.ico); */
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: block;
+    /* padding: 3px; */
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    /* box-shadow: 0 1px 7px rgba(0, 0, 0, 0.65); */
+    cursor: auto;
+    text-align: center;
+    background-color: #FFFFFF;
+}
+
+.leaflet-editable-label-interior:hover {
+    background-color: #F4F4F4;
+}
