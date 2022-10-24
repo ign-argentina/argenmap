@@ -1572,8 +1572,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						const type = layer.split('_')[0];
 						if (mapa.editableLayers.hasOwnProperty(type)) {
 							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
-							if (lyr)
+							if (lyr) {
 								drawnItems.addLayer(lyr);
+							}
 						}
 					}
 
@@ -1597,7 +1598,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.hideGroupLayer = (group,file) => {
 						if (mapa.groupLayers.hasOwnProperty(group))
-							mapa.groupLayers[group].forEach(layer => {
+						mapa.groupLayers[group].forEach(layer => {
 								mapa.hideLayer(layer);
 						});
 					}
@@ -1660,15 +1661,17 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.addLayerToGroup = (layer, group, file) => {
-						if (file==undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
-								mapa.groupLayers[group].push(layer);
+						let feature = null ; 
+						feature = ( typeof layer === "object" ) ? feature = layer.name : feature = layer;
+						if ( mapa.groupLayers.hasOwnProperty(group) ) {
+							if ( mapa.groupLayers[group].find(layerName => layerName === feature) ) {
+								return; // feature already exist in group
 							}
-						}else {
-							if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
-								mapa.groupLayers[group].push(layer);
-							}
+							mapa.groupLayers[group].push(feature);
+							return;
 						}
+						mapa.groupLayers[group] = [];
+						mapa.groupLayers[group].push(feature);
 					}
 
 					mapa.removeLayerFromGroup = (layer, group, file) => {
