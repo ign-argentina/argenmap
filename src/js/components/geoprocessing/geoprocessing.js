@@ -226,11 +226,23 @@ class Geoprocessing {
         const type = layername.split('_')[0]; // gets gruop name without count number
         mapa.editableLayers[type] = [];
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
-        drawnItems.addLayer(imageLayer); // makes imageLayer into the map ;)
-
+        drawnItems.addLayer(imageLayer); // makes imageLayer into the map
+        
+        const height = this.lastHeightProcessed;
+        const title = `${imageLayer.name}_${height}m`;
         const download = () => {
-          // download image
-        }
+          const latlngs = selectedRectangle.getLatLngs()[0];
+          const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat}`;
+
+          this.geoprocessing
+            .execute(coords, height, "image/tiff", "#0368ff60", 1.0)
+            .then((result) => {
+              downloadBlob(result, title);
+            })
+            .catch((ex) => {
+              console.log(ex.message);
+            });
+        };
 
         addedLayers.push({
           id: layername,
@@ -240,7 +252,8 @@ class Geoprocessing {
           rectangle: selectedRectangle,
           download: download
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        
+        menu_ui.addFileLayer("Geoprocesos", title, layername, layername);
         break;
       }
       case "buffer": {
@@ -606,7 +619,6 @@ class Geoprocessing {
 
   buildOptionForm(fields) {
     this.optionsForm.clearForm();
-    //console.log(fields);
     this.fieldsToReferenceLayers = [];
     const formFields = [];
     let sliderLayer;
@@ -934,6 +946,7 @@ class Geoprocessing {
         this.geoprocessing.host,
         this.geoprocessing.mdeLayerFullname
       );
+      this.lastHeightProcessed = valueOfWaterRise;
       waterRise
         .execute(arrayWaterRise, valueOfWaterRise)
         .then((result) => {
