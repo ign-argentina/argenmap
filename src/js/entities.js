@@ -2826,9 +2826,15 @@ class Menu_UI{
             let download_opt = document.createElement("li")
             download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
             download_opt.onclick = function(){
-                let index_file = getIndexFileLayerbyID(id)
-                let d_file_name = addedLayers[index_file].name
-                mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
+                const index_file = getIndexFileLayerbyID(id)
+                // let d_file_name = addedLayers[index_file].name // unused
+                const layer = addedLayers[index_file];
+                if (!layer.download) {
+                    mapa.downloadMultiLayerGeoJSON(id,layer.name,true)
+                    return;
+                }
+                layer.download();
+                return;
             }
 
             let edit_name_opt = document.createElement("li")
