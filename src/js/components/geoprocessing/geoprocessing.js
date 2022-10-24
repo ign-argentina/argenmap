@@ -212,15 +212,25 @@ class Geoprocessing {
         ];
 
         let hasPane = mapa.getPanes().hasOwnProperty("heightPane");
-
         if (!hasPane) {
           mapa.createPane("heightPane");
         }
-
         const options = {opacity: 0.3, pane: "heightPane"}
+        
+        let imageLayer = L.imageOverlay(imageUrl, imageBounds, options); // makes leaflet image overlay from received blob
+        imageLayer.title = layername;
+        imageLayer.name = layername;
+        
+        mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
+        
+        const type = layername.split('_')[0]; // gets gruop name without count number
+        mapa.editableLayers[type] = [];
+        mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
+        drawnItems.addLayer(imageLayer); // makes imageLayer into the map ;)
 
-        let imageLayer = L.imageOverlay(imageUrl, imageBounds, options);
-        imageLayer.addTo(mapa);
+        const download = () => {
+          // download image
+        }
 
         addedLayers.push({
           id: layername,
@@ -228,7 +238,7 @@ class Geoprocessing {
           name: layername,
           file_name: layername,
           rectangle: selectedRectangle,
-          kb: null,
+          download: download
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
         break;
