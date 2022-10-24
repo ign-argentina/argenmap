@@ -161,9 +161,10 @@ class Geoprocessing {
         mapa
           .getEditableLayer(this.editableLayer_name)
           .setStyle({ fillOpacity: 0 });
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
-
-        let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+          mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+          
+          let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+          mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
         addedLayers.push({
           id: layername,
