@@ -1114,3 +1114,25 @@ function loadDeveloperLogo() {
     }
     L.control.developerLogo({ position: 'bottomright'}).addTo(mapa);
 }
+
+function downloadBlob(blob, name = 'file.txt') {
+    // Convert your blob into a Blob URL
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = name;
+    document.body.appendChild(link);
+    // Dispatch click event on the link
+    link.dispatchEvent(
+      new MouseEvent('click', { 
+        bubbles: true, 
+        cancelable: true, 
+        view: window 
+      })
+    );
+  
+    // Remove link from body
+    document.body.removeChild(link);
+}
+  
+  
