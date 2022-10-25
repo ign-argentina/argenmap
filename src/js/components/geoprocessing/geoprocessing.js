@@ -354,6 +354,8 @@ class Geoprocessing {
   }
 
   setSliderForWaterRise(sliderLayer) {
+    $("#ejec_gp").removeClass("disabledbutton");
+
     //Contains all unique values
     let arraySlider = []; //Array that contains all unique values
 
@@ -416,8 +418,6 @@ class Geoprocessing {
           });
           //Then, change specific layer
           lyr.setStyle({ color: "#ff1100" });
-          let execute = document.getElementById("ejec_gp");
-          execute.classList.toggle("disabledbutton") 
         }
       });
     };
@@ -605,7 +605,6 @@ class Geoprocessing {
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
-      $("#ejec_gp").addClass("disabledbutton");
     }
 
     //elevationProfile
@@ -691,6 +690,7 @@ class Geoprocessing {
                     if (!element.value) {
                       document.getElementById("rangeSlider").classList.add("hidden");
                       document.getElementById("sliderValue").classList.add("hidden");
+                      $("#ejec_gp").addClass("disabledbutton");
                       return;
                     }
                     let selectedLayer = "";
@@ -699,10 +699,11 @@ class Geoprocessing {
                         ? (selectedLayer = lyr)
                         : null;
                     });
-                    if (selectedLayer.layer.features.length != 0) {
+                    if (selectedLayer.layer.features.length != 0) {                      
                       mapa.centerLayer(selectedLayer.layer);
                       sliderLayer = selectedLayer;
                       this.updateSliderForWaterRise(sliderLayer);
+                      $("#ejec_gp").removeClass("disabledbutton");
                     }
                   } else if (this.geoprocessId === "buffer") {
                     if (!element.value) {
