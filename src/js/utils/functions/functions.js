@@ -198,120 +198,121 @@ function loadGeojson(url, layer) {
 function loadWmsTplAux(objLayer, param) {
     wmsUrl = objLayer.capa.host;
     layer = objLayer.capa.nombre;
-    if (overlayMaps.hasOwnProperty(layer)) {
-        overlayMaps[layer].removeFrom(mapa);
-        delete overlayMaps[layer];
+  if (overlayMaps.hasOwnProperty(layer)) {
+    overlayMaps[layer].removeFrom(mapa);
+    delete overlayMaps[layer];
+  } else {
+    createWmsLayer(objLayer);
+    overlayMaps[layer].addTo(mapa);
+  }
+
+}
+
+function ucwords(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+//Parse FeatureInfo to display into popup (if info is text/html)
+function parseFeatureInfoHTML(info, idTxt) {
+    infoAux = info.search("<ul>"); // search if info has a list
+    if (infoAux > 0) { // check if info has any content, if so shows popup
+        $(info).find('li').each(function (index) {
+            var aux = $(this).text().split(':');
+            info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
+        });
+
+        info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+
+        return info;
     } else {
-        createWmsLayer(objLayer);
-        overlayMaps[layer].addTo(mapa);
-    }
-
-    function ucwords(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    //Parse FeatureInfo to display into popup (if info is text/html)
-    function parseFeatureInfoHTML(info, idTxt) {
-        infoAux = info.search("<ul>"); // search if info has a list
+        infoAux = info.search("<table"); // search if info has a table
         if (infoAux > 0) { // check if info has any content, if so shows popup
-            $(info).find('li').each(function (index) {
-                var aux = $(this).text().split(':');
-                info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
-            });
-
-            info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
-
+            info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
             return info;
-        } else {
-            infoAux = info.search("<table"); // search if info has a table
-            if (infoAux > 0) { // check if info has any content, if so shows popup
-                info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
-                return info;
-            }
         }
-        return '';
     }
+    return '';
+}
 
-    //Parse FeatureInfo to display into popup (if info is application/json)
-    function parseFeatureInfoJSON(info, idTxt, title) {
-        info = JSON.parse(info);
-        if (info.features.length > 0) { // check if info has any content, if so shows popup
+//Parse FeatureInfo to display into popup (if info is application/json)
+function parseFeatureInfoJSON(info, idTxt, title) {
+    info = JSON.parse(info);
+    if (info.features.length > 0) { // check if info has any content, if so shows popup
 
-            var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
-            infoAux += '<div class="featureGroup">';
-            infoAux += '<div style="padding:1em" class="individualFeature">';
-            infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
-            infoAux += '<ul>';
+        var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
+        infoAux += '<div class="featureGroup">';
+        infoAux += '<div style="padding:1em" class="individualFeature">';
+        infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
+        infoAux += '<ul>';
 
-            for (i in info.features) {
-                Object.keys(info.features[i].properties).forEach(function (k) {
-                    let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
-                    if (k != 'bbox' && !ignoredField ) { //Do not show bbox property
-                        infoAux += '<li>';
-                        infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
-                        if (info.features[i].properties[k] != null) {
-                            infoAux += ' ' + info.features[i].properties[k];
-                        }
-                        infoAux += '<li>';
+        for (i in info.features) {
+            Object.keys(info.features[i].properties).forEach(function (k) {
+                let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
+                if (k != 'bbox' && !ignoredField ) { //Do not show bbox property
+                    infoAux += '<li>';
+                    infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
+                    if (info.features[i].properties[k] != null) {
+                        infoAux += ' ' + info.features[i].properties[k];
                     }
-                });
-            }
-
-            infoAux += '</ul>';
-            infoAux += '</div></div></div>';
-
-            return infoAux;
+                    infoAux += '<li>';
+                }
+            });
         }
 
-        return '';
+        infoAux += '</ul>';
+        infoAux += '</div></div></div>';
+
+        return infoAux;
     }
 
-    function createWmsLayer(objLayer) {
-        //Extends WMS.Source to customize popup behavior
-        var MySource = L.WMS.Source.extend({
-            'showFeatureInfo': function (latlng, info) {
-                let layername = objLayer.capa.titulo
+    return '';
+}
 
-                if (!this._map) {
-                    return;
-                }
+function createWmsLayer(objLayer) {
+    //Extends WMS.Source to customize popup behavior
+    var MySource = L.WMS.Source.extend({
+        'showFeatureInfo': function (latlng, info) {
+            let layername = objLayer.capa.titulo
 
-                if (!loadTableAsPopUp) {
-
-                    if (this.options.INFO_FORMAT == 'text/html') {
-                        var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
-                    } else {
-                        var infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
-                    }
-                    if (infoParsed != '') { // check if info has any content, if so shows popup
-                        var popupContent = $('.leaflet-popup').html();
-                        popupInfo.push(infoParsed); //First info for popup
-                    }
-                    if (popupInfo.length > 0) {
-                        popupInfoToPaginate = popupInfo.slice();
-                        latlngTmp = latlng;
-                        this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
-                        popupInfoPage = 0;
-                    }
-                } else {
-
-                    let tableD = new Datatable(JSON.parse(info), latlng);
-                    createTabulator(tableD, layername);
-
-                }
+            if (!this._map) {
                 return;
             }
-        });
-        var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
-            transparent: true,
-            tiled: true,
-            maxZoom: 21,
-            'title': objLayer.capa.titulo,
-            format: 'image/png',
-            INFO_FORMAT: objLayer.capa.featureInfoFormat
-        });
-        overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
-    }
+
+            if (!loadTableAsPopUp) {
+
+                if (this.options.INFO_FORMAT == 'text/html') {
+                    var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+                } else {
+                    var infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
+                }
+                if (infoParsed != '') { // check if info has any content, if so shows popup
+                    var popupContent = $('.leaflet-popup').html();
+                    popupInfo.push(infoParsed); //First info for popup
+                }
+                if (popupInfo.length > 0) {
+                    popupInfoToPaginate = popupInfo.slice();
+                    latlngTmp = latlng;
+                    this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
+                    popupInfoPage = 0;
+                }
+            } else {
+
+                let tableD = new Datatable(JSON.parse(info), latlng);
+                createTabulator(tableD, layername);
+
+            }
+            return;
+        }
+    });
+    var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
+        transparent: true,
+        tiled: true,
+        maxZoom: 21,
+        'title': objLayer.capa.titulo,
+        format: 'image/png',
+        INFO_FORMAT: objLayer.capa.featureInfoFormat
+    });
+    overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
 }
 
 function loadWms(callbackFunction, objLayer) {
@@ -753,13 +754,11 @@ function zoomEditableLayers(layername) {
 }
 
 function bindZoomLayer() {
-
     let elements = document.getElementsByClassName("zoom-layer");
     let zoomLayer = async function () {
         let layer_name = this.getAttribute("layername")
         let bbox = app.layers[layer_name].capa
-        //if (bbox.servicio === "wms" && typeof bbox.maxy == "null" || typeof bbox.maxy == "undefined") {
-        if (bbox.servicio === "wms" && [bbox.minx, bbox.legendURL].some(el => el === null || 'undefined')) {
+        if (bbox.servicio === "wms" && [bbox.minx, bbox.legendURL].some(el => el === null) && [bbox.minx, bbox.legendURL].some(el => el === "undefined")) {
             await getWmsLyrParams(bbox); // gets layer atribtutes from WMS
         }
 
@@ -884,11 +883,11 @@ function getMulticolorContour(n) {
 //add funcion with setTimeout 
 //fix bug--->  line 553 entities.js 
 //no funciona para todos los templates
-window.onload = function () {
+/* window.onload = function () {
     setTimeout(function () {
         bindZoomLayer()
         bindLayerOptions()
-    }, 2000);
+    }, 200);
 };
 
 
@@ -896,8 +895,8 @@ function bindLayerOptionsIdera() {
     setTimeout(function () {
         bindZoomLayer()
         bindLayerOptions()
-    }, 1000);
-}
+    }, 100);
+} */
 
 
 function zoomLayer(id_dom) {
@@ -924,7 +923,7 @@ function zoomLayer(id_dom) {
 
 async function getWmsLyrParams(lyr) {
     //let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
-    let url = `${lyr.host}?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
+    let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
         sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
     await fetch(url)
         .then((res) => res.text())
@@ -947,8 +946,10 @@ function parseXml(str, lyr, sys) {
 
     if (xmlNodes) {
         for (i = 0; i < xmlNodes.length; i++) {
-            if (xmlNodes[i].childNodes[0].nodeValue === lyr.nombre) {
-                xmlLyr = xmlNodes[i].parentNode;
+            if( xmlNodes[i].childNodes.length > 0 ) {
+                if (xmlNodes[i].childNodes[0].nodeValue === lyr.nombre) {
+                    xmlLyr = xmlNodes[i].parentNode;
+                }
             }
         }
 
