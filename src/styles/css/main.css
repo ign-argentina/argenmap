@@ -140,9 +140,9 @@ Menu principal
 .panel-default > .panel-heading > .panel-title > a {
   font-size: 15px;
 }
-#sidebar-container {
+/* #sidebar-container {
   z-index: 1500;
-}
+} */
 #sidebar .nav {
   border: 1px;
 }

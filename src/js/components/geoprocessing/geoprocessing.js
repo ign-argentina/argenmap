@@ -120,7 +120,7 @@ class Geoprocessing {
       "Seleccione una Opción";
 
     $("#mr").draggable({
-      containment: "#mapa",
+      containment: "body",
     });
 
     if (document.getElementById("mr")) {
