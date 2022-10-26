@@ -196,7 +196,13 @@ class Geoprocessing {
         let layername = app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
         results_counter++;
 
-        let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+        let selectedRectangle;
+        let valueCota = document.getElementById("select-capa").value;
+        addedLayers.forEach(lyr => {
+          if (lyr.id === valueCota) {
+            selectedRectangle = lyr.rectangle
+          }
+        });
 
         const urlCreator = window.URL || window.webkitURL;
         const imageUrl = urlCreator.createObjectURL(result);
@@ -344,7 +350,7 @@ class Geoprocessing {
     });
   }
 
-  updateSliderForWaterRise(sliderLayer) {
+  updateSliderHeight(sliderLayer) {
     document.getElementById("rangeSlider").classList.remove("hidden");
     document.getElementById("sliderValue").classList.remove("hidden");
     let arraySlider = []; //Array that contains all unique values
@@ -366,10 +372,10 @@ class Geoprocessing {
       }
     });
     //Update the current slider value (each time you drag the slider handle)
-    this.sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider);
+    this.sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider);
   }
 
-  setSliderForWaterRise(sliderLayer) {
+  setSliderHeight(sliderLayer) {
     $("#ejec_gp").removeClass("disabledbutton");
 
     //Contains all unique values
@@ -410,10 +416,10 @@ class Geoprocessing {
       }
     });
     //Update the current slider value (each time you drag the slider handle)
-    this.sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider);
+    this.sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider);
   }
 
-  sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider) {
+  sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider) {
     rangeSlider.oninput = function () {
       sliderValue.innerHTML = arraySlider[this.value - 1] + " (m)"; //layers value
       mapa.editableLayers.polyline.forEach((lyr) => {
@@ -612,7 +618,7 @@ class Geoprocessing {
 
       for (let polyline of mapa.editableLayers.polyline) {
         if (polyline.layer && polyline.layer.includes(this.namePrefix)) {
-          this.setSliderForWaterRise(sliderLayer);
+          this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
         }
@@ -705,9 +711,6 @@ class Geoprocessing {
                   } else if (this.geoprocessId === "waterRise") {
                     let selectedLayer = "";
                     if (!element.value) {
-
-                      console.log("selectedLayer: ", selectedLayer)
-
                       this.resetWaterRiseLayerColor();
                       document.getElementById("rangeSlider").classList.add("hidden");
                       document.getElementById("sliderValue").classList.add("hidden");
@@ -720,14 +723,11 @@ class Geoprocessing {
                         : null;
                     });
                     if (selectedLayer.layer.features.length != 0) {   
-
                       this.resetWaterRiseLayerColor();
                       mapa.centerLayer(selectedLayer.layer);
+
                       sliderLayer = selectedLayer;
-
-                      console.log("sliderLayer: ", sliderLayer)
-
-                      this.updateSliderForWaterRise(sliderLayer);
+                      this.updateSliderHeight(sliderLayer);
                       $("#ejec_gp").removeClass("disabledbutton");
                     }
                   } else if (this.geoprocessId === "buffer") {
@@ -931,7 +931,6 @@ class Geoprocessing {
           case "waterRise": {
             addedLayers.forEach((layer) => {
               if (layer.id == document.getElementById("select-capa").value) {
-                console.log("select-capa value: ", layer.id)
                 layer.rectangle._latlngs[0].forEach((coord) => {
                   arrayWaterRise += coord.lng + " " + coord.lat + ",";
                 });
@@ -939,7 +938,6 @@ class Geoprocessing {
                   layer.rectangle._latlngs[0][0].lng +
                   " " +
                   layer.rectangle._latlngs[0][0].lat;
-                  console.log("layer: ",layer)
               }
             });
 
@@ -950,7 +948,6 @@ class Geoprocessing {
               waterRiseValue.length - 4
             );
             valueOfWaterRise = parseInt(waterRiseValue);
-            console.log("valueOfWaterRise: ",valueOfWaterRise)
             break;
           }
         }
