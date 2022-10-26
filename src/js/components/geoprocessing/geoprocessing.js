@@ -349,6 +349,13 @@ class Geoprocessing {
     document.getElementById("rangeSlider").value = "1";
     document.getElementById("rangeSlider").max = arraySlider.length;
     document.getElementById("sliderValue").innerHTML = arraySlider[0] + " (m)";
+
+    //Display the default slider value
+    mapa.editableLayers.polyline.forEach((lyr) => {
+      if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[0]) {
+        lyr.setStyle({ color: "#ff1100" }); //Same id, spedific value
+      }
+    });
     //Update the current slider value (each time you drag the slider handle)
     this.sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider);
   }
@@ -677,7 +684,7 @@ class Geoprocessing {
               }
             }
 
-            //Select element in "Capa"
+            //Select layer in "Capa"
             const select = this.optionsForm.addElement("select", selectId, {
               title: field.name,
               events: {
@@ -687,21 +694,27 @@ class Geoprocessing {
                     const layer = mapa.getEditableLayer(element.value);
                     mapa.centerLayer(layer);
                   } else if (this.geoprocessId === "waterRise") {
+                    let selectedLayer = "";
                     if (!element.value) {
+                      //console.log("selectedLayer: ", selectedLayer)
+
                       document.getElementById("rangeSlider").classList.add("hidden");
                       document.getElementById("sliderValue").classList.add("hidden");
                       $("#ejec_gp").addClass("disabledbutton");
                       return;
                     }
-                    let selectedLayer = "";
                     addedLayers.forEach((lyr) => {
                       lyr.file_name == element.value
                         ? (selectedLayer = lyr)
                         : null;
                     });
-                    if (selectedLayer.layer.features.length != 0) {                      
+                    if (selectedLayer.layer.features.length != 0) {   
+                      //console.log("selectedLayer: ", selectedLayer)
+
                       mapa.centerLayer(selectedLayer.layer);
                       sliderLayer = selectedLayer;
+                      //console.log("sliderLayer: ", sliderLayer)
+
                       this.updateSliderForWaterRise(sliderLayer);
                       $("#ejec_gp").removeClass("disabledbutton");
                     }
