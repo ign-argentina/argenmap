@@ -236,7 +236,10 @@ class Geoprocessing {
         mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
         
         const type = layername.split('_')[0]; // gets gruop name without count number
-        mapa.editableLayers[type] = [];
+
+        if (!mapa.editableLayers[type]) {
+          mapa.editableLayers[type] = [];  
+        }
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
         
@@ -286,6 +289,7 @@ class Geoprocessing {
         break;
       }
     }
+    this.resetWaterRiseLayerColor();
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
