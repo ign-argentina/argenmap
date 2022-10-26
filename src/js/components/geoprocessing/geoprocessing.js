@@ -139,6 +139,12 @@ class Geoprocessing {
     return this.geoprocessingConfig.availableProcesses;
   }
 
+  getCapaValue() {
+    let selectedCapa = document.getElementById("select-capa");
+    let result = selectedCapa.options[selectedCapa.selectedIndex].text;
+    return result;
+  }
+
   displayResult(result) {
     switch (this.geoprocessId) {
       case "contour": {
@@ -197,9 +203,8 @@ class Geoprocessing {
         results_counter++;
 
         let selectedRectangle;
-        let valueCota = document.getElementById("select-capa").value;
         addedLayers.forEach(lyr => {
-          if (lyr.id === valueCota) {
+          if (lyr.id === this.getCapaValue()) {
             selectedRectangle = lyr.rectangle
           }
         });
