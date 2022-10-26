@@ -379,134 +379,138 @@ async function getWfsLayerFields(url, params) {
  * @param {String} api where to look for the CRS type
  * @returns only the number of the projection ex: 22183
  */
-function getCRSByWFSCapabilities(api) {
+function getCRSByWFSCapabilities(capabilitiesUrl, featureName) {
     // TODO falta implementar reject para manejar el error
     return new Promise((resolve, reject) => {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var xmlDoc = this.responseXML;
-                // Element: <DefaultCRS>
-                xmlDoc.getElementsByTagName('DefaultCRS');
-                let crs = xmlDoc.getElementsByTagName('DefaultCRS')[0].innerHTML;
+                const xmlDoc = this.responseXML;
+                const features = xmlDoc.getElementsByTagName('FeatureType');
+                let defaultCRS = null, crs = null;
+
+                Array.from(features).some((feature) => {
+                  let nodeName = feature.getElementsByTagName("Name")[0];
+                  if (nodeName.innerHTML === featureName) {
+                    return (defaultCRS =
+                      feature.getElementsByTagName("DefaultCRS"));
+                  }
+                });
+                
+                if ( defaultCRS.length > 0 ) {
+                    crs = defaultCRS[0].innerHTML.split('::')[1];
+                }
                 // The format of DefaultCRS is "urn:ogc:def:crs:EPSG::22183"
                 // TODO mejora a través de definiciones -> proj4.defs('urn:x-ogc:def:crs:EPSG::4326', proj4.defs('EPSG:4326'));
-                resolve(crs.split('::')[1]);
+                resolve(crs);
             } else if (this.readyState == 4 && this.status != 200) {
                 reject(null)
             }
         };
-        xhttp.open("GET", api, true);
+        xhttp.open("GET", capabilitiesUrl, true);
         xhttp.send();
     })
 }
 
-function getLayerDataByWFS(coords, type, layerData) {
+function getLayerDataByWFS(filterCoords, type, layerData) {
     return new Promise((resolve) => {
-        // Make the url to retrieve the request
-        // If the host has the / wms parameter it is replaced by an empty string
-        const fixHost = layerData.host.replace(/\/wms$/, '');
-        const capabilitiesUrl = `${fixHost}/${layerData.name}/ows?service=wfs&request=GetCapabilities`; // Where to save the reprojection
+        const host = layerData.host.replace(/\/wms\?*$/, ''); // removes /wms? endpoint from URI
+        const layerName = window.encodeURI(layerData.name.replace(":", "/")); // if layer name includes the workspace name, replaces colon with a slash
+        const capabilitiesUrl = `${host}/${layerName}/ows?service=wfs&request=GetCapabilities`;
         
         let reprojectedCoords = [];
-        // Get the CRS
-        getCRSByWFSCapabilities(capabilitiesUrl).then((crs) => {
-            isWgs84 = crs === "4326" || crs === "84";
-            if (isWgs84) {
-            // TODO Obtener el CRS a través del get capabilities del servicio WMS (gestorMenu.items[k].itemComposite.capa)
-            // coords.forEach((coordsPair,i) => {
-            //     let result = proj4(proj4('WGS84'),proj4(PROJECTIONS['22185']),coordsPair);
-            //     coords[i] = result;
-            // });
-            let url = fixHost, 
-            params = {
-                service: 'wfs',
-                request: 'GetFeature',
-                version: '',
-                outputFormat: 'application%2Fjson',
-                typeName: layerData.name,
-                cql_filter: ''
-            }, paramsStr = [];
+        // get the CRS, then defines a WFS request including coordinates in the layer's CRS
+        getCRSByWFSCapabilities(capabilitiesUrl, layerData.name).then((crs) => {
+          let isWgs84 = crs === "4326" || crs === "84" || crs === null; // true if crs = wgs84 or null 
+            let url = host, paramsStr = [],
+                params = {
+                    service: "wfs",
+                    request: "GetFeature",
+                    version: "",
+                    outputFormat: "application%2Fjson",
+                    typeName: layerData.name,
+                    cql_filter: ""
+                };
+          if (isWgs84) {
+            // TODO: get CRS from initial WMS getCapabilities (gestorMenu.items[k].itemComposite.capa)
+            getWfsLayerFields(url, params).then((geom) => {
+              if (type === "polygon" || type === "rectangle") {
+                const coordsFormatted = setCoordinatesFormat(coords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`);
+              }
+              if (type === "circle") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`);
+              }
+              if (type === "marker") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`);
+              }
+              if (type === "polyline") {
+                const coordsFormatted = setCoordinatesFormat(coords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`);
+              }
+
+              Object.entries(params).forEach((p) => {
+                paramsStr.push(p.join("="));
+              });
+              url += "/ows?" + paramsStr.join("&");
+
+              fetch(url).then((response) => {
+                if (response.status !== 200) resolve(null);
+                resolve(response.json());
+              });
+            });
+          }
+          if (!isWgs84) {
+            // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
+            // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
+            // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+
+            // If the CRS is not 84, reproject the coords
+            coords.forEach((coordsPair, i) => {
+              let result = proj4(
+                proj4("WGS84"),
+                proj4(PROJECTIONS[crs]),
+                coordsPair
+              );
+              // coords[i] = result;
+              reprojectedCoords[i] = result;
+            });
 
             getWfsLayerFields(url, params).then((geom) => {
-                if (type === 'polygon' || type === 'rectangle') {
-                    const coordsFormatted = setCoordinatesFormat(coords);
-                    params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
-                }
-                if (type === 'circle') {
-                    params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
-                }
-                if (type === 'marker') {
-                    params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`;
-                }
-                if (type === 'polyline') {
-                    const coordsFormatted = setCoordinatesFormat(coords);
-                    params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
-                }
+              if (type === "polygon" || type === "rectangle") {
+                const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`);
+              }
+              if (type === "circle") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `DWITHIN(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}),${reprojectedCoords.r},meters)`);
+              }
+              if (type === "marker") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}))`);
+              }
+              if (type === "polyline") {
+                const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`);
+              }
 
-                Object.entries(params).forEach(p => {
-                    paramsStr.push(p.join('='));
-                });
-                url += '/ows?' + paramsStr.join('&');
+              Object.entries(params).forEach((p) => {
+                paramsStr.push(p.join("="));
+              });
+              url += "/ows?" + paramsStr.join("&");
 
-                fetch(url).then((response) => {
-                    if (response.status !== 200)
-                        resolve(null);
-                    resolve(response.json());
-                })
-            })
-            }
-            if(!isWgs84) {
-                // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
-                // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
-                // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
-
-                // If the CRS is not 84, reproject the coords
-                coords.forEach((coordsPair, i) => {
-                    let result = proj4(proj4('WGS84'), proj4(PROJECTIONS[crs]), coordsPair);
-                    // coords[i] = result;
-                    reprojectedCoords[i] = result;
-                });
-                // Make the url to retrive WFS data
-                let url = fixHost, 
-                params = {
-                    service: 'wfs',
-                    request: 'GetFeature',
-                    version: '',
-                    outputFormat: 'application%2Fjson',
-                    typeName: layerData.name,
-                    cql_filter: ''
-                }
-                let paramsStr = [];
-
-                getWfsLayerFields(url, params).then((geom) => {
-                    if (type === 'polygon' || type === 'rectangle') {
-                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
-                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
-                    }
-                    if (type === 'circle') {
-                        params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}),${reprojectedCoords.r},meters)`;
-                    }
-                    if (type === 'marker') {
-                        params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}))`;
-                    }
-                    if (type === 'polyline') {
-                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
-                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
-                    }
-
-                    Object.entries(params).forEach(p => {
-                        paramsStr.push(p.join('='));
-                    });
-                    url += '/ows?' + paramsStr.join('&');
-
-                    fetch(url).then((response) => {
-                        if (response.status !== 200)
-                            resolve(null);
-                        resolve(response.json());
-                    });
-                })
-            }
+              fetch(url).then((response) => {
+                if (response.status !== 200) resolve(null);
+                resolve(response.json());
+              });
+            });
+          }
         }).catch((e) => {
             console.error('The host does not provide capabilities for the WFS service');
         })
