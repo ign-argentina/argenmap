@@ -82,10 +82,12 @@ class StylesUI {
     `;
 
   let logoText = document.getElementById("logoText");
-  logoText.innerHTML= app.logoText ? app.logoText.content : "";
-  logoText.href = app.logoText.link ?? '';
-  logoText.title = app.logoText.title ?? '';
-  logoText.target = '_blank';
+  if (app.logoText) {
+    logoText.innerHTML= app.logoText.content;
+    logoText.href = app.logoText.link ?? '';
+    logoText.title = app.logoText.title ?? '';
+    logoText.target = '_blank';
+  }
   
 
   document.head.appendChild(style);
