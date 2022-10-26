@@ -73,7 +73,8 @@ class StylesUI {
       #top-left-logo {
         background-repeat: no-repeat;
         background-image: url("${app.logo.src}");
-        background-size: ${app.logo.height} ${app.logo.width};
+        height: ${app.logo.height};
+        width: ${app.logo.width};
         background-position: left 1px center;
         ${app.logo.style}
       }
