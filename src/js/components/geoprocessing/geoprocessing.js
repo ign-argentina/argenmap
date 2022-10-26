@@ -139,6 +139,12 @@ class Geoprocessing {
     return this.geoprocessingConfig.availableProcesses;
   }
 
+  getCapaValue() {
+    let selectedCapa = document.getElementById("select-capa");
+    let result = selectedCapa.options[selectedCapa.selectedIndex].text;
+    return result;
+  }
+
   displayResult(result) {
     switch (this.geoprocessId) {
       case "contour": {
@@ -196,7 +202,12 @@ class Geoprocessing {
         let layername = app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
         results_counter++;
 
-        let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+        let selectedRectangle;
+        addedLayers.forEach(lyr => {
+          if (lyr.id === this.getCapaValue()) {
+            selectedRectangle = lyr.rectangle
+          }
+        });
 
         const urlCreator = window.URL || window.webkitURL;
         const imageUrl = urlCreator.createObjectURL(result);
@@ -225,7 +236,10 @@ class Geoprocessing {
         mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
         
         const type = layername.split('_')[0]; // gets gruop name without count number
-        mapa.editableLayers[type] = [];
+
+        if (!mapa.editableLayers[type]) {
+          mapa.editableLayers[type] = [];  
+        }
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
         
@@ -275,6 +289,7 @@ class Geoprocessing {
         break;
       }
     }
+    this.resetWaterRiseLayerColor();
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
@@ -335,7 +350,16 @@ class Geoprocessing {
     }
   }
 
-  updateSliderForWaterRise(sliderLayer) {
+  resetWaterRiseLayerColor() {
+    mapa.editableLayers.polyline.forEach((lyr) => {
+      if (lyr.layer && lyr.layer.includes("curvas_de_nivel") && lyr.options.color == "#ff1100") {
+        //Same id, spedific value
+        lyr.setStyle({ color: "#E4C47A" });
+      }
+    });
+  }
+
+  updateSliderHeight(sliderLayer) {
     document.getElementById("rangeSlider").classList.remove("hidden");
     document.getElementById("sliderValue").classList.remove("hidden");
     let arraySlider = []; //Array that contains all unique values
@@ -357,10 +381,10 @@ class Geoprocessing {
       }
     });
     //Update the current slider value (each time you drag the slider handle)
-    this.sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider);
+    this.sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider);
   }
 
-  setSliderForWaterRise(sliderLayer) {
+  setSliderHeight(sliderLayer) {
     $("#ejec_gp").removeClass("disabledbutton");
 
     //Contains all unique values
@@ -401,10 +425,10 @@ class Geoprocessing {
       }
     });
     //Update the current slider value (each time you drag the slider handle)
-    this.sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider);
+    this.sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider);
   }
 
-  sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider) {
+  sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider) {
     rangeSlider.oninput = function () {
       sliderValue.innerHTML = arraySlider[this.value - 1] + " (m)"; //layers value
       mapa.editableLayers.polyline.forEach((lyr) => {
@@ -603,7 +627,7 @@ class Geoprocessing {
 
       for (let polyline of mapa.editableLayers.polyline) {
         if (polyline.layer && polyline.layer.includes(this.namePrefix)) {
-          this.setSliderForWaterRise(sliderLayer);
+          this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
         }
@@ -696,8 +720,7 @@ class Geoprocessing {
                   } else if (this.geoprocessId === "waterRise") {
                     let selectedLayer = "";
                     if (!element.value) {
-                      //console.log("selectedLayer: ", selectedLayer)
-
+                      this.resetWaterRiseLayerColor();
                       document.getElementById("rangeSlider").classList.add("hidden");
                       document.getElementById("sliderValue").classList.add("hidden");
                       $("#ejec_gp").addClass("disabledbutton");
@@ -709,13 +732,11 @@ class Geoprocessing {
                         : null;
                     });
                     if (selectedLayer.layer.features.length != 0) {   
-                      //console.log("selectedLayer: ", selectedLayer)
-
+                      this.resetWaterRiseLayerColor();
                       mapa.centerLayer(selectedLayer.layer);
-                      sliderLayer = selectedLayer;
-                      //console.log("sliderLayer: ", sliderLayer)
 
-                      this.updateSliderForWaterRise(sliderLayer);
+                      sliderLayer = selectedLayer;
+                      this.updateSliderHeight(sliderLayer);
                       $("#ejec_gp").removeClass("disabledbutton");
                     }
                   } else if (this.geoprocessId === "buffer") {
