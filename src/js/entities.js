@@ -97,27 +97,77 @@ class ImpresorItemHTML extends Impresor {
         legend = lyr.legendURL.includes('GetLegendGraphic') ? lyr.legendURL + legendParams : lyr.legendURL ;
         
         // following line adds layer when click is made
-        //let legendImg = `<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"${childId}\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
         let legendImg = `<div class='legend-layer'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
         let activated = item.visible == true ? " active " : "", btnhtml = "";
 
-        //if tab = combobox, img source from 
-        /* if(item.listType === "combobox"){
-            //let url_img = lyr.legendURL + legendParams; 
-            legendImg = "<div class='legend-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='" + legend + "' onerror='showImageOnError(this);'></div>";
-        } */
+        const btn = document.createElement("li");
+        btn.id = childId;
+        btn.classList = "capa list-group-item" + activated;
+        btn.style.padding = "10px 1px 10px 1px";
 
-        if (loadLayerOptions){
-            btnhtml =  "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 1px 1px;' >" + "<div class='capa-title'>" + legendImg + "<div class='name-layer' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" + "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" + "</a>" +"<div class='zoom-layer' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div><div class='layer-options-icon' layername="+item.nombre+" title='Opciones'><i class='fas fa-angle-down'></i></div>"+
-            "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" + "</li>"
-        }
-        else{
-            btnhtml = "<li id='" + childId + "' class='capa list-group-item" + activated + "' style='padding: 10px 1px 10px 1px;' >" + "<div class='capa-title'>" + legendImg + "<div class='name-layer' style='align-self: center;' onClick='gestorMenu.muestraCapa(\"" + childId + "\")'><a nombre=" + item.nombre + " href='#'>" +
-            "<span data-toggle2='tooltip' title='" + item.descripcion + "'>" + (item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre") + "</span></div>" + "</a>" +"<div class='zoom-layer'  style='align-self: center;' layername="+item.nombre+"><i class='fas fa-search-plus' title='Zoom a capa'></i></div>" + "</div><div class='display-none' id=layer-options-"+item.nombre+"></div>" + "</li>"
-        }
- 
-        return btnhtml;
+        const btn_title = document.createElement("div");
+        btn_title.className = "capa-title";
+        btn_title.innerHTML = legendImg;
 
+        const btn_name = document.createElement("div");
+        btn_name.className = "name-layer";
+        btn_name.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`);
+        btn_name.style.alignSelf = "center";
+
+        const btn_link = document.createElement("a");
+        btn_link.setAttribute("nombre", item.nombre);
+        btn_link.href = "#";
+        btn_link.innerHTML = item.titulo ? item.titulo.replace(/_/g, " ") : "por favor ingrese un nombre";
+
+        const btn_tooltip = document.createElement("span");
+        btn_tooltip.setAttribute("data-toggle2", "tooltip");
+        btn_tooltip.title = item.descripcion;
+        
+        const btn_zoom = document.createElement("div");
+        btn_zoom.className = "zoom-layer";
+        btn_zoom.setAttribute("layername", item.nombre);
+        btn_zoom.style.alignSelf = "center";
+
+        const btn_zoom_icon = document.createElement("i");
+        btn_zoom_icon.classList = "fas fa-search-plus";
+        btn_zoom_icon.title = "Zoom a capa";
+        
+        const btn_options_icon_div = document.createElement("div");
+        btn_options_icon_div.className = "layer-options-icon";
+        btn_options_icon_div.setAttribute("layername", item.nombre);
+        btn_options_icon_div.title= "Opciones";
+
+        const btn_options_icon = document.createElement("i");
+        btn_options_icon.classList = "fas fa-angle-down";
+        btn_options_icon.title = "Zoom a capa";
+
+        const btn_options_list = document.createElement("div");
+        btn_options_list.className = "display-none";
+        btn_options_list.id = "layer-options-" + item.nombre;
+
+        const btn_options = document.createElement("div");
+        btn_options.className = "display-none";
+        btn_options.id = "layer-options-" + item.nombre;
+
+        if(loadLayerOptions) {
+            btn.style.padding = "10px 1px 1px 1px";
+            btn_name.removeAttribute("style");
+            btn_zoom.removeAttribute("style");
+            btn_options_icon_div.appendChild(btn_options_icon);
+        }
+
+        btn_link.appendChild(btn_tooltip);
+        btn_name.appendChild(btn_link);
+        btn_title.appendChild(btn_name);
+
+        btn_zoom.appendChild(btn_zoom_icon);
+        btn_title.appendChild(btn_zoom);
+
+        btn.appendChild(btn_title);
+        btn.appendChild(btn_options_icon_div);
+        btn.appendChild(btn_options);
+
+        return btn.outerHTML;
     }
 }
 
@@ -475,6 +525,8 @@ class LayersInfoWMS extends LayersInfo {
             }
 
         }
+        bindZoomLayer();
+        bindLayerOptions();
     }
 
     get_without_print(_gestorMenu) {
@@ -2544,17 +2596,22 @@ class GestorMenu {
                 if (isBaseLayer && layerIsActive && layerIsWmts) {
                     wmtsLayers.push(item);
                 } else {
-                    if (item.getId() == itemSeccion) {
-                        if ($(`#${item.getId()}`).hasClass('active')) {
+                    let id = item.getId();
+                    if ( id === itemSeccion) {
+                        if ($("#" + itemSeccion).hasClass('active')) {
                             this.removeActiveLayer(item.nombre);
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, false);
-                                geoProcessingManager.updateLayerSelect(item.nombre, false);
+                                if(geoProcessingManager) {
+                                    geoProcessingManager.updateLayerSelect(item.nombre, false);
+                                }
                         } else {
                             this.addActiveLayer(item.nombre);
                             if (!isBaseLayer)
                                 mapa.activeLayerHasChanged(item.nombre, true);
-                                geoProcessingManager.updateLayerSelect(item.nombre, true);
+                                if(geoProcessingManager) {
+                                    geoProcessingManager.updateLayerSelect(item.nombre, true);
+                                }
                         }
                         
                         item.showHide();
@@ -2750,6 +2807,13 @@ class Menu_UI{
         //$('#sidebar div.menu5').first().prepend(itemnew)
     }
 
+    addLayerOption({ color = "#474b4e", classList = "far fa-question-circle", title = "Layer option", onclick = callback }) {
+        const layerOption = document.createElement("li");
+        layerOption.innerHTML = `<a style="color:${color};" href="#"><i class="${classList}" aria-hidden="true" style="width:20px;"></i>${title}</a>`;
+        layerOption.onclick = function(){ callback };
+        return layerOption;    
+    }
+
     addFileLayer(groupname, textName, id, fileName){
         let groupnamev= clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
@@ -2817,11 +2881,17 @@ class Menu_UI{
             }
 
             let download_opt = document.createElement("li")
-            download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
+            download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar</a>`
             download_opt.onclick = function(){
-                let index_file = getIndexFileLayerbyID(id)
-                let d_file_name = addedLayers[index_file].name
-                mapa.downloadMultiLayerGeoJSON(id,addedLayers[index_file].name,true)
+                const index_file = getIndexFileLayerbyID(id)
+                // let d_file_name = addedLayers[index_file].name // unused
+                const layer = addedLayers[index_file];
+                if (!layer.download) {
+                    mapa.downloadMultiLayerGeoJSON(id,layer.name,true)
+                    return;
+                }
+                layer.download();
+                return;
             }
 
             let edit_name_opt = document.createElement("li")
@@ -2829,9 +2899,55 @@ class Menu_UI{
             edit_name_opt.onclick = function(){
                 menu_ui.editFileLayerName(id)
             }
+
+            let zoom_layer_opt = document.createElement("li")
+            zoom_layer_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-search-plus" aria-hidden="true" style="width:20px;"></i>Zoom a capa</a>`
+            zoom_layer_opt.onclick = function(){
+                addedLayers.forEach( lyr => {
+                    if( lyr.id === id ) {
+                        mapa.centerLayer(lyr.layer);
+                    }
+                });
+            }
+
+            /* let query_opt = document.createElement("li")
+            query_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="far fa-question-circle" aria-hidden="true" style="width:20px;"></i>Ver datos</a>`
+            query_opt.onclick = function(){
+                console.log('add a popup here!')
+                addedLayers.forEach( lyr => {
+                    if( lyr.id === id ) {
+                        //addedLayers[0].id
+                        lyr.bindPopup(lyr.layer.features[0].properties);
+                        mapa.editableLayers.polygon[0].bindPopup
+                    }
+                });
+            } */
+
+            /* let style_opt = document.createElement("li")
+            style_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-paint-brush" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
+            style_opt.onclick = function(){
+                console.log('edit style!');
+            } */
+
+            /* let chart_opt = document.createElement("li")
+            chart_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-chart-pie" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
+            chart_opt.onclick = function(){
+                console.log('add a popup here!');
+            } */
+
+            /* let copy_opt = document.createElement("li")
+            copy_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-copy" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
+            copy_opt.onclick = function(){
+                console.log('add a popup here!');
+            } */
             
+            mainul.append(zoom_layer_opt)
             mainul.append(edit_name_opt)
             mainul.append(download_opt)
+            //mainul.append(query_opt)
+            //mainul.append(copy_opt)
+            //mainul.append(style_opt)
+            //mainul.append(chart_opt)
             mainul.append(delete_opt)
             
             options.append(fdiv)
@@ -3072,6 +3188,13 @@ class Menu_UI{
             delFileItembyID(id)
             deleteLayerGeometry(id,true)
             $("#modal_layer_del").remove();
+
+            //ElevationProfile
+            if (id.includes("elevation_profile")) {
+                let perfilDelete = new IElevationProfile();
+                perfilDelete.removeElevationProfile(id);
+            }
+
         }
 
         let btn_no = document.createElement("button")

@@ -73,7 +73,8 @@ class StylesUI {
       #top-left-logo {
         background-repeat: no-repeat;
         background-image: url("${app.logo.src}");
-        background-size: ${app.logo.height} ${app.logo.width};
+        height: ${app.logo.height};
+        width: ${app.logo.width};
         background-position: left 1px center;
         ${app.logo.style}
       }
@@ -82,10 +83,12 @@ class StylesUI {
     `;
 
   let logoText = document.getElementById("logoText");
-  logoText.innerHTML= app.logoText ? app.logoText.content : "";
-  logoText.href = app.logoText.link ?? '';
-  logoText.title = app.logoText.title ?? '';
-  logoText.target = '_blank';
+  if (app.logoText) {
+    logoText.innerHTML= app.logoText.content;
+    logoText.href = app.logoText.link ?? '';
+    logoText.title = app.logoText.title ?? '';
+    logoText.target = '_blank';
+  }
   
 
   document.head.appendChild(style);

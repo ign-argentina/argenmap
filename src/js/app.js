@@ -46,12 +46,21 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setSearchbar(app.searchbar.isActive);
       }
 
+      if (app.hasOwnProperty('login')) {
+        setLogin(app.login.isActive);
+      }
+      
       if (app.hasOwnProperty('layer_options')) {
         setLayerOptions(app.layer_options.isActive);
       }
 
       if (app.hasOwnProperty('geoprocessing')) {
         setGeoprocessing(app.geoprocessing.isActive);
+        app.geoprocessing.availableProcesses.forEach((availableProcesses) => {
+          if (availableProcesses.geoprocess === "elevationProfile") {
+            setElevationProfile(true);
+          }
+        });
       }
 
       await this._startModules();
@@ -76,6 +85,15 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           console.error(error);
         }
       }
+    },
+
+    _loadScript: function ( scriptUrl, type = "application/javascript", inBody = true ) {
+      const script = document.createElement('script');
+      script.src = scriptUrl;
+      script.type = type;
+      let target = null;
+      inBody ? target = "body" : target = "head"; 
+      document[target].appendChild(script);
     },
 
     loading: function (placement = '') {
@@ -314,6 +332,15 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
   }
 
+class Module {
+  constructor(scriptUrl, type, target) {
+    this.scriptUrl = scriptUrl,
+    this.type = type,
+    this.target = target
+  }
+
+}
+
 let getGeoserverCounter = 0,
   keywordFilter = 'dato-basico-y-fundamental',
   template = "",
@@ -405,7 +432,6 @@ async function loadTemplate(data, isDefaultTemplate) {
       $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">');
     }
 
-
     //Load dynamic mapa.js
     app.template_id = template;
     $.getScript(`src/js/map/map.js`, (res) => {
@@ -474,7 +500,13 @@ async function loadTemplate(data, isDefaultTemplate) {
               $.getScript("src/js/components/geoprocessing/geoprocessing.js").done(function () {
                 geoProcessingManager = new Geoprocessing();
                 geoProcessingManager.createIcon();
-                geoProcessingManager.setAvailableGeoprocessingConfig(app.geoprocessing)
+                geoProcessingManager.setAvailableGeoprocessingConfig(app.geoprocessing);
+                geoProcessingManager.getProcesses().forEach( process => {
+                  if(process.geoprocess === "waterRise"){
+                    // script loading test without jQuery
+                    app._loadScript("./src/js/components/geoprocessing/IHeight.js"); 
+                  }
+                });
               });
             })
           })
@@ -485,5 +517,46 @@ async function loadTemplate(data, isDefaultTemplate) {
     }, 100);
 
   });
+
+  setTimeout(function() {
+    //load loginatic
+    if (loadLogin) {
+      $('head').append('<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">');
+      $.getScript("src/js/components/cookies/cookies.js").done(() => {
+        $.getScript("src/js/components/login/loginatic.js")
+        .done(function () {
+          loginatic = new loginatic();
+          loginatic._addLoginWrapper();
+          loginatic.init();
+          loginatic.check();
+        });
+      });
+    }
+
+    //load elevationProfile
+    if (loadElevationProfile) {
+      $.getScript("https://code.highcharts.com/highcharts.js").done(() => {
+        $.getScript("https://code.highcharts.com/highcharts-more.js");
+        $.getScript("https://code.highcharts.com/modules/windbarb.js");
+        $.getScript("https://code.highcharts.com/modules/funnel.js");
+        $.getScript("https://code.highcharts.com/modules/exporting.js");
+        $.getScript("https://code.highcharts.com/modules/timeline.js");
+        $.getScript("src/js/plugins/highcharts.theme.js");
+      });
+
+      // TODO: replace script loads by ES modules architecture
+      $.getScript("src/js/components/elevation-profile/elevation-profile.js");
+    }
+  }, 1500);
 };
 
+let conaeCheck = setInterval(() => { // patch to force conae layers into menu
+  let conaeLayers = gestorMenu.items.conae;
+  if ( conaeLayers ) {
+    if( Object.entries(gestorMenu.items.conae.itemsComposite).length === 12 ) {
+			gestorMenu.printMenu();
+      document.getElementById("temp-menu").remove();
+      clearInterval(conaeCheck);
+    }
+  }
+}, 1000);

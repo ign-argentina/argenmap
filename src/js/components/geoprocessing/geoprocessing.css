@@ -207,6 +207,7 @@
 
 .rangeSlider {
   -webkit-appearance: none;
+  appearance: none;
   border-radius: 10px;
   box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.3);
   height: 5px;
@@ -215,6 +216,7 @@
 
 .containerSlider ::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   height: 13px;
   width: 13px;
   background-color: #37bbed;
@@ -231,3 +233,7 @@
   color: red;
 }
 
+.leaflet-pane .leaflet-height-pane {
+  /* mix-blend-mode: difference; */
+  filter: hue-rotate(3.142rad) saturate(4);
+}

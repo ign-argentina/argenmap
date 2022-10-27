@@ -294,13 +294,13 @@ $("body").on("pluginLoad", function(event, plugin){
 					// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
 					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed:true });
 					measureControl.addTo(mapa);
-					if (!L.Browser.android) {
+					/* if (!L.Browser.android) {
 						// replaces event listener for Measure icon in favor of click
 						L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
 						L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
 						L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
 						L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
-					}
+					} */
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':
@@ -333,7 +333,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					
 					mapa.groupLayers = {};
 
-					var drawControl = new L.Control.Draw({
+					mapa.drawControl = new L.Control.Draw({
 						edit: {
 							featureGroup: drawnItems,
 							poly: {
@@ -390,7 +390,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.edit.tooltip.text = 'Arrastrar polígonos o marcadores para editar sus características';
 					L.drawLocal.edit.handlers.edit.tooltip.subtext = 'Click en cancelar para deshacer los cambios';
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
-					mapa.addControl(drawControl);
+					mapa.addControl(mapa.drawControl);
 
 					
 					mapa.on('draw:drawstart', (e) => {
@@ -431,7 +431,14 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
-						drawnItems.addLayer(layer);
+						// if (perfilTopografico.isActive) {
+						// 	// check if profile was clicked
+						// 	mapa.capaPerfilTopografico.clearLayers();
+						// 	mapa.capaPerfilTopografico.addLayer(layer);
+						// 	perfilTopografico.process(layer.getGeoJSON());
+                        // } else {
+							drawnItems.addLayer(layer);		
+                        // }
 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						
@@ -446,6 +453,10 @@ $("body").on("pluginLoad", function(event, plugin){
 							mapa.addSelectionLayersMenuToLayer(layer);
 						}
 						mapa.addContextMenuToLayer(layer);
+
+						if(geoProcessingManager){
+							geoProcessingManager.updateLayerSelect(layer.name, true);
+						}
 					});
 
 					mapa.on('draw:edited', (e) => {
@@ -465,7 +476,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							if (lyrIdx >= 0)
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
-						})
+						});
+						if(geoProcessingManager){
+							let layerName = Object.values(layers._layers)[0].name;
+							geoProcessingManager.updateLayerSelect(layerName, false);
+						}
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
@@ -482,6 +497,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('draw:drawstop', (e) => {
 						setTimeout(() => {
 							currentlyDrawing = false;
+							// if(perfilTopografico.isActive){
+							// 	// reset profile status
+							// 	perfilTopografico.isActive = false;
+							// }
 						}, 300);
 					});
 
@@ -676,7 +695,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (layer.type === 'marker' || layer.type === 'circlemarker') {
 							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
 						} 
-						else if (layer.type === "FeatureCollection") {
+						else if (layer.type === "FeatureCollection" || layer.type === "Feature") {
 							let bbox = turf.bbox(layer);
 							mapa.fitBounds([[bbox[1],bbox[0]],[bbox[3],bbox[2]]]);
 						}
@@ -756,6 +775,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								mapa.deleteLayer(layer.name);
+								if(geoProcessingManager){
+									geoProcessingManager.updateLayerSelect(layer.name, false);
+								}
 							}
 						});
 
@@ -1550,8 +1572,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						const type = layer.split('_')[0];
 						if (mapa.editableLayers.hasOwnProperty(type)) {
 							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
-							if (lyr)
+							if (lyr) {
 								drawnItems.addLayer(lyr);
+							}
 						}
 					}
 
@@ -1575,7 +1598,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.hideGroupLayer = (group,file) => {
 						if (mapa.groupLayers.hasOwnProperty(group))
-							mapa.groupLayers[group].forEach(layer => {
+						mapa.groupLayers[group].forEach(layer => {
 								mapa.hideLayer(layer);
 						});
 					}
@@ -1638,15 +1661,17 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.addLayerToGroup = (layer, group, file) => {
-						if (file==undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
-								mapa.groupLayers[group].push(layer);
+						let feature = null ; 
+						feature = ( typeof layer === "object" ) ? feature = layer.name : feature = layer;
+						if ( mapa.groupLayers.hasOwnProperty(group) ) {
+							if ( mapa.groupLayers[group].find(layerName => layerName === feature) ) {
+								return; // feature already exist in group
 							}
-						}else {
-							if (mapa.groupLayers.hasOwnProperty(group) && !mapa.groupLayers[group].find(layerName => layerName === layer)) {
-								mapa.groupLayers[group].push(layer);
-							}
+							mapa.groupLayers[group].push(feature);
+							return;
 						}
+						mapa.groupLayers[group] = [];
+						mapa.groupLayers[group].push(feature);
 					}
 
 					mapa.removeLayerFromGroup = (layer, group, file) => {
@@ -2152,6 +2177,13 @@ $("body").on("pluginLoad", function(event, plugin){
 				'delete-layer': [],
 				'edit-layer': []
 			};
+
+			mapa.resetView = () => {
+				mapa.setView(
+					[app.mapConfig.center.latitude, app.mapConfig.center.longitude], 
+					app.mapConfig.zoom.initial
+					);
+			}
 
 			setValidZoomLevel(selectedBasemap.nombre);
 

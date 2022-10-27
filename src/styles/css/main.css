@@ -141,7 +141,7 @@ Menu principal
   font-size: 15px;
 }
 #sidebar-container {
-  z-index: 1500;
+  z-index: 500;
 }
 #sidebar .nav {
   border: 1px;
@@ -379,8 +379,10 @@ option-panel-active {
 }
 @media (max-width: 767px) {
   #sidebar-container.collapse {
-    height: 50% !important;
+    height: initial;
+    max-height: 50%;
     overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2),0 -1px 0px rgba(0,0,0,0.02);
   }
 }
 .wms-combobox-selector {
@@ -1055,6 +1057,7 @@ SideBar
   color: rgb(255, 255, 255);
 }
 /*End New navbar*/
+
 /* SearchForm & Buttons*/
 .searchFormBtn {
   display: flex;
@@ -1065,3 +1068,30 @@ SideBar
   width: 100%;
 }
 /* End of SearchForm & Buttons*/
+
+/*******************************
+Perfil Topografico
+*******************************/
+#pt-wrapper {
+  position: absolute;
+  right: 20px;
+  /* background: RGBA(255, 255, 255, .95); */
+  z-index: 99999;
+  display: none;
+}
+
+.pt {
+  padding: 2rem;
+  background: RGBA(255, 255, 255, .95);
+  width: 100%;
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  color: white;
+}
+
+#pt-inner {
+  width: 100%;
+  min-height: 400px;
+}

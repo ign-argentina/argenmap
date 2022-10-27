@@ -51,7 +51,8 @@ const PLUGINS = {
     "EasyPrint": "./src/js/map/plugins/leaflet/leaflet-easyPrint/bundle.js",
     "elevation": "./src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.js",
     "textpath": "./src/js/map/plugins/leaflet/leaflet-textpath/leaflet-textpath.js",
-    "turf": "https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"
+    "turf": "https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js",
+    "editableLabel": "./src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.js"
 };
 
 const MESSAGE_TIME = 4000;

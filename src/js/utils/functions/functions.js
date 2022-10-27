@@ -4,6 +4,8 @@ var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
 var loadCharts = false;
 var loadSearchbar = false;
+var loadLogin = false;
+var loadElevationProfile = false;
 var loadLayerOptions = false;
 var currentlyDrawing = false;
 var loadGeoprocessing = false;
@@ -22,6 +24,14 @@ function setCharts(cond) {
 
 function setSearchbar(cond) {
     loadSearchbar = cond;
+}
+
+function setLogin(cond) {
+    loadLogin = cond;
+}
+
+function setElevationProfile(cond) {
+    loadElevationProfile = cond;
 }
 
 function setLayerOptions(cond) {
@@ -188,120 +198,121 @@ function loadGeojson(url, layer) {
 function loadWmsTplAux(objLayer, param) {
     wmsUrl = objLayer.capa.host;
     layer = objLayer.capa.nombre;
-    if (overlayMaps.hasOwnProperty(layer)) {
-        overlayMaps[layer].removeFrom(mapa);
-        delete overlayMaps[layer];
+  if (overlayMaps.hasOwnProperty(layer)) {
+    overlayMaps[layer].removeFrom(mapa);
+    delete overlayMaps[layer];
+  } else {
+    createWmsLayer(objLayer);
+    overlayMaps[layer].addTo(mapa);
+  }
+
+}
+
+function ucwords(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+//Parse FeatureInfo to display into popup (if info is text/html)
+function parseFeatureInfoHTML(info, idTxt) {
+    infoAux = info.search("<ul>"); // search if info has a list
+    if (infoAux > 0) { // check if info has any content, if so shows popup
+        $(info).find('li').each(function (index) {
+            var aux = $(this).text().split(':');
+            info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
+        });
+
+        info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+
+        return info;
     } else {
-        createWmsLayer(objLayer);
-        overlayMaps[layer].addTo(mapa);
-    }
-
-    function ucwords(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    //Parse FeatureInfo to display into popup (if info is text/html)
-    function parseFeatureInfoHTML(info, idTxt) {
-        infoAux = info.search("<ul>"); // search if info has a list
+        infoAux = info.search("<table"); // search if info has a table
         if (infoAux > 0) { // check if info has any content, if so shows popup
-            $(info).find('li').each(function (index) {
-                var aux = $(this).text().split(':');
-                info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
-            });
-
-            info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
-
+            info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
             return info;
-        } else {
-            infoAux = info.search("<table"); // search if info has a table
-            if (infoAux > 0) { // check if info has any content, if so shows popup
-                info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
-                return info;
-            }
         }
-        return '';
     }
+    return '';
+}
 
-    //Parse FeatureInfo to display into popup (if info is application/json)
-    function parseFeatureInfoJSON(info, idTxt, title) {
-        info = JSON.parse(info);
-        if (info.features.length > 0) { // check if info has any content, if so shows popup
+//Parse FeatureInfo to display into popup (if info is application/json)
+function parseFeatureInfoJSON(info, idTxt, title) {
+    info = JSON.parse(info);
+    if (info.features.length > 0) { // check if info has any content, if so shows popup
 
-            var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
-            infoAux += '<div class="featureGroup">';
-            infoAux += '<div style="padding:1em" class="individualFeature">';
-            infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
-            infoAux += '<ul>';
+        var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
+        infoAux += '<div class="featureGroup">';
+        infoAux += '<div style="padding:1em" class="individualFeature">';
+        infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
+        infoAux += '<ul>';
 
-            for (i in info.features) {
-                Object.keys(info.features[i].properties).forEach(function (k) {
-                    let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
-                    if (k != 'bbox' && !ignoredField ) { //Do not show bbox property
-                        infoAux += '<li>';
-                        infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
-                        if (info.features[i].properties[k] != null) {
-                            infoAux += ' ' + info.features[i].properties[k];
-                        }
-                        infoAux += '<li>';
+        for (i in info.features) {
+            Object.keys(info.features[i].properties).forEach(function (k) {
+                let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
+                if (k != 'bbox' && !ignoredField ) { //Do not show bbox property
+                    infoAux += '<li>';
+                    infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
+                    if (info.features[i].properties[k] != null) {
+                        infoAux += ' ' + info.features[i].properties[k];
                     }
-                });
-            }
-
-            infoAux += '</ul>';
-            infoAux += '</div></div></div>';
-
-            return infoAux;
+                    infoAux += '<li>';
+                }
+            });
         }
 
-        return '';
+        infoAux += '</ul>';
+        infoAux += '</div></div></div>';
+
+        return infoAux;
     }
 
-    function createWmsLayer(objLayer) {
-        //Extends WMS.Source to customize popup behavior
-        var MySource = L.WMS.Source.extend({
-            'showFeatureInfo': function (latlng, info) {
-                let layername = objLayer.capa.titulo
+    return '';
+}
 
-                if (!this._map) {
-                    return;
-                }
+function createWmsLayer(objLayer) {
+    //Extends WMS.Source to customize popup behavior
+    var MySource = L.WMS.Source.extend({
+        'showFeatureInfo': function (latlng, info) {
+            let layername = objLayer.capa.titulo
 
-                if (!loadTableAsPopUp) {
-
-                    if (this.options.INFO_FORMAT == 'text/html') {
-                        var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
-                    } else {
-                        var infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
-                    }
-                    if (infoParsed != '') { // check if info has any content, if so shows popup
-                        var popupContent = $('.leaflet-popup').html();
-                        popupInfo.push(infoParsed); //First info for popup
-                    }
-                    if (popupInfo.length > 0) {
-                        popupInfoToPaginate = popupInfo.slice();
-                        latlngTmp = latlng;
-                        this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
-                        popupInfoPage = 0;
-                    }
-                } else {
-
-                    let tableD = new Datatable(JSON.parse(info), latlng);
-                    createTabulator(tableD, layername);
-
-                }
+            if (!this._map) {
                 return;
             }
-        });
-        var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
-            transparent: true,
-            tiled: true,
-            maxZoom: 21,
-            'title': objLayer.capa.titulo,
-            format: 'image/png',
-            INFO_FORMAT: objLayer.capa.featureInfoFormat
-        });
-        overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
-    }
+
+            if (!loadTableAsPopUp) {
+
+                if (this.options.INFO_FORMAT == 'text/html') {
+                    var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+                } else {
+                    var infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
+                }
+                if (infoParsed != '') { // check if info has any content, if so shows popup
+                    var popupContent = $('.leaflet-popup').html();
+                    popupInfo.push(infoParsed); //First info for popup
+                }
+                if (popupInfo.length > 0) {
+                    popupInfoToPaginate = popupInfo.slice();
+                    latlngTmp = latlng;
+                    this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
+                    popupInfoPage = 0;
+                }
+            } else {
+
+                let tableD = new Datatable(JSON.parse(info), latlng);
+                createTabulator(tableD, layername);
+
+            }
+            return;
+        }
+    });
+    var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
+        transparent: true,
+        tiled: true,
+        maxZoom: 21,
+        'title': objLayer.capa.titulo,
+        format: 'image/png',
+        INFO_FORMAT: objLayer.capa.featureInfoFormat
+    });
+    overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
 }
 
 function loadWms(callbackFunction, objLayer) {
@@ -368,134 +379,139 @@ async function getWfsLayerFields(url, params) {
  * @param {String} api where to look for the CRS type
  * @returns only the number of the projection ex: 22183
  */
-function getCRSByWFSCapabilities(api) {
+function getCRSByWFSCapabilities(capabilitiesUrl, layerName) {
     // TODO falta implementar reject para manejar el error
     return new Promise((resolve, reject) => {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                var xmlDoc = this.responseXML;
-                // Element: <DefaultCRS>
-                xmlDoc.getElementsByTagName('DefaultCRS');
-                let crs = xmlDoc.getElementsByTagName('DefaultCRS')[0].innerHTML;
+                const xmlDoc = this.responseXML;
+                const features = xmlDoc.getElementsByTagName('FeatureType');
+                let defaultCRS = "", crs = null;
+                const featureName = layerName.includes(":") ? layerName.split(":")[1] : layerName;
+
+                Array.from(features).some((feature) => {
+                  let nodeName = feature.getElementsByTagName("Name")[0];
+                  if (nodeName.innerHTML === featureName) {
+                    return defaultCRS = feature.getElementsByTagName("DefaultCRS")[0].innerHTML;
+                  }
+                });
+                
+                if ( defaultCRS.length > 0 ) {
+                    crs = defaultCRS.split('::')[1];
+                }
                 // The format of DefaultCRS is "urn:ogc:def:crs:EPSG::22183"
                 // TODO mejora a través de definiciones -> proj4.defs('urn:x-ogc:def:crs:EPSG::4326', proj4.defs('EPSG:4326'));
-                resolve(crs.split('::')[1]);
+                resolve(crs);
             } else if (this.readyState == 4 && this.status != 200) {
                 reject(null)
             }
         };
-        xhttp.open("GET", api, true);
+        xhttp.open("GET", capabilitiesUrl, true);
         xhttp.send();
     })
 }
 
-function getLayerDataByWFS(coords, type, layerData) {
+function getLayerDataByWFS(filterCoords, type, layerData) {
     return new Promise((resolve) => {
-        // Make the url to retrieve the request
-        // If the host has the / wms parameter it is replaced by an empty string
-        const fixHost = layerData.host.replace(/\/wms$/, '');
-        const capabilitiesUrl = `${fixHost}/${layerData.name}/ows?service=wfs&request=GetCapabilities`; // Where to save the reprojection
+        const host = layerData.host.replace(/\/wms\?*$/, ''); // removes /wms? endpoint from URI
+        const layerName = window.encodeURI(layerData.name.replace(":", "/")); // if layer name includes the workspace name, replaces colon with a slash
+        const capabilitiesUrl = `${host}/${layerName}/ows?service=wfs&request=GetCapabilities`;
         
         let reprojectedCoords = [];
-        // Get the CRS
-        getCRSByWFSCapabilities(capabilitiesUrl).then((crs) => {
-            isWgs84 = crs === "4326" || crs === "84";
-            if (isWgs84) {
-            // TODO Obtener el CRS a través del get capabilities del servicio WMS (gestorMenu.items[k].itemComposite.capa)
-            // coords.forEach((coordsPair,i) => {
-            //     let result = proj4(proj4('WGS84'),proj4(PROJECTIONS['22185']),coordsPair);
-            //     coords[i] = result;
-            // });
-            let url = fixHost, 
-            params = {
-                service: 'wfs',
-                request: 'GetFeature',
-                version: '',
-                outputFormat: 'application%2Fjson',
-                typeName: layerData.name,
-                cql_filter: ''
-            }, paramsStr = [];
+        // get the CRS, then defines a WFS request including coordinates in the layer's CRS
+        getCRSByWFSCapabilities(capabilitiesUrl, layerData.name).then((crs) => {
+          let isWgs84 = crs === "4326" || crs === "84" || crs === null; // true if crs = wgs84 or null 
+            let url = host, paramsStr = [], coords = null,
+                params = {
+                    service: "wfs",
+                    request: "GetFeature",
+                    version: "",
+                    outputFormat: "application%2Fjson",
+                    typeName: layerData.name,
+                    cql_filter: ""
+                };
+          if (isWgs84) {
+            // TODO: get CRS from initial WMS getCapabilities (gestorMenu.items[k].itemComposite.capa)
+            coords = filterCoords;
+            getWfsLayerFields(url, params).then((geom) => {
+              if (type === "polygon" || type === "rectangle") {
+                const coordsFormatted = setCoordinatesFormat(coords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`);
+              }
+              if (type === "circle") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`);
+              }
+              if (type === "marker") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`);
+              }
+              if (type === "polyline") {
+                const coordsFormatted = setCoordinatesFormat(coords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`);
+              }
+
+              Object.entries(params).forEach((p) => {
+                paramsStr.push(p.join("="));
+              });
+              url += "/ows?" + paramsStr.join("&");
+
+              fetch(url).then((response) => {
+                if (response.status !== 200) resolve(null);
+                resolve(response.json());
+              });
+            });
+          }
+          if (!isWgs84) {
+            // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
+            // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
+            // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
+
+            // If the CRS is not 84, reproject the coords
+            filterCoords.forEach((coordsPair, i) => {
+              let result = proj4(
+                proj4("WGS84"),
+                proj4(PROJECTIONS[crs]),
+                coordsPair
+              );
+              coords[i] = result;
+              //reprojectedCoords[i] = result;
+            });
 
             getWfsLayerFields(url, params).then((geom) => {
-                if (type === 'polygon' || type === 'rectangle') {
-                    const coordsFormatted = setCoordinatesFormat(coords);
-                    params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
-                }
-                if (type === 'circle') {
-                    params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`;
-                }
-                if (type === 'marker') {
-                    params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`;
-                }
-                if (type === 'polyline') {
-                    const coordsFormatted = setCoordinatesFormat(coords);
-                    params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
-                }
+              if (type === "polygon" || type === "rectangle") {
+                const coordsFormatted = setCoordinatesFormat(coords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`);
+              }
+              if (type === "circle") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `DWITHIN(${geom},POINT(${coords.lat}%20${coords.lng}),${coords.r},meters)`);
+              }
+              if (type === "marker") {
+                (params.version += "1.1.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},POINT(${coords.lat}%20${coords.lng}))`);
+              }
+              if (type === "polyline") {
+                const coordsFormatted = setCoordinatesFormat(coords);
+                (params.version += "1.0.0"),
+                  (params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`);
+              }
 
-                Object.entries(params).forEach(p => {
-                    paramsStr.push(p.join('='));
-                });
-                url += '/ows?' + paramsStr.join('&');
+              Object.entries(params).forEach((p) => {
+                paramsStr.push(p.join("="));
+              });
+              url += "/ows?" + paramsStr.join("&");
 
-                fetch(url).then((response) => {
-                    if (response.status !== 200)
-                        resolve(null);
-                    resolve(response.json());
-                })
-            })
-            }
-            if(!isWgs84) {
-                // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
-                // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
-                // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
-
-                // If the CRS is not 84, reproject the coords
-                coords.forEach((coordsPair, i) => {
-                    let result = proj4(proj4('WGS84'), proj4(PROJECTIONS[crs]), coordsPair);
-                    // coords[i] = result;
-                    reprojectedCoords[i] = result;
-                });
-                // Make the url to retrive WFS data
-                let url = fixHost, 
-                params = {
-                    service: 'wfs',
-                    request: 'GetFeature',
-                    version: '',
-                    outputFormat: 'application%2Fjson',
-                    typeName: layerData.name,
-                    cql_filter: ''
-                }
-                let paramsStr = [];
-
-                getWfsLayerFields(url, params).then((geom) => {
-                    if (type === 'polygon' || type === 'rectangle') {
-                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
-                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},POLYGON((${coordsFormatted})))`;
-                    }
-                    if (type === 'circle') {
-                        params.version += '1.1.0', params.cql_filter += `DWITHIN(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}),${reprojectedCoords.r},meters)`;
-                    }
-                    if (type === 'marker') {
-                        params.version += '1.1.0', params.cql_filter += `INTERSECTS(${geom},POINT(${reprojectedCoords.lat}%20${reprojectedCoords.lng}))`;
-                    }
-                    if (type === 'polyline') {
-                        const coordsFormatted = setCoordinatesFormat(reprojectedCoords);
-                        params.version += '1.0.0', params.cql_filter += `INTERSECTS(${geom},LINESTRING(${coordsFormatted}))`;
-                    }
-
-                    Object.entries(params).forEach(p => {
-                        paramsStr.push(p.join('='));
-                    });
-                    url += '/ows?' + paramsStr.join('&');
-
-                    fetch(url).then((response) => {
-                        if (response.status !== 200)
-                            resolve(null);
-                        resolve(response.json());
-                    });
-                })
-            }
+              fetch(url).then((response) => {
+                if (response.status !== 200) resolve(null);
+                resolve(response.json());
+              });
+            });
+          }
         }).catch((e) => {
             console.error('The host does not provide capabilities for the WFS service');
         })
@@ -743,13 +759,11 @@ function zoomEditableLayers(layername) {
 }
 
 function bindZoomLayer() {
-
     let elements = document.getElementsByClassName("zoom-layer");
     let zoomLayer = async function () {
         let layer_name = this.getAttribute("layername")
         let bbox = app.layers[layer_name].capa
-        //if (bbox.servicio === "wms" && typeof bbox.maxy == "null" || typeof bbox.maxy == "undefined") {
-        if (bbox.servicio === "wms" && [bbox.minx, bbox.legendURL].some(el => el === null || 'undefined')) {
+        if (bbox.servicio === "wms" && [bbox.minx, bbox.legendURL].some(el => el === null) && [bbox.minx, bbox.legendURL].some(el => el === "undefined")) {
             await getWmsLyrParams(bbox); // gets layer atribtutes from WMS
         }
 
@@ -874,11 +888,11 @@ function getMulticolorContour(n) {
 //add funcion with setTimeout 
 //fix bug--->  line 553 entities.js 
 //no funciona para todos los templates
-window.onload = function () {
+/* window.onload = function () {
     setTimeout(function () {
         bindZoomLayer()
         bindLayerOptions()
-    }, 2000);
+    }, 200);
 };
 
 
@@ -886,8 +900,8 @@ function bindLayerOptionsIdera() {
     setTimeout(function () {
         bindZoomLayer()
         bindLayerOptions()
-    }, 1000);
-}
+    }, 100);
+} */
 
 
 function zoomLayer(id_dom) {
@@ -914,7 +928,7 @@ function zoomLayer(id_dom) {
 
 async function getWmsLyrParams(lyr) {
     //let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
-    let url = `${lyr.host}?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
+    let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
         sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
     await fetch(url)
         .then((res) => res.text())
@@ -937,8 +951,10 @@ function parseXml(str, lyr, sys) {
 
     if (xmlNodes) {
         for (i = 0; i < xmlNodes.length; i++) {
-            if (xmlNodes[i].childNodes[0].nodeValue === lyr.nombre) {
-                xmlLyr = xmlNodes[i].parentNode;
+            if( xmlNodes[i].childNodes.length > 0 ) {
+                if (xmlNodes[i].childNodes[0].nodeValue === lyr.nombre) {
+                    xmlLyr = xmlNodes[i].parentNode;
+                }
             }
         }
 
@@ -1104,3 +1120,25 @@ function loadDeveloperLogo() {
     }
     L.control.developerLogo({ position: 'bottomright'}).addTo(mapa);
 }
+
+function downloadBlob(blob, name = 'file.txt') {
+    // Convert your blob into a Blob URL
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = name;
+    document.body.appendChild(link);
+    // Dispatch click event on the link
+    link.dispatchEvent(
+      new MouseEvent('click', { 
+        bubbles: true, 
+        cancelable: true, 
+        view: window 
+      })
+    );
+  
+    // Remove link from body
+    document.body.removeChild(link);
+}
+  
+  
