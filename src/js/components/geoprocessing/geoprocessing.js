@@ -544,13 +544,24 @@ class Geoprocessing {
 
   checkPolyline(event) {
     switch (event) {
+      case "add-layer":
+        mapa.editableLayers.polyline.forEach((layer) => {
+          if (layer.name.includes("polyline")) {
+            setTimeout(function () {
+              $("#select-capa").val(layer.name).change();
+              $("#ejec_gp").removeClass("disabledbutton");
+            }, 500);
+          }
+        });
+        break;
+        
       case "delete-layer":
-        //contourRectangles = [];
+        document.getElementById("select-capa").selectedIndex = 0;
         $("#ejec_gp").addClass("disabledbutton");
         $("#drawBtn").removeClass("disabledbutton");
         $("#msgRectangle").removeClass("hidden");
         break;
-
+      
       default:
         break;
     }
