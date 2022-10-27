@@ -54,7 +54,7 @@ class IElevationProfile {
         geoProcessingManager.loadingBtn("on")
         this._processLayer(layerSelected.getGeoJSON());
         this._executeProcess();
-        
+        geoProcessingManager.geoprocessId = null;
     }
         
     _processLayer(geoJSON) {

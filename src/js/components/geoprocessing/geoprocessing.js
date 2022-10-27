@@ -293,6 +293,7 @@ class Geoprocessing {
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
+    geoProcessingManager.geoprocessId = null;
   }
 
   updateReferencedDrawedLayers(event, layers) {
