@@ -261,7 +261,7 @@ class Geoprocessing {
 
         addedLayers.push({
           id: layername,
-          layer: result,
+          layer: imageLayer,
           name: layername,
           file_name: layername,
           rectangle: selectedRectangle,
