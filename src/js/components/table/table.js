@@ -35,12 +35,12 @@ function createTabulator(tableD, layername){
 
           if ( !ISCelular){
               $( "#ContainerTable" ).draggable({
-              containment: "#mapa",
+              containment: "body",
               scroll: false}
             );
             
             $( "#ContainerTable" ).resizable({
-              containment: "#mapa",
+              containment: "body",
               minHeight: 65,
               maxHeight: 475,
               minWidth: 450,
