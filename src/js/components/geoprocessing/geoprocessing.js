@@ -289,7 +289,7 @@ class Geoprocessing {
         break;
       }
     }
-    this.resetWaterRiseLayerColor();
+    this.resetHeightLayerColor();
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
@@ -350,7 +350,7 @@ class Geoprocessing {
     }
   }
 
-  resetWaterRiseLayerColor() {
+  resetHeightLayerColor() {
     mapa.editableLayers.polyline.forEach((lyr) => {
       if (lyr.layer && lyr.layer.includes("curvas_de_nivel") && lyr.options.color == "#ff1100") {
         //Same id, spedific value
@@ -720,7 +720,7 @@ class Geoprocessing {
                   } else if (this.geoprocessId === "waterRise") {
                     let selectedLayer = "";
                     if (!element.value) {
-                      this.resetWaterRiseLayerColor();
+                      this.resetHeightLayerColor();
                       document.getElementById("rangeSlider").classList.add("hidden");
                       document.getElementById("sliderValue").classList.add("hidden");
                       $("#ejec_gp").addClass("disabledbutton");
@@ -732,7 +732,7 @@ class Geoprocessing {
                         : null;
                     });
                     if (selectedLayer.layer.features.length != 0) {   
-                      this.resetWaterRiseLayerColor();
+                      this.resetHeightLayerColor();
                       mapa.centerLayer(selectedLayer.layer);
 
                       sliderLayer = selectedLayer;
