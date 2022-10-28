@@ -241,7 +241,7 @@ class IElevationProfile {
             document.getElementById("elevationProfile").append(btncloseWrapper);
 
             document.getElementById("pt-wrapper").style.display = "flex";
-            $("#pt-wrapper").draggable();
+            $("#pt-wrapper").draggable({ containment: "body", scroll: false });
             $("#pt-wrapper").css("top", $("body").height() - 420);
         
         }
