@@ -98,6 +98,9 @@ class Searchbar_UI {
       results.style.margin = "0px";
       search_input.style.width = "130px";
       mapa.removeGroup("markerSearchResult", true);
+      if (innerWidth  <= 768) {
+        document.getElementById("logo-navbar").style.display= ""
+      }
     });
 
     search_input.onkeyup = async (e) => {
@@ -128,15 +131,24 @@ class Searchbar_UI {
         icon_searchbar.style.display = "none";
         results.innerHTML = "";
         selected_item = false;
+        if (innerWidth  <= 768) {
+          document.getElementById("logo-navbar").style.display= ""
+        }
       } else if (q.length <= 2) {
         results.innerHTML = "";
         search_input.style.width = "300px";
         icon_searchbar.style.display = "block";
         selected_item = false;
+        if (innerWidth  <= 768) {
+          document.getElementById("logo-navbar").style.display= "none"
+        }
       } else {
         search_input.style.width = "300px";
         icon_searchbar.style.display = "block";
         search_term = q;
+        if (innerWidth  <= 768) {
+          document.getElementById("logo-navbar").style.display= "none"
+        }
         //e.which <= 90 && e.which >= 48 Alfanumericos
         //e.which == 13 Enter
         //e.which == 8 Backspace

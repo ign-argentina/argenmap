@@ -71,15 +71,10 @@
   #searchbar {
     left      : 50px;
     top       : 5px;
-    max-width : 250px;
-    max-height: 300px
+    max-height: 300px;
   }
 
   #logoText {
-    display: none;
-  }
-
-  #logo-navbar {
     display: none;
   }
 }
