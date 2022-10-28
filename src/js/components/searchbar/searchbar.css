@@ -76,7 +76,11 @@
   }
 
   #logoText {
-    display: none
+    display: none;
+  }
+
+  #logo-navbar {
+    display: none;
   }
 }
 
