@@ -769,14 +769,14 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						});
 
-						contextMenu.createOption({
-							isDisabled: false,
-							text: 'Medir',
-							onclick: (option) => {
-								mapa.closePopup(contextPopup);
-								mapa.measurementsInfo(layer);
-							}
-						});
+						// contextMenu.createOption({
+						// 	isDisabled: false,
+						// 	text: 'Medir',
+						// 	onclick: (option) => {
+						// 		mapa.closePopup(contextPopup);
+						// 		mapa.measurementsWrapper(layer);
+						// 	}
+						// });
 						
 						contextMenu.createOption({
 							isDisabled: false,
@@ -807,7 +807,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						});
 					}
 
-					mapa.measurementsInfo = (layer) => {
+					mapa.measurementsWrapper = (layer) => {
 						if (document.getElementById("measurementInfo")) {
 							document.getElementById("measurementInfo").remove()
 						}
@@ -835,7 +835,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.getMeasurementsInfo = (layer) => { 
 						//TODO:usar funciones de calculo para extender
 
-						//let measurement = document.getElementById("measurementInfo");
 						const type = layer.type;
 						try {
 							if (layer.type === "polyline") {
@@ -860,6 +859,11 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						}
 					}
+
+					// mapa.showMeasurements = (x) => {
+					// 	let measurement = document.getElementById("measurementInfo");
+					// 	const newDiv = document.createElement("div");
+					// }
 
 					// mapa.getLayerType = (layer) => {
 					// 	let measurement = document.getElementById("measurementInfo");
