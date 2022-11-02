@@ -768,6 +768,15 @@ $("body").on("pluginLoad", function(event, plugin){
 								layer.downloadGeoJSON();
 							}
 						});
+
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Medir',
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								mapa.measurementsInfo(layer);
+							}
+						});
 						
 						contextMenu.createOption({
 							isDisabled: false,
@@ -797,6 +806,91 @@ $("body").on("pluginLoad", function(event, plugin){
 							L.DomEvent.stopPropagation(e);
 						});
 					}
+
+					mapa.measurementsInfo = (layer) => {
+						if (document.getElementById("measurementInfo")) {
+							document.getElementById("measurementInfo").remove()
+						}
+						const measurement = document.createElement("div");
+						measurement.id="measurementInfo";
+						measurement.innerHTML="Medidas"
+						measurement.style="top: 150px; left: 600px; position: absolute; background-color: white"
+						document.body.appendChild(measurement);
+						
+						let btncloseWrapper = document.createElement("a");
+						btncloseWrapper.id = "btnclose-wrapper";
+						btncloseWrapper.href = "javascript:void(0)";
+						btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
+						btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
+						btncloseWrapper.onclick = () => {
+							measurement.remove();
+						};
+						measurement.appendChild(btncloseWrapper);
+
+						mapa.getMeasurementsInfo(layer)
+						
+						$("#measurementInfo").draggable({scroll: false}); 
+					}
+
+					mapa.getMeasurementsInfo = (layer) => { 
+						//TODO:usar funciones de calculo para extender
+
+						mapa.getLayerType(layer);
+						try {
+							if (layer.type === "polyline") {
+								mapa.getLongitude(layer);
+							}
+							if (layer.type === "polygon" ||  layer.type === "rectangle") {
+								mapa.getArea(layer);
+								//getPerimetro
+								//getCentroid
+								//getBoundingBox?
+							}
+							if (layer.type === "circle") {
+								//const radius = getRadius drawnItems.getLayers()[0].getRadius() 
+								//const cricumference = Math.PI * radius
+								//getCentroid drawnItems.getLayers()[0].getLatLng()
+								//getArea
+								//getBoundingBox?
+
+							}
+
+						} catch (error) {
+
+						}
+					}
+
+					mapa.getLayerType = (layer) => {
+						let measurement = document.getElementById("measurementInfo");
+						const newDiv = document.createElement("div");
+						resultado = `Tipo: ${layer.type[0].toUpperCase() + layer.type.slice(1).toLowerCase()}`;
+
+						newDiv.innerHTML= resultado
+						measurement.appendChild(newDiv);
+					}
+					
+					mapa.getLongitude = (layer) => {
+						let measurement = document.getElementById("measurementInfo");
+						const newDiv = document.createElement("div");
+						let geojson = layer.getGeoJSON(),
+						longitude = turf.length(geojson)
+						resultado = `Longitud: ${longitude.toFixed(3)} km`;
+
+						newDiv.innerHTML= resultado
+						measurement.appendChild(newDiv);
+					}
+
+					mapa.getArea = (layer) => {
+						let measurement = document.getElementById("measurementInfo");
+						const newDiv = document.createElement("div");
+						let geojson = layer.getGeoJSON(),
+						area = turf.area(geojson) / 1000000,
+						resultado = `Área: ${area.toFixed(3)} km²`;
+
+						newDiv.innerHTML= resultado
+						measurement.appendChild(newDiv);
+					}
+
 
 					mapa.createEditStylePopup = (layer, popup) => {
 						const container = document.createElement('div');
