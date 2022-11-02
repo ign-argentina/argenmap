@@ -749,7 +749,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						});
 
-						contextMenu.createOption({
+						/* contextMenu.createOption({
 							isDisabled: true,
 							text: 'Ocultar geometría',
 							onclick: (option) => {
@@ -757,6 +757,18 @@ $("body").on("pluginLoad", function(event, plugin){
 									mapa.closePopup(contextPopup);
 									mapa.hideLayer(layer.name);
 								}
+							}
+						}); */
+
+						contextMenu.createOption({
+							isDisabled: false,
+							text: 'Medir',
+							onclick: (option) => {
+								// console.log(layer);
+								let geojson = layer.getGeoJSON(),
+								area = turf.area(geojson) / 1000000,
+								string = `Área: ${area.toFixed(3)} km²`;
+								new UserMessage(string, true, "information");
 							}
 						});
 						
