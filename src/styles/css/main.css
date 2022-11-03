@@ -1096,16 +1096,22 @@ Perfil Topografico
   min-height: 400px;
 }
 
-#measurementInfo { 
-  min-width: 230px; 
-  min-height: 300px; 
-  border: 2px solid #ccc; 
+#measurementWrapper { 
+  text-align: inherit;
+  font-size: 18px;
+  font-weight: bold;
+  user-select: text;
+  min-width: 330px; 
+  min-height: 170px; 
+  border: 3px solid #37bbed; 
   padding: 10px; 
 }
 
-/* .div-shadow {
-  width: 5em;
-  height: 2em;
-  margin: 0 1em 1em 0;
-  transition: all 100ms ease-in-out;
-} */
+#measurementInfo { 
+  text-align: inherit;
+  font-size: 14px;
+  user-select: text;
+  min-width: 330px; 
+  min-height: 100px; 
+
+}
