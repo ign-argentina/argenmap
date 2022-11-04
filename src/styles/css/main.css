@@ -1104,3 +1104,17 @@ Perfil Topografico
   width: 100%;
   min-height: 400px;
 }
+
+#measurementInfo { 
+  min-width: 230px; 
+  min-height: 300px; 
+  border: 2px solid #ccc; 
+  padding: 10px; 
+}
+
+/* .div-shadow {
+  width: 5em;
+  height: 2em;
+  margin: 0 1em 1em 0;
+  transition: all 100ms ease-in-out;
+} */
