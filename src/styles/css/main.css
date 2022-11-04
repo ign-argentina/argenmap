@@ -992,7 +992,16 @@ SideBar
   #screenshot,
   #spanopenfolder,
   div[id^="sidebar-toolbar-icon-"] {
-    display: none;
+    display: none !important;
+  }
+  #mapa {
+    display: block;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 10000;
   }
 }
 .leaflet-oldie .leaflet-popup-content-wrapper {
