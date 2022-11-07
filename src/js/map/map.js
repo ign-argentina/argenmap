@@ -846,27 +846,31 @@ $("body").on("pluginLoad", function(event, plugin){
 						try {
 							if (layer.type === "polyline") {
 								const longitude = mapa.getLongitude(layer).toFixed(3);
+								const boundingBox= mapa.getBoundingBox(layer);
 								mapa.showMeasurements(longitude, "Longitud", "km");
+								mapa.showMeasurements(boundingBox, "BoundingBox", "");
 							}
 							if (layer.type === "polygon" ||  layer.type === "rectangle") {
 								const area = mapa.getAreaPolygon(layer).toFixed(3);
 								const centroid = mapa.getCentroidPolygon(layer);
 								const perimeter = mapa.getPerimeter(layer).toFixed(3);
+								const boundingBox= mapa.getBoundingBox(layer);
 								mapa.showMeasurements(area, "Área", "km²");
 								mapa.showMeasurements(centroid, "Centroide", "");
 								mapa.showMeasurements(perimeter, "Perímetro", "km");
-								//getBoundingBox?
+								mapa.showMeasurements(boundingBox, "BoundingBox", "");
 							}
 							if (layer.type === "circle") {
 								const radius = (layer.getRadius()/1000).toFixed(3);
 								const centroid = mapa.getCentroidCircle(layer);
 								const cricumference = mapa.getCricumference(layer).toFixed(3);
 								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(3);
+								const boundingBox= mapa.getBoundingBox(layer);
 								mapa.showMeasurements(radius, "Radio", "km");
 								mapa.showMeasurements(centroid, "Centroide", "");
-								mapa.showMeasurements(cricumference, "Circunferencia", "");
+								mapa.showMeasurements(cricumference, "Circunferencia", "m");
 								mapa.showMeasurements(area, "Área", "km²");
-								//getBoundingBox?
+								mapa.showMeasurements(boundingBox, "BoundingBox", "");
 							}
 
 						} catch (error) {
@@ -925,6 +929,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						let radius = layer.getRadius(),
 							cricumference = (Math.PI * radius)
 						return cricumference;
+					}
+
+					mapa.getBoundingBox = (layer) => {
+						let north = layer.getBounds().getNorth().toFixed(8),
+							east = layer.getBounds().getEast().toFixed(8),
+							south = layer.getBounds().getSouth().toFixed(8),
+							west = layer.getBounds().getWest().toFixed(8),
+							boundingBox = document.createElement("div")
+							boundingBox.innerHTML= `<div>&emsp;northEast: ${north}, ${east}<br>&emsp;southWest: ${south}, ${west}</div>`
+						return boundingBox.innerHTML;
 					}
 
 					mapa.createEditStylePopup = (layer, popup) => {

@@ -1097,21 +1097,22 @@ Perfil Topografico
 }
 
 #measurementWrapper { 
-  text-align: inherit;
+  border: 3px solid #37bbed; 
   font-size: 18px;
   font-weight: bold;
-  user-select: text;
-  min-width: 330px; 
   min-height: 170px; 
-  border: 3px solid #37bbed; 
+  min-width: 330px; 
   padding: 10px; 
+  text-align: inherit;
+  user-select: text;
 }
 
 #measurementInfo { 
   background-color: #d7f2f7;
-  text-align: inherit;
+  border: 3px solid #37bbed; 
   font-size: 14px;
-  user-select: text;
-  min-width: 330px; 
   min-height: 100px; 
+  min-width: 330px; 
+  padding: 5px; 
+  user-select: text;
 }
