@@ -832,7 +832,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						wrapper.appendChild(measurement);
 
 						document.body.appendChild(wrapper);
-						$("#measurementWrapper").draggable({scroll: false, cancel: '.text'}); 
+						$("#measurementWrapper").draggable({scroll: false, cancel: '#measurementInfo'}); 
 												
 						mapa.getMeasurementsInfo(layer);
 
@@ -861,8 +861,8 @@ $("body").on("pluginLoad", function(event, plugin){
 								const radius = layer.getRadius().toFixed(3);
 								const centroid = mapa.getCentroidCircle(layer);
 								const cricumference = (Math.PI * radius).toFixed(3);
-								const area = (Math.PI * (radius*radius)).toFixed(3);
-								mapa.showMeasurements(radius, "Radio", "km");
+								const area = ((Math.PI * (radius*radius))/1000000).toFixed(3);
+								mapa.showMeasurements(radius, "Radio", "m");
 								mapa.showMeasurements(centroid, "Centroide", "");
 								mapa.showMeasurements(cricumference, "Circunferencia", "");
 								mapa.showMeasurements(area, "Área", "km²");
