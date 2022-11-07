@@ -55,6 +55,13 @@ body {
   }
 }
 
+/* Remove sidebar border for media print*/
+@media print{
+  .sidebar{
+    display: none !important;
+  }
+}
+
 /* Sidebar navigation */
 
 .nav-sidebar > li > a {
