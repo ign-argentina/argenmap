@@ -665,8 +665,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.methodsEvents[event].push(method);
 					};
 
-					mapa.addSelectionLayersMenuToLayer = (layer,file) => {
-						if (file==undefined || !file) {
+					mapa.addSelectionLayersMenuToLayer = (layer) => {
 							const popUpDiv = mapa.createPopUp(layer);
 							layer.bindPopup(popUpDiv);
 	
@@ -675,17 +674,6 @@ $("body").on("pluginLoad", function(event, plugin){
 								const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
 								layer.bindPopup(popUpDiv);
 							});
-						}else {
-							const popUpDiv = mapa.createPopUp(layer);
-							layer.bindPopup(popUpDiv);
-	
-							layer.on('click', (e) => {
-								const layer = e.target;
-								const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
-								layer.bindPopup(popUpDiv);
-							});
-
-						}
 					}
 
 					mapa.centerLayer = (layer) => {
