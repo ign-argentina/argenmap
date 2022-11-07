@@ -908,7 +908,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						let geojson = layer.getGeoJSON(),
 						centroid0 = turf.centroid(geojson).geometry.coordinates[0],
 						centroid1 = turf.centroid(geojson).geometry.coordinates[1],
-						resultado = `${centroid0.toFixed(6)}, ${centroid1.toFixed(6)}`;
+						resultado = `${centroid1.toFixed(6)}, ${centroid0.toFixed(6)}`;
 						return resultado;
 					}
 					
