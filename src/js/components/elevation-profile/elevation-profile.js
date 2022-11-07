@@ -130,7 +130,7 @@ class IElevationProfile {
         });
     }
 
-    hideAllElevationProfile() {
+    hideElevationProfile() {
         let wrapper =  document.getElementById("pt-wrapper"),
         selectedLayer
     
@@ -235,7 +235,7 @@ class IElevationProfile {
             btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
                 
             btncloseWrapper.onclick = () => {
-                this.hideAllElevationProfile();
+                this.hideElevationProfile();
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);

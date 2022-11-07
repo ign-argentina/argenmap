@@ -135,7 +135,35 @@ function reloadMenu() {
   recoverSections();
 }
 
+function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAllLayers 
+  if (document.getElementById("pt-wrapper")) {
+    let selectedLayer;
+
+    addedLayers.forEach((layer) => {
+        if (layer.id.includes("elevation_profile_")) {
+            let aux = document.getElementById("flc-" + layer.id),
+            ptInner =  document.getElementById(layer.id);
+
+            if (aux.classList.contains("active")) {
+                mapa.editableLayers.polyline.forEach(polyline => {
+                    if (polyline.idElevProfile === layer.id) {
+                        selectedLayer = polyline;
+                    }
+                });
+                aux.classList.remove("active")
+                selectedLayer.remove();
+                ptInner.classList.toggle("hidden");
+            }
+        }
+    });
+    $("#pt-wrapper").addClass("hidden");
+  }
+
+}
+
 function hideAddedLayers() {
+  hideAllElevationProfile();
+
   addedLayers.forEach((layer) => {
     if (!layer.groupname) {
       let aux = document.getElementById("flc-" + layer.id);
