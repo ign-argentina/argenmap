@@ -832,7 +832,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						wrapper.appendChild(measurement);
 
 						document.body.appendChild(wrapper);
-						$("#measurementWrapper").draggable({scroll: false, cancel: '#measurementInfo'}); 
+						$("#measurementWrapper").draggable({scroll: false, cancel: '#measurementInfo', containment: "body"}); 
 												
 						mapa.getMeasurementsInfo(layer);
 
