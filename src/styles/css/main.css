@@ -1108,10 +1108,10 @@ Perfil Topografico
 }
 
 #measurementInfo { 
+  background-color: #d7f2f7;
   text-align: inherit;
   font-size: 14px;
   user-select: text;
   min-width: 330px; 
   min-height: 100px; 
-
 }

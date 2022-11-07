@@ -858,11 +858,11 @@ $("body").on("pluginLoad", function(event, plugin){
 								//getBoundingBox?
 							}
 							if (layer.type === "circle") {
-								const radius = layer.getRadius().toFixed(3);
+								const radius = (layer.getRadius()/1000).toFixed(3);
 								const centroid = mapa.getCentroidCircle(layer);
-								const cricumference = (Math.PI * radius).toFixed(3);
-								const area = ((Math.PI * (radius*radius))/1000000).toFixed(3);
-								mapa.showMeasurements(radius, "Radio", "m");
+								const cricumference = mapa.getCricumference(layer).toFixed(3);
+								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(3);
+								mapa.showMeasurements(radius, "Radio", "km");
 								mapa.showMeasurements(centroid, "Centroide", "");
 								mapa.showMeasurements(cricumference, "Circunferencia", "");
 								mapa.showMeasurements(area, "Área", "km²");
@@ -870,7 +870,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 
 						} catch (error) {
-
+							console.error(error);
 						}
 					}
 
@@ -887,55 +887,67 @@ $("body").on("pluginLoad", function(event, plugin){
 							longitude = turf.length(geojson);
 						return longitude;
 					}
-
+					
 					mapa.getPerimeter = (layer) => {
 						let geojson = layer.getGeoJSON(),
-							perimeter = turf.length(geojson);
+						perimeter = turf.length(geojson);
 						return perimeter;
 					}
-
+					
 					mapa.getAreaPolygon = (layer) => {
 						let geojson = layer.getGeoJSON(),
-							area = turf.area(geojson) / 1000000;
+						area = turf.area(geojson) / 1000000;
+						return area;
+					}
+					
+					mapa.getCentroidPolygon = (layer) => {
+						let geojson = layer.getGeoJSON(),
+						centroid0 = turf.centroid(geojson).geometry.coordinates[0],
+						centroid1 = turf.centroid(geojson).geometry.coordinates[1],
+						resultado = `${centroid0.toFixed(3)}, ${centroid1.toFixed(3)}`;
+						return resultado;
+					}
+					
+					mapa.getCentroidCircle = (layer) => {
+						let lat = layer.getLatLng().lat,
+						lng = layer.getLatLng().lng,
+						resultado = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+						return resultado;
+					}
+
+					mapa.getAreaCircle = (layer) => {
+						let radius = layer.getRadius(),
+							area = (Math.PI * (radius*radius));
 						return area;
 					}
 
-					mapa.getCentroidPolygon = (layer) => {
-						let geojson = layer.getGeoJSON(),
-							centroid0 = turf.centroid(geojson).geometry.coordinates[0],
-							centroid1 = turf.centroid(geojson).geometry.coordinates[1],
-							resultado = `${centroid0.toFixed(3)}, ${centroid1.toFixed(3)}`;
-						return resultado;
-					}
-
-					mapa.getCentroidCircle = (layer) => {
-						let lat = layer.getLatLng().lat,
-							lng = layer.getLatLng().lng,
-							resultado = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
-						return resultado;
+					mapa.getCricumference = (layer) => {
+						let radius = layer.getRadius(),
+							cricumference = (Math.PI * radius)
+						return cricumference;
 					}
 
 					mapa.createEditStylePopup = (layer, popup) => {
 						const container = document.createElement('div');
 						container.className = 'edit-style-popup-container';
-
+						
 						const closeBtn = document.createElement('a');
 						closeBtn.innerHTML = '<a class="leaflet-popup-close-button" href="#" style="outline: none;">×</a>';
 						closeBtn.onclick = () => {
 							mapa.closePopup(popup);
 						};
 						container.appendChild(closeBtn);
-
+						
 						//-Lines
 						const lineSection = document.createElement('div');
 						lineSection.className = 'section-popup';
-
+						
 						//Title
 						const title = document.createElement('p');
 						title.className = 'section-title non-selectable-text';
 						title.textContent = 'Línea';
 						lineSection.appendChild(title);
-
+						
 						//Opacity
 						const opacityInputDiv1 = document.createElement('div');
 						opacityInputDiv1.className = 'section-item';
