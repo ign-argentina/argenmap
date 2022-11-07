@@ -908,14 +908,14 @@ $("body").on("pluginLoad", function(event, plugin){
 						let geojson = layer.getGeoJSON(),
 						centroid0 = turf.centroid(geojson).geometry.coordinates[0],
 						centroid1 = turf.centroid(geojson).geometry.coordinates[1],
-						resultado = `${centroid0.toFixed(3)}, ${centroid1.toFixed(3)}`;
+						resultado = `${centroid0.toFixed(6)}, ${centroid1.toFixed(6)}`;
 						return resultado;
 					}
 					
 					mapa.getCentroidCircle = (layer) => {
 						let lat = layer.getLatLng().lat,
 						lng = layer.getLatLng().lng,
-						resultado = `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+						resultado = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 						return resultado;
 					}
 
