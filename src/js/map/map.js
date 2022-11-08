@@ -1609,8 +1609,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.getEditableLayer = (name, file) => {
 						const type = name.split('_')[0];
 						if (file == undefined || !file) {
+							//console.log("1a");
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
 						} else {
+							//console.log("1b");
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
 						}
 					}
@@ -1650,9 +1652,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.getLayerGeoJSON = (layer, file) => {
 						const type = layer.split('_')[0];
 						if (file == undefined || !file) {
+							//console.log("2a");
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
-
 						} else {
+							//console.log("2b");
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
 						}
 					}
@@ -1792,6 +1795,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								geoJSON.properties.styles = styleOptions;
 								geoJSON.properties.type = layer.type;
 								jsonToDownload.features.push(geoJSON);
+								//console.log("3a");
 							});
 						}else{
 							mapa.groupLayers[groupLayer].forEach(layerName => {
@@ -1803,6 +1807,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								// TODO: include all properties fields to GeoJSON
 								(layer.value) ? geoJSON.properties.value = layer.value : 0;
 								jsonToDownload.features.push(geoJSON);
+								//console.log("3b");
 							});
 						}
 
@@ -1936,21 +1941,13 @@ $("body").on("pluginLoad", function(event, plugin){
 					};
 
 					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, groupIsCreated, file) => {
-						if (file==undefined || !file && mapa.groupLayers[groupName] === undefined){
+						if (mapa.groupLayers[groupName] === undefined) {
 							mapa.groupLayers[groupName] = [];
-						}else{
-							if(mapa.groupLayers[groupName] == undefined){
-								mapa.groupLayers[groupName] = [];
-							}
 						}
-						
+
 						if (geoJSON.type === 'FeatureCollection') {
 							geoJSON.features.forEach(feature => {
-								if(file==undefined || !file){
-									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, false);
-								}else {
-									mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
-								}
+								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
 							});
 							return;
 						}
@@ -2098,8 +2095,10 @@ $("body").on("pluginLoad", function(event, plugin){
 									};
 									if(file==undefined || !file){
 										mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, false);
+										//console.log("7a");
 									}else {
 										mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, true);
+										//console.log("7b");
 									}
 								});
 								return;
@@ -2114,11 +2113,7 @@ $("body").on("pluginLoad", function(event, plugin){
 										},
 										properties: geoJSON.properties
 									};
-									if(file==undefined || !file){
-										mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, false);
-									}else {
-										mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, true);
-									}
+									mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, true);
 								});
 								return;
 							}
@@ -2150,19 +2145,17 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 						
 						layer.downloadGeoJSON = () => {
-							if(file==undefined || !file){
+							if (file == undefined || !file) {
 								mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
-							}else {
+								//console.log("9a");
+							} else {
 								mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+								//console.log("9b");
 							}
 						}
 
-						if(file==undefined || !file){
-							mapa.editableLayers[type].push(layer);
-						}else {
-							mapa.editableLayers[type].push(layer);
-						}
-						
+						mapa.editableLayers[type].push(layer);
+
 						if (layer.type === 'marker') {
 							//Default marker styles
 							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
