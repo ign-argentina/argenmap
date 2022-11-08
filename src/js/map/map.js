@@ -1598,35 +1598,21 @@ $("body").on("pluginLoad", function(event, plugin){
 						
 						layer.closePopup();
 
-						if (Object.keys(layer.data).length === 0) {
-							//Download
-							mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
-						} else {
-							//Load data in table
-							//.. its more complicated if active layers is different to each search.
+						mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
 
-							//Load data in table
-							//let tableD = new Datatable (data, coords);
-							//createTabulator(tableD, activeLayer.name);
-
-							mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
-						}
 					}
 
 					mapa.getEditableLayers = (type) => {
 						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type] : mapa.editableLayers;
 					}
 
-					mapa.getEditableLayer = (name,file) => {
+					mapa.getEditableLayer = (name, file) => {
 						const type = name.split('_')[0];
-
-						if (file==undefined || !file) {
+						if (file == undefined || !file) {
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
-						}else {
+						} else {
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
-							
-						}					
-						
+						}
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
@@ -1660,15 +1646,14 @@ $("body").on("pluginLoad", function(event, plugin){
 							});
 						}
 					}
-					
-					mapa.getLayerGeoJSON = (layer,file) => {
+
+					mapa.getLayerGeoJSON = (layer, file) => {
 						const type = layer.split('_')[0];
-						if (file==undefined || !file) {
-							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
-							
-						}else {
+						if (file == undefined || !file) {
 							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
 
+						} else {
+							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
 						}
 					}
 					
@@ -1708,60 +1693,36 @@ $("body").on("pluginLoad", function(event, plugin){
 						});
 					}
 
-					mapa.deleteLayer = (layer, file) => {
+					mapa.deleteLayer = (layer) => {
 						const type = layer.split('_')[0];
-						if (file==undefined || !file) {
-							const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
-							if (lyrIdx >= 0) {
-								drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
-								mapa.editableLayers[type].splice(lyrIdx, 1);
-							}
-	
-							//Delete from groups
-							for (const group in mapa.groupLayers) {
-								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
-								if (lyrInGrpIdx >= 0)
-									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
-							}
-						}else {
-							const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
-							if (lyrIdx >= 0) {
-								drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
-								mapa.editableLayers[type].splice(lyrIdx, 1);
-							}
-	
-							//Delete from groups
-							for (const group in mapa.groupLayers) {
-								const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
-								if (lyrInGrpIdx >= 0)
-									mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
+
+						if (lyrIdx >= 0) {
+							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
+							mapa.editableLayers[type].splice(lyrIdx, 1);
+						}
+
+						//Delete from groups
+						for (const group in mapa.groupLayers) {
+							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
+							if (lyrInGrpIdx >= 0) {
+								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 							}
 						}
-						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers))
-						controlSeccionGeom()
+
+						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
+						controlSeccionGeom();
 					}
 
-					mapa.removeGroup = (group, deleteLayers,file) => {
-						if (file==undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group)) {
-								if (deleteLayers) {
-									const layersArr = [...mapa.groupLayers[group]];
-									layersArr.forEach(layer => {
-										mapa.deleteLayer(layer);
-									});
-								}
-								delete mapa.groupLayers[group];
+					mapa.removeGroup = (group, deleteLayers) => {
+						if (mapa.groupLayers.hasOwnProperty(group)) {
+							if (deleteLayers) {
+								const layersArr = [...mapa.groupLayers[group]];
+								layersArr.forEach(layer => {
+									mapa.deleteLayer(layer);
+								});
 							}
-						}else {
-							if (mapa.groupLayers.hasOwnProperty(group)) {
-								if (deleteLayers) {
-									const layersArr = [...mapa.groupLayers[group]];
-									layersArr.forEach(layer => {
-										mapa.deleteLayer(layer,true);
-									});
-								}
-								delete mapa.groupLayers[group];
-							}
+							delete mapa.groupLayers[group];
 						}
 					}
 
@@ -1774,19 +1735,20 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 							mapa.groupLayers[group].push(feature);
 							return;
-						}
+						};
 						mapa.groupLayers[group] = [];
 						mapa.groupLayers[group].push(feature);
 					}
 
 					mapa.removeLayerFromGroup = (layer, group, file) => {
-						if (file==undefined || !file) {
+						if (file == undefined || !file) {
 							if (mapa.groupLayers.hasOwnProperty(group)) {
 								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
 								if (layerIdx >= 0)
 									mapa.groupLayers[group].splice(layerIdx, 1);
 							}
-						}else {
+
+						} else {
 							if (mapa.groupLayers.hasOwnProperty(group)) {
 								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
 								if (layerIdx >= 0)
