@@ -134,4 +134,4 @@ class EditableLabel {
 }
 
 const editableLabel = new EditableLabel();
-//editableLabel.addTo(mapa);
+editableLabel.addTo(mapa);
