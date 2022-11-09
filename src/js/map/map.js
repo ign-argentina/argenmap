@@ -842,23 +842,23 @@ $("body").on("pluginLoad", function(event, plugin){
 						//TODO:usar funciones de calculo para extender
 
 						const type = layer.type[0].toUpperCase() + layer.type.slice(1).toLowerCase();
-						mapa.showMeasurements(type, "Tipo", "");
+						mapa.showMeasurements("Tipo",type,"");
 						try {
 							if (layer.type === "polyline") {
 								const longitude = mapa.getLongitude(layer).toFixed(3);
 								const boundingBox= mapa.getBoundingBox(layer);
-								mapa.showMeasurements(longitude, "Longitud", "km");
-								mapa.showMeasurements(boundingBox, "BoundingBox", "");
+								mapa.showMeasurements("Longitud",longitude,"km");
+								mapa.showMeasurements("BoundingBox",boundingBox,"");
 							}
 							if (layer.type === "polygon" ||  layer.type === "rectangle") {
 								const area = mapa.getAreaPolygon(layer).toFixed(3);
 								const centroid = mapa.getCentroidPolygon(layer);
 								const perimeter = mapa.getPerimeter(layer).toFixed(3);
 								const boundingBox= mapa.getBoundingBox(layer);
-								mapa.showMeasurements(area, "Área", "km²");
-								mapa.showMeasurements(centroid, "Centroide", "");
-								mapa.showMeasurements(perimeter, "Perímetro", "km");
-								mapa.showMeasurements(boundingBox, "BoundingBox", "");
+								mapa.showMeasurements("Área",area,"km²");
+								mapa.showMeasurements("Centroide",centroid,"");
+								mapa.showMeasurements("Perímetro",perimeter,"km");
+								mapa.showMeasurements("BoundingBox",boundingBox,"");
 							}
 							if (layer.type === "circle") {
 								const radius = (layer.getRadius()/1000).toFixed(3);
@@ -866,11 +866,15 @@ $("body").on("pluginLoad", function(event, plugin){
 								const cricumference = (mapa.getCricumference(layer)/1000).toFixed(3);
 								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(3);
 								const boundingBox= mapa.getBoundingBox(layer);
-								mapa.showMeasurements(area, "Área", "km²");
-								mapa.showMeasurements(centroid, "Centroide", "");
-								mapa.showMeasurements(cricumference, "Circunferencia", "km");
-								mapa.showMeasurements(radius, "Radio", "km");
-								mapa.showMeasurements(boundingBox, "BoundingBox", "");
+								mapa.showMeasurements("Área",area,"km²");
+								mapa.showMeasurements("Centroide",centroid,"");
+								mapa.showMeasurements("Circunferencia",cricumference,"km");
+								mapa.showMeasurements("Radio",radius,"km");
+								mapa.showMeasurements("BoundingBox",boundingBox,"");
+							}
+							if (layer.type === "marker" || layer.type === "circlemarker") {
+								const centroid = mapa.getCentroidCircle(layer);
+								mapa.showMeasurements("Centroide",centroid,"");
 							}
 
 						} catch (error) {
@@ -878,7 +882,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.showMeasurements = (measurement, name, unit) => {
+					mapa.showMeasurements = (name,measurement,unit) => {
 						const wrapper = document.getElementById("measurementInfo"),
 							newDiv = document.createElement("div"),
 							resultado = `${name}: ${measurement} ${unit}`;
