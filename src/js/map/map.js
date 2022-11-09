@@ -1606,15 +1606,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type] : mapa.editableLayers;
 					}
 
-					mapa.getEditableLayer = (name, file) => {
+					mapa.getEditableLayer = (name) => {
 						const type = name.split('_')[0];
-						if (file == undefined || !file) {
-							//console.log("1a");
-							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
-						} else {
-							//console.log("1b");
-							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
-						}
+
+						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === name) : null;
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
@@ -1661,7 +1656,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 					
 
-					mapa.showLayer = (layer,file) => {
+					mapa.showLayer = (layer) => {
 						const type = layer.split('_')[0];
 						if (mapa.editableLayers.hasOwnProperty(type)) {
 							const lyr = mapa.editableLayers[type].find(lyr => lyr.name === layer);
@@ -1671,7 +1666,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.hideLayer = (layer,file) => {
+					mapa.hideLayer = (layer) => {
 						Object.values(drawnItems._layers).forEach(lyr => {
 							if (layer === lyr.name) {
 								drawnItems.removeLayer(lyr);
@@ -1681,7 +1676,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					
-					mapa.showGroupLayer = (group,file) => {
+					mapa.showGroupLayer = (group) => {
 						if (mapa.groupLayers.hasOwnProperty(group)){
 							mapa.groupLayers[group].forEach(layer => {
 								mapa.showLayer(layer);
@@ -1689,7 +1684,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.hideGroupLayer = (group,file) => {
+					mapa.hideGroupLayer = (group) => {
 						if (mapa.groupLayers.hasOwnProperty(group))
 						mapa.groupLayers[group].forEach(layer => {
 								mapa.hideLayer(layer);
@@ -1746,6 +1741,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.removeLayerFromGroup = (layer, group, file) => {
 						if (file == undefined || !file) {
 							if (mapa.groupLayers.hasOwnProperty(group)) {
+								//console.log("a1");
 								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
 								if (layerIdx >= 0)
 									mapa.groupLayers[group].splice(layerIdx, 1);
@@ -1753,6 +1749,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						} else {
 							if (mapa.groupLayers.hasOwnProperty(group)) {
+								//console.log("a2");
 								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
 								if (layerIdx >= 0)
 									mapa.groupLayers[group].splice(layerIdx, 1);
@@ -1782,34 +1779,22 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.remove();
 					}
 					
-					mapa.downloadMultiLayerGeoJSON = (groupLayer,file) => {
+					mapa.downloadMultiLayerGeoJSON = (groupLayer) => {
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []
 						};
-						if (file==undefined || !file){
-							mapa.groupLayers[groupLayer].forEach(layerName => {
-								const layer = mapa.getEditableLayer(layerName);
-								const geoJSON = layer.toGeoJSON();
-								const styleOptions = { ...layer.options };
-								geoJSON.properties.styles = styleOptions;
-								geoJSON.properties.type = layer.type;
-								jsonToDownload.features.push(geoJSON);
-								//console.log("3a");
-							});
-						}else{
-							mapa.groupLayers[groupLayer].forEach(layerName => {
-								const layer = mapa.getEditableLayer(layerName,true);
-								const geoJSON = layer.toGeoJSON();
-								const styleOptions = { ...layer.options };
-								geoJSON.properties.styles = styleOptions;
-								geoJSON.properties.type = layer.type;
-								// TODO: include all properties fields to GeoJSON
-								(layer.value) ? geoJSON.properties.value = layer.value : 0;
-								jsonToDownload.features.push(geoJSON);
-								//console.log("3b");
-							});
-						}
+
+						mapa.groupLayers[groupLayer].forEach(layerName => {
+							const layer = mapa.getEditableLayer(layerName, true);
+							const geoJSON = layer.toGeoJSON();
+							const styleOptions = { ...layer.options };
+							geoJSON.properties.styles = styleOptions;
+							geoJSON.properties.type = layer.type;
+							// TODO: include all properties fields to GeoJSON
+							(layer.value) ? geoJSON.properties.value = layer.value : 0;
+							jsonToDownload.features.push(geoJSON);
+						});
 
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
@@ -2093,13 +2078,9 @@ $("body").on("pluginLoad", function(event, plugin){
 										},
 										properties: geoJSON.properties
 									};
-									if(file==undefined || !file){
-										mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, false);
-										//console.log("7a");
-									}else {
-										mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, true);
-										//console.log("7b");
-									}
+
+									mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, true);
+
 								});
 								return;
 							}
@@ -2145,13 +2126,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 						
 						layer.downloadGeoJSON = () => {
-							if (file == undefined || !file) {
 								mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
-								//console.log("9a");
-							} else {
-								mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
-								//console.log("9b");
-							}
 						}
 
 						mapa.editableLayers[type].push(layer);
