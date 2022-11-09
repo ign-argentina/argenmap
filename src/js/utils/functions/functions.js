@@ -122,6 +122,7 @@ function showImageOnError(image) {
 }
 
 function mainMenuSearch(e) {
+  hideAllElevationProfile();
   e.preventDefault();
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
@@ -191,7 +192,6 @@ function showTotalNumberofLayers() {
 
 function recoverSections() {
   addedLayers.forEach((layer) => {
-    console.log(layer.id)
     if (
       layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix) ||
       layer.id.includes(app.geoprocessing.availableProcesses[1].namePrefix) ||
@@ -202,7 +202,7 @@ function recoverSections() {
     } else if (layer.id.includes("elevation_profile")) {
       let layername = layer.id
       let perfilEdit = new IElevationProfile();
-      perfilEdit.addGeoprocessLayer("Geoprocesos", layername, layername, layername);
+      perfilEdit.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);
     } else if (layer.file == true) {
       menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id);
     } else if (layer.groupname) {
