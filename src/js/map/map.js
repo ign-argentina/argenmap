@@ -863,13 +863,13 @@ $("body").on("pluginLoad", function(event, plugin){
 							if (layer.type === "circle") {
 								const radius = (layer.getRadius()/1000).toFixed(3);
 								const centroid = mapa.getCentroidCircle(layer);
-								const cricumference = mapa.getCricumference(layer).toFixed(3);
+								const cricumference = (mapa.getCricumference(layer)/1000).toFixed(3);
 								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(3);
 								const boundingBox= mapa.getBoundingBox(layer);
-								mapa.showMeasurements(radius, "Radio", "km");
-								mapa.showMeasurements(centroid, "Centroide", "");
-								mapa.showMeasurements(cricumference, "Circunferencia", "m");
 								mapa.showMeasurements(area, "Área", "km²");
+								mapa.showMeasurements(centroid, "Centroide", "");
+								mapa.showMeasurements(cricumference, "Circunferencia", "km");
+								mapa.showMeasurements(radius, "Radio", "km");
 								mapa.showMeasurements(boundingBox, "BoundingBox", "");
 							}
 
