@@ -263,7 +263,7 @@ class Geoprocessing {
           id: layername,
           layer: imageLayer,
           name: layername,
-          file_name: layername,
+          file_name: title,
           rectangle: selectedRectangle,
           download: download
         });
