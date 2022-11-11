@@ -2582,17 +2582,12 @@ class GestorMenu {
     if (this.pluginExists(pluginName)) {
       delete this.plugins[pluginName];
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   pluginExists(pluginName) {
-    if (this.plugins[pluginName]) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.plugins[pluginName] ? true : false ;
   }
 
   ordenaPorPeso(a, b) {
@@ -4106,11 +4101,8 @@ class Geometry {
   }
 
   isValidType(geom) {
-    if (this._types.filter((type) => type === geom)) {
-      return true;
-    } else {
-      return false;
-    }
+    let match = this._types.filter((type) => type === geom);
+    return match ? true : false;
   }
 }
 
