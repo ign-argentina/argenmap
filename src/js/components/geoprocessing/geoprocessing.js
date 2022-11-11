@@ -1,9 +1,10 @@
 let g_modal_close = true;
 let btn_modal_loading = false;
 let process = {};
-let results_counter = 0;
 let contourRectangles = [];
 let isValidRectangle = false;
+let counterContour = 0, counterHeight = 0, counterBuffer = 0,
+    counterElevProfile = 0; //soon to be moved to their respective class
 
 class Geoprocessing {
   formContainer = null;
@@ -161,8 +162,8 @@ class Geoprocessing {
 
         let namePrefix = this.namePrefix;
 
-        let layername = namePrefix + results_counter;
-        results_counter++;
+        let layername = namePrefix + counterContour;
+        counterContour++;
 
         mapa
           .getEditableLayer(this.editableLayer_name)
@@ -199,8 +200,8 @@ class Geoprocessing {
       }
       case "waterRise": {
         btn_modal_loading = true;
-        let layername = app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
-        results_counter++;
+        let layername = app.geoprocessing.availableProcesses[1].namePrefix + counterHeight;
+        counterHeight++;
 
         let selectedRectangle;
         addedLayers.forEach(lyr => {
@@ -274,8 +275,8 @@ class Geoprocessing {
       case "buffer": {
         btn_modal_loading = false;
         let namePrefixBuffer = this.namePrefixBuffer;
-        let layername = namePrefixBuffer + results_counter;
-        results_counter++;
+        let layername = namePrefixBuffer + counterBuffer;
+        counterBuffer++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
         addedLayers.push({

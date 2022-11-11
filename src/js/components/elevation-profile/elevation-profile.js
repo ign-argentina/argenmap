@@ -101,8 +101,8 @@ class IElevationProfile {
                     distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
                 };
             }
-            let layername = "elevation_profile_" + results_counter;
-            results_counter++;
+            let layername = "elevation_profile_" + counterElevProfile;
+            counterElevProfile++;
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
 
