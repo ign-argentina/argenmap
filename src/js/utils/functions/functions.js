@@ -123,6 +123,7 @@ function showImageOnError(image) {
 
 function mainMenuSearch(e) {
   hideAllElevationProfile();
+  hideAddedLayers();
   e.preventDefault();
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
@@ -197,15 +198,15 @@ function recoverSections() {
       layer.id.includes(app.geoprocessing.availableProcesses[2].namePrefix) ||
       layer.id.includes("result_")
     ) {
-      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id);
+      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, false);
     } else if (layer.id.includes(app.geoprocessing.availableProcesses[1].namePrefix)) {
-      menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id);
+      menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, false);
     } else if (layer.id.includes("elevation_profile")) {
       let layername = layer.id
       let perfilEdit = new IElevationProfile();
       perfilEdit.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);
     } else if (layer.file == true) {
-      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id);
+      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, false);
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
         layer.groupname,
@@ -1204,7 +1205,7 @@ function drawRectangle(arg) {
 
   geojson.forEach((e) => {
     mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
-    menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
+    menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name, true);
     addedLayers.push(e);
     setTimeout(function () {
       $("#select-capa").val(e.name).change();

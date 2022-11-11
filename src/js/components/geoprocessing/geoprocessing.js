@@ -194,7 +194,7 @@ class Geoprocessing {
         //mapa.featureGroups.setStyle({color: '#876508'});
         // **
 
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
         break;
       }
       case "waterRise": {
@@ -268,7 +268,7 @@ class Geoprocessing {
           download: download
         });
         
-        menu_ui.addFileLayer("Geoprocesos", title, layername, layername);
+        menu_ui.addFileLayer("Geoprocesos", title, layername, layername, true);
         break;
       }
       case "buffer": {
@@ -285,7 +285,7 @@ class Geoprocessing {
           file_name: layername,
           kb: null,
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
         break;
       }
     }

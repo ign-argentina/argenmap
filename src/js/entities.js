@@ -3466,7 +3466,7 @@ class Menu_UI {
     return layerOption;
   }
 
-  addFileLayer(groupname, textName, id, fileName) {
+  addFileLayer(groupname, textName, id, fileName, isActive) {
     let groupnamev = clearSpecialChars(groupname);
     let main = document.getElementById("lista-" + groupnamev);
 
@@ -3489,7 +3489,11 @@ class Menu_UI {
 
     let layer_item = document.createElement("div");
     layer_item.id = "flc-" + id;
-    layer_item.className = "file-layer active";
+    if (isActive) {
+      layer_item.className = "file-layer active"
+    }else if (!isActive) {
+        layer_item.className = "file-layer"
+    }
 
     let img_icon = document.createElement("div");
     img_icon.className = "file-img";
