@@ -155,13 +155,13 @@ class ImpresorItemHTML extends Impresor {
     const btn_link = document.createElement("a");
     btn_link.setAttribute("nombre", item.nombre);
     btn_link.href = "#";
-    btn_link.innerHTML = item.titulo
-      ? item.titulo.replace(/_/g, " ")
-      : "por favor ingrese un nombre";
 
     const btn_tooltip = document.createElement("span");
     btn_tooltip.setAttribute("data-toggle2", "tooltip");
     btn_tooltip.title = item.descripcion;
+    btn_tooltip.innerHTML = item.titulo
+    ? item.titulo.replace(/_/g, " ")
+    : "por favor ingrese un nombre";
 
     const btn_zoom = document.createElement("div");
     btn_zoom.className = "zoom-layer";
