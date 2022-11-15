@@ -292,7 +292,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					break;
 				case 'Measure':
 					// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed:true });
+					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed: true });
 					measureControl.addTo(mapa);
 					/* if (!L.Browser.android) {
 						// replaces event listener for Measure icon in favor of click
@@ -1674,17 +1674,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.getLayerGeoJSON = (layer, file) => {
+					mapa.getLayerGeoJSON = (layer) => {
 						const type = layer.split('_')[0];
-						if (file == undefined || !file) {
-							//console.log("2a");
-							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
-						} else {
-							//console.log("2b");
-							return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
-						}
+						return mapa.editableLayers.hasOwnProperty(type) ? mapa.editableLayers[type].find(lyr => lyr.name === layer).toGeoJSON() : null;
 					}
-					
 
 					mapa.showLayer = (layer) => {
 						const type = layer.split('_')[0];
@@ -1754,7 +1747,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.addLayerToGroup = (layer, group, file) => {
+					mapa.addLayerToGroup = (layer, group) => {
 						let feature = null ; 
 						feature = ( typeof layer === "object" ) ? feature = layer.name : feature = layer;
 						if ( mapa.groupLayers.hasOwnProperty(group) ) {
@@ -1768,25 +1761,14 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.groupLayers[group].push(feature);
 					}
 
-					mapa.removeLayerFromGroup = (layer, group, file) => {
-						if (file == undefined || !file) {
-							if (mapa.groupLayers.hasOwnProperty(group)) {
-								//console.log("a1");
-								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
-								if (layerIdx >= 0)
-									mapa.groupLayers[group].splice(layerIdx, 1);
-							}
-
-						} else {
-							if (mapa.groupLayers.hasOwnProperty(group)) {
-								//console.log("a2");
-								const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
-								if (layerIdx >= 0)
-									mapa.groupLayers[group].splice(layerIdx, 1);
-							}
+					mapa.removeLayerFromGroup = (layer, group) => {
+						if (mapa.groupLayers.hasOwnProperty(group)) {
+							const layerIdx = mapa.groupLayers[group].findIndex(layerName => layerName === layer);
+							if (layerIdx >= 0)
+								mapa.groupLayers[group].splice(layerIdx, 1);
 						}
 					}
-
+					
 					mapa.downloadLayerGeoJSON = (layer) => {
 						const geoJSON = {
 							type: "FeatureCollection",
@@ -2152,7 +2134,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.groupLayers[groupName].push(name);
 
 						layer.getGeoJSON = () => {
-							return mapa.getLayerGeoJSON(layer.name, file);
+							return mapa.getLayerGeoJSON(layer.name);
 						}
 						
 						layer.downloadGeoJSON = () => {
