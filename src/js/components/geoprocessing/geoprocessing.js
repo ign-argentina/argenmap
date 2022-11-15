@@ -1,9 +1,10 @@
 let g_modal_close = true;
 let btn_modal_loading = false;
 let process = {};
-let results_counter = 0;
 let contourRectangles = [];
 let isValidRectangle = false;
+let counterContour = 0, counterHeight = 0, counterBuffer = 0,
+    counterElevProfile = 0; //soon to be moved to their respective class
 
 class Geoprocessing {
   formContainer = null;
@@ -161,8 +162,8 @@ class Geoprocessing {
 
         let namePrefix = this.namePrefix;
 
-        let layername = namePrefix + results_counter;
-        results_counter++;
+        let layername = namePrefix + counterContour;
+        counterContour++;
 
         mapa
           .getEditableLayer(this.editableLayer_name)
@@ -194,13 +195,13 @@ class Geoprocessing {
         //mapa.featureGroups.setStyle({color: '#876508'});
         // **
 
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
         break;
       }
       case "waterRise": {
         btn_modal_loading = true;
-        let layername = app.geoprocessing.availableProcesses[1].namePrefix + results_counter;
-        results_counter++;
+        let layername = app.geoprocessing.availableProcesses[1].namePrefix + counterHeight;
+        counterHeight++;
 
         let selectedRectangle;
         addedLayers.forEach(lyr => {
@@ -263,19 +264,19 @@ class Geoprocessing {
           id: layername,
           layer: imageLayer,
           name: layername,
-          file_name: layername,
+          file_name: title,
           rectangle: selectedRectangle,
           download: download
         });
         
-        menu_ui.addFileLayer("Geoprocesos", title, layername, layername);
+        menu_ui.addFileLayer("Geoprocesos", title, layername, layername, true);
         break;
       }
       case "buffer": {
         btn_modal_loading = false;
         let namePrefixBuffer = this.namePrefixBuffer;
-        let layername = namePrefixBuffer + results_counter;
-        results_counter++;
+        let layername = namePrefixBuffer + counterBuffer;
+        counterBuffer++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
         addedLayers.push({
@@ -285,7 +286,7 @@ class Geoprocessing {
           file_name: layername,
           kb: null,
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
         break;
       }
     }

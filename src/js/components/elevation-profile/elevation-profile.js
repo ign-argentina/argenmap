@@ -101,12 +101,12 @@ class IElevationProfile {
                     distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
                 };
             }
-            let layername = "elevation_profile_" + results_counter;
-            results_counter++;
+            let layername = "elevation_profile_" + counterElevProfile;
+            counterElevProfile++;
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
 
-            this.addGeoprocessLayer("Geoprocesos", layername, layername, layername);
+            this.addGeoprocessLayer("Geoprocesos", layername, layername, layername, true);
             addedLayers.push({
                 id: layername,
                 name: layername,
@@ -130,7 +130,7 @@ class IElevationProfile {
         });
     }
 
-    hideAllElevationProfile() {
+    hideElevationProfile() {
         let wrapper =  document.getElementById("pt-wrapper"),
         selectedLayer
     
@@ -235,7 +235,7 @@ class IElevationProfile {
             btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
                 
             btncloseWrapper.onclick = () => {
-                this.hideAllElevationProfile();
+                this.hideElevationProfile();
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);
@@ -504,7 +504,7 @@ class IElevationProfile {
 
     }
 
-    addGeoprocessLayer(groupname, textName, id, fileName){
+    addGeoprocessLayer(groupname, textName, id, fileName, isActive){
         let groupnamev= clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
 
@@ -517,7 +517,11 @@ class IElevationProfile {
 
              let layer_item = document.createElement("div")
              layer_item.id = "flc-" +id
-             layer_item.className = "file-layer active"
+             if (isActive) {
+                layer_item.className = "file-layer active"
+             }else if (!isActive) {
+                layer_item.className = "file-layer"
+             }
               
              let img_icon =document.createElement("div")
              img_icon.className = "file-img"
