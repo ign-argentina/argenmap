@@ -26,52 +26,54 @@ loginatic = function() {
         }
     }
 
-    this.process = () => {
+    this.process = async() => {
         let pwd = document.getElementById("input-pwd").value;
-        let request = $.ajax({
-            async: false,
-            url: 'src/config/users.json',
-            type: 'POST',
-            success: function(d) {}
-        });
 
-        let json = JSON.parse(request.responseText);
+        let result = await fetch("src/config/user.json")
+        .then(function (response) {
+            if (response.status !== 200) {
+                console.log('Looks like there was a problem. Status Code: ' + response.status);
+                return;
+            }
+            if (response.status == 200) {
+                return response.json();
+            }
+
+        });
         let logged = false;
 
-        for (let i = 0; i < json.length; i++) {
-            if (json[i].clave == pwd) {
-                let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
+        if (result.clave == pwd) {
+            let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
 
-                this.currentLogin = json[i];
+            this.currentLogin = result;
 
-                let lat = json[i].lat_4326;
-                let lon = json[i].lon_4326;
-                let zoom = json[i].zoom ?? 13;
+            let lat = result.lat_4326;
+            let lon = result.lon_4326;
+            let zoom = result.zoom ?? 13;
 
-                /* document.title += ' - ' + json[i].nombregobiernolocal;
-                let logoTitle = document.getElementById('logoText');
-                logoTitle.innerText += ' - ' + json[i].nombregobiernolocal; */
+            /* document.title += ' - ' + json[i].nombregobiernolocal;
+            let logoTitle = document.getElementById('logoText');
+            logoTitle.innerText += ' - ' + json[i].nombregobiernolocal; */
 
-                mapa.setView([lat, lon], zoom);
-                document.getElementById("login-wrapper").style.display = "none";
-                logged = true;
+            mapa.setView([lat, lon], zoom);
+            document.getElementById("login-wrapper").style.display = "none";
+            logged = true;
 
-                if ($("#btn-logout").length == 0) {
-                    this._addLogoutButton();                    
-                }
+            if ($("#btn-logout").length == 0) {
+                this._addLogoutButton();                    
+            }
 
-                if (recuerdame == 1) {
-                    // console.log("recuerdame OK");
-                    setCookie("lat", lat);
-                    setCookie("lon", lon);
-                    setCookie("zoom", 10);
-                    setCookie("autologin", 1);
-                } else {
-                    // console.log("No entra a recuerdame");
-                }
-                break;
+            if (recuerdame == 1) {
+                // console.log("recuerdame OK");
+                setCookie("lat", lat);
+                setCookie("lon", lon);
+                setCookie("zoom", 10);
+                setCookie("autologin", 1);
+            } else {
+                // console.log("No entra a recuerdame");
             }
         }
+
         if (!logged) {
             alert("No se encontró ningun municipio para su clave, por favor intentelo nuevamente");
         }
