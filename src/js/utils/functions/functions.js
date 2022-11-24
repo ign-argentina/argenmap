@@ -140,9 +140,10 @@ function reloadMenu() {
 function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAllLayers 
   if (document.getElementById("pt-wrapper")) {
     let selectedLayer;
+    let elevProfileRecover = new IElevationProfile();
 
     addedLayers.forEach((layer) => {
-        if (layer.id.includes("perfil_de_elevacion_")) {
+        if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
             let aux = document.getElementById("flc-" + layer.id),
             ptInner =  document.getElementById(layer.id);
 
@@ -192,18 +193,20 @@ function showTotalNumberofLayers() {
 }
 
 function recoverSections() {
+  let geoprocessessRecover = new Geoprocessing();
+  let elevProfileRecover = new IElevationProfile();
+
   addedLayers.forEach((layer) => {
     if (
-      layer.id.includes("curvas_de_nivel_") ||
-      layer.id.includes("area_de_influencia_")
+      layer.id.includes(geoprocessessRecover.namePrefixContour) ||
+      layer.id.includes(geoprocessessRecover.namePrefixBuffer)
     ) {
       menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, false);
-    } else if (layer.id.includes("cota_")) {
+    } else if (layer.id.includes(geoprocessessRecover.namePrefixHeight)) {
       menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, false);
-    } else if (layer.id.includes("perfil_de_elevacion_")) {
+    } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
       let layername = layer.id
-      let perfilEdit = new IElevationProfile();
-      perfilEdit.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);
+      elevProfileRecover.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);
     } else if (layer.file == true) {
       menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, false);
     } else if (layer.groupname) {
