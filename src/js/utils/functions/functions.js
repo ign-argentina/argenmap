@@ -142,7 +142,7 @@ function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAl
     let selectedLayer;
 
     addedLayers.forEach((layer) => {
-        if (layer.id.includes("elevation_profile_")) {
+        if (layer.id.includes("perfil_de_elevacion")) {
             let aux = document.getElementById("flc-" + layer.id),
             ptInner =  document.getElementById(layer.id);
 
@@ -201,7 +201,7 @@ function recoverSections() {
       menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, false);
     } else if (layer.id.includes(app.geoprocessing.availableProcesses[1].namePrefix)) {
       menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, false);
-    } else if (layer.id.includes("elevation_profile")) {
+    } else if (layer.id.includes("perfil_de_elevacion")) {
       let layername = layer.id
       let perfilEdit = new IElevationProfile();
       perfilEdit.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);

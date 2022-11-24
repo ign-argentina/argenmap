@@ -4,7 +4,8 @@ class IElevationProfile {
         this.serviceLayer = "geoprocesos:alos_unificado";
         this.values = "";
         this.data = [];
-        this.namePrefix = "elevation_profile_";
+        this.altnamePrefixElevProfile = "perfil_de_elevacion_";
+        this.namePrefixElevProfile = app.geoprocessing.availableProcesses[3].namePrefix ?? this.altnamePrefixElevProfile;
         this.verticesLimit = 100;
         this.verticesLimitMsg = `Selected line has too much vertices. Simplifiy the geometry to execute the process or select a line with less than `;
     }
@@ -101,7 +102,7 @@ class IElevationProfile {
                     distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
                 };
             }
-            let layername = "elevation_profile_" + counterElevProfile;
+            let layername = this.namePrefixElevProfile + counterElevProfile;
             counterElevProfile++;
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
@@ -135,7 +136,7 @@ class IElevationProfile {
         selectedLayer
     
         addedLayers.forEach((layer) => {
-            if (layer.id.includes("elevation_profile_")) {
+            if (layer.id.includes(this.namePrefixElevProfile)) {
                 let aux = document.getElementById("flc-" + layer.id),
                 ptInner =  document.getElementById(layer.id);
                 
@@ -156,7 +157,7 @@ class IElevationProfile {
         //Is wrapper empty?
         let count = 0; 
         addedLayers.forEach(layer => {
-            if (layer.id.includes("elevation_profile")) {
+            if (layer.id.includes(this.namePrefixElevProfile)) {
                 count++;
             }
         });
@@ -201,7 +202,7 @@ class IElevationProfile {
         //Is wrapper empty?
         let count = 0; 
         addedLayers.forEach(layer => {
-            if (layer.id.includes("elevation_profile")) {
+            if (layer.id.includes(this.namePrefixElevProfile)) {
                 count++;
             }
         });
@@ -492,7 +493,7 @@ class IElevationProfile {
         wrapper =  document.getElementById("pt-wrapper");
 
         addedLayers.forEach(layer => {
-            if (layer.id.includes("elevation_profile")) {
+            if (layer.id.includes(this.namePrefixElevProfile)) {
                 layersCount++;
             }
         });
