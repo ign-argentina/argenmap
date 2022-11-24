@@ -355,7 +355,7 @@ class Geoprocessing {
 
   resetHeightLayerColor() {
     mapa.editableLayers.polyline.forEach((lyr) => {
-      if (lyr.layer && lyr.layer.includes("curvas_de_nivel") && lyr.options.color == "#ff1100") {
+      if (lyr.layer && lyr.layer.includes(this.namePrefixContour) && lyr.options.color == "#ff1100") {
         //Same id, spedific value
         lyr.setStyle({ color: "#E4C47A" });
       }
