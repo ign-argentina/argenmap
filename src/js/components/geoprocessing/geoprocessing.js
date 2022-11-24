@@ -15,8 +15,9 @@ class Geoprocessing {
   optionsForm = null;
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
-  namePrefix = app.geoprocessing.availableProcesses[0].namePrefix ?? "result_";
-  namePrefixBuffer = app.geoprocessing.availableProcesses[2].namePrefix ?? "result_";
+  namePrefixContour = app.geoprocessing.availableProcesses[0].namePrefix ?? "curvas_de_nivel_";
+  namePrefixHeight = app.geoprocessing.availableProcesses[1].namePrefix ?? "cota_";
+  namePrefixBuffer = app.geoprocessing.availableProcesses[2].namePrefix ?? "area_de_influencia_";
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -160,7 +161,7 @@ class Geoprocessing {
 
         document.head.appendChild(style_fix_textpath);
 
-        let namePrefix = this.namePrefix;
+        let namePrefix = this.namePrefixContour;
 
         let layername = namePrefix + counterContour;
         counterContour++;
@@ -200,7 +201,7 @@ class Geoprocessing {
       }
       case "waterRise": {
         btn_modal_loading = true;
-        let layername = app.geoprocessing.availableProcesses[1].namePrefix + counterHeight;
+        let layername = this.namePrefixHeight + counterHeight;
         counterHeight++;
 
         let selectedRectangle;
@@ -639,7 +640,7 @@ class Geoprocessing {
       $("#msgRectangle").addClass("hidden");
 
       for (let polyline of mapa.editableLayers.polyline) {
-        if (polyline.layer && polyline.layer.includes(this.namePrefix)) {
+        if (polyline.layer && polyline.layer.includes(this.namePrefixContour)) {
           this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
@@ -695,7 +696,7 @@ class Geoprocessing {
                 });
               } else if (this.geoprocessId === "waterRise") {
                 addedLayers.forEach((layer) => {
-                  if (layer.id.includes(this.namePrefix)) {
+                  if (layer.id.includes(this.namePrefixContour)) {
                     options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
@@ -1029,7 +1030,7 @@ class Geoprocessing {
           //Auto show layer for waterRise and buffer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if (layer.id.includes(this.namePrefix)) {
+              if (layer.id.includes(this.namePrefixContour)) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
