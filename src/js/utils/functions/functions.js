@@ -122,6 +122,8 @@ function showImageOnError(image) {
 }
 
 function mainMenuSearch(e) {
+  hideAllElevationProfile();
+  hideAddedLayers();
   e.preventDefault();
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
@@ -135,7 +137,36 @@ function reloadMenu() {
   recoverSections();
 }
 
+function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAllLayers 
+  if (document.getElementById("pt-wrapper")) {
+    let selectedLayer;
+    let elevProfileRecover = new IElevationProfile();
+
+    addedLayers.forEach((layer) => {
+        if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
+            let aux = document.getElementById("flc-" + layer.id),
+            ptInner =  document.getElementById(layer.id);
+
+            if (aux.classList.contains("active")) {
+                mapa.editableLayers.polyline.forEach(polyline => {
+                    if (polyline.idElevProfile === layer.id) {
+                        selectedLayer = polyline;
+                    }
+                });
+                aux.classList.remove("active")
+                selectedLayer.remove();
+                ptInner.classList.toggle("hidden");
+            }
+        }
+    });
+    $("#pt-wrapper").addClass("hidden");
+  }
+
+}
+
 function hideAddedLayers() {
+  hideAllElevationProfile();
+
   addedLayers.forEach((layer) => {
     if (!layer.groupname) {
       let aux = document.getElementById("flc-" + layer.id);
@@ -162,16 +193,22 @@ function showTotalNumberofLayers() {
 }
 
 function recoverSections() {
+  let geoprocessessRecover = new Geoprocessing();
+  let elevProfileRecover = new IElevationProfile();
+
   addedLayers.forEach((layer) => {
     if (
-      layer.id.includes(app.geoprocessing.availableProcesses[0].namePrefix) ||
-      layer.id.includes(app.geoprocessing.availableProcesses[1].namePrefix) ||
-      layer.id.includes(app.geoprocessing.availableProcesses[2].namePrefix) ||
-      layer.id.includes("result_")
+      layer.id.includes(geoprocessessRecover.namePrefixContour) ||
+      layer.id.includes(geoprocessessRecover.namePrefixBuffer)
     ) {
-      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id);
+      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, false);
+    } else if (layer.id.includes(geoprocessessRecover.namePrefixHeight)) {
+      menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, false);
+    } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
+      let layername = layer.id
+      elevProfileRecover.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);
     } else if (layer.file == true) {
-      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id);
+      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, false);
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
         layer.groupname,
@@ -1170,7 +1207,7 @@ function drawRectangle(arg) {
 
   geojson.forEach((e) => {
     mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
-    menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name);
+    menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name, true);
     addedLayers.push(e);
     setTimeout(function () {
       $("#select-capa").val(e.name).change();

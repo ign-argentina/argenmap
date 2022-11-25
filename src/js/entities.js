@@ -2582,17 +2582,12 @@ class GestorMenu {
     if (this.pluginExists(pluginName)) {
       delete this.plugins[pluginName];
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   pluginExists(pluginName) {
-    if (this.plugins[pluginName]) {
-      return true;
-    } else {
-      return false;
-    }
+    return this.plugins[pluginName] ? true : false ;
   }
 
   ordenaPorPeso(a, b) {
@@ -3466,7 +3461,7 @@ class Menu_UI {
     return layerOption;
   }
 
-  addFileLayer(groupname, textName, id, fileName) {
+  addFileLayer(groupname, textName, id, fileName, isActive) {
     let groupnamev = clearSpecialChars(groupname);
     let main = document.getElementById("lista-" + groupnamev);
 
@@ -3489,7 +3484,11 @@ class Menu_UI {
 
     let layer_item = document.createElement("div");
     layer_item.id = "flc-" + id;
-    layer_item.className = "file-layer active";
+    if (isActive) {
+      layer_item.className = "file-layer active"
+    }else if (!isActive) {
+        layer_item.className = "file-layer"
+    }
 
     let img_icon = document.createElement("div");
     img_icon.className = "file-img";
@@ -4106,11 +4105,8 @@ class Geometry {
   }
 
   isValidType(geom) {
-    if (this._types.filter((type) => type === geom)) {
-      return true;
-    } else {
-      return false;
-    }
+    let match = this._types.filter((type) => type === geom);
+    return match ? true : false;
   }
 }
 
