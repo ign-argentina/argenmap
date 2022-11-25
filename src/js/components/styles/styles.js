@@ -115,8 +115,10 @@ class StylesUI {
     toprightlogo.style.height = app.referencias.height
     toprightlogo.style.top = "7px"
 
+    let image = app.referencias.src ?? "";
+
     toprightlogo.onclick = function () {
-      clickReferencias('')
+      clickReferencias(image)
     };
   } 
   else {
