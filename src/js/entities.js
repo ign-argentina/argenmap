@@ -105,7 +105,7 @@ class ImpresorItemHTML extends Impresor {
     let lyr = item.capa,
       legend,
       legendParams =
-        "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;hideEmptyRules:true;dpi:111",
+        "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;dpi:111",
       aux = {
         ...item,
         childid: childId,
