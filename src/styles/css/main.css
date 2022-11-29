@@ -1121,6 +1121,7 @@ Perfil Topografico
 #measurementInfo { 
   background-color: #d7f2f7;
   border: 1px solid #525252; 
+  border-radius: 4px;
   font-size: 14px;
   min-height: 100px; 
   min-width: 330px; 
