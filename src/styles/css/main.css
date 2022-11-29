@@ -1106,7 +1106,8 @@ Perfil Topografico
 }
 
 #measurementWrapper { 
-  border: 3px solid #37bbed; 
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
   font-size: 18px;
   font-weight: bold;
   min-height: 170px; 
@@ -1119,7 +1120,7 @@ Perfil Topografico
 
 #measurementInfo { 
   background-color: #d7f2f7;
-  border: 3px solid #37bbed; 
+  border: 1px solid #525252; 
   font-size: 14px;
   min-height: 100px; 
   min-width: 330px; 
