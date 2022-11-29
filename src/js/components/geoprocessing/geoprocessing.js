@@ -87,7 +87,7 @@ class Geoprocessing {
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
       '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
-    btnclose.onclick = function () {
+    btnclose.onclick = () => {
       //Close geoprocess window and clear
       document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
         "";
@@ -97,6 +97,8 @@ class Geoprocessing {
       document.getElementsByClassName("form")[1].innerHTML = "";
       divContainer.remove();
       g_modal_close = true;
+
+      this.resetHeightLayerColor();
     };
     s_sec.append(btnclose);
 
