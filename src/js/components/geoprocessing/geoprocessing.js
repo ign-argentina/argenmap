@@ -1023,6 +1023,7 @@ class Geoprocessing {
         change: (element) => {
           if (!element.value) {
             this.optionsForm.clearForm();
+            this.resetHeightLayerColor();
             return;
           }
           this.geoprocessId = element.value;
@@ -1057,6 +1058,9 @@ class Geoprocessing {
                 $("#drawRectangleBtn").removeClass("disabledbutton");
               }, 500);
             }
+          }
+          if (this.geoprocessId !== "waterRise") {
+            this.resetHeightLayerColor();
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(
