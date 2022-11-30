@@ -1,3 +1,4 @@
 src/config
-!src/config/default
+!src/config/default/*
 .vscode
+.hintrc

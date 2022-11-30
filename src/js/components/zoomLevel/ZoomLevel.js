@@ -20,10 +20,47 @@ class ZoomLevel {
         this.updateZoomLevel();
     }
 
+    getTemplate(){
+        const zoomLevel = document.createElement('div');
+        zoomLevel.id = 'zoom-level';
+        zoomLevel.title = 'Zoom';
+        zoomLevel.classList.add('center-flex');
+        zoomLevel.setAttribute('data-html2canvas-ignore', 'true');
+
+        const iconContainer = document.createElement('div');
+        iconContainer.id = 'icon-container';
+        iconContainer.classList.add('center-flex');
+
+        const zoomIcon = document.createElement('i');
+        zoomIcon.classList = 'fa fa-search-plus';
+        zoomIcon.setAttribute('aria-hidden', 'true');
+
+        const valueContainer = document.createElement('div');
+        valueContainer.id = 'zoom-container';
+        valueContainer.classList.add('center-flex');
+
+        const zoomValue = document.createElement('p');
+        zoomValue.id = 'zoom-value';
+
+        iconContainer.appendChild(zoomIcon);
+        valueContainer.appendChild(zoomValue);
+        zoomLevel.appendChild(iconContainer);
+        zoomLevel.appendChild(valueContainer);
+
+        return zoomLevel;
+    }
+
     createComponent() {
-        const elem = document.createElement('div');
-        elem.innerHTML = zoomTemplate;
-        document.getElementById('mapa').appendChild(elem);
+        let zoom = this.getTemplate();
+        L.Control.zoomLevel = L.Control.extend({
+            onAdd: function(map) {
+                return zoom;
+            }
+        });
+        L.control.zoomLevel = function(opts) {
+            return new L.Control.zoomLevel(opts);
+        }
+        L.control.zoomLevel({ position: 'bottomleft'}).addTo(mapa);
 
         this._zoomLevelDomElement = document.getElementById('zoom-value');
         this._zoomLevelDomElement.style.margin = 0;

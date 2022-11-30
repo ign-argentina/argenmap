@@ -2,6 +2,7 @@ class StylesUI {
 
  createstyles(){
   const style = document.createElement('style');
+  let minBgSize = app.logo.miniHeight !== '' ? app.logo.miniHeight + ' ' + app.logo.miniWidth : 'contain !important';
   style.id="main-style-ui"
   style.innerHTML = `
     .navbar{
@@ -54,6 +55,7 @@ class StylesUI {
     }
     .navbar-toggle .icon-bar {
       border: 1px solid ${app.theme.iconBar};
+      border-radius: 5px;
     }
     #sidebar-container{
       background-color:${app.theme.menuBackground};
@@ -62,9 +64,8 @@ class StylesUI {
       #top-left-logo {
         background-repeat: no-repeat;
         background-image: url("${app.logo.srcLogoMini}");
-        background-size: ${app.logo.miniHeight} ${app.logo.miniWidth};
+        background-size: ${minBgSize};
         background-position: left 1px center;
-        width: 70%;
         ${app.logo.ministyle}
       }
     }
@@ -72,7 +73,8 @@ class StylesUI {
       #top-left-logo {
         background-repeat: no-repeat;
         background-image: url("${app.logo.src}");
-        background-size: ${app.logo.height} ${app.logo.width};
+        height: ${app.logo.height};
+        width: ${app.logo.width};
         background-position: left 1px center;
         ${app.logo.style}
       }
@@ -80,18 +82,25 @@ class StylesUI {
     }
     `;
 
+  let logoText = document.getElementById("logoText");
+  if (app.logoText) {
+    logoText.innerHTML= app.logoText.content;
+    logoText.href = app.logoText.link ?? '';
+    logoText.title = app.logoText.title ?? '';
+    logoText.target = '_blank';
+  }
+  
+
   document.head.appendChild(style);
   let linkicon =  document.createElement("link")
   linkicon.rel = "icon"
   linkicon.href = app.favicon
   document.head.appendChild(linkicon);
 
-  let title = document.createElement("title")
-  title.innerHTML = app.title
-  document.head.appendChild(title);
+  if (app.title !== "") { document.title = app.title };
 
   let topleftlogolink = document.getElementById("top-left-logo-link")
-  topleftlogolink.href = app.website
+  topleftlogolink.href = app.logo.link ?? '';
 
   let topleftlogo = document.getElementById("top-left-logo")
   topleftlogo.alt = app.logo.title
@@ -106,9 +115,15 @@ class StylesUI {
     toprightlogo.style.height = app.referencias.height
     toprightlogo.style.top = "7px"
 
+    let image = app.referencias.src ?? "";
+
     toprightlogo.onclick = function () {
-      clickReferencias()
+      clickReferencias(image)
     };
+  } 
+  else {
+    let toprightlogo = document.getElementById("logo-help")
+    toprightlogo.style.display= "none"
   }
  }
 
@@ -176,10 +191,10 @@ class StylesUI {
  }
 }
 
-function clickReferencias(){
+function clickReferencias(img){
     event.preventDefault();
     $.fancybox.open({
-        src : 'src/styles/images/referencias.png',
+        src : img,
         type : 'image',
         closeBtn: 'true'
     });

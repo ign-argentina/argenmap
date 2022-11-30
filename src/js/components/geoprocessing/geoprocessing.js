@@ -1,35 +1,35 @@
-let controlElevation = null;
 let g_modal_close = true;
-let ep_modal_close = true;
 let btn_modal_loading = false;
-let geoprocessing = {
-  contour: GeoserviceFactory.Contour,
-  elevationProfile: GeoserviceFactory.ElevationProfile,
-  waterRise: GeoserviceFactory.ElevationProfile,
-};
-let results_counter = 0;
-let contour_result_active = false;
+let process = {};
+let contourRectangles = [];
+let isValidRectangle = false;
+let counterContour = 0, counterHeight = 0, counterBuffer = 0,
+    counterElevProfile = 0; //soon to be moved to their respective class
 
 class Geoprocessing {
   formContainer = null;
+  contour_result_active = false;
   geoprocessId = null;
   geoprocessingConfig = null;
   geoprocessing = null;
   optionsForm = null;
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
+  namePrefixContour = app.geoprocessing.availableProcesses[0].namePrefix ?? "curvas_de_nivel_";
+  namePrefixHeight = app.geoprocessing.availableProcesses[1].namePrefix ?? "cota_";
+  namePrefixBuffer = app.geoprocessing.availableProcesses[2].namePrefix ?? "area_de_influencia_";
 
   svgZoomStyle(zoom) {
-    if (contour_result_active) {
+    if (this.contour_result_active) {
       let aux = document.getElementById("fix-textpath");
       if (zoom < 14) {
         aux.innerHTML = `
         .leaflet-pane svg text {
           font-size: 0.1em !important;
         }
-        `
+        `;
       } else {
-        aux.innerHTML = ""
+        aux.innerHTML = "";
       }
     }
   }
@@ -87,9 +87,18 @@ class Geoprocessing {
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
       '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
-    btnclose.onclick = function () {
+    btnclose.onclick = () => {
+      //Close geoprocess window and clear
+      document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
+        "";
+      document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
+        "";
+      document.getElementById("select-process").selectedIndex = 0;
+      document.getElementsByClassName("form")[1].innerHTML = "";
       divContainer.remove();
       g_modal_close = true;
+
+      this.resetHeightLayerColor();
     };
     s_sec.append(btnclose);
 
@@ -111,22 +120,40 @@ class Geoprocessing {
     geoprocessingTabContent.innerHTML = "";
     geoprocessingTabContent.appendChild(geoProcessingManager.getForm());
 
-    document.getElementById("select-process").options[0].text="Seleccione una Opción";
+    document.getElementById("select-process").options[0].text =
+      "Seleccione una Opción";
 
     $("#mr").draggable({
-      containment: "#mapa",
+      containment: "body",
     });
+
+    if (document.getElementById("mr")) {
+      document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
+        "filter: contrast(22%) brightness(157%);pointer-events:none;";
+      document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
+        "filter: contrast(22%) brightness(157%);pointer-events:none;";
+    }
   }
 
   setAvailableGeoprocessingConfig(geoprocessingConfig) {
     this.geoprocessingConfig = geoprocessingConfig;
   }
 
+  getProcesses() {
+    return this.geoprocessingConfig.availableProcesses;
+  }
+
+  getCapaValue() {
+    let selectedCapa = document.getElementById("select-capa");
+    let result = selectedCapa.options[selectedCapa.selectedIndex].text;
+    return result;
+  }
+
   displayResult(result) {
     switch (this.geoprocessId) {
       case "contour": {
         btn_modal_loading = false;
-        contour_result_active = true;
+        this.contour_result_active = true;
         let style_fix_textpath = document.createElement("style");
         style_fix_textpath.id = "fix-textpath";
         style_fix_textpath.innerHTML = `
@@ -136,54 +163,124 @@ class Geoprocessing {
 
         document.head.appendChild(style_fix_textpath);
 
-        let layername = "contourResult_" + results_counter;
-        results_counter++;
+        let namePrefix = this.namePrefixContour;
+
+        let layername = namePrefix + counterContour;
+        counterContour++;
 
         mapa
           .getEditableLayer(this.editableLayer_name)
           .setStyle({ fillOpacity: 0 });
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+          mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+          
+          let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+          mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
+
         addedLayers.push({
           id: layername,
           layer: result,
           name: layername,
           file_name: layername,
+          rectangle: selectedRectangle,
           kb: null,
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-        //$("#btnclose-icon-modalfile").click();
-        break;
-      }
-      case "elevationProfile": {
-        btn_modal_loading = false;
-        let g_result = `{"type":"Feature","properties":{"type":"polyline"},"geometry":${JSON.stringify(
-          result
-        )}}`;
-        let layername = "elevationProfile_" + results_counter;
-        results_counter++;
 
-        mapa
-          .getEditableLayer(this.editableLayer_name)
-          .setStyle({ fillOpacity: 0 });
-        //mapa.addGeoJsonLayerToDrawedLayers(g_result,layername,true,true);
-        addedLayers.push({
-          id: layername,
-          layer: g_result,
-          name: layername,
-          file_name: layername,
-          kb: null,
-        });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
-        if (ep_modal_close) this.elevationDiv(result);
+        // ** Avoiding Leaflet Draw object test **
+        // first comment addGeoJsonLayerToDrawedLayers() call
+
+        // makes a Leaflet featureGroup object and add it to the map
+        //mapa.featureGroups = L.featureGroup().addTo(mapa);
+
+        // adds an arbitrary layer to the featureGroup
+        //mapa.featureGroups.addLayer(L.geoJSON(addedLayers[0].layer));
+
+        // set style for all layers in the featureGroup
+        //mapa.featureGroups.setStyle({color: '#876508'});
+        // **
+
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
         break;
       }
       case "waterRise": {
+        btn_modal_loading = true;
+        let layername = this.namePrefixHeight + counterHeight;
+        counterHeight++;
+
+        let selectedRectangle;
+        addedLayers.forEach(lyr => {
+          if (lyr.id === this.getCapaValue()) {
+            selectedRectangle = lyr.rectangle
+          }
+        });
+
+        const urlCreator = window.URL || window.webkitURL;
+        const imageUrl = urlCreator.createObjectURL(result);
+        
+        let imageBounds = [
+          [
+            selectedRectangle._bounds._southWest.lat,
+            selectedRectangle._bounds._southWest.lng,
+          ],
+          [
+            selectedRectangle._bounds._northEast.lat,
+            selectedRectangle._bounds._northEast.lng,
+          ],
+        ];
+
+        let hasPane = mapa.getPanes().hasOwnProperty("heightPane");
+        if (!hasPane) {
+          mapa.createPane("heightPane");
+        }
+        const options = {opacity: 0.3, pane: "heightPane"}
+        
+        let imageLayer = L.imageOverlay(imageUrl, imageBounds, options); // makes leaflet image overlay from received blob
+        imageLayer.title = layername;
+        imageLayer.name = layername;
+        
+        mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
+        
+        const type = layername.split('_')[0]; // gets gruop name without count number
+
+        if (!mapa.editableLayers[type]) {
+          mapa.editableLayers[type] = [];  
+        }
+        mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
+        drawnItems.addLayer(imageLayer); // makes imageLayer into the map
+        
+        const height = this.lastHeightProcessed;
+        const title = `${imageLayer.name}_${height}m`;
+        const download = () => {
+          const latlngs = selectedRectangle.getLatLngs()[0];
+          const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat}`;
+
+          this.geoprocessing
+            .execute(coords, height, "image/tiff", "#0368ff60", 1.0)
+            .then((result) => {
+              downloadBlob(result, title);
+            })
+            .catch((ex) => {
+              console.log(ex.message);
+            });
+        };
+
+        addedLayers.push({
+          id: layername,
+          layer: imageLayer,
+          name: layername,
+          file_name: title,
+          rectangle: selectedRectangle,
+          download: download
+        });
+        
+        menu_ui.addFileLayer("Geoprocesos", title, layername, layername, true);
+        break;
+      }
+      case "buffer": {
         btn_modal_loading = false;
-        let layername = "waterRise_" + results_counter;
-        results_counter++;
-        mapa
-          .getEditableLayer(this.editableLayer_name)
-          .setStyle({ fillOpacity: 0 });
+        let namePrefixBuffer = this.namePrefixBuffer;
+        let layername = namePrefixBuffer + counterBuffer;
+        counterBuffer++;
+
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
         addedLayers.push({
           id: layername,
@@ -192,19 +289,21 @@ class Geoprocessing {
           file_name: layername,
           kb: null,
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername);
+        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
         break;
       }
     }
-    //this.optionsForm.clearForm();
+    this.resetHeightLayerColor();
     document.getElementById("select-process").selectedIndex = 0;
-    document.getElementsByClassName("form")[1].innerHTML = '';
+    document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
+    geoProcessingManager.geoprocessId = null;
   }
 
-  updateReferencedDrawedLayers(layers) {
+  updateReferencedDrawedLayers(event, layers) {
     if (!this.optionsForm) return;
     if (this.geoprocessId === "contour") {
+      this.checkRectangleArea(event);
       this.fieldsToReferenceLayers.forEach((fieldId) => {
         const element = this.optionsForm.getElement(fieldId);
         if (
@@ -214,27 +313,6 @@ class Geoprocessing {
           const options = [];
           options.push({ value: "", text: "" });
           const layerTypes = element.getAttribute("layerTypes").split(",");
-          layerTypes.forEach((type) => {
-            if (layers.hasOwnProperty(type)) {
-              layers[type].forEach((layer) => {
-                options.push({ value: layer.name, text: layer.name });
-              });
-            }
-          });
-          this.optionsForm.setOptionsToSelect(fieldId, options);
-        }
-      });
-    }
-    if (this.geoprocessId === "elevationProfile") {
-      this.fieldsToReferenceLayers.forEach((fieldId) => {
-        const element = this.optionsForm.getElement(fieldId);
-        if (
-          element.hasAttribute("references") &&
-          element.getAttribute("references") === "drawedLayers"
-        ) {
-          const options = [];
-          options.push({ value: "", text: "" });
-          const layerTypes = ["polyline"];
           layerTypes.forEach((type) => {
             if (layers.hasOwnProperty(type)) {
               layers[type].forEach((layer) => {
@@ -268,46 +346,66 @@ class Geoprocessing {
         }
       });
     }
+
+    if (this.geoprocessId === "buffer") {
+      this.checkRectangleArea(event);
+    }
+    if (this.geoprocessId === "elevationProfile") {
+      this.checkPolyline(event);
+    }
   }
 
-  updateSliderForWaterRise(sliderLayer) {
-    let arraySlider = [];//Array that contains all unique values
-    console.log("Curva actual: ",sliderLayer)
-    console.log("Curva actual: ",sliderLayer.layer.features)
-
-    sliderLayer.layer.features.forEach((element) => {
-        if (!arraySlider.includes(element.properties.value)) {
-          arraySlider.push(element.properties.value);
-        }
+  resetHeightLayerColor() {
+    mapa.editableLayers.polyline.forEach((lyr) => {
+      if (lyr.layer && lyr.layer.includes(this.namePrefixContour) && lyr.options.color == "#ff1100") {
+        //Same id, spedific value
+        lyr.setStyle({ color: "#E4C47A" });
+      }
     });
-    console.log("arraySlider: ",arraySlider)
+  }
+
+  updateSliderHeight(sliderLayer) {
+    document.getElementById("rangeSlider").classList.remove("hidden");
+    document.getElementById("sliderValue").classList.remove("hidden");
+    let arraySlider = []; //Array that contains all unique values
+    sliderLayer.layer.features.forEach((element) => {
+      if (!arraySlider.includes(element.properties.value)) {
+        arraySlider.push(element.properties.value);
+      }
+    });
 
     document.getElementById("rangeSlider").min = "1";
     document.getElementById("rangeSlider").value = "1";
     document.getElementById("rangeSlider").max = arraySlider.length;
-    document.getElementById("sliderValue").innerHTML = arraySlider[0]+" (m)";
+    document.getElementById("sliderValue").innerHTML = arraySlider[0] + " (m)";
+
+    //Display the default slider value
+    mapa.editableLayers.polyline.forEach((lyr) => {
+      if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[0]) {
+        lyr.setStyle({ color: "#ff1100" }); //Same id, spedific value
+      }
+    });
     //Update the current slider value (each time you drag the slider handle)
-    this.sliderForWaterRise(sliderLayer, rangeSlider,sliderValue,arraySlider);
+    this.sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider);
   }
-  
-  setSliderForWaterRise(sliderLayer) {
+
+  setSliderHeight(sliderLayer) {
+    $("#ejec_gp").removeClass("disabledbutton");
+
     //Contains all unique values
-    let arraySlider = [];//Array that contains all unique values
-    console.log("Curva actual: ",sliderLayer)
-    console.log("Curva actual: ",sliderLayer.layer.features)
+    let arraySlider = []; //Array that contains all unique values
 
     sliderLayer.layer.features.forEach((element) => {
-        if (!arraySlider.includes(element.properties.value)) {
-          arraySlider.push(element.properties.value);
-        }
+      if (!arraySlider.includes(element.properties.value)) {
+        arraySlider.push(element.properties.value);
+      }
     });
-    console.log("arraySlider: ",arraySlider)
 
     //Create Slider Div
     let containerSlider = document.createElement("div");
     containerSlider.id = "containerSlider";
     containerSlider.className = "containerSlider";
-    document.getElementsByClassName("form")[1].appendChild(containerSlider); 
+    document.getElementsByClassName("form")[1].appendChild(containerSlider);
     //Create Slider
     let rangeSlider = document.createElement("input");
     rangeSlider.type = "range";
@@ -317,43 +415,252 @@ class Geoprocessing {
     rangeSlider.title = "slider";
     rangeSlider.className = "rangeSlider";
     rangeSlider.id = "rangeSlider";
-    document.getElementById("containerSlider").appendChild(rangeSlider);      
+    document.getElementById("containerSlider").appendChild(rangeSlider);
     //Create Slider value
     let sliderValue = document.createElement("div");
     sliderValue.id = "sliderValue";
     sliderValue.className = "sliderValue";
-    document.getElementsByClassName("form")[1].appendChild(sliderValue); 
+    document.getElementsByClassName("form")[1].appendChild(sliderValue);
     //Display the default slider value
-    sliderValue.innerHTML = arraySlider[0]+" (m)";
-    mapa.editableLayers.polyline.forEach( (lyr) => {
-      if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[0]) {//Same id, spedific value
-        lyr.setStyle({color: '#ff1100'});
+    sliderValue.innerHTML = arraySlider[0] + " (m)";
+    mapa.editableLayers.polyline.forEach((lyr) => {
+      if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[0]) {
+        //Same id, spedific value
+        lyr.setStyle({ color: "#ff1100" });
       }
-    })
+    });
     //Update the current slider value (each time you drag the slider handle)
-    this.sliderForWaterRise(sliderLayer, rangeSlider,sliderValue,arraySlider);
+    this.sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider);
   }
 
-  sliderForWaterRise(sliderLayer, rangeSlider, sliderValue, arraySlider) {
-    rangeSlider.oninput = function() {
-      sliderValue.innerHTML = arraySlider[this.value-1]+" (m)";//valor de layers
-      //lyr.setStyle({color: '#E4C47A'});
-      //lyr.setStyle({color: '#ff1100'});
-      //if (lyr.layer == sliderLayer.id /*Misma Curva*/ && lyr.value == arraySlider[this.value-1] /*Misma Altura*/) {
-
-      mapa.editableLayers.polyline.forEach( (lyr) => {
-        if (lyr.layer == sliderLayer.id && lyr.value == arraySlider[this.value-1]) {//Same id, same value
+  sliderHeight(sliderLayer, rangeSlider, sliderValue, arraySlider) {
+    rangeSlider.oninput = function () {
+      sliderValue.innerHTML = arraySlider[this.value - 1] + " (m)"; //layers value
+      mapa.editableLayers.polyline.forEach((lyr) => {
+        if (
+          lyr.layer == sliderLayer.id &&
+          lyr.value == arraySlider[this.value - 1]
+        ) {
+          //Same id, same value
           //Set all layers with normal colour
-          mapa.editableLayers.polyline.forEach( (lyr) => {
-            if (lyr.layer == sliderLayer.id && lyr.value !== arraySlider[this.value-1]) {//Same id, diferent value
-              lyr.setStyle({color: '#E4C47A'});
+          mapa.editableLayers.polyline.forEach((lyr) => {
+            if (
+              lyr.layer == sliderLayer.id &&
+              lyr.value !== arraySlider[this.value - 1]
+            ) {
+              //Same id, diferent value
+              lyr.setStyle({ color: "#E4C47A" });
             }
-          })
+          });
           //Then, change specific layer
-          lyr.setStyle({color: '#ff1100'});
+          lyr.setStyle({ color: "#ff1100" });
         }
-      })
+      });
+    };
+  }
 
+  calculateRectangleArea(event) {
+    let _area, rectPos, rectangleArea, formattedArea, maxSize;
+    if (this.geoprocessId === "contour") {
+      maxSize = 100;
+    } else if (this.geoprocessId === "buffer") {
+      maxSize = 1000;
+    }
+
+    if (event === "add-layer") {
+      L.GeometryUtil.readableArea = function (area, isMetric, precision) {
+        $("#ejec_gp").addClass("disabledbutton");
+        rectPos = mapa.editableLayers.rectangle;
+        formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
+        _area = formattedArea + " km²";
+
+        if (formattedArea > maxSize) {
+          isValidRectangle = false;
+          $("#ejec_gp").addClass("disabledbutton");
+          $("#invalidRect").removeClass("hidden");
+        } else if (formattedArea < maxSize) {
+          isValidRectangle = true;
+          $("#msgRectangle").addClass("hidden");
+          $("#invalidRect").addClass("hidden");
+          if (
+            $("#input-equidistancia").val() >= 10 &&
+            $("#input-equidistancia").val() <= 10000
+          ) {
+            $("#ejec_gp").removeClass("disabledbutton");
+          }
+        }
+        contourRectangles = [];
+        return _area;
+      };
+    } else if (event === "edit-layer") {
+      $("#ejec_gp").addClass("disabledbutton");
+      rectPos = mapa.editableLayers.rectangle;
+
+      contourRectangles.push(rectPos[rectPos.length - 1]);
+      rectangleArea = L.GeometryUtil.geodesicArea(
+        contourRectangles[contourRectangles.length - 1].getLatLngs()[0]
+      );
+      formattedArea = L.GeometryUtil.formattedNumber(
+        rectangleArea / 1000000,
+        2
+      );
+
+      if (formattedArea > maxSize) {
+        isValidRectangle = false;
+        $("#ejec_gp").addClass("disabledbutton");
+        $("#invalidRect").removeClass("hidden");
+      } else if (formattedArea < maxSize) {
+        isValidRectangle = true;
+        $("#msgRectangle").addClass("hidden");
+        $("#invalidRect").addClass("hidden");
+        if (
+          $("#input-equidistancia").val() >= 10 &&
+          $("#input-equidistancia").val() <= 10000
+        ) {
+          $("#ejec_gp").removeClass("disabledbutton");
+        }
+      }
+      contourRectangles = [];
+    }
+  }
+
+  checkRectangleArea(event) {
+    switch (event) {
+      case "add-layer":
+        this.calculateRectangleArea(event);
+        break;
+
+      case "edit-layer":
+        this.calculateRectangleArea(event);
+        break;
+
+      case "delete-layer":
+        contourRectangles = [];
+        $("#invalidRect").addClass("hidden");
+        $("#ejec_gp").addClass("disabledbutton");
+        $("#drawRectangleBtn").removeClass("disabledbutton");
+        $("#msgRectangle").removeClass("hidden");
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  checkPolyline(event) {
+    switch (event) {
+      case "add-layer":
+        mapa.editableLayers.polyline.forEach((layer) => {
+          if (layer.name.includes("polyline")) {
+            setTimeout(function () {
+              $("#select-capa").val(layer.name).change();
+              $("#ejec_gp").removeClass("disabledbutton");
+            }, 500);
+          }
+        });
+        break;
+        
+      case "delete-layer":
+        document.getElementById("select-capa").selectedIndex = 0;
+        $("#ejec_gp").addClass("disabledbutton");
+        $("#drawBtn").removeClass("disabledbutton");
+        $("#msgRectangle").removeClass("hidden");
+        break;
+      
+      default:
+        break;
+    }
+  }
+
+
+  checkLayersForBuffer() {
+    gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+      if (layer) {
+        $("#msgNoLayer").addClass("hidden");
+        $("#msgRectangle").removeClass("hidden");
+        //$("#drawRectangleBtn").removeClass("disabledbutton");
+        $('label[for="input-equidistancia"]').show();
+        document
+          .getElementById("input-equidistancia")
+          .classList.remove("hidden");
+      }
+    });
+  }
+
+  buildOptionFormMessages(sliderLayer) {
+    //Contour & Buffer Rectangle Message
+    let rectSizeMsg = document.createElement("div");
+    rectSizeMsg.innerHTML =
+      "Se superó el limite. <br> Edite o elimine el rectángulo.";
+    rectSizeMsg.id = "invalidRect";
+    rectSizeMsg.style = "color: #ff1100; font-weight: bolder;";
+    document.getElementsByClassName("form")[1].appendChild(rectSizeMsg);
+    $("#invalidRect").addClass("hidden");
+
+    let layerMessage = document.createElement("div");
+    layerMessage.id = "msgRectangle";
+    layerMessage.style = "color: #37bbed; font-weight: bolder; font-size: 13px";
+
+    //Contour Messages
+    if (this.geoprocessId === "contour") {
+      layerMessage.innerHTML = "Dibuje Rectángulo hasta 100km²";
+      document.getElementsByClassName("form")[1].appendChild(layerMessage);
+
+      //Hide Capa for Contour Lines
+      $('label[for="select-capa"]').hide();
+      document.getElementById("select-capa").classList.add("hidden");
+    }
+
+    //Buffer Messages
+    else if (this.geoprocessId === "buffer") {
+      layerMessage.innerHTML = "Dibuje Rectángulo hasta 1000km²";
+      document.getElementsByClassName("form")[1].appendChild(layerMessage);
+
+      let messageBuffer = document.createElement("div");
+      messageBuffer.innerHTML = "Active una Capa";
+      messageBuffer.id = "msgNoLayer";
+      messageBuffer.style = "color: red; font-weight: bolder;";
+      document.getElementsByClassName("form")[1].appendChild(messageBuffer);
+      $("#msgRectangle").addClass("hidden");
+
+      $('label[for="select-capa"]').show();
+      $('label[for="input-equidistancia"]').hide();
+      $("#drawRectangleBtn").addClass("disabledbutton");
+      document.getElementById("input-equidistancia").classList.add("hidden");
+      document.getElementById("select-capa").classList.remove("hidden");
+
+      this.checkLayersForBuffer();
+    }
+
+    //Cota Messages & Slider
+    else if (this.geoprocessId === "waterRise") {
+      let message = document.createElement("div");
+      message.innerHTML = "No hay Curvas de Nivel";
+      message.id = "msgNoContour";
+      message.style = "color: red; font-weight: bolder;";
+      document.getElementsByClassName("form")[1].appendChild(message);
+      $("#msgRectangle").addClass("hidden");
+
+      for (let polyline of mapa.editableLayers.polyline) {
+        if (polyline.layer && polyline.layer.includes(this.namePrefixContour)) {
+          this.setSliderHeight(sliderLayer);
+          $("#msgNoContour").addClass("hidden");
+          break;
+        }
+      };
+
+      $('label[for="select-capa"]').show();
+      document.getElementById("drawRectangleBtn").classList.add("hidden");
+      document.getElementById("select-capa").classList.remove("hidden");
+    }
+
+    //elevationProfile
+    else if (this.geoprocessId === "elevationProfile") {
+      layerMessage.innerHTML = "Dibuje una Línea";
+      document.getElementsByClassName("form")[1].appendChild(layerMessage);
+
+      //Hide drawRectangle for elevationProfile
+      document.getElementById("drawRectangleBtn").classList.add("hidden");
     }
   }
 
@@ -382,26 +689,42 @@ class Geoprocessing {
               extraProps.layerTypes = field.allowedTypes;
               const editableLayers = mapa.getEditableLayers();
 
+              //show elements in "Capa"
               if (this.geoprocessId === "contour") {
-                editableLayers["rectangle"].forEach((layer) => {
-                  options.push({ value: layer.name, text: layer.name });
+                addedLayers.forEach((layer) => {
+                  if (layer.id.includes("rectangle")) {
+                    options.push({ value: layer.id, text: layer.name });
+                  }
                 });
               } else if (this.geoprocessId === "waterRise") {
-                //Si exixsten curvas de nivel...las muestro
                 addedLayers.forEach((layer) => {
-                  if(layer.id.includes("contourResult_")){
-                    options.push({ value: layer.name, text: layer.name });
+                  if (layer.id.includes(this.namePrefixContour)) {
+                    options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
                 });
-                
-              } else if (this.geoprocessId === "elevationProfile") {
-                editableLayers["polyline"].forEach((layer) => {
-                  options.push({ value: layer.name, text: layer.name });
+              } else if (this.geoprocessId === "buffer") {
+                gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+                  if (layer && gestorMenu.layerIsWmts(layer.name) == false) {
+                    options.push({
+                      value: layer.name,
+                      text: gestorMenu.getLayerData(layer.name).title,
+                    });
+                  }
                 });
+              } else if (this.geoprocessId === "elevationProfile") {
+                const polylines = mapa.editableLayers.polyline;
+                if (polylines.length > 0) {
+                  polylines.forEach((poly) => {
+                    if (!poly.layer) {
+                      options.push({ value: poly.name, text: poly.name });
+                    }
+                  });
+                }
               }
             }
 
+            //Select layer in "Capa"
             const select = this.optionsForm.addElement("select", selectId, {
               title: field.name,
               events: {
@@ -410,191 +733,282 @@ class Geoprocessing {
                     if (!element.value) return;
                     const layer = mapa.getEditableLayer(element.value);
                     mapa.centerLayer(layer);
-                  }
-                  else if (this.geoprocessId === "waterRise") {
-                    if (!element.value) return;
+                  } else if (this.geoprocessId === "waterRise") {
                     let selectedLayer = "";
-                    addedLayers.forEach(lyr => {
-                      lyr.id == element.value ? selectedLayer = lyr : null;
+                    if (!element.value) {
+                      this.resetHeightLayerColor();
+                      document.getElementById("rangeSlider").classList.add("hidden");
+                      document.getElementById("sliderValue").classList.add("hidden");
+                      $("#ejec_gp").addClass("disabledbutton");
+                      return;
+                    }
+                    addedLayers.forEach((lyr) => {
+                      lyr.file_name == element.value
+                        ? (selectedLayer = lyr)
+                        : null;
                     });
-                    mapa.centerLayer(selectedLayer.layer);
-                    sliderLayer = selectedLayer;
-                    this.updateSliderForWaterRise(sliderLayer);
-                    //console.log("Curva actual: ",sliderLayer)
-                  }       
+                    if (selectedLayer.layer.features.length != 0) {   
+                      this.resetHeightLayerColor();
+                      mapa.centerLayer(selectedLayer.layer);
+
+                      sliderLayer = selectedLayer;
+                      this.updateSliderHeight(sliderLayer);
+                      $("#ejec_gp").removeClass("disabledbutton");
+                    }
+                  } else if (this.geoprocessId === "buffer") {
+                    if (!element.value) {
+                      $("#drawRectangleBtn").addClass("disabledbutton");
+                      $("#ejec_gp").addClass("disabledbutton");
+                    } else {
+                      $("#drawRectangleBtn").removeClass("disabledbutton");
+                    }
+                  } else if (this.geoprocessId === "elevationProfile") {
+                    if (!element.value) {
+                      $("#ejec_gp").addClass("disabledbutton");
+                      return;
+                    }
+                    let selectedLayer = "";
+                    const polylines = mapa.editableLayers.polyline;
+                    if (polylines.length > 0) {
+                      polylines.forEach((polyline) => {
+                        polyline.name === element.value
+                          ? (selectedLayer = polyline)
+                          : null;
+                      });
+                      mapa.centerLayer(selectedLayer.getGeoJSON());
+                      $("#ejec_gp").removeClass("disabledbutton");
+                    }
+                  }
                 },
               },
               extraProps: extraProps,
             });
-            this.optionsForm.setOptionsToSelect(selectId, options);
 
+            this.optionsForm.setOptionsToSelect(selectId, options);
             formFields.push(select);
           }
           break;
-        case "input": {
-          const extraProps = {};
-          extraProps.type = field.type;
-          extraProps.title = field.name;
-          if (field.hasOwnProperty("min")) {
-            extraProps.min = field.min;
+        case "input":
+          {
+            const extraProps = {};
+            extraProps.type = field.type;
+            extraProps.title = field.name;
+            if (field.hasOwnProperty("min")) {
+              extraProps.min = field.min;
+            }
+            if (field.hasOwnProperty("max")) {
+              extraProps.max = field.max;
+            }
+            const inputId = `input-${id}`;
+            const input = this.optionsForm.addElement("input", inputId, {
+              title: field.name,
+              extraProps: extraProps,
+            });
+            let inputDefault = document.getElementById("input-equidistancia");
+
+            //Different inputs depending on active geoprocess
+            if (this.geoprocessId == "contour") {
+              inputDefault.value = 100;
+              $("label[for='input-equidistancia']").html("Equidistancia (m)");
+            } else if (this.geoprocessId == "buffer") {
+              inputDefault.value = 1000;
+              $("label[for='input-equidistancia']").html("Distancia (m)");
+            } else if (this.geoprocessId == "waterRise") {
+              $("label[for='input-cota']").hide();
+              document.getElementById("input-cota").classList.add("hidden");
+            }
+            formFields.push(input);
           }
-          if (field.hasOwnProperty("max")) {
-            extraProps.max = field.max;
-          }
-          const inputId = `input-${id}`;
-          const input = this.optionsForm.addElement("input", inputId, {
-            title: field.name,
-            extraProps: extraProps,
-          });
-          let inputDefault = document.getElementById("input-equidistancia");
-          inputDefault.value = 100;
-          $("label[for='input-equidistancia']").html("Equidistancia (m)");
-
-          formFields.push(input);
-        }
-      }
-    });
-
-    if (this.geoprocessId === "waterRise") {
-      // let contourBtn = document.createElement("button");
-      // contourBtn.innerHTML = "CdN";
-      // contourBtn.className = "contourButton";
-      // contourBtn.id = "contourBtn";
-      // document.getElementsByClassName("form")[1].appendChild(contourBtn);
-      
-      let message = document.createElement("div");
-      message.innerHTML = "No hay Curvas de Nivel";
-      message.className = "msgNoContour";
-      message.id = "msgNoContour";
-      message.style = "color: red";
-      document.getElementsByClassName("form")[1].appendChild(message);
-
-      for (let lyr of mapa.editableLayers.polyline) {
-        if (lyr.layer.includes("contourResult_")) {
-          this.setSliderForWaterRise(sliderLayer);
-          $("#ejec_gp").removeClass("disabledbutton");
-          $("#msgNoContour").addClass("hidden");
           break;
-        }
+        case "button":
+          {
+            this.optionsForm.addButton(field.name, field.onclick, field.id);
+          }
+          break;
+        default:
+          break;
       }
-
-    }
-
-    function checkExecuteBtn(){
-      //Check to see if there is any text entered
-      // If $('#select-capa').val is empty or if $('#input-equidistancia').val < 100 or > 10.000, then disable the button.
-      if( $('#select-capa').val() === '' || ( $('#input-equidistancia').val() < 10 || $('#input-equidistancia').val() > 10000 ) ) {
-        $("#ejec_gp").addClass("disabledbutton");
-      } else {
-        $("#ejec_gp").removeClass("disabledbutton");
-      }
-    }
-    $(document).ready(function(){
-      $("#select-capa").on("change",checkExecuteBtn);
-      $('#input-equidistancia').keyup(checkExecuteBtn);
     });
 
+    function checkExecuteBtn() {
+      //Check to see if there is any text entered
+      if (
+        $("#input-equidistancia").val() >= 10 &&
+        $("#input-equidistancia").val() <= 10000 &&
+        isValidRectangle == true
+      ) {
+        $("#ejec_gp").removeClass("disabledbutton");
+      } else if (
+        $("#input-equidistancia").val() < 10 ||
+        $("#input-equidistancia").val() > 10000
+      ) {
+        $("#ejec_gp").addClass("disabledbutton");
+      }
+    }
+    $(document).ready(function () {
+      $("#input-equidistancia").keyup(checkExecuteBtn);
+    });
+
+    //Draw Rectangle Button
+    let rectangleBtn;
+    if (this.geoprocessId === "contour") {
+      rectangleBtn = "Dibujar Rectángulo";
+    } else if (this.geoprocessId === "buffer") {
+      rectangleBtn = "Selección de Área";
+    }
+    this.optionsForm.addButton(
+      rectangleBtn,
+      () => {
+        let drawingRectangle = new L.Draw.Rectangle(mapa);
+        $("#drawRectangleBtn").addClass("disabledbutton");
+        drawingRectangle.enable();
+        this.checkRectangleArea("add-layer");
+      },
+      "drawRectangleBtn"
+    );
+
+    //Execute Button
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
-          let values = [];
-          for (let i = 0; i < formFields.length; i++) {
-            if (!formFields[i].value) {
-              return new UserMessage(
-                `El campo '${formFields[i].title}' está vacío.`,
-                true,
-                "error"
-              );
-            }
-
-            if (
-              formFields[i].hasAttribute("references") &&
-              formFields[i].getAttribute("references") === "drawedLayers"
-            ) {
-              const layer = mapa.getEditableLayer(formFields[i].value);
-              this.editableLayer_name = layer.name;
-
-              switch (this.geoprocessId) {
-                case "contour": {
-                  const sw = layer.getBounds().getSouthWest();
-                  values.push(sw.lng);
-                  values.push(sw.lat);
-                  const ne = layer.getBounds().getNorthEast();
-                  values.push(ne.lng);
-                  values.push(ne.lat);
-                  break;
-                }
-                case "elevationProfile": {
-                  let coords = layer.getLatLngs();
-                  let coords_value = "";
-                  coords.forEach((e, i) => {
-                    if (i != coords.length - 1) {
-                      coords_value += e.lng + " " + e.lat + ",";
-                    } else {
-                      coords_value += e.lng + " " + e.lat;
-                    }
-                  });
-
-                  values = coords_value;
-                  break;
-                }
-                case "waterRise": {
-                  const sw = layer.getBounds().getSouthWest();
-                  values.push(sw.lng);
-                  values.push(sw.lat);
-                  const ne = layer.getBounds().getNorthEast();
-                  values.push(ne.lng);
-                  values.push(ne.lat);
-                  break;
-                }
-              }
-            } else {
-              values.push(+formFields[i].value);
-            }
-          }
-
-          btn_modal_loading = true;
-          this.loadingBtn("on");
-          if (this.geoprocessId === "contour") {
-            this.geoprocessing
-              .execute(...values)
-              .then((result) => {
-                this.displayResult(result);
-              })
-              .catch((error) => {
-                new UserMessage(error.message, true, "error");
-                this.loadingBtn("off");
-              });
-          } else if (this.geoprocessId === "elevationProfile") {
-            this.geoprocessing
-              .execute(values)
-              .then((result) => {
-                this.displayResult(result);
-              })
-              .catch((error) => {
-                new UserMessage(error.message, true, "error");
-                this.loadingBtn("off");
-              });
-          } else if (this.geoprocessId === "waterRise") {
-            let waterRise = new GeoserviceFactory.WaterRise(
-              this.geoprocessing.host
-            );
-            waterRise
-              .execute(...values)
-              .then((result) => {
-                this.displayResult(result);
-              })
-              .catch((error) => {
-                new UserMessage(error.message, true, "error");
-                this.loadingBtn("off");
-              });
-          }
-          this.loadingBtn("off");
+        if (this.geoprocessId === "buffer") {
+          this.executeBuffer();
+        } else if (this.geoprocessId === "elevationProfile") {
+          //this.executeElevationProfile();
+          let perfilTopografico = new IElevationProfile();
+          perfilTopografico.executeElevationProfile();
+        } else {
+          this.executeGeoprocess(formFields);
+        }
       },
       "ejec_gp"
     );
-    $("#ejec_gp").addClass("disabledbutton");
-    if (this.geoprocessId === "waterRise") { $("#ejec_gp").addClass("hidden") };
+
+    $("#ejec_gp").addClass("disabledbutton"); //Execute Button disabled from the start
+    this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
+  }
+
+
+  executeBuffer() {
+    let drawnRectangle;
+    mapa.editableLayers.rectangle.forEach((lyr) => {
+      drawnRectangle = lyr;
+    });
+    let layerSelected;
+    gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+      let selctedLayerName = document.getElementById("select-capa").value;
+      layer.name === selctedLayerName
+        ? (layerSelected = layer)
+        : console.info("Layer not found.");
+    });
+
+    let coords = getGeometryCoords(drawnRectangle);
+
+    let distanceBuffer =
+      document.getElementById("input-equidistancia").value / 1000;
+
+    this.loadingBtn("on");
+    let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+      .then((data) => {
+        if (!data) {
+          throw new Error("Error fetching to server");
+        }
+        buffer = turf.buffer(data, distanceBuffer);
+        this.displayResult(buffer);
+      })
+      .catch((error) => {
+        console.error(error);
+        new UserMessage(error.message, true, "error");
+        this.loadingBtn("off");
+      });
+
+    let lastRectangle = mapa.getEditableLayers().rectangle.length - 1;
+    mapa.deleteLayer(mapa.getEditableLayers().rectangle[lastRectangle].name);
+  }
+
+  executeGeoprocess(formFields) {
+    let values = [];
+    let arrayWaterRise = "";
+    let valueOfWaterRise;
+    contourRectangles = [];
+    for (let i = 0; i < formFields.length; i++) {
+      if (
+        formFields[i].hasAttribute("references") &&
+        formFields[i].getAttribute("references") === "drawedLayers"
+      ) {
+        let layer;
+        mapa.editableLayers.rectangle.forEach((lyr) => {
+          layer = lyr;
+        });
+
+        layer != null ? (this.editableLayer_name = layer.name) : null;
+
+        switch (this.geoprocessId) {
+          case "contour": {
+            const sw = layer.getBounds().getSouthWest();
+            values.push(sw.lng);
+            values.push(sw.lat);
+            const ne = layer.getBounds().getNorthEast();
+            values.push(ne.lng);
+            values.push(ne.lat);
+            break;
+          }
+          case "waterRise": {
+            addedLayers.forEach((layer) => {
+              if (layer.id == document.getElementById("select-capa").value) {
+                layer.rectangle._latlngs[0].forEach((coord) => {
+                  arrayWaterRise += coord.lng + " " + coord.lat + ",";
+                });
+                arrayWaterRise +=
+                  layer.rectangle._latlngs[0][0].lng +
+                  " " +
+                  layer.rectangle._latlngs[0][0].lat;
+              }
+            });
+
+            let waterRiseValue =
+              document.getElementById("sliderValue").innerHTML;
+            waterRiseValue = waterRiseValue.substring(
+              0,
+              waterRiseValue.length - 4
+            );
+            valueOfWaterRise = parseInt(waterRiseValue);
+            break;
+          }
+        }
+      } else {
+        values.push(+formFields[i].value);
+      }
+    }
+
+    btn_modal_loading = true;
+    this.loadingBtn("on");
+    if (this.geoprocessId === "contour") {
+      this.geoprocessing
+        .execute(...values)
+        .then((result) => {
+          this.displayResult(result);
+        })
+        .catch((error) => {
+          new UserMessage(error.message, true, "error");
+          this.loadingBtn("off");
+        });
+    } else if (this.geoprocessId === "waterRise") {
+      let waterRise = new GeoserviceFactory.WaterRise(
+        this.geoprocessing.host,
+        this.geoprocessing.mdeLayerFullname
+      );
+      this.lastHeightProcessed = valueOfWaterRise;
+      waterRise
+        .execute(arrayWaterRise, valueOfWaterRise)
+        .then((result) => {
+          this.displayResult(result);
+        })
+        .catch((error) => {
+          new UserMessage(error.message, true, "error");
+          this.loadingBtn("off");
+        });
+    }
   }
 
   buildForm() {
@@ -611,88 +1025,76 @@ class Geoprocessing {
         change: (element) => {
           if (!element.value) {
             this.optionsForm.clearForm();
+            this.resetHeightLayerColor();
             return;
           }
           this.geoprocessId = element.value;
 
-          if (this.geoprocessId=="contour") {
-            let bounds = drawRectangle();
-          } 
-          if (this.geoprocessId=="waterRise") {
+          //Auto show layer for waterRise and buffer
+          if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if(layer.id.includes("contourResult_")){
-                setTimeout(function(){
+              if (layer.id.includes(this.namePrefixContour)) {
+                setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
-                },500);              
+                }, 500);
               }
             });
+          }
+          if (this.geoprocessId == "elevationProfile") {
+            // mapa.editableLayers.polyline.forEach((layer) => {
+            //   if (layer.name.includes("polyline")) {
+            //     setTimeout(function () {
+            //       $("#select-capa").val(layer.name).change();
+            //     }, 500);
+            //   }
+            // });
+          }
+          if (this.geoprocessId == "buffer") {
+            let layerForBuffer = gestorMenu.getActiveLayersWithoutBasemap()[0];
+            if (
+              layerForBuffer &&
+              gestorMenu.layerIsWmts(layerForBuffer.name) == false
+            ) {
+              setTimeout(function () {
+                $("#select-capa").val(layerForBuffer.name).change();
+                $("#drawRectangleBtn").removeClass("disabledbutton");
+              }, 500);
+            }
+          }
+          if (this.geoprocessId !== "waterRise") {
+            this.resetHeightLayerColor();
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(
             (e) => e.geoprocess === this.geoprocessId
           );
-          this.geoprocessing = new geoprocessing[this.geoprocessId](
+
+          this.process = {
+            contour: GeoserviceFactory.Contour,
+            elevationProfile: IElevationProfile,
+            waterRise: GeoserviceFactory.WaterRise,
+            buffer: GeoserviceFactory.Contour,
+          };
+
+          this.geoprocessing = new this.process[this.geoprocessId](
             item.baseUrl,
             item.layer
           );
           this.buildOptionForm(this.geoprocessing.getFields());
-        },
-
-
-      },
+        }
+      }
     });
 
     const options = [];
     options.push({ value: "", text: "" });
     this.geoprocessingConfig.availableProcesses.forEach((geoprocess) => {
-
+      //if(geoprocess.geoprocess !== 'elevationProfile') {
       options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
+      //}
     });
 
     geoprocessingForm.setOptionsToSelect(selectProcessId, options);
-    /*
-    let opt_c = document.createElement('ul')
-    opt_c.className = "dropdown-menu"
-    opt_c.setAttribute('role', 'menu')
-    opt_c.role = "menu"
 
-    let options_container =  document.createElement("div")
-    options_container.className = "btn-group"
-
-    let secdiv = document.createElement('div')
-    secdiv.className = "dropdown-toggle"
-    secdiv.setAttribute('data-toggle', 'dropdown')
-    secdiv.setAttribute('aria-haspopup', 'true')
-    secdiv.setAttribute('aria-expanded', 'false')
-    secdiv.style = 'border: 0px;'
-    secdiv.innerHTML = '<div id="geop_textselect" style="display:flex;flex-direction: row;width:170px;color:black;border-radius: 4px;border: 1px solid grey;padding:5px"><section style="width: 98%;">Seleccionar Geoproceso</section><section style="width: 2%;"><i class="fas fa-angle-down"></i></section></div>'
-
-    let ulsec = document.createElement('ul')
-    ulsec.className = "dropdown-menu"
-    ulsec.id = "list-geoprocess"
-    ulsec.style = "right: 0px !important; left: auto !important;"
-
-    options.forEach((e, i) =>{
-      let li = document.createElement('li')
-      li.innerHTML = `<a style="color:#1e1e1e;" href="#">${e.text}</a>`
-      
-      li.onclick = () => {
-        let element = `<div style="display:flex;flex-direction:row;width:100%"><section style="width: 95%;text-align: center;">${e.text}</section><section style="width: 5%;text-align: right;"><i class="fas fa-angle-down"></i></section></div>`
-        $("#geop_textselect").html(element)
-
-        this.geoprocessId = e.value;
-          const item = this.geoprocessingConfig.availableProcesses.find(e => e.geoprocess === this.geoprocessId);
-          this.geoprocessing = new geoprocessing[this.geoprocessId](item.baseUrl);
-          this.buildOptionForm(this.geoprocessing.getFields());
-      };
-
-      ulsec.append(li)
-    });
-
-    options_container.appendChild(secdiv)
-    options_container.appendChild(ulsec)
-    container.appendChild(options_container)
-*/
     this.optionsForm = new FormBuilder();
     container.appendChild(this.optionsForm.form);
 
@@ -703,103 +1105,79 @@ class Geoprocessing {
     if (!this.formContainer) {
       this.formContainer = this.buildForm();
       mapa.addMethodToEvent(
-        this.updateReferencedDrawedLayers.bind(this),
+        this.updateReferencedDrawedLayers.bind(this, "add-layer"),
         "add-layer"
       );
       mapa.addMethodToEvent(
-        this.updateReferencedDrawedLayers.bind(this),
+        this.updateReferencedDrawedLayers.bind(this, "delete-layer"),
         "delete-layer"
+      );
+      mapa.addMethodToEvent(
+        this.updateReferencedDrawedLayers.bind(this, "edit-layer"),
+        "edit-layer"
       );
     }
     return this.formContainer;
   }
 
-  elevationDiv(result) {
-    ep_modal_close = false;
-    let mainmodal = document.createElement("div");
-    mainmodal.id = "modal-perfil-elevacion";
-    mainmodal.className = "modal-perfil-elevacion";
-
-    let dive = document.createElement("div");
-    dive.id = "elevation-div";
-    dive.className = "elevation-div";
-    let modal = document.createElement("div");
-    modal.innerHTML = `
-        <div id="ContainerER" >
-        <div id="icons-table" style="display:flex">
-        <div style="width:95%"></div>
-        <div style="width:5%"><a id="btnclose" class="icon-table"><span id="removeEP" class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div>
-        </div>
-        <div id="elevation-div-results"></div>
-        </div>`;
-
-    mainmodal.append(modal);
-    document.body.appendChild(mainmodal);
-    $("#modal-perfil-elevacion").draggable({
-      containment: "#mapa",
-      scroll: false,
-    });
-
-    let btnclose = document.getElementById("modal-perfil-elevacion");
-    btnclose.onclick = function () {
-      ep_modal_close = true;
-      $("#modal-perfil-elevacion").remove();
-      clearElevationProfile();
-      controlElevation = null;
-    };
-
-    let aux = document.getElementById("elevation-div-results");
-    aux.innerHTML = "";
-    aux.append(dive);
-
-    let otraresp = `{"name":"response","type":"FeatureCollection","features":[{"type":"Feature","name":"elevation","geometry":${JSON.stringify(
-      result
-    )},"properties":null}]}`;
-    let options = {
-      summary: "inline",
-      detachedView: false,
-      elevationDiv: "#elevation-div",
-      zFollow: 12,
-      legend: false,
-      followMarker: false,
-      autofitBounds: false,
-      autohide: false,
-      distance: false,
-    };
-
-    controlElevation = L.control.elevation(options);
-    controlElevation.addTo(mapa);
-    controlElevation.load(otraresp);
-  }
-
   loadingBtn(status) {
     let btn_ejecutar = document.getElementById("ejec_gp");
-
     if (status === "on") {
       btn_ejecutar.innerHTML =
         '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    } else {
+      $("#ejec_gp").addClass("disabledbutton");
+    } else if (status === "off") {
       btn_ejecutar.innerHTML = "Ejecutar";
+      $("#ejec_gp").removeClass("disabledbutton");
     }
   }
-}
 
-function clearElevationProfile() {
-  for (var l in mapa._layers) {
-    if (
-      mapa._layers[l].options &&
-      mapa._layers[l].options.pane &&
-      mapa._layers[l].options.pane === "elevationPane"
-    ) {
-      mapa._layers[l].remove();
+  updateLayerSelect(layerName, addToList) {
+    let select = document.getElementById("select-capa"),
+      option = document.createElement("option");
+    option.value = layerName;
+    option.innerHTML = gestorMenu.getLayerData(layerName).title;
+
+    if(layerName.includes('polyline') && select !== null){
+      if (addToList) {
+        for (let i = 0; i < select.length; i++) {
+          if (select[i].value !== layerName) {
+            option.innerHTML = layerName;
+            select.appendChild(option);
+          }
+        }
+      } else if (!addToList) {
+        for (let i = 0; i < select.length; i++) {
+          if (select[i].value === layerName) {
+            select[i].remove();
+          }
+          if (!document.getElementById("select-capa")[1]) {
+            $("#drawRectangleBtn").addClass("disabledbutton");
+            $("#ejec_gp").addClass("disabledbutton");
+          }
+        }
+      }
     }
-    if (
-      mapa._layers[l] &&
-      mapa._layers[l].feature &&
-      mapa._layers[l].feature.name &&
-      mapa._layers[l].feature.name === "elevation"
-    ) {
-      mapa._layers[l].remove();
+
+    if (select && this.geoprocessId === "buffer") {
+      if (addToList && gestorMenu.layerIsWmts(layerName) == false) {
+        for (let i = 0; i < select.length; i++) {
+          if (select[i].value !== layerName) {
+            select.appendChild(option);
+            this.checkLayersForBuffer();
+          }
+        }
+      } else if (!addToList) {
+        for (let i = 0; i < select.length; i++) {
+          if (select[i].value === layerName) {
+            select[i].remove();
+          }
+          if (!document.getElementById("select-capa")[1]) {
+            $("#drawRectangleBtn").addClass("disabledbutton");
+            $("#ejec_gp").addClass("disabledbutton");
+          }
+        }
+      }
     }
   }
 }

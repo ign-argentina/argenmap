@@ -457,9 +457,16 @@ function addLayersfromFiles() {
     // Draw the layer in the map
     mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
     // Add the layer to the Menu
-    menu_ui.addFileLayer("Archivos", e.name, e.id, e.file_name);
+    menu_ui.addFileLayer("Archivos", e.name, e.id, e.file_name, true);
     // Save layer to check its existence in the next layer load
-    addedLayers.push(e);
+    addedLayers.push({
+      id: e.id,
+      layer: e.layer,
+      name: e.name,
+      file_name: e.file_name,
+      file: true,
+      kb: e.kb
+    });
   });
 
   // let close = document.getElementById("modalOpenFile")

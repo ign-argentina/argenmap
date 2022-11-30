@@ -137,14 +137,25 @@ class UI{
   }
   
   addTabs(layername){
-    let aux 
+    let aux;
     if(datatable.length==1){aux = this.createElement("li",datatable.length,"active")}
     else{aux = this.createElement("li",datatable.length)}
     aux.style = "border: 1px solid silver;border-top-right-radius: 8px;border-top-left-radius: 8px;"
     
-    aux.innerHTML='<a class="tabEvent" style="height:38px; padding:10px !important; overflow:hidden; white-space: nowrap; direction: rtl;text-overflow: ellipsis;" data-toggle="tab" istabletab="true" aria-expanded="true" id ='+datatable.length+'>'+layername+' '+datatable.length+'</a>'
-    aux.onclick =function(){
+    let activedata = datatable[datatable.length - 1]; // gets lats active table in array
+    
+    let tabLink = document.createElement('a');
+    tabLink.id = layername + '-tab';
+    tabLink.classList.add('tabEvent');
+    tabLink.style = 'height:38px; padding:10px !important; overflow:hidden; white-space: nowrap; direction: rtl;text-overflow: ellipsis;';
+    tabLink.setAttribute('data-toggle', 'tab');
+    tabLink.setAttribute('istabletab', 'true');
+    tabLink.setAttribute('aria-expanded', 'true');
+    tabLink.innerHTML = `${gestorMenu.getLayerData(layername).title} (${activedata.length})`;
 
+    aux.appendChild(tabLink);
+    
+    aux.onclick =function(){
       activedata=this.id-1;
       let data = datatable[activedata];
       newTable(data)

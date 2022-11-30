@@ -11,8 +11,8 @@
   height: 62px;
   color: black;
   font-size: 1.1em;
-  bottom: 50px;
-  right: 1.15%;
+  bottom: 20px;
+  /* right: 1.15%; */
   /* transform: translateX(4%); */
   z-index: 1000;
   box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
@@ -37,13 +37,13 @@
   border-bottom-right-radius: 3px;
 }
 
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   #zoom-level {
     bottom: 55px;
     right: 1px;
   }
 }
-
+ */
 @media (max-height: 500px) {
   #zoom-level {
     display: none;

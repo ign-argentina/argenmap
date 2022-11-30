@@ -105,6 +105,12 @@
   border-radius: 3px;
   border-color: #cccccc;
 }
+/* Remove loadLayersButtonContent div/icon for media  print*/
+@media print{
+  #loadLayersButtonContent{
+    display: none !important;
+  }
+}
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 600px) {
