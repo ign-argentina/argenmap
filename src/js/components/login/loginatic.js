@@ -29,7 +29,8 @@ loginatic = function() {
     this.process = async() => {
         let pwd = document.getElementById("input-pwd").value;
 
-        let result = await fetch("src/config/user.json")
+        //let result = await fetch("src/config/user.json")
+        let result = await fetch( app.login.api + pwd )
         .then(function (response) {
             if (response.status !== 200) {
                 console.log('Looks like there was a problem. Status Code: ' + response.status);
