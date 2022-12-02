@@ -1,6 +1,8 @@
 loginatic = function() {
 
     this.currentLogin = false;
+    this.notLoggedTxt = app.login.notLogged || "Password not found, please retry with a valid one.";
+    this.noPassword =  app.login.noPassword || "No password given!";
     this.init = (conf) => {
         if (getCookie("autologin") == null) {
             setCookie("autologin", 0);
@@ -29,54 +31,64 @@ loginatic = function() {
     this.process = async() => {
         let pwd = document.getElementById("input-pwd").value;
 
-        //let result = await fetch("src/config/user.json")
-        let result = await fetch( app.login.api + pwd )
-        .then(function (response) {
-            if (response.status !== 200) {
-                console.log('Looks like there was a problem. Status Code: ' + response.status);
-                return;
-            }
-            if (response.status == 200) {
-                return response.json();
-            }
-
-        });
-        let logged = false;
-
-        if (result.clave == pwd) {
-            let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
-
-            this.currentLogin = result;
-
-            let lat = result.lat_4326;
-            let lon = result.lon_4326;
-            let zoom = result.zoom ?? 13;
-
-            /* document.title += ' - ' + json[i].nombregobiernolocal;
-            let logoTitle = document.getElementById('logoText');
-            logoTitle.innerText += ' - ' + json[i].nombregobiernolocal; */
-
-            mapa.setView([lat, lon], zoom);
-            document.getElementById("login-wrapper").style.display = "none";
-            logged = true;
-
-            if ($("#btn-logout").length == 0) {
-                this._addLogoutButton();                    
-            }
-
-            if (recuerdame == 1) {
-                // console.log("recuerdame OK");
-                setCookie("lat", lat);
-                setCookie("lon", lon);
-                setCookie("zoom", 10);
-                setCookie("autologin", 1);
-            } else {
-                // console.log("No entra a recuerdame");
-            }
+        if( !pwd.length ) {
+            alert(this.noPassword);
+            // new UserMessage(this.noPassword, true, 'error');
         }
 
-        if (!logged) {
-            alert("No se encontró ningun municipio para su clave, por favor intentelo nuevamente");
+        if( pwd.length ) {
+            //let result = await fetch("src/config/user.json")
+            let notLoggedTxt = this.notLoggedTxt;
+            let result = await fetch( app.login.api + pwd )
+            .then(function (response) {
+                if ( response.status >= 500 ) {
+                    new UserMessage('Looks like there was a problem. Status Code: ' + response.status, true, 'error');
+                    return;
+                }
+                if ( response.status !== 200 ) {
+                    alert(notLoggedTxt);
+                    return;
+                }
+                if ( response.status === 200 ) {
+                    return response.json();
+                }
+    
+            });
+            let logged = false;
+    
+            /* if (result.clave == pwd) { */
+            if (result.clave) {
+                let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
+    
+                this.currentLogin = result;
+    
+                let lat = result.lat_4326;
+                let lon = result.lon_4326;
+                let zoom = result.zoom ?? 13;
+    
+                /* document.title += ' - ' + json[i].nombregobiernolocal;
+                let logoTitle = document.getElementById('logoText');
+                logoTitle.innerText += ' - ' + json[i].nombregobiernolocal; */
+    
+                mapa.setView([lat, lon], zoom);
+                document.getElementById("login-wrapper").style.display = "none";
+                logged = true;
+    
+                if ($("#btn-logout").length == 0) {
+                    this._addLogoutButton();                    
+                }
+    
+                if (recuerdame == 1) {
+                    setCookie("lat", lat);
+                    setCookie("lon", lon);
+                    setCookie("zoom", 10);
+                    setCookie("autologin", 1);
+                }
+            }
+    
+            if (!logged) {
+                alert(this.notLoggedTxt);
+            }
         }
     }
 
@@ -103,7 +115,7 @@ loginatic = function() {
                         <span class="input-group-addon" id="basic-addon1">
                         <i class="fas fa-lock"></i>
                         </span>
-                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';">
+                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';" required>
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox" id="inp-recuerdame" name="recuerdame">Recuérdame</label>
