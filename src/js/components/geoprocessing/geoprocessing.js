@@ -60,13 +60,30 @@ class Geoprocessing {
     elem.style.border = border_style;
     elem.style.boxShadow = shadow_style;
 
-    elem.onclick = function () {
+    elem.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
         g_modal_close = false;
       }
+      else {
+        //Close geoprocess window and clear
+        this.closeModal();
+      }
     };
     document.querySelector(".leaflet-top.leaflet-left").appendChild(elem);
+  }
+
+  closeModal() {
+    document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
+      "";
+    document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
+      "";
+    document.getElementById("select-process").selectedIndex = 0;
+    document.getElementsByClassName("form")[1].innerHTML = "";
+    document.getElementById("mr").remove();
+    g_modal_close = true;
+
+    this.resetHeightLayerColor();
   }
 
   createModal() {
@@ -89,16 +106,7 @@ class Geoprocessing {
       '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = () => {
       //Close geoprocess window and clear
-      document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
-        "";
-      document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
-        "";
-      document.getElementById("select-process").selectedIndex = 0;
-      document.getElementsByClassName("form")[1].innerHTML = "";
-      divContainer.remove();
-      g_modal_close = true;
-
-      this.resetHeightLayerColor();
+      this.closeModal();
     };
     s_sec.append(btnclose);
 
