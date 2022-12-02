@@ -65,7 +65,7 @@
     top: 0;
     left: 0;
     background: RGBA(255, 255, 255, .6);
-    z-index: 99999;
+    z-index: 1050;
     display: none;
 }
 
