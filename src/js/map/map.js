@@ -681,23 +681,21 @@ $("body").on("pluginLoad", function(event, plugin){
 						esriTable.innerHTML= 'No existen datos a este nivel de zoom.';
 						
 						let copytoClipboard = 
-							`<a onclick="copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. 
-							Una resolución espacial de ${imgData.resolution} m. 
-							La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. 
-							El proveedor es ${imgData.provider_texto} y el producto ${imgData.product}. \');" 
-							href="#"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a>`;
+							`<a onclick=
+								"copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. Una resolución espacial de ${imgData.resolution} m. La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. El proveedor es ${imgData.provider_texto} y el producto ${imgData.product}. \');" 
+								href="#"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a>`;
 							
 						if (imgData!="") {
 							esriTable.innerHTML = 
 								copytoClipboard + 
-								`<tr><td>Fecha</td><td>${imgData.date}</td></tr>
-								<tr><td title="Relación de metros por lado de pixel">Resolución espacial</td><td>${imgData.resolution} m</td></tr>
-								<tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr>
-								<tr><td title="Misión aérea o constelación satelital">Sensor</td><td>${imgData.sensor}</td></tr>
-								<tr><td>Proveedor</td><td>${imgData.provider}</td></tr>
-								<tr><td>Producto</td><td>${imgData.product}</td></tr>
-								<tr><td>Zoom mínimo</td><td>${imgData.minZoom}</td></tr>
-								<tr><td>Zoom máximo</td><td>${imgData.maxZoom}</td></tr>`;
+								`<tr><td>Fecha:</td><td>${imgData.date}</td></tr>
+								<tr><td title="Relación de metros por lado de pixel">Resolución espacial:</td><td>${imgData.resolution} m</td></tr>
+								<tr><td>Exactitud:</td><td>${imgData.accuracy} m</td></tr>
+								<tr><td title="Misión aérea o constelación satelital">Sensor:</td><td>${imgData.sensor}</td></tr>
+								<tr><td>Proveedor:</td><td>${imgData.provider}</td></tr>
+								<tr><td>Producto:</td><td>${imgData.product}</td></tr>
+								<tr><td>Zoom mínimo:</td><td>${imgData.minZoom}</td></tr>
+								<tr><td>Zoom máximo:</td><td>${imgData.maxZoom}</td></tr>`;
 						}
 						
 						//Info Wrapper
@@ -922,9 +920,15 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.showMeasurements = (name,measurement,unit) => {
 						const wrapper = document.getElementById("measurementInfo"),
-							newDiv = document.createElement("div"),
-							resultado = `${name}: ${measurement} ${unit}`;
-						newDiv.innerHTML = resultado;
+							newDiv = document.createElement("tr"),
+
+							infoName = document.createElement("td");
+							infoName.innerHTML = `${name}:`;
+							infoDesc = document.createElement("td");
+							infoDesc.innerHTML = `${measurement} ${unit}`;
+
+						newDiv.appendChild(infoName);
+						newDiv.appendChild(infoDesc);
 						wrapper.appendChild(newDiv);
 					}
 					
@@ -979,7 +983,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							south = layer.getBounds().getSouth().toFixed(8),
 							west = layer.getBounds().getWest().toFixed(8),
 							boundingBox = document.createElement("div")
-							boundingBox.innerHTML= `<div>&emsp;northEast: ${north}, ${east}<br>&emsp;southWest: ${south}, ${west}</div>`
+							boundingBox.innerHTML= `<div>northEast: ${north}, ${east}<br>southWest: ${south}, ${west}</div>`
 						return boundingBox.innerHTML;
 					}
 

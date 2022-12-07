@@ -72,22 +72,3 @@
 .context-menu :last-child {
   border-radius: 0 0 5px 5px;
 }
-
-#esriwrapper { 
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
-  font-weight: bold;
-  padding: 10px; 
-  text-align: inherit;
-  user-select: text;
-  z-index: 99999;
-}
-
-#esriInfo { 
-  background-color: #d7f2f7;
-  border: 1px solid #525252; 
-  border-radius: 4px;
-  font-size: 14px;
-  padding: 5px; 
-  user-select: text;
-}

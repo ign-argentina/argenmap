@@ -1108,10 +1108,7 @@ Perfil Topografico
 #measurementWrapper { 
   border-radius: 8px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
-  font-size: 18px;
   font-weight: bold;
-  min-height: 170px; 
-  min-width: 330px; 
   padding: 10px; 
   text-align: inherit;
   user-select: text;
@@ -1123,8 +1120,41 @@ Perfil Topografico
   border: 1px solid #525252; 
   border-radius: 4px;
   font-size: 14px;
-  min-height: 100px; 
-  min-width: 330px; 
-  padding: 5px; 
+  padding: 2px; 
   user-select: text;
+}
+
+#measurementInfo td {
+  padding: 3px;
+}
+
+#measurementInfo tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+#esriwrapper { 
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
+  font-weight: bold;
+  padding: 10px; 
+  text-align: inherit;
+  user-select: text;
+  z-index: 99999;
+}
+
+#esriInfo { 
+  background-color: #d7f2f7;
+  border: 1px solid #525252; 
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 2px; 
+  user-select: text;
+}
+
+#esriTable td {
+  padding: 3px;
+}
+
+#esriTable tr:nth-child(even) {
+  background-color: #ffffff;
 }
