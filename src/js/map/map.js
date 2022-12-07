@@ -889,7 +889,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.showMeasurements("BoundingBox",boundingBox,"");
 							}
 							if (layer.type === "polygon" ||  layer.type === "rectangle") {
-								const area = mapa.getAreaPolygon(layer).toFixed(3);
+								const area = mapa.getAreaPolygon(layer).toFixed(7);
 								const centroid = mapa.getCentroidPolygon(layer);
 								const perimeter = mapa.getPerimeter(layer).toFixed(3);
 								const boundingBox= mapa.getBoundingBox(layer);
@@ -902,7 +902,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								const radius = (layer.getRadius()/1000).toFixed(3);
 								const centroid = mapa.getCentroidCircle(layer);
 								const cricumference = (mapa.getCricumference(layer)/1000).toFixed(3);
-								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(3);
+								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(7);
 								const boundingBox= mapa.getBoundingBox(layer);
 								mapa.showMeasurements("Área",area,"km²");
 								mapa.showMeasurements("Centroide",centroid,"");
