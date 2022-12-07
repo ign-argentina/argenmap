@@ -639,18 +639,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									text: 'Datos de imagen satelital',
 									onclick: (option) => {
 										mapa.closePopup(contextPopup);
-										let imagenDato = '<div><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span>No existen datos a este nivel de zoom</div>',
-										imgData = new Fechaimagen(lat,lng,zoom).area;
-										if (imgData!="") {
-											//let mdTable = `Fecha: ${imgData.date}<br>Resolución espacial: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
-											let mdTable = `<table id="md-table" style="width: 300px;text-align:left;" align="left"><tr><td>Fecha</td><td>${imgData.date}</td></tr><tr><td title="Relación de metros por lado de pixel">Resolución espacial</td><td>${imgData.resolution} m</td></tr><tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr><tr><td title="Misión aérea o constelación satelital">Sensor</td><td>${imgData.sensor}</td></tr><tr><td>Proveedor</td><td>${imgData.provider}</td></tr><tr><td>Producto</td><td>${imgData.product}</td></tr><tr><td>Zoom mínimo</td><td>${imgData.minZoom}</td></tr><tr><td>Zoom máximo</td><td>${imgData.maxZoom}</td></tr></table>`;
-											imagenDato = `<div><a onclick="copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. Una resolución espacial de ${imgData.resolution} m. La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. El proveedor es ${imgData.provider_texto} y el producto ${imgData.product} \');" href="#" style="position: absolute;top: 18px;left: 22px;"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span><!--<center><b>Metadatos del fondo</b></center><br>-->${mdTable}<hr></div>`;
-										}
-
-										$(".context-imagen").slideDown();
-										$(".context-imagen").html(imagenDato);
-										
-										
+										mapa.esriImagery(lat,lng,zoom);
 									}
 								});
 							}
@@ -660,6 +649,67 @@ $("body").on("pluginLoad", function(event, plugin){
 						.setContent(contextMenu.menu);
 						mapa.openPopup(contextPopup);
 					});
+
+					mapa.esriImagery = (lat,lng,zoom) => {		
+						//Close
+						if (document.getElementById("esriwrapper")) {
+							document.getElementById("esriwrapper").remove();
+						}
+
+						//Main Wrapper
+						const wrapper = document.createElement("div");
+						wrapper.id="esriwrapper";
+						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white";
+						wrapper.innerHTML="Datos de imagen satelital";
+
+						//Close Button
+						let btncloseWrapper = document.createElement("a");
+						btncloseWrapper.id = "btnclose-wrapper";
+						btncloseWrapper.href = "javascript:void(0)";
+						btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
+						btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
+						btncloseWrapper.onclick = () => {
+							wrapper.remove();
+						};
+						wrapper.appendChild(btncloseWrapper);
+						
+						//Data				
+						let imgData = new Fechaimagen(lat,lng,zoom).area;
+						let esriTable = document.createElement("table");
+						esriTable.id="esriTable";
+						esriTable.style="width: 300px;text-align:left;align=left";
+						esriTable.innerHTML= 'No existen datos a este nivel de zoom.';
+						
+						let copytoClipboard = 
+							`<a onclick="copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. 
+							Una resolución espacial de ${imgData.resolution} m. 
+							La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. 
+							El proveedor es ${imgData.provider_texto} y el producto ${imgData.product}. \');" 
+							href="#"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a>`;
+							
+						if (imgData!="") {
+							esriTable.innerHTML = 
+								copytoClipboard + 
+								`<tr><td>Fecha</td><td>${imgData.date}</td></tr>
+								<tr><td title="Relación de metros por lado de pixel">Resolución espacial</td><td>${imgData.resolution} m</td></tr>
+								<tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr>
+								<tr><td title="Misión aérea o constelación satelital">Sensor</td><td>${imgData.sensor}</td></tr>
+								<tr><td>Proveedor</td><td>${imgData.provider}</td></tr>
+								<tr><td>Producto</td><td>${imgData.product}</td></tr>
+								<tr><td>Zoom mínimo</td><td>${imgData.minZoom}</td></tr>
+								<tr><td>Zoom máximo</td><td>${imgData.maxZoom}</td></tr>`;
+						}
+						
+						//Info Wrapper
+						const esriInfo = document.createElement("div");
+						esriInfo.id="esriInfo";
+						esriInfo.appendChild(esriTable);								
+						wrapper.appendChild(esriInfo);
+
+						document.body.appendChild(wrapper);
+						$("#esriwrapper").draggable({scroll: false, cancel: '#esriInfo', containment: "body"}); 
+
+					}
 
 					mapa.addMethodToEvent = (method, event) => {
 						mapa.methodsEvents[event].push(method);
