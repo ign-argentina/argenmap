@@ -44,7 +44,7 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
 var ordered = ['','','','','','','','',''];
-var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9;
+var ordenZoomHome = 1; var ordenLocate = 2; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -81,9 +81,6 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'locate':
 			ordered.splice(ordenLocate, 1, plugin.pluginName);
 			break;
-		case 'FullScreen':
-			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
-			break;
 		default :
 			// Add unordered plugins
 			unordered = plugin.pluginName;
@@ -101,10 +98,6 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('locate')){
 		if(gestorMenu.plugins['locate'].getStatus() == 'ready' || gestorMenu.plugins['locate'].getStatus() == 'fail'){
-		} else { visiblesActivar = false; }
-	}
-	if(visiblesActivar && gestorMenu.pluginExists('FullScreen')) {
-		if(gestorMenu.plugins['FullScreen'].getStatus() == 'ready' || gestorMenu.plugins['FullScreen'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('graticula')) {
@@ -216,33 +209,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					    }
 					}).addTo(mapa);
 					gestorMenu.plugins['locate'].setStatus('visible');
-					break;
-				case 'FullScreen':
-					// Leaflet-Control.FullScreen plugin https://github.com/brunob/leaflet.fullscreen
-					L.control.fullscreen({
-					  position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
-					  title: 'Ver en pantalla completa', // change the title of the button, default Full Screen
-					  titleCancel: 'Salir de pantalla completa', // change the title of the button when fullscreen is on, default Exit Full Screen
-					  content: null, // change the content of the button, can be HTML, default null
-					  forceSeparateButton: true, // force seperate button to detach from zoom buttons, default false
-					  forcePseudoFullscreen: false, // force use of pseudo full screen even if full screen API is available, default false
-					  fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
-					}).addTo(mapa);	
-
-					/* mapa.on('enterFullscreen', function(){
-					  if (miniMap._minimized) {
-					    miniMap._restore();
-					    window.setTimeout( miniMap_Minimize, 2000 );
-					  }
-					});
-
-					mapa.on('exitFullscreen', function(){
-					  if (miniMap._minimized) {
-						miniMap._restore();
-						window.setTimeout( miniMap_Minimize, 2000 );
-					  }
-					}); */
-					gestorMenu.plugins['FullScreen'].setStatus('visible');
 					break;
 				case 'graticula':
 					// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule

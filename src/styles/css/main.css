@@ -950,9 +950,6 @@ SideBar
   .leaflet-control-layers-toggle {
     border: 1px solid rgba(0, 0, 0, 0.2) !important;
   }
-  .leaflet-control-zoom-fullscreen .fullscreen-icon {
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  }
   .leaflet-draw-toolbar .leaflet-bar {
     bottom: 150px !important;
     position: relative;
