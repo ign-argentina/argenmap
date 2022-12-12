@@ -2,7 +2,6 @@ let areHiddenLeft = false;
 let areHiddenRigth = false;
 let locate = null;
 let zoomhome = null;
-let fullscreen = null;
 let customgraticule = null;
 let measure = null;
 let loadLayersButton = null;
@@ -18,9 +17,6 @@ class SidebarTools {
     );
     zoomhome = document.getElementsByClassName(
       "leaflet-control-zoomhome leaflet-bar leaflet-control"
-    );
-    fullscreen = document.getElementsByClassName(
-      "leaflet-control-zoom-fullscreen fullscreen-icon"
     );
     customgraticule = document.getElementsByClassName(
       "leaflet-control leaflet-control-customgraticule"
@@ -67,7 +63,6 @@ class SidebarTools {
 
         areHiddenLeft = false;
         zoomhome[0].hidden = false;
-        fullscreen[0].style.display = "";
         customgraticule[0].hidden = false;
         locate[0].hidden = false;
         measure[0].hidden = false;
@@ -79,7 +74,6 @@ class SidebarTools {
         //this.style.left = "10px";
         areHiddenLeft = true;
         //zoomhome[0].hidden = true;
-        fullscreen[0].style.display = "none";
         customgraticule[0].hidden = true;
         locate[0].hidden = true;
         measure[0].hidden = true;

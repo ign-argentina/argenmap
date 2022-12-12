@@ -553,6 +553,9 @@ async function loadTemplate(data, isDefaultTemplate) {
         const sc = new Screenshot();
         sc.createComponent();
 
+        const fs = new Fullscreen();
+        fs.createComponent();
+
         // const modalgeojson = new IconModalGeojson;
         // modalgeojson.createComponent();
 

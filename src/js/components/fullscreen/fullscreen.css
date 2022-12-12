@@ -1,0 +1,64 @@
+.center-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#fullscreen {
+  position: absolute;
+  flex-direction: column;
+  width: 34px;
+  height: 34px;
+  color: black;
+  font-size: 1.3em;
+  top: 290px;
+  left: 10px;
+  z-index: 999;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+#fullscreen :hover {
+  background-color: #f5f4f4;
+}
+
+#fullscreen :active {
+  background-color: grey;
+}
+
+#iconFS-container {
+  height: 100%;
+  width: 100%;
+  flex: 3;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+}
+
+#iconFS .fas{
+    width: 18px;
+    height: 18px;
+}
+
+@media (max-width: 600px) {
+  #fullscreen {
+    right: 1px;
+  }
+}
+
+@media (max-height: 500px) {
+  #fullscreen {
+    top: 167px;
+    left: 1px;
+    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  #fullscreen {
+    top: 235px;
+    left: 0px;
+    /* border: 2px solid rgba(0, 0, 0, 0.2) !important; */
+  }
+}
