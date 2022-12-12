@@ -11,7 +11,7 @@
   height: 34px;
   color: black;
   font-size: 1.3em;
-  top: 260px;
+  top: 290px;
   left: 10px;
   z-index: 999;
   border: 2px solid rgba(0, 0, 0, 0.2);
@@ -38,6 +38,7 @@
     width: 18px;
     height: 18px;
 }
+
 @media (max-width: 600px) {
   #fullscreen {
     right: 1px;
@@ -46,8 +47,8 @@
 
 @media (max-height: 500px) {
   #fullscreen {
-    top: 124px;
-    left: 34px;
+    top: 167px;
+    left: 1px;
     border: 1px solid rgba(0, 0, 0, 0.2) !important;
     width: 32px;
     height: 32px;
@@ -56,8 +57,8 @@
 
 @media (max-width: 600px) {
   #fullscreen {
-    top: 310px;
-    left: 2px;
+    top: 235px;
+    left: 1px;
     /* border: 2px solid rgba(0, 0, 0, 0.2) !important; */
   }
 }

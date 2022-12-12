@@ -1,17 +1,14 @@
 class Fullscreen {
   constructor() {
     this.component = `
-      <div class="center-flex" id="fullscreen" title="Pantalla Completa" onclick=toggleFullScreen()>
-          <div class="center-flex" id="iconFS-container">
-            <i id="iconFS"class="fas fa-expand" aria-hidden="true"></i>
-          </div>
+      <div class="center-flex" id="iconFS-container" title="Pantalla Completa" onclick=toggleFullScreen()>
+            <i id="iconFS" class="fas fa-expand center-flex" aria-hidden="true"></i>
       </div>
       `;
   }
 
   createComponent() {
     const elem = document.createElement("div");
-    elem.className = "leaflet-control-locate leaflet-bar leaflet-control";
     elem.id = "fullscreen";
 
     let isChrome =
@@ -32,7 +29,6 @@ class Fullscreen {
 
     elem.innerHTML = this.component;
     document.getElementById("mapa").appendChild(elem);
-    //document.querySelector(".leaflet-bottom.leaflet-left").appendChild(elem);
   }
 }
 
@@ -41,10 +37,12 @@ function toggleFullScreen() {
   if (!document.fullscreenElement) {
     icon.classList.remove("fas", "fa-expand");
     icon.classList.add("fas", "fa-compress");
+    document.getElementById("iconFS-container").title = "Salir de pantalla completa";
     document.documentElement.requestFullscreen();
   } else if (document.exitFullscreen) {
     icon.classList.remove("fas", "fa-compress");
     icon.classList.add("fas", "fa-expand");
+    document.getElementById("iconFS-container").title = "Pantalla completa";
     document.exitFullscreen();
   }
 }
