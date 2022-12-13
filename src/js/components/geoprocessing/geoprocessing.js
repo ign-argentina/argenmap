@@ -40,14 +40,14 @@ class Geoprocessing {
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "leaflet-control-locate leaflet-bar leaflet-control";
+    elem.className = "leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
     elem.title = app.geoprocessing.buttonTitle;
     elem.innerHTML = modalicon;
 
     let isChrome =
       /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-    let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
+    let shadow_style = "0 1px 5px rgb(0 0 0 / 45%)";
     let border_style = "none";
     let size = "26px";
     if (!isChrome) {

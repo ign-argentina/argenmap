@@ -37,7 +37,7 @@
 }
 
 #geoprocesos-icon {
-  position: absolute;
+  /*position: absolute;
   flex-direction: column;
   width: 26px;
   height: 26px;
@@ -45,7 +45,7 @@
   font-size: 1.1em;
   z-index: 999;
   border-radius: 3px;
-  cursor: pointer;
+  cursor: pointer;*/
 }
 
 .icon-layer-geo {
@@ -129,28 +129,28 @@
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-@media (min-width: 769px) {
+/*@media (min-width: 769px) {
   #geoprocesos-icon {
     top: 410px;
   }
-}
+}*/
 @media (max-width: 768px) {
   #mr {
     left: 45px;
     max-width: 700px;
   }
-  #geoprocesos-icon {
+  /*#geoprocesos-icon {
     top: 410px;
     background-color: pink;
-  }
+  }*/
 }
 
 @media (max-width: 600px) {
-  #geoprocesos-icon {
+  /*#geoprocesos-icon {
     top: 350px;
     left: 2px;
     background-color: pink;
-  }
+  }*/
 
   #mr {
     left: 45px;
@@ -178,10 +178,10 @@
     left: 45px;
     max-height: 50%;
   }
-  #geoprocesos-icon {
+  /*#geoprocesos-icon {
     top: 254px !important;
     left: 0;
-  }
+  }*/
 }
 
 @media (max-height: 420px) {
