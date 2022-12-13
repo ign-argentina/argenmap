@@ -43,8 +43,8 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['','','','','','','','',''];
-var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9;
+var ordered = ['','','','','','','','','',''];
+var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9; var ordenScreenShoter = 10
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -83,6 +83,9 @@ $("body").on("pluginLoad", function(event, plugin){
 			break;
 		case 'FullScreen':
 			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
+			break;
+		case 'screenShoter':
+			ordered.splice(ordenScreenShoter, 1, plugin.pluginName);
 			break;
 		default :
 			// Add unordered plugins
@@ -131,9 +134,25 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['minimap'].getStatus() == 'ready' || gestorMenu.plugins['minimap'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
+	if(visiblesActivar && gestorMenu.pluginExists('screenShoter')) {
+		if(gestorMenu.plugins['screenShoter'].getStatus() == 'ready' || gestorMenu.plugins['screenShoter'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
 	if(visiblesActivar){
 		ordered.forEach(function(e){
 			switch (e) {
+				case 'screenShoter':
+					let d = new Date();
+    				let n = d.getTime();		
+					L.simpleMapScreenshoter({	
+						hideElementsWithSelectors: [
+							".leaflet-control-container",
+							"#sidebar-toolbar-icon-left"
+						],	
+						screenName: "mapaIGN" + n, // string or function				
+					}).addTo(mapa);
+					gestorMenu.plugins['screenShoter'].setStatus('visible');
+					break;
 				case 'ZoomHome':
 					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
 					var zoomHome = L.Control.zoomHome({

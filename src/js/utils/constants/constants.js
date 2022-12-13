@@ -52,6 +52,7 @@ const PLUGINS = {
   EasyPrint: _PATH + "leaflet-easyPrint/bundle.js",
   elevation: _PATH + "leaflet-elevation/leaflet-elevation.js",
   textpath: _PATH + "leaflet-textpath/leaflet-textpath.js",
+  screenShoter: "https://unpkg.com/leaflet-simple-map-screenshoter",
   turf: "https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js",
   editableLabel: _PATH + "leaflet-editable-label/Leaflet.EditableLabel.js",
 };

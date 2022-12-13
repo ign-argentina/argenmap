@@ -8,6 +8,7 @@ let measure = null;
 let loadLayersButton = null;
 let leafletbottom = null;
 let drawb = null;
+let screenShoter = null;
 let screenshot = null;
 let divbar = null;
 let icongeop = null;
@@ -32,6 +33,7 @@ class SidebarTools {
 
     leafletbottom = document.getElementsByClassName("leaflet-bottom");
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
+    screenShoter = document.getElementsByClassName("leaflet-control-simpleMapScreenshoter");
     screenshot = document.getElementById("screenshot");
     
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
@@ -54,9 +56,6 @@ class SidebarTools {
     document.getElementById("mapa").appendChild(elemright);
 
     $("#sidebar-toolbar-icon-left").click(function () {
-     
-  
-
       if (areHiddenLeft) {
        
         if (window.matchMedia("(max-width: 400px)").matches) {
@@ -64,7 +63,6 @@ class SidebarTools {
         } else {
           this.style.left = "46px";
         }
-
         areHiddenLeft = false;
         zoomhome[0].hidden = false;
         fullscreen[0].style.display = "";
@@ -74,6 +72,7 @@ class SidebarTools {
         loadLayersButton.style.display = "";
         screenshot.style.display = "";
         divbar[2].hidden = false;
+        screenShoter[0].hidden = false;
         $("#geoprocesos-icon").show();
       } else {
         //this.style.left = "10px";
@@ -86,10 +85,9 @@ class SidebarTools {
         loadLayersButton.style.display = "none";
         screenshot.style.display = "none";
         divbar[2].hidden = true;
+        screenShoter[0].hidden = true;
         $("#geoprocesos-icon").hide();
       }
-
-
 
     });
 
