@@ -889,6 +889,10 @@ Control graticula
 /*******************************
 SideBar
 *******************************/
+.leaflet-bottom .leaflet-control-scale{
+  margin-left: 10px !important;
+}
+
 @media (max-width: 768px) {
   .leaflet-control-minimap {
     display: none;
@@ -909,6 +913,9 @@ SideBar
   .leaflet-right .leaflet-control {
     margin-right: 0px !important;
     margin-top: 0px !important;
+  }
+  .leaflet-bottom .leaflet-control-scale{
+    margin-left: 0px !important;
   }
 }
 @media (max-height: 500px) {
