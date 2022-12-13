@@ -6,7 +6,7 @@ class LoadLayersModal {
     <div id="loadLayersButton" title="Agregar capas">
         <div id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
             <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="18" height="18">
-        </button>
+        </div>
     </div>
     `;
 	}
@@ -15,8 +15,10 @@ class LoadLayersModal {
 
 	createComponent() {
 		const elem = document.createElement("div");
+		elem.className = "leaflet-bar leaflet-control";
 		elem.innerHTML = this.component;
-		document.getElementById("mapa").appendChild(elem);
+		document.querySelector(".leaflet-top.leaflet-left").append(elem);
+		//document.getElementById("mapa").appendChild(elem);
 	}
 }
 

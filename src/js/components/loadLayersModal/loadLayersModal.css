@@ -80,7 +80,7 @@
 }
 
 #loadLayersButton {
-  position: absolute;
+  /*position: absolute;
   flex-direction: column;
   width: 34px;
   height: 34px;
@@ -90,7 +90,7 @@
   left: 2px;
   z-index: 999;
   border: 2px solid rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  border-radius: 3px;*/
 }
 
 #loadLayersButton:hover {
@@ -114,10 +114,10 @@
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 600px) {
-  #loadLayersButton {
+  /*#loadLayersButton {
     top: 334px;
     left: 10px;
-  }
+  }*/
 
   #loadLayersModal {
     width: 56%;
