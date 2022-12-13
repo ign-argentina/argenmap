@@ -100,9 +100,15 @@ body {
   .map-container {
     position: fixed;
   }
+
   .leaflet-bottom,
   #zoom-level {
     margin-bottom: 51px;
+
+  }
+
+  #zoom-level {
+    bottom: -20px !important;
   }
 }
 @media (min-width: 1367px) {
