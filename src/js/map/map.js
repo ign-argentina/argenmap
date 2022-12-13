@@ -149,7 +149,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							".leaflet-control-container",
 							"#sidebar-toolbar-icon-left"
 						],	
-						screenName: "mapaIGN" + n, // string or function				
+						screenName: "mapaIGN" + n,				
 					}).addTo(mapa);
 					gestorMenu.plugins['screenShoter'].setStatus('visible');
 					break;

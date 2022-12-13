@@ -9,7 +9,6 @@ let loadLayersButton = null;
 let leafletbottom = null;
 let drawb = null;
 let screenShoter = null;
-let screenshot = null;
 let divbar = null;
 let icongeop = null;
 class SidebarTools {
@@ -34,7 +33,6 @@ class SidebarTools {
     leafletbottom = document.getElementsByClassName("leaflet-bottom");
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
     screenShoter = document.getElementsByClassName("leaflet-control-simpleMapScreenshoter");
-    screenshot = document.getElementById("screenshot");
     
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
     this.component = `
@@ -70,7 +68,6 @@ class SidebarTools {
         locate[0].hidden = false;
         measure[0].hidden = false;
         loadLayersButton.style.display = "";
-        screenshot.style.display = "";
         divbar[2].hidden = false;
         screenShoter[0].hidden = false;
         $("#geoprocesos-icon").show();
@@ -83,7 +80,6 @@ class SidebarTools {
         locate[0].hidden = true;
         measure[0].hidden = true;
         loadLayersButton.style.display = "none";
-        screenshot.style.display = "none";
         divbar[2].hidden = true;
         screenShoter[0].hidden = true;
         $("#geoprocesos-icon").hide();

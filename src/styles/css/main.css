@@ -108,8 +108,7 @@ body {
 @media (min-width: 1367px) {
   .leaflet-control-layers-toggle,
   .leaflet-control-customgraticule,
-  #modalgeojson,
-  #screenshot {
+  #modalgeojson {
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   }
 }
@@ -989,7 +988,6 @@ SideBar
   .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)),
   #sidebar,
   #zoom-level,
-  #screenshot,
   #spanopenfolder,
   div[id^="sidebar-toolbar-icon-"] {
     display: none !important;
