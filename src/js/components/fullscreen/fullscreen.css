@@ -5,7 +5,7 @@
 }
 
 #fullscreen {
-  position: absolute;
+  /*position: absolute;
   flex-direction: column;
   width: 34px;
   height: 34px;
@@ -15,7 +15,7 @@
   left: 10px;
   z-index: 999;
   border: 2px solid rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  border-radius: 3px;*/
 }
 
 #fullscreen :hover {
@@ -39,11 +39,11 @@
     height: 18px;
 }
 
-@media (max-width: 600px) {
+/*@media (max-width: 600px) {
   #fullscreen {
     right: 1px;
   }
-}
+}/*
 
 @media (max-height: 500px) {
   #fullscreen {
@@ -55,10 +55,11 @@
   }
 }
 
-@media (max-width: 600px) {
-  #fullscreen {
+ /*@media (max-width: 600px) {
+ #fullscreen {
     top: 235px;
     left: 0px;
-    /* border: 2px solid rgba(0, 0, 0, 0.2) !important; */
+    /* border: 2px solid rgba(0, 0, 0, 0.2) !important; 
   }
 }
+*/
