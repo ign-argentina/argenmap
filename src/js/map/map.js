@@ -143,7 +143,8 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.simpleMapScreenshoter({	
 						hideElementsWithSelectors: [
 							".leaflet-control-container",
-							"#sidebar-toolbar-icon-left"
+							"#sidebar-toolbar-icon-left",
+							"#sidebar-toolbar-icon-right"
 						],	
 						screenName: "mapaIGN" + n,				
 					}).addTo(mapa);
