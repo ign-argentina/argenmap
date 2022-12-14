@@ -267,11 +267,6 @@
   .tabs_upload {
     margin-bottom: 2px;
   }
-
-  #loadLayersButton {
-      top: 221px;
-      left: 0px;
-  }
 }
 
 @media (max-width: 768px) {

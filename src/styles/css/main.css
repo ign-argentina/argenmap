@@ -979,9 +979,9 @@ SideBar
   .leaflet-control-measure-interaction div h3 {
     font-size: 12px !important;
   }
-  .leaflet-draw-toolbar {
+  /*.leaflet-draw-toolbar {
     border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  }
+  }*/
 }
 @media (max-height: 550px) {
   .leaflet-control-minimap {

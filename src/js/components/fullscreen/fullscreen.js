@@ -14,7 +14,7 @@ class Fullscreen {
 
     let isChrome =
       /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-    let shadow_style = "0 1px 5px rgb(0 0 0 / 45%)";
+    let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
     let border_style = "none";
     let size = "26px";
     if (!isChrome) {
