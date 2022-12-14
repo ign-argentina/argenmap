@@ -30,7 +30,6 @@ class Fullscreen {
 
     elem.innerHTML = this.component;
     document.querySelector(".leaflet-top.leaflet-left").append(elem);
-    //document.getElementById("mapa").appendChild(elem);
   }
 }
 
@@ -39,7 +38,8 @@ function toggleFullScreen() {
   if (!document.fullscreenElement) {
     icon.classList.remove("fas", "fa-expand");
     icon.classList.add("fas", "fa-compress");
-    document.getElementById("iconFS-container").title = "Salir de pantalla completa";
+    document.getElementById("iconFS-container").title =
+      "Salir de pantalla completa";
     document.documentElement.requestFullscreen();
   } else if (document.exitFullscreen) {
     icon.classList.remove("fas", "fa-compress");

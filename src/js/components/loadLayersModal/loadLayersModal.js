@@ -4,11 +4,10 @@ class LoadLayersModal {
   constructor() {
     this.component = `
         <div id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
-            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="18" height="18">
+            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="17" height="17">
         </div>
     `;
   }
-  //<div id="loadLayersButton" title="Agregar capas">    </div>
   createComponent() {
     const elem = document.createElement("div");
     elem.className = "leaflet-bar leaflet-control";
@@ -16,7 +15,6 @@ class LoadLayersModal {
     elem.title = "Agregar capas";
     elem.innerHTML = this.component;
     document.querySelector(".leaflet-top.leaflet-left").append(elem);
-    //document.getElementById("mapa").appendChild(elem);
   }
 }
 

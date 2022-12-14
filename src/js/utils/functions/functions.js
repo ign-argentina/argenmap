@@ -800,6 +800,16 @@ function setProperStyleToCtrlBtns() {
       )[0];
       btns.push(customGraticuleCtrlBtn);
 
+      const locateCtrlBtn = document.getElementsByClassName(
+        "leaflet-control-locate"
+      )[0];
+      btns.push(locateCtrlBtn);
+
+      const measureCtrlBtn = document.getElementsByClassName(
+        "leaflet-control-measure"
+      )[0];
+      btns.push(measureCtrlBtn);
+
       const modalLoadLayersCtrlBtn =
         document.getElementById("loadLayersButton");
       btns.push(modalLoadLayersCtrlBtn);

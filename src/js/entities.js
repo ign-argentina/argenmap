@@ -437,7 +437,6 @@ class ImpresorCapasBaseHTML extends Impresor {
     if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
       const baseMapsMenu = document.createElement("a");
       baseMapsMenu.classList = "leaflet-control-layers-toggle";
-      //pull-left
       baseMapsMenu.title = itemComposite.nombre;
       baseMapsMenu.setAttribute("role", "button");
       baseMapsMenu.setAttribute("data-toggle", "collapse");
