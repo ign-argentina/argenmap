@@ -550,9 +550,6 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         gestorMenu.loadInitialLayers(urlInteraction);
 
-        const sc = new Screenshot();
-        sc.createComponent();
-
         const fs = new Fullscreen();
         fs.createComponent();
 
