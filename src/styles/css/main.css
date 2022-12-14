@@ -789,7 +789,7 @@ input:checked.switch + label:after {
 /*******************************
 Control mapa base
 *******************************/
-#basemap-selector {
+/*#basemap-selector {
   position: absolute;
   top: 60px;
   right: 10px;
@@ -800,14 +800,13 @@ Control mapa base
   height: 34px;
   line-height: 30px;
   border-radius: 4px;
-  color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
   background-color: white;
   background-image: none;
   text-align: center;
-}
+}*/
 #basemap-selector .leaflet-control-layers-toggle:hover {
   background-color: #f4f4f4;
 }
@@ -833,11 +832,10 @@ Control mapa base
   margin-right: 5px;
 }
 .basemap-selector .leaflet-control-layers-toggle {
-  width: 35px;
+  width: 34px;
   height: 34px;
   /* line-height: 30px; */
   border-radius: 4px;
-  color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
@@ -855,13 +853,13 @@ Control mapa base
 .list-inline li {
   width: 230px;
 }
-@media (max-height: 400px) {
+/*@media (max-height: 400px) {
   .basemap-selector > a {
     width: 30px !important;
     height: 30px !important;
     border-radius: 4px;
   }
-}
+}*/
 /*******************************
 Control graticula
 *******************************/
@@ -953,16 +951,20 @@ SideBar
   .leaflet-control {
     margin-left: 0px !important;
     margin-top: 0px !important;
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    /*border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    border-radius: 4px;*/
   }
-  .basemap-selector > a {
+  /*.basemap-selector > a {
     border: 0px solid rgba(0, 0, 0, 0.2) !important;
     width: 30px !important;
     height: 30px !important;
+  }*/
+  .leaflet-control .basemap-selector{
+    border: none !important; 
   }
-  .leaflet-control-layers-toggle {
+  /*.leaflet-control-layers-toggle {
     border: 1px solid rgba(0, 0, 0, 0.2) !important;
-  }
+  }*/
   .leaflet-draw-toolbar .leaflet-bar {
     bottom: 150px !important;
     position: relative;
