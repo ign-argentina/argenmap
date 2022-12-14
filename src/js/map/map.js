@@ -151,6 +151,15 @@ $("body").on("pluginLoad", function(event, plugin){
 						],	
 						screenName: "mapaIGN" + n,				
 					}).addTo(mapa);
+					document.getElementsByClassName('leaflet-control-simpleMapScreenshoter')[0].id = "screenShoter";
+					let screenShoter = document.getElementById("screenShoter");
+					screenShoter.classList.remove("leaflet-control-simpleMapScreenshoter");
+					screenShoter.children[0].id = "screenShoter-btn";
+
+					let screenShoterBtn = document.getElementById("screenShoter-btn");
+					screenShoterBtn.classList.add("leaflet-control-screenShoter");
+					screenShoterBtn.classList.remove("leaflet-control-simpleMapScreenshoter-btn");
+
 					gestorMenu.plugins['screenShoter'].setStatus('visible');
 					break;
 				case 'ZoomHome':
