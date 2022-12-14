@@ -6,6 +6,7 @@ a.leaflet-control-zoomhome-in,
 a.leaflet-control-zoomhome-out {
   font-size: 1.5em;
   line-height: 26px;
+  color: #000 !important;
 }
 
 @media screen and (-webkit-min-device-pixel-ratio:0) {

@@ -1125,20 +1125,21 @@ Perfil Topografico
   background-color: #ffffff;
 }
 
-
 #screenShoter {
   flex-direction: column;
   color: black;
   font-size: 1.1em;
-  z-index: 999;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  border-radius: 4px;
   background-color: #fff;
-  border-bottom: 1px solid #ccc;
-  width: 26px;
-  height: 26px;
-  line-height: 26px;
-  display: block;
-  text-align: center;
-  text-decoration: none;
+}
+
+@-moz-document url-prefix() {
+  #screenShoter {
+    height: 34px !important;
+    width: 34px !important;
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 4px;
+    border: 2px solid rgba(0, 0, 0, 0.2) !important;
+    box-shadow: none !important;
+  }
 }
