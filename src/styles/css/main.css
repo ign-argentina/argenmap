@@ -930,11 +930,11 @@ SideBar
     width: 32px;
     height: 32px;
   }
-  div .leaflet-control-measure {
+ /* div .leaflet-control-measure {
     left: 34px !important;
     top: 156px !important;
     position: absolute;
-  }
+  }*/
   div .leaflet-control-geo {
     left: 34px !important;
     top: 195px !important;
