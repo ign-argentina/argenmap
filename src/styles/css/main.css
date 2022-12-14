@@ -108,7 +108,6 @@ body {
 @media (min-width: 1367px) {
   .leaflet-control-layers-toggle,
   .leaflet-control-customgraticule,
-  .leaflet-control-screenShoter,
   #modalgeojson {
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   }
@@ -881,30 +880,6 @@ Control graticula
   cursor: pointer;
 }
 /*******************************
-Control graticula
-*******************************/
-.leaflet-control-screenShoter {
-  width: 34px;
-  height: 34px;
-  line-height: 30px;
-  border-radius: 2px;
-  color: black;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  background-color: white;
-  background-image: none;
-  text-align: center;
-  background-image: url(../images/grid.png);
-  background-size: 70% 70%;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-.leaflet-control-screenShoter:hover {
-  background-color: #f4f4f4;
-  cursor: pointer;
-}
-/*******************************
 SideBar
 *******************************/
 @media (max-width: 768px) {
@@ -940,10 +915,6 @@ SideBar
     margin-left: 40px !important;
   }
   .leaflet-control-customgraticule {
-    width: 32px;
-    height: 32px;
-  }
-  .leaflet-control-screenShoter {
     width: 32px;
     height: 32px;
   }

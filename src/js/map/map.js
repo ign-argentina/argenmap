@@ -151,14 +151,18 @@ $("body").on("pluginLoad", function(event, plugin){
 						],	
 						screenName: "mapaIGN" + n,				
 					}).addTo(mapa);
+
 					document.getElementsByClassName('leaflet-control-simpleMapScreenshoter')[0].id = "screenShoter";
 					let screenShoter = document.getElementById("screenShoter");
-					screenShoter.classList.remove("leaflet-control-simpleMapScreenshoter");
+					screenShoter.classList.remove("leaflet-control-simpleMapScreenshoter");		
+					screenShoter.classList.add("leaflet-control-locate");
+					screenShoter.classList.add("leaflet-bar");
+					screenShoter.style = "width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;"
 					screenShoter.children[0].id = "screenShoter-btn";
 
 					let screenShoterBtn = document.getElementById("screenShoter-btn");
-					screenShoterBtn.classList.add("leaflet-control-screenShoter");
 					screenShoterBtn.classList.remove("leaflet-control-simpleMapScreenshoter-btn");
+					screenShoterBtn.innerHTML='<i class="fas fa-camera"></i>'
 
 					gestorMenu.plugins['screenShoter'].setStatus('visible');
 					break;
