@@ -1,9 +1,3 @@
-.center-flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 #fullscreen :hover {
   background-color: #f5f4f4;
 }
@@ -15,7 +9,6 @@
 #iconFS-container {
   height: 100%;
   width: 100%;
-  flex: 3;
   background-color: rgba(255, 255, 255, 1);
   border-radius: 4px;
   font-size: 17px;
