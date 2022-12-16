@@ -805,17 +805,9 @@ function setProperStyleToCtrlBtns() {
       )[0];
       btns.push(locateCtrlBtn);
 
-      const measureCtrlBtn = document.getElementsByClassName(
-        "leaflet-control-measure"
-      )[0];
-      btns.push(measureCtrlBtn);
-
       const modalLoadLayersCtrlBtn =
         document.getElementById("loadLayersButton");
       btns.push(modalLoadLayersCtrlBtn);
-
-      //const screenshotCtrlBtn = document.getElementById("screenshot");
-      //btns.push(screenshotCtrlBtn);
 
       btns.forEach((btn) => {
         btn.style.width = size;

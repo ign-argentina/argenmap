@@ -79,6 +79,11 @@
   left: calc(100% / 5);
 }
 
+#loadLayersButton {
+width: 34px;
+height: 34px;
+}
+
 #loadLayersButton:hover {
   background-color: #f4f4f4;
 }
