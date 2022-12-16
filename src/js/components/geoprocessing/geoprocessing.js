@@ -40,7 +40,7 @@ class Geoprocessing {
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "leaflet-control-locate leaflet-bar leaflet-control";
+    elem.className = "leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
     elem.title = app.geoprocessing.buttonTitle;
     elem.innerHTML = modalicon;

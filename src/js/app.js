@@ -550,11 +550,11 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         gestorMenu.loadInitialLayers(urlInteraction);
 
-        const sc = new Screenshot();
-        sc.createComponent();
+        const sidebarTool = new SidebarTools();
+        sidebarTool.createComponent();
 
-        const fs = new Fullscreen();
-        fs.createComponent();
+        //const sc = new Screenshot();
+        //sc.createComponent();
 
         // const modalgeojson = new IconModalGeojson;
         // modalgeojson.createComponent();
@@ -565,8 +565,8 @@ async function loadTemplate(data, isDefaultTemplate) {
         const loadLayersModal = new LoadLayersModal();
         loadLayersModal.createComponent();
 
-        const sidebarTool = new SidebarTools();
-        sidebarTool.createComponent();
+        const fs = new Fullscreen();
+        fs.createComponent();
 
         setProperStyleToCtrlBtns();
 

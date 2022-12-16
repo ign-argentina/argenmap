@@ -145,9 +145,10 @@
   height: 100%;
   width: 100%;
   flex: 4;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 4px;
   border-color: #cccccc;
+  font-size: 14px;
 }
 .icons-modalfile{
   display: flex;

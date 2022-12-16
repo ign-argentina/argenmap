@@ -103,6 +103,10 @@ body {
   .leaflet-bottom,
   #zoom-level {
     margin-bottom: 51px;
+
+  }
+  #zoom-level {
+    bottom: -20px !important;
   }
 }
 @media (min-width: 1367px) {
@@ -783,25 +787,6 @@ input:checked.switch + label:after {
 /*******************************
 Control mapa base
 *******************************/
-#basemap-selector {
-  position: absolute;
-  top: 60px;
-  right: 10px;
-  z-index: 1000;
-}
-#basemap-selector .leaflet-control-layers-toggle {
-  width: 34px;
-  height: 34px;
-  line-height: 30px;
-  border-radius: 4px;
-  color: black;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-  background-color: white;
-  background-image: none;
-  text-align: center;
-}
 #basemap-selector .leaflet-control-layers-toggle:hover {
   background-color: #f4f4f4;
 }
@@ -827,11 +812,10 @@ Control mapa base
   margin-right: 5px;
 }
 .basemap-selector .leaflet-control-layers-toggle {
-  width: 35px;
+  width: 34px;
   height: 34px;
   /* line-height: 30px; */
   border-radius: 4px;
-  color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
@@ -848,13 +832,6 @@ Control mapa base
 }
 .list-inline li {
   width: 230px;
-}
-@media (max-height: 400px) {
-  .basemap-selector > a {
-    width: 30px !important;
-    height: 30px !important;
-    border-radius: 4px;
-  }
 }
 /*******************************
 Control graticula
@@ -883,6 +860,9 @@ Control graticula
 /*******************************
 SideBar
 *******************************/
+.leaflet-bottom .leaflet-control-scale{
+  margin-left: 10px !important;
+}
 @media (max-width: 768px) {
   .leaflet-control-minimap {
     display: none;
@@ -904,6 +884,9 @@ SideBar
     margin-right: 0px !important;
     margin-top: 0px !important;
   }
+  .leaflet-bottom .leaflet-control-scale{
+    margin-left: 0px !important;
+  }
 }
 @media (max-height: 500px) {
   .leaflet-bottom {
@@ -918,11 +901,6 @@ SideBar
   .leaflet-control-customgraticule {
     width: 32px;
     height: 32px;
-  }
-  div .leaflet-control-measure {
-    left: 34px !important;
-    top: 156px !important;
-    position: absolute;
   }
   div .leaflet-control-geo {
     left: 34px !important;
@@ -940,15 +918,11 @@ SideBar
   .leaflet-control {
     margin-left: 0px !important;
     margin-top: 0px !important;
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    /*border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    border-radius: 4px;*/
   }
-  .basemap-selector > a {
-    border: 0px solid rgba(0, 0, 0, 0.2) !important;
-    width: 30px !important;
-    height: 30px !important;
-  }
-  .leaflet-control-layers-toggle {
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  .leaflet-control .basemap-selector{
+    border: none !important; 
   }
   .leaflet-draw-toolbar .leaflet-bar {
     bottom: 150px !important;
@@ -963,9 +937,6 @@ SideBar
   }
   .leaflet-control-measure-interaction div h3 {
     font-size: 12px !important;
-  }
-  .leaflet-draw-toolbar {
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
   }
 }
 @media (max-height: 550px) {

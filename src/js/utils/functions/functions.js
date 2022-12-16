@@ -776,21 +776,39 @@ function setProperStyleToCtrlBtns() {
   const interval = setInterval(() => {
     if (zoomhomeCtrlBtn.length > 0) {
       window.clearInterval(interval);
-      const width = zoomhomeCtrlBtn[0].offsetWidth;
+      //const width = zoomhomeCtrlBtn[0].offsetWidth;
       const btns = [];
+      btns.push(zoomhomeCtrlBtn[0]);
+
       const layersToggleCtrlBtn = document.getElementsByClassName(
         "leaflet-control-layers-toggle"
       )[0];
       btns.push(layersToggleCtrlBtn);
+      
+      const zoomhomeCtrlBtnIn = document.getElementsByClassName(
+        "leaflet-control-zoomhome-in"
+      )[0];
+      btns.push(zoomhomeCtrlBtnIn);
+
+      const zoomhomeCtrlBtnOut = document.getElementsByClassName(
+        "leaflet-control-zoomhome-out"
+      )[0];
+      btns.push(zoomhomeCtrlBtnOut);
+
       const customGraticuleCtrlBtn = document.getElementsByClassName(
         "leaflet-control-customgraticule"
       )[0];
       btns.push(customGraticuleCtrlBtn);
+
+      const locateCtrlBtn = document.getElementsByClassName(
+        "leaflet-control-locate"
+      )[0];
+      btns.push(locateCtrlBtn);
+
       const modalLoadLayersCtrlBtn =
         document.getElementById("loadLayersButton");
       btns.push(modalLoadLayersCtrlBtn);
-      const screenshotCtrlBtn = document.getElementById("screenshot");
-      btns.push(screenshotCtrlBtn);
+
       btns.forEach((btn) => {
         btn.style.width = size;
         btn.style.height = size;
