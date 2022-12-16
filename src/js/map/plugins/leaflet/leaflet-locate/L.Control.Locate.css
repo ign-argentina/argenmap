@@ -15,7 +15,7 @@ Date: 2015-05-27 */
 
 .leaflet-control-locate a {
   font-size: 1.4em;
-  color: #444;
+  color: #111;
 }
 .leaflet-control-locate.active a {
   color: #2074B6;

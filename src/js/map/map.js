@@ -138,30 +138,42 @@ $("body").on("pluginLoad", function(event, plugin){
 		ordered.forEach(function(e){
 			switch (e) {
 				case 'screenShoter':
-					let d = new Date();
-    				let n = d.getTime();		
-					L.simpleMapScreenshoter({	
-						hideElementsWithSelectors: [
-							".leaflet-control-container",
-							"#sidebar-toolbar-icon-left",
-							"#sidebar-toolbar-icon-right"
-						],	
-						screenName: "mapaIGN" + n,				
-					}).addTo(mapa);
+					if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+						let d = new Date()
+						let n = d.getTime();
+            			L.simpleMapScreenshoter({
+              				hideElementsWithSelectors: [
+               				 ".leaflet-control-container",
+                			"#sidebar-toolbar-icon-left",
+                			"#sidebar-toolbar-icon-right",
+             			 ],
+              			screenName: "mapaIGN" + n,
+           				}).addTo(mapa);
 
-					document.getElementsByClassName('leaflet-control-simpleMapScreenshoter')[0].id = "screenShoter";
-					let screenShoter = document.getElementById("screenShoter");
-					screenShoter.classList.remove("leaflet-control-simpleMapScreenshoter");		
-					screenShoter.classList.add("leaflet-control-locate");
-					screenShoter.classList.add("leaflet-bar");
-					screenShoter.style = "width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;"
-					screenShoter.children[0].id = "screenShoter-btn";
+    			        document.getElementsByClassName(
+    			          "leaflet-control-simpleMapScreenshoter"
+    			        )[0].id = "screenShoter";
+    			        let screenShoter = document.getElementById("screenShoter");
+    			        screenShoter.classList.remove(
+    			          "leaflet-control-simpleMapScreenshoter"
+    			        );
+    			        screenShoter.classList.add("leaflet-control-locate");
+    			        screenShoter.classList.add("leaflet-bar");
+    			        screenShoter.style =
+    			          "width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
+    			        screenShoter.children[0].id = "screenShoter-btn";
+						
+    			        let screenShoterBtn = document.getElementById("screenShoter-btn");
+    			        screenShoterBtn.classList.remove(
+    			          "leaflet-control-simpleMapScreenshoter-btn"
+    			        );
+    			        screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
-					let screenShoterBtn = document.getElementById("screenShoter-btn");
-					screenShoterBtn.classList.remove("leaflet-control-simpleMapScreenshoter-btn");
-					screenShoterBtn.innerHTML='<i class="fas fa-camera"></i>'
-
-					gestorMenu.plugins['screenShoter'].setStatus('visible');
+    			        gestorMenu.plugins["screenShoter"].setStatus("visible");
+    			        function myFunc() {
+    			          console.log("this should be run only on firefox browser");
+    			        }
+    			    }
 					break;
 				case 'ZoomHome':
 					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome

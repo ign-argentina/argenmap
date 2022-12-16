@@ -553,6 +553,9 @@ async function loadTemplate(data, isDefaultTemplate) {
         const fs = new Fullscreen();
         fs.createComponent();
 
+        const pdfP = new PdfPrinter();
+        pdfP.createComponent();
+
         // const modalgeojson = new IconModalGeojson;
         // modalgeojson.createComponent();
 
