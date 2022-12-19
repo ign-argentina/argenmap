@@ -142,13 +142,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						let d = new Date()
 						let n = d.getTime();
             			L.simpleMapScreenshoter({
-              				hideElementsWithSelectors: [
-               				 ".leaflet-control-container",
-                			"#sidebar-toolbar-icon-left",
-                			"#sidebar-toolbar-icon-right",
-             			 ],
-              			screenName: "mapaIGN" + n,
-           				}).addTo(mapa);
+                    hideElementsWithSelectors: [
+                      ".leaflet-top.leaflet-left",
+                      ".leaflet-top.leaflet-right",
+                      ".leaflet-bottom.leaflet-right",
+                      "#zoom-level",
+                      "#sidebar-toolbar-icon-left",
+                      "#sidebar-toolbar-icon-right",
+                    ],
+                    screenName: "mapaIGN" + n,
+                  }).addTo(mapa);
 
     			        document.getElementsByClassName(
     			          "leaflet-control-simpleMapScreenshoter"
@@ -170,9 +173,6 @@ $("body").on("pluginLoad", function(event, plugin){
     			        screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
     			        gestorMenu.plugins["screenShoter"].setStatus("visible");
-    			        function myFunc() {
-    			          console.log("this should be run only on firefox browser");
-    			        }
     			    }
 					break;
 				case 'ZoomHome':
