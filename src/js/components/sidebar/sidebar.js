@@ -10,6 +10,9 @@ let drawb = null;
 let divbar = null;
 let icongeop = null;
 let fullscreen = null;
+let pdfPrinter = null;
+let screenShoter = null;
+
 class SidebarTools {
   constructor() {
     locate = document.getElementsByClassName(
@@ -32,6 +35,8 @@ class SidebarTools {
     
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
 
+    pdfPrinter = document.getElementById("pdfPrinter");
+
     fullscreen = document.getElementById("fullscreen");
 
     this.component = `
@@ -51,8 +56,12 @@ class SidebarTools {
 
     document.getElementById("mapa").appendChild(elem);
     document.getElementById("mapa").appendChild(elemright);
+    
 
     $("#sidebar-toolbar-icon-left").click(function () {
+
+      screenShoter = document.getElementById("screenShoter");
+
       if (areHiddenLeft) {
        
         if (window.matchMedia("(max-width: 400px)").matches) {
@@ -67,7 +76,8 @@ class SidebarTools {
         measure[0].hidden = false;
         loadLayersButton.style.display = "";
         divbar[2].hidden = false;
-        document.getElementById("screenShoter").style.display = "";
+        if (screenShoter !== null) screenShoter.style.display = "";
+        pdfPrinter.style.display = "";
         $("#geoprocesos-icon").show();
         fullscreen.style.display = "";
       } else {
@@ -79,7 +89,8 @@ class SidebarTools {
         measure[0].hidden = true;
         loadLayersButton.style.display = "none";
         divbar[2].hidden = true;
-        document.getElementById("screenShoter").style.display = "none";
+        if (screenShoter !== null) screenShoter.style.display = "none";
+        pdfPrinter.style.display = "none";
         $("#geoprocesos-icon").hide();
         fullscreen.style.display = "none";
       }
