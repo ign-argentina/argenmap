@@ -191,6 +191,7 @@ class Geoprocessing {
           file_name: layername,
           rectangle: selectedRectangle,
           kb: null,
+          isActive: true,
         });
 
         // ** Avoiding Leaflet Draw object test **
@@ -277,6 +278,7 @@ class Geoprocessing {
           name: layername,
           file_name: title,
           rectangle: selectedRectangle,
+          isActive: true,
           download: download
         });
         
@@ -296,6 +298,7 @@ class Geoprocessing {
           name: layername,
           file_name: layername,
           kb: null,
+          isActive: true,
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
         break;

@@ -180,6 +180,13 @@ function hideAddedLayers() {
 
 function showTotalNumberofLayers() {
   let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
+
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive && lyr.isActive == true) {
+      activeLayers++;
+    }
+  });
+  console.log(activeLayers)
   if (activeLayers > 0) {
     $("#cleanTrash").html(
       "<div class='glyphicon glyphicon-th-list'></div>" +
@@ -843,13 +850,23 @@ let normalize = (function () {
 function clickGeometryLayer(layer) {
   let aux = document.getElementById("flc-" + layer);
 
-  if (aux.className === "file-layer active") {
-    aux.className = "file-layer";
-    mapa.hideGroupLayer(layer);
-  } else {
-    aux.className = "file-layer active";
-    mapa.showGroupLayer(layer);
-  }
+  addedLayers.forEach(lyr => {
+    if (lyr.id === layer) {
+      if (aux.className === "file-layer active") {
+        aux.className = "file-layer";
+        mapa.hideGroupLayer(layer);
+        lyr.isActive = false
+      } else {
+        aux.className = "file-layer active";
+        mapa.showGroupLayer(layer);
+        lyr.isActive = true
+      }
+    }
+  });
+
+  showTotalNumberofLayers();
+
+
 }
 
 function checkIfGeoprocessingIsOpen() {

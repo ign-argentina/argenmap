@@ -3485,9 +3485,9 @@ class Menu_UI {
     let layer_item = document.createElement("div");
     layer_item.id = "flc-" + id;
     if (isActive) {
-      layer_item.className = "file-layer active"
+      layer_item.className = "file-layer active";
     }else if (!isActive) {
-        layer_item.className = "file-layer"
+        layer_item.className = "file-layer";
     }
 
     let img_icon = document.createElement("div");

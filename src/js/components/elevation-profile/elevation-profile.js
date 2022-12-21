@@ -113,6 +113,7 @@ class IElevationProfile {
                 file_name: layername,
                 layer: result,
                 data: dataForDisplay,
+                isActive: true,
                 polyline: selectedPolyline,
               });
 

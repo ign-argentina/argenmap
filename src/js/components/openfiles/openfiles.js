@@ -465,15 +465,13 @@ function addLayersfromFiles() {
       name: e.name,
       file_name: e.file_name,
       file: true,
-      kb: e.kb
+      kb: e.kb,
+      isActive: true,
     });
   });
-
-  // let close = document.getElementById("modalOpenFile")
-  // document.getElementById("modalgeojson").style.color = "black";
-  // document.body.removeChild(close);
   currentLayers = [];
-  // open = false;
+  showTotalNumberofLayers();
+
 }
 
 function delFileItembyID(id) {
