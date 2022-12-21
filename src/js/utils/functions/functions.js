@@ -173,9 +173,14 @@ function hideAddedLayers() {
       if (aux.className === "file-layer active") {
         aux.className = "file-layer";
         mapa.hideGroupLayer(layer.id);
+        gestorMenu.cleanAllLayers()
+      }
+      if (layer.isActive) {
+        layer.isActive = false
       }
     }
   });
+  showTotalNumberofLayers();
 }
 
 function showTotalNumberofLayers() {
@@ -863,10 +868,7 @@ function clickGeometryLayer(layer) {
       }
     }
   });
-
   showTotalNumberofLayers();
-
-
 }
 
 function checkIfGeoprocessingIsOpen() {
