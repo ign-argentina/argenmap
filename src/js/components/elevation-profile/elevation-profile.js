@@ -115,8 +115,9 @@ class IElevationProfile {
                 data: dataForDisplay,
                 isActive: true,
                 polyline: selectedPolyline,
-              });
-
+            });
+            showTotalNumberofLayers();
+            
             this._displayResult(dataForDisplay, selectedPolyline);
             geoProcessingManager.loadingBtn("off")
 
@@ -165,6 +166,7 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
+        showTotalNumberofLayers();
 
     }
 
@@ -218,6 +220,8 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
+        showTotalNumberofLayers();
+
     }
 
 
