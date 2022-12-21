@@ -1337,3 +1337,12 @@ function downloadBlob(blob, name = "file.txt") {
   // Remove link from body
   document.body.removeChild(link);
 }
+
+function changeIsActive(id, isActive) {
+  addedLayers.forEach(lyr => {
+      if (lyr.id == id && lyr.isActive) {
+          if (isActive == true) lyr.isActive = false;
+          if (isActive == false) lyr.isActive = true;
+      }
+  });
+}

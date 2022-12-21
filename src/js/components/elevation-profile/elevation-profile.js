@@ -149,6 +149,7 @@ class IElevationProfile {
                     aux.classList.remove("active")
                     selectedLayer.remove();
                     ptInner.classList.toggle("hidden");
+                    changeIsActive(layer.id, true);
                 }
 
             }
@@ -179,26 +180,34 @@ class IElevationProfile {
             }
         });
 
-        if (aux.classList.contains("active")) {
-            if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
-                wrapper.classList.toggle("hidden");
+
+        addedLayers.forEach(lyr => {
+            if (lyr.id == id) {
+                if (aux.classList.contains("active")) {
+                    if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
+                        wrapper.classList.toggle("hidden");
+                    }
+                    else {
+                        aux.classList.remove("active")
+                        selectedLayer.remove();
+                        ptInner.classList.toggle("hidden");
+                    }
+                    lyr.isActive = false
+                }
+                else if (!aux.classList.contains("active")) {
+                    if (wrapper.classList.contains("hidden")) { //if wrapper is  hidden & all layers are deactivated
+                        wrapper.classList.toggle("hidden");
+                    }
+                    aux.classList.add("active");
+                    selectedLayer.addTo(mapa);
+                    ptInner.classList.toggle("hidden");
+                    lyr.isActive = true
+
+                }
+                
             }
-            else {
-                aux.classList.remove("active")
-                selectedLayer.remove();
-                ptInner.classList.toggle("hidden");
-            }
-       
-        }
-        else if (!aux.classList.contains("active")) {
-            if (wrapper.classList.contains("hidden")) { //if wrapper is  hidden & all layers are deactivated
-                wrapper.classList.toggle("hidden");
-            }
-            aux.classList.add("active");
-            selectedLayer.addTo(mapa);
-            ptInner.classList.toggle("hidden");
-        }
-        
+        });
+      
         //Is wrapper empty?
         let count = 0; 
         addedLayers.forEach(layer => {
