@@ -27,6 +27,7 @@
 
 .redIcon {
     color: rgba(255, 0, 0, 0.637);
+    margin-top: 4.5px;
 }
 
 .leaflet-editable-label-interior {
@@ -50,4 +51,20 @@
 
 .leaflet-editable-label-interior:hover {
   background-color: #f4f4f4;
+}
+
+.map-label{
+  min-width: 150px !important;
+  background: transparent;
+  font-weight: bold;
+  color: #333;
+  font-family: inherit;
+  font-size: medium;
+  text-align: center;
+  border: none;
+}
+
+.leaflet-div-icon{
+  background-color: rgba(255, 255, 255, 0.7);
+  border: nones;
 }

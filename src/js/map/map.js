@@ -294,7 +294,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						circlemarker: [],
 						rectangle: [],
 						polygon: [],
-						polyline: []
+						polyline: [],
+						tag: []
 					};
 					
 					mapa.groupLayers = {};
@@ -311,7 +312,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							circlemarker: {metric: true},
 					        polyline: {metric: true},
 					        circle:{metric: true},
-					        rectangle: {metric: true}
+					        rectangle: {metric: true},
+							tag: {metric:true}
 						},
 						position: 'topright'
 					});
@@ -329,6 +331,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.draw.toolbar.buttons.rectangle = 'Dibujar un rectángulo';
 					L.drawLocal.draw.toolbar.buttons.circle = 'Dibujar un círculo';
 					L.drawLocal.draw.toolbar.buttons.marker = 'Dibujar un marcador';
+					L.drawLocal.draw.toolbar.buttons.tag = 'añade texto';
 					L.drawLocal.draw.toolbar.buttons.circlemarker = 'Dibujar un marcador circular';
 					L.drawLocal.draw.handlers.circle.tooltip.start = 'Click y arrastra para dibujar un círculo';
 					L.drawLocal.draw.handlers.circle.radius = 'Radio';
@@ -1977,6 +1980,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							options = { ...geoJSON.properties.styles };
 						}
 
+						let divIcon = {};
+						if (geoJSON.properties.hasOwnProperty('Text')) {
+							divIcon = { ...geoJSON.properties.Text };
+						}
+
 						switch (type) {
 							case 'point': {
 								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
@@ -1997,6 +2005,11 @@ $("body").on("pluginLoad", function(event, plugin){
 										case 'marker': {
 											layer = L.marker(invertedCoords);
 											type = 'marker';
+										};
+										break;
+										case 'tag': {
+											layer = L.marker(invertedCoords, { icon: L.divIcon(divIcon) });
+											type = 'tag';
 										};
 										break;
 										default: {
