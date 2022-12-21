@@ -3612,6 +3612,7 @@ class Menu_UI {
     layer_item.append(options);
     layer_container.append(layer_item);
     content.appendChild(layer_container);
+    showTotalNumberofLayers();
   }
 
   addLayerOptions(layer) {

@@ -186,7 +186,7 @@ function showTotalNumberofLayers() {
       activeLayers++;
     }
   });
-  console.log(activeLayers)
+
   if (activeLayers > 0) {
     $("#cleanTrash").html(
       "<div class='glyphicon glyphicon-th-list'></div>" +
