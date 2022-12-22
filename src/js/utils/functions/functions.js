@@ -213,14 +213,14 @@ function recoverSections() {
       layer.id.includes(geoprocessessRecover.namePrefixContour) ||
       layer.id.includes(geoprocessessRecover.namePrefixBuffer)
     ) {
-      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, true);
+      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.id, layer.id, layer.id, true);
     } else if (layer.id.includes(geoprocessessRecover.namePrefixHeight)) {
-      menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, true);
+      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.file_name, layer.id, layer.id, true);
     } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
       let layername = layer.id
-      elevProfileRecover.addGeoprocessLayer("Geoprocesos", layername, layername, layername, true);
+      elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
     } else if (layer.type == "file") {
-      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, true);
+      menu_ui.addFileLayer("Archivos", "file", layer.id, layer.id, layer.id, true);
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
         layer.groupname,
@@ -1250,4 +1250,14 @@ function changeIsActive(id, isActive) {
           if (isActive == false) lyr.isActive = true;
       }
   });
+}
+
+function addCounterForSection(groupnamev, layerType) {
+  let counter = 0;
+  addedLayers.forEach(lyr => {
+    if (lyr.type && lyr.type == layerType) {
+      counter++;
+    }
+  });
+  $("#" + groupnamev + "-a").html(groupnamev +" <span class='active-layers-counter'>" + counter +"</span>");
 }

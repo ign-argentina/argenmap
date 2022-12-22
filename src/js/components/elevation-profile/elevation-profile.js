@@ -106,7 +106,6 @@ class IElevationProfile {
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
 
-            this.addGeoprocessLayer("Geoprocesos", layername, layername, layername, true);
             addedLayers.push({
                 id: layername,
                 name: layername,
@@ -117,6 +116,7 @@ class IElevationProfile {
                 polyline: selectedPolyline,
                 type: "geoprocess"
             });
+            this.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
             showTotalNumberofLayers();
             
             this._displayResult(dataForDisplay, selectedPolyline);
@@ -519,7 +519,7 @@ class IElevationProfile {
 
     }
 
-    addGeoprocessLayer(groupname, textName, id, fileName, isActive){
+    addGeoprocessLayer(groupname, layerType, textName, id, fileName, isActive){
         let groupnamev= clearSpecialChars(groupname);
         let main = document.getElementById("lista-"+groupnamev)
 
@@ -614,6 +614,7 @@ class IElevationProfile {
             layer_item.append(options)
             layer_container.append(layer_item)
             content.appendChild(layer_container)
+            addCounterForSection(groupnamev, layerType);
     }
 
     

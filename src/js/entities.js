@@ -3461,7 +3461,7 @@ class Menu_UI {
     return layerOption;
   }
 
-  addFileLayer(groupname, textName, id, fileName, isActive) {
+  addFileLayer(groupname, layerType, textName, id, fileName, isActive) {
     let groupnamev = clearSpecialChars(groupname);
     let main = document.getElementById("lista-" + groupnamev);
 
@@ -3613,6 +3613,7 @@ class Menu_UI {
     layer_container.append(layer_item);
     content.appendChild(layer_container);
     showTotalNumberofLayers();
+    addCounterForSection(groupnamev, layerType);
   }
 
   addLayerOptions(layer) {
