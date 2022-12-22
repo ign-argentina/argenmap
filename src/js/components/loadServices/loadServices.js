@@ -359,6 +359,8 @@ function handleAllLayersCheck(e) {
 					layer: servicesLoaded[layersIndex[layer_name]].layers[layer_name],
 					name: layer_name,
 					file_name: layer_name,
+					isActive: true,
+					type: "other",
 					groupname: servicesLoaded[layersIndex[layer_name]].title
 				});
 				menu_ui.addLayerToGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name])
@@ -396,6 +398,8 @@ function handleLayerCheck(e) {
 			layer: servicesLoaded[layersIndex[e.target.value]].layers[e.target.value],
 			name: e.target.value,
 			file_name: e.target.value,
+			isActive: true,
+			type: "other",
 			groupname: servicesLoaded[layersIndex[e.target.value]].title
 		});
 		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);

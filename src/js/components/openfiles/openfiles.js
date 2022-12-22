@@ -471,7 +471,7 @@ function addLayersfromFiles() {
   });
   currentLayers = [];
   showTotalNumberofLayers();
-
+  showNumberofLayers("Archivos", "file");
 }
 
 function delFileItembyID(id) {

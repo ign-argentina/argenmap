@@ -852,7 +852,7 @@ let normalize = (function () {
   };
 })();
 
-function clickGeometryLayer(layer) {
+function clickGeometryLayer(layer, groupnamev, layerType) {
   let aux = document.getElementById("flc-" + layer);
 
   addedLayers.forEach(lyr => {
@@ -860,14 +860,15 @@ function clickGeometryLayer(layer) {
       if (aux.className === "file-layer active") {
         aux.className = "file-layer";
         mapa.hideGroupLayer(layer);
-        lyr.isActive = false
+        lyr.isActive = false;
       } else {
         aux.className = "file-layer active";
         mapa.showGroupLayer(layer);
-        lyr.isActive = true
+        lyr.isActive = true;
       }
     }
   });
+  showNumberofLayers(groupnamev, layerType);
   showTotalNumberofLayers();
 }
 
@@ -1260,4 +1261,21 @@ function addCounterForSection(groupnamev, layerType) {
     }
   });
   $("#" + groupnamev + "-a").html(groupnamev +" <span class='active-layers-counter'>" + counter +"</span>");
+}
+
+function showNumberofLayers(groupnamev, layerType) {
+  let activeLayers = 0;
+  let section = document.getElementById(groupnamev+"-a");
+
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive === true && lyr.type == layerType) {
+      activeLayers++;
+    }
+  });
+  
+  if (activeLayers > 0) {
+    section.innerHTML = groupnamev+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
+  } else {
+    section.innerHTML = groupnamev;
+  }
 }
