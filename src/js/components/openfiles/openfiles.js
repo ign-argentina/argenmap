@@ -467,6 +467,7 @@ function addLayersfromFiles() {
       file: true,
       kb: e.kb,
       isActive: true,
+      type: "file"
     });
   });
   currentLayers = [];

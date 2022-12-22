@@ -115,6 +115,7 @@ class IElevationProfile {
                 data: dataForDisplay,
                 isActive: true,
                 polyline: selectedPolyline,
+                type: "geoprocess"
             });
             showTotalNumberofLayers();
             

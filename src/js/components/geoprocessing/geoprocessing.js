@@ -190,7 +190,7 @@ class Geoprocessing {
           name: layername,
           file_name: layername,
           rectangle: selectedRectangle,
-          kb: null,
+          type: "geoprocess",
           isActive: true,
         });
 
@@ -279,7 +279,8 @@ class Geoprocessing {
           file_name: title,
           rectangle: selectedRectangle,
           isActive: true,
-          download: download
+          download: download,
+          type: "geoprocess"
         });
         
         menu_ui.addFileLayer("Geoprocesos", title, layername, layername, true);
@@ -297,7 +298,7 @@ class Geoprocessing {
           layer: result,
           name: layername,
           file_name: layername,
-          kb: null,
+          type: "geoprocess",
           isActive: true,
         });
         menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
