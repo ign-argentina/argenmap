@@ -208,6 +208,7 @@ class Geoprocessing {
         // **
 
         menu_ui.addFileLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
+        showNumberofLayers("Geoprocesos", "geoprocess");
         break;
       }
       case "waterRise": {
@@ -284,6 +285,7 @@ class Geoprocessing {
         });
         
         menu_ui.addFileLayer("Geoprocesos", "geoprocess",title, layername, layername, true);
+        showNumberofLayers("Geoprocesos", "geoprocess");
         break;
       }
       case "buffer": {
@@ -302,6 +304,7 @@ class Geoprocessing {
           isActive: true,
         });
         menu_ui.addFileLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
+        showNumberofLayers("Geoprocesos", "geoprocess");
         break;
       }
     }

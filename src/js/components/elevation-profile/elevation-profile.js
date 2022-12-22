@@ -118,6 +118,7 @@ class IElevationProfile {
             });
             this.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
             showTotalNumberofLayers();
+            showNumberofLayers("Geoprocesos", "geoprocess");
             
             this._displayResult(dataForDisplay, selectedPolyline);
             geoProcessingManager.loadingBtn("off")
@@ -221,6 +222,7 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
+        showNumberofLayers("Geoprocesos", "geoprocess");
         showTotalNumberofLayers();
 
     }
