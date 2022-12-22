@@ -464,7 +464,6 @@ function addLayersfromFiles() {
       layer: e.layer,
       name: e.name,
       file_name: e.file_name,
-      file: true,
       kb: e.kb,
       isActive: true,
       type: "file"

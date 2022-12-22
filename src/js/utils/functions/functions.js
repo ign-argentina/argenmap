@@ -219,7 +219,7 @@ function recoverSections() {
     } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
       let layername = layer.id
       elevProfileRecover.addGeoprocessLayer("Geoprocesos", layername, layername, layername, true);
-    } else if (layer.file == true) {
+    } else if (layer.type == "file") {
       menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, true);
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
