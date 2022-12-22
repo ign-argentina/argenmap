@@ -122,8 +122,8 @@ function showImageOnError(image) {
 }
 
 function mainMenuSearch(e) {
-  hideAllElevationProfile();
-  hideAddedLayers();
+  //hideAllElevationProfile();
+  //hideAddedLayers();
   e.preventDefault();
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
@@ -213,14 +213,14 @@ function recoverSections() {
       layer.id.includes(geoprocessessRecover.namePrefixContour) ||
       layer.id.includes(geoprocessessRecover.namePrefixBuffer)
     ) {
-      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, false);
+      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, true);
     } else if (layer.id.includes(geoprocessessRecover.namePrefixHeight)) {
-      menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, false);
+      menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, true);
     } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
       let layername = layer.id
-      elevProfileRecover.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);
+      elevProfileRecover.addGeoprocessLayer("Geoprocesos", layername, layername, layername, true);
     } else if (layer.file == true) {
-      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, false);
+      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, true);
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
         layer.groupname,
