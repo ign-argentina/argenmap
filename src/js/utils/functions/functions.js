@@ -1279,3 +1279,13 @@ function showNumberofLayers(groupnamev, layerType) {
     section.innerHTML = groupnamev;
   }
 }
+
+function hideAddedLayersCounter() {
+  fileLayerGroup.forEach(lyr => {
+    let section = document.getElementById(lyr+"-a");
+    
+    if (section) {
+      section.innerHTML = lyr;
+    }
+  })
+}

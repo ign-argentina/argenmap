@@ -2351,6 +2351,7 @@ class GestorMenu {
     });
     this.toggleLayers(layers);
     hideAddedLayers();
+    hideAddedLayersCounter();
   }
 
   toggleLayers(layers) {
@@ -3463,6 +3464,9 @@ class Menu_UI {
 
   addFileLayer(groupname, layerType, textName, id, fileName, isActive) {
     let groupnamev = clearSpecialChars(groupname);
+    if (!fileLayerGroup.includes(groupnamev)) {
+      fileLayerGroup.push(groupnamev);
+    }
     let main = document.getElementById("lista-" + groupnamev);
 
     let div = ` 

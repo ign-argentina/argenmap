@@ -1,6 +1,7 @@
 let upload_files = null;
 let currentLayers = [];
 let addedLayers = [];
+let fileLayerGroup = [];
 let open = false;
 let control_btn_add_layer = false;
 
