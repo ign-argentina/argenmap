@@ -1,8 +1,8 @@
-.textbox > div,
+/*.textbox > div,
 .textbox .leaflet-popup-tip-container .leaflet-popup-tip {
   background: transparent !important;
   box-shadow: none;
-  /* -webkit-user-drag: element; */
+  /* -webkit-user-drag: element; 
 }
 
 .textbox {
@@ -23,12 +23,7 @@
 
 .textbox:hover {
   cursor: text;
-}
-
-.redIcon {
-    color: rgba(255, 0, 0, 0.637);
-    margin-top: 4.5px;
-}
+}*/
 
 .leaflet-editable-label-interior {
   /* background-image: url(favicon.ico); */
@@ -53,7 +48,12 @@
   background-color: #f4f4f4;
 }
 
-.map-label{
+.redIcon {
+  color: rgba(255, 0, 0, 0.637);
+  margin-top: 4.5px;
+}
+
+.map-label {
   min-width: 150px !important;
   background: transparent;
   font-weight: bold;
@@ -64,7 +64,6 @@
   border: none;
 }
 
-.leaflet-div-icon{
+.leaflet-div-icon {
   background-color: rgba(255, 255, 255, 0.7);
-  border: nones;
 }

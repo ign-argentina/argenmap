@@ -84,7 +84,7 @@ class EditableLabel {
       properties: {
         Text: {
           iconSize: null,
-          html: `<input id="tag" placeholder="Escribe algo aquí.." class="map-label" onkeypress="this.style.width = ((this.value.length + 1) * 8) + 'px';"></input>`,
+          html: `<input id="tag" autocomplete="off" placeholder="Escribe algo aquí.." class="map-label" onkeypress="this.style.width = ((this.value.length + 1) * 8) + 'px';"></input>`,
         },
         type: "tag",
       },
