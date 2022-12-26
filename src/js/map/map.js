@@ -2197,7 +2197,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						//Left-click
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'tag') {
 							mapa.addSelectionLayersMenuToLayer(layer, file);
 						}
 						//Right-click

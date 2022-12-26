@@ -91,6 +91,7 @@ class EditableLabel {
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
     mapa.addGeoJsonLayerToDrawedLayers(geojsonDivIcon, "geojsonDivIcon", true);
+    this.deactivate();
 
     /*const textMarker = new L.Marker([lat, lng], { icon: icon });
     this._map.editableLayers.marker.push(textMarker);
