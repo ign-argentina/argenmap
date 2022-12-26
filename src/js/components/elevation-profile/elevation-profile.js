@@ -253,6 +253,7 @@ class IElevationProfile {
                 
             btncloseWrapper.onclick = () => {
                 this.hideElevationProfile();
+                showNumberofLayers("Geoprocesos", "geoprocess");
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);
@@ -523,8 +524,10 @@ class IElevationProfile {
 
     addGeoprocessLayer(groupname, layerType, textName, id, fileName, isActive){
         let groupnamev= clearSpecialChars(groupname);
-        let main = document.getElementById("lista-"+groupnamev)
-
+        let main = document.getElementById("lista-"+groupnamev)  
+        if (!fileLayerGroup.includes(groupnamev)) {
+            fileLayerGroup.push(groupnamev);
+        }
         let id_options_container = "opt-c-"+id
         if(!main){menu_ui.addSection(groupnamev)}
         let content = document.getElementById(groupnamev+"-panel-body")
