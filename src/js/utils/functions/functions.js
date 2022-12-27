@@ -1272,11 +1272,12 @@ function showNumberofLayers(groupnamev, layerType) {
       activeLayers++;
     }
   });
-  
-  if (activeLayers > 0) {
-    section.innerHTML = groupnamev+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
-  } else {
-    section.innerHTML = groupnamev;
+  if (section) {
+    if (activeLayers > 0) {
+      section.innerHTML = groupnamev+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
+    } else {
+      section.innerHTML = groupnamev;
+    }
   }
 }
 

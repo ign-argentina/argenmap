@@ -581,7 +581,7 @@ class IElevationProfile {
             delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
             delete_opt.onclick = () => {
                 let menu = new Menu_UI
-                menu.modalEliminar(id)
+                menu.modalEliminar(id, groupnamev, layerType)
             }
 
             let download_opt = document.createElement("li")

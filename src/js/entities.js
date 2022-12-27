@@ -3534,7 +3534,7 @@ class Menu_UI {
     delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`;
     delete_opt.onclick = function () {
       let menu = new Menu_UI();
-      menu.modalEliminar(id);
+      menu.modalEliminar(id, groupnamev, layerType);
       //deleteLayerGeometry(layer)
     };
 
@@ -3825,7 +3825,7 @@ class Menu_UI {
     return li;
   }
 
-  modalEliminar(id) {
+  modalEliminar(id, groupnamev, layerType) {
     let index_file = getIndexFileLayerbyID(id);
     let textname = addedLayers[index_file].name;
     let fileName = addedLayers[index_file].file_name;
@@ -3870,6 +3870,8 @@ class Menu_UI {
         let perfilDelete = new IElevationProfile();
         perfilDelete.removeElevationProfile(id);
       }
+      showNumberofLayers(groupnamev, layerType);
+      showTotalNumberofLayers();
     };
 
     let btn_no = document.createElement("button");
