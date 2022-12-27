@@ -3864,11 +3864,13 @@ class Menu_UI {
       delFileItembyID(id);
       deleteLayerGeometry(id, true);
       $("#modal_layer_del").remove();
-
+      
       //ElevationProfile
-      if (id.includes("elevation_profile")) {
+      if (IElevationProfile) {
         let perfilDelete = new IElevationProfile();
-        perfilDelete.removeElevationProfile(id);
+        if (id.includes(perfilDelete.namePrefixElevProfile)) {
+          perfilDelete.removeElevationProfile(id);
+        }
       }
       showNumberofLayers(groupnamev, layerType);
       showTotalNumberofLayers();
