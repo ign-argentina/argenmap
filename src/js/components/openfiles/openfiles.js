@@ -453,7 +453,8 @@ class UImf {
 let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
-
+  let sectionName = "Archivos",
+      typeName = "file";
   currentLayers.forEach((e) => {
     // Draw the layer in the map
     mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
@@ -466,13 +467,14 @@ function addLayersfromFiles() {
       file_name: e.file_name,
       kb: e.kb,
       isActive: true,
-      type: "file"
+      type: typeName,
+      section: sectionName
     });
-    menu_ui.addFileLayer("Archivos", "file", e.name, e.id, e.file_name, true);
+    menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
+    showNumberofLayers(e.id);
   });
   currentLayers = [];
   showTotalNumberofLayers();
-  showNumberofLayers("Archivos", "file");
 }
 
 function delFileItembyID(id) {

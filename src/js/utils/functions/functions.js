@@ -852,7 +852,7 @@ let normalize = (function () {
   };
 })();
 
-function clickGeometryLayer(layer, groupnamev, layerType) {
+function clickGeometryLayer(layer) {
   let aux = document.getElementById("flc-" + layer);
 
   addedLayers.forEach(lyr => {
@@ -868,7 +868,7 @@ function clickGeometryLayer(layer, groupnamev, layerType) {
       }
     }
   });
-  showNumberofLayers(groupnamev, layerType);
+  showNumberofLayers(layer);
   showTotalNumberofLayers();
 }
 
@@ -1263,30 +1263,39 @@ function addCounterForSection(groupnamev, layerType) {
   $("#" + groupnamev + "-a").html(groupnamev +" <span class='active-layers-counter'>" + counter +"</span>");
 }
 
-function showNumberofLayers(groupnamev, layerType) {
+function showNumberofLayers(layerId) {
   let activeLayers = 0;
-  let section = document.getElementById(groupnamev+"-a");
+  let element,section,layerType;
+
+  addedLayers.forEach(lyr => {
+    if (lyr.id == layerId) {
+      section = lyr.section;
+      layerType = lyr.type;
+      element = document.getElementById(section + "-a");
+    }
+  });
 
   addedLayers.forEach(lyr => {
     if (lyr.isActive === true && lyr.type == layerType) {
       activeLayers++;
     }
   });
-  if (section) {
+
+  if (element) {
     if (activeLayers > 0) {
-      section.innerHTML = groupnamev+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
+      element.innerHTML = section+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
     } else {
-      section.innerHTML = groupnamev;
+      element.innerHTML = section;
     }
   }
 }
 
 function hideAddedLayersCounter() {
   fileLayerGroup.forEach(lyr => {
-    let section = document.getElementById(lyr+"-a");
+    let element = document.getElementById(lyr+"-a");
     
-    if (section) {
-      section.innerHTML = lyr;
+    if (element) {
+      element.innerHTML = lyr;
     }
   })
 }

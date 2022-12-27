@@ -104,7 +104,9 @@ class IElevationProfile {
             let layername = this.namePrefixElevProfile + counterElevProfile;
             counterElevProfile++;
             let dataForDisplay = this.data;
-            let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
+            let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername,
+                layerType = "geoprocess",
+                sectionName = "Geoprocesos"
 
             addedLayers.push({
                 id: layername,
@@ -114,11 +116,12 @@ class IElevationProfile {
                 data: dataForDisplay,
                 isActive: true,
                 polyline: selectedPolyline,
-                type: "geoprocess"
+                type: layerType,
+                section: sectionName
             });
-            this.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
+            this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
             showTotalNumberofLayers();
-            showNumberofLayers("Geoprocesos", "geoprocess");
+            showNumberofLayers(layername);
             
             this._displayResult(dataForDisplay, selectedPolyline);
             geoProcessingManager.loadingBtn("off")
@@ -222,7 +225,7 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
-        showNumberofLayers("Geoprocesos", "geoprocess");
+        showNumberofLayers(id);
         showTotalNumberofLayers();
 
     }
@@ -253,7 +256,7 @@ class IElevationProfile {
                 
             btncloseWrapper.onclick = () => {
                 this.hideElevationProfile();
-                showNumberofLayers("Geoprocesos", "geoprocess");
+                showNumberofLayers(document.getElementById("elevationProfile").children[1].id);
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);
