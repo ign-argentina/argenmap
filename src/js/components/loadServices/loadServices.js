@@ -360,7 +360,6 @@ function handleAllLayersCheck(e) {
 					name: layer_name,
 					file_name: layer_name,
 					isActive: false,
-					layerActive: servicesLoaded[layersIndex[layer_name]].layers[layer_name],
 					type: "WMS",
 					section: servicesLoaded[layersIndex[layer_name]].title
 				});
@@ -402,7 +401,6 @@ function handleLayerCheck(e) {
 			name: e.target.value,
 			file_name: e.target.value,
 			isActive: false,
-			layerActive: servicesLoaded[layersIndex[e.target.value]].layers[e.target.value],
 			type: "WMS",
 			section: servicesLoaded[layersIndex[e.target.value]].title
 		});

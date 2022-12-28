@@ -175,7 +175,7 @@ function hideAddedLayers() {
           aux.className = "file-layer";
           mapa.hideGroupLayer(layer.id);
           gestorMenu.cleanAllLayers();
-          layer.layerActive.active = false;
+          layer.layer.active = false;
           mapa.removeLayer(layer.layer.L_layer);
           showNumberofWMSLayers(layer.file_name);
         }
@@ -237,6 +237,13 @@ function recoverSections() {
       elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
     } else if (layer.type == "file") {
       menu_ui.addFileLayer("Archivos", "file", layer.id, layer.id, layer.id, true);
+    } else if (layer.type == "WMS") {
+      if (layer.isActive === true) {
+        mapa.removeLayer(layer.layer.L_layer);
+        layer.isActive = false;
+      }
+      menu_ui.addLayerToGroup(layer.section, layer.type, layer.name, layer.id, layer.file_name, layer.layer);
+      showTotalNumberofLayers();
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
         layer.groupname,
