@@ -4034,7 +4034,7 @@ class Menu_UI {
     img_icon.className = "loadservice-layer-img";
     img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`;
     img_icon.onclick = function () {
-      clickGeometryLayer(id);
+      clickWMSLayer(layer, layer_item, fileName)
     };
 
     let layer_name = document.createElement("div");
@@ -4072,26 +4072,12 @@ class Menu_UI {
     zoom_button.className = "loadservice-layer-img";
     zoom_button.innerHTML = `<i class="fas fa-search-plus" title="Zoom a capa"></i>`;
     zoom_button.onclick = function () {
-      layer_item.classList.toggle("active");
-
-      if (!layer.active) {
-        let bounds = [
-          [layer.maxy, layer.maxx],
-          [layer.miny, layer.minx],
-        ];
-        mapa.fitBounds(bounds);
-        layer.L_layer = L.tileLayer
-          .wms(layer.host, {
-            layers: layer.name,
-            format: "image/png",
-            transparent: true,
-          })
-          .addTo(mapa);
-        layer.active = true;
-      } else {
-        mapa.removeLayer(layer.L_layer);
-        layer.active = false;
-      }
+      clickWMSLayer(layer, layer_item, fileName)
+      let bounds = [
+        [layer.maxy, layer.maxx],
+        [layer.miny, layer.minx],
+      ];
+      mapa.fitBounds(bounds);
     };
 
     layer_item.append(img_icon);

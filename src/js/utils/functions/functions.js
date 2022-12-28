@@ -175,7 +175,7 @@ function hideAddedLayers() {
           aux.className = "file-layer";
           mapa.hideGroupLayer(layer.id);
           gestorMenu.cleanAllLayers();
-          layer.layerActive.active = false
+          layer.layerActive.active = false;
           showNumberofWMSLayers(layer.file_name);
         }
         if (layer.isActive) {
@@ -186,14 +186,22 @@ function hideAddedLayers() {
         if (aux.className === "file-layer active") {
           aux.className = "file-layer";
           mapa.hideGroupLayer(layer.id);
-          gestorMenu.cleanAllLayers()
+          gestorMenu.cleanAllLayers();
         }
         if (layer.isActive) {
-          layer.isActive = false
+          layer.isActive = false;
         }
       }
     }
   });
+
+  addedLayers.forEach(lyr => {
+    if (lyr.type === "WMS") {
+      mapa.removeLayer(lyr.L_layer);
+
+    }
+  })
+
   showTotalNumberofLayers();
 }
 
