@@ -169,14 +169,28 @@ function hideAddedLayers() {
 
   addedLayers.forEach((layer) => {
     if (!layer.groupname) {
-      let aux = document.getElementById("flc-" + layer.id);
-      if (aux.className === "file-layer active") {
-        aux.className = "file-layer";
-        mapa.hideGroupLayer(layer.id);
-        gestorMenu.cleanAllLayers()
-      }
-      if (layer.isActive) {
-        layer.isActive = false
+      if (layer.type === "WMS") {
+        let aux = document.getElementById("srvcLyr-" + layer.id + layer.file_name);
+        if (aux.className === "file-layer active") {
+          aux.className = "file-layer";
+          mapa.hideGroupLayer(layer.id);
+          gestorMenu.cleanAllLayers();
+          layer.layerActive.active = false
+          showNumberofWMSLayers(layer.file_name);
+        }
+        if (layer.isActive) {
+          layer.isActive = false
+        }
+      } else {
+        let aux = document.getElementById("flc-" + layer.id);
+        if (aux.className === "file-layer active") {
+          aux.className = "file-layer";
+          mapa.hideGroupLayer(layer.id);
+          gestorMenu.cleanAllLayers()
+        }
+        if (layer.isActive) {
+          layer.isActive = false
+        }
       }
     }
   });
@@ -887,7 +901,6 @@ function clickWMSLayer(layer, layer_item, fileName) {
     })
 
   } else if (layer_item.classList.value === "file-layer" && !layer.active) {
-
     layer_item.classList.value = "file-layer active"
     layer.active = true;
 

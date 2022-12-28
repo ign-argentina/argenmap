@@ -360,6 +360,7 @@ function handleAllLayersCheck(e) {
 					name: layer_name,
 					file_name: layer_name,
 					isActive: false,
+					layerActive: servicesLoaded[layersIndex[layer_name]].layers[layer_name],
 					type: "WMS",
 					section: servicesLoaded[layersIndex[layer_name]].title
 				});
@@ -376,6 +377,8 @@ function handleAllLayersCheck(e) {
 					addedLayers.splice(layer,1);
 				}
 			});
+			showNumberofWMSLayers(layer_name);
+
 			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 			document.querySelector(`input[value='${layer_name}']`).checked = false
 			for (let i in selectedServiceLayers) {
@@ -399,6 +402,7 @@ function handleLayerCheck(e) {
 			name: e.target.value,
 			file_name: e.target.value,
 			isActive: false,
+			layerActive: servicesLoaded[layersIndex[e.target.value]].layers[e.target.value],
 			type: "WMS",
 			section: servicesLoaded[layersIndex[e.target.value]].title
 		});
@@ -410,7 +414,7 @@ function handleLayerCheck(e) {
 				addedLayers.splice(layer,1);
 			}
 		});
-		
+		showNumberofWMSLayers(e.target.value);
 		menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 		for (let i in selectedServiceLayers) {
 			if (selectedServiceLayers[i] === e.target.value) {
