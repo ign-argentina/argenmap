@@ -3982,6 +3982,7 @@ class Menu_UI {
     ) {
       this.removeLayersGroup(groupname);
     }
+    showTotalNumberofLayers();
   }
 
   removeLayersGroup(groupname) {
@@ -3992,7 +3993,7 @@ class Menu_UI {
     }
   }
 
-  addLayerToGroup(groupname, textName, id, fileName, layer) {
+  addLayerToGroup(groupname, layerType, textName, id, fileName, layer) {
     let newLayer = layer;
     newLayer.active = false;
     newLayer.L_layer = null;
@@ -4011,6 +4012,9 @@ class Menu_UI {
     }
 
     let groupnamev = clearSpecialChars(groupname);
+    if (!fileLayerGroup.includes(groupname)) {
+      fileLayerGroup.push(groupname);
+    }
     let main = document.getElementById("lista-" + groupnamev);
     let id_options_container = "opt-c-" + id;
     if (!main) {
@@ -4040,27 +4044,28 @@ class Menu_UI {
     layer_name.innerHTML = "<a>" + capitalizedTitle + "</a>";
     layer_name.title = fileName;
     layer_name.onclick = function () {
-      layer_item.classList.toggle("active");
+      clickWMSLayer(layer, layer_item, id)
+      // layer_item.classList.toggle("active");
+      // if (!layer.active) {
+      //   layer.L_layer = L.tileLayer
+      //     .wms(layer.host, {
+      //       layers: layer.name,
+      //       format: "image/png",
+      //       transparent: true,
+      //     })
+      //     .addTo(mapa);
+      //   layer.active = true;
 
-      if (!layer.active) {
-        layer.L_layer = L.tileLayer
-          .wms(layer.host, {
-            layers: layer.name,
-            format: "image/png",
-            transparent: true,
-          })
-          .addTo(mapa);
-        layer.active = true;
+      //   gestorMenu.layersDataForWfs[layer.name] = {
+      //     name: layer.name,
+      //     section: layer.title,
+      //     host: layer.host,
+      //   };
+      // } else {     
+      //   mapa.removeLayer(layer.L_layer);
+      //   layer.active = false;
+      // }
 
-        gestorMenu.layersDataForWfs[layer.name] = {
-          name: layer.name,
-          section: layer.title,
-          host: layer.host,
-        };
-      } else {
-        mapa.removeLayer(layer.L_layer);
-        layer.active = false;
-      }
     };
 
     let zoom_button = document.createElement("div");
@@ -4098,6 +4103,7 @@ class Menu_UI {
     // Open the tab
 
     if (serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
+    addCounterForSection(groupname, layerType);
   }
 }
 

@@ -872,6 +872,45 @@ function clickGeometryLayer(layer) {
   showTotalNumberofLayers();
 }
 
+function clickWMSLayer(layer, layer_item, id) {
+
+  if (layer_item.classList.value === "file-layer active" && layer.active) {
+    layer_item.classList.value = "file-layer"
+
+    mapa.removeLayer(layer.L_layer);
+    layer.active = false;
+
+    addedLayers.forEach(lyr => {
+      if (lyr.id == id) {
+        lyr.isActive == false
+      }
+    })
+
+  } else if (layer_item.classList.value === "file-layer" && !layer.active) {
+
+    layer_item.classList.value = "file-layer active"
+    layer.active = true;
+
+    layer.L_layer = L.tileLayer
+      .wms(layer.host, {
+        layers: layer.name,
+        format: "image/png",
+        transparent: true,
+      })
+      .addTo(mapa);
+
+    gestorMenu.layersDataForWfs[layer.name] = {
+      name: layer.name,
+      section: layer.title,
+      host: layer.host,
+    };
+
+  }
+
+  showNumberofLayers(layer);
+  showTotalNumberofLayers();
+}
+
 function checkIfGeoprocessingIsOpen() {
   if (document.getElementById("select-process")) {
     document.getElementById("select-process").selectedIndex = 0;
@@ -1256,11 +1295,15 @@ function changeIsActive(id, isActive) {
 function addCounterForSection(groupnamev, layerType) {
   let counter = 0;
   addedLayers.forEach(lyr => {
-    if (lyr.type && lyr.type == layerType) {
+    if (lyr.isActive ==true && lyr.type == layerType) {
       counter++;
     }
   });
-  $("#" + groupnamev + "-a").html(groupnamev +" <span class='active-layers-counter'>" + counter +"</span>");
+  if (counter > 0) {
+    $("#" + groupnamev + "-a").html(groupnamev +" <span class='active-layers-counter'>" + counter +"</span>");
+  }else {
+    $("#" + groupnamev + "-a").html(groupnamev);
+  }
 }
 
 function showNumberofLayers(layerId) {
@@ -1269,9 +1312,13 @@ function showNumberofLayers(layerId) {
 
   addedLayers.forEach(lyr => {
     if (lyr.id == layerId) {
-      section = lyr.section;
       layerType = lyr.type;
-      element = document.getElementById(section + "-a");
+      section = lyr.section;
+      if (section.includes(" ")) {
+        element = document.getElementById(section.replace(/ /g, "_") + "-a");
+      }else {      
+        element = document.getElementById(section + "-a");
+      }
     }
   });
 
