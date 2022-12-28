@@ -872,7 +872,7 @@ function clickGeometryLayer(layer) {
   showTotalNumberofLayers();
 }
 
-function clickWMSLayer(layer, layer_item, id) {
+function clickWMSLayer(layer, layer_item, fileName) {
 
   if (layer_item.classList.value === "file-layer active" && layer.active) {
     layer_item.classList.value = "file-layer"
@@ -881,8 +881,8 @@ function clickWMSLayer(layer, layer_item, id) {
     layer.active = false;
 
     addedLayers.forEach(lyr => {
-      if (lyr.id == id) {
-        lyr.isActive == false
+      if (lyr.file_name == fileName) {
+        lyr.isActive = false
       }
     })
 
@@ -905,9 +905,15 @@ function clickWMSLayer(layer, layer_item, id) {
       host: layer.host,
     };
 
+    addedLayers.forEach(lyr => {
+      if (lyr.file_name == fileName) {
+        lyr.isActive = true
+      }
+    })
+
   }
 
-  showNumberofLayers(layer);
+  showNumberofWMSLayers(fileName);
   showTotalNumberofLayers();
 }
 
@@ -1312,6 +1318,37 @@ function showNumberofLayers(layerId) {
 
   addedLayers.forEach(lyr => {
     if (lyr.id == layerId) {
+      layerType = lyr.type;
+      section = lyr.section;
+      if (section.includes(" ")) {
+        element = document.getElementById(section.replace(/ /g, "_") + "-a");
+      }else {      
+        element = document.getElementById(section + "-a");
+      }
+    }
+  });
+
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive === true && lyr.type == layerType) {
+      activeLayers++;
+    }
+  });
+
+  if (element) {
+    if (activeLayers > 0) {
+      element.innerHTML = section+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
+    } else {
+      element.innerHTML = section;
+    }
+  }
+}
+
+function showNumberofWMSLayers(fileName) {
+  let activeLayers = 0;
+  let element,section,layerType;
+
+  addedLayers.forEach(lyr => {
+    if (lyr.file_name == fileName) {
       layerType = lyr.type;
       section = lyr.section;
       if (section.includes(" ")) {

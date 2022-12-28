@@ -4044,7 +4044,7 @@ class Menu_UI {
     layer_name.innerHTML = "<a>" + capitalizedTitle + "</a>";
     layer_name.title = fileName;
     layer_name.onclick = function () {
-      clickWMSLayer(layer, layer_item, id)
+      clickWMSLayer(layer, layer_item, fileName)
       // layer_item.classList.toggle("active");
       // if (!layer.active) {
       //   layer.L_layer = L.tileLayer
