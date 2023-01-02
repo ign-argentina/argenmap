@@ -223,11 +223,13 @@ function showTotalNumberofLayers() {
 function recoverSections() {
   let geoprocessessRecover = new Geoprocessing();
   let elevProfileRecover = new IElevationProfile();
-  let isActive = true;
-
+  
   addedLayers.forEach((layer) => {
+    let isActive;
     if (layer.isActive === false) {
       isActive = false
+    } else {
+      isActive = true
     }
 
     if (
