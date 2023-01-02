@@ -223,22 +223,27 @@ function showTotalNumberofLayers() {
 function recoverSections() {
   let geoprocessessRecover = new Geoprocessing();
   let elevProfileRecover = new IElevationProfile();
+  let isActive = true;
 
   addedLayers.forEach((layer) => {
+    if (layer.isActive === false) {
+      isActive = false
+    }
+
     if (
       layer.id.includes(geoprocessessRecover.namePrefixContour) ||
       layer.id.includes(geoprocessessRecover.namePrefixBuffer)
     ) {
-      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.id, layer.id, layer.id, true);
+      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.id, layer.id, layer.id, isActive);
     } else if (layer.id.includes(geoprocessessRecover.namePrefixHeight)) {
-      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.file_name, layer.id, layer.id, true);
+      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.file_name, layer.id, layer.id, isActive);
     } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
       let layername = layer.id
-      elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, true);
+      elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, isActive);
     } else if (layer.type == "file") {
-      menu_ui.addFileLayer("Archivos", "file", layer.id, layer.id, layer.id, true);
+      menu_ui.addFileLayer("Archivos", "file", layer.id, layer.id, layer.id, isActive);
     } else if (layer.type == "WMS") {
-      if (layer.isActive === true) {
+      if (isActive) {
         mapa.removeLayer(layer.layer.L_layer);
         layer.isActive = false;
       }
