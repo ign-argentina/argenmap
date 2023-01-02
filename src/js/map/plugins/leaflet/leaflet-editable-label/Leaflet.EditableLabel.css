@@ -61,9 +61,9 @@
   font-family: inherit;
   font-size: medium;
   text-align: center;
-  border: none;
+  border: 2px solid;
 }
 
 .leaflet-div-icon {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.3);
 }

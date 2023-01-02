@@ -5,7 +5,6 @@ class EditableLabel {
     this.activated = false;
     this.control = null;
     this.title = "Agregar etiqueta";
-    this.text = "Click aquí para escribir";
   }
 
   _initialize = () => {
@@ -55,14 +54,6 @@ class EditableLabel {
     },
   });
 
-  _getTextDiv = () => {
-    let textDiv = document.createElement("div");
-    textDiv.innerHTML = this.text;
-    textDiv.contentEditable = true;
-    textDiv.focus();
-    return textDiv;
-  };
-
   _addLayerGroup = () => {
     this.labelsLayer = L.layerGroup().addTo(this._map);
     /* addedLayers.push({
@@ -79,12 +70,32 @@ class EditableLabel {
   };
 
   addText = ({ lat, lng }) => {
-    let geojsonDivIcon = {
+    let name = "tag_";
+
+    if (mapa.editableLayers['tag'].length === 0) {
+      name += "1";
+    } else {
+      const lastLayerName =
+        mapa.editableLayers['tag'][mapa.editableLayers['tag'].length - 1].name;
+      name += parseInt(lastLayerName.split("_")[1]) + 1;
+    }
+
+    var input = document.createElement("input");
+    input.type = "text";
+    input.name = name;
+    input.autocomplete = "off";
+    input.placeholder = "Escribe algo aquí...";
+    input.className = "map-label";
+    input.onkeyup = function () {
+      input.style.width = (this.value.length + 1) * 8 + "px";
+    };
+
+    var geojsonDivIcon = {
       type: "Feature",
       properties: {
         Text: {
           iconSize: null,
-          html: `<input id="tag" autocomplete="off" placeholder="Escribe algo aquí.." class="map-label" onkeypress="this.style.width = ((this.value.length + 1) * 8) + 'px';"></input>`,
+          html: input,
         },
         type: "tag",
       },
@@ -92,16 +103,6 @@ class EditableLabel {
     };
     mapa.addGeoJsonLayerToDrawedLayers(geojsonDivIcon, "geojsonDivIcon", true);
     this.deactivate();
-
-    /*const textMarker = new L.Marker([lat, lng], { icon: icon });
-    this._map.editableLayers.marker.push(textMarker);
-    textMarker.addTo(this._map);
-    this.labelsLayer.addLayer(textMarker);
-
-    textMarker.on("dragend", function (e) {
-      textMarker.openPopup();
-    });*/
-
   };
 
   updateContent(content) {}
@@ -133,7 +134,7 @@ class EditableLabel {
     controlIcon.classList.toggle("fa-times");
     controlIcon.classList.toggle("redIcon");
     if (controlIcon.classList.contains("redIcon")) {
-      control.title = "Eliminar etiquetas";
+      control.title = "Desactivar";
     } else {
       control.title = this.title;
     }
