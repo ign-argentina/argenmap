@@ -101,7 +101,7 @@ class EditableLabel {
       },
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(geojsonDivIcon, "geojsonDivIcon", true);
+    mapa.addGeoJsonLayerToDrawedLayers(geojsonDivIcon, "geojsonDivIcon_"+name, true);
     this.deactivate();
   };
 
