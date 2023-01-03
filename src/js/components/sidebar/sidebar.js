@@ -77,15 +77,17 @@ class SidebarTools {
       });
 
     document.querySelector("#sidebar-toolbar-icon-right").addEventListener("click", function () {
+
         drawb = document.getElementsByClassName("leaflet-top leaflet-right");
+
         let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
         let pos_right_max600 = "36px";
         let pos_right = "46px";
-      if (!isChrome) {
-        pos_right_max600 = "36px";
-        pos_right = "54px";
+        if (!isChrome) {
+          pos_right_max600 = "36px";
+          pos_right = "54px";
+        }
 
-      }
         if (areHiddenRigth) {
           areHiddenRigth = false;
           drawb[0].hidden = false;
@@ -106,8 +108,8 @@ class SidebarTools {
         }
       });
 
-    if (window.matchMedia("(max-width: 400px)").matches) {
+    /*if (window.matchMedia("(max-width: 400px)").matches) {
       $("#sidebar-toolbar-icon-right").click();
-    }
+    }*/
   }
 }
