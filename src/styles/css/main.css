@@ -615,6 +615,10 @@ Popup geometría
   -ms-user-select: none;
   user-select: none;
 }
+div.leaflet-popup.edit-style-popup.leaflet-zoom-animated{
+  position: relative;
+  top: 50px;
+}
 .section-popup {
   position: relative;
   display: flex;
@@ -1125,4 +1129,9 @@ Perfil Topografico
 
 #esriTable tr:nth-child(even) {
   background-color: #ffffff;
+}
+
+div.leaflet-popup.edit-style-popup.leaflet-zoom-animated{
+  position: relative;
+  top: 50px;
 }
