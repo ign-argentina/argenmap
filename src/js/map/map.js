@@ -51,7 +51,8 @@ const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) 
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
 var ordered = ['','','','','','','','',''];
-var ordenZoomHome = 1; var ordenLocate = 2; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9;
+var ordenZoomHome = 1; var ordenLocate = 2; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6;
+var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -277,6 +278,13 @@ $("body").on("pluginLoad", function(event, plugin){
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':
+
+					const loadLayersModal = new LoadLayersModal();
+        			loadLayersModal.createComponent();
+
+       				const fs = new Fullscreen();
+        			fs.createComponent();
+
                		break;
 				case 'Draw':
 

@@ -562,12 +562,6 @@ async function loadTemplate(data, isDefaultTemplate) {
         // const modalserviceLayers = new IconModalLoadServices;
         // modalserviceLayers.createComponent();
 
-        const loadLayersModal = new LoadLayersModal();
-        loadLayersModal.createComponent();
-
-        const fs = new Fullscreen();
-        fs.createComponent();
-
         setProperStyleToCtrlBtns();
 
         let bm = document.getElementById("collapseBaseMapLayers");
