@@ -1340,6 +1340,31 @@ function addCounterForSection(groupnamev, layerType) {
   }
 }
 
+function updateNumberofLayers(layerSection) {
+  let activeLayers = 0;
+  let element;
+
+  if (layerSection.includes(" ")) {
+    element = document.getElementById(layerSection.replace(/ /g, "_") + "-a");
+  }else {      
+    element = document.getElementById(layerSection + "-a");
+  }
+
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive === true && lyr.section == layerSection) {
+      activeLayers++;
+    }
+  });
+
+  if (element) {
+    if (activeLayers > 0) {
+      element.innerHTML = layerSection+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
+    } else {
+      element.innerHTML = layerSection;
+    }
+  }
+}
+
 function showNumberofLayers(layerId) {
   let activeLayers = 0;
   let element,section,layerType;
@@ -1408,6 +1433,21 @@ function hideAddedLayersCounter() {
     
     if (element) {
       element.innerHTML = lyr;
+    }
+  })
+}
+
+function deleteAddedLayer (layer) { //Requires layer from editableLayers
+  let layerSection;
+  addedLayers.forEach(lyr => {
+    if (lyr.id === layer.id) {
+      let index = addedLayers.indexOf(lyr);
+      if (index > -1) {
+        layerSection = lyr.section;
+        addedLayers.splice(index, 1);
+        updateNumberofLayers(layerSection);
+        showTotalNumberofLayers();
+      }
     }
   })
 }
