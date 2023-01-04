@@ -214,7 +214,6 @@ class Geoprocessing {
 
         menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
         updateNumberofLayers(sectionName)
-        //showNumberofLayers(layername);
         break;
       }
       case "waterRise": {
@@ -294,7 +293,6 @@ class Geoprocessing {
         menu_ui.addFileLayer(sectionName, layerType, title, layername, layername, true);
         updateNumberofLayers(sectionName)
 
-        //showNumberofLayers(layername);
         break;
       }
       case "buffer": {
@@ -316,7 +314,6 @@ class Geoprocessing {
         menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
         updateNumberofLayers(sectionName)
 
-        //showNumberofLayers(layername);
         break;
       }
     }

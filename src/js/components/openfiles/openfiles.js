@@ -472,7 +472,6 @@ function addLayersfromFiles() {
     });
     menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
     updateNumberofLayers(sectionName)
-    //showNumberofLayers(e.id);
   });
   currentLayers = [];
   showTotalNumberofLayers();

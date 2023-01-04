@@ -121,7 +121,6 @@ class IElevationProfile {
             });
             this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
             showTotalNumberofLayers();
-            //showNumberofLayers(layername);
             updateNumberofLayers(sectionName);
 
             this._displayResult(dataForDisplay, selectedPolyline);
@@ -227,7 +226,6 @@ class IElevationProfile {
             wrapper.classList.toggle("hidden");
         }
         updateNumberofLayers(sectionName);
-        //showNumberofLayers(id);
         showTotalNumberofLayers();
 
     }
@@ -259,7 +257,6 @@ class IElevationProfile {
             btncloseWrapper.onclick = () => {
                 this.hideElevationProfile();
                 updateNumberofLayers(document.getElementById("elevationProfile").children[1].section);
-                //showNumberofLayers(document.getElementById("elevationProfile").children[1].id);
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);

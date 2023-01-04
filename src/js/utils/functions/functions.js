@@ -177,7 +177,7 @@ function hideAddedLayers() {
           gestorMenu.cleanAllLayers();
           layer.layer.active = false;
           mapa.removeLayer(layer.layer.L_layer);
-          showNumberofWMSLayers(layer.file_name);
+          updateNumberofLayers(layer.section);
         }
         if (layer.isActive) {
           layer.isActive = false
@@ -900,25 +900,25 @@ function clickGeometryLayer(layer) {
 
     }
   });
-  //showNumberofLayers(layer);
   showTotalNumberofLayers();
 }
 
 function clickWMSLayer(layer, layer_item, fileName) {
-
+  let sectionName;
   if (layer_item.classList.value === "file-layer active" && layer.active) {
-    layer_item.classList.value = "file-layer"
+    layer_item.classList.value = "file-layer";
     mapa.removeLayer(layer.L_layer);
     layer.active = false;
 
     addedLayers.forEach(lyr => {
       if (lyr.file_name == fileName) {
-        lyr.isActive = false
+        sectionName = lyr.section;
+        lyr.isActive = false;
       }
     })
 
   } else if (layer_item.classList.value === "file-layer" && !layer.active) {
-    layer_item.classList.value = "file-layer active"
+    layer_item.classList.value = "file-layer active";
     layer.active = true;
 
     layer.L_layer = L.tileLayer
@@ -937,13 +937,14 @@ function clickWMSLayer(layer, layer_item, fileName) {
 
     addedLayers.forEach(lyr => {
       if (lyr.file_name == fileName) {
-        lyr.isActive = true
+        sectionName = lyr.section;
+        lyr.isActive = true;
       }
     })
 
   }
 
-  showNumberofWMSLayers(fileName);
+  updateNumberofLayers(sectionName);
   showTotalNumberofLayers();
 }
 
@@ -1362,68 +1363,6 @@ function updateNumberofLayers(layerSection) {
       element.innerHTML = layerSection+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
     } else {
       element.innerHTML = layerSection;
-    }
-  }
-}
-
-function showNumberofLayers(layerId) {
-  let activeLayers = 0;
-  let element,section,layerType;
-
-  addedLayers.forEach(lyr => {
-    if (lyr.id == layerId) {
-      layerType = lyr.type;
-      section = lyr.section;
-      if (section.includes(" ")) {
-        element = document.getElementById(section.replace(/ /g, "_") + "-a");
-      }else {      
-        element = document.getElementById(section + "-a");
-      }
-    }
-  });
-
-  addedLayers.forEach(lyr => {
-    if (lyr.isActive === true && lyr.type == layerType) {
-      activeLayers++;
-    }
-  });
-
-  if (element) {
-    if (activeLayers > 0) {
-      element.innerHTML = section+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
-    } else {
-      element.innerHTML = section;
-    }
-  }
-}
-
-function showNumberofWMSLayers(fileName) {
-  let activeLayers = 0;
-  let element,section,layerType;
-
-  addedLayers.forEach(lyr => {
-    if (lyr.file_name == fileName) {
-      layerType = lyr.type;
-      section = lyr.section;
-      if (section.includes(" ")) {
-        element = document.getElementById(section.replace(/ /g, "_") + "-a");
-      }else {      
-        element = document.getElementById(section + "-a");
-      }
-    }
-  });
-
-  addedLayers.forEach(lyr => {
-    if (lyr.isActive === true && lyr.type == layerType) {
-      activeLayers++;
-    }
-  });
-
-  if (element) {
-    if (activeLayers > 0) {
-      element.innerHTML = section+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
-    } else {
-      element.innerHTML = section;
     }
   }
 }

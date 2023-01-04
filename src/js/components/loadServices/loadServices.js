@@ -376,7 +376,7 @@ function handleAllLayersCheck(e) {
 					addedLayers.splice(layer,1);
 				}
 			});
-			showNumberofWMSLayers(layer_name);
+			updateNumberofLayers(servicesLoaded[layersIndex[layer_name]].title);
 
 			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 			document.querySelector(`input[value='${layer_name}']`).checked = false
@@ -412,7 +412,8 @@ function handleLayerCheck(e) {
 				addedLayers.splice(layer,1);
 			}
 		});
-		showNumberofWMSLayers(e.target.value);
+		updateNumberofLayers(servicesLoaded[layersIndex[e.target.value]].title);
+
 		menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 		for (let i in selectedServiceLayers) {
 			if (selectedServiceLayers[i] === e.target.value) {

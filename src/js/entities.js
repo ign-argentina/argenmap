@@ -3873,7 +3873,6 @@ class Menu_UI {
         }
       }
       updateNumberofLayers(layer.section);
-      //showNumberofLayers(layer);
       showTotalNumberofLayers();
     };
 
