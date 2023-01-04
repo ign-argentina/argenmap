@@ -808,7 +808,6 @@ function setProperStyleToCtrlBtns() {
       const modalLoadLayersCtrlBtn =
         document.getElementById("loadLayersButton");
       btns.push(modalLoadLayersCtrlBtn);
-
       btns.forEach((btn) => {
         btn.style.width = size;
         btn.style.height = size;

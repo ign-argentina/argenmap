@@ -7,10 +7,12 @@ let measure = null;
 let loadLayersButton = null;
 let leafletbottom = null;
 let drawb = null;
-let screenshot = null;
 let divbar = null;
 let icongeop = null;
 let fullscreen = null;
+let pdfPrinter = null;
+let screenShoter = null;
+
 class SidebarTools {
   constructor() {
     locate = document.getElementsByClassName(
@@ -30,10 +32,10 @@ class SidebarTools {
     leafletbottom = document.getElementsByClassName("leaflet-bottom");
 
     drawb = document.getElementsByClassName("leaflet-top leaflet-right");
-
-    screenshot = document.getElementById("screenshot");
     
     divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
+
+    pdfPrinter = document.getElementById("pdfPrinter");
 
     fullscreen = document.getElementById("fullscreen");
 
@@ -54,10 +56,11 @@ class SidebarTools {
 
     document.getElementById("mapa").appendChild(elem);
     document.getElementById("mapa").appendChild(elemright);
+    
 
     $("#sidebar-toolbar-icon-left").click(function () {
-     
-  
+
+      screenShoter = document.getElementById("screenShoter");
 
       if (areHiddenLeft) {
        
@@ -66,15 +69,15 @@ class SidebarTools {
         } else {
           this.style.left = "46px";
         }
-
         areHiddenLeft = false;
         zoomhome[0].hidden = false;
         customgraticule[0].hidden = false;
         locate[0].hidden = false;
         measure[0].hidden = false;
         loadLayersButton.style.display = "";
-        screenshot.style.display = "";
         divbar[2].hidden = false;
+        if (screenShoter !== null) screenShoter.style.display = "";
+        pdfPrinter.style.display = "";
         $("#geoprocesos-icon").show();
         fullscreen.style.display = "";
       } else {
@@ -85,13 +88,12 @@ class SidebarTools {
         locate[0].hidden = true;
         measure[0].hidden = true;
         loadLayersButton.style.display = "none";
-        screenshot.style.display = "none";
         divbar[2].hidden = true;
+        if (screenShoter !== null) screenShoter.style.display = "none";
+        pdfPrinter.style.display = "none";
         $("#geoprocesos-icon").hide();
         fullscreen.style.display = "none";
       }
-
-
 
     });
 
