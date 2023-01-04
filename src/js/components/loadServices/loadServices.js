@@ -373,7 +373,11 @@ function handleAllLayersCheck(e) {
 
 			addedLayers.forEach((layer) => {
 				if (layer.groupname == groupName) {
-					addedLayers.splice(layer,1);
+
+					let index = addedLayers.indexOf(layer);
+					if (index > -1) {
+						addedLayers.splice(index, 1);
+					}
 				}
 			});
 			updateNumberofLayers(servicesLoaded[layersIndex[layer_name]].title);
@@ -409,7 +413,10 @@ function handleLayerCheck(e) {
 	} else {
 		addedLayers.forEach((layer) => {
 			if (layer.id == layersIndex[e.target.value]) {
-				addedLayers.splice(layer,1);
+				let index = addedLayers.indexOf(layer);
+				if (index > -1) {
+					addedLayers.splice(index, 1);
+				}
 			}
 		});
 		updateNumberofLayers(servicesLoaded[layersIndex[e.target.value]].title);
