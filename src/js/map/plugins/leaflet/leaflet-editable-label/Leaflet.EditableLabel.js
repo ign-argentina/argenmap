@@ -72,38 +72,43 @@ class EditableLabel {
   addText = ({ lat, lng }) => {
     let name = "tag_";
 
-    if (mapa.editableLayers['tag'].length === 0) {
+    if (mapa.editableLayers["tag"].length === 0) {
       name += "1";
     } else {
       const lastLayerName =
-        mapa.editableLayers['tag'][mapa.editableLayers['tag'].length - 1].name;
+        mapa.editableLayers["tag"][mapa.editableLayers["tag"].length - 1].name;
       name += parseInt(lastLayerName.split("_")[1]) + 1;
     }
 
-    var input = document.createElement("textarea");
-    //input.type = "text";
-    input.name = name;
-    input.autocomplete = "off";
-    input.placeholder = "Escribe algo aquí...";
-    input.className = "map-label";
-    input.autofocus = true;
-    input.style.resize = "none"
-    //input.onkeyup = function () {
-    //  input.style.width = (this.value.length + 1) * 8 + "px";
-    //};
+    var textarea = document.createElement("textarea");
+    textarea.name = name;
+    textarea.autocomplete = "off";
+    textarea.placeholder = "Escribe algo aquí...";
+    textarea.className = "map-label";
+    textarea.autofocus = true;
+    textarea.style.resize = "none";
+    textarea.maxlength = "255";
+    textarea.onkeyup = function () {
+      this.style.height = "20px";
+      this.style.height = this.scrollHeight + 4 + "px";
+    };
 
     var geojsonDivIcon = {
       type: "Feature",
       properties: {
         Text: {
           iconSize: null,
-          html: input,
+          html: textarea,
         },
         type: "tag",
       },
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(geojsonDivIcon, "geojsonDivIcon_"+name, true);
+    mapa.addGeoJsonLayerToDrawedLayers(
+      geojsonDivIcon,
+      "geojsonDivIcon_" + name,
+      true
+    );
     this.deactivate();
   };
 
