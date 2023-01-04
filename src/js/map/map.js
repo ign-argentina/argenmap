@@ -44,6 +44,7 @@ const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) 
 	layer.options.icon.options.html.style.borderWidth = borderWidth + 'px';
 	layer.options.icon.options.html.style.borderColor = borderColor;
 	layer.options.icon.options.html.style.backgroundColor = fillColor;
+	//layer.options.icon.options.html.parentElement.style.backgroundColor =fillColor
 	layer.options.icon.options.html.style.color = textColor;
 };
 
@@ -383,8 +384,11 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 					
 					mapa.on('draw:editstart', (e) => {
+						var n = Object.keys(drawnItems._layers).length;
+						if (n>100){
+							alert(`Existen ${n} elementos en el mapa. Esta cantidad puede afectar el funcionamiento del mismo y se deba recargar la página`);
+						}
 						currentlyDrawing = true;
-						
 					});
 
 					mapa.on('draw:created', (e) => {
