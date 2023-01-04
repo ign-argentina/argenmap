@@ -3872,7 +3872,8 @@ class Menu_UI {
           perfilDelete.removeElevationProfile(id);
         }
       }
-      showNumberofLayers(layer);
+      updateNumberofLayers(layer.section);
+      //showNumberofLayers(layer);
       showTotalNumberofLayers();
     };
 

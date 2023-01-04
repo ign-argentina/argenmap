@@ -121,8 +121,9 @@ class IElevationProfile {
             });
             this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
             showTotalNumberofLayers();
-            showNumberofLayers(layername);
-            
+            //showNumberofLayers(layername);
+            updateNumberofLayers(sectionName);
+
             this._displayResult(dataForDisplay, selectedPolyline);
             geoProcessingManager.loadingBtn("off")
 
@@ -179,17 +180,17 @@ class IElevationProfile {
         let aux = document.getElementById("flc-" + id),
         selectedLayer,
         wrapper =  document.getElementById("pt-wrapper"),
-        ptInner =  document.getElementById(id);
-
+        ptInner =  document.getElementById(id),
+        sectionName;
         mapa.editableLayers.polyline.forEach(polyline => {
             if (polyline.idElevProfile === id) {
                 selectedLayer = polyline;
             }
         });
 
-
         addedLayers.forEach(lyr => {
             if (lyr.id == id) {
+                sectionName = lyr.section;
                 if (aux.classList.contains("active")) {
                     if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
                         wrapper.classList.toggle("hidden");
@@ -225,7 +226,8 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
-        showNumberofLayers(id);
+        updateNumberofLayers(sectionName);
+        //showNumberofLayers(id);
         showTotalNumberofLayers();
 
     }
@@ -256,7 +258,8 @@ class IElevationProfile {
                 
             btncloseWrapper.onclick = () => {
                 this.hideElevationProfile();
-                showNumberofLayers(document.getElementById("elevationProfile").children[1].id);
+                updateNumberofLayers(document.getElementById("elevationProfile").children[1].section);
+                //showNumberofLayers(document.getElementById("elevationProfile").children[1].id);
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);

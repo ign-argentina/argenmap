@@ -896,9 +896,11 @@ function clickGeometryLayer(layer) {
         mapa.showGroupLayer(layer);
         lyr.isActive = true;
       }
+      updateNumberofLayers(lyr.section)
+
     }
   });
-  showNumberofLayers(layer);
+  //showNumberofLayers(layer);
   showTotalNumberofLayers();
 }
 
@@ -1343,7 +1345,6 @@ function addCounterForSection(groupnamev, layerType) {
 function updateNumberofLayers(layerSection) {
   let activeLayers = 0;
   let element;
-
   if (layerSection.includes(" ")) {
     element = document.getElementById(layerSection.replace(/ /g, "_") + "-a");
   }else {      

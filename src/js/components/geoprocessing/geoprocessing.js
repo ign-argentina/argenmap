@@ -213,7 +213,8 @@ class Geoprocessing {
         // **
 
         menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
-        showNumberofLayers(layername);
+        updateNumberofLayers(sectionName)
+        //showNumberofLayers(layername);
         break;
       }
       case "waterRise": {
@@ -291,7 +292,9 @@ class Geoprocessing {
         });
         
         menu_ui.addFileLayer(sectionName, layerType, title, layername, layername, true);
-        showNumberofLayers(layername);
+        updateNumberofLayers(sectionName)
+
+        //showNumberofLayers(layername);
         break;
       }
       case "buffer": {
@@ -311,7 +314,9 @@ class Geoprocessing {
           section: sectionName
         });
         menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
-        showNumberofLayers(layername);
+        updateNumberofLayers(sectionName)
+
+        //showNumberofLayers(layername);
         break;
       }
     }
