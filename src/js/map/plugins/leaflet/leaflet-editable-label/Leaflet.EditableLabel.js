@@ -80,15 +80,17 @@ class EditableLabel {
       name += parseInt(lastLayerName.split("_")[1]) + 1;
     }
 
-    var input = document.createElement("input");
-    input.type = "text";
+    var input = document.createElement("textarea");
+    //input.type = "text";
     input.name = name;
     input.autocomplete = "off";
     input.placeholder = "Escribe algo aquí...";
     input.className = "map-label";
-    input.onkeyup = function () {
-      input.style.width = (this.value.length + 1) * 8 + "px";
-    };
+    input.autofocus = true;
+    input.style.resize = "none"
+    //input.onkeyup = function () {
+    //  input.style.width = (this.value.length + 1) * 8 + "px";
+    //};
 
     var geojsonDivIcon = {
       type: "Feature",
