@@ -40,6 +40,14 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 	layer.options.fillColor = fillColor;
 };
 
+const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) => {
+	layer.options.icon.options.html.style.borderWidth = borderWidth + 'px';
+	layer.options.icon.options.html.style.borderColor = borderColor;
+	layer.options.icon.options.html.style.backgroundColor = fillColor;
+	//layer.options.icon.options.html.parentElement.style.backgroundColor =fillColor
+	layer.options.icon.options.html.style.color = textColor;
+};
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
@@ -245,7 +253,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					    metric: true,
 					    strings: {
 					        title: "Mi posición",
-					        popup: "Ustes se encuentra a {distance} {unit} desde este punto",
+					        popup: "Usted se encuentra a {distance} {unit} desde este punto",
 					        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
 					    },
 					    locateOptions: {
@@ -318,6 +326,13 @@ $("body").on("pluginLoad", function(event, plugin){
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':
+
+					const loadLayersModal = new LoadLayersModal();
+        			loadLayersModal.createComponent();
+
+       				const fs = new Fullscreen();
+        			fs.createComponent();
+
                		break;
 				case 'Draw':
 
@@ -342,7 +357,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						circlemarker: [],
 						rectangle: [],
 						polygon: [],
-						polyline: []
+						polyline: [],
+						tag: []
 					};
 					
 					mapa.groupLayers = {};
@@ -359,7 +375,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							circlemarker: {metric: true},
 					        polyline: {metric: true},
 					        circle:{metric: true},
-					        rectangle: {metric: true}
+					        rectangle: {metric: true},
+							tag: {metric:true}
 						},
 						position: 'topright'
 					});
@@ -414,8 +431,12 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 					
 					mapa.on('draw:editstart', (e) => {
+						var n = Object.keys(drawnItems._layers).length;
+						if (n>100){
+							alert(`Existen ${n} elementos en el mapa. Esta cantidad puede afectar el funcionamiento del mismo y se deberá recargar la página`);
+							
+						}
 						currentlyDrawing = true;
-						
 					});
 
 					mapa.on('draw:created', (e) => {
@@ -453,7 +474,7 @@ $("body").on("pluginLoad", function(event, plugin){
                         // } else {
 							drawnItems.addLayer(layer);		
                         // }
-
+ 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						
 						if (layer.type === 'marker') {
@@ -463,7 +484,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
 
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'tag') {
 							mapa.addSelectionLayersMenuToLayer(layer);
 						}
 						mapa.addContextMenuToLayer(layer);
@@ -778,9 +799,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								editStylePopup.setContent(editStylePopupContent)
-								.setLatLng(layer.type !== 'marker' && layer.type !== 'circlemarker' ? layer.getBounds().getCenter() : layer.getLatLng())
+								.setLatLng(layer.type !== "marker" && layer.type !== "circlemarker" && layer.type !== "tag" ? layer.getBounds().getCenter() : layer.getLatLng());
 								mapa.openPopup(editStylePopup);
-								//
 								const parent = editStylePopupContent.parentElement;
 								parent.className = 'leaflet-popup-content popup-parent';
 							}
@@ -1477,10 +1497,196 @@ $("body").on("pluginLoad", function(event, plugin){
 							markerSection.appendChild(downloadDiv);
 						}
 						
+						//Tag
+						const tagSection = document.createElement('div');
+						tagSection.className = 'section-popup';
+						
+						if (layer.type === 'tag') {
+
+							//Title
+							const title4 = document.createElement('p');
+							title4.className = 'section-title';
+							title4.textContent = 'Etiqueta';
+							tagSection.appendChild(title4);
+
+							//Enable
+							const enableTagInputDiv = document.createElement('div');
+							enableTagInputDiv.className = 'section-item';
+							const enableTagInput = document.createElement('input');
+							enableTagInput.className = 'section-item-input';
+							enableTagInput.id = 'enable-marker-input';
+							enableTagInput.type = 'checkbox';
+							enableTagInput.checked = layer.options.hasOwnProperty('customTag');
+							enableTagInput.addEventListener("change", (e) => {
+								weightInput2.disabled = !enableTagInput.checked;
+								colorInput3.disabled = !enableTagInput.checked;
+								colorInput4.disabled = !enableTagInput.checked;
+								colorInput5.disabled = !enableTagInput.checked;
+							});
+							const enableTagLabel = document.createElement('label');
+							enableTagLabel.setAttribute('for', 'enable-marker-input');
+							enableTagLabel.innerHTML = 'Personalizado';
+							enableTagInputDiv.appendChild(enableTagLabel);
+							enableTagInputDiv.appendChild(enableTagInput);
+							tagSection.appendChild(enableTagInputDiv);
+
+							//Opacity
+							const opacityInputDiv3 = document.createElement('div');
+							opacityInputDiv3.className = 'section-item';
+							const opacityInput3 = document.createElement('input');
+							opacityInput3.className = 'section-item-input';
+							opacityInput3.id = 'opacity-input-3';
+							opacityInput3.type = 'range';
+							opacityInput3.min = 0;
+							opacityInput3.max = 1;
+							opacityInput3.step = 0.01;
+							opacityInput3.value = layer.options.opacity;
+							opacityInput3.addEventListener("change", (e) => {
+								layer.setOpacity(opacityInput3.value);
+							});
+							opacityInput3.addEventListener("input", (e) => {
+								layer.setOpacity(opacityInput3.value);
+							});
+							const opacityLabel3 = document.createElement('label');
+							opacityLabel3.setAttribute('for', 'opacity-input-3');
+							opacityLabel3.innerHTML = 'Opacidad';
+							opacityInputDiv3.appendChild(opacityLabel3);
+							opacityInputDiv3.appendChild(opacityInput3);
+							tagSection.appendChild(opacityInputDiv3);
+
+							//Weight
+							const weightInputDiv2 = document.createElement('div');
+							weightInputDiv2.className = 'section-item';
+							const weightInput2 = document.createElement('input');
+							weightInput2.className = 'section-item-input';
+							weightInput2.id = 'weight-input-2';
+							weightInput2.type = 'range';
+							weightInput2.min = 0;
+							weightInput2.max = 3.2;
+							weightInput2.step = 0.1;
+							weightInput2.value = 2;
+							weightInput2.disabled = !enableTagInput.checked;
+							weightInput2.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							weightInput2.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const weightLabel2 = document.createElement('label');
+							weightLabel2.setAttribute('for', 'weight-input-2');
+							weightLabel2.className = 'non-selectable-text';
+							weightLabel2.innerHTML = 'Anchura del borde';
+							weightInputDiv2.appendChild(weightLabel2);
+							weightInputDiv2.appendChild(weightInput2);
+							tagSection.appendChild(weightInputDiv2);
+
+							//Border color
+							const colorInputDiv3 = document.createElement('div');
+							colorInputDiv3.className = 'section-item';
+							const colorInput3 = document.createElement('input');
+							colorInput3.className = 'section-item-input';
+							colorInput3.id = 'color-input-3';
+							colorInput3.type = 'color';
+							colorInput3.value = "#000000";
+							colorInput3.disabled = !enableTagInput.checked;
+							colorInput3.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							colorInput3.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const colorLabel3 = document.createElement('label');
+							colorLabel3.setAttribute('for', 'color-input-3');
+							colorLabel3.innerHTML = 'Color del borde';
+							colorInputDiv3.appendChild(colorLabel3);
+							colorInputDiv3.appendChild(colorInput3);
+							tagSection.appendChild(colorInputDiv3);
+
+							//Fill color
+							const colorInputDiv4 = document.createElement('div');
+							colorInputDiv4.className = 'section-item';
+							const colorInput4 = document.createElement('input');
+							colorInput4.className = 'section-item-input';
+							colorInput4.id = 'color-input-4';
+							colorInput4.type = 'color';
+							colorInput4.value = "#ffffff";
+							colorInput4.disabled = !enableTagInput.checked;
+							colorInput4.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							colorInput4.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const colorLabel4 = document.createElement('label');
+							colorLabel4.setAttribute('for', 'color-input-4');
+							colorLabel4.innerHTML = 'Color del relleno';
+							colorInputDiv4.appendChild(colorLabel4);
+							colorInputDiv4.appendChild(colorInput4);
+							tagSection.appendChild(colorInputDiv4);
+
+							//Text color
+							const colorInputDiv5 = document.createElement('div');
+							colorInputDiv5.className = 'section-item';
+							const colorInput5 = document.createElement('input');
+							colorInput5.className = 'section-item-input';
+							colorInput5.id = 'color-input-5';
+							colorInput5.type = 'color';
+							colorInput5.value = "#000000";
+							colorInput5.disabled = !enableTagInput.checked;
+							colorInput5.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							colorInput5.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const colorLabel5 = document.createElement('label');
+							colorLabel5.setAttribute('for', 'color-input-5');
+							colorLabel5.innerHTML = 'Color del texto';
+							colorInputDiv5.appendChild(colorLabel5);
+							colorInputDiv5.appendChild(colorInput5);
+							tagSection.appendChild(colorInputDiv5);
+						}
 
 						switch (layer.type) {
 							case 'marker': {
 								container.appendChild(markerSection);
+								container.style.height = '240px';
+							}
+							break;
+							case 'tag': {
+								container.appendChild(tagSection);
 								container.style.height = '240px';
 							}
 							break;
@@ -2025,6 +2231,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							options = { ...geoJSON.properties.styles };
 						}
 
+						let divIcon = {};
+						if (geoJSON.properties.hasOwnProperty('Text')) {
+							divIcon = { ...geoJSON.properties.Text };
+						}
+
 						switch (type) {
 							case 'point': {
 								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
@@ -2045,6 +2256,11 @@ $("body").on("pluginLoad", function(event, plugin){
 										case 'marker': {
 											layer = L.marker(invertedCoords);
 											type = 'marker';
+										};
+										break;
+										case 'tag': {
+											layer = L.marker(invertedCoords, { icon: L.divIcon(divIcon) });
+											type = 'tag';
 										};
 										break;
 										default: {
@@ -2232,7 +2448,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						//Left-click
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'tag') {
 							mapa.addSelectionLayersMenuToLayer(layer, file);
 						}
 						//Right-click

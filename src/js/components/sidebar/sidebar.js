@@ -15,32 +15,8 @@ let screenShoter = null;
 
 class SidebarTools {
   constructor() {
-    locate = document.getElementsByClassName(
-      "leaflet-control-locate leaflet-bar leaflet-control"
-    );
-    zoomhome = document.getElementsByClassName(
-      "leaflet-control-zoomhome leaflet-bar leaflet-control"
-    );
-    customgraticule = document.getElementsByClassName(
-      "leaflet-control leaflet-control-customgraticule"
-    );
-    measure = document.getElementsByClassName(
-      "leaflet-control-measure leaflet-bar leaflet-control"
-    );
-    loadLayersButton = document.getElementById("loadLayersButton");
-
-    leafletbottom = document.getElementsByClassName("leaflet-bottom");
-
-    drawb = document.getElementsByClassName("leaflet-top leaflet-right");
-    
-    divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
-
-    pdfPrinter = document.getElementById("pdfPrinter");
-
-    fullscreen = document.getElementById("fullscreen");
-
     this.component = `
-    <span data-html2canvas-ignore="true" id="sidebar-toolbar-span"class="glyphicon glyphicon-option-vertical" aria-hidden="true">
+    <span id="sidebar-toolbar-span"class="glyphicon glyphicon-option-vertical" aria-hidden="true">
     `;
   }
 
@@ -56,66 +32,88 @@ class SidebarTools {
 
     document.getElementById("mapa").appendChild(elem);
     document.getElementById("mapa").appendChild(elemright);
-    
 
-    $("#sidebar-toolbar-icon-left").click(function () {
+    document.querySelector("#sidebar-toolbar-icon-left").addEventListener("click", function () {
+        locate = document.getElementsByClassName("leaflet-control-locate");
+        zoomhome = document.getElementsByClassName("leaflet-control-zoomhome");
+        customgraticule = document.getElementsByClassName("leaflet-control-customgraticule");
+        measure = document.getElementsByClassName("leaflet-control-measure");
+        loadLayersButton = document.getElementById("loadLayersButton");
+        leafletbottom = document.getElementsByClassName("leaflet-bottom");
+        drawb = document.getElementsByClassName("leaflet-top leaflet-right");
+        screenShoter = document.getElementById("screenShoter");
+        divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
+        fullscreen = document.getElementById("fullscreen");
+        icongeop = document.getElementById("geoprocesos-icon");
 
-      screenShoter = document.getElementById("screenShoter");
+        if (areHiddenLeft) {
+          /*if (window.matchMedia("(max-width: 400px)").matches) {
+            this.style.left = "40px";
+          } else {
+            this.style.left = "46px";
+          }*/
 
-      if (areHiddenLeft) {
-       
-        if (window.matchMedia("(max-width: 400px)").matches) {
-          this.style.left = "40px";
+          areHiddenLeft = false;
+          zoomhome[0].hidden = false;
+          customgraticule[0].hidden = false;
+          locate[0].hidden = false;
+          measure[0].hidden = false;
+          loadLayersButton.style.display = "";
+          divbar[2].hidden = false;
+          icongeop.style.display = "";
+          fullscreen.style.display = "";
+          if (screenShoter !== null) screenShoter.style.display = "";
+          pdfPrinter.style.display = "";
         } else {
-          this.style.left = "46px";
+          //this.style.left = "10px";
+          areHiddenLeft = true;
+          //zoomhome[0].hidden = true;
+          customgraticule[0].hidden = true;
+          locate[0].hidden = true;
+          measure[0].hidden = true;
+          loadLayersButton.style.display = "none";
+          divbar[2].hidden = true;
+          icongeop.style.display = "none";
+          fullscreen.style.display = "none";
+          if (screenShoter !== null) screenShoter.style.display = "none";
+          pdfPrinter.style.display = "none";
         }
-        areHiddenLeft = false;
-        zoomhome[0].hidden = false;
-        customgraticule[0].hidden = false;
-        locate[0].hidden = false;
-        measure[0].hidden = false;
-        loadLayersButton.style.display = "";
-        divbar[2].hidden = false;
-        if (screenShoter !== null) screenShoter.style.display = "";
-        pdfPrinter.style.display = "";
-        $("#geoprocesos-icon").show();
-        fullscreen.style.display = "";
-      } else {
-        //this.style.left = "10px";
-        areHiddenLeft = true;
-        //zoomhome[0].hidden = true;
-        customgraticule[0].hidden = true;
-        locate[0].hidden = true;
-        measure[0].hidden = true;
-        loadLayersButton.style.display = "none";
-        divbar[2].hidden = true;
-        if (screenShoter !== null) screenShoter.style.display = "none";
-        pdfPrinter.style.display = "none";
-        $("#geoprocesos-icon").hide();
-        fullscreen.style.display = "none";
-      }
+      });
 
-    });
+    document.querySelector("#sidebar-toolbar-icon-right").addEventListener("click", function () {
 
-    $("#sidebar-toolbar-icon-right").click(function () {
-      if (areHiddenRigth) {
-        areHiddenRigth = false;
-        drawb[0].hidden = false;
-        this.style.right = "46px";
-      } else {
-        areHiddenRigth = true;
-        drawb[0].hidden = true;
+        drawb = document.getElementsByClassName("leaflet-top leaflet-right");
 
-        if (window.matchMedia("(max-height: 400px)").matches) {
-          this.style.right = "5px";
+        let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        let pos_right_max600 = "36px";
+        let pos_right = "46px";
+        if (!isChrome) {
+          pos_right_max600 = "36px";
+          pos_right = "54px";
+        }
+
+        if (areHiddenRigth) {
+          areHiddenRigth = false;
+          drawb[0].hidden = false;
+          if (window.matchMedia("(max-width: 600px)").matches) {
+            this.style.right = pos_right_max600;
+          } else {
+            this.style.right = pos_right;
+          }
         } else {
-          this.style.right = "10px";
-        }
-      }
-    });
+          areHiddenRigth = true;
+          drawb[0].hidden = true;
 
-    if (window.matchMedia("(max-width: 400px)").matches) {
+          if (window.matchMedia("(max-height: 400px)").matches) {
+            this.style.right = "5px";
+          } else {
+            this.style.right = "10px";
+          }
+        }
+      });
+
+    /*if (window.matchMedia("(max-width: 400px)").matches) {
       $("#sidebar-toolbar-icon-right").click();
-    }
+    }*/
   }
 }

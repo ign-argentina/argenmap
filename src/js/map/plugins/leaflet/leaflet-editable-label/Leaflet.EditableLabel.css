@@ -1,39 +1,8 @@
-.textbox > div,
-.textbox .leaflet-popup-tip-container .leaflet-popup-tip {
-  background: transparent !important;
-  box-shadow: none;
-  /* -webkit-user-drag: element; */
-}
-
-.textbox {
-  background: transparent;
-  font-weight: bold;
-  color: blue;
-  font-family: inherit;
-  font-size: medium;
-}
-
-.textbox:focus {
-  background-color: #fafafa91;
-  -webkit-user-select: none;
-  user-select: none;
-  border-style: dotted;
-  border-color: #e98fe191;
-}
-
-.textbox:hover {
-  cursor: text;
-}
-
-.redIcon {
-    color: rgba(255, 0, 0, 0.637);
-}
-
 .leaflet-editable-label-interior {
   /* background-image: url(favicon.ico); */
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
   background-position: 50% 50%;
   background-repeat: no-repeat;
   background-size: contain;
@@ -48,6 +17,39 @@
   background-color: #ffffff;
 }
 
+@-moz-document url-prefix() {
+  .leaflet-editable-label-interior {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 4px;
+    box-shadow: none !important;
+  }
+}
+
 .leaflet-editable-label-interior:hover {
   background-color: #f4f4f4;
+}
+
+.redIcon {
+  color: rgba(255, 0, 0, 0.637);
+  margin-top: 4.5px;
+}
+
+.map-label {
+  min-width: 150px !important;
+  background: transparent;
+  font-weight: bold;
+  color: #333;
+  font-family: inherit;
+  font-size: medium;
+  text-align: center;
+  border: 2px solid;
+  overflow: hidden;
+  height: 32px;
+}
+
+.leaflet-div-icon {
+  background-color: transparent;
+  border: none;
 }
