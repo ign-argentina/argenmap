@@ -50,9 +50,9 @@ const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) 
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['','','','','','','','','',''];
+var ordered = ['','','','','','','','','','',''];
 var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
-var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10; 
+var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10; var ordenPdfPriner = 11;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -95,6 +95,9 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'BrowserPrint':
 			ordered.splice(ordenPrint, 1, plugin.pluginName);
 			break;
+		case 'pdfPrinter':
+			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
+			break;
 		default :
 			// Add unordered plugins
 			unordered = plugin.pluginName;
@@ -108,6 +111,10 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('ZoomHome')) {
 		if(gestorMenu.plugins['ZoomHome'].getStatus() == 'ready' || gestorMenu.plugins['ZoomHome'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('FullScreen')) {
+		if(gestorMenu.plugins['FullScreen'].getStatus() == 'ready' || gestorMenu.plugins['FullScreen'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('locate')){
@@ -124,6 +131,10 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('BrowserPrint')) {
 		if(gestorMenu.plugins['BrowserPrint'].getStatus() == 'ready' || gestorMenu.plugins['BrowserPrint'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('pdfPrinter')) {
+		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
@@ -149,38 +160,38 @@ $("body").on("pluginLoad", function(event, plugin){
 					if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
 						let d = new Date()
 						let n = d.getTime();
-            			L.simpleMapScreenshoter({
-                    hideElementsWithSelectors: [
-                      ".leaflet-top.leaflet-left",
-                      ".leaflet-top.leaflet-right",
-                      ".leaflet-bottom.leaflet-right",
-                      "#zoom-level",
-                      "#sidebar-toolbar-icon-left",
-                      "#sidebar-toolbar-icon-right",
-                    ],
-                    screenName: "mapaIGN" + n,
-                  }).addTo(mapa);
+						L.simpleMapScreenshoter({
+							hideElementsWithSelectors: [
+							".leaflet-top.leaflet-left",
+							".leaflet-top.leaflet-right",
+							".leaflet-bottom.leaflet-right",
+							"#zoom-level",
+							"#sidebar-toolbar-icon-left",
+							"#sidebar-toolbar-icon-right",
+							],
+							screenName: "mapaIGN" + n,
+						}).addTo(mapa);
 
-    			        document.getElementsByClassName(
-    			          "leaflet-control-simpleMapScreenshoter"
-    			        )[0].id = "screenShoter";
-    			        let screenShoter = document.getElementById("screenShoter");
-    			        screenShoter.classList.remove(
-    			          "leaflet-control-simpleMapScreenshoter"
-    			        );
-    			        screenShoter.classList.add("leaflet-control-locate");
-    			        screenShoter.classList.add("leaflet-bar");
-    			        screenShoter.style =
-    			          "width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
-    			        screenShoter.children[0].id = "screenShoter-btn";
+						document.getElementsByClassName(
+						"leaflet-control-simpleMapScreenshoter"
+						)[0].id = "screenShoter";
+						let screenShoter = document.getElementById("screenShoter");
+						screenShoter.classList.remove(
+						"leaflet-control-simpleMapScreenshoter"
+						);
+						screenShoter.classList.add("leaflet-control-locate");
+						screenShoter.classList.add("leaflet-bar");
+						screenShoter.style =
+						"width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
+						screenShoter.children[0].id = "screenShoter-btn";
 						
-    			        let screenShoterBtn = document.getElementById("screenShoter-btn");
-    			        screenShoterBtn.classList.remove(
-    			          "leaflet-control-simpleMapScreenshoter-btn"
-    			        );
-    			        screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
+						let screenShoterBtn = document.getElementById("screenShoter-btn");
+						screenShoterBtn.classList.remove(
+						"leaflet-control-simpleMapScreenshoter-btn"
+						);
+						screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
-    			        gestorMenu.plugins["screenShoter"].setStatus("visible");
+						gestorMenu.plugins["screenShoter"].setStatus("visible");
     			    }
 					break;
 				case 'ZoomHome':
@@ -194,10 +205,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
-
+					break;
+				case 'FullScreen':
 					const fs = new Fullscreen();
 					fs.createComponent();
-
 					break;
 				case 'betterScale':
 					// Leaflet BetterScale plugin
@@ -369,14 +380,16 @@ $("body").on("pluginLoad", function(event, plugin){
 						  );
 						});
 					}
-	
-					const pdfP = new PdfPrinter();
-					pdfP.createComponent();
 					
 					const loadLayersModal = new LoadLayersModal();
         			loadLayersModal.createComponent();
 					
 				   break;
+				case 'pdfPrinter':
+					const pdfP = new PdfPrinter();
+					pdfP.createComponent();
+
+					break;
 				case 'Draw':
 
 				    var orgReadbleDistance = L.GeometryUtil.readableArea;

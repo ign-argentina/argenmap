@@ -48,12 +48,13 @@ const PLUGINS = {
   betterWMS: _PATH + "leaflet-wms/leaflet.wms.js",
   graticula: _PATH + "leaflet-simplegraticule/L.SimpleGraticule.js",
   WMTS: _PATH + "leaflet-wmts/leaflet-tilelayer-wmts.js",
-  //EasyPrint: _PATH + "leaflet-easyPrint/bundle.js",
   elevation: _PATH + "leaflet-elevation/leaflet-elevation.js",
   textpath: _PATH + "leaflet-textpath/leaflet-textpath.js",
   screenShoter: "https://unpkg.com/leaflet-simple-map-screenshoter",
   turf: "https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js",
   editableLabel: _PATH + "leaflet-editable-label/Leaflet.EditableLabel.js",
+  pdfPrinter: "src/js/components/pdfPrinter/pdfPrinter.js",
+  FullScreen: "src/js/components/fullscreen/fullscreen.js",
 };
 
 const MESSAGE_TIME = 4000;
