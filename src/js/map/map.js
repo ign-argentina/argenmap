@@ -332,6 +332,9 @@ $("body").on("pluginLoad", function(event, plugin){
 				    const fs = new Fullscreen();
 					fs.createComponent();
 
+					const pdfP = new PdfPrinter();
+					pdfP.createComponent();
+
 				   break;
 				case 'Draw':
 

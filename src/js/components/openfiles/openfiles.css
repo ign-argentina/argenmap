@@ -117,12 +117,6 @@
   max-height: 56px;
 }
 
-.center-flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 #modalgeojson {
   position: absolute;
   flex-direction: column;
