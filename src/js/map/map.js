@@ -51,7 +51,8 @@ const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) 
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
 var ordered = ['','','','','','','','','',''];
-var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9; var ordenScreenShoter = 10;
+var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5;
+var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9; var ordenScreenShoter = 10;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';

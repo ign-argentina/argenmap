@@ -45,6 +45,7 @@ class SidebarTools {
         divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
         fullscreen = document.getElementById("fullscreen");
         icongeop = document.getElementById("geoprocesos-icon");
+        pdfPrinter = document.getElementById("pdfPrinter");
 
         if (areHiddenLeft) {
           /*if (window.matchMedia("(max-width: 400px)").matches) {
@@ -67,7 +68,7 @@ class SidebarTools {
         } else {
           //this.style.left = "10px";
           areHiddenLeft = true;
-          //zoomhome[0].hidden = true;
+          zoomhome[0].hidden = true;
           customgraticule[0].hidden = true;
           locate[0].hidden = true;
           measure[0].hidden = true;
