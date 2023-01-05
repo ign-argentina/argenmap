@@ -194,6 +194,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
+
+					const fs = new Fullscreen();
+					fs.createComponent();
+
 					break;
 				case 'betterScale':
 					// Leaflet BetterScale plugin
@@ -364,11 +368,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						  );
 						});
-					  }
-
-					const fs = new Fullscreen();
-					fs.createComponent();
-					
+					}
+	
 					const pdfP = new PdfPrinter();
 					pdfP.createComponent();
 					
