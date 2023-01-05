@@ -50,9 +50,10 @@ const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) 
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['','','','','','','','','','',''];
+var ordered = ['','','','','','','','','','','','',''];
 var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
-var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10; var ordenPdfPriner = 11;
+var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -92,8 +93,11 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'screenShoter':
 			ordered.splice(ordenScreenShoter, 1, plugin.pluginName);
 			break;
-		case 'BrowserPrint':
-			ordered.splice(ordenPrint, 1, plugin.pluginName);
+		case 'geoprocessing':
+			ordered.splice(ordenGeoprocessing, 1, plugin.pluginName);
+			break;
+		case 'loadLayer':
+			ordered.splice(ordenLoadLayer, 1, plugin.pluginName);
 			break;
 		case 'pdfPrinter':
 			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
@@ -153,6 +157,14 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['screenShoter'].getStatus() == 'ready' || gestorMenu.plugins['screenShoter'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
+	if(visiblesActivar && gestorMenu.pluginExists('geoprocessing')) {
+		if(gestorMenu.plugins['geoprocessing'].getStatus() == 'ready' || gestorMenu.plugins['geoprocessing'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('loadLayer')) {
+		if(gestorMenu.plugins['loadLayer'].getStatus() == 'ready' || gestorMenu.plugins['loadLayer'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
 	if(visiblesActivar){
 		ordered.forEach(function(e){
 			switch (e) {
@@ -209,6 +221,10 @@ $("body").on("pluginLoad", function(event, plugin){
 				case 'FullScreen':
 					const fs = new Fullscreen();
 					fs.createComponent();
+					break;
+				case 'loadLayer':
+					const loadLayersModal = new LoadLayersModal();
+        			loadLayersModal.createComponent();
 					break;
 				case 'betterScale':
 					// Leaflet BetterScale plugin
@@ -340,7 +356,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					} */
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
-				case 'BrowserPrint':					
+				case 'geoprocessing':					
 					if (loadGeoprocessing) {
 						$("head").append(
 						  '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">'
@@ -379,16 +395,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						  );
 						});
-					}
-					
-					const loadLayersModal = new LoadLayersModal();
-        			loadLayersModal.createComponent();
-					
+					}					
 				   break;
 				case 'pdfPrinter':
 					const pdfP = new PdfPrinter();
 					pdfP.createComponent();
-
 					break;
 				case 'Draw':
 

@@ -55,6 +55,8 @@ const PLUGINS = {
   editableLabel: _PATH + "leaflet-editable-label/Leaflet.EditableLabel.js",
   pdfPrinter: "src/js/components/pdfPrinter/pdfPrinter.js",
   FullScreen: "src/js/components/fullscreen/fullscreen.js",
+  geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
+  loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js"
 };
 
 const MESSAGE_TIME = 4000;
