@@ -356,47 +356,42 @@ $("body").on("pluginLoad", function(event, plugin){
 					} */
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
-				case 'geoprocessing':					
+				case "geoprocessing":
 					if (loadGeoprocessing) {
-						$("head").append(
-						  '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">'
-						);
-						$("head").append(
-						  '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
-						);
-						$("head").append(
-						  '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">'
-						);
-						$("head").append(
-						  '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
-						);
-						$.getScript(
-						  "src/js/plugins/geoprocess-executor/geoprocess-executor.js"
-						).done(function () {
-						  $.getScript("src/js/components/form-builder/form-builder.js").done(
-							function () {
-							  $.getScript(
-								"src/js/components/geoprocessing/geoprocessing.js"
-							  ).done(function () {
-								geoProcessingManager = new Geoprocessing();
-								geoProcessingManager.createIcon();
-								geoProcessingManager.setAvailableGeoprocessingConfig(
-								  app.geoprocessing
-								);
-								geoProcessingManager.getProcesses().forEach((process) => {
-								  if (process.geoprocess === "waterRise") {
-									// script loading test without jQuery
-									app._loadScript(
-									  "./src/js/components/geoprocessing/IHeight.js"
-									);
-								  }
-								});
+					  let HTMLhead = document.querySelector("head");
+					  HTMLhead.insertAdjacentHTML("beforeend",
+						'<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
+					  HTMLhead.insertAdjacentHTML("beforeend",
+						'<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
+					  HTMLhead.insertAdjacentHTML("beforeend",
+						'<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">');
+					  $.getScript(
+						"src/js/plugins/geoprocess-executor/geoprocess-executor.js"
+					  ).done(function () {
+						$.getScript("src/js/components/form-builder/form-builder.js").done(
+						  function () {
+							$.getScript(
+							  "src/js/components/geoprocessing/geoprocessing.js"
+							).done(function () {
+							  geoProcessingManager = new Geoprocessing();
+							  geoProcessingManager.createIcon();
+							  geoProcessingManager.setAvailableGeoprocessingConfig(
+								app.geoprocessing
+							  );
+							  geoProcessingManager.getProcesses().forEach((process) => {
+								if (process.geoprocess === "waterRise") {
+								  // script loading test without jQuery
+								  app._loadScript(
+									"./src/js/components/geoprocessing/IHeight.js"
+								  );
+								}
 							  });
-							}
-						  );
-						});
-					}					
-				   break;
+							});
+						  }
+						);
+					  });
+					}
+					break;
 				case 'pdfPrinter':
 					const pdfP = new PdfPrinter();
 					pdfP.createComponent();
@@ -3106,6 +3101,4 @@ function copytoClipboard(coords){
 	document.body.removeChild(aux);
 	new UserMessage('Las coordenadas se copiaron al portapapeles', true, 'information');
 }
-
-
 
