@@ -51,7 +51,7 @@ const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) 
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
 var ordered = ['','','','','','','','','',''];
-var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 5;
+var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10; 
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
@@ -326,6 +326,46 @@ $("body").on("pluginLoad", function(event, plugin){
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
 				case 'BrowserPrint':					
+					if (loadGeoprocessing) {
+						$("head").append(
+						  '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">'
+						);
+						$("head").append(
+						  '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
+						);
+						$("head").append(
+						  '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">'
+						);
+						$("head").append(
+						  '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
+						);
+						$.getScript(
+						  "src/js/plugins/geoprocess-executor/geoprocess-executor.js"
+						).done(function () {
+						  $.getScript("src/js/components/form-builder/form-builder.js").done(
+							function () {
+							  $.getScript(
+								"src/js/components/geoprocessing/geoprocessing.js"
+							  ).done(function () {
+								geoProcessingManager = new Geoprocessing();
+								geoProcessingManager.createIcon();
+								geoProcessingManager.setAvailableGeoprocessingConfig(
+								  app.geoprocessing
+								);
+								geoProcessingManager.getProcesses().forEach((process) => {
+								  if (process.geoprocess === "waterRise") {
+									// script loading test without jQuery
+									app._loadScript(
+									  "./src/js/components/geoprocessing/IHeight.js"
+									);
+								  }
+								});
+							  });
+							}
+						  );
+						});
+					  }
+
 					const fs = new Fullscreen();
 					fs.createComponent();
 					
