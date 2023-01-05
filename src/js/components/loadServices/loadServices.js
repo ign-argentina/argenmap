@@ -359,9 +359,11 @@ function handleAllLayersCheck(e) {
 					layer: servicesLoaded[layersIndex[layer_name]].layers[layer_name],
 					name: layer_name,
 					file_name: layer_name,
-					groupname: servicesLoaded[layersIndex[layer_name]].title
+					isActive: false,
+					type: "WMS",
+					section: servicesLoaded[layersIndex[layer_name]].title
 				});
-				menu_ui.addLayerToGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name])
+				menu_ui.addLayerToGroup(servicesLoaded[layersIndex[layer_name]].title, "WMS", layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 			}
 		}
 	} else {
@@ -371,10 +373,16 @@ function handleAllLayersCheck(e) {
 
 			addedLayers.forEach((layer) => {
 				if (layer.groupname == groupName) {
-					addedLayers.splice(layer,1);
+
+					let index = addedLayers.indexOf(layer);
+					if (index > -1) {
+						addedLayers.splice(index, 1);
+					}
 				}
 			});
-			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
+			updateNumberofLayers(servicesLoaded[layersIndex[layer_name]].title);
+
+			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 			document.querySelector(`input[value='${layer_name}']`).checked = false
 			for (let i in selectedServiceLayers) {
 				if (selectedServiceLayers[i] === layer_name) {
@@ -396,17 +404,23 @@ function handleLayerCheck(e) {
 			layer: servicesLoaded[layersIndex[e.target.value]].layers[e.target.value],
 			name: e.target.value,
 			file_name: e.target.value,
-			groupname: servicesLoaded[layersIndex[e.target.value]].title
+			isActive: false,
+			type: "WMS",
+			section: servicesLoaded[layersIndex[e.target.value]].title
 		});
-		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
+		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, "WMS", e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 
 	} else {
 		addedLayers.forEach((layer) => {
 			if (layer.id == layersIndex[e.target.value]) {
-				addedLayers.splice(layer,1);
+				let index = addedLayers.indexOf(layer);
+				if (index > -1) {
+					addedLayers.splice(index, 1);
+				}
 			}
 		});
-		
+		updateNumberofLayers(servicesLoaded[layersIndex[e.target.value]].title);
+
 		menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[e.target.value]].title, e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 		for (let i in selectedServiceLayers) {
 			if (selectedServiceLayers[i] === e.target.value) {
