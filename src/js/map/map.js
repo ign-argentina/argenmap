@@ -51,8 +51,8 @@ const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) 
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
 var ordered = ['','','','','','','','','',''];
-var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5;
-var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9; var ordenScreenShoter = 10;
+var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 5;
+var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10; 
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -68,32 +68,32 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'ZoomHome':
 			ordered.splice(ordenZoomHome, 1, plugin.pluginName);
 			break;
+		case 'locate':
+			ordered.splice(ordenLocate, 1, plugin.pluginName);
+			break;
 		case 'Measure':
 			ordered.splice(ordenMeasure, 1, plugin.pluginName);
-			break;
-        case 'BrowserPrint':
-			ordered.splice(ordenPrint, 1, plugin.pluginName);
 			break;
 		case 'graticula':
 			ordered.splice(ordenGraticula, 1, plugin.pluginName);
 			break;
-		case 'minimap':
-			ordered.splice(ordenMinimap, 1, plugin.pluginName);
-			break;
-		case 'betterScale':
-			ordered.splice(ordenBetterScale, 1, plugin.pluginName);
+		case 'FullScreen':
+			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
 			break;
 		case 'Draw':
 			ordered.splice(ordenDraw, 1, plugin.pluginName);
 			break;
-		case 'locate':
-			ordered.splice(ordenLocate, 1, plugin.pluginName);
+		case 'betterScale':
+			ordered.splice(ordenBetterScale, 1, plugin.pluginName);
 			break;
-		case 'FullScreen':
-			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
+		case 'minimap':
+			ordered.splice(ordenMinimap, 1, plugin.pluginName);
 			break;
 		case 'screenShoter':
 			ordered.splice(ordenScreenShoter, 1, plugin.pluginName);
+			break;
+		case 'BrowserPrint':
+			ordered.splice(ordenPrint, 1, plugin.pluginName);
 			break;
 		default :
 			// Add unordered plugins
@@ -325,17 +325,16 @@ $("body").on("pluginLoad", function(event, plugin){
 					} */
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
-				case 'BrowserPrint':
-
-					const loadLayersModal = new LoadLayersModal();
-        			loadLayersModal.createComponent();
-
-				    const fs = new Fullscreen();
+				case 'BrowserPrint':					
+					const fs = new Fullscreen();
 					fs.createComponent();
-
+					
 					const pdfP = new PdfPrinter();
 					pdfP.createComponent();
-
+					
+					const loadLayersModal = new LoadLayersModal();
+        			loadLayersModal.createComponent();
+					
 				   break;
 				case 'Draw':
 
