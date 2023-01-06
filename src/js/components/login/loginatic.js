@@ -143,7 +143,7 @@ loginatic = function () {
                 </div>
             </div>
         `;
-    document.getElementById("login-wrapper").append(wrapperHtml);
+    $("#login-wrapper").append(wrapperHtml);
   };
 
   this._addLogoutButton = () => {
@@ -157,7 +157,5 @@ loginatic = function () {
     logoutButton.innerHTML = `<div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div>`;
 
     document.getElementById("mapa").append(logoutButton);
-
-    // $("#mapa").append(`<div class="center-flex btn-logout" id="btn-logout" title="Cerrar sesión" onclick="loginatic.logout();" style="width: 30px; height: 30px; border: medium none; box-shadow: rgba(0, 0, 0, 0.65) 0px 1px 5px;"><div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div></div>`);
   };
 };
