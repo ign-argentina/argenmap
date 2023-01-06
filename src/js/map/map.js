@@ -370,22 +370,18 @@ $("body").on("pluginLoad", function(event, plugin){
 					  ).done(function () {
 						$.getScript("src/js/components/form-builder/form-builder.js").done(
 						  function () {
-							$.getScript(
-							  "src/js/components/geoprocessing/geoprocessing.js"
-							).done(function () {
-							  geoProcessingManager = new Geoprocessing();
-							  geoProcessingManager.createIcon();
-							  geoProcessingManager.setAvailableGeoprocessingConfig(
-								app.geoprocessing
-							  );
-							  geoProcessingManager.getProcesses().forEach((process) => {
-								if (process.geoprocess === "waterRise") {
-								  // script loading test without jQuery
-								  app._loadScript(
-									"./src/js/components/geoprocessing/IHeight.js"
-								  );
-								}
-							  });
+							geoProcessingManager = new Geoprocessing();
+							geoProcessingManager.createIcon();
+							geoProcessingManager.setAvailableGeoprocessingConfig(
+							app.geoprocessing
+							);
+							geoProcessingManager.getProcesses().forEach((process) => {
+							if (process.geoprocess === "waterRise") {
+								// script loading test without jQuery
+								app._loadScript(
+								"./src/js/components/geoprocessing/IHeight.js"
+								);
+							}
 							});
 						  }
 						);
