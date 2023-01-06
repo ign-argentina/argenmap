@@ -51,7 +51,7 @@ const PLUGINS = {
   elevation: _PATH + "leaflet-elevation/leaflet-elevation.js",
   textpath: _PATH + "leaflet-textpath/leaflet-textpath.js",
   screenShoter: "https://unpkg.com/leaflet-simple-map-screenshoter",
-  turf: "https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js",
+  turf: "src/js/plugins/turf/turf.min.js",
   editableLabel: _PATH + "leaflet-editable-label/Leaflet.EditableLabel.js",
   pdfPrinter: "src/js/components/pdfPrinter/pdfPrinter.js",
   FullScreen: "src/js/components/fullscreen/fullscreen.js",
