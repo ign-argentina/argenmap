@@ -489,11 +489,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 					
 					mapa.on('draw:editstart', (e) => {
-						var n = Object.keys(drawnItems._layers).length;
-						if (n>100){
-							alert(`Existen ${n} elementos en el mapa. Esta cantidad puede afectar el funcionamiento del mismo y se deberá recargar la página`);
-							
-						}
 						currentlyDrawing = true;
 					});
 
