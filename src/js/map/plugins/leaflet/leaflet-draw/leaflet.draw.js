@@ -2702,7 +2702,7 @@
             } */
         });
 
-        if (_nodes > 5) {
+        if (_nodes > 3000) {
           if (window.confirm(`ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`)) {
             !this._enabled &&
               this._hasAvailableLayers() &&
