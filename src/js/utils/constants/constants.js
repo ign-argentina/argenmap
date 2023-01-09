@@ -37,7 +37,7 @@ const PLUGINS = {
   leafletAjax: "https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js",
   betterScale: "https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js",
   AwesomeMarkers: "https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js",
-  Draw: "https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js",
+  Draw: _PATH + "leaflet-draw/leaflet.draw.js",
   ZoomHome: _PATH + "leaflet-zoomhome/dist/leaflet.zoomhome.min.js",
   BingLayer: _PATH + "leaflet-bing-layer-gh-pages/leaflet-bing-layer.js",
   minimap: _PATH + "leaflet-minimap/Control.MiniMap.js",
