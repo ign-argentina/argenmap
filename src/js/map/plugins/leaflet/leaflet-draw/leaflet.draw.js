@@ -2685,27 +2685,37 @@
           : L.EditToolbar.Edit.include(L.Mixin.Events);
       },
       enable: function () {
-        let _nodes = null, _complexGeom = ["polyline", "rectangle", "polygon"]; 
-        this._featureGroup.eachLayer(lyr => {
-            let isComplex = _complexGeom.find(elem => elem === lyr.type)
-            if(isComplex) {
-                _nodes += lyr._latlngs.length;
-            }/*  else {
+        let _nodes = null,
+          _complexGeom = ["polyline", "rectangle", "polygon"];
+        this._featureGroup.eachLayer((lyr) => {
+          let isComplex = _complexGeom.find((elem) => elem === lyr.type);
+          if (isComplex) {
+            _nodes += lyr._latlngs.length;
+          } /*  else {
                 console.log(lyr.type + " single coordinate geom")
             } */
         });
-        
-        if(_nodes < 5) {
+
+        if (_nodes > 500) {
+          if (window.confirm(`Existen ${_nodes} elementos en el mapa.`)) {
             !this._enabled &&
+              this._hasAvailableLayers() &&
+              (this.fire("enabled", { handler: this.type }),
+              this._map.fire(L.Draw.Event.EDITSTART, { handler: this.type }),
+              L.Handler.prototype.enable.call(this),
+              this._featureGroup
+                .on("layeradd", this._enableLayerEdit, this)
+                .on("layerremove", this._disableLayerEdit, this));
+          }
+        } else {
+          !this._enabled &&
             this._hasAvailableLayers() &&
             (this.fire("enabled", { handler: this.type }),
             this._map.fire(L.Draw.Event.EDITSTART, { handler: this.type }),
             L.Handler.prototype.enable.call(this),
             this._featureGroup
-            .on("layeradd", this._enableLayerEdit, this)
-            .on("layerremove", this._disableLayerEdit, this));
-        } else {
-            alert(`${_nodes} elements..`);
+              .on("layeradd", this._enableLayerEdit, this)
+              .on("layerremove", this._disableLayerEdit, this));
         }
       },
       disable: function () {
