@@ -831,6 +831,7 @@ Control mapa base
   text-align: center;
   background-image: url(../images/capas.png);
   background-size: 80% 70%;
+  opacity: 0.9;
 }
 .basemap-selector .leaflet-control-layers-toggle:hover {
   background-color: #f4f4f4;
@@ -1154,7 +1155,7 @@ Icons
   cursor: pointer;
 }
 i.fas.fa-camera{
-  color: #252525;
+  color: #333333;
 }
 
 @-moz-document url-prefix() {
