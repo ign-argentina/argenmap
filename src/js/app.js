@@ -553,20 +553,11 @@ async function loadTemplate(data, isDefaultTemplate) {
         const sidebarTool = new SidebarTools();
         sidebarTool.createComponent();
 
-        //const sc = new Screenshot();
-        //sc.createComponent();
-
         // const modalgeojson = new IconModalGeojson;
         // modalgeojson.createComponent();
 
         // const modalserviceLayers = new IconModalLoadServices;
         // modalserviceLayers.createComponent();
-
-        const loadLayersModal = new LoadLayersModal();
-        loadLayersModal.createComponent();
-
-        const fs = new Fullscreen();
-        fs.createComponent();
 
         setProperStyleToCtrlBtns();
 
@@ -578,45 +569,6 @@ async function loadTemplate(data, isDefaultTemplate) {
           event.stopPropagation();
         });
 
-        if (loadGeoprocessing) {
-          $("head").append(
-            '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">'
-          );
-          $("head").append(
-            '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
-          );
-          $("head").append(
-            '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">'
-          );
-          $("head").append(
-            '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
-          );
-          $.getScript(
-            "src/js/plugins/geoprocess-executor/geoprocess-executor.js"
-          ).done(function () {
-            $.getScript("src/js/components/form-builder/form-builder.js").done(
-              function () {
-                $.getScript(
-                  "src/js/components/geoprocessing/geoprocessing.js"
-                ).done(function () {
-                  geoProcessingManager = new Geoprocessing();
-                  geoProcessingManager.createIcon();
-                  geoProcessingManager.setAvailableGeoprocessingConfig(
-                    app.geoprocessing
-                  );
-                  geoProcessingManager.getProcesses().forEach((process) => {
-                    if (process.geoprocess === "waterRise") {
-                      // script loading test without jQuery
-                      app._loadScript(
-                        "./src/js/components/geoprocessing/IHeight.js"
-                      );
-                    }
-                  });
-                });
-              }
-            );
-          });
-        }
       }
     }, 100);
   });

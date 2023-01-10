@@ -158,6 +158,9 @@ class Geoprocessing {
   }
 
   displayResult(result) {
+    let layerType = "geoprocess",
+      sectionName = "Geoprocesos"
+    
     switch (this.geoprocessId) {
       case "contour": {
         btn_modal_loading = false;
@@ -184,13 +187,16 @@ class Geoprocessing {
           let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
           mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
+
         addedLayers.push({
           id: layername,
           layer: result,
           name: layername,
           file_name: layername,
           rectangle: selectedRectangle,
-          kb: null,
+          type: layerType,
+          isActive: true,
+          section: sectionName
         });
 
         // ** Avoiding Leaflet Draw object test **
@@ -206,7 +212,8 @@ class Geoprocessing {
         //mapa.featureGroups.setStyle({color: '#876508'});
         // **
 
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
+        updateNumberofLayers(sectionName)
         break;
       }
       case "waterRise": {
@@ -277,10 +284,15 @@ class Geoprocessing {
           name: layername,
           file_name: title,
           rectangle: selectedRectangle,
-          download: download
+          isActive: true,
+          download: download,
+          type: layerType,
+          section: sectionName
         });
         
-        menu_ui.addFileLayer("Geoprocesos", title, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, title, layername, layername, true);
+        updateNumberofLayers(sectionName)
+
         break;
       }
       case "buffer": {
@@ -295,9 +307,13 @@ class Geoprocessing {
           layer: result,
           name: layername,
           file_name: layername,
-          kb: null,
+          type: layerType,
+          isActive: true,
+          section: sectionName
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
+        updateNumberofLayers(sectionName)
+
         break;
       }
     }

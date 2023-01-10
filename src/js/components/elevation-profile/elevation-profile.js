@@ -104,17 +104,24 @@ class IElevationProfile {
             let layername = this.namePrefixElevProfile + counterElevProfile;
             counterElevProfile++;
             let dataForDisplay = this.data;
-            let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername;
+            let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername,
+                layerType = "geoprocess",
+                sectionName = "Geoprocesos"
 
-            this.addGeoprocessLayer("Geoprocesos", layername, layername, layername, true);
             addedLayers.push({
                 id: layername,
                 name: layername,
                 file_name: layername,
                 layer: result,
                 data: dataForDisplay,
+                isActive: true,
                 polyline: selectedPolyline,
-              });
+                type: layerType,
+                section: sectionName
+            });
+            this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
+            showTotalNumberofLayers();
+            updateNumberofLayers(sectionName);
 
             this._displayResult(dataForDisplay, selectedPolyline);
             geoProcessingManager.loadingBtn("off")
@@ -148,6 +155,7 @@ class IElevationProfile {
                     aux.classList.remove("active")
                     selectedLayer.remove();
                     ptInner.classList.toggle("hidden");
+                    changeIsActive(layer.id, true);
                 }
 
             }
@@ -163,6 +171,7 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
+        showTotalNumberofLayers();
 
     }
 
@@ -170,34 +179,42 @@ class IElevationProfile {
         let aux = document.getElementById("flc-" + id),
         selectedLayer,
         wrapper =  document.getElementById("pt-wrapper"),
-        ptInner =  document.getElementById(id);
-
+        ptInner =  document.getElementById(id),
+        sectionName;
         mapa.editableLayers.polyline.forEach(polyline => {
             if (polyline.idElevProfile === id) {
                 selectedLayer = polyline;
             }
         });
 
-        if (aux.classList.contains("active")) {
-            if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
-                wrapper.classList.toggle("hidden");
+        addedLayers.forEach(lyr => {
+            if (lyr.id == id) {
+                sectionName = lyr.section;
+                if (aux.classList.contains("active")) {
+                    if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
+                        wrapper.classList.toggle("hidden");
+                    }
+                    else {
+                        aux.classList.remove("active")
+                        selectedLayer.remove();
+                        ptInner.classList.toggle("hidden");
+                    }
+                    lyr.isActive = false
+                }
+                else if (!aux.classList.contains("active")) {
+                    if (wrapper.classList.contains("hidden")) { //if wrapper is  hidden & all layers are deactivated
+                        wrapper.classList.toggle("hidden");
+                    }
+                    aux.classList.add("active");
+                    selectedLayer.addTo(mapa);
+                    ptInner.classList.toggle("hidden");
+                    lyr.isActive = true
+
+                }
+                
             }
-            else {
-                aux.classList.remove("active")
-                selectedLayer.remove();
-                ptInner.classList.toggle("hidden");
-            }
-       
-        }
-        else if (!aux.classList.contains("active")) {
-            if (wrapper.classList.contains("hidden")) { //if wrapper is  hidden & all layers are deactivated
-                wrapper.classList.toggle("hidden");
-            }
-            aux.classList.add("active");
-            selectedLayer.addTo(mapa);
-            ptInner.classList.toggle("hidden");
-        }
-        
+        });
+      
         //Is wrapper empty?
         let count = 0; 
         addedLayers.forEach(layer => {
@@ -208,6 +225,9 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
+        updateNumberofLayers(sectionName);
+        showTotalNumberofLayers();
+
     }
 
 
@@ -236,6 +256,7 @@ class IElevationProfile {
                 
             btncloseWrapper.onclick = () => {
                 this.hideElevationProfile();
+                updateNumberofLayers(document.getElementById("elevationProfile").children[1].section);
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);
@@ -504,10 +525,12 @@ class IElevationProfile {
 
     }
 
-    addGeoprocessLayer(groupname, textName, id, fileName, isActive){
+    addGeoprocessLayer(groupname, layerType, textName, id, fileName, isActive){
         let groupnamev= clearSpecialChars(groupname);
-        let main = document.getElementById("lista-"+groupnamev)
-
+        let main = document.getElementById("lista-"+groupnamev)  
+        if (!fileLayerGroup.includes(groupnamev)) {
+            fileLayerGroup.push(groupnamev);
+        }
         let id_options_container = "opt-c-"+id
         if(!main){menu_ui.addSection(groupnamev)}
         let content = document.getElementById(groupnamev+"-panel-body")
@@ -561,7 +584,7 @@ class IElevationProfile {
             delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
             delete_opt.onclick = () => {
                 let menu = new Menu_UI
-                menu.modalEliminar(id)
+                menu.modalEliminar(id, groupnamev, layerType)
             }
 
             let download_opt = document.createElement("li")
@@ -599,6 +622,7 @@ class IElevationProfile {
             layer_item.append(options)
             layer_container.append(layer_item)
             content.appendChild(layer_container)
+            addCounterForSection(groupnamev, layerType);
     }
 
     

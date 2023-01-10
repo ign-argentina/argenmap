@@ -37,7 +37,7 @@ const PLUGINS = {
   leafletAjax: "https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js",
   betterScale: "https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.js",
   AwesomeMarkers: "https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js",
-  Draw: "https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js",
+  Draw: _PATH + "leaflet-draw/leaflet.draw.js",
   ZoomHome: _PATH + "leaflet-zoomhome/dist/leaflet.zoomhome.min.js",
   BingLayer: _PATH + "leaflet-bing-layer-gh-pages/leaflet-bing-layer.js",
   minimap: _PATH + "leaflet-minimap/Control.MiniMap.js",
@@ -48,11 +48,15 @@ const PLUGINS = {
   betterWMS: _PATH + "leaflet-wms/leaflet.wms.js",
   graticula: _PATH + "leaflet-simplegraticule/L.SimpleGraticule.js",
   WMTS: _PATH + "leaflet-wmts/leaflet-tilelayer-wmts.js",
-  EasyPrint: _PATH + "leaflet-easyPrint/bundle.js",
   elevation: _PATH + "leaflet-elevation/leaflet-elevation.js",
   textpath: _PATH + "leaflet-textpath/leaflet-textpath.js",
-  turf: "https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js",
+  screenShoter: "https://unpkg.com/leaflet-simple-map-screenshoter",
+  turf: "src/js/plugins/turf/turf.min.js",
   editableLabel: _PATH + "leaflet-editable-label/Leaflet.EditableLabel.js",
+  pdfPrinter: "src/js/components/pdfPrinter/pdfPrinter.js",
+  FullScreen: "src/js/components/fullscreen/fullscreen.js",
+  geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
+  loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js"
 };
 
 const MESSAGE_TIME = 4000;

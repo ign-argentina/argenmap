@@ -79,13 +79,18 @@
   left: calc(100% / 5);
 }
 
+#loadLayersButtonContent>img{
+  opacity: 0.9;
+}
+
 #loadLayersButton {
 width: 34px;
 height: 34px;
 }
 
 #loadLayersButton:hover {
-  background-color: #f4f4f4;
+  background-color: #f5f4f4;
+  cursor: pointer;
 }
 
 #loadLayersButtonContent {
@@ -123,9 +128,9 @@ height: 34px;
     flex-direction: column;
   }
 
-  .modalNavButton {
-    /* margin-right: 0; */
-  }
+  /*.modalNavButton {
+     margin-right: 0; 
+  }*/
 }
 
 /* Medium devices (tablets, 768px and up) */
