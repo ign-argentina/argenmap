@@ -196,6 +196,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						screenShoter.style =
 						"width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
 						screenShoter.children[0].id = "screenShoter-btn";
+						screenShoter.title = "Captura de pantalla";
 						
 						let screenShoterBtn = document.getElementById("screenShoter-btn");
 						screenShoterBtn.classList.remove(
