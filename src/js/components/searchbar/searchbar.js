@@ -67,9 +67,8 @@ class Searchbar_UI {
 
     let icon = document.createElement("div");
     icon.id = "div-icon-close-searchbar";
-    icon.style = "margin: 5px;text-align:center;width:32px;height:27px";
-    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px;display: flex;
-    align-items: flex-end;justify-content: center"></i>`;
+    icon.style = "margin: 5px;text-align:center;width:32px;height:27pxdisplay:flex;align-items:flex-end;justify-content:center;";
+    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px;"></i>`;
     icon.style.width = "10%";
     maininput.append(input);
     maininput.append(icon);
@@ -138,14 +137,14 @@ class Searchbar_UI {
       } else if (q.length <= 2) {
         results.innerHTML = "";
         search_input.style.width = "300px";
-        icon_searchbar.style.display = "block";
+        icon_searchbar.style.display = "flex";
         selected_item = false;
         if (innerWidth  <= 768) {
           document.getElementById("logo-navbar").style.display= "none"
         }
       } else {
         search_input.style.width = "300px";
-        icon_searchbar.style.display = "block";
+        icon_searchbar.style.display = "flex";
         search_term = q;
         if (innerWidth  <= 768) {
           document.getElementById("logo-navbar").style.display= "none"
@@ -188,11 +187,11 @@ class Searchbar_UI {
       } else if (q.length <= 2) {
         results.innerHTML = "";
         search_input.style.width = "300px";
-        icon_searchbar.style.display = "block";
+        icon_searchbar.style.display = "flex";
         selected_item = false;
       } else {
         search_input.style.width = "300px";
-        icon_searchbar.style.display = "block";
+        icon_searchbar.style.display = "flex";
         search_term = q;
 
         results.innerHTML = "";
