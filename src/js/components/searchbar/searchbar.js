@@ -68,7 +68,8 @@ class Searchbar_UI {
     let icon = document.createElement("div");
     icon.id = "div-icon-close-searchbar";
     icon.style = "margin: 5px;text-align:center;width:32px;height:27px";
-    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px"></i>`;
+    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px;display: flex;
+    align-items: flex-end;justify-content: center"></i>`;
     icon.style.width = "10%";
     maininput.append(input);
     maininput.append(icon);
