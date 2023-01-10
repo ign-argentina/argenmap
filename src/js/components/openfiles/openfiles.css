@@ -297,7 +297,7 @@ section .details span{
 
 .upload{
   width: 100%;
-  color:#37bbed;
+  color:#37bbed !important;
   cursor: pointer;
 }
 .upload:hover{

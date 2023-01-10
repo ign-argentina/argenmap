@@ -2689,21 +2689,21 @@
           _complexGeom = ["polyline", "rectangle", "polygon"];
         this._featureGroup.eachLayer((lyr) => {
           let isComplex = _complexGeom.find((elem) => elem === lyr.type);
-          console.log(lyr)
           if (isComplex) {
             if (lyr.type === "polyline") {
               _nodes += lyr._latlngs.length;
-            } else if (lyr.type === "rectangle" || lyr.type === "polygon") {
+            } else /*if (lyr.type === "rectangle" || lyr.type === "polygon")*/ {
               _nodes += lyr._latlngs[0].length;
             }
-            console.log(_nodes)
           } /*  else {
                 console.log(lyr.type + " single coordinate geom")
             } */
         });
 
         if (_nodes > 3000) {
-          if (window.confirm(`ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`)) {
+          if (window.confirm(
+              `ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`
+            )) {
             !this._enabled &&
               this._hasAvailableLayers() &&
               (this.fire("enabled", { handler: this.type }),

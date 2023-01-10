@@ -1138,8 +1138,8 @@ Perfil Topografico
 /*******************************
 Icons
 *******************************/
-.fa, .fas {
-  color: #252525 !important;
+.fa,.fas~.leaflet-control {
+  color: #252525;
 }
 
 #screenShoter {
@@ -1152,6 +1152,9 @@ Icons
 #screenShoter :hover {
   background-color: #f5f4f4;
   cursor: pointer;
+}
+i.fas.fa-camera{
+  color: #252525;
 }
 
 @-moz-document url-prefix() {
