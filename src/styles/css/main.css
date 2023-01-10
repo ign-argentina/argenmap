@@ -1135,12 +1135,23 @@ Perfil Topografico
   background-color: #ffffff;
 }
 
+/*******************************
+Icons
+*******************************/
+.fa, .fas {
+  color: #252525 !important;
+}
+
 #screenShoter {
   flex-direction: column;
-  color: black;
-  font-size: 1.1em;
+  font-size: 1em;
   border-radius: 4px;
   background-color: #fff;
+}
+
+#screenShoter :hover {
+  background-color: #f5f4f4;
+  cursor: pointer;
 }
 
 @-moz-document url-prefix() {
@@ -1152,4 +1163,8 @@ Perfil Topografico
     border: 2px solid rgba(0, 0, 0, 0.2) !important;
     box-shadow: none !important;
   }
+}
+.leaflet-draw-edit-edit,.leaflet-draw-edit-remove:hover{
+  background-color: #f5f4f4 !important;
+  cursor: pointer !important;
 }

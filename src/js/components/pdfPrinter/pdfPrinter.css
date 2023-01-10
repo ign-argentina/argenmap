@@ -1,5 +1,6 @@
   #pdfPrinter :hover {
     background-color: #f5f4f4;
+    cursor: pointer;
   }
   
   #pdfPrinter :active {

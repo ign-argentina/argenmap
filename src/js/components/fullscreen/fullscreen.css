@@ -1,5 +1,6 @@
 #fullscreen :hover {
   background-color: #f5f4f4;
+  cursor: pointer;
 }
 
 #fullscreen :active {
@@ -11,5 +12,9 @@
   width: 100%;
   background-color: rgba(255, 255, 255, 1);
   border-radius: 4px;
-  font-size: 17px;
+  font-size: 18px;
+}
+
+#iconFS{
+  opacity: 0.9;
 }

@@ -85,7 +85,8 @@ height: 34px;
 }
 
 #loadLayersButton:hover {
-  background-color: #f4f4f4;
+  background-color: #f5f4f4;
+  cursor: pointer;
 }
 
 #loadLayersButtonContent {
