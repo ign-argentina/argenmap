@@ -180,6 +180,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							"#zoom-level",
 							"#sidebar-toolbar-icon-left",
 							"#sidebar-toolbar-icon-right",
+							"#btn-logout"
 							],
 							screenName: "mapaIGN" + n,
 						}).addTo(mapa);

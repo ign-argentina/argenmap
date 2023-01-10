@@ -967,6 +967,7 @@ SideBar
   #sidebar,
   #zoom-level,
   #spanopenfolder,
+  #btn-logout,
   div[id^="sidebar-toolbar-icon-"] {
     display: none !important;
   }
