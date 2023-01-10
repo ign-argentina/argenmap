@@ -1,97 +1,115 @@
-loginatic = function() {
+loginatic = function () {
+  this.currentLogin = false;
+  this.notLoggedTxt =
+    app.login.notLogged || "Contraseña no válida, intente nuevamente";
+  this.noPassword = app.login.noPassword || "Campo vacío, ingrese su contraseña";
+  this.init = (conf) => {
+    if (getCookie("autologin") == null) {
+      setCookie("autologin", 0);
+    }
+    if (getCookie("autologin") == "1") {
+      this._addLogoutButton();
+    }
+  };
 
-    this.currentLogin = false;
-    this.init = (conf) => {
-        if (getCookie("autologin") == null) {
-            setCookie("autologin", 0);
+  this.check = () => {
+    //setCookie("autologin", 0);
+    if (getCookie("autologin") == 1) {
+      let lat = getCookie("lat");
+      let lon = getCookie("lon");
+      let zoom = getCookie("zoom");
+
+      setTimeout(function () {
+        if (mapa.setView) {
+          mapa.setView([lat, lon], zoom);
         }
-        if (getCookie("autologin") == "1") {
-            this._addLogoutButton();
-        }
+      }, 500);
+    } else {
+      document.getElementById("login-wrapper").style.display = "flex";
+    }
+  };
+
+  this.process = async () => {
+    let pwd = document.getElementById("input-pwd").value;
+
+    if (!pwd.length) {
+      alert(this.noPassword);
+      // new UserMessage(this.noPassword, true, 'error');
     }
 
-    this.check = () => {
-        //setCookie("autologin", 0);
-        if (getCookie("autologin") == 1) {
-            let lat = getCookie("lat");
-            let lon = getCookie("lon");
-            let zoom = getCookie("zoom");
-
-            setTimeout(function() {
-                if (mapa.setView) { mapa.setView([lat, lon], zoom); }
-
-            }, 500);
-        } else {
-            document.getElementById("login-wrapper").style.display = "flex";
+    if (pwd.length) {
+      //let result = await fetch("src/config/user.json")
+      let notLoggedTxt = this.notLoggedTxt;
+      let result = await fetch(app.login.api + pwd).then(function (response) {
+        if (response.status >= 500) {
+          new UserMessage(
+            "Looks like there was a problem. Status Code: " + response.status,
+            true,
+            "error"
+          );
+          return;
         }
-    }
+        if (response.status !== 200) {
+          alert(notLoggedTxt);
+          return;
+        }
+        if (response.status === 200) {
+          return response.json();
+        }
+      });
+      let logged = false;
 
-    this.process = () => {
-        let pwd = document.getElementById("input-pwd").value;
-        let request = $.ajax({
-            async: false,
-            url: 'src/config/users.json',
-            type: 'POST',
-            success: function(d) {}
-        });
+      /* if (result.clave == pwd) { */
+      if (result.clave) {
+        let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
 
-        let json = JSON.parse(request.responseText);
-        let logged = false;
+        this.currentLogin = result;
 
-        for (let i = 0; i < json.length; i++) {
-            if (json[i].clave == pwd) {
-                let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
+        let lat = result.lat_4326;
+        let lon = result.lon_4326;
+        let zoom = result.zoom ?? 13;
 
-                this.currentLogin = json[i];
-
-                let lat = json[i].lat_4326;
-                let lon = json[i].lon_4326;
-                let zoom = json[i].zoom ?? 13;
-
-                /* document.title += ' - ' + json[i].nombregobiernolocal;
+        /* document.title += ' - ' + json[i].nombregobiernolocal;
                 let logoTitle = document.getElementById('logoText');
                 logoTitle.innerText += ' - ' + json[i].nombregobiernolocal; */
 
-                mapa.setView([lat, lon], zoom);
-                document.getElementById("login-wrapper").style.display = "none";
-                logged = true;
+        mapa.setView([lat, lon], zoom);
+        document.getElementById("login-wrapper").style.display = "none";
+        logged = true;
 
-                if ($("#btn-logout").length == 0) {
-                    this._addLogoutButton();                    
-                }
+        if ($("#btn-logout").length == 0) {
+          this._addLogoutButton();
+        }
 
-                if (recuerdame == 1) {
-                    // console.log("recuerdame OK");
-                    setCookie("lat", lat);
-                    setCookie("lon", lon);
-                    setCookie("zoom", 10);
-                    setCookie("autologin", 1);
-                } else {
-                    // console.log("No entra a recuerdame");
-                }
-                break;
-            }
+        if (recuerdame == 1) {
+          setCookie("lat", lat);
+          setCookie("lon", lon);
+          setCookie("zoom", 10);
+          setCookie("autologin", 1);
         }
-        if (!logged) {
-            alert("No se encontró ningun municipio para su clave, por favor intentelo nuevamente");
-        }
+      }
+
+      if (!logged) {
+        alert(this.notLoggedTxt);
+      }
     }
+  };
 
-    this.logout = () => {
-        this.currentLogin = false;
-        setCookie("autologin", 0);
-        /* 
+  this.logout = () => {
+    this.currentLogin = false;
+    setCookie("autologin", 0);
+    /* 
         let lat = -40;
         let lon = -59;
         let zoom = 4; 
         mapa.setView([lat, lon], zoom);
         */
-        mapa.resetView();
-        location.reload();
-    }
+    mapa.resetView();
+    location.reload();
+  };
 
-    this._addLoginWrapper = () => {
-        const wrapperHtml = `
+  this._addLoginWrapper = () => {
+    const wrapperHtml = `
             <div class="container-fluid col-12 col-xs-12 col-sm-6 col-md-3 mt-5 text-center" style="display: flex;align-items: center;">
                 <div class="login">
                     <img src="src/styles/images/lupa.png" width="10%">
@@ -100,7 +118,7 @@ loginatic = function() {
                         <span class="input-group-addon" id="basic-addon1">
                         <i class="fas fa-lock"></i>
                         </span>
-                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';">
+                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';" required>
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox" id="inp-recuerdame" name="recuerdame">Recuérdame</label>
@@ -125,11 +143,19 @@ loginatic = function() {
                 </div>
             </div>
         `;
-        $("#login-wrapper").append(wrapperHtml);
-    }
+    $("#login-wrapper").append(wrapperHtml);
+  };
 
-    this._addLogoutButton = () => {
-        $("#mapa").append(`<div class="center-flex btn-logout" id="btn-logout" title="cerrar sesión" onclick="loginatic.logout();" style="width: 30px; height: 30px; border: medium none; box-shadow: rgba(0, 0, 0, 0.65) 0px 1px 5px;"><div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div></div>`);
-    }
+  this._addLogoutButton = () => {
+    const logoutButton = document.createElement("div");
+    logoutButton.className = "center-flex btn-logout";
+    logoutButton.id = "btn-logout";
+    logoutButton.title = "Cerrar sesión";
+    logoutButton.onclick = function () {
+      loginatic.logout();
+    };
+    logoutButton.innerHTML = `<div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div>`;
 
-}
+    document.getElementById("mapa").append(logoutButton);
+  };
+};

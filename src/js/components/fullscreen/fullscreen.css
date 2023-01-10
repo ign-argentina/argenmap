@@ -1,0 +1,20 @@
+#fullscreen :hover {
+  background-color: #f5f4f4;
+  cursor: pointer;
+}
+
+#fullscreen :active {
+  background-color: grey;
+}
+
+#iconFS-container {
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 4px;
+  font-size: 18px;
+}
+
+#iconFS{
+color: #252525;
+}

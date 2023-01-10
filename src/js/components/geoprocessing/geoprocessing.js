@@ -40,7 +40,7 @@ class Geoprocessing {
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "leaflet-control-locate leaflet-bar leaflet-control";
+    elem.className = "leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
     elem.title = app.geoprocessing.buttonTitle;
     elem.innerHTML = modalicon;
@@ -60,13 +60,30 @@ class Geoprocessing {
     elem.style.border = border_style;
     elem.style.boxShadow = shadow_style;
 
-    elem.onclick = function () {
+    elem.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
         g_modal_close = false;
       }
+      else {
+        //Close geoprocess window and clear
+        this.closeModal();
+      }
     };
     document.querySelector(".leaflet-top.leaflet-left").appendChild(elem);
+  }
+
+  closeModal() {
+    document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
+      "";
+    document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
+      "";
+    document.getElementById("select-process").selectedIndex = 0;
+    document.getElementsByClassName("form")[1].innerHTML = "";
+    document.getElementById("mr").remove();
+    g_modal_close = true;
+
+    this.resetHeightLayerColor();
   }
 
   createModal() {
@@ -89,16 +106,7 @@ class Geoprocessing {
       '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = () => {
       //Close geoprocess window and clear
-      document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
-        "";
-      document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
-        "";
-      document.getElementById("select-process").selectedIndex = 0;
-      document.getElementsByClassName("form")[1].innerHTML = "";
-      divContainer.remove();
-      g_modal_close = true;
-
-      this.resetHeightLayerColor();
+      this.closeModal();
     };
     s_sec.append(btnclose);
 
@@ -150,6 +158,9 @@ class Geoprocessing {
   }
 
   displayResult(result) {
+    let layerType = "geoprocess",
+      sectionName = "Geoprocesos"
+    
     switch (this.geoprocessId) {
       case "contour": {
         btn_modal_loading = false;
@@ -176,13 +187,16 @@ class Geoprocessing {
           let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
           mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
+
         addedLayers.push({
           id: layername,
           layer: result,
           name: layername,
           file_name: layername,
           rectangle: selectedRectangle,
-          kb: null,
+          type: layerType,
+          isActive: true,
+          section: sectionName
         });
 
         // ** Avoiding Leaflet Draw object test **
@@ -198,7 +212,8 @@ class Geoprocessing {
         //mapa.featureGroups.setStyle({color: '#876508'});
         // **
 
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
+        updateNumberofLayers(sectionName)
         break;
       }
       case "waterRise": {
@@ -269,10 +284,15 @@ class Geoprocessing {
           name: layername,
           file_name: title,
           rectangle: selectedRectangle,
-          download: download
+          isActive: true,
+          download: download,
+          type: layerType,
+          section: sectionName
         });
         
-        menu_ui.addFileLayer("Geoprocesos", title, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, title, layername, layername, true);
+        updateNumberofLayers(sectionName)
+
         break;
       }
       case "buffer": {
@@ -287,9 +307,13 @@ class Geoprocessing {
           layer: result,
           name: layername,
           file_name: layername,
-          kb: null,
+          type: layerType,
+          isActive: true,
+          section: sectionName
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
+        updateNumberofLayers(sectionName)
+
         break;
       }
     }

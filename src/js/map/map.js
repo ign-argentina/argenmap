@@ -40,11 +40,20 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 	layer.options.fillColor = fillColor;
 };
 
+const changeTagStyles = (layer, borderWidth, borderColor, fillColor, textColor) => {
+	layer.options.icon.options.html.style.borderWidth = borderWidth + 'px';
+	layer.options.icon.options.html.style.borderColor = borderColor;
+	layer.options.icon.options.html.style.backgroundColor = fillColor;
+	layer.options.icon.options.html.style.color = textColor;
+};
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['','','','','','','','',''];
-var ordenZoomHome = 1; var ordenLocate = 2; var ordenFullScreen = 3; var ordenGraticula = 4; var ordenMeasure = 5; var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenPrint = 9;
+var ordered = ['','','','','','','','','','','','',''];
+var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
+var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -60,29 +69,38 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'ZoomHome':
 			ordered.splice(ordenZoomHome, 1, plugin.pluginName);
 			break;
+		case 'locate':
+			ordered.splice(ordenLocate, 1, plugin.pluginName);
+			break;
 		case 'Measure':
 			ordered.splice(ordenMeasure, 1, plugin.pluginName);
-			break;
-        case 'BrowserPrint':
-			ordered.splice(ordenPrint, 1, plugin.pluginName);
 			break;
 		case 'graticula':
 			ordered.splice(ordenGraticula, 1, plugin.pluginName);
 			break;
-		case 'minimap':
-			ordered.splice(ordenMinimap, 1, plugin.pluginName);
-			break;
-		case 'betterScale':
-			ordered.splice(ordenBetterScale, 1, plugin.pluginName);
+		case 'FullScreen':
+			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
 			break;
 		case 'Draw':
 			ordered.splice(ordenDraw, 1, plugin.pluginName);
 			break;
-		case 'locate':
-			ordered.splice(ordenLocate, 1, plugin.pluginName);
+		case 'betterScale':
+			ordered.splice(ordenBetterScale, 1, plugin.pluginName);
 			break;
-		case 'FullScreen':
-			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
+		case 'minimap':
+			ordered.splice(ordenMinimap, 1, plugin.pluginName);
+			break;
+		case 'screenShoter':
+			ordered.splice(ordenScreenShoter, 1, plugin.pluginName);
+			break;
+		case 'geoprocessing':
+			ordered.splice(ordenGeoprocessing, 1, plugin.pluginName);
+			break;
+		case 'loadLayer':
+			ordered.splice(ordenLoadLayer, 1, plugin.pluginName);
+			break;
+		case 'pdfPrinter':
+			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
 			break;
 		default :
 			// Add unordered plugins
@@ -99,12 +117,12 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['ZoomHome'].getStatus() == 'ready' || gestorMenu.plugins['ZoomHome'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('locate')){
-		if(gestorMenu.plugins['locate'].getStatus() == 'ready' || gestorMenu.plugins['locate'].getStatus() == 'fail'){
-		} else { visiblesActivar = false; }
-	}
 	if(visiblesActivar && gestorMenu.pluginExists('FullScreen')) {
 		if(gestorMenu.plugins['FullScreen'].getStatus() == 'ready' || gestorMenu.plugins['FullScreen'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('locate')){
+		if(gestorMenu.plugins['locate'].getStatus() == 'ready' || gestorMenu.plugins['locate'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('graticula')) {
@@ -119,6 +137,10 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['BrowserPrint'].getStatus() == 'ready' || gestorMenu.plugins['BrowserPrint'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
+	if(visiblesActivar && gestorMenu.pluginExists('pdfPrinter')) {
+		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
 	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
 		if(gestorMenu.plugins['Draw'].getStatus() == 'ready' || gestorMenu.plugins['Draw'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
@@ -131,9 +153,61 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['minimap'].getStatus() == 'ready' || gestorMenu.plugins['minimap'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
+	if(visiblesActivar && gestorMenu.pluginExists('screenShoter')) {
+		if(gestorMenu.plugins['screenShoter'].getStatus() == 'ready' || gestorMenu.plugins['screenShoter'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('geoprocessing')) {
+		if(gestorMenu.plugins['geoprocessing'].getStatus() == 'ready' || gestorMenu.plugins['geoprocessing'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+	if(visiblesActivar && gestorMenu.pluginExists('loadLayer')) {
+		if(gestorMenu.plugins['loadLayer'].getStatus() == 'ready' || gestorMenu.plugins['loadLayer'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
 	if(visiblesActivar){
 		ordered.forEach(function(e){
 			switch (e) {
+				case 'screenShoter':
+					if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+						let d = new Date()
+						let n = d.getTime();
+						L.simpleMapScreenshoter({
+							hideElementsWithSelectors: [
+							".leaflet-top.leaflet-left",
+							".leaflet-top.leaflet-right",
+							".leaflet-bottom.leaflet-right",
+							"#zoom-level",
+							"#sidebar-toolbar-icon-left",
+							"#sidebar-toolbar-icon-right",
+							"#btn-logout"
+							],
+							screenName: "mapaIGN" + n,
+						}).addTo(mapa);
+
+						document.getElementsByClassName(
+						"leaflet-control-simpleMapScreenshoter"
+						)[0].id = "screenShoter";
+						let screenShoter = document.getElementById("screenShoter");
+						screenShoter.classList.remove(
+						"leaflet-control-simpleMapScreenshoter"
+						);
+						screenShoter.classList.add("leaflet-control-locate");
+						screenShoter.classList.add("leaflet-bar");
+						screenShoter.style =
+						"width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
+						screenShoter.children[0].id = "screenShoter-btn";
+						screenShoter.title = "Captura de pantalla";
+						
+						let screenShoterBtn = document.getElementById("screenShoter-btn");
+						screenShoterBtn.classList.remove(
+						"leaflet-control-simpleMapScreenshoter-btn"
+						);
+						screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
+
+						gestorMenu.plugins["screenShoter"].setStatus("visible");
+    			    }
+					break;
 				case 'ZoomHome':
 					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
 					var zoomHome = L.Control.zoomHome({
@@ -145,6 +219,14 @@ $("body").on("pluginLoad", function(event, plugin){
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
+					break;
+				case 'FullScreen':
+					const fs = new Fullscreen();
+					fs.createComponent();
+					break;
+				case 'loadLayer':
+					const loadLayersModal = new LoadLayersModal();
+        			loadLayersModal.createComponent();
 					break;
 				case 'betterScale':
 					// Leaflet BetterScale plugin
@@ -204,7 +286,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					    metric: true,
 					    strings: {
 					        title: "Mi posición",
-					        popup: "Ustes se encuentra a {distance} {unit} desde este punto",
+					        popup: "Usted se encuentra a {distance} {unit} desde este punto",
 					        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
 					    },
 					    locateOptions: {
@@ -216,33 +298,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					    }
 					}).addTo(mapa);
 					gestorMenu.plugins['locate'].setStatus('visible');
-					break;
-				case 'FullScreen':
-					// Leaflet-Control.FullScreen plugin https://github.com/brunob/leaflet.fullscreen
-					L.control.fullscreen({
-					  position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
-					  title: 'Ver en pantalla completa', // change the title of the button, default Full Screen
-					  titleCancel: 'Salir de pantalla completa', // change the title of the button when fullscreen is on, default Exit Full Screen
-					  content: null, // change the content of the button, can be HTML, default null
-					  forceSeparateButton: true, // force seperate button to detach from zoom buttons, default false
-					  forcePseudoFullscreen: false, // force use of pseudo full screen even if full screen API is available, default false
-					  fullscreenElement: false // Dom element to render in full screen, false by default, fallback to map._container
-					}).addTo(mapa);	
-
-					/* mapa.on('enterFullscreen', function(){
-					  if (miniMap._minimized) {
-					    miniMap._restore();
-					    window.setTimeout( miniMap_Minimize, 2000 );
-					  }
-					});
-
-					mapa.on('exitFullscreen', function(){
-					  if (miniMap._minimized) {
-						miniMap._restore();
-						window.setTimeout( miniMap_Minimize, 2000 );
-					  }
-					}); */
-					gestorMenu.plugins['FullScreen'].setStatus('visible');
 					break;
 				case 'graticula':
 					// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
@@ -303,8 +358,42 @@ $("body").on("pluginLoad", function(event, plugin){
 					} */
 					gestorMenu.plugins['Measure'].setStatus('visible');
 					break;
-				case 'BrowserPrint':
-               		break;
+				case "geoprocessing":
+					if (loadGeoprocessing) {
+					  let HTMLhead = document.querySelector("head");
+					  HTMLhead.insertAdjacentHTML("beforeend",
+						'<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
+					  HTMLhead.insertAdjacentHTML("beforeend",
+						'<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
+					  HTMLhead.insertAdjacentHTML("beforeend",
+						'<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">');
+					  $.getScript(
+						"src/js/plugins/geoprocess-executor/geoprocess-executor.js"
+					  ).done(function () {
+						$.getScript("src/js/components/form-builder/form-builder.js").done(
+						  function () {
+							geoProcessingManager = new Geoprocessing();
+							geoProcessingManager.createIcon();
+							geoProcessingManager.setAvailableGeoprocessingConfig(
+							app.geoprocessing
+							);
+							geoProcessingManager.getProcesses().forEach((process) => {
+							if (process.geoprocess === "waterRise") {
+								// script loading test without jQuery
+								app._loadScript(
+								"./src/js/components/geoprocessing/IHeight.js"
+								);
+							}
+							});
+						  }
+						);
+					  });
+					}
+					break;
+				case 'pdfPrinter':
+					const pdfP = new PdfPrinter();
+					pdfP.createComponent();
+					break;
 				case 'Draw':
 
 				    var orgReadbleDistance = L.GeometryUtil.readableArea;
@@ -328,7 +417,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						circlemarker: [],
 						rectangle: [],
 						polygon: [],
-						polyline: []
+						polyline: [],
+						tag: []
 					};
 					
 					mapa.groupLayers = {};
@@ -345,7 +435,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							circlemarker: {metric: true},
 					        polyline: {metric: true},
 					        circle:{metric: true},
-					        rectangle: {metric: true}
+					        rectangle: {metric: true},
+							tag: {metric:true}
 						},
 						position: 'topright'
 					});
@@ -401,7 +492,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					
 					mapa.on('draw:editstart', (e) => {
 						currentlyDrawing = true;
-						
 					});
 
 					mapa.on('draw:created', (e) => {
@@ -439,7 +529,7 @@ $("body").on("pluginLoad", function(event, plugin){
                         // } else {
 							drawnItems.addLayer(layer);		
                         // }
-
+ 
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 						
 						if (layer.type === 'marker') {
@@ -449,7 +539,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
 
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'tag') {
 							mapa.addSelectionLayersMenuToLayer(layer);
 						}
 						mapa.addContextMenuToLayer(layer);
@@ -639,18 +729,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									text: 'Datos de imagen satelital',
 									onclick: (option) => {
 										mapa.closePopup(contextPopup);
-										let imagenDato = '<div><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span>No existen datos a este nivel de zoom</div>',
-										imgData = new Fechaimagen(lat,lng,zoom).area;
-										if (imgData!="") {
-											//let mdTable = `Fecha: ${imgData.date}<br>Resolución espacial: ${imgData.resolution} m<br>Exactitud: ${imgData.accuracy} m<br>Sensor: ${imgData.sensor}<br>Proveedor: ${imgData.provider}<br>Producto: ${imgData.product}`;
-											let mdTable = `<table id="md-table" style="width: 300px;text-align:left;" align="left"><tr><td>Fecha</td><td>${imgData.date}</td></tr><tr><td title="Relación de metros por lado de pixel">Resolución espacial</td><td>${imgData.resolution} m</td></tr><tr><td>Exactitud</td><td>${imgData.accuracy} m</td></tr><tr><td title="Misión aérea o constelación satelital">Sensor</td><td>${imgData.sensor}</td></tr><tr><td>Proveedor</td><td>${imgData.provider}</td></tr><tr><td>Producto</td><td>${imgData.product}</td></tr><tr><td>Zoom mínimo</td><td>${imgData.minZoom}</td></tr><tr><td>Zoom máximo</td><td>${imgData.maxZoom}</td></tr></table>`;
-											imagenDato = `<div><a onclick="copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. Una resolución espacial de ${imgData.resolution} m. La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. El proveedor es ${imgData.provider_texto} y el producto ${imgData.product} \');" href="#" style="position: absolute;top: 18px;left: 22px;"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a><span style="cursor: pointer;font-size: 20px;right: 20px;position: absolute;top: 10px;" onclick="$(\'.context-imagen\').slideUp()"><i class="fa fa-window-close" aria-hidden="true"></i></span><!--<center><b>Metadatos del fondo</b></center><br>-->${mdTable}<hr></div>`;
-										}
-
-										$(".context-imagen").slideDown();
-										$(".context-imagen").html(imagenDato);
-										
-										
+										mapa.esriImagery(lat,lng,zoom);
 									}
 								});
 							}
@@ -660,6 +739,65 @@ $("body").on("pluginLoad", function(event, plugin){
 						.setContent(contextMenu.menu);
 						mapa.openPopup(contextPopup);
 					});
+
+					mapa.esriImagery = (lat,lng,zoom) => {		
+						//Close
+						if (document.getElementById("esriwrapper")) {
+							document.getElementById("esriwrapper").remove();
+						}
+
+						//Main Wrapper
+						const wrapper = document.createElement("div");
+						wrapper.id="esriwrapper";
+						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white";
+						wrapper.innerHTML="Datos de imagen satelital";
+
+						//Close Button
+						let btncloseWrapper = document.createElement("a");
+						btncloseWrapper.id = "btnclose-wrapper";
+						btncloseWrapper.href = "javascript:void(0)";
+						btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
+						btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
+						btncloseWrapper.onclick = () => {
+							wrapper.remove();
+						};
+						wrapper.appendChild(btncloseWrapper);
+						
+						//Data				
+						let imgData = new Fechaimagen(lat,lng,zoom).area;
+						let esriTable = document.createElement("table");
+						esriTable.id="esriTable";
+						esriTable.style="width: 300px;text-align:left;align=left";
+						esriTable.innerHTML= 'No existen datos a este nivel de zoom.';
+						
+						let copytoClipboard = 
+							`<a onclick=
+								"copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. Una resolución espacial de ${imgData.resolution} m. La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. El proveedor es ${imgData.provider_texto} y el producto ${imgData.product}. \');" 
+								href="#"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a>`;
+							
+						if (imgData!="") {
+							esriTable.innerHTML = 
+								copytoClipboard + 
+								`<tr><td>Fecha:</td><td>${imgData.date}</td></tr>
+								<tr><td title="Relación de metros por lado de pixel">Resolución espacial:</td><td>${imgData.resolution} m</td></tr>
+								<tr><td>Exactitud:</td><td>${imgData.accuracy} m</td></tr>
+								<tr><td title="Misión aérea o constelación satelital">Sensor:</td><td>${imgData.sensor}</td></tr>
+								<tr><td>Proveedor:</td><td>${imgData.provider}</td></tr>
+								<tr><td>Producto:</td><td>${imgData.product}</td></tr>
+								<tr><td>Zoom mínimo:</td><td>${imgData.minZoom}</td></tr>
+								<tr><td>Zoom máximo:</td><td>${imgData.maxZoom}</td></tr>`;
+						}
+						
+						//Info Wrapper
+						const esriInfo = document.createElement("div");
+						esriInfo.id="esriInfo";
+						esriInfo.appendChild(esriTable);								
+						wrapper.appendChild(esriInfo);
+
+						document.body.appendChild(wrapper);
+						$("#esriwrapper").draggable({scroll: false, cancel: '#esriInfo', containment: "body"}); 
+
+					}
 
 					mapa.addMethodToEvent = (method, event) => {
 						mapa.methodsEvents[event].push(method);
@@ -716,9 +854,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								editStylePopup.setContent(editStylePopupContent)
-								.setLatLng(layer.type !== 'marker' && layer.type !== 'circlemarker' ? layer.getBounds().getCenter() : layer.getLatLng())
+								.setLatLng(layer.type !== "marker" && layer.type !== "circlemarker" && layer.type !== "tag" ? layer.getBounds().getCenter() : layer.getLatLng());
 								mapa.openPopup(editStylePopup);
-								//
 								const parent = editStylePopupContent.parentElement;
 								parent.className = 'leaflet-popup-content popup-parent';
 							}
@@ -770,7 +907,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: 'Eliminar geometría',
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);
+								mapa.closePopup(contextPopup);							
+								deleteAddedLayer(layer);							
 								mapa.deleteLayer(layer.name);
 								if(geoProcessingManager){
 									geoProcessingManager.updateLayerSelect(layer.name, false);
@@ -839,7 +977,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.showMeasurements("BoundingBox",boundingBox,"");
 							}
 							if (layer.type === "polygon" ||  layer.type === "rectangle") {
-								const area = mapa.getAreaPolygon(layer).toFixed(3);
+								const area = mapa.getAreaPolygon(layer).toFixed(7);
 								const centroid = mapa.getCentroidPolygon(layer);
 								const perimeter = mapa.getPerimeter(layer).toFixed(3);
 								const boundingBox= mapa.getBoundingBox(layer);
@@ -852,7 +990,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								const radius = (layer.getRadius()/1000).toFixed(3);
 								const centroid = mapa.getCentroidCircle(layer);
 								const cricumference = (mapa.getCricumference(layer)/1000).toFixed(3);
-								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(3);
+								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(7);
 								const boundingBox= mapa.getBoundingBox(layer);
 								mapa.showMeasurements("Área",area,"km²");
 								mapa.showMeasurements("Centroide",centroid,"");
@@ -872,9 +1010,15 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.showMeasurements = (name,measurement,unit) => {
 						const wrapper = document.getElementById("measurementInfo"),
-							newDiv = document.createElement("div"),
-							resultado = `${name}: ${measurement} ${unit}`;
-						newDiv.innerHTML = resultado;
+							newDiv = document.createElement("tr"),
+
+							infoName = document.createElement("td");
+							infoName.innerHTML = `${name}:`;
+							infoDesc = document.createElement("td");
+							infoDesc.innerHTML = `${measurement} ${unit}`;
+
+						newDiv.appendChild(infoName);
+						newDiv.appendChild(infoDesc);
 						wrapper.appendChild(newDiv);
 					}
 					
@@ -929,7 +1073,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							south = layer.getBounds().getSouth().toFixed(8),
 							west = layer.getBounds().getWest().toFixed(8),
 							boundingBox = document.createElement("div")
-							boundingBox.innerHTML= `<div>&emsp;northEast: ${north}, ${east}<br>&emsp;southWest: ${south}, ${west}</div>`
+							boundingBox.innerHTML= `<div>northEast: ${north}, ${east}<br>southWest: ${south}, ${west}</div>`
 						return boundingBox.innerHTML;
 					}
 
@@ -1409,10 +1553,196 @@ $("body").on("pluginLoad", function(event, plugin){
 							markerSection.appendChild(downloadDiv);
 						}
 						
+						//Tag
+						const tagSection = document.createElement('div');
+						tagSection.className = 'section-popup';
+						
+						if (layer.type === 'tag') {
+
+							//Title
+							const title4 = document.createElement('p');
+							title4.className = 'section-title';
+							title4.textContent = 'Etiqueta';
+							tagSection.appendChild(title4);
+
+							//Enable
+							const enableTagInputDiv = document.createElement('div');
+							enableTagInputDiv.className = 'section-item';
+							const enableTagInput = document.createElement('input');
+							enableTagInput.className = 'section-item-input';
+							enableTagInput.id = 'enable-marker-input';
+							enableTagInput.type = 'checkbox';
+							enableTagInput.checked = layer.options.hasOwnProperty('customTag');
+							enableTagInput.addEventListener("change", (e) => {
+								weightInput2.disabled = !enableTagInput.checked;
+								colorInput3.disabled = !enableTagInput.checked;
+								colorInput4.disabled = !enableTagInput.checked;
+								colorInput5.disabled = !enableTagInput.checked;
+							});
+							const enableTagLabel = document.createElement('label');
+							enableTagLabel.setAttribute('for', 'enable-marker-input');
+							enableTagLabel.innerHTML = 'Personalizado';
+							enableTagInputDiv.appendChild(enableTagLabel);
+							enableTagInputDiv.appendChild(enableTagInput);
+							tagSection.appendChild(enableTagInputDiv);
+
+							//Opacity
+							const opacityInputDiv3 = document.createElement('div');
+							opacityInputDiv3.className = 'section-item';
+							const opacityInput3 = document.createElement('input');
+							opacityInput3.className = 'section-item-input';
+							opacityInput3.id = 'opacity-input-3';
+							opacityInput3.type = 'range';
+							opacityInput3.min = 0;
+							opacityInput3.max = 1;
+							opacityInput3.step = 0.01;
+							opacityInput3.value = layer.options.opacity;
+							opacityInput3.addEventListener("change", (e) => {
+								layer.setOpacity(opacityInput3.value);
+							});
+							opacityInput3.addEventListener("input", (e) => {
+								layer.setOpacity(opacityInput3.value);
+							});
+							const opacityLabel3 = document.createElement('label');
+							opacityLabel3.setAttribute('for', 'opacity-input-3');
+							opacityLabel3.innerHTML = 'Opacidad';
+							opacityInputDiv3.appendChild(opacityLabel3);
+							opacityInputDiv3.appendChild(opacityInput3);
+							tagSection.appendChild(opacityInputDiv3);
+
+							//Weight
+							const weightInputDiv2 = document.createElement('div');
+							weightInputDiv2.className = 'section-item';
+							const weightInput2 = document.createElement('input');
+							weightInput2.className = 'section-item-input';
+							weightInput2.id = 'weight-input-2';
+							weightInput2.type = 'range';
+							weightInput2.min = 0;
+							weightInput2.max = 3.2;
+							weightInput2.step = 0.1;
+							weightInput2.value = 2;
+							weightInput2.disabled = !enableTagInput.checked;
+							weightInput2.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							weightInput2.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const weightLabel2 = document.createElement('label');
+							weightLabel2.setAttribute('for', 'weight-input-2');
+							weightLabel2.className = 'non-selectable-text';
+							weightLabel2.innerHTML = 'Anchura del borde';
+							weightInputDiv2.appendChild(weightLabel2);
+							weightInputDiv2.appendChild(weightInput2);
+							tagSection.appendChild(weightInputDiv2);
+
+							//Border color
+							const colorInputDiv3 = document.createElement('div');
+							colorInputDiv3.className = 'section-item';
+							const colorInput3 = document.createElement('input');
+							colorInput3.className = 'section-item-input';
+							colorInput3.id = 'color-input-3';
+							colorInput3.type = 'color';
+							colorInput3.value = "#000000";
+							colorInput3.disabled = !enableTagInput.checked;
+							colorInput3.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							colorInput3.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const colorLabel3 = document.createElement('label');
+							colorLabel3.setAttribute('for', 'color-input-3');
+							colorLabel3.innerHTML = 'Color del borde';
+							colorInputDiv3.appendChild(colorLabel3);
+							colorInputDiv3.appendChild(colorInput3);
+							tagSection.appendChild(colorInputDiv3);
+
+							//Fill color
+							const colorInputDiv4 = document.createElement('div');
+							colorInputDiv4.className = 'section-item';
+							const colorInput4 = document.createElement('input');
+							colorInput4.className = 'section-item-input';
+							colorInput4.id = 'color-input-4';
+							colorInput4.type = 'color';
+							colorInput4.value = "#ffffff";
+							colorInput4.disabled = !enableTagInput.checked;
+							colorInput4.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							colorInput4.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const colorLabel4 = document.createElement('label');
+							colorLabel4.setAttribute('for', 'color-input-4');
+							colorLabel4.innerHTML = 'Color del relleno';
+							colorInputDiv4.appendChild(colorLabel4);
+							colorInputDiv4.appendChild(colorInput4);
+							tagSection.appendChild(colorInputDiv4);
+
+							//Text color
+							const colorInputDiv5 = document.createElement('div');
+							colorInputDiv5.className = 'section-item';
+							const colorInput5 = document.createElement('input');
+							colorInput5.className = 'section-item-input';
+							colorInput5.id = 'color-input-5';
+							colorInput5.type = 'color';
+							colorInput5.value = "#000000";
+							colorInput5.disabled = !enableTagInput.checked;
+							colorInput5.addEventListener("change", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							colorInput5.addEventListener("input", (e) => {
+								const weight = weightInput2.value;
+								const borderColor = colorInput3.value;
+								const fillColor = colorInput4.value;
+								const textColor = colorInput5.value;
+								changeTagStyles(layer, weight, borderColor, fillColor, textColor);
+							});
+							const colorLabel5 = document.createElement('label');
+							colorLabel5.setAttribute('for', 'color-input-5');
+							colorLabel5.innerHTML = 'Color del texto';
+							colorInputDiv5.appendChild(colorLabel5);
+							colorInputDiv5.appendChild(colorInput5);
+							tagSection.appendChild(colorInputDiv5);
+						}
 
 						switch (layer.type) {
 							case 'marker': {
 								container.appendChild(markerSection);
+								container.style.height = '240px';
+							}
+							break;
+							case 'tag': {
+								container.appendChild(tagSection);
 								container.style.height = '240px';
 							}
 							break;
@@ -1957,6 +2287,11 @@ $("body").on("pluginLoad", function(event, plugin){
 							options = { ...geoJSON.properties.styles };
 						}
 
+						let divIcon = {};
+						if (geoJSON.properties.hasOwnProperty('Text')) {
+							divIcon = { ...geoJSON.properties.Text };
+						}
+
 						switch (type) {
 							case 'point': {
 								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
@@ -1977,6 +2312,11 @@ $("body").on("pluginLoad", function(event, plugin){
 										case 'marker': {
 											layer = L.marker(invertedCoords);
 											type = 'marker';
+										};
+										break;
+										case 'tag': {
+											layer = L.marker(invertedCoords, { icon: L.divIcon(divIcon) });
+											type = 'tag';
 										};
 										break;
 										default: {
@@ -2127,6 +2467,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							name += parseInt(lastLayerName.split('_')[1]) + 1;
 						}
 						
+						layer.id = groupName;
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
@@ -2164,7 +2505,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						//Left-click
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline') {
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'tag') {
 							mapa.addSelectionLayersMenuToLayer(layer, file);
 						}
 						//Right-click
@@ -2753,6 +3094,4 @@ function copytoClipboard(coords){
 	document.body.removeChild(aux);
 	new UserMessage('Las coordenadas se copiaron al portapapeles', true, 'information');
 }
-
-
 

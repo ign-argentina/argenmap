@@ -1,23 +1,21 @@
 var LOAD_LAYERS_MODAL_OPEN = false;
 
 class LoadLayersModal {
-	constructor() {
-		this.component = `
-    <div id="loadLayersButton" title="Agregar capas">
+  constructor() {
+    this.component = `
         <div id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
-            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="18" height="18">
-        </button>
-    </div>
+            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="17" height="17">
+        </div>
     `;
-	}
-
-
-
-	createComponent() {
-		const elem = document.createElement("div");
-		elem.innerHTML = this.component;
-		document.getElementById("mapa").appendChild(elem);
-	}
+  }
+  createComponent() {
+    const elem = document.createElement("div");
+    elem.className = "leaflet-bar leaflet-control";
+    elem.id = "loadLayersButton";
+    elem.title = "Agregar capas";
+    elem.innerHTML = this.component;
+    document.querySelector(".leaflet-top.leaflet-left").append(elem);
+  }
 }
 
 class modalUI {

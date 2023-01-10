@@ -122,8 +122,8 @@ function showImageOnError(image) {
 }
 
 function mainMenuSearch(e) {
-  hideAllElevationProfile();
-  hideAddedLayers();
+  //hideAllElevationProfile();
+  //hideAddedLayers();
   e.preventDefault();
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
@@ -169,17 +169,45 @@ function hideAddedLayers() {
 
   addedLayers.forEach((layer) => {
     if (!layer.groupname) {
-      let aux = document.getElementById("flc-" + layer.id);
-      if (aux.className === "file-layer active") {
-        aux.className = "file-layer";
-        mapa.hideGroupLayer(layer.id);
+      if (layer.type === "WMS") {
+        let aux = document.getElementById("srvcLyr-" + layer.id + layer.file_name);
+        if (aux.className === "file-layer active") {
+          aux.className = "file-layer";
+          mapa.hideGroupLayer(layer.id);
+          gestorMenu.cleanAllLayers();
+          layer.layer.active = false;
+          mapa.removeLayer(layer.layer.L_layer);
+          updateNumberofLayers(layer.section);
+        }
+        if (layer.isActive) {
+          layer.isActive = false
+        }
+      } else {
+        let aux = document.getElementById("flc-" + layer.id);
+        if (aux.className === "file-layer active") {
+          aux.className = "file-layer";
+          mapa.hideGroupLayer(layer.id);
+          gestorMenu.cleanAllLayers();
+        }
+        if (layer.isActive) {
+          layer.isActive = false;
+        }
       }
     }
   });
+
+  showTotalNumberofLayers();
 }
 
 function showTotalNumberofLayers() {
   let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
+
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive && lyr.isActive == true) {
+      activeLayers++;
+    }
+  });
+
   if (activeLayers > 0) {
     $("#cleanTrash").html(
       "<div class='glyphicon glyphicon-th-list'></div>" +
@@ -195,20 +223,34 @@ function showTotalNumberofLayers() {
 function recoverSections() {
   let geoprocessessRecover = new Geoprocessing();
   let elevProfileRecover = new IElevationProfile();
-
+  
   addedLayers.forEach((layer) => {
+    let isActive;
+    if (layer.isActive === false) {
+      isActive = false
+    } else {
+      isActive = true
+    }
+
     if (
       layer.id.includes(geoprocessessRecover.namePrefixContour) ||
       layer.id.includes(geoprocessessRecover.namePrefixBuffer)
     ) {
-      menu_ui.addFileLayer("Geoprocesos", layer.id, layer.id, layer.id, false);
+      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.id, layer.id, layer.id, isActive);
     } else if (layer.id.includes(geoprocessessRecover.namePrefixHeight)) {
-      menu_ui.addFileLayer("Geoprocesos", layer.file_name, layer.id, layer.id, false);
+      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.file_name, layer.id, layer.id, isActive);
     } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
       let layername = layer.id
-      elevProfileRecover.addGeoprocessLayer("Geoprocesos", layername, layername, layername, false);
-    } else if (layer.file == true) {
-      menu_ui.addFileLayer("Archivos", layer.id, layer.id, layer.id, false);
+      elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, isActive);
+    } else if (layer.type == "file") {
+      menu_ui.addFileLayer("Archivos", "file", layer.id, layer.id, layer.id, isActive);
+    } else if (layer.type == "WMS") {
+      if (isActive) {
+        mapa.removeLayer(layer.layer.L_layer);
+        layer.isActive = false;
+      }
+      menu_ui.addLayerToGroup(layer.section, layer.type, layer.name, layer.id, layer.file_name, layer.layer);
+      showTotalNumberofLayers();
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
         layer.groupname,
@@ -776,21 +818,38 @@ function setProperStyleToCtrlBtns() {
   const interval = setInterval(() => {
     if (zoomhomeCtrlBtn.length > 0) {
       window.clearInterval(interval);
-      const width = zoomhomeCtrlBtn[0].offsetWidth;
+      //const width = zoomhomeCtrlBtn[0].offsetWidth;
       const btns = [];
+      btns.push(zoomhomeCtrlBtn[0]);
+
       const layersToggleCtrlBtn = document.getElementsByClassName(
         "leaflet-control-layers-toggle"
       )[0];
       btns.push(layersToggleCtrlBtn);
+      
+      const zoomhomeCtrlBtnIn = document.getElementsByClassName(
+        "leaflet-control-zoomhome-in"
+      )[0];
+      btns.push(zoomhomeCtrlBtnIn);
+
+      const zoomhomeCtrlBtnOut = document.getElementsByClassName(
+        "leaflet-control-zoomhome-out"
+      )[0];
+      btns.push(zoomhomeCtrlBtnOut);
+
       const customGraticuleCtrlBtn = document.getElementsByClassName(
         "leaflet-control-customgraticule"
       )[0];
       btns.push(customGraticuleCtrlBtn);
+
+      const locateCtrlBtn = document.getElementsByClassName(
+        "leaflet-control-locate"
+      )[0];
+      btns.push(locateCtrlBtn);
+
       const modalLoadLayersCtrlBtn =
         document.getElementById("loadLayersButton");
       btns.push(modalLoadLayersCtrlBtn);
-      const screenshotCtrlBtn = document.getElementById("screenshot");
-      btns.push(screenshotCtrlBtn);
       btns.forEach((btn) => {
         btn.style.width = size;
         btn.style.height = size;
@@ -826,13 +885,67 @@ let normalize = (function () {
 function clickGeometryLayer(layer) {
   let aux = document.getElementById("flc-" + layer);
 
-  if (aux.className === "file-layer active") {
-    aux.className = "file-layer";
-    mapa.hideGroupLayer(layer);
-  } else {
-    aux.className = "file-layer active";
-    mapa.showGroupLayer(layer);
+  addedLayers.forEach(lyr => {
+    if (lyr.id === layer) {
+      if (aux.className === "file-layer active") {
+        aux.className = "file-layer";
+        mapa.hideGroupLayer(layer);
+        lyr.isActive = false;
+      } else {
+        aux.className = "file-layer active";
+        mapa.showGroupLayer(layer);
+        lyr.isActive = true;
+      }
+      updateNumberofLayers(lyr.section)
+
+    }
+  });
+  showTotalNumberofLayers();
+}
+
+function clickWMSLayer(layer, layer_item, fileName) {
+  let sectionName;
+  if (layer_item.classList.value === "file-layer active" && layer.active) {
+    layer_item.classList.value = "file-layer";
+    mapa.removeLayer(layer.L_layer);
+    layer.active = false;
+
+    addedLayers.forEach(lyr => {
+      if (lyr.file_name == fileName) {
+        sectionName = lyr.section;
+        lyr.isActive = false;
+      }
+    })
+
+  } else if (layer_item.classList.value === "file-layer" && !layer.active) {
+    layer_item.classList.value = "file-layer active";
+    layer.active = true;
+
+    layer.L_layer = L.tileLayer
+      .wms(layer.host, {
+        layers: layer.name,
+        format: "image/png",
+        transparent: true,
+      })
+      .addTo(mapa);
+
+    gestorMenu.layersDataForWfs[layer.name] = {
+      name: layer.name,
+      section: layer.title,
+      host: layer.host,
+    };
+
+    addedLayers.forEach(lyr => {
+      if (lyr.file_name == fileName) {
+        sectionName = lyr.section;
+        lyr.isActive = true;
+      }
+    })
+
   }
+
+  updateNumberofLayers(sectionName);
+  showTotalNumberofLayers();
 }
 
 function checkIfGeoprocessingIsOpen() {
@@ -1124,101 +1237,6 @@ function parseXml(str, lyr, sys) {
   }
 }
 
-function drawRectangle(arg) {
-  // drawRectangle({lat: -24.68695, lng:-64.83230, area: 7000, map: mapa, color: "#ff7800"});
-  const {
-    map = mapa,
-    lat = map.getCenter().lat,
-    lng = map.getCenter().lng,
-    area = 10000,
-    color = "#3388ff",
-  } = arg || {};
-  const PROJ = L.CRS.EPSG3857;
-  let center,
-    sw,
-    ne,
-    halfDistance = area / 2,
-    type = "rectangle",
-    name = type + "_";
-
-  if (map.editableLayers[type].length === 0) {
-    name += "1";
-  } else {
-    const lastLayerName =
-      map.editableLayers[type][map.editableLayers[type].length - 1].name;
-    name += parseInt(lastLayerName.split("_")[1]) + 1;
-  }
-
-  center = PROJ.project(new L.LatLng(lat, lng));
-  sw = L.latLng(
-    PROJ.unproject(
-      new L.Point(center.x - halfDistance, center.y - halfDistance)
-    )
-  );
-  ne = L.latLng(
-    PROJ.unproject(
-      new L.Point(center.x + halfDistance, center.y + halfDistance)
-    )
-  );
-
-  let geojson = [
-    {
-      id: name,
-      layer: {
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            properties: {
-              styles: {
-                stroke: true,
-                color: color,
-                weight: 4,
-                opacity: 0.5,
-                fill: true,
-                fillColor: color,
-                fillOpacity: 0.2,
-                clickable: true,
-                _dashArray: null,
-                draggable: true,
-              },
-              type: "rectangle",
-            },
-            geometry: {
-              type: "Polygon",
-              coordinates: [
-                [
-                  [sw.lng, sw.lat],
-                  [sw.lng, ne.lat],
-                  [ne.lng, ne.lat],
-                  [ne.lng, sw.lat],
-                  [sw.lng, sw.lat],
-                ],
-              ],
-            },
-          },
-        ],
-      },
-      name: name,
-      file_name: name + ".geojson",
-      kb: 0.417,
-    },
-  ];
-
-  geojson.forEach((e) => {
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
-    menu_ui.addFileLayer("Curvas de nivel", e.name, e.id, e.file_name, true);
-    addedLayers.push(e);
-    setTimeout(function () {
-      $("#select-capa").val(e.name).change();
-    }, 500);
-  });
-
-  map.fitBounds([sw, ne]);
-
-  return geojson;
-}
-
 function switchHillShade(basemap) {
   if (basemap === gestorMenu.getActiveBasemap()) {
     hillShade();
@@ -1300,4 +1318,76 @@ function downloadBlob(blob, name = "file.txt") {
 
   // Remove link from body
   document.body.removeChild(link);
+}
+
+function changeIsActive(id, isActive) {
+  addedLayers.forEach(lyr => {
+      if (lyr.id == id && lyr.isActive) {
+          if (isActive == true) lyr.isActive = false;
+          if (isActive == false) lyr.isActive = true;
+      }
+  });
+}
+
+function addCounterForSection(groupnamev, layerType) {
+  let counter = 0;
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive ==true && lyr.type == layerType) {
+      counter++;
+    }
+  });
+  if (counter > 0) {
+    $("#" + groupnamev + "-a").html(groupnamev +" <span class='active-layers-counter'>" + counter +"</span>");
+  }else {
+    $("#" + groupnamev + "-a").html(groupnamev);
+  }
+}
+
+function updateNumberofLayers(layerSection) {
+  let activeLayers = 0;
+  let element;
+  if (layerSection.includes(" ")) {
+    element = document.getElementById(layerSection.replace(/ /g, "_") + "-a");
+  }else {      
+    element = document.getElementById(layerSection + "-a");
+  }
+
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive === true && lyr.section == layerSection) {
+      activeLayers++;
+    }
+  });
+
+  if (element) {
+    if (activeLayers > 0) {
+      element.innerHTML = layerSection+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
+    } else {
+      element.innerHTML = layerSection;
+    }
+  }
+}
+
+function hideAddedLayersCounter() {
+  fileLayerGroup.forEach(lyr => {
+    let element = document.getElementById(lyr+"-a");
+    
+    if (element) {
+      element.innerHTML = lyr;
+    }
+  })
+}
+
+function deleteAddedLayer (layer) { //Requires layer from editableLayers
+  let layerSection;
+  addedLayers.forEach(lyr => {
+    if (lyr.id === layer.id) {
+      let index = addedLayers.indexOf(lyr);
+      if (index > -1) {
+        layerSection = lyr.section;
+        addedLayers.splice(index, 1);
+        updateNumberofLayers(layerSection);
+        showTotalNumberofLayers();
+      }
+    }
+  })
 }
