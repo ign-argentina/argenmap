@@ -70,13 +70,13 @@ class EditableLabel {
   };
 
   addText = ({ lat, lng }) => {
-    let name = "tag_";
+    let name = "label_";
 
-    if (mapa.editableLayers["tag"].length === 0) {
+    if (mapa.editableLayers["label"].length === 0) {
       name += "1";
     } else {
       const lastLayerName =
-        mapa.editableLayers["tag"][mapa.editableLayers["tag"].length - 1].name;
+        mapa.editableLayers["label"][mapa.editableLayers["label"].length - 1].name;
       name += parseInt(lastLayerName.split("_")[1]) + 1;
     }
 
@@ -100,7 +100,7 @@ class EditableLabel {
           iconSize: null,
           html: textarea,
         },
-        type: "tag",
+        type: "label",
       },
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
