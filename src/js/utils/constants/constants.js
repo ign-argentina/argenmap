@@ -50,7 +50,7 @@ const PLUGINS = {
   WMTS: _PATH + "leaflet-wmts/leaflet-tilelayer-wmts.js",
   elevation: _PATH + "leaflet-elevation/leaflet-elevation.js",
   textpath: _PATH + "leaflet-textpath/leaflet-textpath.js",
-  screenShoter: "https://unpkg.com/leaflet-simple-map-screenshoter",
+  screenShoter: _PATH + "leaflet-simple-map-screenshoter/leaflet-simple-map-screenshoter.js",
   turf: "src/js/plugins/turf/turf.min.js",
   editableLabel: _PATH + "leaflet-editable-label/Leaflet.EditableLabel.js",
   pdfPrinter: "src/js/components/pdfPrinter/pdfPrinter.js",

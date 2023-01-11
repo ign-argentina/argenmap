@@ -192,7 +192,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						screenShoter.classList.remove(
 						"leaflet-control-simpleMapScreenshoter"
 						);
-						screenShoter.classList.add("leaflet-control-locate");
 						screenShoter.classList.add("leaflet-bar");
 						screenShoter.style =
 						"width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
