@@ -563,9 +563,23 @@ $("body").on("pluginLoad", function(event, plugin){
 						var layers = e.layers;
 						Object.values(layers._layers).forEach(deletedLayer => {
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
-							if (lyrIdx >= 0)
+							if (lyrIdx >= 0) {
+								
+								let layerSection;
+								addedLayers.forEach(lyr => {
+									if (lyr.id === deletedLayer.id) {
+										let index = addedLayers.indexOf(lyr);
+										if (index > -1) {
+											layerSection = lyr.section;
+											addedLayers.splice(index, 1);
+											updateNumberofLayers(layerSection);
+											showTotalNumberofLayers();
+										}
+									}
+								});
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
+							}
 						});
 						if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
