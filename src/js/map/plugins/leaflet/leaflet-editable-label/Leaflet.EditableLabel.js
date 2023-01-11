@@ -85,7 +85,7 @@ class EditableLabel {
     textarea.autocomplete = "off";
     textarea.placeholder = "Escribe algo aquí...";
     textarea.className = "map-label";
-    textarea.autofocus = true;
+    //textarea.autofocus = true;
     textarea.style.resize = "none";
     textarea.maxlength = "255";
     textarea.onkeyup = function () {

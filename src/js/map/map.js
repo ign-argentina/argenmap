@@ -866,7 +866,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							text: 'Acercar',
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
-								if (layer.type === 'marker' || layer.type === 'circlemarker') {
+								if (layer.type === 'marker' || layer.type === 'circlemarker' || layer.type === 'tag') {
 									mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
 								} else {
 									mapa.fitBounds(layer.getBounds());
@@ -998,7 +998,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.showMeasurements("Radio",radius,"km");
 								mapa.showMeasurements("BoundingBox",boundingBox,"");
 							}
-							if (layer.type === "marker" || layer.type === "circlemarker") {
+							if (layer.type === "marker" || layer.type === "circlemarker" || layer.type === "tag") {
 								const centroid = mapa.getCentroidCircle(layer);
 								mapa.showMeasurements("Centroide",centroid,"");
 							}
