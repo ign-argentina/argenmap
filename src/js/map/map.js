@@ -709,19 +709,29 @@ $("body").on("pluginLoad", function(event, plugin){
 							}); */
 						
 						contextMenu.createOption({
-							isDisabled: false,
-							text: 'Agregar marcador',
-							onclick: (option) => {
-								let geojsonMarker = {
-									type: "Feature",
-									properties: {
-									},
-									geometry: { type: "Point", coordinates: [lng,lat]},
-								}
-								mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker , "geojsonMarker", false)
-								mapa.closePopup(contextPopup);
-							}
-						});
+            			  isDisabled: false,
+            			  text: "Agregar marcador",
+            			  onclick: (option) => {
+            			    let name = "marker_";
+
+            			    if (mapa.editableLayers["marker"].length === 0) {
+            			      name += "1";
+            			    } else {
+            			      const lastLayerName =
+            			        mapa.editableLayers["marker"][mapa.editableLayers["marker"].length - 1].name;
+            			      name += parseInt(lastLayerName.split("_")[1]) + 1;
+            			    }
+						
+            			    let geojsonMarker = {
+            			      type: "Feature",
+            			      properties: {},
+            			      geometry: { type: "Point", coordinates: [lng, lat] },
+            			    };
+							
+            			    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "geojsonMarker_" + name, false);
+            			    mapa.closePopup(contextPopup);
+            			  },
+            			});
 
 							if (gestorMenu.getActiveBasemap() === "esri_imagery") {
 								contextMenu.createOption({
