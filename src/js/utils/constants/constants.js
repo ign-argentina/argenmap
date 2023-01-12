@@ -44,7 +44,6 @@ const PLUGINS = {
   locate: _PATH + "leaflet-locate/L.Control.Locate.min.js",
   MousePosition: _PATH + "leaflet-mouseposition/src/L.Control.MousePosition.js",
   Measure: _PATH + "leaflet-measure/leaflet-measure.js",
-  BrowserPrint: _PATH + "leaflet-browser-print/dist/leaflet.browser.print.min.js",
   betterWMS: _PATH + "leaflet-wms/leaflet.wms.js",
   graticula: _PATH + "leaflet-simplegraticule/L.SimpleGraticule.js",
   WMTS: _PATH + "leaflet-wmts/leaflet-tilelayer-wmts.js",

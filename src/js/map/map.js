@@ -126,10 +126,6 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['Measure'].getStatus() == 'ready' || gestorMenu.plugins['Measure'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('BrowserPrint')) {
-		if(gestorMenu.plugins['BrowserPrint'].getStatus() == 'ready' || gestorMenu.plugins['BrowserPrint'].getStatus() == 'fail'){
-		} else { visiblesActivar = false; }
-	}
 	if(visiblesActivar && gestorMenu.pluginExists('pdfPrinter')) {
 		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }

@@ -485,9 +485,6 @@ Leaflet
 .individualFeature h4 {
   text-decoration: none !important;
 }
-.leaflet-control-easyPrint {
-  height: 33px !important;
-}
 .leaflet-control-minimap {
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
