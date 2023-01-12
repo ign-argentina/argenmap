@@ -68,7 +68,7 @@
   z-index: 1200;
   border: 3px;
   padding: 8px 12px;
-  background-color: white;
+  background-color: white !important;
   top: 100px;
   position: absolute;
   margin-bottom: 10px;

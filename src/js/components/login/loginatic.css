@@ -201,7 +201,7 @@
 }
 
 .white-modal {
-    background-color: white;
+	background-color: white !important;
     padding: 2rem;
     width: 100%;
     border-radius: 10px;

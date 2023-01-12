@@ -90,7 +90,7 @@ body {
 #mapa {
   position: relative;
   height: 100%;
-  background-color: white;
+	background-color: white !important;
 }
 #top-left-logo {
   width: 170px;
@@ -327,7 +327,7 @@ li.active > div > a {
   margin-top: 5px;
 }
 .options-container {
-  background-color: white;
+	background-color: white !important;
   display: flex;
   flex-direction: initial;
 }
@@ -594,7 +594,7 @@ Popup geometría
 }
 .edit-style-popup-container {
   width: 350px;
-  background-color: white;
+	background-color: white !important;
   border-radius: 5px;
   position: absolute;
   display: flex;
@@ -756,7 +756,7 @@ input:checked.switch + label:after {
   align-items: center;
   width: 250px;
   height: 40px;
-  background-color: white;
+	background-color: white !important;
   border: 1px solid #008dc9;
   color: #008dc9;
   text-align: center;
@@ -827,7 +827,7 @@ Control mapa base
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  background-color: white;
+	background-color: white !important;
   text-align: center;
   background-image: url(../images/capas.png);
   background-size: 80% 70%;
@@ -854,7 +854,7 @@ Control graticula
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
-  background-color: white;
+	background-color: white !important;
   background-image: none;
   text-align: center;
   background-image: url(../images/grid.png);
@@ -1069,7 +1069,7 @@ Perfil Topografico
 
 .pt {
   padding: 2rem;
-  background: RGBA(255, 255, 255, .95);
+  background: RGBA(255, 255, 255, .95) !important;
   width: 100%;
   border-radius: 10px;
   -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);

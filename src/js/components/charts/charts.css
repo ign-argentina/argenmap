@@ -8,7 +8,7 @@
 	z-index: 1200;
 	border: 3px;
 	padding: 5px;
-	background-color: white;
+	background-color: white !important;
 	flex-flow: column;
 	left: 300px;
 	top: 100px;

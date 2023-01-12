@@ -763,7 +763,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						//Main Wrapper
 						const wrapper = document.createElement("div");
 						wrapper.id="esriwrapper";
-						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white";
+						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white !important";
 						wrapper.innerHTML="Datos de imagen satelital";
 
 						//Close Button
@@ -954,7 +954,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						const wrapper = document.createElement("div");
 						wrapper.id="measurementWrapper";
-						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white"
+						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white !important"
 						wrapper.innerHTML="Medidas"
 						
 						let btncloseWrapper = document.createElement("a");
