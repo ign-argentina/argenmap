@@ -97,6 +97,7 @@ class EditableLabel {
       type: "Feature",
       properties: {
         Text: {
+          className: 'my-div-icon',
           iconSize: null,
           html: textarea,
         },

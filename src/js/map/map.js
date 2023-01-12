@@ -40,13 +40,6 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 	layer.options.fillColor = fillColor;
 };
 
-const changeLabelStyles = (layer, borderWidth, borderColor, fillColor, textColor) => {
-	layer.options.icon.options.html.style.borderWidth = borderWidth + 'px';
-	layer.options.icon.options.html.style.borderColor = borderColor;
-	layer.options.icon.options.html.style.backgroundColor = fillColor;
-	layer.options.icon.options.html.style.color = textColor;
-};
-
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
@@ -1097,7 +1090,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						};
 						container.appendChild(closeBtn);
 						
-						//-Lines
+						//Lines
 						const lineSection = document.createElement('div');
 						lineSection.className = 'section-popup';
 						
@@ -1271,7 +1264,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						colorInputDiv1.appendChild(colorInput1);
 						lineSection.appendChild(colorInputDiv1);
 
-						//-Fill
+						//Fill
 						const fillSection = document.createElement('div');
 						fillSection.className = 'section-popup';
 
@@ -1326,7 +1319,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						opacityInputDiv2.appendChild(opacityInput2);
 						fillSection.appendChild(opacityInputDiv2);
 
-						//-Circle
+						//Circle
 						const circleSection = document.createElement('div');
 						circleSection.className = 'section-popup';
 
@@ -1359,7 +1352,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						radiusInputDiv.appendChild(radiusInput);
 						circleSection.appendChild(radiusInputDiv);
 
-						//-Marker
+						//Marker
 						const markerSection = document.createElement('div');
 						markerSection.className = 'section-popup';
 						
@@ -1562,7 +1555,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							markerSection.appendChild(downloadDiv);
 						}
 						
-						//label
+						//Labels
 						const labelSection = document.createElement('div');
 						labelSection.className = 'section-popup';
 						
@@ -1631,19 +1624,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							weightInput2.step = 0.1;
 							weightInput2.value = 2;
 							weightInput2.disabled = !enableLabelInput.checked;
-							weightInput2.addEventListener("change", (e) => {
-								const weight = weightInput2.value;
-								const borderColor = colorInput3.value;
-								const fillColor = colorInput4.value;
-								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
-							});
 							weightInput2.addEventListener("input", (e) => {
-								const weight = weightInput2.value;
-								const borderColor = colorInput3.value;
-								const fillColor = colorInput4.value;
-								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
+								const borderWidth = weightInput2.value;
+								layer.options.icon.options.html.style.borderWidth = borderWidth + 'px';
 							});
 							const weightLabel2 = document.createElement('label');
 							weightLabel2.setAttribute('for', 'weight-input-2');
@@ -1662,19 +1645,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorInput3.type = 'color';
 							colorInput3.value = "#000000";
 							colorInput3.disabled = !enableLabelInput.checked;
-							colorInput3.addEventListener("change", (e) => {
-								const weight = weightInput2.value;
-								const borderColor = colorInput3.value;
-								const fillColor = colorInput4.value;
-								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
-							});
 							colorInput3.addEventListener("input", (e) => {
-								const weight = weightInput2.value;
 								const borderColor = colorInput3.value;
-								const fillColor = colorInput4.value;
-								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
+								layer.options.icon.options.html.style.borderColor = borderColor;
 							});
 							const colorLabel3 = document.createElement('label');
 							colorLabel3.setAttribute('for', 'color-input-3');
@@ -1692,27 +1665,31 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorInput4.type = 'color';
 							colorInput4.value = "#ffffff";
 							colorInput4.disabled = !enableLabelInput.checked;
-							colorInput4.addEventListener("change", (e) => {
-								const weight = weightInput2.value;
-								const borderColor = colorInput3.value;
-								const fillColor = colorInput4.value;
-								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
-							});
 							colorInput4.addEventListener("input", (e) => {
-								const weight = weightInput2.value;
-								const borderColor = colorInput3.value;
 								const fillColor = colorInput4.value;
-								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
+								layer.options.icon.options.html.style.backgroundColor = fillColor;
 							});
 							const colorLabel4 = document.createElement('label');
 							colorLabel4.setAttribute('for', 'color-input-4');
-							colorLabel4.innerHTML = 'Color del relleno';
+							colorLabel4.innerHTML = 'Color de relleno';
 							colorInputDiv4.appendChild(colorLabel4);
 							colorInputDiv4.appendChild(colorInput4);
 							labelSection.appendChild(colorInputDiv4);
 
+							//Remove background color
+							const colorInputDiv6 = document.createElement('div');
+							colorInputDiv6.className = 'section-item';
+							const transparentLabel = document.createElement('input');
+							transparentLabel.className = 'section-item-input';
+							transparentLabel.id = 'enable-marker-input';
+							transparentLabel.type = 'button';
+							transparentLabel.value = 'Quitar color de relleno'
+							transparentLabel.onclick = function () {
+								layer.options.icon.options.html.style.backgroundColor = "transparent";
+							};
+							colorInputDiv6.appendChild(transparentLabel);
+							labelSection.appendChild(colorInputDiv6);
+							
 							//Text color
 							const colorInputDiv5 = document.createElement('div');
 							colorInputDiv5.className = 'section-item';
@@ -1722,19 +1699,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorInput5.type = 'color';
 							colorInput5.value = "#000000";
 							colorInput5.disabled = !enableLabelInput.checked;
-							colorInput5.addEventListener("change", (e) => {
-								const weight = weightInput2.value;
-								const borderColor = colorInput3.value;
-								const fillColor = colorInput4.value;
-								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
-							});
 							colorInput5.addEventListener("input", (e) => {
-								const weight = weightInput2.value;
-								const borderColor = colorInput3.value;
-								const fillColor = colorInput4.value;
 								const textColor = colorInput5.value;
-								changeLabelStyles(layer, weight, borderColor, fillColor, textColor);
+								layer.options.icon.options.html.style.color = textColor;
 							});
 							const colorLabel5 = document.createElement('label');
 							colorLabel5.setAttribute('for', 'color-input-5');
@@ -1752,7 +1719,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							break;
 							case 'label': {
 								container.appendChild(labelSection);
-								container.style.height = '240px';
+								container.style.height = '280px';
 							}
 							break;
 							case 'circlemarker': {
