@@ -1,23 +1,24 @@
 #mr {
+  width: 240px;
+  max-height: 450px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  width: 240px;
+  position: absolute;
+  top: 100px;
+  left: 40%;
+  background-color: white !important;
+  border: 3px;
+  border-radius: 8px;
+  padding: 5px;
+  margin-bottom: 10px;
   overflow: hidden;
   float: none;
-  border-radius: 8px;
-  z-index: 1200;
-  border: 3px;
-  padding: 5px;
-  background-color: white !important;
-  left: 50%;
-  top: 100px;
-  position: absolute;
-  margin-bottom: 10px;
   -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  z-index: 1200;
 }
 
 #iconopenfile-container {
@@ -77,7 +78,7 @@
 }
 
 .geoprocessing-form-container {
-	background-color: white !important;
+  background-color: white !important;
   padding: 5px;
   display: flex;
   flex-direction: column;
@@ -93,7 +94,7 @@
   z-index: 1200;
   border: 3px;
   padding: 5px;
-	background-color: white !important;
+  background-color: white !important;
   left: 40%;
   top: 100px;
   position: absolute;
@@ -103,22 +104,6 @@
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-#mr {
-  max-height: 450px;
-  overflow: hidden;
-  float: none;
-  border-radius: 8px;
-  z-index: 1200;
-  border: 3px;
-  padding: 5px;
-  left: 40%;
-  top: 100px;
-  position: absolute;
-  margin-bottom: 10px;
-  -moz-box-shadow: inset 0 0 10px #000000;
-  -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-}
 
 @media (max-width: 768px) {
   #mr {
