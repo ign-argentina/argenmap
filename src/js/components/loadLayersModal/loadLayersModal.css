@@ -68,7 +68,7 @@
   z-index: 1200;
   border: 3px;
   padding: 8px 12px;
-  background-color: white;
+  background-color: white !important;
   top: 100px;
   position: absolute;
   margin-bottom: 10px;
@@ -104,13 +104,13 @@ height: 34px;
 
 /* Remove loadLayersButtonContent div/icon for media  print*/
 @media print {
-  #loadLayersButtonContent {
+  #loadLayersModal {
     display: none !important;
   }
 }
 
 /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 600px) {
+@media (min-width: 630px) {
 
   #loadLayersModal {
     width: 56%;

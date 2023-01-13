@@ -3861,6 +3861,12 @@ class Menu_UI {
     btn_si.className = "btn btn-info";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
+      let section;
+      addedLayers.forEach(lyr => {
+        if (lyr.id === id) {
+          section = lyr.section;
+        }
+      });
       delFileItembyID(id);
       deleteLayerGeometry(id, true);
       $("#modal_layer_del").remove();
@@ -3872,7 +3878,7 @@ class Menu_UI {
           perfilDelete.removeElevationProfile(id);
         }
       }
-      updateNumberofLayers(layer.section);
+      updateNumberofLayers(section);
       showTotalNumberofLayers();
     };
 
