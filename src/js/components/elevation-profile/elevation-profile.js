@@ -256,7 +256,14 @@ class IElevationProfile {
                 
             btncloseWrapper.onclick = () => {
                 this.hideElevationProfile();
-                updateNumberofLayers(document.getElementById("elevationProfile").children[1].section);
+                let idElevProfile = document.getElementById("elevationProfile").children[1].id,
+                    section;
+                addedLayers.forEach(lyr => {
+                    if (lyr.id === idElevProfile) {
+                        section = lyr.section;
+                    }
+                })
+                updateNumberofLayers(section);
             };
 
             document.getElementById("elevationProfile").append(btncloseWrapper);

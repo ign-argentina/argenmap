@@ -65,7 +65,7 @@
   justify-content: space-between;
   padding: 10px 1px 10px 1px; 
   border:1px solid #ddd;
-  background-color: white;
+	background-color: white !important;
   -ms-user-select: none;
   -webkit-user-select: none;
   user-select:none;
@@ -162,7 +162,7 @@
   z-index: 1200;
   border: 3px;
   padding: 5px;
-  background-color: white;
+	background-color: white !important;
   left: 40%;
   top: 100px;
   position: absolute;

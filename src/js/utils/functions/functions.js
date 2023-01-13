@@ -756,7 +756,7 @@ function adaptToImage(imgDiv) {
         container_expand_legend_grafic.classList.remove("hidden");
         //container_expand_legend_grafic.classList.toggle("hidden");
         container_expand_legend_grafic.setAttribute("load", true);
-        container_expand_legend_grafic.style = "background-color: white;";
+        container_expand_legend_grafic.style = "background-color: white !important;";
         resize_img_icon.innerHTML =
           '<i class="fas fa-angle-up" aria-hidden="true"></i>';
         item.append(container_expand_legend_grafic);
@@ -1346,14 +1346,14 @@ function addCounterForSection(groupnamev, layerType) {
 function updateNumberofLayers(layerSection) {
   let activeLayers = 0;
   let element;
-  if (layerSection.includes(" ")) {
+  if (layerSection && layerSection.includes(' ')) {
     element = document.getElementById(layerSection.replace(/ /g, "_") + "-a");
   }else {      
     element = document.getElementById(layerSection + "-a");
   }
 
   addedLayers.forEach(lyr => {
-    if (lyr.isActive === true && lyr.section == layerSection) {
+    if (lyr.isActive && lyr.section == layerSection) {
       activeLayers++;
     }
   });

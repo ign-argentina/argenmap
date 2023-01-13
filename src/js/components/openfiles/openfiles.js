@@ -186,7 +186,14 @@ class UImf {
     btnCapa.innerHTML = "Agregar Capa"
     btnCapa.onclick = function () {
 
-      if (control_btn_add_layer) addLayersfromFiles()
+      if (control_btn_add_layer) {
+        addLayersfromFiles();
+        new UserMessage(`Capas agregadas exitosamente.`, true, "information");
+      }
+
+      // if (control_btn_add_layer) { old version
+      //   addLayersfromFiles()
+      // }
     }
 
     // mainIcons
@@ -471,7 +478,9 @@ function addLayersfromFiles() {
       section: sectionName
     });
     menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
-    updateNumberofLayers(sectionName)
+    updateNumberofLayers(sectionName);
+    $("#item_uf_" + e.id).remove();
+
   });
   currentLayers = [];
   showTotalNumberofLayers();
