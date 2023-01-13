@@ -1346,14 +1346,14 @@ function addCounterForSection(groupnamev, layerType) {
 function updateNumberofLayers(layerSection) {
   let activeLayers = 0;
   let element;
-  if (layerSection.includes(" ")) {
+  if (layerSection && layerSection.includes(' ')) {
     element = document.getElementById(layerSection.replace(/ /g, "_") + "-a");
   }else {      
     element = document.getElementById(layerSection + "-a");
   }
 
   addedLayers.forEach(lyr => {
-    if (lyr.isActive === true && lyr.section == layerSection) {
+    if (lyr.isActive && lyr.section == layerSection) {
       activeLayers++;
     }
   });
