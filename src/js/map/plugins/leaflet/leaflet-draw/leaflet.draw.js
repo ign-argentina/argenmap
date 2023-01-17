@@ -2824,12 +2824,8 @@
         var e,
           i,
           o = t.layer || t.target || t;
-        console.log(o);
-        console.log(o.name === "cota_0");
-        console.log(!o._image);
-        console.log(typeof o);
-        if (typeof o != "string" && !o._image) {
-          //typeof o != "string"
+console.log(o);
+        if (typeof o != "string" && !o._image) { //to disallow editing in geoprocesses
           this._backupLayer(o),
             this.options.poly &&
               ((i = L.Util.extend({}, this.options.poly)),
@@ -2855,7 +2851,7 @@
       },
       _disableLayerEdit: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string") {
+        if (typeof e != "string" && !e._image) { //to disallow editing in geoprocesses
           (e.edited = !1),
             e.editing && e.editing.disable(),
             delete e.options.editing,

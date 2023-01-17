@@ -185,6 +185,7 @@ class Geoprocessing {
           mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
           
           let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+          selectedRectangle._image = true; //aux to disallow editing the layer
           mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
 
