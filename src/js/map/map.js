@@ -569,10 +569,10 @@ $("body").on("pluginLoad", function(event, plugin){
 								deleteLayerFromMenu(deletedLayer);
 							}
 						});
-						if(geoProcessingManager){
+						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
-						}
+						}*/
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
@@ -922,9 +922,9 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.closePopup(contextPopup);							
 								deleteAddedLayer(layer);							
 								mapa.deleteLayer(layer.name);
-								if(geoProcessingManager){
+								/*if(geoProcessingManager){
 									geoProcessingManager.updateLayerSelect(layer.name, false);
-								}
+								}*/
 							}
 						});
 
