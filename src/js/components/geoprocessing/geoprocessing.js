@@ -103,7 +103,7 @@ class Geoprocessing {
     btnclose.id = "btnclose-icon-modalfile";
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
-      '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
+      '<i title="Cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = () => {
       //Close geoprocess window and clear
       this.closeModal();
