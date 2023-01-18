@@ -243,15 +243,13 @@ class IElevationProfile {
             document.body.appendChild(wrapper);
     
             $("#pt-wrapper").append(`
-                <div class="pt" id="elevationProfile" style="overflow-y: scroll; height: 420px;">
-                    </div>
-                </div>
+                <div class="pt" id="elevationProfile" style="display: table;"></div></div>
             `);
 
             let btncloseWrapper = document.createElement("a");
             btncloseWrapper.id = "btnclose-wrapper";
             btncloseWrapper.href = "javascript:void(0)";
-            btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
+            btncloseWrapper.style = "display: flex; justify-content: flex-end; color:#676767; overflow-y:auto;";
             btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
                 
             btncloseWrapper.onclick = () => {

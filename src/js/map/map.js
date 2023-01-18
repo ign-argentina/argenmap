@@ -458,7 +458,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.draw.handlers.simpleshape.tooltip.end = 'Soltar el mouse para finalizar el dibujo';
 					L.drawLocal.edit.toolbar.actions.save.title = 'Guardar cambios';
 					L.drawLocal.edit.toolbar.actions.save.text = 'Guardar';
-					L.drawLocal.edit.toolbar.actions.cancel.title = 'Cacelar edición, descartar todos los cambios';
+					L.drawLocal.edit.toolbar.actions.cancel.title = 'Cancelar edición, descartar todos los cambios';
 					L.drawLocal.edit.toolbar.actions.cancel.text = 'Cancelar';
 					L.drawLocal.edit.toolbar.actions.clearAll.title = 'Limpiar todas las capas';
 					L.drawLocal.edit.toolbar.actions.clearAll.text = 'Limpiar todo';
@@ -473,9 +473,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					
 					mapa.on('draw:drawstart', (e) => {
-
-					currentlyDrawing = true;
-
+						currentlyDrawing = true;
 					});
 					
 					mapa.on('draw:editstart', (e) => {
