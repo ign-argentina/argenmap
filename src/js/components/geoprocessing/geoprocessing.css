@@ -21,7 +21,7 @@
   z-index: 1200;
 }
 
-#iconopenfile-container {
+#iconopenfile-container :hover {
   background-color: #f5f4f4;
   cursor: pointer;
 }

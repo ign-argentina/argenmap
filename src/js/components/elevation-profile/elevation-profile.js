@@ -106,8 +106,11 @@ class IElevationProfile {
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername,
                 layerType = "geoprocess",
-                sectionName = "Geoprocesos"
+                sectionName = "Geoprocesos";
 
+            let uneditablePolyline = mapa.editableLayers.polyline.at(-1);
+            uneditablePolyline._uneditable = true; //aux to disallow editing the layer
+                
             addedLayers.push({
                 id: layername,
                 name: layername,
@@ -243,15 +246,14 @@ class IElevationProfile {
             document.body.appendChild(wrapper);
     
             $("#pt-wrapper").append(`
-                <div class="pt" id="elevationProfile" style="overflow-y: scroll; height: 420px;">
-                    </div>
+                <div class="pt" id="elevationProfile" style="overflow-y: auto; height: 420px; padding: 5px 7px;">
                 </div>
             `);
 
             let btncloseWrapper = document.createElement("a");
             btncloseWrapper.id = "btnclose-wrapper";
             btncloseWrapper.href = "javascript:void(0)";
-            btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
+            btncloseWrapper.style = "display: flex; justify-content: flex-end; color:#676767;";
             btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
                 
             btncloseWrapper.onclick = () => {
@@ -284,12 +286,15 @@ class IElevationProfile {
 
         const inner = document.createElement("div");
         inner.id = selectedPolyline;
+        inner.style.height = '390px';
 
         document.getElementById("elevationProfile").appendChild(inner);
         $('#'+inner.id).highcharts({
             credits: { enabled: false },
             lang: {
                 viewFullscreen: "Pantalla Completa",
+                exitFullscreen: "Salir de pantalla completa",
+                contextButtonTitle: "Menú",
                 printChart: "Imprimir",
                 downloadCSV: "Descargar en CSV",
                 downloadJPEG: "Descargar en JPG",

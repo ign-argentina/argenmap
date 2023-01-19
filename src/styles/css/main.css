@@ -1166,7 +1166,8 @@ i.fas.fa-camera{
     box-shadow: none !important;
   }
 }
+
 .leaflet-draw-edit-edit,.leaflet-draw-edit-remove:hover{
-  background-color: #f5f4f4 !important;
-  cursor: pointer !important;
+  background-color: #f5f4f4;
+  cursor: pointer;
 }
