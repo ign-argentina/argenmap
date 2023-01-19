@@ -15,9 +15,7 @@ class Geoprocessing {
   optionsForm = null;
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
-  namePrefixContour = app.geoprocessing.availableProcesses[0].namePrefix ?? "curvas_de_nivel_";
-  namePrefixHeight = app.geoprocessing.availableProcesses[1].namePrefix ?? "cota_";
-  namePrefixBuffer = app.geoprocessing.availableProcesses[2].namePrefix ?? "area_de_influencia_";
+  _namePrefix = null;
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -151,6 +149,14 @@ class Geoprocessing {
     return this.geoprocessingConfig.availableProcesses;
   }
 
+  set namePrefix (processId) {
+    this._namePrefix = processId ?? "process_";
+  }
+
+  get namePrefix () {
+    return this._namePrefix;
+  }
+
   getCapaValue() {
     let selectedCapa = document.getElementById("select-capa");
     let result = selectedCapa.options[selectedCapa.selectedIndex].text;
@@ -174,9 +180,7 @@ class Geoprocessing {
 
         document.head.appendChild(style_fix_textpath);
 
-        let namePrefix = this.namePrefixContour;
-
-        let layername = namePrefix + counterContour;
+        let layername = this.namePrefix + counterContour;
         counterContour++;
 
         mapa
@@ -218,7 +222,7 @@ class Geoprocessing {
       }
       case "waterRise": {
         btn_modal_loading = true;
-        let layername = this.namePrefixHeight + counterHeight;
+        let layername = this.namePrefix + counterHeight;
         counterHeight++;
 
         let selectedRectangle;
@@ -297,8 +301,7 @@ class Geoprocessing {
       }
       case "buffer": {
         btn_modal_loading = false;
-        let namePrefixBuffer = this.namePrefixBuffer;
-        let layername = namePrefixBuffer + counterBuffer;
+        let layername = this.namePrefix + counterBuffer;
         counterBuffer++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
@@ -381,7 +384,7 @@ class Geoprocessing {
 
   resetHeightLayerColor() {
     mapa.editableLayers.polyline.forEach((lyr) => {
-      if (lyr.layer && lyr.layer.includes(this.namePrefixContour) && lyr.options.color == "#ff1100") {
+      if (lyr.layer && lyr.layer.includes(this.namePrefix) && lyr.options.color == "#ff1100") {
         //Same id, spedific value
         lyr.setStyle({ color: "#E4C47A" });
       }
@@ -666,7 +669,13 @@ class Geoprocessing {
       $("#msgRectangle").addClass("hidden");
 
       for (let polyline of mapa.editableLayers.polyline) {
-        if (polyline.layer && polyline.layer.includes(this.namePrefixContour)) {
+        let contourPrefix = null;
+        this.getProcesses().forEach( process => {
+          if( process.geoprocess === "contour" ) {
+            contourPrefix = process.namePrefix;
+          };
+        });
+        if (polyline.layer && polyline.layer.includes(contourPrefix)) {
           this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
@@ -721,8 +730,14 @@ class Geoprocessing {
                   }
                 });
               } else if (this.geoprocessId === "waterRise") {
+                let contourPrefix = null;
                 addedLayers.forEach((layer) => {
-                  if (layer.id.includes(this.namePrefixContour)) {
+                  this.getProcesses().forEach( process => {
+                    if( process.geoprocess === "contour" ) {
+                      contourPrefix = process.namePrefix;
+                    };
+                  });
+                  if (layer.id.includes(contourPrefix)) {
                     options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
@@ -1057,7 +1072,7 @@ class Geoprocessing {
           //Auto show layer for waterRise and buffer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if (layer.id.includes(this.namePrefixContour)) {
+              if (layer.id.includes(this.namePrefix)) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
@@ -1105,6 +1120,7 @@ class Geoprocessing {
             item.layer
           );
           this.buildOptionForm(this.geoprocessing.getFields());
+          this.namePrefix = item.namePrefix;
         }
       }
     });
