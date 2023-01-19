@@ -914,14 +914,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						
 						contextMenu.createOption({
 							isDisabled: false,
-							text: 'Eliminar geometría',
+							text: app.strings.delete_geometry ?? 'Delete geometry',
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);							
-								//deleteAddedLayer(layer);							
+								mapa.closePopup(contextPopup);				
 								mapa.deleteLayer(layer.name);
-								/*if(geoProcessingManager){
-									geoProcessingManager.updateLayerSelect(layer.name, false);
-								}*/
 							}
 						});
 
