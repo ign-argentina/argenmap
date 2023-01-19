@@ -916,12 +916,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: 'Eliminar geometría',
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);							
-								deleteAddedLayer(layer);							
+								mapa.closePopup(contextPopup);				
 								mapa.deleteLayer(layer.name);
-								/*if(geoProcessingManager){
-									geoProcessingManager.updateLayerSelect(layer.name, false);
-								}*/
 							}
 						});
 
