@@ -109,7 +109,7 @@ class IElevationProfile {
                 sectionName = "Geoprocesos";
 
             let uneditablePolyline = mapa.editableLayers.polyline.at(-1);
-            uneditablePolyline._uneditable = true; //aux to disallow editing the layer
+            uneditablePolyline._editable = false; //aux to disallow editing the layer
                 
             addedLayers.push({
                 id: layername,
