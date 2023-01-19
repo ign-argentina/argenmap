@@ -106,8 +106,11 @@ class IElevationProfile {
             let dataForDisplay = this.data;
             let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername,
                 layerType = "geoprocess",
-                sectionName = "Geoprocesos"
+                sectionName = "Geoprocesos";
 
+            let uneditablePolyline = mapa.editableLayers.polyline.at(-1);
+            uneditablePolyline._uneditable = true; //aux to disallow editing the layer
+                
             addedLayers.push({
                 id: layername,
                 name: layername,
@@ -287,7 +290,7 @@ class IElevationProfile {
 
         document.getElementById("elevationProfile").appendChild(inner);
         $('#'+inner.id).highcharts({
-            credits: { enabled: true },
+            credits: { enabled: false },
             lang: {
                 viewFullscreen: "Pantalla Completa",
                 exitFullscreen: "Salir de pantalla completa",
