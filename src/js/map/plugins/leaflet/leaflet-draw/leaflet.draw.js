@@ -2692,12 +2692,10 @@
           if (isComplex) {
             if (lyr.type === "polyline") {
               _nodes += lyr._latlngs.length;
-            } /*if (lyr.type === "rectangle" || lyr.type === "polygon")*/ else {
+            } else {
               _nodes += lyr._latlngs[0].length;
             }
-          } /*  else {
-                console.log(lyr.type + " single coordinate geom")
-            } */
+          } //else {console.log(lyr.type + " single coordinate geom")}
         });
 
         if (_nodes > 3000) {
@@ -2824,12 +2822,7 @@
         var e,
           i,
           o = t.layer || t.target || t;
-        console.log(o);
-        console.log(o.name === "cota_0");
-        console.log(!o._image);
-        console.log(typeof o);
-        if (typeof o != "string" && !o._image) {
-          //typeof o != "string"
+        if (typeof o != "string" && !o._image) { //to disallow editing in geoprocesses
           this._backupLayer(o),
             this.options.poly &&
               ((i = L.Util.extend({}, this.options.poly)),
@@ -2855,7 +2848,7 @@
       },
       _disableLayerEdit: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string") {
+        if (typeof e != "string" && !e._image) { //to disallow editing in geoprocesses
           (e.edited = !1),
             e.editing && e.editing.disable(),
             delete e.options.editing,
@@ -2964,18 +2957,25 @@
           this.save();
       },
       _enableLayerDelete: function (t) {
-        (t.layer || t.target || t).on("click", this._removeLayer, this);
+        var e = t.layer || t.target || t;
+        if (typeof e != "string" && !e._image) {
+          e.on("click", this._removeLayer, this);
+        }
       },
       _disableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
-        e.off("click", this._removeLayer, this),
-          this._deletedLayers.removeLayer(e);
+        if (typeof e != "string" && !e._image) {
+          e.off("click", this._removeLayer, this),
+            this._deletedLayers.removeLayer(e);
+        }
       },
       _removeLayer: function (t) {
         var e = t.layer || t.target || t;
-        this._deletableLayers.removeLayer(e),
-          this._deletedLayers.addLayer(e),
-          e.fire("deleted");
+        if (typeof e != "string" && !e._image && !e.value) {
+          this._deletableLayers.removeLayer(e),
+            this._deletedLayers.addLayer(e),
+            e.fire("deleted");
+        }
       },
       _onMouseMove: function (t) {
         this._tooltip.updatePosition(t.latlng);

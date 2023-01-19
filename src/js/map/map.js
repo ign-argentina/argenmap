@@ -458,7 +458,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.draw.handlers.simpleshape.tooltip.end = 'Soltar el mouse para finalizar el dibujo';
 					L.drawLocal.edit.toolbar.actions.save.title = 'Guardar cambios';
 					L.drawLocal.edit.toolbar.actions.save.text = 'Guardar';
-					L.drawLocal.edit.toolbar.actions.cancel.title = 'Cacelar edición, descartar todos los cambios';
+					L.drawLocal.edit.toolbar.actions.cancel.title = 'Cancelar edición, descartar todos los cambios';
 					L.drawLocal.edit.toolbar.actions.cancel.text = 'Cancelar';
 					L.drawLocal.edit.toolbar.actions.clearAll.title = 'Limpiar todas las capas';
 					L.drawLocal.edit.toolbar.actions.clearAll.text = 'Limpiar todo';
@@ -473,9 +473,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					
 					mapa.on('draw:drawstart', (e) => {
-
-					currentlyDrawing = true;
-
+						currentlyDrawing = true;
 					});
 					
 					mapa.on('draw:editstart', (e) => {
@@ -550,9 +548,8 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('draw:deleted', function (e) {
 						var layers = e.layers;
 						Object.values(layers._layers).forEach(deletedLayer => {
-							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex(lyr => lyr.name = deletedLayer.name);
+							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
 							if (lyrIdx >= 0) {
-								
 								let layerSection;
 								addedLayers.forEach(lyr => {
 									if (lyr.id === deletedLayer.id) {
@@ -569,10 +566,10 @@ $("body").on("pluginLoad", function(event, plugin){
 								deleteLayerFromMenu(deletedLayer);
 							}
 						});
-						if(geoProcessingManager){
+						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
-						}
+						}*/
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
@@ -922,9 +919,9 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.closePopup(contextPopup);							
 								deleteAddedLayer(layer);							
 								mapa.deleteLayer(layer.name);
-								if(geoProcessingManager){
+								/*if(geoProcessingManager){
 									geoProcessingManager.updateLayerSelect(layer.name, false);
-								}
+								}*/
 							}
 						});
 

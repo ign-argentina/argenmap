@@ -101,7 +101,7 @@ class Geoprocessing {
     btnclose.id = "btnclose-icon-modalfile";
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
-      '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
+      '<i title="Cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = () => {
       //Close geoprocess window and clear
       this.closeModal();
@@ -189,6 +189,7 @@ class Geoprocessing {
           mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
           
           let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+          selectedRectangle._image = true; //aux to disallow editing the layer
           mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
 
