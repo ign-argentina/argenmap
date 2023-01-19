@@ -2822,7 +2822,7 @@
         var e,
           i,
           o = t.layer || t.target || t;
-        if (typeof o != "string" && o._editable) { //to disallow editing in geoprocesses
+        if (typeof o != "string" && !o._uneditable) { //to disallow editing in geoprocesses
           this._backupLayer(o),
             this.options.poly &&
               ((i = L.Util.extend({}, this.options.poly)),
@@ -2848,7 +2848,7 @@
       },
       _disableLayerEdit: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string" && e._editable) { //to disallow editing in geoprocesses
+        if (typeof e != "string" && !e._uneditable) { //to disallow editing in geoprocesses
           (e.edited = !1),
             e.editing && e.editing.disable(),
             delete e.options.editing,
@@ -2958,20 +2958,20 @@
       },
       _enableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string" && e._editable) {
+        if (typeof e != "string" && !e._uneditable) {
           e.on("click", this._removeLayer, this);
         }
       },
       _disableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string" && e._editable) {
+        if (typeof e != "string" && !e._uneditable) {
           e.off("click", this._removeLayer, this),
             this._deletedLayers.removeLayer(e);
         }
       },
       _removeLayer: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string" && e._editable && !e.value) {
+        if (typeof e != "string" && !e._uneditable && !e.value) {
           this._deletableLayers.removeLayer(e),
             this._deletedLayers.addLayer(e),
             e.fire("deleted");

@@ -2030,8 +2030,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.deleteLayer = (layer) => {
 						const type = layer.split('_')[0];
 						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
-console.log(type);
-console.log(lyrIdx);
 
 						if (lyrIdx >= 0) {
 							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);

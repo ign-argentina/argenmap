@@ -189,7 +189,7 @@ class Geoprocessing {
           mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
           
           let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
-          selectedRectangle._editable = false; //aux to disallow editing the layer
+          selectedRectangle._uneditable = true; //aux to disallow editing the layer
           mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
 
@@ -256,7 +256,7 @@ class Geoprocessing {
         let imageLayer = L.imageOverlay(imageUrl, imageBounds, options); // makes leaflet image overlay from received blob
         imageLayer.title = layername;
         imageLayer.name = layername;
-        imageLayer._editable = false;
+        imageLayer._uneditable = true;
         
         mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
         
