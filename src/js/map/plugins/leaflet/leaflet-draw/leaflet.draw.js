@@ -2692,18 +2692,18 @@
           if (isComplex) {
             if (lyr.type === "polyline") {
               _nodes += lyr._latlngs.length;
-            } else /*if (lyr.type === "rectangle" || lyr.type === "polygon")*/ {
+            } else {
               _nodes += lyr._latlngs[0].length;
             }
-          } /*  else {
-                console.log(lyr.type + " single coordinate geom")
-            } */
+          } //else {console.log(lyr.type + " single coordinate geom")}
         });
 
         if (_nodes > 3000) {
-          if (window.confirm(
+          if (
+            window.confirm(
               `ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`
-            )) {
+            )
+          ) {
             !this._enabled &&
               this._hasAvailableLayers() &&
               (this.fire("enabled", { handler: this.type }),
@@ -2822,47 +2822,52 @@
         var e,
           i,
           o = t.layer || t.target || t;
-        this._backupLayer(o),
-          this.options.poly &&
-            ((i = L.Util.extend({}, this.options.poly)), (o.options.poly = i)),
-          this.options.selectedPathOptions &&
-            ((e = L.Util.extend({}, this.options.selectedPathOptions)),
-            e.maintainColor &&
-              ((e.color = o.options.color),
-              (e.fillColor = o.options.fillColor)),
-            (o.options.original = L.extend({}, o.options)),
-            (o.options.editing = e)),
-          o instanceof L.Marker
-            ? (o.editing && o.editing.enable(),
-              o.dragging.enable(),
-              o
-                .on("dragend", this._onMarkerDragEnd)
-                .on("touchmove", this._onTouchMove, this)
-                .on("MSPointerMove", this._onTouchMove, this)
-                .on("touchend", this._onMarkerDragEnd, this)
-                .on("MSPointerUp", this._onMarkerDragEnd, this))
-            : o.editing.enable();
+        if (typeof o != "string" && !o._uneditable) { //to disallow editing in geoprocesses
+          this._backupLayer(o),
+            this.options.poly &&
+              ((i = L.Util.extend({}, this.options.poly)),
+              (o.options.poly = i)),
+            this.options.selectedPathOptions &&
+              ((e = L.Util.extend({}, this.options.selectedPathOptions)),
+              e.maintainColor &&
+                ((e.color = o.options.color),
+                (e.fillColor = o.options.fillColor)),
+              (o.options.original = L.extend({}, o.options)),
+              (o.options.editing = e)),
+            o instanceof L.Marker
+              ? (o.editing && o.editing.enable(),
+                o.dragging.enable(),
+                o
+                  .on("dragend", this._onMarkerDragEnd)
+                  .on("touchmove", this._onTouchMove, this)
+                  .on("MSPointerMove", this._onTouchMove, this)
+                  .on("touchend", this._onMarkerDragEnd, this)
+                  .on("MSPointerUp", this._onMarkerDragEnd, this))
+              : o.editing.enable();
+        }
       },
       _disableLayerEdit: function (t) {
         var e = t.layer || t.target || t;
-        (e.edited = !1),
-          e.editing && e.editing.disable(),
-          delete e.options.editing,
-          delete e.options.original,
-          this._selectedPathOptions &&
-            (e instanceof L.Marker
-              ? this._toggleMarkerHighlight(e)
-              : (e.setStyle(e.options.previousOptions),
-                delete e.options.previousOptions)),
-          e instanceof L.Marker
-            ? (e.dragging.disable(),
-              e
-                .off("dragend", this._onMarkerDragEnd, this)
-                .off("touchmove", this._onTouchMove, this)
-                .off("MSPointerMove", this._onTouchMove, this)
-                .off("touchend", this._onMarkerDragEnd, this)
-                .off("MSPointerUp", this._onMarkerDragEnd, this))
-            : e.editing.disable();
+        if (typeof e != "string" && !e._uneditable) { //to disallow editing in geoprocesses
+          (e.edited = !1),
+            e.editing && e.editing.disable(),
+            delete e.options.editing,
+            delete e.options.original,
+            this._selectedPathOptions &&
+              (e instanceof L.Marker
+                ? this._toggleMarkerHighlight(e)
+                : (e.setStyle(e.options.previousOptions),
+                  delete e.options.previousOptions)),
+            e instanceof L.Marker
+              ? (e.dragging.disable(),
+                e
+                  .off("dragend", this._onMarkerDragEnd, this)
+                  .off("touchmove", this._onTouchMove, this)
+                  .off("MSPointerMove", this._onTouchMove, this)
+                  .off("touchend", this._onMarkerDragEnd, this)
+                  .off("MSPointerUp", this._onMarkerDragEnd, this))
+              : e.editing.disable();
+        }
       },
       _onMouseMove: function (t) {
         this._tooltip.updatePosition(t.latlng);
@@ -2952,18 +2957,25 @@
           this.save();
       },
       _enableLayerDelete: function (t) {
-        (t.layer || t.target || t).on("click", this._removeLayer, this);
+        var e = t.layer || t.target || t;
+        if (typeof e != "string" && !e._uneditable) {
+          e.on("click", this._removeLayer, this);
+        }
       },
       _disableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
-        e.off("click", this._removeLayer, this),
-          this._deletedLayers.removeLayer(e);
+        if (typeof e != "string" && !e._uneditable) {
+          e.off("click", this._removeLayer, this),
+            this._deletedLayers.removeLayer(e);
+        }
       },
       _removeLayer: function (t) {
         var e = t.layer || t.target || t;
-        this._deletableLayers.removeLayer(e),
-          this._deletedLayers.addLayer(e),
-          e.fire("deleted");
+        if (typeof e != "string" && !e._uneditable && !e.value) {
+          this._deletableLayers.removeLayer(e),
+            this._deletedLayers.addLayer(e),
+            e.fire("deleted");
+        }
       },
       _onMouseMove: function (t) {
         this._tooltip.updatePosition(t.latlng);
