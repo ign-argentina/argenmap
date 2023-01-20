@@ -18,6 +18,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
     init: async function (data) {
       Object.assign(app, data);
+      Object.assign(STRINGS, data.strings);
 
       if (Object.keys(app.profiles).length === 0) {
         app["profiles"] = {

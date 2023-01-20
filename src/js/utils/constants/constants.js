@@ -13,6 +13,13 @@ const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
 
+const STRINGS = {
+  basemap_legend_button_text: "View basemap legend",
+  basemap_max_zoom: " to max zoom ",
+  basemap_min_zoom: "Min zoom ",
+  delete_geometry: "Delete geometry"
+}
+
 //Default Services Values
 const DEFAULT_WMTS_MAX_ZOOM_LEVEL = 21;
 

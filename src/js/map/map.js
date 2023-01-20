@@ -914,7 +914,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						
 						contextMenu.createOption({
 							isDisabled: false,
-							text: app.strings.delete_geometry ?? 'Delete geometry',
+							text: STRINGS.delete_geometry,
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);				
 								mapa.deleteLayer(layer.name);

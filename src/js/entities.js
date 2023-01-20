@@ -311,19 +311,8 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_INFO.appendChild(BASEMAP_THUMBNAIL);
     BASEMAP_INFO.appendChild(BASEMAP_TITLE);
 
-    let str = {
-      _bm_min_zoom: "Min zoom ",
-      _bm_max_zoom: " to max zoom ",
-      _bm_legend_button_txt: "View basemap legend",
-    };
-    if (app.strings) {
-      (str._bm_min_zoom = app.strings.basemap_min_zoom),
-        (str._bm_max_zoom = app.strings.basemap_max_zoom),
-        (str._bm_legend_button_txt = app.strings.basemap_legend_button_text);
-    }
-
     const BASEMAP_LEGEND_IMG = itemComposite.legend ?? null;
-    const LEGEND_BTN_TEXT = str._bm_legend_button_txt;
+    const LEGEND_BTN_TEXT = STRINGS.basemap_legend_button_text;
 
     const BASEMAP_LEGEND = document.createElement("button");
     BASEMAP_LEGEND.innerHTML = LEGEND_BTN_TEXT;
@@ -335,7 +324,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const BASEMAP_TOOLTIP = document.createElement("span");
     BASEMAP_TOOLTIP.id = itemComposite.nombre + "-tooltip";
     BASEMAP_TOOLTIP.classList.add("tooltiptext");
-    BASEMAP_TOOLTIP.innerHTML = `<span>${str._bm_min_zoom}<b>${minZoom}</b>${str._bm_max_zoom}<b>${maxZoom}</b></span>`;
+    BASEMAP_TOOLTIP.innerHTML = `<span>${STRINGS.basemap_min_zoom}<b>${minZoom}</b>${STRINGS.basemap_max_zoom}<b>${maxZoom}</b></span>`;
     BASEMAP_TOOLTIP.style =
       "-webkit-flex-direction: column; flex-direction: column; width: fit-content; height: fit-content; flex: 1 1 auto; padding: 5px;";
     BASEMAP_LEGEND_IMG ? BASEMAP_TOOLTIP.append(BASEMAP_LEGEND) : "";
