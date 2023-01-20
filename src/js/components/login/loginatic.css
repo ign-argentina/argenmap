@@ -1,21 +1,26 @@
-.center-flex {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .btn-logout {
+    width: 30px;
+    height: auto;
+    display: block;
+    box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
     position: absolute;
-    flex-direction: column;
-    width: 34px;
-    height: 34px;
-    color: black;
-    font-size: 1.1em;
+    color: #222;
+    font-size: 1.25em;
     bottom: 100px;
     left: 10px;
     z-index: 99999;
-    border: 2px solid rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    border-radius: 4px;
+}
+
+@-moz-document url-prefix() {
+    .btn-logout {
+        width: 34px;
+        height: 34px;
+        box-shadow: none;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        bottom: 30px;
+        left: 54px;
+    }
 }
 
 .btn-logout :hover {
@@ -27,34 +32,71 @@
 }
 
 #icon-container {
-    height: 100%;
-    width: 100%;
+    height: 30px;
+    width: 30px;
     flex: 3;
     background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 3px;
+    border-radius: 4px;
+}
+
+@media (max-width: 800px) {
+    .btn-logout {
+        bottom: 150px;
+    }
 }
 
 @media (max-width: 600px) {
     .btn-logout {
-        right: 1px;
+        bottom: 150px;
+        left: 0;
+    }
+}
+
+@media (max-height: 600px) {
+    .btn-logout {
+        bottom: 83px;
+        left: 50px;
+    }
+
+    @-moz-document url-prefix() {
+        .btn-logout {
+            bottom: 30px;
+            left: 50px;
+        }
     }
 }
 
 @media (max-height: 500px) {
     .btn-logout {
-        top: 124px;
-        left: 34px;
-        border: 1px solid rgba(0, 0, 0, 0.2) !important;
-        width: 32px;
-        height: 32px;
+        width: 30px;
+        height: 30px;
+        bottom: 60px;
+        left: 0;
     }
-}
 
-@media (max-width: 600px) {
-    .btn-logout {
-        bottom: 200px;
-        left: 2px;
-        /* border: 2px solid rgba(0, 0, 0, 0.2) !important; */
+    #icon-container {
+        height: 30px;
+        width: 30px;
+        flex: 3;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 4px;
+    }
+
+    @-moz-document url-prefix() {
+        .btn-logout {
+            width: 34px;
+            height: 34px;
+            bottom: 15px;
+            left: 0;
+        }
+
+        #icon-container {
+            height: 30px;
+            width: 30px;
+            flex: 3;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+        }
     }
 }
 
@@ -65,7 +107,7 @@
     top: 0;
     left: 0;
     background: RGBA(255, 255, 255, .6);
-    z-index: 99999;
+    z-index: 1050;
     display: none;
 }
 
@@ -159,7 +201,7 @@
 }
 
 .white-modal {
-    background-color: white;
+	background-color: white !important;
     padding: 2rem;
     width: 100%;
     border-radius: 10px;

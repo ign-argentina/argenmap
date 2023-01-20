@@ -311,19 +311,8 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_INFO.appendChild(BASEMAP_THUMBNAIL);
     BASEMAP_INFO.appendChild(BASEMAP_TITLE);
 
-    let str = {
-      _bm_min_zoom: "Min zoom ",
-      _bm_max_zoom: " to max zoom ",
-      _bm_legend_button_txt: "View basemap legend",
-    };
-    if (app.strings) {
-      (str._bm_min_zoom = app.strings.basemap_min_zoom),
-        (str._bm_max_zoom = app.strings.basemap_max_zoom),
-        (str._bm_legend_button_txt = app.strings.basemap_legend_button_text);
-    }
-
     const BASEMAP_LEGEND_IMG = itemComposite.legend ?? null;
-    const LEGEND_BTN_TEXT = str._bm_legend_button_txt;
+    const LEGEND_BTN_TEXT = STRINGS.basemap_legend_button_text;
 
     const BASEMAP_LEGEND = document.createElement("button");
     BASEMAP_LEGEND.innerHTML = LEGEND_BTN_TEXT;
@@ -335,7 +324,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const BASEMAP_TOOLTIP = document.createElement("span");
     BASEMAP_TOOLTIP.id = itemComposite.nombre + "-tooltip";
     BASEMAP_TOOLTIP.classList.add("tooltiptext");
-    BASEMAP_TOOLTIP.innerHTML = `<span>${str._bm_min_zoom}<b>${minZoom}</b>${str._bm_max_zoom}<b>${maxZoom}</b></span>`;
+    BASEMAP_TOOLTIP.innerHTML = `<span>${STRINGS.basemap_min_zoom}<b>${minZoom}</b>${STRINGS.basemap_max_zoom}<b>${maxZoom}</b></span>`;
     BASEMAP_TOOLTIP.style =
       "-webkit-flex-direction: column; flex-direction: column; width: fit-content; height: fit-content; flex: 1 1 auto; padding: 5px;";
     BASEMAP_LEGEND_IMG ? BASEMAP_TOOLTIP.append(BASEMAP_LEGEND) : "";
@@ -436,7 +425,7 @@ class ImpresorCapasBaseHTML extends Impresor {
     // Only one basemap-selector
     if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
       const baseMapsMenu = document.createElement("a");
-      baseMapsMenu.classList = "leaflet-control-layers-toggle pull-left";
+      baseMapsMenu.classList = "leaflet-control-layers-toggle";
       baseMapsMenu.title = itemComposite.nombre;
       baseMapsMenu.setAttribute("role", "button");
       baseMapsMenu.setAttribute("data-toggle", "collapse");
@@ -2351,6 +2340,7 @@ class GestorMenu {
     });
     this.toggleLayers(layers);
     hideAddedLayers();
+    hideAddedLayersCounter();
   }
 
   toggleLayers(layers) {
@@ -3461,8 +3451,11 @@ class Menu_UI {
     return layerOption;
   }
 
-  addFileLayer(groupname, textName, id, fileName, isActive) {
+  addFileLayer(groupname, layerType, textName, id, fileName, isActive) {
     let groupnamev = clearSpecialChars(groupname);
+    if (!fileLayerGroup.includes(groupnamev)) {
+      fileLayerGroup.push(groupnamev);
+    }
     let main = document.getElementById("lista-" + groupnamev);
 
     let div = ` 
@@ -3485,16 +3478,16 @@ class Menu_UI {
     let layer_item = document.createElement("div");
     layer_item.id = "flc-" + id;
     if (isActive) {
-      layer_item.className = "file-layer active"
+      layer_item.className = "file-layer active";
     }else if (!isActive) {
-        layer_item.className = "file-layer"
+        layer_item.className = "file-layer";
     }
 
     let img_icon = document.createElement("div");
     img_icon.className = "file-img";
     img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`;
     img_icon.onclick = function () {
-      clickGeometryLayer(id, true);
+      clickGeometryLayer(id);
     };
 
     let layer_name = document.createElement("div");
@@ -3502,7 +3495,7 @@ class Menu_UI {
     layer_name.innerHTML = "<a>" + textName + "</a>";
     layer_name.title = fileName;
     layer_name.onclick = function () {
-      clickGeometryLayer(id, true);
+      clickGeometryLayer(id);
     };
 
     let options = document.createElement("div");
@@ -3530,7 +3523,7 @@ class Menu_UI {
     delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`;
     delete_opt.onclick = function () {
       let menu = new Menu_UI();
-      menu.modalEliminar(id);
+      menu.modalEliminar(id, groupnamev, layerType);
       //deleteLayerGeometry(layer)
     };
 
@@ -3612,6 +3605,8 @@ class Menu_UI {
     layer_item.append(options);
     layer_container.append(layer_item);
     content.appendChild(layer_container);
+    showTotalNumberofLayers();
+    addCounterForSection(groupnamev, layerType);
   }
 
   addLayerOptions(layer) {
@@ -3819,7 +3814,7 @@ class Menu_UI {
     return li;
   }
 
-  modalEliminar(id) {
+  modalEliminar(id, groupnamev, layerType) {
     let index_file = getIndexFileLayerbyID(id);
     let textname = addedLayers[index_file].name;
     let fileName = addedLayers[index_file].file_name;
@@ -3855,15 +3850,25 @@ class Menu_UI {
     btn_si.className = "btn btn-info";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
+      let section;
+      addedLayers.forEach(lyr => {
+        if (lyr.id === id) {
+          section = lyr.section;
+        }
+      });
       delFileItembyID(id);
       deleteLayerGeometry(id, true);
       $("#modal_layer_del").remove();
-
+      
       //ElevationProfile
-      if (id.includes("elevation_profile")) {
+      if (IElevationProfile) {
         let perfilDelete = new IElevationProfile();
-        perfilDelete.removeElevationProfile(id);
+        if (id.includes(perfilDelete.namePrefixElevProfile)) {
+          perfilDelete.removeElevationProfile(id);
+        }
       }
+      updateNumberofLayers(section);
+      showTotalNumberofLayers();
     };
 
     let btn_no = document.createElement("button");
@@ -3926,7 +3931,7 @@ class Menu_UI {
         editDomNameofFileLayerbyID(id, this.value);
         a_new.innerHTML = `<a>${this.value}</a>`;
         a_new.onclick = function () {
-          clickGeometryLayer(id, true);
+          clickGeometryLayer(id);
         };
         container.insertBefore(a_new, nodo_hijo);
       }
@@ -3972,6 +3977,7 @@ class Menu_UI {
     ) {
       this.removeLayersGroup(groupname);
     }
+    showTotalNumberofLayers();
   }
 
   removeLayersGroup(groupname) {
@@ -3982,7 +3988,7 @@ class Menu_UI {
     }
   }
 
-  addLayerToGroup(groupname, textName, id, fileName, layer) {
+  addLayerToGroup(groupname, layerType, textName, id, fileName, layer) {
     let newLayer = layer;
     newLayer.active = false;
     newLayer.L_layer = null;
@@ -4001,6 +4007,9 @@ class Menu_UI {
     }
 
     let groupnamev = clearSpecialChars(groupname);
+    if (!fileLayerGroup.includes(groupname)) {
+      fileLayerGroup.push(groupname);
+    }
     let main = document.getElementById("lista-" + groupnamev);
     let id_options_container = "opt-c-" + id;
     if (!main) {
@@ -4020,7 +4029,7 @@ class Menu_UI {
     img_icon.className = "loadservice-layer-img";
     img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`;
     img_icon.onclick = function () {
-      clickGeometryLayer(id, true);
+      clickWMSLayer(layer, layer_item, fileName)
     };
 
     let layer_name = document.createElement("div");
@@ -4030,53 +4039,40 @@ class Menu_UI {
     layer_name.innerHTML = "<a>" + capitalizedTitle + "</a>";
     layer_name.title = fileName;
     layer_name.onclick = function () {
-      layer_item.classList.toggle("active");
+      clickWMSLayer(layer, layer_item, fileName)
+      // layer_item.classList.toggle("active");
+      // if (!layer.active) {
+      //   layer.L_layer = L.tileLayer
+      //     .wms(layer.host, {
+      //       layers: layer.name,
+      //       format: "image/png",
+      //       transparent: true,
+      //     })
+      //     .addTo(mapa);
+      //   layer.active = true;
 
-      if (!layer.active) {
-        layer.L_layer = L.tileLayer
-          .wms(layer.host, {
-            layers: layer.name,
-            format: "image/png",
-            transparent: true,
-          })
-          .addTo(mapa);
-        layer.active = true;
+      //   gestorMenu.layersDataForWfs[layer.name] = {
+      //     name: layer.name,
+      //     section: layer.title,
+      //     host: layer.host,
+      //   };
+      // } else {     
+      //   mapa.removeLayer(layer.L_layer);
+      //   layer.active = false;
+      // }
 
-        gestorMenu.layersDataForWfs[layer.name] = {
-          name: layer.name,
-          section: layer.title,
-          host: layer.host,
-        };
-      } else {
-        mapa.removeLayer(layer.L_layer);
-        layer.active = false;
-      }
     };
 
     let zoom_button = document.createElement("div");
     zoom_button.className = "loadservice-layer-img";
     zoom_button.innerHTML = `<i class="fas fa-search-plus" title="Zoom a capa"></i>`;
     zoom_button.onclick = function () {
-      layer_item.classList.toggle("active");
-
-      if (!layer.active) {
-        let bounds = [
-          [layer.maxy, layer.maxx],
-          [layer.miny, layer.minx],
-        ];
-        mapa.fitBounds(bounds);
-        layer.L_layer = L.tileLayer
-          .wms(layer.host, {
-            layers: layer.name,
-            format: "image/png",
-            transparent: true,
-          })
-          .addTo(mapa);
-        layer.active = true;
-      } else {
-        mapa.removeLayer(layer.L_layer);
-        layer.active = false;
-      }
+      clickWMSLayer(layer, layer_item, fileName)
+      let bounds = [
+        [layer.maxy, layer.maxx],
+        [layer.miny, layer.minx],
+      ];
+      mapa.fitBounds(bounds);
     };
 
     layer_item.append(img_icon);
@@ -4088,6 +4084,7 @@ class Menu_UI {
     // Open the tab
 
     if (serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
+    addCounterForSection(groupname, layerType);
   }
 }
 

@@ -5,11 +5,13 @@ class EditableLabel {
     this.activated = false;
     this.control = null;
     this.title = "Agregar etiqueta";
-    this.text = "Click aquí para escribir";
   }
 
   _initialize = () => {
-    this.control = new this.labelsControl({ title: this.title, click: this.addLabel });
+    this.control = new this.labelsControl({
+      title: this.title,
+      click: this.addLabel,
+    });
     this._map.addControl(this.control);
 
     this.control.getContainer().addEventListener("click", () => {
@@ -26,34 +28,31 @@ class EditableLabel {
   labelsControl = L.Control.extend({
     options: {
       position: "topright",
-      title: "Editable Labels"
+      title: "Editable Labels",
     },
 
     onAdd: function (map) {
-      let controlDiv = L.DomUtil.create("div", "leaflet-editable-label leaflet-bar");
+      let controlDiv = L.DomUtil.create(
+        "div",
+        "leaflet-editable-label leaflet-bar"
+      );
       L.DomEvent.addListener(controlDiv, "click", L.DomEvent.stopPropagation)
         .addListener(controlDiv, "click", L.DomEvent.preventDefault)
-        .addListener(controlDiv, "click", function () {
-        });
+        .addListener(controlDiv, "click", function () {});
 
       const icon = document.createElement("i");
       icon.classList = "fas fa-edit";
 
-      let controlUI = L.DomUtil.create("div", "leaflet-editable-label-interior", controlDiv);
+      let controlUI = L.DomUtil.create(
+        "div",
+        "leaflet-editable-label-interior",
+        controlDiv
+      );
       controlUI.title = this.options.title;
       controlUI.appendChild(icon);
       return controlDiv;
     },
-
   });
-
-  _getTextDiv = () => {
-    let textDiv = document.createElement("div");
-    textDiv.innerHTML = this.text;
-    textDiv.contentEditable = true;
-    textDiv.focus();
-    return textDiv;
-  };
 
   _addLayerGroup = () => {
     this.labelsLayer = L.layerGroup().addTo(this._map);
@@ -71,33 +70,50 @@ class EditableLabel {
   };
 
   addText = ({ lat, lng }) => {
-    const offset = L.point(0, 42);
-    const popup = L.popup({
-      autoClose: false,
-      closeOnClick: false,
-      closeButton: false,
-      className: "textbox",
-      offset: offset,
-    });
+    let name = "label_";
 
-    popup.setContent(this._getTextDiv);
+    if (mapa.editableLayers["label"].length === 0) {
+      name += "1";
+    } else {
+      const lastLayerName =
+        mapa.editableLayers["label"][mapa.editableLayers["label"].length - 1].name;
+      name += parseInt(lastLayerName.split("_")[1]) + 1;
+    }
 
-    const textMarker = new L.Marker([lat, lng], {
-      opacity: 0,
-      draggable: true,
-    });
-    this._map.editableLayers.marker.push(textMarker);
-    textMarker.addTo(this._map).bindPopup(popup).openPopup();
-    this.labelsLayer.addLayer(textMarker);
+    var textarea = document.createElement("textarea");
+    textarea.name = name;
+    textarea.autocomplete = "off";
+    textarea.placeholder = "Escribe algo aquí...";
+    textarea.className = "map-label";
+    //textarea.autofocus = true;
+    textarea.style.resize = "none";
+    textarea.maxlength = "255";
+    textarea.onkeyup = function () {
+      this.style.height = "20px";
+      this.style.height = this.scrollHeight + 4 + "px";
+    };
 
-    textMarker.on("dragend", function (e) {
-      textMarker.openPopup();
-    });
+    var geojsonDivIcon = {
+      type: "Feature",
+      properties: {
+        Text: {
+          className: 'my-div-icon',
+          iconSize: null,
+          html: textarea,
+        },
+        type: "label",
+      },
+      geometry: { type: "Point", coordinates: [lng, lat] },
+    };
+    mapa.addGeoJsonLayerToDrawedLayers(
+      geojsonDivIcon,
+      "geojsonDivIcon_" + name,
+      true
+    );
+    this.deactivate();
   };
 
-  updateContent(content) {
-
-  }
+  updateContent(content) {}
 
   activate = () => {
     this._addLayerGroup();
@@ -105,14 +121,14 @@ class EditableLabel {
     this._map.on("click", (e) => {
       this.addText(e.latlng);
     });
-  }
+  };
 
   deactivate = () => {
     this.activated = false;
     this._updateButton();
-    this.labelsLayer.clearLayers()
+    this.labelsLayer.clearLayers();
     this._map.off("click");
-  }
+  };
 
   addTo = (map) => {
     this._map = map;
@@ -123,10 +139,10 @@ class EditableLabel {
     let control = this.control.getContainer().firstElementChild;
     let controlIcon = control.querySelectorAll("i")[0];
     controlIcon.classList.toggle("fa-edit");
-    controlIcon.classList.toggle("fa-eraser");
+    controlIcon.classList.toggle("fa-times");
     controlIcon.classList.toggle("redIcon");
     if (controlIcon.classList.contains("redIcon")) {
-      control.title = "Eliminar etiquetas";
+      control.title = "Desactivar";
     } else {
       control.title = this.title;
     }

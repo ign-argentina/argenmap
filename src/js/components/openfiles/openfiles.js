@@ -1,6 +1,7 @@
 let upload_files = null;
 let currentLayers = [];
 let addedLayers = [];
+let fileLayerGroup = [];
 let open = false;
 let control_btn_add_layer = false;
 
@@ -185,7 +186,14 @@ class UImf {
     btnCapa.innerHTML = "Agregar Capa"
     btnCapa.onclick = function () {
 
-      if (control_btn_add_layer) addLayersfromFiles()
+      if (control_btn_add_layer) {
+        addLayersfromFiles();
+        new UserMessage(`Capas agregadas exitosamente.`, true, "information");
+      }
+
+      // if (control_btn_add_layer) { old version
+      //   addLayersfromFiles()
+      // }
     }
 
     // mainIcons
@@ -452,28 +460,30 @@ class UImf {
 let uimodalfs = new UImf();
 
 function addLayersfromFiles() {
-
+  let sectionName = "Archivos",
+      typeName = "file";
   currentLayers.forEach((e) => {
     // Draw the layer in the map
     mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
     // Add the layer to the Menu
-    menu_ui.addFileLayer("Archivos", e.name, e.id, e.file_name, true);
     // Save layer to check its existence in the next layer load
     addedLayers.push({
       id: e.id,
       layer: e.layer,
       name: e.name,
       file_name: e.file_name,
-      file: true,
-      kb: e.kb
+      kb: e.kb,
+      isActive: true,
+      type: typeName,
+      section: sectionName
     });
-  });
+    menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
+    updateNumberofLayers(sectionName);
+    $("#item_uf_" + e.id).remove();
 
-  // let close = document.getElementById("modalOpenFile")
-  // document.getElementById("modalgeojson").style.color = "black";
-  // document.body.removeChild(close);
+  });
   currentLayers = [];
-  // open = false;
+  showTotalNumberofLayers();
 }
 
 function delFileItembyID(id) {

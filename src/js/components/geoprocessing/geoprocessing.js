@@ -15,9 +15,7 @@ class Geoprocessing {
   optionsForm = null;
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
-  namePrefixContour = app.geoprocessing.availableProcesses[0].namePrefix ?? "curvas_de_nivel_";
-  namePrefixHeight = app.geoprocessing.availableProcesses[1].namePrefix ?? "cota_";
-  namePrefixBuffer = app.geoprocessing.availableProcesses[2].namePrefix ?? "area_de_influencia_";
+  _namePrefix = null;
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -40,7 +38,7 @@ class Geoprocessing {
     </div>
     `;
     const elem = document.createElement("div");
-    elem.className = "leaflet-control-locate leaflet-bar leaflet-control";
+    elem.className = "leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
     elem.title = app.geoprocessing.buttonTitle;
     elem.innerHTML = modalicon;
@@ -60,13 +58,30 @@ class Geoprocessing {
     elem.style.border = border_style;
     elem.style.boxShadow = shadow_style;
 
-    elem.onclick = function () {
+    elem.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
         g_modal_close = false;
       }
+      else {
+        //Close geoprocess window and clear
+        this.closeModal();
+      }
     };
     document.querySelector(".leaflet-top.leaflet-left").appendChild(elem);
+  }
+
+  closeModal() {
+    document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
+      "";
+    document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
+      "";
+    document.getElementById("select-process").selectedIndex = 0;
+    document.getElementsByClassName("form")[1].innerHTML = "";
+    document.getElementById("mr").remove();
+    g_modal_close = true;
+
+    this.resetHeightLayerColor();
   }
 
   createModal() {
@@ -86,19 +101,10 @@ class Geoprocessing {
     btnclose.id = "btnclose-icon-modalfile";
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
-      '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
+      '<i title="Cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
     btnclose.onclick = () => {
       //Close geoprocess window and clear
-      document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
-        "";
-      document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
-        "";
-      document.getElementById("select-process").selectedIndex = 0;
-      document.getElementsByClassName("form")[1].innerHTML = "";
-      divContainer.remove();
-      g_modal_close = true;
-
-      this.resetHeightLayerColor();
+      this.closeModal();
     };
     s_sec.append(btnclose);
 
@@ -143,6 +149,14 @@ class Geoprocessing {
     return this.geoprocessingConfig.availableProcesses;
   }
 
+  set namePrefix (processId) {
+    this._namePrefix = processId ?? "process_";
+  }
+
+  get namePrefix () {
+    return this._namePrefix;
+  }
+
   getCapaValue() {
     let selectedCapa = document.getElementById("select-capa");
     let result = selectedCapa.options[selectedCapa.selectedIndex].text;
@@ -150,6 +164,9 @@ class Geoprocessing {
   }
 
   displayResult(result) {
+    let layerType = "geoprocess",
+      sectionName = "Geoprocesos"
+    
     switch (this.geoprocessId) {
       case "contour": {
         btn_modal_loading = false;
@@ -163,9 +180,7 @@ class Geoprocessing {
 
         document.head.appendChild(style_fix_textpath);
 
-        let namePrefix = this.namePrefixContour;
-
-        let layername = namePrefix + counterContour;
+        let layername = this.namePrefix + counterContour;
         counterContour++;
 
         mapa
@@ -174,7 +189,9 @@ class Geoprocessing {
           mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
           
           let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+          selectedRectangle._uneditable = true; //aux to disallow editing the layer
           mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
+
 
         addedLayers.push({
           id: layername,
@@ -182,7 +199,9 @@ class Geoprocessing {
           name: layername,
           file_name: layername,
           rectangle: selectedRectangle,
-          kb: null,
+          type: layerType,
+          isActive: true,
+          section: sectionName
         });
 
         // ** Avoiding Leaflet Draw object test **
@@ -198,12 +217,13 @@ class Geoprocessing {
         //mapa.featureGroups.setStyle({color: '#876508'});
         // **
 
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
+        updateNumberofLayers(sectionName)
         break;
       }
       case "waterRise": {
         btn_modal_loading = true;
-        let layername = this.namePrefixHeight + counterHeight;
+        let layername = this.namePrefix + counterHeight;
         counterHeight++;
 
         let selectedRectangle;
@@ -236,6 +256,7 @@ class Geoprocessing {
         let imageLayer = L.imageOverlay(imageUrl, imageBounds, options); // makes leaflet image overlay from received blob
         imageLayer.title = layername;
         imageLayer.name = layername;
+        imageLayer._uneditable = true;
         
         mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
         
@@ -269,16 +290,20 @@ class Geoprocessing {
           name: layername,
           file_name: title,
           rectangle: selectedRectangle,
-          download: download
+          isActive: true,
+          download: download,
+          type: layerType,
+          section: sectionName
         });
         
-        menu_ui.addFileLayer("Geoprocesos", title, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, title, layername, layername, true);
+        updateNumberofLayers(sectionName)
+
         break;
       }
       case "buffer": {
         btn_modal_loading = false;
-        let namePrefixBuffer = this.namePrefixBuffer;
-        let layername = namePrefixBuffer + counterBuffer;
+        let layername = this.namePrefix + counterBuffer;
         counterBuffer++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
@@ -287,9 +312,13 @@ class Geoprocessing {
           layer: result,
           name: layername,
           file_name: layername,
-          kb: null,
+          type: layerType,
+          isActive: true,
+          section: sectionName
         });
-        menu_ui.addFileLayer("Geoprocesos", layername, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
+        updateNumberofLayers(sectionName)
+
         break;
       }
     }
@@ -357,7 +386,7 @@ class Geoprocessing {
 
   resetHeightLayerColor() {
     mapa.editableLayers.polyline.forEach((lyr) => {
-      if (lyr.layer && lyr.layer.includes(this.namePrefixContour) && lyr.options.color == "#ff1100") {
+      if (lyr.layer && lyr.layer.includes(this.namePrefix) && lyr.options.color == "#ff1100") {
         //Same id, spedific value
         lyr.setStyle({ color: "#E4C47A" });
       }
@@ -642,7 +671,13 @@ class Geoprocessing {
       $("#msgRectangle").addClass("hidden");
 
       for (let polyline of mapa.editableLayers.polyline) {
-        if (polyline.layer && polyline.layer.includes(this.namePrefixContour)) {
+        let contourPrefix = null;
+        this.getProcesses().forEach( process => {
+          if( process.geoprocess === "contour" ) {
+            contourPrefix = process.namePrefix;
+          };
+        });
+        if (polyline.layer && polyline.layer.includes(contourPrefix)) {
           this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
@@ -697,8 +732,14 @@ class Geoprocessing {
                   }
                 });
               } else if (this.geoprocessId === "waterRise") {
+                let contourPrefix = null;
                 addedLayers.forEach((layer) => {
-                  if (layer.id.includes(this.namePrefixContour)) {
+                  this.getProcesses().forEach( process => {
+                    if( process.geoprocess === "contour" ) {
+                      contourPrefix = process.namePrefix;
+                    };
+                  });
+                  if (layer.id.includes(contourPrefix)) {
                     options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
@@ -1033,7 +1074,7 @@ class Geoprocessing {
           //Auto show layer for waterRise and buffer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if (layer.id.includes(this.namePrefixContour)) {
+              if (layer.id.includes(this.namePrefix)) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
@@ -1081,6 +1122,7 @@ class Geoprocessing {
             item.layer
           );
           this.buildOptionForm(this.geoprocessing.getFields());
+          this.namePrefix = item.namePrefix;
         }
       }
     });

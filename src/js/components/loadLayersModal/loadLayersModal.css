@@ -68,7 +68,7 @@
   z-index: 1200;
   border: 3px;
   padding: 8px 12px;
-  background-color: white;
+  background-color: white !important;
   top: 100px;
   position: absolute;
   margin-bottom: 10px;
@@ -79,22 +79,18 @@
   left: calc(100% / 5);
 }
 
+#loadLayersButtonContent>img{
+  opacity: 0.9;
+}
+
 #loadLayersButton {
-  position: absolute;
-  flex-direction: column;
-  width: 34px;
-  height: 34px;
-  color: black;
-  font-size: 1.1em;
-  top: 270px;
-  left: 2px;
-  z-index: 999;
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+width: 34px;
+height: 34px;
 }
 
 #loadLayersButton:hover {
-  background-color: #f4f4f4;
+  background-color: #f5f4f4;
+  cursor: pointer;
 }
 
 #loadLayersButtonContent {
@@ -105,19 +101,16 @@
   border-radius: 3px;
   border-color: #cccccc;
 }
+
 /* Remove loadLayersButtonContent div/icon for media  print*/
-@media print{
-  #loadLayersButtonContent{
+@media print {
+  #loadLayersModal {
     display: none !important;
   }
 }
 
 /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 600px) {
-  #loadLayersButton {
-    top: 334px;
-    left: 10px;
-  }
+@media (min-width: 630px) {
 
   #loadLayersModal {
     width: 56%;
@@ -135,9 +128,9 @@
     flex-direction: column;
   }
 
-  .modalNavButton {
-    /* margin-right: 0; */
-  }
+  /*.modalNavButton {
+     margin-right: 0; 
+  }*/
 }
 
 /* Medium devices (tablets, 768px and up) */
@@ -170,22 +163,16 @@
     max-width: 700px;
   } */
 
-  /* #loadLayersButton {
-    top: 334px;
-  } */
 }
+
 @media (max-width: 600px) {
   /* #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 580px;
   } */
-
-  /* #loadLayersButton {
-    left: 2px !important;
-    top: 264px;
-  } */
 }
+
 @media (max-width: 480px) {
   /* #loadLayersModal {
     left: 45px;
@@ -193,6 +180,7 @@
     max-width: 300px;
   } */
 }
+
 @media (max-width: 360px) {
   /* #loadLayersModal {
     left: 45px;
@@ -200,13 +188,3 @@
     max-width: 250px;
   } */
 }
-
-/* @media (max-height: 500px) {
-  #loadLayersButton {
-    left: 34px;
-    top: 188px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    width: 32px;
-    height: 32px;
-  }
-} */
