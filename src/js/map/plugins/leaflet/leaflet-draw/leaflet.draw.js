@@ -2958,20 +2958,17 @@
       },
       _enableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string" && !e._uneditable) {
           e.on("click", this._removeLayer, this);
-        }
       },
       _disableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string" && !e._uneditable) {
           e.off("click", this._removeLayer, this),
             this._deletedLayers.removeLayer(e);
-        }
       },
       _removeLayer: function (t) {
         var e = t.layer || t.target || t;
-        if (typeof e != "string" && !e._uneditable && !e.value) {
+        let isFile = e.id ? e.id.includes('json')||e.id.includes('zip')||e.id.includes('kml') : false;
+        if (typeof e != "string" && !e._uneditable && !e.value && !isFile) {
           this._deletableLayers.removeLayer(e),
             this._deletedLayers.addLayer(e),
             e.fire("deleted");

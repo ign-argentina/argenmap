@@ -107,7 +107,7 @@ class EditableLabel {
     };
     mapa.addGeoJsonLayerToDrawedLayers(
       geojsonDivIcon,
-      "geojsonDivIcon_" + name,
+      "divIcon_" + name,
       true
     );
     this.deactivate();
