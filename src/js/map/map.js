@@ -916,8 +916,10 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: STRINGS.delete_geometry,
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);				
-								mapa.deleteLayer(layer.name);
+								mapa.closePopup(contextPopup);
+								if (typeof layer != "string" && !layer._uneditable && !layer.value) {
+									mapa.deleteLayer(layer.name);
+								}
 							}
 						});
 
@@ -2026,12 +2028,12 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.deleteLayer = (layer) => {
 						const type = layer.split('_')[0];
 						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
-
+						
 						if (lyrIdx >= 0) {
-							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
-							mapa.editableLayers[type].splice(lyrIdx, 1);
+						drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
+						mapa.editableLayers[type].splice(lyrIdx, 1);
 						}
-
+						
 						//Delete from groups
 						for (const group in mapa.groupLayers) {
 							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
@@ -2039,7 +2041,6 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 							}
 						}
-
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 						controlSeccionGeom();
 					}
