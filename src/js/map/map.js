@@ -1516,7 +1516,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							//Download
 							const downloadDiv = document.createElement('div');
 							downloadDiv.className = 'section-item';
-							
+
 							const downloadTitle = document.createElement('label');
 							downloadTitle.className = '';
 							downloadTitle.innerHTML = 'Descargar como';
@@ -2242,7 +2242,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						const icon = L.icon({
 							iconUrl: markerPNG,
 							shadowUrl: 'src/styles/images/marker-shadow.png',
-							popupAnchor:  [1, -33]
+							popupAnchor: [0, -41], //[1, -33]
+							iconSize: [25, 41],
+							iconAnchor: [12.5, 41]
 						});
 						layer.setIcon(icon);
 					};
