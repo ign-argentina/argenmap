@@ -10,7 +10,7 @@ class IElevationProfile {
     }
 
     drawPolyline() {
-        const drawPolyline = new L.Draw.Polyline(mapa);
+        const drawPolyline = new L.Draw.Polyline(mapa, {shapeOptions: {color: '#f00'}});
         $("#drawBtn").addClass("disabledbutton");
         $("#msgRectangle").addClass("hidden");
         drawPolyline.enable();
@@ -380,7 +380,13 @@ class IElevationProfile {
                 point: {
                     events: {
                         mouseOver: function (event) {
-                            mapa.markerPerfilTopografico = L.marker([event.target.lng, event.target.lat]).addTo(mapa);
+                            mapa.markerPerfilTopografico = L.circleMarker([event.target.lng, event.target.lat], {
+                                radius: 5,
+                                fillOpacity: 0.7,
+                                color: '#ff7070',
+                                fillColor: '#ff5050',
+                                weight: 3,
+                            }).addTo(mapa);
                         },
                         mouseOut: function () {
                             mapa.markerPerfilTopografico.remove();
