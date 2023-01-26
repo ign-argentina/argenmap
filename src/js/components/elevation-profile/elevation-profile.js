@@ -296,6 +296,8 @@ class IElevationProfile {
                 exitFullscreen: "Salir de pantalla completa",
                 contextButtonTitle: "Menú",
                 printChart: "Imprimir",
+                resetZoom: "Restablecer zoom",
+                resetZoomTitle: "Restablecer zoom escala 1:1",
                 downloadCSV: "Descargar en CSV",
                 downloadJPEG: "Descargar en JPG",
                 downloadPDF: "Descargar en PDF",
