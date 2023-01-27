@@ -289,7 +289,8 @@ class IElevationProfile {
         inner.style.height = '390px';
 
         document.getElementById("elevationProfile").appendChild(inner);
-        $('#'+inner.id).highcharts({
+
+        Highcharts.setOptions({
             credits: { enabled: false },
             lang: {
                 viewFullscreen: "Pantalla Completa",
@@ -305,6 +306,12 @@ class IElevationProfile {
                 downloadSVG: "Descargar en SVG",
                 downloadXLS: "Descargar en XLS"
             },
+            accessibility: {
+                enabled: false
+            }
+        });
+
+        $('#'+inner.id).highcharts({
             chart: {
                 zoomType: 'x',
                 backgroundColor: 'rgba(255, 255, 255, 0.0)',
