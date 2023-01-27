@@ -173,25 +173,19 @@ class Geoprocessing {
         this.contour_result_active = true;
         let style_fix_textpath = document.createElement("style");
         style_fix_textpath.id = "fix-textpath";
-        style_fix_textpath.innerHTML = `
-        .leaflet-pane svg text {
-          font-size: 0.8em;
-        }`;
+        style_fix_textpath.innerHTML = `.leaflet-pane svg text { font-size: 0.8em; }`;
 
         document.head.appendChild(style_fix_textpath);
 
         let layername = this.namePrefix + counterContour;
         counterContour++;
 
-        mapa
-          .getEditableLayer(this.editableLayer_name)
-          .setStyle({ fillOpacity: 0 });
-          mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
-          
-          let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
-          selectedRectangle._uneditable = true; //aux to disallow editing the layer
-          mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
+        mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 });
+        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
 
+        let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+        selectedRectangle._uneditable = true; //aux to disallow editing the layer
+        mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
         addedLayers.push({
           id: layername,

@@ -143,31 +143,28 @@ class IElevationProfile {
     }
 
     hideElevationProfile() {
-        let wrapper =  document.getElementById("pt-wrapper"),
-        selectedLayer
-    
+        let wrapper = document.getElementById("pt-wrapper")
         addedLayers.forEach((layer) => {
             if (layer.id.includes(this.namePrefixElevProfile)) {
                 let aux = document.getElementById("flc-" + layer.id),
-                ptInner =  document.getElementById(layer.id);
-                
+                    ptInner = document.getElementById(layer.id);
+
                 if (aux.classList.contains("active")) {
-                    mapa.editableLayers.polyline.forEach(polyline => {
-                        if (polyline.idElevProfile === layer.id) {
-                            selectedLayer = polyline;
+                    aux.classList.remove("active")
+                    Object.values(drawnItems._layers).forEach(lyr => {
+                        if (layer.id === lyr.idElevProfile) {
+                            drawnItems.removeLayer(lyr);
+                            return;
                         }
                     });
-                    aux.classList.remove("active")
-                    selectedLayer.remove();
                     ptInner.classList.toggle("hidden");
                     changeIsActive(layer.id, true);
                 }
-
             }
         });
 
         //Is wrapper empty?
-        let count = 0; 
+        let count = 0;
         addedLayers.forEach(layer => {
             if (layer.id.includes(this.namePrefixElevProfile)) {
                 count++;
@@ -177,51 +174,50 @@ class IElevationProfile {
             wrapper.classList.toggle("hidden");
         }
         showTotalNumberofLayers();
-
     }
 
     clickDisplayResult(id) {
         let aux = document.getElementById("flc-" + id),
-        selectedLayer,
-        wrapper =  document.getElementById("pt-wrapper"),
-        ptInner =  document.getElementById(id),
-        sectionName;
-        mapa.editableLayers.polyline.forEach(polyline => {
-            if (polyline.idElevProfile === id) {
-                selectedLayer = polyline;
-            }
-        });
-
+            selectedLayer,
+            wrapper = document.getElementById("pt-wrapper"),
+            ptInner = document.getElementById(id),
+            sectionName;
         addedLayers.forEach(lyr => {
-            if (lyr.id == id) {
-                sectionName = lyr.section;
+            if (lyr.id === id) {
                 if (aux.classList.contains("active")) {
-                    if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
+                    if (wrapper.classList.contains("hidden")) { //if wrapper window is closed while btn is active
                         wrapper.classList.toggle("hidden");
-                    }
-                    else {
+                    } else {
                         aux.classList.remove("active")
-                        selectedLayer.remove();
+                        Object.values(drawnItems._layers).forEach(lyr => {
+                            if (id === lyr.idElevProfile) {
+                                drawnItems.removeLayer(lyr);
+                                return;
+                            }
+                        });
                         ptInner.classList.toggle("hidden");
                     }
-                    lyr.isActive = false
-                }
-                else if (!aux.classList.contains("active")) {
+                    lyr.isActive = false;
+                } else {
                     if (wrapper.classList.contains("hidden")) { //if wrapper is  hidden & all layers are deactivated
                         wrapper.classList.toggle("hidden");
                     }
                     aux.classList.add("active");
-                    selectedLayer.addTo(mapa);
+                    if (mapa.editableLayers.hasOwnProperty('polyline')) {
+                        const lyr = mapa.editableLayers["polyline"].find(lyr => lyr.idElevProfile === id);
+                        if (lyr) {
+                            drawnItems.addLayer(lyr);
+                        }
+                    }
                     ptInner.classList.toggle("hidden");
-                    lyr.isActive = true
-
+                    lyr.isActive = true;
                 }
-                
+                updateNumberofLayers(lyr.section);
             }
         });
-      
+
         //Is wrapper empty?
-        let count = 0; 
+        let count = 0;
         addedLayers.forEach(layer => {
             if (layer.id.includes(this.namePrefixElevProfile)) {
                 count++;
@@ -230,9 +226,7 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
-        updateNumberofLayers(sectionName);
         showTotalNumberofLayers();
-
     }
 
 
