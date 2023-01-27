@@ -151,12 +151,7 @@ class IElevationProfile {
 
                 if (aux.classList.contains("active")) {
                     aux.classList.remove("active")
-                    Object.values(drawnItems._layers).forEach(lyr => {
-                        if (layer.id === lyr.idElevProfile) {
-                            drawnItems.removeLayer(lyr);
-                            return;
-                        }
-                    });
+                    this.removePolyline(layer.id);
                     ptInner.classList.toggle("hidden");
                     changeIsActive(layer.id, true);
                 }
@@ -178,10 +173,8 @@ class IElevationProfile {
 
     clickDisplayResult(id) {
         let aux = document.getElementById("flc-" + id),
-            selectedLayer,
             wrapper = document.getElementById("pt-wrapper"),
-            ptInner = document.getElementById(id),
-            sectionName;
+            ptInner = document.getElementById(id);
         addedLayers.forEach(lyr => {
             if (lyr.id === id) {
                 if (aux.classList.contains("active")) {
@@ -189,12 +182,7 @@ class IElevationProfile {
                         wrapper.classList.toggle("hidden");
                     } else {
                         aux.classList.remove("active")
-                        Object.values(drawnItems._layers).forEach(lyr => {
-                            if (id === lyr.idElevProfile) {
-                                drawnItems.removeLayer(lyr);
-                                return;
-                            }
-                        });
+                        this.removePolyline(id); //Removes drawItems
                         ptInner.classList.toggle("hidden");
                     }
                     lyr.isActive = false;
@@ -522,12 +510,8 @@ class IElevationProfile {
     }
 
     removeElevationProfile(id) {
-        Object.values(drawnItems._layers).forEach(lyr => { //Removes Drawed Layer
-            if (id === lyr.idElevProfile) {
-                drawnItems.removeLayer(lyr);
-                return;
-            }
-        });
+        
+        this.removePolyline(id); //Removes drawItems
 
         let polylines = mapa.editableLayers.polyline; //Removes Editable Layer
         polylines.forEach( lyr => {
@@ -556,6 +540,15 @@ class IElevationProfile {
             wrapper.classList.toggle("hidden"); //Hides Wrapper
         }
 
+    }
+
+    removePolyline(id) {
+        Object.values(drawnItems._layers).forEach(lyr => {
+            if (id === lyr.idElevProfile) {
+                drawnItems.removeLayer(lyr);
+                return;
+            }
+        });
     }
 
     addGeoprocessLayer(groupname, layerType, textName, id, fileName, isActive){
@@ -658,5 +651,4 @@ class IElevationProfile {
             addCounterForSection(groupnamev, layerType);
     }
 
-    
 }
