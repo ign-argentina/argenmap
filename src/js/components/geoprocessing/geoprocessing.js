@@ -93,10 +93,10 @@ class Geoprocessing {
     mainIcons.className = "icons-modalfile";
 
     let f_sec = document.createElement("section");
-    f_sec.style = "width:95%";
+    f_sec.style = "width:93%";
 
     let s_sec = document.createElement("section");
-    s_sec.style = "width:5%";
+    s_sec.style = "width: 7%; display: flex; justify-content: start;";
     let btnclose = document.createElement("a");
     btnclose.id = "btnclose-icon-modalfile";
     btnclose.className = "icon-modalfile";

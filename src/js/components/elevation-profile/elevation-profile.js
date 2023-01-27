@@ -1,3 +1,5 @@
+let polylineColor = '#D63900';
+
 class IElevationProfile {
     constructor() {
         this.serviceURL = "https://imagenes.ign.gob.ar/geoserver/ows?service=WMS&version=1.1.1";
@@ -10,7 +12,7 @@ class IElevationProfile {
     }
 
     drawPolyline() {
-        const drawPolyline = new L.Draw.Polyline(mapa, {shapeOptions: {color: '#d6924b'}});
+        const drawPolyline = new L.Draw.Polyline(mapa, {shapeOptions: {color: polylineColor, opacity: 0.8}});
         $("#drawBtn").addClass("disabledbutton");
         $("#msgRectangle").addClass("hidden");
         drawPolyline.enable();
@@ -240,23 +242,31 @@ class IElevationProfile {
         }
         else {
             const wrapper = document.createElement("div");
-            wrapper.id="pt-wrapper";
+            wrapper.id = "pt-wrapper";
             wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-10 col-md-10 hidden"
-            
+
             document.body.appendChild(wrapper);
-    
+
             $("#pt-wrapper").append(`
                 <div class="pt" id="elevationProfile" style="overflow-y: auto; height: 250px; padding: 5px 7px;">
                 </div>
             `);
 
-            let btncloseWrapper = document.createElement("a");
-            btncloseWrapper.id = "btnclose-wrapper";
-            btncloseWrapper.href = "javascript:void(0)";
-            btncloseWrapper.style = "display: flex; justify-content: flex-end; color:#676767;";
-            btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
-                
-            btncloseWrapper.onclick = () => {
+            let mainIcons = document.createElement("div");
+            mainIcons.className = "icons-modalfile";
+
+            let f_sec = document.createElement("section");
+            f_sec.style = "width: 95%;";
+
+            let s_sec = document.createElement("section");
+            s_sec.style = "width: 5%; display: flex; justify-content: end; padding-right: 1%;";
+
+            let btnclose = document.createElement("a");
+            btnclose.id = "btnclose-wrapper";
+            btnclose.className = "icon-modalfile";
+            btnclose.innerHTML =
+                '<i title="Cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
+            btnclose.onclick = () => {
                 this.hideElevationProfile();
                 let idElevProfile = document.getElementById("elevationProfile").children[1].id,
                     section;
@@ -267,17 +277,19 @@ class IElevationProfile {
                 })
                 updateNumberofLayers(section);
             };
+            s_sec.append(btnclose);
 
-            document.getElementById("elevationProfile").append(btncloseWrapper);
+            mainIcons.append(f_sec);
+            mainIcons.append(s_sec);
+
+            document.getElementById("elevationProfile").append(mainIcons);
 
             document.getElementById("pt-wrapper").style.display = "flex";
             $("#pt-wrapper").draggable({ containment: "body", scroll: false });
             $("#pt-wrapper").css("top", $("body").height() - 320);
-        
-        }
-    
-    }
 
+        }
+    }
 
     _displayResult(dataForDisplay, selectedPolyline) {
         if (document.getElementById("pt-wrapper").classList.contains("hidden")) {
@@ -388,10 +400,10 @@ class IElevationProfile {
                     events: {
                         mouseOver: function (event) {
                             mapa.markerPerfilTopografico = L.circleMarker([event.target.lng, event.target.lat], {
-                                radius: 5,
+                                radius: 4,
                                 fillOpacity: 0.7,
-                                color: '#f8b46d',
-                                fillColor: '#f7a35c',
+                                color: polylineColor,
+                                fillColor: polylineColor,
                                 weight: 3,
                             }).addTo(mapa);
                         },
