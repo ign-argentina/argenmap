@@ -10,7 +10,7 @@ class IElevationProfile {
     }
 
     drawPolyline() {
-        const drawPolyline = new L.Draw.Polyline(mapa, {shapeOptions: {color: '#f00'}});
+        const drawPolyline = new L.Draw.Polyline(mapa, {shapeOptions: {color: '#d6924b'}});
         $("#drawBtn").addClass("disabledbutton");
         $("#msgRectangle").addClass("hidden");
         drawPolyline.enable();
@@ -241,12 +241,12 @@ class IElevationProfile {
         else {
             const wrapper = document.createElement("div");
             wrapper.id="pt-wrapper";
-            wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-6 col-md-6 hidden"
+            wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-10 col-md-10 hidden"
             
             document.body.appendChild(wrapper);
     
             $("#pt-wrapper").append(`
-                <div class="pt" id="elevationProfile" style="overflow-y: auto; height: 420px; padding: 5px 7px;">
+                <div class="pt" id="elevationProfile" style="overflow-y: auto; height: 250px; padding: 5px 7px;">
                 </div>
             `);
 
@@ -272,7 +272,7 @@ class IElevationProfile {
 
             document.getElementById("pt-wrapper").style.display = "flex";
             $("#pt-wrapper").draggable({ containment: "body", scroll: false });
-            $("#pt-wrapper").css("top", $("body").height() - 420);
+            $("#pt-wrapper").css("top", $("body").height() - 320);
         
         }
     
@@ -286,7 +286,7 @@ class IElevationProfile {
 
         const inner = document.createElement("div");
         inner.id = selectedPolyline;
-        inner.style.height = '390px';
+        inner.style.height = '220px';
 
         document.getElementById("elevationProfile").appendChild(inner);
 
@@ -390,8 +390,8 @@ class IElevationProfile {
                             mapa.markerPerfilTopografico = L.circleMarker([event.target.lng, event.target.lat], {
                                 radius: 5,
                                 fillOpacity: 0.7,
-                                color: '#ff7070',
-                                fillColor: '#ff5050',
+                                color: '#f8b46d',
+                                fillColor: '#f7a35c',
                                 weight: 3,
                             }).addTo(mapa);
                         },
