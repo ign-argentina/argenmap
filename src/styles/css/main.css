@@ -223,6 +223,7 @@ li.active > div > a {
   width: 18px;
   border-radius: 50%;
   background: #33b560;
+  color: white;
 }
 .item-group-short-desc {
   font-size: 11px;
