@@ -17,7 +17,8 @@ const STRINGS = {
   basemap_legend_button_text: "View basemap legend",
   basemap_max_zoom: " to max zoom ",
   basemap_min_zoom: "Min zoom ",
-  delete_geometry: "Delete geometry"
+  delete_geometry: "Delete geometry",
+  url_required: "URL parameter is required."
 }
 
 //Default Services Values

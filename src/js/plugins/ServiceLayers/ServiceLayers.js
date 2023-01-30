@@ -27,7 +27,11 @@ class ServiceLayers{
      * @returns a promise with the capabilities data
      */
     async handleRequest(url){
-        if (!url || !url.length) throw new Error('url parameter is required');
+        if (!url || !url.length) {
+            //throw new Error('url parameter is required');
+            new UserMessage(STRINGS.url_required, true, 'warning');
+            return null;
+        } 
         // Validate url returns an object with the host (www.google.com) and capability (...gle.com/wms?service=getCapa.)
         let validatedUrl = this.validateUrl(url)
         this.url = validatedUrl.capability;
