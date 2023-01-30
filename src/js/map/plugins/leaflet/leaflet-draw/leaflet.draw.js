@@ -2958,12 +2958,15 @@
       },
       _enableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
+        if (typeof e != "string" && !e._uneditable && !e.value)
           e.on("click", this._removeLayer, this);
       },
       _disableLayerDelete: function (t) {
         var e = t.layer || t.target || t;
+        if (typeof e != "string" && !e._uneditable && !e.value) {
           e.off("click", this._removeLayer, this),
             this._deletedLayers.removeLayer(e);
+        }
       },
       _removeLayer: function (t) {
         var e = t.layer || t.target || t;
