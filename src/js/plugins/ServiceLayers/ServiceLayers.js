@@ -73,7 +73,8 @@ class ServiceLayers{
                 // realizar la asignación de minx,miny,etc dependiendo el sistema
                 let bbox;
                 layer.BoundingBox.some((p) => {
-                    if (p.crs == 'CRS:84') {
+                    let crs = p.crs.toString().toLowerCase();
+                    if ( crs === 'crs:84' || crs === 'epsg:4326' ) {
                         bbox = p.extent;
                         return true;
                     }
