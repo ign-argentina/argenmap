@@ -231,7 +231,7 @@ li.active > div > a {
 }
 .item-group-short-desc a {
   font-size: 11px;
-  color: #dddddd;
+  color: white;
 }
 .item-group-title {
   cursor: pointer;
