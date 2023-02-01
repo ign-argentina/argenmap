@@ -262,7 +262,7 @@ li.active > div > a {
   user-select: none;
   cursor: pointer;
 }
-.active .name-layer a {
+.active a {
   color: white;
 }
 .capa-title {
