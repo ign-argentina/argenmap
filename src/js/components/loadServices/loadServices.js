@@ -67,10 +67,7 @@ class ModalService {
 		let alert = document.createElement("div");
 		alert.className = "alert alert-danger"
 		alert.setAttribute('id', 'wrongURL');
-		alert.innerHTML = `
-      <strong>Ups!</strong> No fué posible conectar con el servicio<br><small style="margin-top:6px;display:block">El formato dado puede no ser el correcto o el servidor no acepta solicitudes de orígenes cruzados (<a href="https://developer.mozilla.org/es/docs/Web/HTTP/CORS" class="text-danger" target="_blank" alt="Sobre CORS" title="Sobre CORS"><strong><u>CORS</u></strong></a>)</small>
-    `;
-
+		alert.innerHTML = "";
 
 		modalContainer.append(mainIcons);
 		modalContainer.append(tab_div);
@@ -275,11 +272,15 @@ async function handleURLInput(e) {
 		// Add the container to the modal
 		document.getElementById('select-layers-container').prepend(wmsResultContainer);
 	}).catch((error)=>{
-		console.error(error);
-		document.getElementById('wrongURL').style.display = 'block';
+		let customErrorMsg = "<br>No fué posible conectar con el servicio<br>";
 		if(error.message.toLowerCase().includes('cors')){
-			new UserMessage('El servidor no permite el intercambio de recursos de origen cruzado o CORS', true, 'error');
+			customErrorMsg += `<small style="margin-top:6px;display:block">El formato dado puede no ser el correcto o el servidor no acepta solicitudes de orígenes cruzados (<a href="https://developer.mozilla.org/es/docs/Web/HTTP/CORS" class="text-danger" target="_blank" alt="Sobre CORS" title="Sobre CORS"><strong><u>CORS</u></strong></a>)</small>`
 		}
+		if(error.message.toLowerCase().includes('failed to fetch')){
+			customErrorMsg += `<small style="margin-top:6px;display:block">Posiblemente el protocolo de la URL no es correcto, probar cambiando "http" por "https".</small>`
+		}
+		document.getElementById('wrongURL').innerHTML = `<strong>${error.message}</strong>${customErrorMsg}`;
+		document.getElementById('wrongURL').style.display = 'block';
 	})
 }
 
