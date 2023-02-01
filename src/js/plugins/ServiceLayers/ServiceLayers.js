@@ -36,26 +36,24 @@ class ServiceLayers{
         let validatedUrl = this.validateUrl(url)
         this.url = validatedUrl.capability;
         this.host = validatedUrl.host;
-        
-        try {
-            const response = await fetch(this.url);
-            // Check response
-            if (!response.ok) throw new Error(`An error has occured: ${response.status}`);
-            // Parse the response
-            const data = await response.text();
 
-            // Instantiate the capabilities parser
-            const wmsParser = new WMSCapabilities(); // TODO add new parsers for other types of services
-            // Parse and resolve
-            const capabilities = await wmsParser.parse(data);
+        const options = {
+            redirect: "follow",
+            referrerPolicy: "no-referrer"
+        };
+        let data = null;
 
-            return capabilities;
-        } catch (error) {
-            // when a CORS type error occurs the name of the error is a "TypeError", different from a 404 which is an "Error" 
-            if(error.name==="TypeError") throw new Error('Maybe a Cross-Origin Request Blocked (CORS)',error);
-            
-            throw error;
-        }
+        await fetch(this.url, options)
+            .then( res => {
+                if(!res.ok){
+                    throw new Error('Network response was not OK. Status code: ' + res.status);
+                }
+                return res.text();
+            })
+            .then( d => data = d )
+            .catch( e => { throw new Error(e) });
+
+        return new WMSCapabilities().parse(data);
     }
 
 
