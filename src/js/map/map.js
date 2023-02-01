@@ -727,7 +727,7 @@ $("body").on("pluginLoad", function(event, plugin){
             			      geometry: { type: "Point", coordinates: [lng, lat] },
             			    };
 							
-            			    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "geojsonMarker_" + name, false);
+            			    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "addedMarker_" + name, false);
             			    mapa.closePopup(contextPopup);
             			  },
             			});
