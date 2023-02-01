@@ -1,3 +1,5 @@
+let polylineColor = '#D63900';
+
 class IElevationProfile {
     constructor() {
         this.serviceURL = "https://imagenes.ign.gob.ar/geoserver/ows?service=WMS&version=1.1.1";
@@ -10,7 +12,7 @@ class IElevationProfile {
     }
 
     drawPolyline() {
-        const drawPolyline = new L.Draw.Polyline(mapa);
+        const drawPolyline = new L.Draw.Polyline(mapa, {shapeOptions: {color: polylineColor, opacity: 0.8}});
         $("#drawBtn").addClass("disabledbutton");
         $("#msgRectangle").addClass("hidden");
         drawPolyline.enable();
@@ -141,31 +143,23 @@ class IElevationProfile {
     }
 
     hideElevationProfile() {
-        let wrapper =  document.getElementById("pt-wrapper"),
-        selectedLayer
-    
+        let wrapper = document.getElementById("pt-wrapper")
         addedLayers.forEach((layer) => {
             if (layer.id.includes(this.namePrefixElevProfile)) {
                 let aux = document.getElementById("flc-" + layer.id),
-                ptInner =  document.getElementById(layer.id);
-                
+                    ptInner = document.getElementById(layer.id);
+
                 if (aux.classList.contains("active")) {
-                    mapa.editableLayers.polyline.forEach(polyline => {
-                        if (polyline.idElevProfile === layer.id) {
-                            selectedLayer = polyline;
-                        }
-                    });
                     aux.classList.remove("active")
-                    selectedLayer.remove();
+                    this.removePolyline(layer.id);
                     ptInner.classList.toggle("hidden");
                     changeIsActive(layer.id, true);
                 }
-
             }
         });
 
         //Is wrapper empty?
-        let count = 0; 
+        let count = 0;
         addedLayers.forEach(layer => {
             if (layer.id.includes(this.namePrefixElevProfile)) {
                 count++;
@@ -175,51 +169,43 @@ class IElevationProfile {
             wrapper.classList.toggle("hidden");
         }
         showTotalNumberofLayers();
-
     }
 
     clickDisplayResult(id) {
         let aux = document.getElementById("flc-" + id),
-        selectedLayer,
-        wrapper =  document.getElementById("pt-wrapper"),
-        ptInner =  document.getElementById(id),
-        sectionName;
-        mapa.editableLayers.polyline.forEach(polyline => {
-            if (polyline.idElevProfile === id) {
-                selectedLayer = polyline;
-            }
-        });
-
+            wrapper = document.getElementById("pt-wrapper"),
+            ptInner = document.getElementById(id);
         addedLayers.forEach(lyr => {
-            if (lyr.id == id) {
-                sectionName = lyr.section;
+            if (lyr.id === id) {
                 if (aux.classList.contains("active")) {
-                    if (wrapper.classList.contains("hidden")) {//if wrapper window is closed while btn is active
+                    if (wrapper.classList.contains("hidden")) { //if wrapper window is closed while btn is active
                         wrapper.classList.toggle("hidden");
-                    }
-                    else {
+                    } else {
                         aux.classList.remove("active")
-                        selectedLayer.remove();
+                        this.removePolyline(id); //Removes drawItems
                         ptInner.classList.toggle("hidden");
                     }
-                    lyr.isActive = false
-                }
-                else if (!aux.classList.contains("active")) {
+                    lyr.isActive = false;
+                } else {
                     if (wrapper.classList.contains("hidden")) { //if wrapper is  hidden & all layers are deactivated
                         wrapper.classList.toggle("hidden");
                     }
                     aux.classList.add("active");
-                    selectedLayer.addTo(mapa);
+                    if (mapa.editableLayers.hasOwnProperty('polyline')) {
+                        const lyr = mapa.editableLayers["polyline"].find(lyr => lyr.idElevProfile === id);
+                        if (lyr) {
+                            drawnItems.addLayer(lyr);
+                        }
+                    }
                     ptInner.classList.toggle("hidden");
-                    lyr.isActive = true
-
+                    lyr.isActive = true;
                 }
-                
+                updateNumberofLayers(lyr.section);
             }
         });
-      
+
         //Is wrapper empty?
-        let count = 0; 
+        let count = 0;
         addedLayers.forEach(layer => {
             if (layer.id.includes(this.namePrefixElevProfile)) {
                 count++;
@@ -228,9 +214,7 @@ class IElevationProfile {
         if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
             wrapper.classList.toggle("hidden");
         }
-        updateNumberofLayers(sectionName);
         showTotalNumberofLayers();
-
     }
 
 
@@ -240,23 +224,31 @@ class IElevationProfile {
         }
         else {
             const wrapper = document.createElement("div");
-            wrapper.id="pt-wrapper";
-            wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-6 col-md-6 hidden"
-            
+            wrapper.id = "pt-wrapper";
+            wrapper.classList = "justify-content-center col-12 col-xs-12 col-sm-10 col-md-10 hidden"
+
             document.body.appendChild(wrapper);
-    
+
             $("#pt-wrapper").append(`
-                <div class="pt" id="elevationProfile" style="overflow-y: auto; height: 420px; padding: 5px 7px;">
+                <div class="pt" id="elevationProfile" style="overflow-y: auto; height: 250px; padding: 5px 7px;">
                 </div>
             `);
 
-            let btncloseWrapper = document.createElement("a");
-            btncloseWrapper.id = "btnclose-wrapper";
-            btncloseWrapper.href = "javascript:void(0)";
-            btncloseWrapper.style = "display: flex; justify-content: flex-end; color:#676767;";
-            btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
-                
-            btncloseWrapper.onclick = () => {
+            let mainIcons = document.createElement("div");
+            mainIcons.className = "icons-modalfile";
+
+            let f_sec = document.createElement("section");
+            f_sec.style = "width: 95%;";
+
+            let s_sec = document.createElement("section");
+            s_sec.style = "width: 5%; display: flex; justify-content: end; padding-right: 1%;";
+
+            let btnclose = document.createElement("a");
+            btnclose.id = "btnclose-wrapper";
+            btnclose.className = "icon-modalfile";
+            btnclose.innerHTML =
+                '<i title="Cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
+            btnclose.onclick = () => {
                 this.hideElevationProfile();
                 let idElevProfile = document.getElementById("elevationProfile").children[1].id,
                     section;
@@ -267,17 +259,19 @@ class IElevationProfile {
                 })
                 updateNumberofLayers(section);
             };
+            s_sec.append(btnclose);
 
-            document.getElementById("elevationProfile").append(btncloseWrapper);
+            mainIcons.append(f_sec);
+            mainIcons.append(s_sec);
+
+            document.getElementById("elevationProfile").append(mainIcons);
 
             document.getElementById("pt-wrapper").style.display = "flex";
             $("#pt-wrapper").draggable({ containment: "body", scroll: false });
-            $("#pt-wrapper").css("top", $("body").height() - 420);
-        
-        }
-    
-    }
+            $("#pt-wrapper").css("top", $("body").height() - 320);
 
+        }
+    }
 
     _displayResult(dataForDisplay, selectedPolyline) {
         if (document.getElementById("pt-wrapper").classList.contains("hidden")) {
@@ -286,16 +280,19 @@ class IElevationProfile {
 
         const inner = document.createElement("div");
         inner.id = selectedPolyline;
-        inner.style.height = '390px';
+        inner.style.height = '220px';
 
         document.getElementById("elevationProfile").appendChild(inner);
-        $('#'+inner.id).highcharts({
+
+        Highcharts.setOptions({
             credits: { enabled: false },
             lang: {
                 viewFullscreen: "Pantalla Completa",
                 exitFullscreen: "Salir de pantalla completa",
                 contextButtonTitle: "Menú",
                 printChart: "Imprimir",
+                resetZoom: "Restablecer zoom",
+                resetZoomTitle: "Restablecer zoom escala 1:1",
                 downloadCSV: "Descargar en CSV",
                 downloadJPEG: "Descargar en JPG",
                 downloadPDF: "Descargar en PDF",
@@ -303,6 +300,12 @@ class IElevationProfile {
                 downloadSVG: "Descargar en SVG",
                 downloadXLS: "Descargar en XLS"
             },
+            accessibility: {
+                enabled: false
+            }
+        });
+
+        $('#'+inner.id).highcharts({
             chart: {
                 zoomType: 'x',
                 backgroundColor: 'rgba(255, 255, 255, 0.0)',
@@ -378,7 +381,13 @@ class IElevationProfile {
                 point: {
                     events: {
                         mouseOver: function (event) {
-                            mapa.markerPerfilTopografico = L.marker([event.target.lng, event.target.lat]).addTo(mapa);
+                            mapa.markerPerfilTopografico = L.circleMarker([event.target.lng, event.target.lat], {
+                                radius: 4,
+                                fillOpacity: 0.7,
+                                color: polylineColor,
+                                fillColor: polylineColor,
+                                weight: 3,
+                            }).addTo(mapa);
                         },
                         mouseOut: function () {
                             mapa.markerPerfilTopografico.remove();
@@ -501,12 +510,8 @@ class IElevationProfile {
     }
 
     removeElevationProfile(id) {
-        Object.values(drawnItems._layers).forEach(lyr => { //Removes Drawed Layer
-            if (id === lyr.idElevProfile) {
-                drawnItems.removeLayer(lyr);
-                return;
-            }
-        });
+        
+        this.removePolyline(id); //Removes drawItems
 
         let polylines = mapa.editableLayers.polyline; //Removes Editable Layer
         polylines.forEach( lyr => {
@@ -535,6 +540,15 @@ class IElevationProfile {
             wrapper.classList.toggle("hidden"); //Hides Wrapper
         }
 
+    }
+
+    removePolyline(id) {
+        Object.values(drawnItems._layers).forEach(lyr => {
+            if (id === lyr.idElevProfile) {
+                drawnItems.removeLayer(lyr);
+                return;
+            }
+        });
     }
 
     addGeoprocessLayer(groupname, layerType, textName, id, fileName, isActive){
@@ -637,5 +651,4 @@ class IElevationProfile {
             addCounterForSection(groupnamev, layerType);
     }
 
-    
 }

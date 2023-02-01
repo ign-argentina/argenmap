@@ -139,29 +139,27 @@ function reloadMenu() {
 
 function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAllLayers 
   if (document.getElementById("pt-wrapper")) {
-    let selectedLayer;
     let elevProfileRecover = new IElevationProfile();
-
     addedLayers.forEach((layer) => {
-        if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
-            let aux = document.getElementById("flc-" + layer.id),
-            ptInner =  document.getElementById(layer.id);
+      if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
+        let aux = document.getElementById("flc-" + layer.id),
+          ptInner = document.getElementById(layer.id);
 
-            if (aux.classList.contains("active")) {
-                mapa.editableLayers.polyline.forEach(polyline => {
-                    if (polyline.idElevProfile === layer.id) {
-                        selectedLayer = polyline;
-                    }
-                });
-                aux.classList.remove("active")
-                selectedLayer.remove();
-                ptInner.classList.toggle("hidden");
+        if (aux.classList.contains("active")) {
+          aux.classList.remove("active")
+          Object.values(drawnItems._layers).forEach(lyr => {
+            if (layer.id === lyr.idElevProfile) {
+              drawnItems.removeLayer(lyr);
+              return;
             }
+          });
+          ptInner.classList.toggle("hidden");
+          changeIsActive(layer.id, true);
         }
+      }
     });
     $("#pt-wrapper").addClass("hidden");
   }
-
 }
 
 function hideAddedLayers() {
