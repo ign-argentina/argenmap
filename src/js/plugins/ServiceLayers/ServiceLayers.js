@@ -27,31 +27,33 @@ class ServiceLayers{
      * @returns a promise with the capabilities data
      */
     async handleRequest(url){
-        if (!url || !url.length) throw new Error('url parameter is required');
+        if (!url || !url.length) {
+            //throw new Error('url parameter is required');
+            new UserMessage(STRINGS.url_required, true, 'warning');
+            return null;
+        } 
         // Validate url returns an object with the host (www.google.com) and capability (...gle.com/wms?service=getCapa.)
         let validatedUrl = this.validateUrl(url)
         this.url = validatedUrl.capability;
         this.host = validatedUrl.host;
-        
-        try {
-            const response = await fetch(this.url);
-            // Check response
-            if (!response.ok) throw new Error(`An error has occured: ${response.status}`);
-            // Parse the response
-            const data = await response.text();
 
-            // Instantiate the capabilities parser
-            const wmsParser = new WMSCapabilities(); // TODO add new parsers for other types of services
-            // Parse and resolve
-            const capabilities = await wmsParser.parse(data);
+        const options = {
+            redirect: "follow",
+            referrerPolicy: "no-referrer"
+        };
+        let data = null;
 
-            return capabilities;
-        } catch (error) {
-            // when a CORS type error occurs the name of the error is a "TypeError", different from a 404 which is an "Error" 
-            if(error.name==="TypeError") throw new Error('Maybe a Cross-Origin Request Blocked (CORS)',error);
-            
-            throw error;
-        }
+        await fetch(this.url, options)
+            .then( res => {
+                if(!res.ok){
+                    throw new Error('Network response was not OK. Status code: ' + res.status);
+                }
+                return res.text();
+            })
+            .then( d => data = d )
+            .catch( e => { throw new Error(e) });
+
+        return new WMSCapabilities().parse(data);
     }
 
 
@@ -69,7 +71,8 @@ class ServiceLayers{
                 // realizar la asignación de minx,miny,etc dependiendo el sistema
                 let bbox;
                 layer.BoundingBox.some((p) => {
-                    if (p.crs == 'CRS:84') {
+                    let crs = p.crs.toString().toLowerCase();
+                    if ( crs === 'crs:84' || crs === 'epsg:4326' ) {
                         bbox = p.extent;
                         return true;
                     }

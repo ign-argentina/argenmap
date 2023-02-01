@@ -223,6 +223,7 @@ li.active > div > a {
   width: 18px;
   border-radius: 50%;
   background: #33b560;
+  color: white;
 }
 .item-group-short-desc {
   font-size: 11px;
@@ -230,7 +231,7 @@ li.active > div > a {
 }
 .item-group-short-desc a {
   font-size: 11px;
-  color: #dddddd;
+  color: white;
 }
 .item-group-title {
   cursor: pointer;
@@ -260,6 +261,9 @@ li.active > div > a {
   -webkit-user-select: none;
   user-select: none;
   cursor: pointer;
+}
+.active a {
+  color: white;
 }
 .capa-title {
   vertical-align: top;
@@ -1069,9 +1073,9 @@ Perfil Topografico
   background: RGBA(255, 255, 255, .95) !important;
   width: 100%;
   border-radius: 10px;
-  -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
-  box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
   color: white;
 }
 

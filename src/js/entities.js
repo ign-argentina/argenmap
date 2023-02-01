@@ -4005,7 +4005,7 @@ class Menu_UI {
       serviceItems[id].layersInMenu++;
       // firstLayerAdded = true; // Yes! First layer added
     }
-
+    
     let groupnamev = clearSpecialChars(groupname);
     if (!fileLayerGroup.includes(groupname)) {
       fileLayerGroup.push(groupname);
@@ -4015,15 +4015,17 @@ class Menu_UI {
     if (!main) {
       this.addSection(groupname);
     }
-
+    
     let content = document.getElementById(groupnamev + "-panel-body");
     let layer_container = document.createElement("div");
     layer_container.id = "fl-" + id;
     layer_container.className = "file-layer-container";
-
+    
     let layer_item = document.createElement("div");
     layer_item.id = "srvcLyr-" + id + textName;
     layer_item.className = "file-layer";
+    
+    if ( !layer.legend ) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in methods of the menu
 
     let img_icon = document.createElement("div");
     img_icon.className = "loadservice-layer-img";
