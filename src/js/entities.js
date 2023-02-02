@@ -3430,11 +3430,8 @@ class Menu_UI {
         </div>
         </div>`;
 
-    document
-      .getElementById("sidebar")
-      .insertBefore(itemnew, sidebar.children[1]);
-    //add before first child of: div .menu5
-    //$('#sidebar div.menu5').first().prepend(itemnew)
+    let searchForm = document.getElementById("searchForm");
+    insertAfter(itemnew,searchForm);
   }
 
   addLayerOption({
