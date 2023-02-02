@@ -197,11 +197,12 @@ $("body").on("pluginLoad", function(event, plugin){
     			    }
 					break;
 				case 'ZoomHome':
-					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.zoomhome
+					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
 					var zoomHome = L.Control.zoomHome({
 						zoomHomeTitle: 'Inicio',
 						zoomInTitle: 'Acercarse',
 						zoomOutTitle: 'Alejarse',
+						zoomHomeIcon: 'solid fa-earth-americas',
 						homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
 						homeZoom: app.mapConfig.zoom.initial
 					});

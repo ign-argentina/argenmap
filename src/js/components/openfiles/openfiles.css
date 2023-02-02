@@ -72,6 +72,10 @@
   margin-bottom: -1px;
 }
 
+.active > div > a {
+  color: white;
+}
+
 .file-img{
   cursor: pointer;
   width:15%;

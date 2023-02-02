@@ -262,7 +262,7 @@ li.active > div > a {
   user-select: none;
   cursor: pointer;
 }
-.active a {
+.active > div > div > a {
   color: white;
 }
 .capa-title {
@@ -823,17 +823,28 @@ Control mapa base
 .basemap-selector .leaflet-control-layers-toggle {
   width: 34px;
   height: 34px;
-  /* line-height: 30px; */
   border-radius: 4px;
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 	background-color: white !important;
   text-align: center;
-  background-image: url(../images/capas.png);
+  background-image: none;
   background-size: 80% 70%;
   opacity: 0.9;
 }
+.basemap-selector .leaflet-control-layers-toggle::after {
+  display: inline;
+  content: "\f5fd";
+  font-family: "FontAwesome";
+  max-height: max-content;
+  color: rgba(0, 0, 0);
+  font-size: 1.3em;
+  vertical-align: -webkit-baseline-middle;
+  vertical-align: middle;
+  line-height: 1.75em;
+}
+
 .basemap-selector .leaflet-control-layers-toggle:hover {
   background-color: #f4f4f4;
 }
