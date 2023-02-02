@@ -1389,7 +1389,3 @@ function deleteAddedLayer (layer) { //Requires layer from editableLayers
     }
   })
 }
-
-function insertAfter(newNode, existingNode) {
-  existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
-}

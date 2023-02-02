@@ -3431,7 +3431,7 @@ class Menu_UI {
         </div>`;
 
     let searchForm = document.getElementById("searchForm");
-    insertAfter(itemnew,searchForm);
+    searchForm.after(itemnew);
   }
 
   addLayerOption({
