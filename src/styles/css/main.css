@@ -1104,6 +1104,8 @@ Perfil Topografico
   font-weight: bold;
   padding: 10px; 
   text-align: inherit;
+  -webkit-user-select: text;
+  -moz-user-select: text;
   user-select: text;
   z-index: 99999;
 }
@@ -1114,6 +1116,8 @@ Perfil Topografico
   border-radius: 4px;
   font-size: 14px;
   padding: 2px; 
+  -webkit-user-select: text;
+  -moz-user-select: text;
   user-select: text;
 }
 
@@ -1131,6 +1135,8 @@ Perfil Topografico
   font-weight: bold;
   padding: 10px; 
   text-align: inherit;
+  -webkit-user-select: text;
+  -moz-user-select: text;
   user-select: text;
   z-index: 99999;
 }
@@ -1140,7 +1146,9 @@ Perfil Topografico
   border: 1px solid #525252; 
   border-radius: 4px;
   font-size: 14px;
-  padding: 2px; 
+  padding: 2px;
+  -webkit-user-select: text;
+  -moz-user-select: text;
   user-select: text;
 }
 
