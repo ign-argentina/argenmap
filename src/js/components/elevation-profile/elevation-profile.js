@@ -142,35 +142,6 @@ class IElevationProfile {
         });
     }
 
-    hideElevationProfile() {
-        let wrapper = document.getElementById("pt-wrapper")
-        addedLayers.forEach((layer) => {
-            if (layer.id.includes(this.namePrefixElevProfile)) {
-                let aux = document.getElementById("flc-" + layer.id),
-                    ptInner = document.getElementById(layer.id);
-
-                if (aux.classList.contains("active")) {
-                    aux.classList.remove("active")
-                    this.removePolyline(layer.id);
-                    ptInner.classList.toggle("hidden");
-                    changeIsActive(layer.id, true);
-                }
-            }
-        });
-
-        //Is wrapper empty?
-        let count = 0;
-        addedLayers.forEach(layer => {
-            if (layer.id.includes(this.namePrefixElevProfile)) {
-                count++;
-            }
-        });
-        if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
-            wrapper.classList.toggle("hidden");
-        }
-        showTotalNumberofLayers();
-    }
-
     clickDisplayResult(id) {
         let aux = document.getElementById("flc-" + id),
             wrapper = document.getElementById("pt-wrapper"),
@@ -249,7 +220,7 @@ class IElevationProfile {
             btnclose.innerHTML =
                 '<i title="Cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
             btnclose.onclick = () => {
-                this.hideElevationProfile();
+                hideAllElevationProfile();
                 let idElevProfile = document.getElementById("elevationProfile").children[1].id,
                     section;
                 addedLayers.forEach(lyr => {
@@ -258,6 +229,8 @@ class IElevationProfile {
                     }
                 })
                 updateNumberofLayers(section);
+                showTotalNumberofLayers();
+
             };
             s_sec.append(btnclose);
 
