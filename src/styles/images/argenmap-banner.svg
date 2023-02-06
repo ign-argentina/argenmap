@@ -11,10 +11,10 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    id="svg2"
-   width="2166.6865"
+   width="2244.6865"
    height="512"
-   viewBox="0 0 2166.6865 512"
-   sodipodi:docname="argenmap-512.svg"
+   viewBox="0 0 2244.6865 512"
+   sodipodi:docname="argenmap-banner.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    inkscape:export-filename="/home/gperez/ign/argenmap/logo/argenmap-512png.png"
    inkscape:export-xdpi="180"
@@ -46,9 +46,9 @@
      inkscape:window-height="713"
      id="namedview4"
      showgrid="false"
-     inkscape:zoom="0.25830078"
-     inkscape:cx="855.08432"
-     inkscape:cy="769.53151"
+     inkscape:zoom="0.12915039"
+     inkscape:cx="-175.04001"
+     inkscape:cy="-5.9619781"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
@@ -80,16 +80,16 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="Texto"
-     transform="translate(-74.387996,-3.3050771e-6)">
+     transform="translate(-74.387992,-6.6101543e-6)">
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#3074ba;fill-opacity:1;stroke:none"
-       x="416.18149"
+       x="494.18152"
        y="426.82794"
        id="text817"><tspan
          sodipodi:role="line"
          id="tspan815"
-         x="416.18149"
+         x="494.18152"
          y="426.82794"
          style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:354.66665649px;font-family:'Encode Sans';-inkscape-font-specification:'Encode Sans, Semi-Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#3074ba;fill-opacity:1">Argenmap</tspan></text>
   </g>
