@@ -220,7 +220,8 @@ class Geoprocessing {
       }
       case "waterRise": {
         btn_modal_loading = true;
-        let layername = this.namePrefix + counterHeight;
+        const height = this.lastHeightProcessed;
+        let layername =  `${this.namePrefix + counterHeight}_${height}m`;
         counterHeight++;
 
         let selectedRectangle;
@@ -265,8 +266,7 @@ class Geoprocessing {
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
         
-        const height = this.lastHeightProcessed;
-        const title = `${imageLayer.name}_${height}m`;
+        const title = `${imageLayer.name}`;
         const download = () => {
           const latlngs = selectedRectangle.getLatLngs()[0];
           const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat}`;
@@ -285,7 +285,7 @@ class Geoprocessing {
           id: layername,
           layer: imageLayer,
           name: layername,
-          file_name: title,
+          file_name: layername,
           rectangle: selectedRectangle,
           isActive: true,
           download: download,
@@ -293,7 +293,7 @@ class Geoprocessing {
           section: sectionName
         });
         
-        menu_ui.addFileLayer(sectionName, layerType, title, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
         updateNumberofLayers(sectionName)
 
         break;
