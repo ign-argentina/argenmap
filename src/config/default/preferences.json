@@ -71,10 +71,10 @@
     },
   "logo": {
     "title":"Instituto Geográfico Nacional",
-    "src": "src/config/default/styles/images/logo2.png",
+    "src": "src/styles/images/argenmap-banner.webp",
     "height": "",
     "width": "",
-    "style": "",
+    "style": "background-size: 160px",
     "srcLogoMini": "src/config/default/styles/images/logo_RESPONSIVE.png",
     "miniHeight": "",
     "miniWidth": "",
