@@ -1284,7 +1284,7 @@ function loadDeveloperLogo() {
         "desarrollado por el Instituto Geográfico Nacional de la República Argentina";
       link.style.cursor = "pointer";
       let img = L.DomUtil.create("img");
-      img.src = "src/styles/images/noimage.gif";
+      img.src = "src/styles/images/noimage.webp";
       img.alt = "Instituto Geográfico Nacional de la República Argentina";
       img.style = "width: 64px; background-size: cover";
       img.style.backgroundImage = `url('${APP_IMG}')`;
