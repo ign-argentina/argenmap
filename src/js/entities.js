@@ -254,6 +254,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         OVERLAY_CHECKBOX.id = "switch-" + itemComposite.capa.nombre;
         OVERLAY_CHECKBOX.title = itemComposite.capa.nombre;
         OVERLAY_CHECKBOX.classList.add("switch");
+        OVERLAY_CHECKBOX.classList.add("hillshade");
         OVERLAY_CHECKBOX.setAttribute("onclick", "switchHillShade(this.title)");
 
         const OVERLAY_TOOLTIP = document.createElement("span");

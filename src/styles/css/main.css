@@ -738,7 +738,10 @@ input:checked.switch + label:after {
   background: #fff;
   border-radius: 90px;
   transition: 0.3s;
-  background-image: url("../images/mountains.svg");
+}
+.hillshade + label:after {
+  color: #252525;
+  background-image: url("../images/mountains.webp");
   background-repeat: no-repeat;
   background-size: 75%;
   background-position: center;
