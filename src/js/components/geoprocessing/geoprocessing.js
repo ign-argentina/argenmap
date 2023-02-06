@@ -61,10 +61,12 @@ class Geoprocessing {
     elem.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
+        document.getElementById("iconopenfile-container").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
         g_modal_close = false;
       }
       else {
         //Close geoprocess window and clear
+        document.getElementById("iconopenfile-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         this.closeModal();
       }
     };

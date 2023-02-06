@@ -144,6 +144,10 @@ class modalUI {
 			modal.createModal();
 			modal.showActions(0);
 			LOAD_LAYERS_MODAL_OPEN = true;
+		} else {
+			document.body.removeChild(loadLayersModal);
+			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+			LOAD_LAYERS_MODAL_OPEN = false;
 		}
 	}
 
