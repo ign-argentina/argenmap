@@ -82,6 +82,7 @@ class Geoprocessing {
     document.getElementsByClassName("form")[1].innerHTML = "";
     document.getElementById("mr").remove();
     g_modal_close = true;
+    document.getElementById("iconopenfile-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
 
     this.resetHeightLayerColor();
   }
@@ -382,7 +383,7 @@ class Geoprocessing {
 
   resetHeightLayerColor() {
     mapa.editableLayers.polyline.forEach((lyr) => {
-      if (lyr.layer && lyr.layer.includes(this.namePrefix) && lyr.options.color == "#ff1100") {
+      if (lyr.layer && lyr.options.color == "#ff1100") {
         //Same id, spedific value
         lyr.setStyle({ color: "#E4C47A" });
       }
