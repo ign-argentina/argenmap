@@ -1,4 +1,4 @@
-<img width="150" src="src/styles/images/argenmap_logo.svg" alt="Argenmap" />
+<img width="256" src="src/styles/images/argenmap-banner.svg" alt="Argenmap" />
 
 ---
 [English version][README_en]
