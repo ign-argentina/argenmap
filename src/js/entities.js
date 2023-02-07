@@ -3987,6 +3987,7 @@ class Menu_UI {
   }
 
   addLayerToGroup(groupname, layerType, textName, id, fileName, layer) {
+    layer.name = encodeURI(layer.name);
     let newLayer = layer;
     newLayer.active = false;
     newLayer.L_layer = null;
@@ -4023,11 +4024,18 @@ class Menu_UI {
     layer_item.id = "srvcLyr-" + id + textName;
     layer_item.className = "file-layer";
     
-    if ( !layer.legend ) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in methods of the menu
+    if ( !layer.legend ) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in menu methods
+
+    let imageFormats = ["png", "jpg", "gif", "webp", "svg", "bmp", "ico"],
+    notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
+
+    if (notLegendFromFile) {
+      layer.legend += "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off" 
+    }
 
     let img_icon = document.createElement("div");
     img_icon.className = "loadservice-layer-img";
-    img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`;
+    img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}">`;
     img_icon.onclick = function () {
       clickWMSLayer(layer, layer_item, fileName)
     };
