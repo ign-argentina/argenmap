@@ -382,8 +382,9 @@ function handleAllLayersCheck(e) {
 				}
 			});
 			updateNumberofLayers(servicesLoaded[layersIndex[layer_name]].title);
+			
+			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name,layersIndex[layer_name],servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 
-			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 			document.querySelector(`input[value='${layer_name}']`).checked = false
 			for (let i in selectedServiceLayers) {
 				if (selectedServiceLayers[i] === layer_name) {
