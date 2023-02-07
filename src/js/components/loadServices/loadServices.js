@@ -200,7 +200,6 @@ async function handleURLInput(e) {
 		return null
 	};
 
-
 	serviceLayer.loadWMS(url).then((layers)=>{
 		if(document.getElementById('wrongURL')) document.getElementById('wrongURL').style.display = 'none';
 		if(document.getElementById('buttonEnd')) document.getElementById('buttonEnd').style.display = 'block';
@@ -281,6 +280,7 @@ async function handleURLInput(e) {
 		}
 		document.getElementById('wrongURL').innerHTML = `<strong>${error.message}</strong>${customErrorMsg}`;
 		document.getElementById('wrongURL').style.display = 'block';
+		throw new Error(error);
 	})
 }
 
@@ -409,6 +409,7 @@ function handleLayerCheck(e) {
 			type: "WMS",
 			section: servicesLoaded[layersIndex[e.target.value]].title
 		});
+		
 		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, "WMS", e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 
 	} else {
