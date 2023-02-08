@@ -122,8 +122,6 @@ function showImageOnError(image) {
 }
 
 function mainMenuSearch(e) {
-  //hideAllElevationProfile();
-  //hideAddedLayers();
   e.preventDefault();
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
@@ -139,9 +137,10 @@ function reloadMenu() {
 
 function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAllLayers 
   if (document.getElementById("pt-wrapper")) {
-    let elevProfileRecover = new IElevationProfile();
+    let geoprocessRecover = new Geoprocessing();
+
     addedLayers.forEach((layer) => {
-      if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
+      if (layer.id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
         let aux = document.getElementById("flc-" + layer.id),
           ptInner = document.getElementById(layer.id);
 
@@ -219,7 +218,8 @@ function showTotalNumberofLayers() {
 }
 
 function recoverSections() {
-  let elevProfileRecover = new IElevationProfile();
+  let elevProfileRecover = new IElevationProfile(),
+      geoprocessRecover = new Geoprocessing();
   
   addedLayers.forEach((layer) => {
     let isActive;
@@ -230,12 +230,12 @@ function recoverSections() {
     }
 
     if (
-      layer.id.includes("curvas_de_nivel_") ||
-      layer.id.includes("area_de_influencia_") ||
-      layer.id.includes("cota_")
+      layer.id.includes(geoprocessRecover.GEOPROCESS.contour) ||
+      layer.id.includes(geoprocessRecover.GEOPROCESS.waterRise) ||
+      layer.id.includes(geoprocessRecover.GEOPROCESS.buffer)
     ) {
       menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.id, layer.id, layer.id, isActive);
-    } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
+    } else if (layer.id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
       let layername = layer.id
       elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, isActive);
     } else if (layer.type == "file") {
