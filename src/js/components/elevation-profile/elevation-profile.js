@@ -6,7 +6,7 @@ class IElevationProfile {
         this.serviceLayer = "geoprocesos:alos_unificado";
         this.values = "";
         this.data = [];
-        this.namePrefixElevProfile = geoProcessingManager.namePrefix ?? "perfil_de_elevacion_";
+        this.namePrefixElevProfile = geoProcessingManager.namePrefix;
         this.verticesLimit = 100;
         this.verticesLimitMsg = `Selected line has too much vertices. Simplifiy the geometry to execute the process or select a line with less than `;
     }

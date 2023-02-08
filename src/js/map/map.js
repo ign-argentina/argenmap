@@ -373,6 +373,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								"./src/js/components/geoprocessing/IHeight.js"
 								);
 							}
+							geoProcessingManager.getNewProcessPrefix();
 							});
 						  }
 						);

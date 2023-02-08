@@ -16,6 +16,12 @@ class Geoprocessing {
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
   _namePrefix = null;
+  GEOPROCESS = {
+    contour: "curvas_de_nivel_",
+    waterRise: "cota_",
+    buffer: "area_de_influencia_",
+    elevationProfile: "perfil_de_elevacion_"
+  }
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -152,8 +158,16 @@ class Geoprocessing {
     return this.geoprocessingConfig.availableProcesses;
   }
 
+  getNewProcessPrefix() {
+    this.getProcesses().forEach( process => {
+      if (process.namePrefix) {
+        this.GEOPROCESS[process.geoprocess] = process.namePrefix;
+      }
+    })
+  }
+
   set namePrefix (processId) {
-    this._namePrefix = processId ?? "process_";
+    this._namePrefix = this.GEOPROCESS[processId];
   }
 
   get namePrefix () {
@@ -169,7 +183,7 @@ class Geoprocessing {
   displayResult(result) {
     let layerType = "geoprocess",
       sectionName = "Geoprocesos"
-    
+
     switch (this.geoprocessId) {
       case "contour": {
         btn_modal_loading = false;
@@ -179,7 +193,6 @@ class Geoprocessing {
         style_fix_textpath.innerHTML = `.leaflet-pane svg text { font-size: 0.8em; }`;
 
         document.head.appendChild(style_fix_textpath);
-
         let layername = this.namePrefix + counterContour;
         counterContour++;
 
@@ -668,13 +681,7 @@ class Geoprocessing {
       $("#msgRectangle").addClass("hidden");
 
       for (let polyline of mapa.editableLayers.polyline) {
-        let contourPrefix = null;
-        this.getProcesses().forEach( process => {
-          if( process.geoprocess === "contour" ) {
-            contourPrefix = process.namePrefix;
-          };
-        });
-        if (polyline.layer && polyline.layer.includes(contourPrefix)) {
+        if (polyline.layer && polyline.layer.includes(this.GEOPROCESS.contour)) {
           this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
@@ -729,14 +736,8 @@ class Geoprocessing {
                   }
                 });
               } else if (this.geoprocessId === "waterRise") {
-                let contourPrefix = null;
                 addedLayers.forEach((layer) => {
-                  this.getProcesses().forEach( process => {
-                    if( process.geoprocess === "contour" ) {
-                      contourPrefix = process.namePrefix;
-                    };
-                  });
-                  if (layer.id.includes(contourPrefix)) {
+                  if (layer.id.includes(this.GEOPROCESS.contour)) {
                     options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
@@ -906,6 +907,7 @@ class Geoprocessing {
     );
 
     //Execute Button
+    
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
@@ -1023,8 +1025,8 @@ class Geoprocessing {
     this.loadingBtn("on");
     if (this.geoprocessId === "contour") {
       this.geoprocessing
-        .execute(...values)
-        .then((result) => {
+      .execute(...values)
+      .then((result) => {
           this.displayResult(result);
         })
         .catch((error) => {
@@ -1067,11 +1069,11 @@ class Geoprocessing {
             return;
           }
           this.geoprocessId = element.value;
-
+          this.namePrefix = this.geoprocessId;
           //Auto show layer for waterRise and buffer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if (layer.id.includes(this.namePrefix)) {
+              if (layer.id.includes(this.GEOPROCESS.contour)) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
@@ -1119,7 +1121,7 @@ class Geoprocessing {
             item.layer
           );
           this.buildOptionForm(this.geoprocessing.getFields());
-          this.namePrefix = item.namePrefix;
+          //this.namePrefix = item.namePrefix;
         }
       }
     });
