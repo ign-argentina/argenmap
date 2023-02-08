@@ -78,7 +78,7 @@ const MESSAGE_COLORS = {
   },
   warning: {
     text: "#856404",
-    background: "#f7e23a",
+    background: "rgba(247,226,58,0.75)",
   },
 };
 
