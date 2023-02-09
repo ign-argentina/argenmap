@@ -720,7 +720,7 @@ function setSelectedBasemapAsActive(layerName, availableBasemaps) {
 
 function adaptToImage(imgDiv) {
   let img = imgDiv.childNodes[0],
-    item = imgDiv.closest("li");
+    item = imgDiv.parentNode.parentNode;
   if (img.naturalHeight > 24) {
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
@@ -742,7 +742,7 @@ function adaptToImage(imgDiv) {
           ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
     container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
 
-    resize_img_icon.onclick = () => {
+    resize_img_icon.onclick = (event) => {
       if (container_expand_legend_grafic.getAttribute("load") === "true") {
         //container_expand_legend_grafic.className = "hidden";
         container_expand_legend_grafic.classList.toggle("hidden");
@@ -758,6 +758,7 @@ function adaptToImage(imgDiv) {
           '<i class="fas fa-angle-up" aria-hidden="true"></i>';
         item.append(container_expand_legend_grafic);
       }
+      event.stopPropagation();
     };
 
     imgDiv.removeChild(img);

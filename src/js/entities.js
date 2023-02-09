@@ -3987,7 +3987,7 @@ class Menu_UI {
   }
 
   addLayerToGroup(groupname, layerType, textName, id, fileName, layer) {
-    layer.name = encodeURI(layer.name);
+    // layer.name = encodeURI(layer.name);
     let newLayer = layer;
     newLayer.active = false;
     newLayer.L_layer = null;
@@ -4035,7 +4035,7 @@ class Menu_UI {
 
     let img_icon = document.createElement("div");
     img_icon.className = "loadservice-layer-img";
-    img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}">`;
+    img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}" onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'>`;
     img_icon.onclick = function () {
       clickWMSLayer(layer, layer_item, fileName)
     };
