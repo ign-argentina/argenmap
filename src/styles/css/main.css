@@ -499,6 +499,10 @@ Leaflet
   border-radius: 4px;
   box-sizing: border-box;
 }
+/* The following rule adds shadows to overlay layers elements */
+/* .leaflet-pane .leaflet-overlay-pane:not(:first-child) {
+  filter: drop-shadow(5px -2px 1.5px rgba(5,15,5,0.3));
+} */
 /*******************************
 Leaflet popup featureInfo
 *******************************/
