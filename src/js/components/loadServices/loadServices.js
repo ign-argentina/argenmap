@@ -178,8 +178,20 @@ class ModalService {
 
 let modalService = new ModalService();
 
+function loadingConectBtn(status) {
+    let btn_conectar = document.getElementById("buttonConectar");
+    if (status === "on") {
+		btn_conectar.innerHTML =
+        '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
+      $("#buttonConectar").addClass("disabledbutton");
+    } else if (status === "off") {
+		btn_conectar.innerHTML = "Ejecutar";
+      $("#buttonConectar").removeClass("disabledbutton");
+    }
+  }
 
 async function handleURLInput(e) {
+	loadingConectBtn("on");
 	e.preventDefault();
 	let url = document.getElementsByName('input-url')[0].value;
 	document.getElementsByName('input-url')[0].value = '';
@@ -197,6 +209,7 @@ async function handleURLInput(e) {
 	// if the service was added show alert and break execution
 	if (exist) {
 		new UserMessage('El servicio ya fué agregado', true, 'warning');
+		loadingConectBtn("off");
 		return null
 	};
 
@@ -270,7 +283,12 @@ async function handleURLInput(e) {
 		})
 		// Add the container to the modal
 		document.getElementById('select-layers-container').prepend(wmsResultContainer);
+
+		new UserMessage('El servicio fué agregado exitosamente', true, 'information');
+		loadingConectBtn("off");
+		
 	}).catch((error)=>{
+		loadingConectBtn("off");
 		let customErrorMsg = "<br>No fué posible conectar con el servicio<br>";
 		if(error.message.toLowerCase().includes('cors')){
 			customErrorMsg += `<small style="margin-top:6px;display:block">El formato dado puede no ser el correcto o el servidor no acepta solicitudes de orígenes cruzados (<a href="https://developer.mozilla.org/es/docs/Web/HTTP/CORS" class="text-danger" target="_blank" alt="Sobre CORS" title="Sobre CORS"><strong><u>CORS</u></strong></a>)</small>`
