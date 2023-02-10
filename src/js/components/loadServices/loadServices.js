@@ -373,8 +373,7 @@ function handleAllLayersCheck(e) {
 			groupName = servicesLoaded[layersIndex[layer_name]].title;
 
 			addedLayers.forEach((layer) => {
-				if (layer.groupname == groupName) {
-
+				if (layer.section === groupName) {
 					let index = addedLayers.indexOf(layer);
 					if (index > -1) {
 						addedLayers.splice(index, 1);
@@ -410,16 +409,18 @@ function handleLayerCheck(e) {
 			type: "WMS",
 			section: servicesLoaded[layersIndex[e.target.value]].title
 		});
-		
+
 		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, "WMS", e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 
 	} else {
 		addedLayers.forEach((layer) => {
-			if (layer.id == layersIndex[e.target.value]) {
+			if (layer.name == e.target.value) {
 				let index = addedLayers.indexOf(layer);
 				if (index > -1) {
 					addedLayers.splice(index, 1);
 				}
+				console.log(layer)
+				console.log(addedLayers)
 			}
 		});
 		updateNumberofLayers(servicesLoaded[layersIndex[e.target.value]].title);
@@ -432,6 +433,7 @@ function handleLayerCheck(e) {
 			}
 		}
 	}
+
 }
 
 function capitalize(word) {
