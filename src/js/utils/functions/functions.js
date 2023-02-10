@@ -1389,3 +1389,20 @@ function deleteAddedLayer (layer) { //Requires layer from editableLayers
     }
   })
 }
+
+function loadingBtn(status, idBtn, btnName) {
+  let btn_ejecutar = document.getElementById(idBtn);
+  if (status === "on") {
+    btn_ejecutar.innerHTML =
+      '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
+    $("#ejec_gp").addClass("disabledbutton");
+    $('#'+ idBtn).addClass("disabledbutton");
+  } else if (status === "off") {
+    if (btnName) {
+      btn_ejecutar.innerHTML = btnName;
+    } else {
+      btn_ejecutar.innerHTML = "Ejecutar";
+    }
+    $('#'+ idBtn).removeClass("disabledbutton");
+  }
+}

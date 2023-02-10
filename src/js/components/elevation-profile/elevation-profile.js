@@ -53,7 +53,7 @@ class IElevationProfile {
             return new UserMessage(tooMuchVertices, true, "error");
         }
 
-        geoProcessingManager.loadingBtn("on")
+        loadingBtn("on", "ejec_gp");
         this._processLayer(layerSelected.getGeoJSON());
         this._executeProcess();
         geoProcessingManager.geoprocessId = null;
@@ -129,7 +129,7 @@ class IElevationProfile {
             updateNumberofLayers(sectionName);
 
             this._displayResult(dataForDisplay, selectedPolyline);
-            geoProcessingManager.loadingBtn("off")
+            loadingBtn("off", "ejec_gp");
 
             document.getElementById("select-process").selectedIndex = 0;
             document.getElementsByClassName("form")[1].innerHTML = "";
@@ -138,7 +138,7 @@ class IElevationProfile {
         .catch((error) => {
             console.log('Hay error: ', error);
             new UserMessage(error, true, 'error');
-            geoProcessingManager.loadingBtn("off")
+            loadingBtn("off", "ejec_gp");
         });
     }
 

@@ -947,8 +947,8 @@ class Geoprocessing {
     let distanceBuffer =
       document.getElementById("input-equidistancia").value / 1000;
 
-    this.loadingBtn("on");
-    let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+      loadingBtn("on", "ejec_gp");
+      let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
       .then((data) => {
         if (!data) {
           throw new Error("Error fetching to server");
@@ -959,7 +959,7 @@ class Geoprocessing {
       .catch((error) => {
         console.error(error);
         new UserMessage(error.message, true, "error");
-        this.loadingBtn("off");
+        loadingBtn("off", "ejec_gp");
       });
 
     let lastRectangle = mapa.getEditableLayers().rectangle.length - 1;
@@ -1022,7 +1022,7 @@ class Geoprocessing {
     }
 
     btn_modal_loading = true;
-    this.loadingBtn("on");
+    loadingBtn("on", "ejec_gp");
     if (this.geoprocessId === "contour") {
       this.geoprocessing
       .execute(...values)
@@ -1031,7 +1031,7 @@ class Geoprocessing {
         })
         .catch((error) => {
           new UserMessage(error.message, true, "error");
-          this.loadingBtn("off");
+          loadingBtn("off", "ejec_gp");
         });
     } else if (this.geoprocessId === "waterRise") {
       let waterRise = new GeoserviceFactory.WaterRise(
@@ -1046,7 +1046,7 @@ class Geoprocessing {
         })
         .catch((error) => {
           new UserMessage(error.message, true, "error");
-          this.loadingBtn("off");
+          loadingBtn("off", "ejec_gp");
         });
     }
   }
@@ -1159,18 +1159,6 @@ class Geoprocessing {
       );
     }
     return this.formContainer;
-  }
-
-  loadingBtn(status) {
-    let btn_ejecutar = document.getElementById("ejec_gp");
-    if (status === "on") {
-      btn_ejecutar.innerHTML =
-        '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-      $("#ejec_gp").addClass("disabledbutton");
-    } else if (status === "off") {
-      btn_ejecutar.innerHTML = "Ejecutar";
-      $("#ejec_gp").removeClass("disabledbutton");
-    }
   }
 
   updateLayerSelect(layerName, addToList) {
