@@ -419,8 +419,6 @@ function handleLayerCheck(e) {
 				if (index > -1) {
 					addedLayers.splice(index, 1);
 				}
-				console.log(layer)
-				console.log(addedLayers)
 			}
 		});
 		updateNumberofLayers(servicesLoaded[layersIndex[e.target.value]].title);
