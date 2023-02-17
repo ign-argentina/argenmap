@@ -81,8 +81,6 @@ class ModalService {
 				let service = servicesLoaded[sourceId];
 				let layers = service.layers;
 
-				// console.log(service);
-
 				// Create the container and show the data
 				let wmsResultContainer = document.createElement('div');
 				// Show title and layers count
@@ -122,11 +120,34 @@ class ModalService {
 				let checkLabel = document.createElement('label');
 				checkLabel.classList.add("all-layers-checkbox");
 				checkLabel.classList.add(`label-${serviceID}`);
-				checkLabel.innerHTML = `
-          <span class="tree-line">─</span><input type="checkbox" value="${serviceID}" onchange="handleAllLayersCheck(event)">&nbsp;Agregar todas <small>(${Object.keys(layers).length} capas)</small>
-          `;
-				wmsResultContainer.append(checkLabel);
+						
+				let span = document.createElement('span');
+				span.classList.add('tree-line');
+				span.innerText = '─';
+				
+				let checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.value = serviceID;
 
+				let layerCount = 0;
+				Object.keys(servicesLoaded[serviceID].layers).forEach(lyr => {
+					if (selectedServiceLayers.includes(lyr)) {
+						layerCount++
+					}
+				});
+
+				checkbox.checked = (layerCount === Object.keys(servicesLoaded[serviceID].layers).length)
+				checkbox.addEventListener('change', handleAllLayersCheck, false);
+				
+				let text = document.createElement('span');
+				text.innerHTML = `&nbsp;Agregar todas <small>(${Object.keys(layers).length} capas)</small>`;
+				
+				checkLabel.append(span);
+				checkLabel.append(checkbox);
+				checkLabel.append(text);
+
+				wmsResultContainer.append(checkLabel);
+				
 				// Show layers and checkboxes
 				for (let i in layers) {
 					let layer = layers[i];
@@ -146,7 +167,6 @@ class ModalService {
 					checkbox.type = 'checkbox';
 					checkbox.value = layer.name;
 					checkbox.checked = selectedServiceLayers.some(e => e == layer.name);
-					// checkbox.onclick = handleLayerCheck(event);
 					checkbox.addEventListener('change', handleLayerCheck, false);
 
 					let title = document.createTextNode(` ${capitalize(layer.title)}`);
