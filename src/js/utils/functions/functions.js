@@ -990,17 +990,19 @@ function zoomEditableLayers(layername) {
 function bindZoomLayer() {
   let elements = document.getElementsByClassName("zoom-layer");
   let zoomLayer = async function () {
-    let layer_name = this.getAttribute("layername");
-    let bbox = app.layers[layer_name].capa;
-    if (
-      bbox.servicio === "wms" &&
-      [bbox.minx, bbox.legendURL].some((el) => el === null) &&
-      [bbox.minx, bbox.legendURL].some((el) => el === "undefined")
-    ) {
-      await getWmsLyrParams(bbox); // gets layer atribtutes from WMS
+    let layer_name = this.getAttribute("layername")
+        layer = app.layers[layer_name].capa,
+        bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
+        noBbox = bbox.some((el) => { 
+          return el === null || el === undefined;
+        });
+    if ( layer.servicio === "wms" ) {
+      if ( noBbox ) {
+        await getWmsLyrParams(layer); // gets layer atribtutes from WMS
+      }
     }
-
-    if (bbox.maxy == "null" || typeof bbox.maxy == "undefined") {
+    
+    if ( noBbox ) {
       for (i = 0; i < this.childNodes.length; i++) {
         if (this.childNodes[i].className == "fas fa-search-plus") {
           this.childNodes[i].classList.remove("fa-search-plus");
@@ -1008,7 +1010,7 @@ function bindZoomLayer() {
           //this.childNodes[i].setAttribute('style', 'color: orange');
           this.childNodes[i].setAttribute(
             "title",
-            "Invalid bbox in WMS response"
+            STRINGS.no_bbox
           );
           break;
         }
@@ -1023,8 +1025,8 @@ function bindZoomLayer() {
     });
     if (!active) gestorMenu.muestraCapa(app.layers[layer_name].childid);
     let bounds = [
-      [bbox.maxy, bbox.maxx],
-      [bbox.miny, bbox.minx],
+      [layer.maxy, layer.maxx],
+      [layer.miny, layer.minx],
     ];
     try {
       mapa.fitBounds(bounds);
@@ -1177,8 +1179,12 @@ function zoomLayer(id_dom) {
 
 async function getWmsLyrParams(lyr) {
   //let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
+  if( lyr.host.charAt(lyr.host.length - 1) !== "?" ) { 
+    lyr.host += "?"
+  }
   let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
     sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
+  console.log(url)
   await fetch(url)
     .then((res) => res.text())
     .then((str) => {
