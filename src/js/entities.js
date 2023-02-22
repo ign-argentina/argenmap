@@ -3299,7 +3299,7 @@ class GestorMenu {
       }
     }
 
-    bindLayerOptionsIdera();
+    // bindLayerOptionsIdera();
   }
 
   getLayerData(layerName, sectionName) {
