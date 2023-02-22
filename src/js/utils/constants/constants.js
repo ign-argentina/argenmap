@@ -18,7 +18,8 @@ const STRINGS = {
   basemap_max_zoom: " to max zoom ",
   basemap_min_zoom: "Min zoom ",
   delete_geometry: "Delete geometry",
-  url_required: "URL parameter is required."
+  url_required: "URL parameter is required",
+  no_bbox: "Invalid or empty bounding box"
 }
 
 //Default Services Values
