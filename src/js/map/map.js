@@ -158,7 +158,7 @@ $("body").on("pluginLoad", function(event, plugin){
 		ordered.forEach(function(e){
 			switch (e) {
 				case 'screenShoter':
-					if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+					if (L.Browser.webkit) {
 						let d = new Date()
 						let n = d.getTime();
 						L.simpleMapScreenshoter({
@@ -183,7 +183,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						);
 						screenShoter.classList.add("leaflet-bar");
 						screenShoter.style =
-						"width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
+							"width: 26px !important; height: 26px !important; border: none; border-radius: 4px;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
 						screenShoter.children[0].id = "screenShoter-btn";
 						screenShoter.title = "Captura de pantalla";
 						

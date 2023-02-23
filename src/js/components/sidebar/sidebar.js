@@ -5,7 +5,7 @@ let zoomhome = null;
 let customgraticule = null;
 let measure = null;
 let loadLayersButton = null;
-let leafletbottom = null;
+//let leafletbottom = null;
 let drawb = null;
 let divbar = null;
 let icongeop = null;
@@ -39,7 +39,7 @@ class SidebarTools {
         customgraticule = document.getElementsByClassName("leaflet-control-customgraticule");
         measure = document.getElementsByClassName("leaflet-control-measure");
         loadLayersButton = document.getElementById("loadLayersButton");
-        leafletbottom = document.getElementsByClassName("leaflet-bottom");
+        //leafletbottom = document.getElementsByClassName("leaflet-bottom");
         drawb = document.getElementsByClassName("leaflet-top leaflet-right");
         screenShoter = document.getElementById("screenShoter");
         divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
