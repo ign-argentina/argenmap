@@ -1901,6 +1901,10 @@ class Item extends ItemComposite {
   showHide() {
     $("#" + this.getId()).toggleClass("active");
 
+    if (this.seccion.includes("mapasbase0") && !$("#" + this.getId()).hasClass("active")) {
+      $("#" + this.getId()).toggleClass("active");
+    }//fixes main mapabase active bug by asking if its not activated.
+
     if (typeof this.callback == "string") {
       this.callback = eval(this.callback);
     }
