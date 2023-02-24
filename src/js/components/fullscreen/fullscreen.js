@@ -12,8 +12,7 @@ class Fullscreen {
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "fullscreen";
 
-    let isChrome =
-      /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    let isChrome = L.Browser.webkit;
     let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
     let border_style = "none";
     let size = "26px";
