@@ -1196,7 +1196,7 @@ i.fas.fa-camera {
   cursor: pointer;
 }
 
-.leaflet-touch .leaflet-bar a {
+/* .leaflet-touch .leaflet-bar a {
   width: 26px;
   height: 26px;
   line-height: 26px;
@@ -1208,9 +1208,9 @@ i.fas.fa-camera {
   background-clip: border-box !important;
   box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   border-radius: 3px !important;
-}
+} */
 
-@-moz-document url-prefix() {
+/* @-moz-document url-prefix() {
 
   .leaflet-touch .leaflet-bar a,
   .leaflet-control a {
@@ -1255,4 +1255,4 @@ i.fas.fa-camera {
   a.leaflet-control-layers-toggle {
     border: none !important;
   }
-}
+} */
