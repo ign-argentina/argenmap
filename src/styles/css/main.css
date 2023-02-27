@@ -832,8 +832,8 @@ Control mapa base
 .basemap-selector .leaflet-control-layers-toggle {
   width: 34px;
   height: 34px;
-  border-radius: 4px;
-  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  /* border: 2px solid rgba(0, 0, 0, 0.2); */
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
 	background-color: white !important;
@@ -870,7 +870,7 @@ Control graticula
   width: 34px;
   height: 34px;
   line-height: 30px;
-  border-radius: 2px;
+  border-radius: 3px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
@@ -1135,11 +1135,11 @@ Perfil Topografico
   background-color: #ffffff;
 }
 
-#esriwrapper { 
+#esriwrapper {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
   font-weight: bold;
-  padding: 10px; 
+  padding: 10px;
   text-align: inherit;
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -1147,9 +1147,9 @@ Perfil Topografico
   z-index: 99999;
 }
 
-#esriInfo { 
+#esriInfo {
   background-color: #d7f2f7;
-  border: 1px solid #525252; 
+  border: 1px solid #525252;
   border-radius: 4px;
   font-size: 14px;
   padding: 2px;
@@ -1169,7 +1169,8 @@ Perfil Topografico
 /*******************************
 Icons
 *******************************/
-.fa,.fas~.leaflet-control {
+.fa,
+.fas~.leaflet-control {
   color: #252525;
 }
 
@@ -1184,22 +1185,74 @@ Icons
   background-color: #f5f4f4;
   cursor: pointer;
 }
-i.fas.fa-camera{
+
+i.fas.fa-camera {
   color: #333333;
 }
 
-@-moz-document url-prefix() {
-  #screenShoter {
-    height: 34px !important;
-    width: 34px !important;
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 4px;
-    border: 2px solid rgba(0, 0, 0, 0.2) !important;
-    box-shadow: none !important;
-  }
-}
-
-.leaflet-draw-edit-edit,.leaflet-draw-edit-remove:hover{
+.leaflet-draw-edit-edit,
+.leaflet-draw-edit-remove:hover {
   background-color: #f5f4f4;
   cursor: pointer;
+}
+
+.leaflet-touch .leaflet-bar a {
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  border-radius: 2px !important;
+}
+
+.leaflet-touch .leaflet-bar {
+  border: none !important;
+  background-clip: border-box !important;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
+  border-radius: 3px !important;
+}
+
+@-moz-document url-prefix() {
+
+  .leaflet-touch .leaflet-bar a,
+  .leaflet-control a {
+    width: 30px !important;
+    height: 30px !important;
+    line-height: 30px;
+    background-color: #fff !important;
+  }
+
+  #fullscreen,
+  #pdfPrinter,
+  #loadLayersButton,
+  #geoprocesos-icon,
+  .leaflet-control-customgraticule,
+  .leaflet-control-locate {
+    width: 34px !important;
+    height: 34px !important;
+    line-height: 34px;
+    background-color: #fff !important;
+    border-radius: 4px !important;
+  }
+
+  a.leaflet-control-layers-toggle {
+    box-shadow: none !important;
+    background-color: #fff !important;
+  }
+
+  #screenShoter {
+    display: none;
+  }
+
+  .leaflet-touch .leaflet-bar,
+  .basemap-selector,
+  .leaflet-control-customgraticule {
+    border: 2px solid rgba(0, 0, 0, 0.2) !important;
+    background-clip: padding-box !important;
+    box-shadow: none !important;
+    border-radius: 4px !important;
+    background-color: #fff !important;
+  }
+
+  a.leaflet-control-layers-toggle {
+    border: none !important;
+  }
 }
