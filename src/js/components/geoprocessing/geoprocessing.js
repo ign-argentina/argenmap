@@ -39,9 +39,9 @@ class Geoprocessing {
   }
   createIcon() {
     const modalicon = `
-    <div class="center-flex" id="iconopenfile-container">
+    <a>
         <span id="spanopenfolder" class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></span>
-    </div>
+    </a>
     `;
     const elem = document.createElement("div");
     elem.className = "leaflet-bar leaflet-control";

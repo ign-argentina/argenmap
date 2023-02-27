@@ -1,9 +1,9 @@
 class Fullscreen {
   constructor() {
     this.component = `
-      <div class="center-flex" id="iconFS-container" title="Pantalla Completa" onclick=toggleFullScreen()>
-            <i id="iconFS" class="fas fa-expand center-flex" aria-hidden="true"></i>
-      </div>
+      <a title="Pantalla Completa" onclick=toggleFullScreen()>
+            <i id="iconFS" class="fas fa-expand" aria-hidden="true"></i>
+      </a>
       `;
   }
 

@@ -83,24 +83,24 @@
   opacity: 0.9;
 }
 
-#loadLayersButton {
+/* #loadLayersButton {
 width: 34px;
 height: 34px;
-}
+} */
 
 #loadLayersButton:hover {
   background-color: #f5f4f4;
   cursor: pointer;
 }
 
-#loadLayersButtonContent {
+/* #loadLayersButtonContent {
   height: 100%;
   width: 100%;
   flex: 4;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 3px;
   border-color: #cccccc;
-}
+} */
 
 /* Remove loadLayersButtonContent div/icon for media  print*/
 @media print {

@@ -829,19 +829,19 @@ Control mapa base
   width: 50px;
   margin-right: 5px;
 }
-.basemap-selector .leaflet-control-layers-toggle {
-  width: 34px;
+ .basemap-selector .leaflet-control-layers-toggle {
+   background-image: none;
+  /* width: 34px;
   height: 34px;
-  border-radius: 3px;
-  /* border: 2px solid rgba(0, 0, 0, 0.2); */
-  -webkit-background-clip: padding-box;
+  border-radius: 3px;*/
+   /* border: 2px solid rgba(0, 0, 0, 0.2); */
+   /*-webkit-background-clip: padding-box;
   background-clip: padding-box;
 	background-color: white !important;
   text-align: center;
-  background-image: none;
   background-size: 80% 70%;
-  opacity: 0.9;
-}
+  opacity: 0.9;*/
+ }
 .basemap-selector .leaflet-control-layers-toggle::after {
   display: inline;
   content: "\f5fd";
@@ -866,14 +866,14 @@ Control mapa base
 /*******************************
 Control graticula
 *******************************/
-.leaflet-control-customgraticule {
-  width: 34px;
+ .leaflet-control-customgraticule {
+  /* width: 34px;
   height: 34px;
   line-height: 30px;
   border-radius: 3px;
   color: black;
   border: 2px solid rgba(0, 0, 0, 0.2);
-  -webkit-background-clip: padding-box;
+  -webkit-background-clip: padding-box; */
   background-clip: padding-box;
 	background-color: white !important;
   background-image: none;
@@ -886,7 +886,7 @@ Control graticula
 .leaflet-control-customgraticule:hover {
   background-color: #f4f4f4;
   cursor: pointer;
-}
+} 
 /*******************************
 SideBar
 *******************************/

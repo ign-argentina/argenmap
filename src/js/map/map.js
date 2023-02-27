@@ -182,8 +182,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						"leaflet-control-simpleMapScreenshoter"
 						);
 						screenShoter.classList.add("leaflet-bar");
-						screenShoter.style =
-							"width: 26px !important; height: 26px !important; border: none; border-radius: 3px !important; box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
+						/* screenShoter.style =
+							"width: 26px !important; height: 26px !important; border: none; border-radius: 3px !important; box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;"; */
 						screenShoter.children[0].id = "screenShoter-btn";
 						screenShoter.title = "Captura de pantalla";
 						
@@ -293,8 +293,10 @@ $("body").on("pluginLoad", function(event, plugin){
                     var customGraticule = null;
 					L.Control.CustomGraticule = L.Control.extend({
 					  onAdd: function (map) {
-						var container = L.DomUtil.create('div', 'leaflet-control leaflet-control-customgraticule');
+						var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar');
 						container.title = 'Cuadrícula';
+						var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule')
+						container.appendChild(icon);
 						
 						container.onclick = function() {
 							if (customGraticule == null) {
@@ -2565,7 +2567,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			L.Control.Watermark = L.Control.extend({
 
 			  onAdd: function (map) {
-				var container = L.DomUtil.create('div', 'leaflet-control basemap-selector');
+				var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar basemap-selector');
 				return container;
 			  }
 			});
