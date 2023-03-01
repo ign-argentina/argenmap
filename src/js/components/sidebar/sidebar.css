@@ -1,111 +1,38 @@
-#sidebar-toolbar-icon-left {
-  display: flex;
-  text-align: center;
-  position: absolute;
-  top: 10px;
-  left: 46px;
-  z-index: 999;
-  width: 12px;
-  height: 26px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+div.leaflet-bar.leaflet-control:has(#sidebar-toolbar-icon-left,
+  #sidebar-toolbar-icon-right) {
+  box-shadow: none !important;
 }
 
+#sidebar-toolbar-icon-left,
 #sidebar-toolbar-icon-right {
-  display: flex;
-  text-align: center;
-  position: absolute;
-  top: 10px;
-  right: 46px;
-  z-index: 999;
-  width: 12px;
-  height: 26px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  width: 15px;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 #sidebar-toolbar-span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 24px;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.6);
   cursor: pointer;
 }
 
-@media (min-width: 769px) {
-  div #sidebar-toolbar-icon-left:hover {
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    background: rgba(0, 0, 0, 0.3);
-  }
+div #sidebar-toolbar-icon-left:hover,
+div #sidebar-toolbar-icon-right:hover {
+  width: 26px;
+  background: rgba(0, 0, 0, 0.4);
+}
 
-  div #sidebar-toolbar-icon-right:hover {
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    background: rgba(0, 0, 0, 0.3);
+@media (max-width: 600px) {
+
+  div.leaflet-bar.leaflet-control:has(#sidebar-toolbar-icon-left) {
+    top: -15px !important;
+    left: 15px !important;
+  }
+  
+  div.leaflet-bar.leaflet-control:has(#sidebar-toolbar-icon-right) {
+    top: 5px !important;
+    right: 36px !important;
   }
 }
 
-@-moz-document url-prefix() {
-  #sidebar-toolbar-icon-left {
-    display: flex;
-    text-align: center;
-    position: absolute;
-    top: 10px;
-    left: 54px;
-    z-index: 999;
-    width: 16px;
-    height: 34px;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    box-shadow: none;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-  }
-
-  #sidebar-toolbar-icon-right {
-    display: flex;
-    text-align: center;
-    position: absolute;
-    top: 10px;
-    right: 54px;
-    z-index: 999;
-    width: 16px;
-    height: 34px;
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    box-shadow: none;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-  }
-
-  #sidebar-toolbar-span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 26px;
-    color: rgba(0, 0, 0, 0.3);
-  }
-
-  @media (min-width: 769px) {
-    div #sidebar-toolbar-icon-left:hover {
-      justify-content: center;
-      width: 30px;
-      height: 34px;
-      background: rgba(0, 0, 0, 0.3);
-    }
-
-    div #sidebar-toolbar-icon-right:hover {
-      justify-content: center;
-      width: 30px;
-      height: 34px;
-      background: rgba(0, 0, 0, 0.3);
-    }
-  }
-}
 /*
 @media (max-height: 400px) {
   #sidebar-toolbar-icon-left {
@@ -137,13 +64,4 @@
 }
 */
 @media (max-width: 600px) {
-  #sidebar-toolbar-icon-left {
-    top: 5px;
-    left: 36px;
-  }
-
-  #sidebar-toolbar-icon-right {
-    top: 5px;
-    right: 36px;
-  }
 }
