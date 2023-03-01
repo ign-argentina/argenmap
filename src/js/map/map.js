@@ -293,9 +293,9 @@ $("body").on("pluginLoad", function(event, plugin){
                     var customGraticule = null;
 					L.Control.CustomGraticule = L.Control.extend({
 					  onAdd: function (map) {
-						var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar');
+						var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
 						container.title = 'Cuadrícula';
-						var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule')
+						var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
 						container.appendChild(icon);
 						
 						container.onclick = function() {

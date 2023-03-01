@@ -34,20 +34,21 @@ class EditableLabel {
     onAdd: function (map) {
       let controlDiv = L.DomUtil.create(
         "div",
-        "leaflet-editable-label leaflet-bar"
+        "leaflet-bar leaflet-control"
       );
+      let controlUI = L.DomUtil.create(
+        "a",
+        "leaflet-editable-label leaflet-editable-label-interior"
+      );
+      controlDiv.appendChild(controlUI);
+
       L.DomEvent.addListener(controlDiv, "click", L.DomEvent.stopPropagation)
         .addListener(controlDiv, "click", L.DomEvent.preventDefault)
         .addListener(controlDiv, "click", function () {});
 
       const icon = document.createElement("i");
-      icon.classList = "fas fa-edit";
+      icon.classList = "fa-solid fa-pen";
 
-      let controlUI = L.DomUtil.create(
-        "div",
-        "leaflet-editable-label-interior",
-        controlDiv
-      );
       controlUI.title = this.options.title;
       controlUI.appendChild(icon);
       return controlDiv;
