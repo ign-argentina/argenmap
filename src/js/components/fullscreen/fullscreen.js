@@ -11,22 +11,6 @@ class Fullscreen {
     const elem = document.createElement("div");
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "fullscreen";
-
-    /* let isChrome = L.Browser.webkit;
-    let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
-    let border_style = "none";
-    let size = "26px";
-    if (!isChrome) {
-      shadow_style = "none";
-      border_style = "2px solid rgba(0, 0, 0, 0.2)";
-      size = "34px";
-    }
-
-    elem.style.width = size;
-    elem.style.height = size;
-    elem.style.border = border_style;
-    elem.style.boxShadow = shadow_style; */
-
     elem.innerHTML = this.component;
     document.querySelector(".leaflet-top.leaflet-left").append(elem);
   }

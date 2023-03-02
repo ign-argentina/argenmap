@@ -21,7 +21,7 @@ div #sidebar-toolbar-icon-right:hover {
 }
 
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   #hideBtnLeft {
     top: -10px !important;
     left: 26px !important;

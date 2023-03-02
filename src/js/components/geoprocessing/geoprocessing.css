@@ -197,3 +197,8 @@
   /* mix-blend-mode: difference; */
   filter: hue-rotate(3.142rad) saturate(4);
 }
+
+#geoPIcon{
+  font-size: 15px;
+  line-height: inherit;
+}

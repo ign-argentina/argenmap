@@ -7,17 +7,7 @@
   background-color: grey;
 }
 
-/*   #iconPDF-container {
-    height: 100%;
-    width: 100%;
-    flex: 3;
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 3px;
-    font-size: 17px;
-  } */
-
 #iconPDF {
-  color: #252525;
-  font-size: 18px;
+  font-size: 16px;
   line-height: inherit;
 }

@@ -182,8 +182,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						"leaflet-control-simpleMapScreenshoter"
 						);
 						screenShoter.classList.add("leaflet-bar");
-						/* screenShoter.style =
-							"width: 26px !important; height: 26px !important; border: none; border-radius: 3px !important; box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;"; */
 						screenShoter.children[0].id = "screenShoter-btn";
 						screenShoter.title = "Captura de pantalla";
 						

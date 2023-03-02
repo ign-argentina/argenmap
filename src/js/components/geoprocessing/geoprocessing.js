@@ -40,7 +40,7 @@ class Geoprocessing {
   createIcon() {
     const modalicon = `
     <a>
-        <span id="spanopenfolder" class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></span>
+        <i id="geoPIcon" class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></i>
     </a>
     `;
     const elem = document.createElement("div");
