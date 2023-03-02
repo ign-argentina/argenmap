@@ -1,5 +1,5 @@
-div.leaflet-bar.leaflet-control:has(#sidebar-toolbar-icon-left,
-  #sidebar-toolbar-icon-right) {
+#hideBtnLeft,
+#hideBtnRight {
   box-shadow: none !important;
 }
 
@@ -20,48 +20,22 @@ div #sidebar-toolbar-icon-right:hover {
   background: rgba(0, 0, 0, 0.4);
 }
 
-@media (max-width: 600px) {
 
-  div.leaflet-bar.leaflet-control:has(#sidebar-toolbar-icon-left) {
+@media (max-width: 767px) {
+  #hideBtnLeft {
+    top: -10px !important;
+    left: 26px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #hideBtnLeft {
     top: -15px !important;
     left: 15px !important;
   }
-  
-  div.leaflet-bar.leaflet-control:has(#sidebar-toolbar-icon-right) {
+
+  #hideBtnRight {
     top: 5px !important;
-    right: 36px !important;
-  }
-}
-
-/*
-@media (max-height: 400px) {
-  #sidebar-toolbar-icon-left {
-    top: 34px;
-    left: 36px;
-  }
-
-  #sidebar-toolbar-icon-right {
-    top: 5px;
     right: 36px;
   }
-}
-
-@media (max-height: 500px) {
-  #sidebar-toolbar-icon-left {
-    top: 34px;
-    left: 36px;
-  }
-
-  #sidebar-toolbar-icon {
-    top: 40px;
-    left: 40px;
-  }
-
-  #sidebar-toolbar-icon-right {
-    top: 5px;
-    right: 36px;
-  }
-}
-*/
-@media (max-width: 600px) {
 }

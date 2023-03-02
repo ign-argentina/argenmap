@@ -32,8 +32,11 @@ class SidebarTools {
   }
 
   createComponent() {
+    let rightPositionStyle;
+    window.matchMedia("(max-width: 600px)").matches ? rightPositionStyle = "position: absolute; top: 10px; right: 36px;" : rightPositionStyle = "position: absolute; top: 10px; right: 46px;";
+
     this.createBtn("sidebar-toolbar-icon-left", "position: relative; top: -10px; left: 6px;", "hideBtnLeft");
-    this.createBtn("sidebar-toolbar-icon-right", "position: absolute; top: 10px; right: 46px;", "hideBtnRight");
+    this.createBtn("sidebar-toolbar-icon-right", rightPositionStyle, "hideBtnRight");
 
     this.hideLeftBtns();
     this.hideRightBtns();
@@ -41,26 +44,23 @@ class SidebarTools {
 
   hideRightBtns() {
     document.querySelector("a#sidebar-toolbar-icon-right").addEventListener("click", function () {
-      let btn = document.querySelector("#hideBtnRight");
+      let btnR = document.querySelector("#hideBtnRight");
       let drawb = document.getElementsByClassName("leaflet-top leaflet-right");
 
-      let pos_right_max600 = "36px";
-      let pos_right = "46px";
-      if (!L.Browser.webkit) {
-        pos_right_max600 = "36px";
-        pos_right = "46px";
-      }
+      let pos_right_max600, pos_right;
+
+      L.Browser.webkit ? (pos_right_max600 = "36px", pos_right = "46px") : (pos_right_max600 = "36px", pos_right = "46px");
 
       if (areHiddenRigth) {
         areHiddenRigth = false;
         drawb[0].hidden = false;
 
-        window.matchMedia("(max-width: 600px)").matches ? btn.style.right = pos_right_max600 : btn.style.right = pos_right;
+        window.matchMedia("(max-width: 600px)").matches ? btnR.style.right = pos_right_max600 : btnR.style.right = pos_right;
       } else {
         areHiddenRigth = true;
         drawb[0].hidden = true;
 
-        window.matchMedia("(max-height: 400px)").matches ? btn.style.right = "5px" : btn.style.right = "10px";
+        window.matchMedia("(min-width: 600px)").matches ? btnR.style.right = "10px" : btnR.style.right = "5px";
       }
     });
   }
