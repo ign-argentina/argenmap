@@ -1850,7 +1850,9 @@ class Item extends ItemComposite {
   }
 
   getSVGFilenameForLegendImg() {
-    return this.titulo.replace(":", "").replace("/", "") + ".svg";
+    if (this.titulo !== undefined) {
+      return this.titulo.replace(":", "").replace("/", "") + ".svg";
+    }
   }
 
   getVisible() {
