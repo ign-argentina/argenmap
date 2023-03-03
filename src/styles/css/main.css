@@ -1,3 +1,11 @@
+:root {
+  --main-bg-color: #fff;
+  --active-bg-color: #33b560;
+  --hoverSelect-bg-color: #61ca86;
+  --text-color: #fff;
+  --popup-fnt-size: 12px;
+}
+
 /*******************************
 General
 *******************************/
@@ -104,7 +112,7 @@ body {
 #mapa {
   position: relative;
   height: 100%;
-  background-color: white !important;
+  background-color: var(--main-bg-color, white) !important;
 }
 
 #top-left-logo {
@@ -220,7 +228,7 @@ Menu principal
 }
 
 .nav-tabs>li.active>a {
-  background-color: #33b560 !important;
+  background-color: var(--active-bg-color, #33b560) !important;
   color: white !important;
 }
 
@@ -234,7 +242,7 @@ Menu principal
 }
 
 .active {
-  background-color: #33b560 !important;
+  background-color: var(--active-bg-color, #33b560) !important;
 }
 
 li.active>div>a {
@@ -259,7 +267,7 @@ li.active>div>a {
   text-align: center;
   vertical-align: middle;
   border-radius: 50%;
-  background: #33b560;
+  background-color: var(--active-bg-color, #33b560) !important;
 }
 
 .total-active-layers-counter {
@@ -268,7 +276,7 @@ li.active>div>a {
   font-weight: bolder;
   width: 18px;
   border-radius: 50%;
-  background: #33b560;
+  background-color: var(--active-bg-color, #33b560);
   color: white;
   margin-left: 3px;
 }
@@ -511,7 +519,7 @@ Searcher
 }
 
 .btn-search:hover {
-  background-color: rgb(97, 202, 134);
+  background-color: var(--hoverSelect-bg-color, rgb(97, 202, 134));
   color: rgb(255, 255, 255);
 }
 
@@ -610,7 +618,7 @@ Leaflet popup featureInfo
 *******************************/
 .featureInfo {
   font-family: inherit;
-  font-size: 12px;
+  font-size: var(--popup-fnt-size, 12px);
   width: 100%;
 }
 
@@ -1176,7 +1184,7 @@ New navbar
 #logoText {
   align-self: center;
   text-align: right;
-  color: white;
+  color: var(--text-color, #fff);
   font-size: 18px;
   font-family: "Encode Sans Bold", sans-serif;
   -webkit-user-select: none;
@@ -1190,11 +1198,11 @@ New navbar
 }
 
 .btn-reset-layers {
-  background-color: rgb(255, 255, 255);
+  background-color: var(--main-bg-color, #fff);
 }
 
 .btn-reset-layers:hover {
-  background-color: rgb(97, 202, 134);
+  background-color: var(--hoverSelect-bg-color, rgb(97, 202, 134));
   color: rgb(255, 255, 255);
 }
 
@@ -1269,7 +1277,7 @@ Measurement Info
 }
 
 #measurementInfo tr:nth-child(even) {
-  background-color: #ffffff;
+  background-color: var(--main-bg-color, #fff);
 }
 
 #esriwrapper {
@@ -1303,7 +1311,7 @@ ESRI
 }
 
 #esriTable tr:nth-child(even) {
-  background-color: #ffffff;
+  background-color: var(--main-bg-color, #fff);
 }
 
 /*******************************

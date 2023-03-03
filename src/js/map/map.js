@@ -663,7 +663,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							text: 'Mas información',
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);	
-									 $("#search_bar").val(lat+","+lng).focus();					              
+									 $("#search_bar").val(lat+","+lng).focus();
 							}
 						});
 
