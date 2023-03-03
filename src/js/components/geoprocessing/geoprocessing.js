@@ -38,7 +38,7 @@ class Geoprocessing {
     }
   }
   createIcon() {
-    const modalicon = `
+    const modalIcon = `
     <a>
         <i id="geoPIcon" class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></i>
     </a>
@@ -47,21 +47,7 @@ class Geoprocessing {
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
     elem.title = app.geoprocessing.buttonTitle;
-    elem.innerHTML = modalicon;
-
-    /* let isChrome = L.Browser.webkit;
-    let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
-    let border_style = "none";
-    let size = "26px";
-    if (!isChrome) {
-      shadow_style = "none";
-      border_style = "2px solid rgba(0, 0, 0, 0.2)";
-      size = "34px";
-    }
-    elem.style.width = size;
-    elem.style.height = size;
-    elem.style.border = border_style;
-    elem.style.boxShadow = shadow_style; */
+    elem.innerHTML = modalIcon;
 
     elem.onclick = () => {
       if (g_modal_close) {

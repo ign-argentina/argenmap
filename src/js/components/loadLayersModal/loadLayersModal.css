@@ -79,14 +79,9 @@
   left: calc(100% / 5);
 }
 
-#loadLayersButtonContent>img{
+#loadLayersButtonContent>img {
   opacity: 0.9;
 }
-
-/* #loadLayersButton {
-width: 34px;
-height: 34px;
-} */
 
 #loadLayersButton:hover {
   background-color: #f5f4f4;
@@ -101,13 +96,6 @@ height: 34px;
   border-radius: 3px;
   border-color: #cccccc;
 } */
-
-/* Remove loadLayersButtonContent div/icon for media  print*/
-@media print {
-  #loadLayersModal {
-    display: none !important;
-  }
-}
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 630px) {
@@ -156,35 +144,37 @@ height: 34px;
   }
 }
 
-@media (max-width: 768px) {
-  /* #loadLayersModal {
+/*@media (max-width: 768px) {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 700px;
-  } */
+  }
 
 }
 
 @media (max-width: 600px) {
-  /* #loadLayersModal {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 580px;
-  } */
+  }
 }
 
 @media (max-width: 480px) {
-  /* #loadLayersModal {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 300px;
-  } */
+  }
 }
 
 @media (max-width: 360px) {
-  /* #loadLayersModal {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 250px;
-  } */
+  }
 }
+
+*/

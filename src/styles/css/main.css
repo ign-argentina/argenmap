@@ -247,7 +247,7 @@ li.active>div>a {
 }
 
 .list-group-item.active {
-  border-color: white;
+  border-color: #ccc;
 }
 
 .active-layers-counter {
@@ -263,13 +263,14 @@ li.active>div>a {
 }
 
 .total-active-layers-counter {
-  display: inherit;
+  display: inline-block;
   font-size: 12px;
   font-weight: bolder;
   width: 18px;
   border-radius: 50%;
   background: #33b560;
   color: white;
+  margin-left: 3px;
 }
 
 .item-group-short-desc {
@@ -284,7 +285,6 @@ li.active>div>a {
 
 .item-group-title {
   cursor: pointer;
-  -webkit-user-select: none;
   user-select: none;
   font-family: "Encode Sans Semi Bold", sans-serif;
   font-size: 15px;
@@ -439,9 +439,9 @@ li.active>div>a {
   padding: 2px;
 }
 
-option-panel-active {
+/* .option-panel-active {
   background-color: yellowgreen;
-}
+} */
 
 @media (max-width: 390px) {
   .leaflet-control-minimap {
@@ -604,6 +604,7 @@ Leaflet
 /* .leaflet-pane .leaflet-overlay-pane:not(:first-child) {
   filter: drop-shadow(5px -2px 1.5px rgba(5,15,5,0.3));
 } */
+
 /*******************************
 Leaflet popup featureInfo
 *******************************/
@@ -668,9 +669,6 @@ Popup geometría
 }
 
 .active-layer-label {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
@@ -687,9 +685,6 @@ Popup geometría
 }
 
 .popup-btn-text {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   margin: 0 !important;
   font-weight: 700;
@@ -736,17 +731,8 @@ Popup geometría
   box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
 }
 
-.edit-style-popup-container .section-popup .section-title {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
+.edit-style-popup-container .section-popup .section-title,
 .edit-style-popup-container .section-popup .section-item label {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
@@ -963,17 +949,15 @@ Control mapa base
 
 #collapseBaseMapLayers {
   position: absolute;
-  top: 1px;
   padding: 0 !important;
   margin-left: 40px;
-  /* left: 41px; */
 }
 
 #collapseBaseMapLayers .list-group-item {
   padding: 5px;
   background: rgba(255, 255, 255, 0.9);
   font-size: 14px;
-  width: 240px;
+  width: 245px;
 }
 
 #collapseBaseMapLayers .list-group-item:hover {
@@ -1017,10 +1001,6 @@ Control mapa base
 Control graticula
 *******************************/
 .leaflet-control-customgraticule {
-  background-clip: padding-box;
-  background-color: white !important;
-  background-image: none;
-  text-align: center;
   background-image: url(../images/grid.webp);
   background-size: 70% 70%;
   background-repeat: no-repeat;
@@ -1061,13 +1041,17 @@ SideBar
   }
 
   .leaflet-bottom .leaflet-control-scale {
-    margin-left: 0px !important;
+    margin-left: 5px !important;
   }
 }
 
 @media (max-height: 500px) {
-  .leaflet-bottom {
+  .leaflet-bottom:not(.leaflet-control-scale) {
     display: none;
+  }
+
+  .leaflet-control-scale {
+    margin-left: 5px !important;
   }
 
   #collapseBaseMapLayers .list-group-item {
@@ -1127,46 +1111,25 @@ SideBar
     display: none;
   }
 
-  .leaflet-control-scale-line {
+  #zoom-level {
     display: none;
   }
 }
 
-@media (max-height: 400px) {
+/* @media (max-height: 400px) {
   .leaflet-bottom {
     margin-right: 40px !important;
   }
-}
-
-@media print {
-
-  .navbar,
-  .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)),
-  #sidebar,
-  #zoom-level,
-  #geoPIcon,
-  #btn-logout,
-  div[id^="sidebar-toolbar-icon-"] {
-    display: none !important;
-  }
-
-  #mapa {
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    z-index: 10000;
-  }
-}
+} */
 
 .leaflet-oldie .leaflet-popup-content-wrapper {
   transform: scale(1);
 }
 
-/*New navbar*/
+/*******************************
+New navbar
+*******************************/
+
 @media (max-width: 390px) {
   .navbar-new-content {
     margin: 0% 4px !important;
@@ -1235,9 +1198,9 @@ SideBar
   color: rgb(255, 255, 255);
 }
 
-/*End New navbar*/
-
-/* SearchForm & Buttons*/
+/*******************************
+SearchForm & Buttons
+*******************************/
 .searchFormBtn {
   display: flex;
   flex-direction: column-reverse;
@@ -1247,8 +1210,6 @@ SideBar
 .formBtns {
   width: 100%;
 }
-
-/* End of SearchForm & Buttons*/
 
 /*******************************
 Perfil Topografico
@@ -1277,6 +1238,9 @@ Perfil Topografico
   min-height: 400px;
 }
 
+/*******************************
+Measurement Info
+*******************************/
 #measurementWrapper {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
@@ -1320,6 +1284,9 @@ Perfil Topografico
   z-index: 99999;
 }
 
+/*******************************
+ESRI
+*******************************/
 #esriInfo {
   background-color: #d7f2f7;
   border: 1px solid #525252;
@@ -1342,23 +1309,47 @@ Perfil Topografico
 /*******************************
 Icons
 *******************************/
-
 .leaflet-bar a,
 .leaflet-bar a:hover {
   color: #303030 !important;
 }
 
+/*******************************
+ScreenShot
+*******************************/
 #screenShoter {
   font-size: 1.3em;
 }
 
 #screenShoter :hover {
-  background-color: #f5f4f4;
   cursor: pointer;
 }
 
-.leaflet-draw-edit-edit,
-.leaflet-draw-edit-remove:hover {
-  background-color: #f5f4f4;
-  cursor: pointer;
+/*******************************
+Print
+*******************************/
+@media print {
+
+  .navbar,
+  .sidebar,
+  .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)),
+  #sidebar,
+  #zoom-level,
+  #geoPIcon,
+  #btn-logout,
+  #loadLayersModal,
+  div[id^="sidebar-toolbar-icon-"] {
+    display: none !important;
+  }
+
+  #mapa {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 10000;
+  }
 }
