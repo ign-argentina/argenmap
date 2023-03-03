@@ -989,27 +989,41 @@ function zoomEditableLayers(layername) {
 function bindZoomLayer() {
   let elements = document.getElementsByClassName("zoom-layer");
   let zoomLayer = async function () {
-    let layer_name = this.getAttribute("layername")
-        layer = app.layers[layer_name].capa,
-        bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
-        noBbox = bbox.some((el) => { 
-          return el === null || el === undefined;
-        });
+
+    let layer_name = this.getAttribute("layername");
+    let layer = app.layers[layer_name].capa;
+    
     if ( layer.servicio === "wms" ) {
-      if ( noBbox ) {
-        await getWmsLyrParams(layer); // gets layer atribtutes from WMS
-      }
+      await getWmsLyrParams(layer); // gets layer atribtutes from WMS
     }
     
+    console.log("layer: ", layer)
+    let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
+    noBbox = bbox.some((el) => { 
+      return el === null || el === undefined;
+    });
+    
+    console.log("bbox: ", bbox)
     if ( noBbox ) {
       for (i = 0; i < this.childNodes.length; i++) {
         if (this.childNodes[i].className == "fas fa-search-plus") {
           this.childNodes[i].classList.remove("fa-search-plus");
           this.childNodes[i].classList.add("fa-exclamation-triangle");
-          //this.childNodes[i].setAttribute('style', 'color: orange');
           this.childNodes[i].setAttribute(
             "title",
             STRINGS.no_bbox
+          );
+          break;
+        }
+      }
+    } else {
+      for (i = 0; i < this.childNodes.length; i++) {
+        if (this.childNodes[i].className == "fas fa-exclamation-triangle") {
+          this.childNodes[i].classList.remove("fa-exclamation-triangle");
+          this.childNodes[i].classList.add("fa-search-plus");
+          this.childNodes[i].setAttribute(
+            "title",
+            "Zoom a capa"
           );
           break;
         }
