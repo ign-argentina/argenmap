@@ -188,14 +188,18 @@ class Searchbar_UI {
         results.innerHTML = "";
         search_input.style.width = "300px";
         icon_searchbar.style.display = "flex";
-        document.getElementById("logo-navbar").style.display = "none";
+        if (innerWidth  <= 768) {
+          document.getElementById("logo-navbar").style.display= "none"
+        }
         selected_item = false;
       } else {
         search_input.style.width = "300px";
         icon_searchbar.style.display = "flex";
         search_term = q;
         results.innerHTML = "";
-        document.getElementById("logo-navbar").style.display = "none";
+        if (innerWidth  <= 768) {
+          document.getElementById("logo-navbar").style.display= "none"
+        }
         selected_item = false;
         //si contienen caracteres invalidos #$%#$% o es igual a url
         if (regexValidator(search_term) && !itsloading) {
