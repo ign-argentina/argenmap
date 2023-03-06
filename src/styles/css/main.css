@@ -1318,12 +1318,37 @@ ESRI
 }
 
 /*******************************
-Icons
+Icons and Btns
 *******************************/
 .leaflet-bar a,
 .leaflet-bar a:hover {
   color: #303030 !important;
 }
+
+/* leaflet- control and leaflet-bar determines the style of the buttons on the map */
+
+/* .leaflet-bar {
+  box-shadow: 0 1px 5px rgb(0 0 0 / 65%) !important;
+  border: none !important;
+  border-radius: 4px !important;
+}
+
+.leaflet-bar a ,.leaflet-touch .leaflet-bar a{
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+}
+
+.leaflet-bar a:last-child {
+  border-bottom-left-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+  border-bottom: none !important;
+}
+
+.leaflet-bar a:first-child {
+  border-top-left-radius: 4px !important;
+  border-top-right-radius: 4px !important;
+} */
 
 /*******************************
 ScreenShot
