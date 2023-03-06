@@ -668,12 +668,12 @@ $("body").on("pluginLoad", function(event, plugin){
 						});
 
 						contextMenu.createOption({
-						isDisabled: false,
-						text: "Abrir en...",
-						onclick: (option) => {
-							mapa.closePopup(contextPopup);
-							let _url = `geo:${lat},${lng}`;
-							window.open(_url);
+							isDisabled: L.Browser.mobile ? false : true, // check if running in a mobile device
+							text: "Abrir en...",
+							onclick: (option) => {
+								mapa.closePopup(contextPopup);
+								let _url = `geo:${lat},${lng}`;
+								window.open(_url);
 							}
 						});
 
