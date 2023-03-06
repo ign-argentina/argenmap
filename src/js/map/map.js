@@ -869,6 +869,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.openPopup(editStylePopup);
 								const parent = editStylePopupContent.parentElement;
 								parent.className = 'leaflet-popup-content popup-parent';
+								$("#editContainer").draggable({scroll: false, containment: "body"});
 							}
 						});
 						
@@ -1089,6 +1090,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.createEditStylePopup = (layer, popup) => {
 						const container = document.createElement('div');
 						container.className = 'edit-style-popup-container';
+						container.id = "editContainer";
 						
 						const closeBtn = document.createElement('a');
 						closeBtn.innerHTML = '<a class="leaflet-popup-close-button" href="#" style="outline: none;">×</a>';
@@ -1106,7 +1108,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						title.className = 'section-title non-selectable-text';
 						title.textContent = 'Línea';
 						lineSection.appendChild(title);
-						
+
 						//Opacity
 						const opacityInputDiv1 = document.createElement('div');
 						opacityInputDiv1.className = 'section-item';
@@ -1565,7 +1567,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						//Labels
 						const labelSection = document.createElement('div');
 						labelSection.className = 'section-popup';
-						
+
 						if (layer.type === 'label') {
 
 							//Title

@@ -206,7 +206,6 @@ async function handleURLInput(e) {
 
 	const serviceLayer = new ServiceLayers();
 
-
 	// check if the service was added 
 	let validHost = serviceLayer.validateUrl(url).host;
 	let exist;

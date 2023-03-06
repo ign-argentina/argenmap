@@ -45,7 +45,6 @@ class modalUI {
 		this.selectedAction = 0;
 	}
 
-
 	createElement(element, id, className) {
 		let aux = document.createElement(element);
 		if (id) {
@@ -62,7 +61,6 @@ class modalUI {
 		divContainer.id = "loadLayersModal"
 		divContainer.className = "loadLayersModal"
 
-
 		let header = document.createElement('div');
 		header.classList.add('modalHeader');
 
@@ -72,16 +70,12 @@ class modalUI {
 		let closeButton = document.createElement('button');
 		closeButton.classList.add('modalCloseButton');
 
-
 		closeButton.innerHTML = '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
 		closeButton.onclick = function () {
 			document.body.removeChild(loadLayersModal);
 			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
 			LOAD_LAYERS_MODAL_OPEN = false;
 		};
-
-
-
 
 		header.appendChild(modalTitle);
 		header.appendChild(closeButton);
@@ -119,24 +113,18 @@ class modalUI {
 			actionContent.innerText = action.content;
 
 			content.appendChild(actionContent);
-
 		})
-
-
 
 		mainSection.appendChild(nav);
 		mainSection.appendChild(content);
 
 		divContainer.appendChild(mainSection);
-
-
 		document.body.appendChild(divContainer);
 
 		$("#loadLayersModal").draggable({
 			containment: "#mapa"
 		})
 	}
-
 
 	open() {
 		if(!LOAD_LAYERS_MODAL_OPEN){
@@ -161,7 +149,6 @@ class modalUI {
 		buttons[actionIndx].classList.add('modalNavButtonActive');
 
 		// console.log(this.actions);
-
 		// Remove previous
 		// if (previous) this.actions[previous].component.removeComponent();
 

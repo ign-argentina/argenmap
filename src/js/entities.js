@@ -904,7 +904,7 @@ class LayersInfoWMS extends LayersInfo {
     if (this.tab.listType) {
       ilistType = this.tab.listType;
     }
-
+   
     if (!$("#temp-menu").hasClass("temp")) {
       $("body").append(
         '<div id="temp-menu" class="temp" style="display:none"></div>'
@@ -1850,7 +1850,9 @@ class Item extends ItemComposite {
   }
 
   getSVGFilenameForLegendImg() {
-    return this.titulo.replace(":", "").replace("/", "") + ".svg";
+    if (this.titulo !== undefined) {
+      return this.titulo.replace(":", "").replace("/", "") + ".svg";
+    }
   }
 
   getVisible() {
@@ -3289,6 +3291,9 @@ class GestorMenu {
     nuevo_impresor.addLoadingAnimation("NEW-wms-combo-list");
     //Realiza el GET de las capas
 
+    let tempMenu = document.getElementById("temp-menu");
+    tempMenu ? tempMenu.remove() : 0
+
     var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, "");
     for (var key in this.layersInfo) {
       if (this.layersInfo[key].section == itemSeccionAux) {
@@ -3298,7 +3303,6 @@ class GestorMenu {
         //this.layersInfo[key].get(this)
       }
     }
-
     // bindLayerOptionsIdera();
   }
 
