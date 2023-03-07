@@ -3,9 +3,9 @@ var LOAD_LAYERS_MODAL_OPEN = false;
 class LoadLayersModal {
   constructor() {
     this.component = `
-        <div id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
+        <a id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
             <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="17" height="17">
-        </div>
+        </a>
     `;
   }
   createComponent() {

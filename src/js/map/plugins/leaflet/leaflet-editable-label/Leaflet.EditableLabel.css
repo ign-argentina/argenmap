@@ -1,4 +1,4 @@
-.leaflet-editable-label-interior {
+/* .leaflet-editable-label-interior {
   width: 26px;
   height: 26px;
   line-height: 26px;
@@ -12,9 +12,9 @@
   cursor: auto;
   text-align: center;
   background-color: #ffffff;
-}
+} */
 
-@-moz-document url-prefix() {
+/* @-moz-document url-prefix() {
   .leaflet-editable-label-interior {
     width: 30px;
     height: 30px;
@@ -22,7 +22,7 @@
     border-radius: 4px;
     box-shadow: none !important;
   }
-}
+} */
 
 .leaflet-editable-label-interior:hover {
   background-color: #f5f4f4;

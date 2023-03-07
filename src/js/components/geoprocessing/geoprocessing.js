@@ -38,40 +38,26 @@ class Geoprocessing {
     }
   }
   createIcon() {
-    const modalicon = `
-    <div class="center-flex" id="iconopenfile-container">
-        <span id="spanopenfolder" class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></span>
-    </div>
+    const modalIcon = `
+    <a id="geoPIcon">
+        <i  class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></i>
+    </a>
     `;
     const elem = document.createElement("div");
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
     elem.title = app.geoprocessing.buttonTitle;
-    elem.innerHTML = modalicon;
-
-    let isChrome = L.Browser.webkit;
-    let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
-    let border_style = "none";
-    let size = "26px";
-    if (!isChrome) {
-      shadow_style = "none";
-      border_style = "2px solid rgba(0, 0, 0, 0.2)";
-      size = "34px";
-    }
-    elem.style.width = size;
-    elem.style.height = size;
-    elem.style.border = border_style;
-    elem.style.boxShadow = shadow_style;
+    elem.innerHTML = modalIcon;
 
     elem.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
-        document.getElementById("iconopenfile-container").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
+        document.getElementById("geoPIcon").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
         g_modal_close = false;
       }
       else {
         //Close geoprocess window and clear
-        document.getElementById("iconopenfile-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         this.closeModal();
       }
     };
@@ -87,7 +73,7 @@ class Geoprocessing {
     document.getElementsByClassName("form")[1].innerHTML = "";
     document.getElementById("mr").remove();
     g_modal_close = true;
-    document.getElementById("iconopenfile-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+    document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
 
     this.resetHeightLayerColor();
   }

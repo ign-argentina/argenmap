@@ -190,7 +190,7 @@ class Searchbar_UI {
         icon_searchbar.style.display = "flex";
         if (innerWidth  <= 768) {
           document.getElementById("logo-navbar").style.display= "none"
-        } 
+        }
         selected_item = false;
       } else {
         search_input.style.width = "300px";

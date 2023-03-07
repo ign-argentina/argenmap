@@ -65,7 +65,7 @@
   justify-content: space-between;
   padding: 10px 1px 10px 1px; 
   border:1px solid #ddd;
-	background-color: white !important;
+	background-color: white;
   -ms-user-select: none;
   -webkit-user-select: none;
   user-select:none;
