@@ -53,7 +53,7 @@
 .modalContent {
   border: 1px solid #37bbed;
   border-radius: 4px;
-  width: auto;
+  width: 100%;
 }
 
 .disableAction {
@@ -100,7 +100,7 @@
 @media (min-width: 670px) {
 
   #loadLayersModal {
-    width: 50%;
+    width: 55%;
     left: calc(100% / 2.9);
   }
 
@@ -121,9 +121,9 @@
 }
 
 /* Medium devices (tablets, 768px and up) */
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   #loadLayersModal {
-    width: min-content;
+    width: 50%;
     left: calc(100% / 2.5);
   }
 }
@@ -131,7 +131,7 @@
 /* Large devices (tablets, 768px and up) */
 @media (min-width: 992px) {
   #loadLayersModal {
-    width: min-content;
+    width: 40%;
     left: calc(100% / 2.5);
   }
 }
@@ -139,7 +139,7 @@
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
   #loadLayersModal {
-    width: 34%;
+    width: 35%;
     left: calc(100% / 2.4);
   }
 }

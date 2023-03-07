@@ -19,10 +19,11 @@ class SidebarTools {
     `;
   }
 
-  createBtn(id, stylePosition, btnId) {
+  createBtn(id, stylePosition, btnId, title) {
     const elem = document.createElement("div");
     elem.className = 'leaflet-bar leaflet-control';
     elem.id = btnId;
+    elem.title = title;
     const elemIcon = document.createElement("a");
     elemIcon.id = id;
     elemIcon.innerHTML = this.component;
@@ -35,8 +36,8 @@ class SidebarTools {
     let rightPositionStyle;
     window.matchMedia("(max-width: 600px)").matches ? rightPositionStyle = "position: absolute; top: 10px; right: 36px;" : rightPositionStyle = "position: absolute; top: 10px; right: 46px;";
 
-    this.createBtn("sidebar-toolbar-icon-left", "position: relative; top: -10px; left: 6px;", "hideBtnLeft");
-    this.createBtn("sidebar-toolbar-icon-right", rightPositionStyle, "hideBtnRight");
+    this.createBtn("sidebar-toolbar-icon-left", "position: relative; top: -10px; left: 6px;", "hideBtnLeft", "Esconder herramientas");
+    this.createBtn("sidebar-toolbar-icon-right", rightPositionStyle, "hideBtnRight", "Esconder herramientas");
 
     this.hideLeftBtns();
     this.hideRightBtns();
