@@ -81,8 +81,6 @@ class ModalService {
 				let service = servicesLoaded[sourceId];
 				let layers = service.layers;
 
-				// console.log(service);
-
 				// Create the container and show the data
 				let wmsResultContainer = document.createElement('div');
 				// Show title and layers count
@@ -122,11 +120,34 @@ class ModalService {
 				let checkLabel = document.createElement('label');
 				checkLabel.classList.add("all-layers-checkbox");
 				checkLabel.classList.add(`label-${serviceID}`);
-				checkLabel.innerHTML = `
-          <span class="tree-line">─</span><input type="checkbox" value="${serviceID}" onchange="handleAllLayersCheck(event)">&nbsp;Agregar todas <small>(${Object.keys(layers).length} capas)</small>
-          `;
-				wmsResultContainer.append(checkLabel);
+						
+				let span = document.createElement('span');
+				span.classList.add('tree-line');
+				span.innerText = '─';
+				
+				let checkbox = document.createElement('input');
+				checkbox.type = 'checkbox';
+				checkbox.value = serviceID;
 
+				let layerCount = 0;
+				Object.keys(servicesLoaded[serviceID].layers).forEach(lyr => {
+					if (selectedServiceLayers.includes(lyr)) {
+						layerCount++
+					}
+				});
+
+				checkbox.checked = (layerCount === Object.keys(servicesLoaded[serviceID].layers).length)
+				checkbox.addEventListener('change', handleAllLayersCheck, false);
+				
+				let text = document.createElement('span');
+				text.innerHTML = `&nbsp;Agregar todas <small>(${Object.keys(layers).length} capas)</small>`;
+				
+				checkLabel.append(span);
+				checkLabel.append(checkbox);
+				checkLabel.append(text);
+
+				wmsResultContainer.append(checkLabel);
+				
 				// Show layers and checkboxes
 				for (let i in layers) {
 					let layer = layers[i];
@@ -146,7 +167,6 @@ class ModalService {
 					checkbox.type = 'checkbox';
 					checkbox.value = layer.name;
 					checkbox.checked = selectedServiceLayers.some(e => e == layer.name);
-					// checkbox.onclick = handleLayerCheck(event);
 					checkbox.addEventListener('change', handleLayerCheck, false);
 
 					let title = document.createTextNode(` ${capitalize(layer.title)}`);
@@ -178,14 +198,13 @@ class ModalService {
 
 let modalService = new ModalService();
 
-
 async function handleURLInput(e) {
+	loadingBtn("on", "buttonConectar", "Conectar");
 	e.preventDefault();
 	let url = document.getElementsByName('input-url')[0].value;
 	document.getElementsByName('input-url')[0].value = '';
 
 	const serviceLayer = new ServiceLayers();
-
 
 	// check if the service was added 
 	let validHost = serviceLayer.validateUrl(url).host;
@@ -197,9 +216,9 @@ async function handleURLInput(e) {
 	// if the service was added show alert and break execution
 	if (exist) {
 		new UserMessage('El servicio ya fué agregado', true, 'warning');
+		loadingBtn("off", "buttonConectar", "Conectar");
 		return null
 	};
-
 
 	serviceLayer.loadWMS(url).then((layers)=>{
 		if(document.getElementById('wrongURL')) document.getElementById('wrongURL').style.display = 'none';
@@ -271,7 +290,12 @@ async function handleURLInput(e) {
 		})
 		// Add the container to the modal
 		document.getElementById('select-layers-container').prepend(wmsResultContainer);
+
+		new UserMessage('El servicio fué agregado exitosamente', true, 'information');
+		loadingBtn("off", "buttonConectar", "Conectar");
+
 	}).catch((error)=>{
+		loadingBtn("off", "buttonConectar", "Conectar");
 		let customErrorMsg = "<br>No fué posible conectar con el servicio<br>";
 		if(error.message.toLowerCase().includes('cors')){
 			customErrorMsg += `<small style="margin-top:6px;display:block">El formato dado puede no ser el correcto o el servidor no acepta solicitudes de orígenes cruzados (<a href="https://developer.mozilla.org/es/docs/Web/HTTP/CORS" class="text-danger" target="_blank" alt="Sobre CORS" title="Sobre CORS"><strong><u>CORS</u></strong></a>)</small>`
@@ -281,6 +305,7 @@ async function handleURLInput(e) {
 		}
 		document.getElementById('wrongURL').innerHTML = `<strong>${error.message}</strong>${customErrorMsg}`;
 		document.getElementById('wrongURL').style.display = 'block';
+		throw new Error(error);
 	})
 }
 
@@ -373,8 +398,7 @@ function handleAllLayersCheck(e) {
 			groupName = servicesLoaded[layersIndex[layer_name]].title;
 
 			addedLayers.forEach((layer) => {
-				if (layer.groupname == groupName) {
-
+				if (layer.section === groupName) {
 					let index = addedLayers.indexOf(layer);
 					if (index > -1) {
 						addedLayers.splice(index, 1);
@@ -382,8 +406,9 @@ function handleAllLayersCheck(e) {
 				}
 			});
 			updateNumberofLayers(servicesLoaded[layersIndex[layer_name]].title);
+			
+			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layer_name,layersIndex[layer_name],servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 
-			menu_ui.removeLayerFromGroup(servicesLoaded[layersIndex[layer_name]].title, layersIndex[layer_name], layer_name, servicesLoaded[layersIndex[layer_name]].layers[layer_name]);
 			document.querySelector(`input[value='${layer_name}']`).checked = false
 			for (let i in selectedServiceLayers) {
 				if (selectedServiceLayers[i] === layer_name) {
@@ -409,11 +434,12 @@ function handleLayerCheck(e) {
 			type: "WMS",
 			section: servicesLoaded[layersIndex[e.target.value]].title
 		});
+
 		menu_ui.addLayerToGroup(servicesLoaded[layersIndex[e.target.value]].title, "WMS", e.target.value, layersIndex[e.target.value], e.target.value, servicesLoaded[layersIndex[e.target.value]].layers[e.target.value]);
 
 	} else {
 		addedLayers.forEach((layer) => {
-			if (layer.id == layersIndex[e.target.value]) {
+			if (layer.name == e.target.value) {
 				let index = addedLayers.indexOf(layer);
 				if (index > -1) {
 					addedLayers.splice(index, 1);
@@ -430,6 +456,7 @@ function handleLayerCheck(e) {
 			}
 		}
 	}
+
 }
 
 function capitalize(word) {

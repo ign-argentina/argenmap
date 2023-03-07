@@ -6,7 +6,7 @@ class IElevationProfile {
         this.serviceLayer = "geoprocesos:alos_unificado";
         this.values = "";
         this.data = [];
-        this.namePrefixElevProfile = app.geoprocessing.availableProcesses[3].namePrefix ?? "perfil_de_elevacion_";
+        this.namePrefixElevProfile = geoProcessingManager.namePrefix;
         this.verticesLimit = 100;
         this.verticesLimitMsg = `Selected line has too much vertices. Simplifiy the geometry to execute the process or select a line with less than `;
     }
@@ -53,7 +53,7 @@ class IElevationProfile {
             return new UserMessage(tooMuchVertices, true, "error");
         }
 
-        geoProcessingManager.loadingBtn("on")
+        loadingBtn("on", "ejec_gp");
         this._processLayer(layerSelected.getGeoJSON());
         this._executeProcess();
         geoProcessingManager.geoprocessId = null;
@@ -129,7 +129,7 @@ class IElevationProfile {
             updateNumberofLayers(sectionName);
 
             this._displayResult(dataForDisplay, selectedPolyline);
-            geoProcessingManager.loadingBtn("off")
+            loadingBtn("off", "ejec_gp");
 
             document.getElementById("select-process").selectedIndex = 0;
             document.getElementsByClassName("form")[1].innerHTML = "";
@@ -138,37 +138,8 @@ class IElevationProfile {
         .catch((error) => {
             console.log('Hay error: ', error);
             new UserMessage(error, true, 'error');
-            geoProcessingManager.loadingBtn("off")
+            loadingBtn("off", "ejec_gp");
         });
-    }
-
-    hideElevationProfile() {
-        let wrapper = document.getElementById("pt-wrapper")
-        addedLayers.forEach((layer) => {
-            if (layer.id.includes(this.namePrefixElevProfile)) {
-                let aux = document.getElementById("flc-" + layer.id),
-                    ptInner = document.getElementById(layer.id);
-
-                if (aux.classList.contains("active")) {
-                    aux.classList.remove("active")
-                    this.removePolyline(layer.id);
-                    ptInner.classList.toggle("hidden");
-                    changeIsActive(layer.id, true);
-                }
-            }
-        });
-
-        //Is wrapper empty?
-        let count = 0;
-        addedLayers.forEach(layer => {
-            if (layer.id.includes(this.namePrefixElevProfile)) {
-                count++;
-            }
-        });
-        if (document.getElementById("elevationProfile").querySelectorAll('.hidden').length == count) {
-            wrapper.classList.toggle("hidden");
-        }
-        showTotalNumberofLayers();
     }
 
     clickDisplayResult(id) {
@@ -249,7 +220,7 @@ class IElevationProfile {
             btnclose.innerHTML =
                 '<i title="Cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
             btnclose.onclick = () => {
-                this.hideElevationProfile();
+                hideAllElevationProfile();
                 let idElevProfile = document.getElementById("elevationProfile").children[1].id,
                     section;
                 addedLayers.forEach(lyr => {
@@ -258,6 +229,8 @@ class IElevationProfile {
                     }
                 })
                 updateNumberofLayers(section);
+                showTotalNumberofLayers();
+
             };
             s_sec.append(btnclose);
 

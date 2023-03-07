@@ -177,7 +177,7 @@ class Searchbar_UI {
       let q = e.target.value;
       q = q.trim();
       q = q.toLowerCase();
-
+      
       if (q.length === 0) {
         search_term = null;
         search_input.style.width = "130px";
@@ -188,13 +188,18 @@ class Searchbar_UI {
         results.innerHTML = "";
         search_input.style.width = "300px";
         icon_searchbar.style.display = "flex";
+        if (innerWidth  <= 768) {
+          document.getElementById("logo-navbar").style.display= "none"
+        }
         selected_item = false;
       } else {
         search_input.style.width = "300px";
         icon_searchbar.style.display = "flex";
         search_term = q;
-
         results.innerHTML = "";
+        if (innerWidth  <= 768) {
+          document.getElementById("logo-navbar").style.display= "none"
+        }
         selected_item = false;
         //si contienen caracteres invalidos #$%#$% o es igual a url
         if (regexValidator(search_term) && !itsloading) {

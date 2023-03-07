@@ -1,21 +1,13 @@
-  #pdfPrinter :hover {
-    background-color: #f5f4f4;
-    cursor: pointer;
-  }
+#pdfPrinter :hover {
+  background-color: #f5f4f4;
+  cursor: pointer;
+}
 
-  #pdfPrinter :active {
-    background-color: grey;
-  }
+#pdfPrinter :active {
+  background-color: grey;
+}
 
-  #iconPDF-container {
-    height: 100%;
-    width: 100%;
-    flex: 3;
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 4px;
-    font-size: 17px;
-  }
-
-  #iconPDF {
-    color: #252525;
-  }
+#iconPDF {
+  font-size: 16px;
+  line-height: inherit;
+}

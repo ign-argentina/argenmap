@@ -53,8 +53,7 @@
 .modalContent {
   border: 1px solid #37bbed;
   border-radius: 4px;
-  padding: 4px;
-  width: 100%;
+  width: auto;
 }
 
 .disableAction {
@@ -75,17 +74,12 @@
   -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-  width: 70%;
+  width: 50%;
   left: calc(100% / 5);
 }
 
-#loadLayersButtonContent>img{
+#loadLayersButtonContent>img {
   opacity: 0.9;
-}
-
-#loadLayersButton {
-width: 34px;
-height: 34px;
 }
 
 #loadLayersButton:hover {
@@ -93,28 +87,21 @@ height: 34px;
   cursor: pointer;
 }
 
-#loadLayersButtonContent {
+/* #loadLayersButtonContent {
   height: 100%;
   width: 100%;
   flex: 4;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 3px;
   border-color: #cccccc;
-}
-
-/* Remove loadLayersButtonContent div/icon for media  print*/
-@media print {
-  #loadLayersModal {
-    display: none !important;
-  }
-}
+} */
 
 /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 630px) {
+@media (min-width: 670px) {
 
   #loadLayersModal {
-    width: 56%;
-    left: calc(100% / 4);
+    width: 50%;
+    left: calc(100% / 2.9);
   }
 
   .modalMainSection {
@@ -136,14 +123,15 @@ height: 34px;
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 800px) {
   #loadLayersModal {
-    width: 50%;
+    width: min-content;
+    left: calc(100% / 2.5);
   }
 }
 
 /* Large devices (tablets, 768px and up) */
 @media (min-width: 992px) {
   #loadLayersModal {
-    width: 34%;
+    width: min-content;
     left: calc(100% / 2.5);
   }
 }
@@ -156,35 +144,37 @@ height: 34px;
   }
 }
 
-@media (max-width: 768px) {
-  /* #loadLayersModal {
+/*@media (max-width: 768px) {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 700px;
-  } */
+  }
 
 }
 
 @media (max-width: 600px) {
-  /* #loadLayersModal {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 580px;
-  } */
+  }
 }
 
 @media (max-width: 480px) {
-  /* #loadLayersModal {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 300px;
-  } */
+  }
 }
 
 @media (max-width: 360px) {
-  /* #loadLayersModal {
+  #loadLayersModal {
     left: 45px;
     top: 50px;
     max-width: 250px;
-  } */
+  }
 }
+
+*/

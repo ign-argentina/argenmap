@@ -9,21 +9,26 @@ a.leaflet-control-zoomhome-out {
   color: #000 !important;
 }
 
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  .leaflet-control-zoomhome a {
-    border-bottom: 1px solid #ccc !important;
-    box-shadow: none !important;
-  }
+.leaflet-control-zoomhome a:not(.leaflet-control-zoomhome-out) {
+  border-bottom: 1px solid #ccc !important;
 }
 
-@-moz-document url-prefix() {
+/* .leaflet-control-zoomhome a {
+  box-shadow: none !important;
+} */
+
+/* @-moz-document url-prefix() {
   .leaflet-control-zoomhome a {
     border: none !important;
     width: 30px !important;
     height: 30px !important;
+  }
+  s
+  .leaflet-control-zoomhome a:not(.leaflet-control-zoomhome-out) {
     border-bottom: 1px solid #ccc !important;
   }
-  div.leaflet-control-zoomhome.leaflet-bar.leaflet-control{
+
+  div.leaflet-control-zoomhome.leaflet-bar.leaflet-control {
     width: 34px !important;
   }
-}
+} */

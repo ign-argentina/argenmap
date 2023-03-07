@@ -560,7 +560,7 @@ async function loadTemplate(data, isDefaultTemplate) {
         // const modalserviceLayers = new IconModalLoadServices;
         // modalserviceLayers.createComponent();
 
-        setProperStyleToCtrlBtns();
+        //setProperStyleToCtrlBtns();
 
         let bm = document.getElementById("collapseBaseMapLayers");
         bm.addEventListener("dblclick", function () {

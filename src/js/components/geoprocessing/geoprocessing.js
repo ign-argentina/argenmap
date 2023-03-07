@@ -16,6 +16,12 @@ class Geoprocessing {
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
   _namePrefix = null;
+  GEOPROCESS = {
+    contour: "curvas_de_nivel_",
+    waterRise: "cota_",
+    buffer: "area_de_influencia_",
+    elevationProfile: "perfil_de_elevacion_"
+  }
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -32,39 +38,26 @@ class Geoprocessing {
     }
   }
   createIcon() {
-    const modalicon = `
-    <div class="center-flex" id="iconopenfile-container">
-        <span id="spanopenfolder" class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></span>
-    </div>
+    const modalIcon = `
+    <a id="geoPIcon">
+        <i  class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></i>
+    </a>
     `;
     const elem = document.createElement("div");
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "geoprocesos-icon";
     elem.title = app.geoprocessing.buttonTitle;
-    elem.innerHTML = modalicon;
-
-    let isChrome =
-      /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-    let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
-    let border_style = "none";
-    let size = "26px";
-    if (!isChrome) {
-      shadow_style = "none";
-      border_style = "2px solid rgba(0, 0, 0, 0.2)";
-      size = "34px";
-    }
-    elem.style.width = size;
-    elem.style.height = size;
-    elem.style.border = border_style;
-    elem.style.boxShadow = shadow_style;
+    elem.innerHTML = modalIcon;
 
     elem.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
+        document.getElementById("geoPIcon").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
         g_modal_close = false;
       }
       else {
         //Close geoprocess window and clear
+        document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         this.closeModal();
       }
     };
@@ -80,6 +73,7 @@ class Geoprocessing {
     document.getElementsByClassName("form")[1].innerHTML = "";
     document.getElementById("mr").remove();
     g_modal_close = true;
+    document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
 
     this.resetHeightLayerColor();
   }
@@ -149,8 +143,16 @@ class Geoprocessing {
     return this.geoprocessingConfig.availableProcesses;
   }
 
+  getNewProcessPrefix() {
+    this.getProcesses().forEach( process => {
+      if (process.namePrefix) {
+        this.GEOPROCESS[process.geoprocess] = process.namePrefix;
+      }
+    })
+  }
+
   set namePrefix (processId) {
-    this._namePrefix = processId ?? "process_";
+    this._namePrefix = this.GEOPROCESS[processId];
   }
 
   get namePrefix () {
@@ -166,7 +168,7 @@ class Geoprocessing {
   displayResult(result) {
     let layerType = "geoprocess",
       sectionName = "Geoprocesos"
-    
+
     switch (this.geoprocessId) {
       case "contour": {
         btn_modal_loading = false;
@@ -176,7 +178,6 @@ class Geoprocessing {
         style_fix_textpath.innerHTML = `.leaflet-pane svg text { font-size: 0.8em; }`;
 
         document.head.appendChild(style_fix_textpath);
-
         let layername = this.namePrefix + counterContour;
         counterContour++;
 
@@ -217,7 +218,8 @@ class Geoprocessing {
       }
       case "waterRise": {
         btn_modal_loading = true;
-        let layername = this.namePrefix + counterHeight;
+        const height = this.lastHeightProcessed;
+        let layername =  `${this.namePrefix + counterHeight}_${height}m`;
         counterHeight++;
 
         let selectedRectangle;
@@ -262,8 +264,7 @@ class Geoprocessing {
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
         
-        const height = this.lastHeightProcessed;
-        const title = `${imageLayer.name}_${height}m`;
+        const title = `${imageLayer.name}`;
         const download = () => {
           const latlngs = selectedRectangle.getLatLngs()[0];
           const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat}`;
@@ -282,7 +283,7 @@ class Geoprocessing {
           id: layername,
           layer: imageLayer,
           name: layername,
-          file_name: title,
+          file_name: layername,
           rectangle: selectedRectangle,
           isActive: true,
           download: download,
@@ -290,7 +291,7 @@ class Geoprocessing {
           section: sectionName
         });
         
-        menu_ui.addFileLayer(sectionName, layerType, title, layername, layername, true);
+        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
         updateNumberofLayers(sectionName)
 
         break;
@@ -301,6 +302,9 @@ class Geoprocessing {
         counterBuffer++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        let selectedBuffer = mapa.editableLayers.polygon.at(-1);
+        selectedBuffer._uneditable = true; //aux to disallow editing the layer
+        
         addedLayers.push({
           id: layername,
           layer: result,
@@ -380,7 +384,7 @@ class Geoprocessing {
 
   resetHeightLayerColor() {
     mapa.editableLayers.polyline.forEach((lyr) => {
-      if (lyr.layer && lyr.layer.includes(this.namePrefix) && lyr.options.color == "#ff1100") {
+      if (lyr.layer && lyr.options.color == "#ff1100") {
         //Same id, spedific value
         lyr.setStyle({ color: "#E4C47A" });
       }
@@ -665,13 +669,7 @@ class Geoprocessing {
       $("#msgRectangle").addClass("hidden");
 
       for (let polyline of mapa.editableLayers.polyline) {
-        let contourPrefix = null;
-        this.getProcesses().forEach( process => {
-          if( process.geoprocess === "contour" ) {
-            contourPrefix = process.namePrefix;
-          };
-        });
-        if (polyline.layer && polyline.layer.includes(contourPrefix)) {
+        if (polyline.layer && polyline.layer.includes(this.GEOPROCESS.contour)) {
           this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
@@ -726,14 +724,8 @@ class Geoprocessing {
                   }
                 });
               } else if (this.geoprocessId === "waterRise") {
-                let contourPrefix = null;
                 addedLayers.forEach((layer) => {
-                  this.getProcesses().forEach( process => {
-                    if( process.geoprocess === "contour" ) {
-                      contourPrefix = process.namePrefix;
-                    };
-                  });
-                  if (layer.id.includes(contourPrefix)) {
+                  if (layer.id.includes(this.GEOPROCESS.contour)) {
                     options.push({ value: layer.id, text: layer.name });
                     sliderLayer = layer;
                   }
@@ -903,6 +895,7 @@ class Geoprocessing {
     );
 
     //Execute Button
+    
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
@@ -942,8 +935,8 @@ class Geoprocessing {
     let distanceBuffer =
       document.getElementById("input-equidistancia").value / 1000;
 
-    this.loadingBtn("on");
-    let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+      loadingBtn("on", "ejec_gp");
+      let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
       .then((data) => {
         if (!data) {
           throw new Error("Error fetching to server");
@@ -954,7 +947,7 @@ class Geoprocessing {
       .catch((error) => {
         console.error(error);
         new UserMessage(error.message, true, "error");
-        this.loadingBtn("off");
+        loadingBtn("off", "ejec_gp");
       });
 
     let lastRectangle = mapa.getEditableLayers().rectangle.length - 1;
@@ -1017,16 +1010,16 @@ class Geoprocessing {
     }
 
     btn_modal_loading = true;
-    this.loadingBtn("on");
+    loadingBtn("on", "ejec_gp");
     if (this.geoprocessId === "contour") {
       this.geoprocessing
-        .execute(...values)
-        .then((result) => {
+      .execute(...values)
+      .then((result) => {
           this.displayResult(result);
         })
         .catch((error) => {
           new UserMessage(error.message, true, "error");
-          this.loadingBtn("off");
+          loadingBtn("off", "ejec_gp");
         });
     } else if (this.geoprocessId === "waterRise") {
       let waterRise = new GeoserviceFactory.WaterRise(
@@ -1041,7 +1034,7 @@ class Geoprocessing {
         })
         .catch((error) => {
           new UserMessage(error.message, true, "error");
-          this.loadingBtn("off");
+          loadingBtn("off", "ejec_gp");
         });
     }
   }
@@ -1064,11 +1057,11 @@ class Geoprocessing {
             return;
           }
           this.geoprocessId = element.value;
-
+          this.namePrefix = this.geoprocessId;
           //Auto show layer for waterRise and buffer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
-              if (layer.id.includes(this.namePrefix)) {
+              if (layer.id.includes(this.GEOPROCESS.contour)) {
                 setTimeout(function () {
                   $("#select-capa").val(layer.name).change();
                 }, 500);
@@ -1116,7 +1109,7 @@ class Geoprocessing {
             item.layer
           );
           this.buildOptionForm(this.geoprocessing.getFields());
-          this.namePrefix = item.namePrefix;
+          //this.namePrefix = item.namePrefix;
         }
       }
     });
@@ -1154,18 +1147,6 @@ class Geoprocessing {
       );
     }
     return this.formContainer;
-  }
-
-  loadingBtn(status) {
-    let btn_ejecutar = document.getElementById("ejec_gp");
-    if (status === "on") {
-      btn_ejecutar.innerHTML =
-        '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-      $("#ejec_gp").addClass("disabledbutton");
-    } else if (status === "off") {
-      btn_ejecutar.innerHTML = "Ejecutar";
-      $("#ejec_gp").removeClass("disabledbutton");
-    }
   }
 
   updateLayerSelect(layerName, addToList) {

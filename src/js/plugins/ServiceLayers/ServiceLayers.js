@@ -67,20 +67,22 @@ class ServiceLayers{
             this.id = this.generateId(this.title);
 
             return this.layers = this.rawData.Capability.Layer.Layer.map((layer) => {
-                // TODO Se deberia comprobar la existencia de CRS:84 
-                // realizar la asignación de minx,miny,etc dependiendo el sistema
+                // assign minx, miny, etc depending on CRS
                 let bbox;
                 layer.BoundingBox.some((p) => {
                     let crs = p.crs.toString().toLowerCase();
-                    if ( crs === 'crs:84' || crs === 'epsg:4326' ) {
+                    bbox = p.extent;
+                    return true;
+                    // The following if triggers an error if layer's CRS doesn't match with WGS84, it is commented until is managed in a more suitable way
+                    /* if ( crs === 'crs:84' || crs === 'epsg:4326') { 
                         bbox = p.extent;
                         return true;
-                    }
+                    } */
                 });
                 let style = "";
                 (layer.Style) ? 
-                    style = layer.Style[0].LegendURL[0] 
-                    : style;
+                style = layer.Style[0].LegendURL[0] 
+                : style;
                 return {
                     name: layer.Name,
                     title: layer.Title,

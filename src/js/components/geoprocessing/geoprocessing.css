@@ -21,8 +21,7 @@
   z-index: 1200;
 }
 
-#iconopenfile-container :hover {
-  background-color: #f5f4f4;
+#geoprocesos-icon :hover {
   cursor: pointer;
 }
 
@@ -196,4 +195,8 @@
 .leaflet-pane .leaflet-height-pane {
   /* mix-blend-mode: difference; */
   filter: hue-rotate(3.142rad) saturate(4);
+}
+
+#geoPIcon{
+  font-size: 15px;
 }

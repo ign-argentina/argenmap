@@ -7,14 +7,7 @@
   background-color: grey;
 }
 
-#iconFS-container {
-  height: 100%;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 1);
-  border-radius: 4px;
+#iconFS {
   font-size: 18px;
-}
-
-#iconFS{
-color: #252525;
+  line-height: inherit;
 }
