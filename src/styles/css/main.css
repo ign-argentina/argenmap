@@ -7,6 +7,7 @@
   --group-title-fnt-size: 15px;
   --body-fnt-size: 14px;
   --layer-cont-fnt-size: 11px;
+  --layer-border-color: 1px solid #ddd;
 }
 
 /*******************************
@@ -214,7 +215,7 @@ Menu principal
 }
 
 .nav-tabs {
-  border-bottom: 1px solid #ddd;
+  border-bottom: var(--layer-border-color);
 }
 
 .nav-tabs>.active {
@@ -223,7 +224,7 @@ Menu principal
 
 .nav-tabs>li>a {
   color: white;
-  border: 1px solid #ddd;
+  border: var(--layer-border-color);
   padding: 5px 15px;
 }
 
@@ -237,7 +238,7 @@ Menu principal
 }
 
 .tab-content {
-  border: 1px solid #ddd;
+  border: var(--layer-border-color);
 }
 
 .panel-heading {
@@ -315,6 +316,9 @@ li.active>div>a {
 }
 
 .expand-legend-graphic {
+  border-left: var(--layer-border-color);
+  border-right: var(--layer-border-color);
+  padding: 2px 5px;
   overflow-x: auto;
 }
 
@@ -427,9 +431,9 @@ li.active>div>a {
 
 .options-panel {
   width: 80%;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd;
+  border-top: var(--layer-border-color);
+  border-bottom: var(--layer-border-color);
+  border-right: var(--layer-border-color);
 }
 
 .option-tab-icon {
@@ -438,7 +442,7 @@ li.active>div>a {
   width: 100%;
   color: silver;
   padding: 2px;
-  border: 1px solid #ddd;
+  border: var(--layer-border-color);
 }
 
 .option-tab-icon-active {
@@ -446,8 +450,8 @@ li.active>div>a {
   text-align: center;
   width: 100%;
   color: grey;
-  border-top: 1px solid #ddd;
-  border-left: 1px solid #ddd;
+  border-top: var(--layer-border-color);
+  border-left: var(--layer-border-color);
   padding: 2px;
 }
 
