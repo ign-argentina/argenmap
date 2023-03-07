@@ -952,7 +952,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						const wrapper = document.createElement("div");
 						wrapper.id="measurementWrapper";
-						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white !important"
+						wrapper.style="top: 100px; left: 300px; position: absolute;"
 						wrapper.innerHTML="Medidas"
 						
 						let btncloseWrapper = document.createElement("a");
