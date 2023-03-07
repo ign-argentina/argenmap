@@ -6,6 +6,7 @@
   --popup-fnt-size: 12px;
   --group-title-fnt-size: 15px;
   --body-fnt-size: 14px;
+  --layer-cont-fnt-size: 11px;
 }
 
 /*******************************
@@ -180,7 +181,7 @@ Menu principal
 
 .panel-default>.panel-heading {
   color: white;
-  font-size: 15px;
+  font-size: var(--group-title-fnt-size, 15px);
 }
 
 .panel-default>.panel-heading>.panel-title>a {
@@ -265,20 +266,20 @@ li.active>div>a {
   height: 20px;
   width: 20px;
   display: table-cell;
-  font-size: 10px;
+  font-size: var(--layer-cont-fnt-size, 11px);
   font-weight: bolder;
   text-align: center;
   vertical-align: middle;
-  border-radius: 50%;
+  border-radius: 100%;
   background-color: var(--active-bg-color, #33b560) !important;
 }
 
 .total-active-layers-counter {
   display: inline-block;
-  font-size: 12px;
+  font-size: var(--layer-cont-fnt-size, 11px);
   font-weight: bolder;
   width: 18px;
-  border-radius: 50%;
+  border-radius: 100%;
   background-color: var(--active-bg-color, #33b560);
   color: white;
   margin-left: 3px;
@@ -412,7 +413,7 @@ li.active>div>a {
 }
 
 .options-container {
-  background-color: white !important;
+  background-color: var(--main-bg-color, white) !important;
   display: flex;
   flex-direction: initial;
 }
@@ -518,7 +519,7 @@ Searcher
 }
 
 .btn-search {
-  background-color: rgb(255, 255, 255);
+  background-color: var(--main-bg-color, white);
 }
 
 .btn-search:hover {
@@ -728,7 +729,7 @@ Popup geometría
 
 .edit-style-popup-container {
   width: 350px;
-  background-color: white !important;
+  background-color: var(--main-bg-color, white) !important;
   border-radius: 5px;
   position: absolute;
   display: flex;
@@ -772,7 +773,7 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   transform: translate(-50%, -50%);
   top: -30px;
   font-weight: bold;
-  font-size: 14px;
+  font-size: var(--body-fnt-size, 14px);
 }
 
 .section-item {
@@ -909,7 +910,7 @@ input:checked.switch+label:after {
   align-items: center;
   width: 250px;
   height: 40px;
-  background-color: white !important;
+  background-color: var(--main-bg-color, white) !important;
   border: 1px solid #008dc9;
   color: #008dc9;
   text-align: center;
@@ -917,7 +918,7 @@ input:checked.switch+label:after {
   padding: 5px 0;
   white-space: pre;
   position: absolute;
-  top: -9px;
+  top: -16px;
   left: 150%;
   z-index: 50000;
 }
@@ -967,7 +968,7 @@ Control mapa base
 #collapseBaseMapLayers .list-group-item {
   padding: 5px;
   background: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
+  font-size: var(--body-fnt-size, 14px);
   width: 245px;
 }
 
@@ -996,10 +997,6 @@ Control mapa base
   line-height: 1.75em;
 }
 
-.basemap-selector .leaflet-control-layers-toggle:hover {
-  background-color: #f4f4f4;
-}
-
 .list-inline {
   margin-bottom: 0px;
 }
@@ -1019,7 +1016,6 @@ Control graticula
 }
 
 .leaflet-control-customgraticule:hover {
-  background-color: #f4f4f4;
   cursor: pointer;
 }
 
@@ -1113,7 +1109,7 @@ SideBar
   }
 
   .leaflet-control-measure-interaction div h3 {
-    font-size: 12px !important;
+    font-size: var(--popup-fnt-size, 12px) !important;
   }
 }
 
@@ -1253,7 +1249,7 @@ Perfil Topografico
 Measurement Info
 *******************************/
 #measurementWrapper {
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
   font-weight: bold;
   padding: 10px;
@@ -1262,13 +1258,14 @@ Measurement Info
   -moz-user-select: text;
   user-select: text;
   z-index: 99999;
+  background-color: var(--main-bg-color, white);
 }
 
 #measurementInfo {
   background-color: #d7f2f7;
   border: 1px solid #525252;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--body-fnt-size, 14px);
   padding: 2px;
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -1283,6 +1280,9 @@ Measurement Info
   background-color: var(--main-bg-color, #fff);
 }
 
+/*******************************
+ESRI
+*******************************/
 #esriwrapper {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
@@ -1295,14 +1295,11 @@ Measurement Info
   z-index: 99999;
 }
 
-/*******************************
-ESRI
-*******************************/
 #esriInfo {
   background-color: #d7f2f7;
   border: 1px solid #525252;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: var(--body-fnt-size, 14px);
   padding: 2px;
   -webkit-user-select: text;
   -moz-user-select: text;
