@@ -1300,7 +1300,7 @@ function loadDeveloperLogo() {
       link.href = "https://www.ign.gob.ar/";
       link.target = "_blank";
       link.title =
-        "desarrollado por el Instituto Geográfico Nacional de la República Argentina";
+        "Desarrollado por el Instituto Geográfico Nacional de la República Argentina";
       link.style.cursor = "pointer";
       let img = L.DomUtil.create("img");
       img.src = "src/styles/images/noimage.webp";
