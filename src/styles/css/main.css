@@ -1003,6 +1003,7 @@ Control mapa base
 
 .list-inline li {
   width: 230px;
+  display: block;
 }
 
 /*******************************
