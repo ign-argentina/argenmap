@@ -512,12 +512,15 @@ class IElevationProfile {
             hiddenCount = elevProfileDiv.querySelectorAll('.hidden').length;
         }
         
-        if (layersCount == hiddenCount && !wrapper.classList.contains("hidden")) {
-            wrapper.classList.toggle("hidden"); //Hides Wrapper
+        if (wrapper) {
+            if (layersCount == hiddenCount && !wrapper.classList.contains("hidden")) {
+                wrapper.classList.toggle("hidden"); //Hides Wrapper
+            }
+            if (layersCount === 0 && hiddenCount === 0) { //Removes Wrapper
+                wrapper.remove();
+            }
         }
-        if (layersCount === 0 && hiddenCount === 0) { //Removes Wrapper
-            wrapper.remove();
-        }
+
 
     }
 
