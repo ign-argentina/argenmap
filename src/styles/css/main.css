@@ -279,6 +279,7 @@ li.active>div>a {
   display: inline-block;
   font-size: var(--layer-cont-fnt-size, 11px);
   font-weight: bolder;
+  height: 18px;
   width: 18px;
   border-radius: 100%;
   background-color: var(--active-bg-color, #33b560);
