@@ -495,7 +495,7 @@ class IElevationProfile {
         });
 
         let highchartsGraph = document.getElementById(id);  //Removes Highcharts
-        highchartsGraph.remove();
+        if (highchartsGraph) highchartsGraph.remove();
 
         //Is wrapper empty?
         let layersCount = 0,
@@ -507,10 +507,16 @@ class IElevationProfile {
                 layersCount++;
             }
         });
-        hiddenCount = document.getElementById("elevationProfile").querySelectorAll('.hidden').length;
-
+        let elevProfileDiv = document.getElementById("elevationProfile");
+        if (elevProfileDiv) {
+            hiddenCount = elevProfileDiv.querySelectorAll('.hidden').length;
+        }
+        
         if (layersCount == hiddenCount && !wrapper.classList.contains("hidden")) {
             wrapper.classList.toggle("hidden"); //Hides Wrapper
+        }
+        if (layersCount === 0 && hiddenCount === 0) { //Removes Wrapper
+            wrapper.remove();
         }
 
     }
