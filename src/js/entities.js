@@ -254,6 +254,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         OVERLAY_CHECKBOX.id = "switch-" + itemComposite.capa.nombre;
         OVERLAY_CHECKBOX.title = itemComposite.capa.nombre;
         OVERLAY_CHECKBOX.classList.add("switch");
+        OVERLAY_CHECKBOX.classList.add("hillshade");
         OVERLAY_CHECKBOX.setAttribute("onclick", "switchHillShade(this.title)");
 
         const OVERLAY_TOOLTIP = document.createElement("span");
@@ -903,7 +904,7 @@ class LayersInfoWMS extends LayersInfo {
     if (this.tab.listType) {
       ilistType = this.tab.listType;
     }
-
+   
     if (!$("#temp-menu").hasClass("temp")) {
       $("body").append(
         '<div id="temp-menu" class="temp" style="display:none"></div>'
@@ -1849,7 +1850,9 @@ class Item extends ItemComposite {
   }
 
   getSVGFilenameForLegendImg() {
-    return this.titulo.replace(":", "").replace("/", "") + ".svg";
+    if (this.titulo !== undefined) {
+      return this.titulo.replace(":", "").replace("/", "") + ".svg";
+    }
   }
 
   getVisible() {
@@ -1899,6 +1902,10 @@ class Item extends ItemComposite {
 
   showHide() {
     $("#" + this.getId()).toggleClass("active");
+
+    if (this.seccion.includes("mapasbase0") && !$("#" + this.getId()).hasClass("active")) {
+      $("#" + this.getId()).toggleClass("active");
+    }//fixes main mapabase active bug by asking if its not activated.
 
     if (typeof this.callback == "string") {
       this.callback = eval(this.callback);
@@ -3284,6 +3291,9 @@ class GestorMenu {
     nuevo_impresor.addLoadingAnimation("NEW-wms-combo-list");
     //Realiza el GET de las capas
 
+    let tempMenu = document.getElementById("temp-menu");
+    tempMenu ? tempMenu.remove() : 0
+
     var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, "");
     for (var key in this.layersInfo) {
       if (this.layersInfo[key].section == itemSeccionAux) {
@@ -3293,8 +3303,7 @@ class GestorMenu {
         //this.layersInfo[key].get(this)
       }
     }
-
-    bindLayerOptionsIdera();
+    // bindLayerOptionsIdera();
   }
 
   getLayerData(layerName, sectionName) {
@@ -3986,6 +3995,7 @@ class Menu_UI {
   }
 
   addLayerToGroup(groupname, layerType, textName, id, fileName, layer) {
+    // layer.name = encodeURI(layer.name);
     let newLayer = layer;
     newLayer.active = false;
     newLayer.L_layer = null;
@@ -4022,11 +4032,18 @@ class Menu_UI {
     layer_item.id = "srvcLyr-" + id + textName;
     layer_item.className = "file-layer";
     
-    if ( !layer.legend ) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in methods of the menu
+    if ( !layer.legend ) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in menu methods
+
+    let imageFormats = ["png", "jpg", "gif", "webp", "svg", "bmp", "ico"],
+    notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
+
+    if (notLegendFromFile) {
+      layer.legend += "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off" 
+    }
 
     let img_icon = document.createElement("div");
     img_icon.className = "loadservice-layer-img";
-    img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off">`;
+    img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}" onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'>`;
     img_icon.onclick = function () {
       clickWMSLayer(layer, layer_item, fileName)
     };

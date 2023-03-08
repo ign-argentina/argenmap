@@ -18,7 +18,8 @@ const STRINGS = {
   basemap_max_zoom: " to max zoom ",
   basemap_min_zoom: "Min zoom ",
   delete_geometry: "Delete geometry",
-  url_required: "URL parameter is required."
+  url_required: "URL parameter is required",
+  no_bbox: "Invalid or empty bounding box"
 }
 
 //Default Services Values
@@ -78,7 +79,7 @@ const MESSAGE_COLORS = {
   },
   warning: {
     text: "#856404",
-    background: "#f7e23a",
+    background: "rgba(247,226,58,0.75)",
   },
 };
 
@@ -89,6 +90,8 @@ const PROJECTIONS = {
   22185:
     "+proj=tmerc +lat_0=-90 +lon_0=-60 +k=1 +x_0=5500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
 };
+
+const LEGEND_ERROR = "src/styles/images/not-found.svg";
 
 const ERROR_IMG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 

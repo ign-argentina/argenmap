@@ -158,7 +158,7 @@ $("body").on("pluginLoad", function(event, plugin){
 		ordered.forEach(function(e){
 			switch (e) {
 				case 'screenShoter':
-					if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
+					if (L.Browser.webkit) {
 						let d = new Date()
 						let n = d.getTime();
 						L.simpleMapScreenshoter({
@@ -182,8 +182,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						"leaflet-control-simpleMapScreenshoter"
 						);
 						screenShoter.classList.add("leaflet-bar");
-						screenShoter.style =
-						"width: 26px;height: 26px;border: none;box-shadow: rgb(0 0 0 / 65%) 0px 1px 5px;";
 						screenShoter.children[0].id = "screenShoter-btn";
 						screenShoter.title = "Captura de pantalla";
 						
@@ -293,8 +291,10 @@ $("body").on("pluginLoad", function(event, plugin){
                     var customGraticule = null;
 					L.Control.CustomGraticule = L.Control.extend({
 					  onAdd: function (map) {
-						var container = L.DomUtil.create('div', 'leaflet-control leaflet-control-customgraticule');
+						var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
 						container.title = 'Cuadrícula';
+						var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
+						container.appendChild(icon);
 						
 						container.onclick = function() {
 							if (customGraticule == null) {
@@ -373,6 +373,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								"./src/js/components/geoprocessing/IHeight.js"
 								);
 							}
+							geoProcessingManager.getNewProcessPrefix();
 							});
 						  }
 						);
@@ -662,19 +663,21 @@ $("body").on("pluginLoad", function(event, plugin){
 							text: 'Mas información',
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);	
-									 $("#search_bar").val(lat+","+lng).focus();					              
+									 $("#search_bar").val(lat+","+lng).focus();
 							}
 						});
 
-						contextMenu.createOption({
-						isDisabled: false,
-						text: "Abrir en...",
-						onclick: (option) => {
-							mapa.closePopup(contextPopup);
-							let _url = `geo:${lat},${lng}`;
-							window.open(_url);
-							}
-						});
+						if (L.Browser.mobile) { // check if running in a mobile device
+							contextMenu.createOption({
+								isDisabled: false,
+								text: "Abrir en...",
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									let _url = `geo:${lat},${lng}`;
+									window.open(_url);
+								}
+							});
+						}
 
 						/* contextMenu.createOption({
 							isDisabled: false,
@@ -868,6 +871,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.openPopup(editStylePopup);
 								const parent = editStylePopupContent.parentElement;
 								parent.className = 'leaflet-popup-content popup-parent';
+								$("#editContainer").draggable({scroll: false, containment: "body"});
 							}
 						});
 						
@@ -948,7 +952,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						const wrapper = document.createElement("div");
 						wrapper.id="measurementWrapper";
-						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white !important"
+						wrapper.style="top: 100px; left: 300px; position: absolute;"
 						wrapper.innerHTML="Medidas"
 						
 						let btncloseWrapper = document.createElement("a");
@@ -1088,6 +1092,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.createEditStylePopup = (layer, popup) => {
 						const container = document.createElement('div');
 						container.className = 'edit-style-popup-container';
+						container.id = "editContainer";
 						
 						const closeBtn = document.createElement('a');
 						closeBtn.innerHTML = '<a class="leaflet-popup-close-button" href="#" style="outline: none;">×</a>';
@@ -1105,7 +1110,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						title.className = 'section-title non-selectable-text';
 						title.textContent = 'Línea';
 						lineSection.appendChild(title);
-						
+
 						//Opacity
 						const opacityInputDiv1 = document.createElement('div');
 						opacityInputDiv1.className = 'section-item';
@@ -1564,7 +1569,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						//Labels
 						const labelSection = document.createElement('div');
 						labelSection.className = 'section-popup';
-						
+
 						if (layer.type === 'label') {
 
 							//Title
@@ -2564,7 +2569,7 @@ $("body").on("pluginLoad", function(event, plugin){
 			L.Control.Watermark = L.Control.extend({
 
 			  onAdd: function (map) {
-				var container = L.DomUtil.create('div', 'leaflet-control basemap-selector');
+				var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar basemap-selector');
 				return container;
 			  }
 			});

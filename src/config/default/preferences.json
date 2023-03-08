@@ -53,7 +53,7 @@
     "key": ""
   }, 
   "referencias": {
-    "show": true,
+    "show": false,
     "icon": "src/config/default/styles/images/referencias.png",
     "width":"25px",
     "height":"31px"
@@ -70,19 +70,19 @@
     "iconBar":"#4f4f4f"
     },
   "logo": {
-    "title":"Instituto Geográfico Nacional",
-    "src": "src/config/default/styles/images/logo2.png",
+    "title":"Argenmap viewer",
+    "src": "src/styles/images/argenmap-banner-white.webp",
     "height": "",
     "width": "",
-    "style": "",
+    "style": "background-size: 160px",
     "srcLogoMini": "src/config/default/styles/images/logo_RESPONSIVE.png",
     "miniHeight": "",
     "miniWidth": "",
     "ministyle": ";"
   },
-  "title": "IGN - ARGENMAP",
-  "website": "https://www.ign.gob.ar/",
-  "favicon": "https://www.ign.gob.ar/sites/default/files/favicon.png",
+  "title": "Argenmap",
+  "website": "https://github.com/ign-argentina/argenmap",
+  "favicon": "src/styles/images/favicon.ico",
   "geoprocessing": {
     "isActive": true,
     "buttonTitle": "Geoprocesos",

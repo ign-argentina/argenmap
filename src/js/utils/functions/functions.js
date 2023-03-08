@@ -117,13 +117,12 @@ function getDarkerColorTone(hex, lum) {
 
 function showImageOnError(image) {
   image.onerror = "";
-  image.src = ERROR_IMG;
+  image.src = LEGEND_ERROR ?? ERROR_IMG;
+  image.title = "Image legend not found! :P";
   return true;
 }
 
 function mainMenuSearch(e) {
-  //hideAllElevationProfile();
-  //hideAddedLayers();
   e.preventDefault();
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
@@ -139,9 +138,12 @@ function reloadMenu() {
 
 function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAllLayers 
   if (document.getElementById("pt-wrapper")) {
-    let elevProfileRecover = new IElevationProfile();
+    let geoprocessRecover = new Geoprocessing();
+    geoprocessRecover.setAvailableGeoprocessingConfig(app.geoprocessing);
+    geoprocessRecover.getNewProcessPrefix();  
+
     addedLayers.forEach((layer) => {
-      if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
+      if (layer.id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
         let aux = document.getElementById("flc-" + layer.id),
           ptInner = document.getElementById(layer.id);
 
@@ -219,9 +221,11 @@ function showTotalNumberofLayers() {
 }
 
 function recoverSections() {
-  let geoprocessessRecover = new Geoprocessing();
-  let elevProfileRecover = new IElevationProfile();
-  
+  let elevProfileRecover = new IElevationProfile(),
+      geoprocessRecover = new Geoprocessing();
+      geoprocessRecover.setAvailableGeoprocessingConfig(app.geoprocessing);
+      geoprocessRecover.getNewProcessPrefix();
+
   addedLayers.forEach((layer) => {
     let isActive;
     if (layer.isActive === false) {
@@ -231,13 +235,12 @@ function recoverSections() {
     }
 
     if (
-      layer.id.includes(geoprocessessRecover.namePrefixContour) ||
-      layer.id.includes(geoprocessessRecover.namePrefixBuffer)
+      layer.id.includes(geoprocessRecover.GEOPROCESS.contour) ||
+      layer.id.includes(geoprocessRecover.GEOPROCESS.waterRise) ||
+      layer.id.includes(geoprocessRecover.GEOPROCESS.buffer)
     ) {
       menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.id, layer.id, layer.id, isActive);
-    } else if (layer.id.includes(geoprocessessRecover.namePrefixHeight)) {
-      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.file_name, layer.id, layer.id, isActive);
-    } else if (layer.id.includes(elevProfileRecover.namePrefixElevProfile)) {
+    } else if (layer.id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
       let layername = layer.id
       elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, isActive);
     } else if (layer.type == "file") {
@@ -721,7 +724,7 @@ function setSelectedBasemapAsActive(layerName, availableBasemaps) {
 
 function adaptToImage(imgDiv) {
   let img = imgDiv.childNodes[0],
-    item = imgDiv.closest("li");
+    item = imgDiv.parentNode.parentNode;
   if (img.naturalHeight > 24) {
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
@@ -743,7 +746,7 @@ function adaptToImage(imgDiv) {
           ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
     container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
 
-    resize_img_icon.onclick = () => {
+    resize_img_icon.onclick = (event) => {
       if (container_expand_legend_grafic.getAttribute("load") === "true") {
         //container_expand_legend_grafic.className = "hidden";
         container_expand_legend_grafic.classList.toggle("hidden");
@@ -759,6 +762,7 @@ function adaptToImage(imgDiv) {
           '<i class="fas fa-angle-up" aria-hidden="true"></i>';
         item.append(container_expand_legend_grafic);
       }
+      event.stopPropagation();
     };
 
     imgDiv.removeChild(img);
@@ -800,8 +804,7 @@ function setBasemapToLoad(urlLayers, availableBasemaps) {
 }
 
 function setProperStyleToCtrlBtns() {
-  let isChrome =
-    /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+  let isChrome = L.Browser.webkit;
   let shadow_style = "0 1px 5px rgb(0 0 0 / 65%)";
   let border_style = "none";
   let size = "26px";
@@ -990,25 +993,41 @@ function zoomEditableLayers(layername) {
 function bindZoomLayer() {
   let elements = document.getElementsByClassName("zoom-layer");
   let zoomLayer = async function () {
-    let layer_name = this.getAttribute("layername");
-    let bbox = app.layers[layer_name].capa;
-    if (
-      bbox.servicio === "wms" &&
-      [bbox.minx, bbox.legendURL].some((el) => el === null) &&
-      [bbox.minx, bbox.legendURL].some((el) => el === "undefined")
-    ) {
-      await getWmsLyrParams(bbox); // gets layer atribtutes from WMS
-    }
 
-    if (bbox.maxy == "null" || typeof bbox.maxy == "undefined") {
+    let layer_name = this.getAttribute("layername");
+    let layer = app.layers[layer_name].capa;
+    
+    if ( layer.servicio === "wms" ) {
+      await getWmsLyrParams(layer); // gets layer atribtutes from WMS
+    }
+    
+    console.log("layer: ", layer)
+    let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
+    noBbox = bbox.some((el) => { 
+      return el === null || el === undefined;
+    });
+    
+    console.log("bbox: ", bbox)
+    if ( noBbox ) {
       for (i = 0; i < this.childNodes.length; i++) {
         if (this.childNodes[i].className == "fas fa-search-plus") {
           this.childNodes[i].classList.remove("fa-search-plus");
           this.childNodes[i].classList.add("fa-exclamation-triangle");
-          //this.childNodes[i].setAttribute('style', 'color: orange');
           this.childNodes[i].setAttribute(
             "title",
-            "Invalid bbox in WMS response"
+            STRINGS.no_bbox
+          );
+          break;
+        }
+      }
+    } else {
+      for (i = 0; i < this.childNodes.length; i++) {
+        if (this.childNodes[i].className == "fas fa-exclamation-triangle") {
+          this.childNodes[i].classList.remove("fa-exclamation-triangle");
+          this.childNodes[i].classList.add("fa-search-plus");
+          this.childNodes[i].setAttribute(
+            "title",
+            "Zoom a capa"
           );
           break;
         }
@@ -1023,8 +1042,8 @@ function bindZoomLayer() {
     });
     if (!active) gestorMenu.muestraCapa(app.layers[layer_name].childid);
     let bounds = [
-      [bbox.maxy, bbox.maxx],
-      [bbox.miny, bbox.minx],
+      [layer.maxy, layer.maxx],
+      [layer.miny, layer.minx],
     ];
     try {
       mapa.fitBounds(bounds);
@@ -1177,8 +1196,12 @@ function zoomLayer(id_dom) {
 
 async function getWmsLyrParams(lyr) {
   //let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
+  if( lyr.host.charAt(lyr.host.length - 1) !== "?" ) { 
+    lyr.host += "?"
+  }
   let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
     sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
+  console.log(url)
   await fetch(url)
     .then((res) => res.text())
     .then((str) => {
@@ -1281,10 +1304,10 @@ function loadDeveloperLogo() {
       link.href = "https://www.ign.gob.ar/";
       link.target = "_blank";
       link.title =
-        "desarrollado por el Instituto Geográfico Nacional de la República Argentina";
+        "Desarrollado por el Instituto Geográfico Nacional de la República Argentina";
       link.style.cursor = "pointer";
       let img = L.DomUtil.create("img");
-      img.src = "src/styles/images/noimage.gif";
+      img.src = "src/styles/images/noimage.webp";
       img.alt = "Instituto Geográfico Nacional de la República Argentina";
       img.style = "width: 64px; background-size: cover";
       img.style.backgroundImage = `url('${APP_IMG}')`;
@@ -1388,4 +1411,21 @@ function deleteAddedLayer (layer) { //Requires layer from editableLayers
       }
     }
   })
+}
+
+function loadingBtn(status, idBtn, btnName) {
+  let btn_ejecutar = document.getElementById(idBtn);
+  if (status === "on") {
+    btn_ejecutar.innerHTML =
+      '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
+    $("#ejec_gp").addClass("disabledbutton");
+    $('#'+ idBtn).addClass("disabledbutton");
+  } else if (status === "off") {
+    if (btnName) {
+      btn_ejecutar.innerHTML = btnName;
+    } else {
+      btn_ejecutar.innerHTML = "Ejecutar";
+    }
+    $('#'+ idBtn).removeClass("disabledbutton");
+  }
 }
