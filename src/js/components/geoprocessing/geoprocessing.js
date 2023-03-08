@@ -302,8 +302,11 @@ class Geoprocessing {
         counterBuffer++;
 
         mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
-        let selectedBuffer = mapa.editableLayers.polygon.at(-1);
-        selectedBuffer._uneditable = true; //aux to disallow editing the layer
+        mapa.editableLayers.polygon.forEach(lyr => {
+          if (lyr.id === layername) {
+            lyr._uneditable = true; //aux to disallow editing the layer
+          }
+        })
         
         addedLayers.push({
           id: layername,
