@@ -139,6 +139,8 @@ function reloadMenu() {
 function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAllLayers 
   if (document.getElementById("pt-wrapper")) {
     let geoprocessRecover = new Geoprocessing();
+    geoprocessRecover.setAvailableGeoprocessingConfig(app.geoprocessing);
+    geoprocessRecover.getNewProcessPrefix();  
 
     addedLayers.forEach((layer) => {
       if (layer.id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
@@ -221,7 +223,9 @@ function showTotalNumberofLayers() {
 function recoverSections() {
   let elevProfileRecover = new IElevationProfile(),
       geoprocessRecover = new Geoprocessing();
-  
+      geoprocessRecover.setAvailableGeoprocessingConfig(app.geoprocessing);
+      geoprocessRecover.getNewProcessPrefix();
+
   addedLayers.forEach((layer) => {
     let isActive;
     if (layer.isActive === false) {
