@@ -1,26 +1,8 @@
 .btn-logout {
-    width: 30px;
-    height: auto;
-    display: block;
-    box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
     position: absolute;
-    color: #222;
     font-size: 1.25em;
-    bottom: 100px;
-    left: 10px;
-    z-index: 99999;
-    border-radius: 4px;
-}
-
-@-moz-document url-prefix() {
-    .btn-logout {
-        width: 34px;
-        height: 34px;
-        box-shadow: none;
-        border: 2px solid rgba(0, 0, 0, 0.2);
-        bottom: 30px;
-        left: 54px;
-    }
+    bottom: 30px;
+    left: 50px;
 }
 
 .btn-logout :hover {
@@ -31,17 +13,10 @@
     background-color: grey;
 }
 
-#icon-container {
-    height: 30px;
-    width: 30px;
-    flex: 3;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 4px;
-}
-
 @media (max-width: 800px) {
     .btn-logout {
-        bottom: 150px;
+        bottom: 155px;
+        left: 10px;
     }
 }
 
@@ -52,17 +27,10 @@
     }
 }
 
-@media (max-height: 600px) {
+@media (max-height: 650px) {
     .btn-logout {
         bottom: 83px;
-        left: 50px;
-    }
-
-    @-moz-document url-prefix() {
-        .btn-logout {
-            bottom: 30px;
-            left: 50px;
-        }
+        left: 0;
     }
 }
 
@@ -72,31 +40,6 @@
         height: 30px;
         bottom: 60px;
         left: 0;
-    }
-
-    #icon-container {
-        height: 30px;
-        width: 30px;
-        flex: 3;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 4px;
-    }
-
-    @-moz-document url-prefix() {
-        .btn-logout {
-            width: 34px;
-            height: 34px;
-            bottom: 15px;
-            left: 0;
-        }
-
-        #icon-container {
-            height: 30px;
-            width: 30px;
-            flex: 3;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 4px;
-        }
     }
 }
 
@@ -114,7 +57,6 @@
 .login {
     padding: 2rem;
     background: #37bbec;
-    width: 100%;
     border-radius: 10px;
     box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
     -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
@@ -201,7 +143,7 @@
 }
 
 .white-modal {
-	background-color: white !important;
+    background-color: white !important;
     padding: 2rem;
     width: 100%;
     border-radius: 10px;
