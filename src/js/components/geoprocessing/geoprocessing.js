@@ -186,6 +186,7 @@ class Geoprocessing {
 
         let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
         selectedRectangle._uneditable = true; //aux to disallow editing the layer
+        selectedRectangle.process = layername; //aux to relate contour with waterRise
         mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
         addedLayers.push({
@@ -223,9 +224,9 @@ class Geoprocessing {
         counterHeight++;
 
         let selectedRectangle;
-        addedLayers.forEach(lyr => {
-          if (lyr.id === this.getCapaValue()) {
-            selectedRectangle = lyr.rectangle
+        mapa.editableLayers.rectangle.forEach(rect => {
+          if (rect.process === this.getCapaValue()) {
+            selectedRectangle = rect;
           }
         });
 
@@ -985,17 +986,17 @@ class Geoprocessing {
             break;
           }
           case "waterRise": {
-            addedLayers.forEach((layer) => {
-              if (layer.id == document.getElementById("select-capa").value) {
-                layer.rectangle._latlngs[0].forEach((coord) => {
+            mapa.editableLayers.rectangle.forEach(rect => {
+              if (rect.process === document.getElementById("select-capa").value) {
+                rect._latlngs[0].forEach((coord) => {
                   arrayWaterRise += coord.lng + " " + coord.lat + ",";
                 });
                 arrayWaterRise +=
-                  layer.rectangle._latlngs[0][0].lng +
+                rect._latlngs[0][0].lng +
                   " " +
-                  layer.rectangle._latlngs[0][0].lat;
+                  rect._latlngs[0][0].lat;
               }
-            });
+            })
 
             let waterRiseValue =
               document.getElementById("sliderValue").innerHTML;
