@@ -2127,7 +2127,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
-						downloadANode.setAttribute("download", groupLayer + ".geojson");
+						downloadANode.setAttribute("download", "file-" + groupLayer + ".geojson");
 						document.body.appendChild(downloadANode);
 						downloadANode.click();
 						downloadANode.remove();

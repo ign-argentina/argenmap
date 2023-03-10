@@ -773,7 +773,7 @@ class Geoprocessing {
                       return;
                     }
                     addedLayers.forEach((lyr) => {
-                      lyr.file_name == element.value
+                      lyr.id == element.value
                         ? (selectedLayer = lyr)
                         : null;
                     });
