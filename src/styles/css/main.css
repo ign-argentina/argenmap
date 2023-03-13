@@ -513,11 +513,6 @@ Leaflet
   border-radius: 4px;
   box-sizing: border-box;
 }
-.edit-style-popup>.leaflet-popup-content-wrapper,
-.edit-style-popup>.leaflet-popup-tip-container>.leaflet-popup-tip {
-  background-color: transparent;
-  box-shadow: none;
-}
 /* The following rule adds shadows to overlay layers elements */
 /* .leaflet-pane .leaflet-overlay-pane:not(:first-child) {
   filter: drop-shadow(5px -2px 1.5px rgba(5,15,5,0.3));
@@ -614,18 +609,17 @@ Popup geometría
   left: 20px !important;
   top: 20px;
 }
-.edit-style-popup-container {
-  width: 350px;
-  background-color: var(--main-bg-color, white) !important;
-  border-radius: 5px;
+#editContainer{
+  top: 100px;
+  left: 30%;
   position: absolute;
   display: flex;
+  width: 280px;
+  background-color: var(--main-bg-color, white) !important;
+  border-radius: 6px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
-  left: -20px;
-  top: -15px;
   padding: 7px;
   box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
 }
@@ -633,6 +627,16 @@ Popup geometría
 .edit-style-popup-container .section-popup .section-item label {
   user-select: none;
   -webkit-user-select: none;
+}
+.edit-style-popup>.leaflet-popup-content-wrapper,
+.edit-style-popup>.leaflet-popup-tip-container>.leaflet-popup-tip {
+  background-color: transparent;
+  box-shadow: none;
+}
+#btnclose-wrapper {
+  color: #676767;
+  display: flex;
+  align-self: flex-end;
 }
 div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   position: relative;
@@ -647,21 +651,22 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   align-items: center;
   text-align: center;
   width: 100%;
-  margin-top: 25px;
-  margin-bottom: 15px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 .section-title {
   position: absolute;
   align-self: center;
   left: 50%;
   transform: translate(-50%, -50%);
-  top: -30px;
+  top: -10px;
   font-weight: bold;
-  font-size: var(--body-fnt-size, 14px);
+  font-size: var(--group-title-fnt-size, 15px);
+  margin-top: 5px;
 }
 .section-item {
-  flex-basis: 45%;
-  height: 58px;
+  flex-basis: 48%;
+  height: 55px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -670,6 +675,7 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
 .section-item-input {
   width: 95% !important;
   height: 22px;
+  padding: 0;
 }
 .popup-parent {
   height: 0px !important;

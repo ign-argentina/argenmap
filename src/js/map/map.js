@@ -846,9 +846,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.addContextMenuToLayer = (layer) => {
 						let contextPopup = null;
 
-						const editStylePopup = L.popup({ closeButton: false, className: 'edit-style-popup' });
-						const editStylePopupContent = mapa.createEditStylePopup(layer, editStylePopup);
-
 						const contextMenu = new ContextMenu();
 
 						contextMenu.createOption({
@@ -865,13 +862,26 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: 'Editar estilos',
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);
-								editStylePopup.setContent(editStylePopupContent)
-								.setLatLng(layer.type !== "marker" && layer.type !== "circlemarker" && layer.type !== "label" ? layer.getBounds().getCenter() : layer.getLatLng());
-								mapa.openPopup(editStylePopup);
-								const parent = editStylePopupContent.parentElement;
-								parent.className = 'leaflet-popup-content popup-parent';
-								$("#editContainer").draggable({scroll: false, containment: "body"});
+								//mapa.closePopup(contextPopup);
+								if (document.getElementById("editContainer")) {
+									document.getElementById("editContainer").remove()
+								}
+
+								const wrapper = document.createElement("div");
+								wrapper.id = "editContainer";
+
+								let btncloseWrapper = document.createElement("a");
+								btncloseWrapper.id = "btnclose-wrapper";
+								btncloseWrapper.href = "javascript:void(0)";
+								btncloseWrapper.innerHTML = '<i class="fa fa-times"></i>';
+								btncloseWrapper.onclick = () => {
+									wrapper.remove();
+								};
+
+								wrapper.appendChild(btncloseWrapper);
+								wrapper.appendChild(mapa.createEditStylePopup(layer));
+								document.body.appendChild(wrapper);
+								$("#editContainer").draggable({ scroll: false, containment: "#mapa" });
 							}
 						});
 						
@@ -940,9 +950,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							L.DomEvent.stopPropagation(e);
 						});
 
-						L.DomEvent.on(editStylePopup, 'click', function (e) {
+						/* L.DomEvent.on(editStylePopup, 'click', function (e) {
 							L.DomEvent.stopPropagation(e);
-						});
+						}); */
 					}
 
 					mapa.measurementsWrapper = (layer) => {
@@ -1089,17 +1099,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						return boundingBox.innerHTML;
 					}
 
-					mapa.createEditStylePopup = (layer, popup) => {
+					mapa.createEditStylePopup = (layer) => {
 						const container = document.createElement('div');
 						container.className = 'edit-style-popup-container';
-						container.id = "editContainer";
-						
-						const closeBtn = document.createElement('a');
-						closeBtn.innerHTML = '<a class="leaflet-popup-close-button" href="#" style="outline: none;">×</a>';
-						closeBtn.onclick = () => {
-							mapa.closePopup(popup);
-						};
-						container.appendChild(closeBtn);
 						
 						//Lines
 						const lineSection = document.createElement('div');
@@ -1692,9 +1694,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorInputDiv6.className = 'section-item';
 							const transparentLabel = document.createElement('input');
 							transparentLabel.className = 'section-item-input';
-							transparentLabel.id = 'enable-marker-input';
+							transparentLabel.id = 'remove-bg-input';
 							transparentLabel.type = 'button';
-							transparentLabel.value = 'Quitar color de relleno'
+							transparentLabel.value = 'Quitar fondo'
 							transparentLabel.onclick = function () {
 								layer.options.icon.options.html.style.backgroundColor = "transparent";
 							};
@@ -1725,42 +1727,35 @@ $("body").on("pluginLoad", function(event, plugin){
 						switch (layer.type) {
 							case 'marker': {
 								container.appendChild(markerSection);
-								container.style.height = '240px';
 							}
 							break;
 							case 'label': {
 								container.appendChild(labelSection);
-								container.style.height = '280px';
 							}
 							break;
 							case 'circlemarker': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
-								container.style.height = '270px';
 							}
 							break;
 							case 'circle': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
 								container.appendChild(circleSection);
-								container.style.height = '370px';
 							}
 							break;
 							case 'polyline': {
 								container.appendChild(lineSection);
-								container.style.height = '240px';
 							}
 							break;
 							case 'polygon': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
-								container.style.height = '330px';
 							}
 							break;
 							case 'rectangle': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
-								container.style.height = '330px';
 							}
 							break;
 						}
