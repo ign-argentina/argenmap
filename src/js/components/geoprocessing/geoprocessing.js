@@ -194,7 +194,7 @@ class Geoprocessing {
           layer: result,
           name: layername,
           file_name: layername,
-          rectangle: selectedRectangle,
+          //rectangle: selectedRectangle,
           type: layerType,
           isActive: true,
           section: sectionName
@@ -945,6 +945,7 @@ class Geoprocessing {
         if (!data) {
           throw new Error("Error fetching to server");
         }
+        console.log(data)
         buffer = turf.buffer(data, distanceBuffer);
         this.displayResult(buffer);
       })
