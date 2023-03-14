@@ -527,9 +527,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
 
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
+						/* if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
 							mapa.addSelectionLayersMenuToLayer(layer);
-						}
+						} */
 						mapa.addContextMenuToLayer(layer);
 
 						if(geoProcessingManager){
@@ -662,8 +662,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: 'Mas información',
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);	
-									 $("#search_bar").val(lat+","+lng).focus();
+								mapa.closePopup(contextPopup);
+								$("#search_bar").val(lat + "," + lng).focus();
 							}
 						});
 
@@ -816,16 +816,18 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.methodsEvents[event].push(method);
 					};
 
-					mapa.addSelectionLayersMenuToLayer = (layer) => {
-							const popUpDiv = mapa.createPopUp(layer);
+					/* mapa.addSelectionLayersMenuToLayer = (layer) => {
+						//console.log(layer);
+						const popUpDiv = mapa.createPopUp(layer);
+						layer.bindPopup(popUpDiv);
+						//console.log(popUpDiv);
+						layer.on('click', (e) => {
+							const layer = e.target;
+							const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
 							layer.bindPopup(popUpDiv);
-	
-							layer.on('click', (e) => {
-								const layer = e.target;
-								const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
-								layer.bindPopup(popUpDiv);
-							});
-					}
+							console.log(popUpDiv);
+						});
+					} */
 
 					mapa.centerLayer = (layer) => {
 						if (!layer) {
@@ -897,6 +899,18 @@ $("body").on("pluginLoad", function(event, plugin){
 								}
 							}
 						});
+
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Capas activas',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									const popUpDiv1 = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+									layer.bindPopup(popUpDiv1).openPopup();
+								}
+							})
+						};
 
 						/* contextMenu.createOption({
 							isDisabled: true,
@@ -2488,9 +2502,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						//Left-click
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
+						/* if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
 							mapa.addSelectionLayersMenuToLayer(layer, file);
-						}
+						} */
 						//Right-click
 						mapa.addContextMenuToLayer(layer, file);
 
