@@ -605,17 +605,26 @@ class Geoprocessing {
 
 
   checkLayersForBuffer() {
+    let isBuffer = false;
     gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
       if (layer) {
-        $("#msgNoLayer").addClass("hidden");
+        isBuffer = true;
+      }
+    });
+    addedLayers.forEach(lyr => {
+      if (lyr.type === "WMS") {
+        isBuffer = true;
+      }
+    })
+    if (isBuffer) {
+      $("#msgNoLayer").addClass("hidden");
         $("#msgRectangle").removeClass("hidden");
         //$("#drawRectangleBtn").removeClass("disabledbutton");
         $('label[for="input-equidistancia"]').show();
         document
           .getElementById("input-equidistancia")
           .classList.remove("hidden");
-      }
-    });
+    }
   }
 
   buildOptionFormMessages(sliderLayer) {
@@ -743,6 +752,14 @@ class Geoprocessing {
                     });
                   }
                 });
+                addedLayers.forEach(lyr => {
+                  if (lyr.type === "WMS") {
+                    options.push({
+                      value: lyr.name,
+                      text: lyr.layer.title,
+                    });
+                  }
+                })
               } else if (this.geoprocessId === "elevationProfile") {
                 const polylines = mapa.editableLayers.polyline;
                 if (polylines.length > 0) {
@@ -791,6 +808,7 @@ class Geoprocessing {
                       $("#drawRectangleBtn").addClass("disabledbutton");
                       $("#ejec_gp").addClass("disabledbutton");
                     } else {
+                      this.checkLayersForBuffer()
                       $("#drawRectangleBtn").removeClass("disabledbutton");
                     }
                   } else if (this.geoprocessId === "elevationProfile") {
@@ -931,7 +949,16 @@ class Geoprocessing {
       let selctedLayerName = document.getElementById("select-capa").value;
       layer.name === selctedLayerName
         ? (layerSelected = layer)
-        : console.info("Layer not found.");
+        : 0;
+    });
+
+    addedLayers.forEach(lyr => {
+      if (lyr.type === "WMS") {
+        let selctedLayerName = document.getElementById("select-capa").value;
+        lyr.name === selctedLayerName
+        ? (layerSelected = lyr.layer)
+        : 0;
+      }
     });
 
     let coords = getGeometryCoords(drawnRectangle);
@@ -945,7 +972,6 @@ class Geoprocessing {
         if (!data) {
           throw new Error("Error fetching to server");
         }
-        console.log(data)
         buffer = turf.buffer(data, distanceBuffer);
         this.displayResult(buffer);
       })
