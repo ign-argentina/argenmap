@@ -400,7 +400,7 @@ class Geoprocessing {
     document.getElementById("sliderValue").classList.remove("hidden");
     let arraySlider = []; //Array that contains all unique values
     sliderLayer.layer.features.forEach((element) => {
-      if (!arraySlider.includes(element.properties.value)) {
+      if (!arraySlider.includes(element.properties.value) && element.geometry.type == "LineString") {
         arraySlider.push(element.properties.value);
       }
     });
@@ -427,7 +427,7 @@ class Geoprocessing {
     let arraySlider = []; //Array that contains all unique values
 
     sliderLayer.layer.features.forEach((element) => {
-      if (!arraySlider.includes(element.properties.value)) {
+      if (!arraySlider.includes(element.properties.value) && element.geometry.type == "LineString") {
         arraySlider.push(element.properties.value);
       }
     });
