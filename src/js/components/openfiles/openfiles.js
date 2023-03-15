@@ -137,13 +137,24 @@ class UImf {
         }
 
         // Add to current layers to add to the layers menu later
-        currentLayers.push({
-          id: fileLayer.getId(),
-          layer: fileLayer.getGeoJSON(),
-          name: name,
-          file_name: fileLayer.getFileName(),
-          kb: fileLayer.getFileSize('kb')
-        });
+        if (fileLayer.layerData.process) {
+          currentLayers.push({
+            id: fileLayer.getId(),
+            layer: fileLayer.getGeoJSON(),
+            name: name,
+            process: fileLayer.layerData.process,
+            file_name: fileLayer.getFileName(),
+            kb: fileLayer.getFileSize('kb')
+          });
+        } else {
+          currentLayers.push({
+            id: fileLayer.getId(),
+            layer: fileLayer.getGeoJSON(),
+            name: name,
+            file_name: fileLayer.getFileName(),
+            kb: fileLayer.getFileSize('kb')
+          });
+        }
 
         // Show in the dialog
         ui_upload.addFileItem(fileLayer.getId());
