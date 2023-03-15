@@ -469,28 +469,73 @@ class UImf {
 
 let uimodalfs = new UImf();
 
-function addLayersfromFiles() {
-  let sectionName = "Archivos",
-      typeName = "file";
-  currentLayers.forEach((e) => {
-    // Draw the layer in the map
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
-    // Add the layer to the Menu
-    // Save layer to check its existence in the next layer load
-    addedLayers.push({
-      id: e.id,
-      layer: e.layer,
-      name: e.name,
-      file_name: e.file_name,
-      kb: e.kb,
-      isActive: true,
-      type: typeName,
-      section: sectionName
-    });
-    menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
-    updateNumberofLayers(sectionName);
-    $("#item_uf_" + e.id).remove();
+function addProcessfromFiles(e, sectionName, typeName, counter) {
+  switch (e.process) {
+    case geoProcessingManager.GEOPROCESS.contour:
+      counter = counterContour;
+      counterContour++;
+      break;
+    case geoProcessingManager.GEOPROCESS.waterRise:
+      counter = counterHeight;
+      counterHeight++;
+      break;
+    case geoProcessingManager.GEOPROCESS.buffer:
+      counter = counterBuffer;
+      counterBuffer++;
+      break;
+    case geoProcessingManager.GEOPROCESS.elevationProfile:
+      counter = counterElevProfile;
+      counterElevProfile++;
+      break;
+    default:
+      break;
+  }
 
+  sectionName = "Geoprocesos",
+  typeName = "geoprocess";
+  let nameId = e.process + counter;
+  addedLayers.push({
+    id: nameId,
+    layer: e.layer,
+    name:  nameId,
+    file_name: nameId,
+    process: e.process,
+    kb: e.kb,
+    isActive: true,
+    type: typeName,
+    section: sectionName
+  });
+  mapa.addGeoJsonLayerToDrawedLayers(e.layer, nameId, true, true);
+  menu_ui.addFileLayer(sectionName, typeName, nameId, nameId, nameId, true);
+  updateNumberofLayers(sectionName);
+  $("#item_uf_" + nameId).remove();
+}
+
+function addLayersfromFiles() {
+  let sectionName, typeName, counter;
+
+  currentLayers.forEach((e) => {
+    if (e.process) {
+      addProcessfromFiles(e, sectionName, typeName, counter);
+    } else {
+      sectionName = "Archivos",
+      typeName = "file";
+
+      addedLayers.push({
+        id: e.id,
+        layer: e.layer,
+        name: e.name,
+        file_name: e.file_name,
+        kb: e.kb,
+        isActive: true,
+        type: typeName,
+        section: sectionName
+      });
+      mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
+      menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
+      updateNumberofLayers(sectionName);
+      $("#item_uf_" + e.id).remove();
+    }
   });
   currentLayers = [];
   showTotalNumberofLayers();
