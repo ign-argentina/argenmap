@@ -15,8 +15,8 @@
 
 @media (max-width: 800px) {
     .btn-logout {
-        bottom: 155px;
-        left: 10px;
+        bottom: 81px;
+        left: 50px;
     }
 }
 
@@ -27,7 +27,7 @@
     }
 }
 
-@media (max-height: 650px) {
+@media (max-height: 550px) {
     .btn-logout {
         bottom: 83px;
         left: 0;

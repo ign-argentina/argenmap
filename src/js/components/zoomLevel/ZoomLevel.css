@@ -10,8 +10,8 @@
   color: white !important;
 }
 
-@media (max-height: 650px) {
+/* @media (max-height: 650px) {
   #zoom-level {
     display: none;
   }
-}
+} */
