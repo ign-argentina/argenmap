@@ -506,6 +506,26 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
     section: sectionName
   });
   mapa.addGeoJsonLayerToDrawedLayers(e.layer, nameId, true, true);
+
+  if (e.process == geoProcessingManager.GEOPROCESS.contour) {
+    let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+    selectedRectangle._uneditable = true; //aux to disallow editing the layer
+    selectedRectangle.process = nameId; //aux to relate contour with waterRise
+  } else if (e.process == geoProcessingManager.GEOPROCESS.buffer) {
+    mapa.editableLayers.polygon.forEach(lyr => {
+      if (lyr.id === nameId) {
+        lyr._uneditable = true; //aux to disallow editing the layer
+      }
+    })
+  } 
+  // else if (e.process == geoProcessingManager.GEOPROCESS.waterRise) {
+  //   mapa.editableLayers.cota.forEach(lyr => {
+  //     if (lyr.id === nameId) {
+  //       lyr._uneditable = true; //aux to disallow editing the layer
+  //     }
+  //   })
+  // }
+
   menu_ui.addFileLayer(sectionName, typeName, nameId, nameId, nameId, true);
   updateNumberofLayers(sectionName);
   $("#item_uf_" + nameId).remove();
