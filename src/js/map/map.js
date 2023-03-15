@@ -864,7 +864,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: 'Editar estilos',
 							onclick: (option) => {
-								//mapa.closePopup(contextPopup);
+								mapa.closePopup(contextPopup);
 								if (document.getElementById("editContainer")) {
 									document.getElementById("editContainer").remove()
 								}
@@ -903,11 +903,14 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
 							contextMenu.createOption({
 								isDisabled: false,
-								text: 'Capas activas',
+								text: 'Usar como filtro',
 								onclick: (option) => {
 									mapa.closePopup(contextPopup);
-									const popUpDiv1 = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
-									layer.bindPopup(popUpDiv1).openPopup();
+									const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+									layer.bindPopup(popUpDiv).openPopup();
+									if (layer._popup){
+										layer.unbindPopup(popUpDiv);
+									}
 								}
 							})
 						};
