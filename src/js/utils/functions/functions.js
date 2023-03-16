@@ -1429,3 +1429,28 @@ function loadingBtn(status, idBtn, btnName) {
     $('#'+ idBtn).removeClass("disabledbutton");
   }
 }
+
+// function getLayerValues() {
+//   let layerArray = []
+//   Object.values(app.getActiveLayers()).forEach(lyr => {
+//     gestorMenu.getActiveLayersWithoutBasemap().forEach(lyrWB => {
+//       if (lyr._name === lyrWB.name) {
+//         let newLayer = lyr;
+//         newLayer.section = lyrWB.section;
+//         layerArray.push(newLayer);
+//       }
+//     })
+//   });
+//   return layerArray;
+// }
+
+function getAllActiveLayers() {
+  let allActiveLayers = [];
+  allActiveLayers = gestorMenu.getActiveLayersWithoutBasemap();
+  addedLayers.forEach(lyr => {
+    if (lyr.isActive === true) {
+      allActiveLayers.push(lyr);
+    }
+  })
+  return allActiveLayers;
+}
