@@ -527,9 +527,6 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
 
-						/* if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
-							mapa.addSelectionLayersMenuToLayer(layer);
-						} */
 						mapa.addContextMenuToLayer(layer);
 
 						if(geoProcessingManager){
@@ -816,19 +813,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.methodsEvents[event].push(method);
 					};
 
-					/* mapa.addSelectionLayersMenuToLayer = (layer) => {
-						//console.log(layer);
-						const popUpDiv = mapa.createPopUp(layer);
-						layer.bindPopup(popUpDiv);
-						//console.log(popUpDiv);
-						layer.on('click', (e) => {
-							const layer = e.target;
-							const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
-							layer.bindPopup(popUpDiv);
-							console.log(popUpDiv);
-						});
-					} */
-
 					mapa.centerLayer = (layer) => {
 						if (!layer) {
 							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
@@ -903,14 +887,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
 							contextMenu.createOption({
 								isDisabled: false,
-								text: 'Usar como filtro',
+								text: 'Usar como filtro de capas',
 								onclick: (option) => {
 									mapa.closePopup(contextPopup);
-									const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
-									layer.bindPopup(popUpDiv).openPopup();
-									if (layer._popup){
-										layer.unbindPopup(popUpDiv);
-									}
+									addSelectionLayersMenuToLayer(layer);
 								}
 							})
 						};
@@ -2504,10 +2484,6 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						}
 
-						//Left-click
-						/* if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
-							mapa.addSelectionLayersMenuToLayer(layer, file);
-						} */
 						//Right-click
 						mapa.addContextMenuToLayer(layer, file);
 
@@ -2626,6 +2602,14 @@ $("body").on("pluginLoad", function(event, plugin){
 			break;
 	}
 });
+
+function addSelectionLayersMenuToLayer(layer) {
+	const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+	layer.bindPopup(popUpDiv).openPopup();
+	if (layer._popup) {
+		layer.unbindPopup(popUpDiv);
+	}
+}
 
 function getGeometryCoords(layer) {
 	let coords = null;
