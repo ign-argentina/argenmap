@@ -964,11 +964,8 @@ class Geoprocessing {
     let allLayers = getAllActiveLayers();
     let selctedLayerName = document.getElementById("select-capa").value;
     allLayers.forEach(lyr => {
-      if (lyr.type === "WMS" && lyr.name === selctedLayerName ) {
+      if (lyr.name === selctedLayerName ) {
         layerSelected = lyr.layer;
-      }
-      else if (lyr.name === selctedLayerName ) {
-        layerSelected = lyr;
       }
     })
 

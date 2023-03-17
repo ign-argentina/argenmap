@@ -1430,23 +1430,29 @@ function loadingBtn(status, idBtn, btnName) {
   }
 }
 
-// function getLayerValues() {
-//   let layerArray = []
-//   Object.values(app.getActiveLayers()).forEach(lyr => {
-//     gestorMenu.getActiveLayersWithoutBasemap().forEach(lyrWB => {
-//       if (lyr._name === lyrWB.name) {
-//         let newLayer = lyr;
-//         newLayer.section = lyrWB.section;
-//         layerArray.push(newLayer);
-//       }
-//     })
-//   });
-//   return layerArray;
-// }
+function getLayerValues() {
+  let layerArray = []
+  Object.values(app.getActiveLayers()).forEach(lyr => {
+    gestorMenu.getActiveLayersWithoutBasemap().forEach(lyrWB => {
+      if (lyr._name === lyrWB.name) {
+        let newLayer = lyr;
+        newLayer.section = lyrWB.section;
+        newLayer.name = lyrWB.name;
+        newLayer.layer = {
+          title: lyr._source.options.title,
+          host: lyr._source._url,
+          name: newLayer.name,
+        }
+        layerArray.push(newLayer);
+      }
+    })
+  });
+  return layerArray;
+}
 
 function getAllActiveLayers() {
   let allActiveLayers = [];
-  allActiveLayers = gestorMenu.getActiveLayersWithoutBasemap();
+  allActiveLayers = getLayerValues();
   addedLayers.forEach(lyr => {
     if (lyr.isActive === true) {
       allActiveLayers.push(lyr);
