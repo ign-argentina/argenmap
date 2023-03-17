@@ -759,7 +759,7 @@ class Geoprocessing {
                       text: lyr.layer.title,
                     });
                   }
-                })
+                });
               } else if (this.geoprocessId === "elevationProfile") {
                 const polylines = mapa.editableLayers.polyline;
                 if (polylines.length > 0) {
@@ -945,21 +945,32 @@ class Geoprocessing {
       drawnRectangle = lyr;
     });
     let layerSelected;
-    gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
-      let selctedLayerName = document.getElementById("select-capa").value;
-      layer.name === selctedLayerName
-        ? (layerSelected = layer)
-        : 0;
-    });
+    // gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+    //   let selctedLayerName = document.getElementById("select-capa").value;
+    //   layer.name === selctedLayerName
+    //     ? (layerSelected = layer)
+    //     : 0;
+    // });
 
-    addedLayers.forEach(lyr => {
-      if (lyr.type === "WMS") {
-        let selctedLayerName = document.getElementById("select-capa").value;
-        lyr.name === selctedLayerName
-        ? (layerSelected = lyr.layer)
-        : 0;
+    // addedLayers.forEach(lyr => {
+    //   if (lyr.type === "WMS") {
+    //     let selctedLayerName = document.getElementById("select-capa").value;
+    //     lyr.name === selctedLayerName
+    //     ? (layerSelected = lyr.layer)
+    //     : 0;
+    //   }
+    // });
+
+    let allLayers = getAllActiveLayers();
+    let selctedLayerName = document.getElementById("select-capa").value;
+    allLayers.forEach(lyr => {
+      if (lyr.type === "WMS" && lyr.name === selctedLayerName ) {
+        layerSelected = lyr.layer;
       }
-    });
+      else if (lyr.name === selctedLayerName ) {
+        layerSelected = lyr;
+      }
+    })
 
     let coords = getGeometryCoords(drawnRectangle);
 
