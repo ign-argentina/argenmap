@@ -1,7 +1,7 @@
 class Fullscreen {
   constructor() {
     this.component = `
-      <a id="iconFS-container" title="Pantalla Completa" onclick=toggleFullScreen()>
+      <a id="iconFS-container" title="Pantalla Completa">
             <i id="iconFS" class="fas fa-expand" aria-hidden="true"></i>
       </a>
       `;
@@ -12,6 +12,7 @@ class Fullscreen {
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "fullscreen";
     elem.innerHTML = this.component;
+    elem.onclick = toggleFullScreen;
     document.querySelector(".leaflet-top.leaflet-left").append(elem);
   }
 }

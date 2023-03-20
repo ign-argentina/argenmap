@@ -385,8 +385,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						const pdfP = new PdfPrinter();
 						pdfP.createComponent();
 					}
-					//const geoSelector = new GeoSelector();
-					//geoSelector.createComponent();
+					const geoSelector = new GeoSelector();
+					geoSelector.createComponent();
 					break;
 				case 'Draw':
 
