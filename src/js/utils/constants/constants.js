@@ -64,7 +64,8 @@ const PLUGINS = {
   pdfPrinter: "src/js/components/pdfPrinter/pdfPrinter.js",
   FullScreen: "src/js/components/fullscreen/fullscreen.js",
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
-  loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js"
+  loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
+  geoSelector: "src/js/components/geometries-selector/geometries-selector.js"
 };
 
 const MESSAGE_TIME = 4000;

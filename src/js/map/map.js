@@ -381,8 +381,12 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 					break;
 				case 'pdfPrinter':
-					const pdfP = new PdfPrinter();
-					pdfP.createComponent();
+					if (!L.Browser.safari) {
+						const pdfP = new PdfPrinter();
+						pdfP.createComponent();
+					}
+					//const geoSelector = new GeoSelector();
+					//geoSelector.createComponent();
 					break;
 				case 'Draw':
 

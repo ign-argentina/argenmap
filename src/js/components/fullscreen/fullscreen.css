@@ -1,10 +1,5 @@
 #fullscreen :hover {
-  background-color: #f5f4f4;
   cursor: pointer;
-}
-
-#fullscreen :active {
-  background-color: grey;
 }
 
 #iconFS {
