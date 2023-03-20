@@ -2689,8 +2689,8 @@ function showMainMenuTpl() {
     gestorMenu.setMenuDOM(".nav.nav-sidebar");
     gestorMenu.setLoadingDOM(".loading");
     gestorMenu.setPrintCallback(printFinished);
-    gestorMenu.setLazyInitialization(true);
-	gestorMenu.setShowSearcher(app.hasOwnProperty('showSearchBar') ? app.showSearchBar : false);
+    gestorMenu.setLazyInitialization(false);
+    gestorMenu.setShowSearcher(app.hasOwnProperty('showSearchBar') ? app.showSearchBar : false);
     gestorMenu.print();
 }
 
