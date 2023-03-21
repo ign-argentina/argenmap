@@ -43,10 +43,10 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['','','','','','','','','','','','',''];
+var ordered = ['','','','','','','','','','','','','',''];
 var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
-var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenGeoSelector = 14;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -95,6 +95,9 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'pdfPrinter':
 			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
 			break;
+			case 'geoSelector':
+			ordered.splice(ordenGeoSelector, 1, plugin.pluginName);
+			break;
 		default :
 			// Add unordered plugins
 			unordered = plugin.pluginName;
@@ -128,6 +131,10 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('pdfPrinter')) {
 		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+ 	if(visiblesActivar && gestorMenu.pluginExists('geoSelector')) {
+		if(gestorMenu.plugins['geoSelector'].getStatus() == 'ready' || gestorMenu.plugins['geoSelector'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
@@ -385,6 +392,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						const pdfP = new PdfPrinter();
 						pdfP.createComponent();
 					}
+					break;
+					case 'geoSelector':
 					const geoSelector = new GeoSelector();
 					geoSelector.createComponent();
 					break;
@@ -2289,7 +2298,7 @@ $("body").on("pluginLoad", function(event, plugin){
 										}
 										break;
 										case 'circlemarker': {
-											layer = L.circlemarker(invertedCoords, options);
+											layer = L.circleMarker(invertedCoords, options);
 											type = 'circlemarker';
 										};
 										break;

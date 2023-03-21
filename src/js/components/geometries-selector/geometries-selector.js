@@ -1,3 +1,4 @@
+let counterGeoSelector = 0;
 class GeoSelector {
     constructor() {
         this.component = `
@@ -18,72 +19,90 @@ class GeoSelector {
 }
 
 function takeAllGeometries() {
-    /* if (mapa.groupLayers[groupName] === undefined) {
-        mapa.groupLayers[groupName] = [];
-    } */
+    /* let drawingRectangle = new L.Draw.Rectangle(mapa, { shapeOptions: { color: 'black', opacity: 0.8, fill: false, weight: 2, dashArray: 6 } });
+    drawingRectangle.enable(); */
 
     let allGeom = [];
-    let name = "group_";
-
-    /*      if (Object.keys(mapa.groupLayers).length === 0) {
-          name += "1";
-        } else {
-          const lastLayerName =
-            mapa.grouplayers[mapa.grouplayers.length - 1].name;
-          name += parseInt(lastLayerName.split("_")[1]) + 1;
-        }  */
+    let layername = "group_" + counterGeoSelector;
+    counterGeoSelector++;
+    const jsonToDownload = {
+        type: "FeatureCollection",
+        features: []
+    };
 
     Object.values(drawnItems._layers).forEach(lyr => {
-        console.log(lyr);
         allGeom.push(lyr);
-        console.log(allGeom);
-        lyr.remove(mapa);
-        drawnItems.removeLayer(lyr);
-    })
 
-    /* addedLayers.push({
-        id: name,
+        const layer = mapa.getEditableLayer(lyr.name, true);
+        const geoJSON = layer.toGeoJSON();
+        const styleOptions = { ...layer.options };
+        geoJSON.properties.styles = styleOptions;
+        geoJSON.properties.type = layer.type;
+        (layer.value) ? geoJSON.properties.value = layer.value : 0;
+        jsonToDownload.features.push(geoJSON);
+
+        drawnItems.removeLayer(lyr);
+        const lyrIdx = mapa.editableLayers[lyr.type].findIndex((deletedLayer) => lyr.name == deletedLayer.name);
+        if (lyrIdx >= 0) {
+            mapa.editableLayers[lyr.type].splice(lyrIdx, 1);
+        };
+    });
+
+    addedLayers.push({
+        id: layername,
         layer: allGeom,
-        name: name,
+        name: layername,
         //rectangle: selectedRectangle,
         type: "group",
         isActive: true,
         section: "Grupo"
-      }); */
-
-    var todas = L.layerGroup(allGeom).toGeoJSON();
-    mapa.addGeoJsonLayerToDrawedLayers(todas, name);
-    //mapa.downloadMultiLayerGeoJSON(name);
-    //menu_ui.addFileLayer("Grupo", "group", name, name, name, true);
-    //updateNumberofLayers("Grupo")
-
-    /* let drawingRectangle = new L.Draw.Rectangle(mapa, { shapeOptions: { color: 'black', opacity: 0.8, fill: false, weight: 2, dashArray: 6 } });
-    drawingRectangle.enable();
-
-    let coords = getGeometryCoords(drawnRectangle);
-
-    mapa.eachLayer(function (layer) {
-
-        if (layer instanceof L.Path) {
-            if (layer._layers) {
-                for (var f in layer._layers) {
-                    var feature = layer._layers[f];
-                    console.log(feature);
-                }
-                let userPolygon = [];
-                userPolygon.push(feature.toGeoJSON());
-                console.log(userPolygon);
-            }
-        }
     });
-    mapa.on('draw:created', function (geometry) {
-        var layer = event.layer;
-        console.log(layer);
-        var markers = jsonToArray(layerGroup._layers);
-        var contains = drawingRectangle.getBounds().contains(mapa.editableLayers.marker[0].getLatLng());
-        var result = geometry.layer;
-        console.log('result => ', result);
-    }); */
+
+    /*  var allLayer = L.layerGroup(allGeom);
+        var x = allLayer.toGeoJSON(); */
+
+    mapa.addGeoJsonLayerToDrawedLayers(jsonToDownload, layername);
+    menu_ui.addFileLayer("Grupo", "group", layername, layername, layername, true);
+    updateNumberofLayers("Grupo");
+    //mapa.downloadMultiLayerGeoJSON(layername);
+
+    //falta zoom
+
+    /* Object.entries(allLayer._layers).forEach(layerName => {
+       const layer = mapa.getEditableLayer(layerName, true);
+       const geoJSON = layer.toGeoJSON();
+       const styleOptions = { ...layer.options };
+       geoJSON.properties.styles = styleOptions;
+       geoJSON.properties.type = layer.type;
+       // TODO: include all properties fields to GeoJSON
+       (layer.value) ? geoJSON.properties.value = layer.value : 0;
+       jsonToDownload.features.push(geoJSON);
+   });
+
+   let coords = getGeometryCoords(drawnRectangle);
+
+   mapa.eachLayer(function (layer) {
+
+       if (layer instanceof L.Path) {
+           if (layer._layers) {
+               for (var f in layer._layers) {
+                   var feature = layer._layers[f];
+                   console.log(feature);
+               }
+               let userPolygon = [];
+               userPolygon.push(feature.toGeoJSON());
+               console.log(userPolygon);
+           }
+       }
+   });
+   mapa.on('draw:created', function (geometry) {
+       var layer = event.layer;
+       console.log(layer);
+       var markers = jsonToArray(layerGroup._layers);
+       var contains = drawingRectangle.getBounds().contains(mapa.editableLayers.marker[0].getLatLng());
+       var result = geometry.layer;
+       console.log('result => ', result);
+   }); */
 }
 
 /* L.Rectangle.include({
