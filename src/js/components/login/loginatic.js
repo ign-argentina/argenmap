@@ -148,13 +148,13 @@ loginatic = function () {
 
   this._addLogoutButton = () => {
     const logoutButton = document.createElement("div");
-    logoutButton.className = "center-flex btn-logout";
+    logoutButton.className = "leaflet-bar leaflet-control btn-logout";
     logoutButton.id = "btn-logout";
     logoutButton.title = "Cerrar sesión";
     logoutButton.onclick = function () {
       loginatic.logout();
     };
-    logoutButton.innerHTML = `<div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div>`;
+    logoutButton.innerHTML = `<a ><span class="fa fa-sign-out-alt" aria-hidden="true"></span></a>`;
 
     document.getElementById("mapa").append(logoutButton);
   };
