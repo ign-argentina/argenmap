@@ -1,5 +1,5 @@
 mainPopup = function () {
-  //FINAL
+  //TEST
   this._addPopupWrapper = () => {
     const mainPopup = document.createElement("div");
     mainPopup.id="main-popup";
@@ -15,19 +15,24 @@ mainPopup = function () {
     const contentWrapper = document.createElement("div");
     contentWrapper.id="contentWrapper";
     contentWrapper.classList = "popup";
-    contentWrapper.innerHTML = '<h4>Bienvenido!</h4><img src="src/styles/images/lupa.png" width="10%">';
+    contentWrapper.innerHTML = '<h4>Bienvenidos a</h4><img src="src/styles/images/argenmap-banner.png" width="40%">';
     mainWrapper.appendChild(contentWrapper);
+
+    // const test = document.createElement("div");
+    // test.id="contentWrapper";
+    // test.innerHTML = '<h4>wesa a</h4><img src="src/styles/images/argenmap-banner.png" width="100%">';
+    // contentWrapper.appendChild(test);
     
-    let btncloseWrapper = document.createElement("a");
-    btncloseWrapper.id = "btnclose-wrapper";
-    btncloseWrapper.href = "javascript:void(0)";
-    btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
-    btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
-    btncloseWrapper.onclick = () => {
-      mainWrapper.remove();
-      document.getElementById("main-popup").style.display = "none";
-    };
-    contentWrapper.append(btncloseWrapper);
+    // let btncloseWrapper = document.createElement("a");
+    // btncloseWrapper.id = "btnclose-wrapper";
+    // btncloseWrapper.href = "javascript:void(0)";
+    // btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
+    // btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
+    // btncloseWrapper.onclick = () => {
+    //   mainWrapper.remove();
+    //   document.getElementById("main-popup").style.display = "none";
+    // };
+    // contentWrapper.append(btncloseWrapper);
 
     let checkbox = document.createElement("div");
     checkbox.id="contentWrapper";
