@@ -19,7 +19,9 @@ class GeoSelector {
 }
 
 function takeAllGeometries() {
-
+if (Object.values(drawnItems._layers).length === 0){
+    return
+}
     /* let drawingRectangle = new L.Draw.Rectangle(mapa, { shapeOptions: { color: 'black', opacity: 0.8, fill: false, weight: 2, dashArray: 6 } });
     drawingRectangle.enable(); */
 

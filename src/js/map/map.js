@@ -2612,7 +2612,6 @@ $("body").on("pluginLoad", function(event, plugin){
 				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
 				/* renderer: L.svg() */
 			});
-			
 
 			//Available events
 			mapa.methodsEvents = {
