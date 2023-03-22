@@ -600,6 +600,7 @@ async function loadTemplate(data, isDefaultTemplate) {
       );
       $.getScript("src/js/components/main-popup/mainPopup.js").done(function () {
         mainPopup = new mainPopup();
+        mainPopup.check();
         mainPopup._addPopupWrapper();
       });
   }
