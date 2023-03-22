@@ -2,7 +2,7 @@ let counterGeoSelector = 0;
 class GeoSelector {
     constructor() {
         this.component = `
-        <a id="iconGS-container" title="Agrupar geometrías">
+        <a id="iconGS-container" class="leaflet-disabled" title="No hay capas para agrupar">
               <i id="iconGS" class="fa-regular fa-object-group" aria-hidden="true"></i>
         </a>
         `;
@@ -19,10 +19,10 @@ class GeoSelector {
 }
 
 function takeAllGeometries() {
+
     /* let drawingRectangle = new L.Draw.Rectangle(mapa, { shapeOptions: { color: 'black', opacity: 0.8, fill: false, weight: 2, dashArray: 6 } });
     drawingRectangle.enable(); */
 
-    let allGeom = [];
     let layername = "group_" + counterGeoSelector;
     counterGeoSelector++;
     const jsonToDownload = {
@@ -31,7 +31,8 @@ function takeAllGeometries() {
     };
 
     Object.values(drawnItems._layers).forEach(lyr => {
-        allGeom.push(lyr);
+        var cont = 0;
+        lyr.name = lyr.name + counterGeoSelector;
 
         const layer = mapa.getEditableLayer(lyr.name, true);
         const geoJSON = layer.toGeoJSON();
@@ -43,14 +44,15 @@ function takeAllGeometries() {
 
         drawnItems.removeLayer(lyr);
         const lyrIdx = mapa.editableLayers[lyr.type].findIndex((deletedLayer) => lyr.name == deletedLayer.name);
-        if (lyrIdx >= 0) {
+        if (lyrIdx >= 0) { //&& mapa.editableLayers[lyr.type][cont].hasOwnProperty("id")
             mapa.editableLayers[lyr.type].splice(lyrIdx, 1);
         };
+        cont++;
     });
 
     addedLayers.push({
         id: layername,
-        layer: allGeom,
+        layer: jsonToDownload,
         name: layername,
         //rectangle: selectedRectangle,
         type: "group",
@@ -58,15 +60,9 @@ function takeAllGeometries() {
         section: "Grupo"
     });
 
-    /*  var allLayer = L.layerGroup(allGeom);
-        var x = allLayer.toGeoJSON(); */
-
     mapa.addGeoJsonLayerToDrawedLayers(jsonToDownload, layername);
-    menu_ui.addFileLayer("Grupo", "group", layername, layername, layername, true);
+    menu_ui.addFileLayer("Grupos", "group", layername, layername, layername, true);
     updateNumberofLayers("Grupo");
-    //mapa.downloadMultiLayerGeoJSON(layername);
-
-    //falta zoom
 
     /* Object.entries(allLayer._layers).forEach(layerName => {
        const layer = mapa.getEditableLayer(layerName, true);

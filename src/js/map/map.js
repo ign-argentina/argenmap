@@ -542,9 +542,11 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.addContextMenuToLayer(layer);
 
-						if(geoProcessingManager){
+						if (geoProcessingManager) {
 							geoProcessingManager.updateLayerSelect(layer.name, true);
 						}
+
+						updateGroupBtn();
 					});
 
 					mapa.on('draw:edited', (e) => {
@@ -578,6 +580,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								deleteLayerFromMenu(deletedLayer);
 							}
 						});
+						updateGroupBtn();
 						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
@@ -642,10 +645,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						var count = 0;
 						
 						var imagen = ""
-						$.each(e.target._zoomBoundLayers,function(clave,valor){
-							$.each(valor._tiles,function(key,value){
-								if (count==0) {
-									
+						$.each(e.target._zoomBoundLayers, function (clave, valor) {
+							$.each(valor._tiles, function (key, value) {
+								if (count == 0) {
+
 									imagen = value.el.currentSrc;
 								}
 								count++;
@@ -689,6 +692,17 @@ $("body").on("pluginLoad", function(event, plugin){
 							});
 						}
 
+						if (Object.values(drawnItems._layers).length != 0) {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Descargar todas las capas',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									mapa.downloadAllActiveLayer();
+								}
+							});
+						}
+
 						/* contextMenu.createOption({
 							isDisabled: false,
 							text: "Share",
@@ -698,7 +712,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								window.open(_url);
 								}
 							}); */
-						
+
 						/* contextMenu.createOption({
 							isDisabled: false,
 							text: "Save",
@@ -720,46 +734,46 @@ $("body").on("pluginLoad", function(event, plugin){
 								new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
 							},
 							}); */
-						
+
 						contextMenu.createOption({
-            			  isDisabled: false,
-            			  text: "Agregar marcador",
-            			  onclick: (option) => {
-            			    let name = "marker_";
+							isDisabled: false,
+							text: "Agregar marcador",
+							onclick: (option) => {
+								let name = "marker_";
 
-            			    if (mapa.editableLayers["marker"].length === 0) {
-            			      name += "1";
-            			    } else {
-            			      const lastLayerName =
-            			        mapa.editableLayers["marker"][mapa.editableLayers["marker"].length - 1].name;
-            			      name += parseInt(lastLayerName.split("_")[1]) + 1;
-            			    }
-						
-            			    let geojsonMarker = {
-            			      type: "Feature",
-            			      properties: {},
-            			      geometry: { type: "Point", coordinates: [lng, lat] },
-            			    };
-							
-            			    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "addedMarker_" + name, false);
-            			    mapa.closePopup(contextPopup);
-            			  },
-            			});
+								if (mapa.editableLayers["marker"].length === 0) {
+									name += "1";
+								} else {
+									const lastLayerName =
+										mapa.editableLayers["marker"][mapa.editableLayers["marker"].length - 1].name;
+									name += parseInt(lastLayerName.split("_")[1]) + 1;
+								}
 
-							if (gestorMenu.getActiveBasemap() === "esri_imagery") {
-								contextMenu.createOption({
-									isDisabled: false,
-									text: 'Datos de imagen satelital',
-									onclick: (option) => {
-										mapa.closePopup(contextPopup);
-										mapa.esriImagery(lat,lng,zoom);
-									}
-								});
-							}
+								let geojsonMarker = {
+									type: "Feature",
+									properties: {},
+									geometry: { type: "Point", coordinates: [lng, lat] },
+								};
+
+								mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "addedMarker_" + name, false);
+								mapa.closePopup(contextPopup);
+							},
+						});
+
+						if (gestorMenu.getActiveBasemap() === "esri_imagery") {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Datos de imagen satelital',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									mapa.esriImagery(lat, lng, zoom);
+								}
+							});
+						}
 
 						contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
-						.setLatLng(e.latlng)
-						.setContent(contextMenu.menu);
+							.setLatLng(e.latlng)
+							.setContent(contextMenu.menu);
 						mapa.openPopup(contextPopup);
 					});
 
@@ -927,6 +941,17 @@ $("body").on("pluginLoad", function(event, plugin){
 								layer.downloadGeoJSON();
 							}
 						});
+
+						if (Object.values(drawnItems._layers).length != 0) {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Descargar todas la capas',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									mapa.downloadAllActiveLayer();
+								}
+							});
+						}
 
 						contextMenu.createOption({
 							isDisabled: false,
@@ -2138,6 +2163,35 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.remove();
 					}
 
+					mapa.downloadAllActiveLayer = () => {
+						let layername = "group_" + counterGeoSelector;
+						counterGeoSelector++;
+						const jsonToDownload = {
+							type: "FeatureCollection",
+							features: []
+						};
+
+						Object.values(drawnItems._layers).forEach(lyr => {
+							const layer = mapa.getEditableLayer(lyr.name, true);
+							const geoJSON = layer.toGeoJSON();
+							const styleOptions = { ...layer.options };
+							const labelText = { ...geoJSON.properties.Text };
+							geoJSON.properties.styles = styleOptions;
+							//geoJSON.properties.Text = labelText;
+							geoJSON.properties.type = layer.type;
+							(layer.value) ? geoJSON.properties.value = layer.value : 0;
+							jsonToDownload.features.push(geoJSON);
+						});
+
+						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
+						const downloadANode = document.createElement('a');
+						downloadANode.setAttribute("href", dataStr);
+						downloadANode.setAttribute("download", layername + ".geojson");
+						document.body.appendChild(downloadANode);
+						downloadANode.click();
+						downloadANode.remove();
+					}
+
 					mapa.createMarker = (color1, color2, borderWidth) => {
 						const svgNS = 'http://www.w3.org/2000/svg';
 
@@ -2615,6 +2669,17 @@ $("body").on("pluginLoad", function(event, plugin){
 			break;
 	}
 });
+
+function updateGroupBtn() {
+	let control = document.getElementById('iconGS-container');
+	if (Object.values(drawnItems._layers).length === 0) {
+		control.title = "No hay capas para agrupar";
+		control.classList.add("leaflet-disabled");
+	} else {
+		control.title = "Agrupar geometrías";
+		control.classList.remove("leaflet-disabled");
+	}
+}
 
 function addSelectionLayersMenuToLayer(layer) {
 	const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
