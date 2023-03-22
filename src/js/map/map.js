@@ -2107,15 +2107,15 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.remove();
 					}
 					
-					mapa.downloadMultiLayerGeoJSON = (groupLayer) => {
+					mapa.downloadMultiLayerGeoJSON = (id) => {
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []
 						};
-
-						mapa.groupLayers[groupLayer].forEach(layerName => {
+						let geoJSON;
+						mapa.groupLayers[id].forEach(layerName => {
 							const layer = mapa.getEditableLayer(layerName, true);
-							const geoJSON = layer.toGeoJSON();
+							geoJSON = layer.toGeoJSON();
 							const styleOptions = { ...layer.options };
 							geoJSON.properties.styles = styleOptions;
 							geoJSON.properties.type = layer.type;
@@ -2124,10 +2124,22 @@ $("body").on("pluginLoad", function(event, plugin){
 							jsonToDownload.features.push(geoJSON);
 						});
 
+						addedLayers.forEach(lyr => {
+							if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.contour)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.contour;
+							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.waterRise)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.waterRise;
+							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.buffer)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.buffer;
+							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.elevationProfile)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.elevationProfile;
+							}
+						});
+
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
-						downloadANode.setAttribute("download", groupLayer + ".geojson");
+						downloadANode.setAttribute("download", id + ".geojson");
 						document.body.appendChild(downloadANode);
 						downloadANode.click();
 						downloadANode.remove();
