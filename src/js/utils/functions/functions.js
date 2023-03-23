@@ -1306,8 +1306,9 @@ function loadDeveloperLogo() {
   L.Control.DeveloperLogo = L.Control.extend({
     onAdd: function (map) {
       let link = L.DomUtil.create("a");
-      link.href = "https://www.ign.gob.ar/";
+      //link.href = "https://www.ign.gob.ar/";
       link.target = "_blank";
+      link.id = "developerLogo"
       link.title =
         "Desarrollado por el Instituto Geográfico Nacional de la República Argentina";
       link.style.cursor = "pointer";
@@ -1317,6 +1318,11 @@ function loadDeveloperLogo() {
       img.style = "width: 64px; background-size: cover";
       img.style.backgroundImage = `url('${APP_IMG}')`;
       link.appendChild(img);
+      link.addEventListener('click', function() {
+        localStorage.removeItem("mainPopup");
+        mainPopup.check();
+        mainPopup._addPopupWrapper(false);
+      });
       return link;
     },
   });

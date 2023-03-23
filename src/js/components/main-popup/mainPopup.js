@@ -6,7 +6,10 @@ mainPopup = function () {
     }
   }
 
-  this._addPopupWrapper = () => {
+  this._addPopupWrapper = (flag) => {
+    if (flag == false) {
+      isChecked = false
+    }
     if (!isChecked) {
       const mainPopup = document.createElement("div");
       mainPopup.id="main-popup";
@@ -54,7 +57,7 @@ mainPopup = function () {
       popupExitBtn.innerHTML ='<i class="fa fa-times"></i>';
       popupExitBtn.onclick = () => {
         mainWrapper.remove();
-        document.getElementById("main-popup").style.display = "none";
+        document.getElementById("main-popup").remove();
       };
       contentWrapper.insertBefore(popupExitBtn, contentWrapper.firstChild);
       //Checkbox
