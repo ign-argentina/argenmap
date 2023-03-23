@@ -25,7 +25,7 @@ mainPopup = function () {
       contentWrapper.innerHTML = 'Bienvenidos a Argenmap!<hr>';
       contentWrapper.style = "font-size: 18px";
       mainWrapper.appendChild(contentWrapper);
-  
+      //Image
       if (app.mainPopup.image) {
         const contentImg = document.createElement("div");
         contentImg.id="contentWrapperImg";
@@ -33,27 +33,27 @@ mainPopup = function () {
         contentImg.innerHTML = `<h4></h4><img src='${image}' width="100%">`;
         contentWrapper.appendChild(contentImg);
       }
-
+      //Text
       if (app.mainPopup.text) {
         let text = app.mainPopup.text
         const contentTxt = document.createElement("div");
         contentTxt.id="contentWrapperTxt";
         contentTxt.innerHTML = `<h4></h4>${text}`;
-        contentTxt.style = "font-size: 15px";
+        contentTxt.style = "font-size: 15px; text-align: justify";
         contentWrapper.appendChild(contentTxt);
       }
-        
-      let btncloseWrapper = document.createElement("a");
-      btncloseWrapper.id = "btnclose-wrapper";
-      btncloseWrapper.href = "javascript:void(0)";
-      btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
-      btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
-      btncloseWrapper.onclick = () => {
+      //ExitBtn
+      let popupExitBtn = document.createElement("a");
+      popupExitBtn.id = "popupExitBtn";
+      popupExitBtn.href = "javascript:void(0)";
+      popupExitBtn.style = "float:right; color:#676767; overflow-y:auto;";
+      popupExitBtn.innerHTML ='<i class="fa fa-times"></i>';
+      popupExitBtn.onclick = () => {
         mainWrapper.remove();
         document.getElementById("main-popup").style.display = "none";
       };
-      contentWrapper.insertBefore(btncloseWrapper, contentWrapper.firstChild);
-  
+      contentWrapper.insertBefore(popupExitBtn, contentWrapper.firstChild);
+      //Checkbox
       let checkbox = document.createElement("div");
       checkbox.id="contentWrapper";
       checkbox.classList = "checkbox";
