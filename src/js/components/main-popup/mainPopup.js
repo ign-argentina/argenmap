@@ -22,15 +22,16 @@ mainPopup = function () {
       mainWrapper.classList = "container-fluid col-12 col-xs-12 col-sm-6 col-md-6 col-lg-5 mt-5 text-center";
       $("#main-popup").append(mainWrapper);
       
-      let welcomeSign = "¡Bienvenidos a Argenmap!";
-      if (app.mainPopup.welcomeSign) {
-        welcomeSign = app.mainPopup.welcomeSign;
-      }
+      
       const contentWrapper = document.createElement("div");
       contentWrapper.id="contentWrapper";
       contentWrapper.classList = "popup";
-      contentWrapper.innerHTML = `${welcomeSign}<hr>`;
       contentWrapper.style = "font-size: 18px";
+      //let welcomeSign = "¡Bienvenidos a Argenmap!";
+      if (app.mainPopup.welcomeSign) {
+        welcomeSign = app.mainPopup.welcomeSign;
+        contentWrapper.innerHTML = `${welcomeSign}<hr>`;
+      }
       mainWrapper.appendChild(contentWrapper);
       //Image
       if (app.mainPopup.image) {
