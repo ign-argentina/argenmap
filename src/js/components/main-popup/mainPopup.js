@@ -50,7 +50,7 @@ mainPopup = function () {
         mainWrapper.remove();
         document.getElementById("main-popup").style.display = "none";
       };
-      contentWrapper.append(btncloseWrapper);
+      contentWrapper.insertBefore(btncloseWrapper, contentWrapper.firstChild);
   
       let checkbox = document.createElement("div");
       checkbox.id="contentWrapper";
