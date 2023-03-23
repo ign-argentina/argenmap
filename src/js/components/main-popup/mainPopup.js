@@ -22,7 +22,8 @@ mainPopup = function () {
       const contentWrapper = document.createElement("div");
       contentWrapper.id="contentWrapper";
       contentWrapper.classList = "popup";
-      contentWrapper.innerHTML = '<h4>Bienvenidos a Argenmap!<hr>';
+      contentWrapper.innerHTML = 'Bienvenidos a Argenmap!<hr>';
+      contentWrapper.style = "font-size: 18px";
       mainWrapper.appendChild(contentWrapper);
   
       if (app.mainPopup.image) {
@@ -38,6 +39,7 @@ mainPopup = function () {
         const contentTxt = document.createElement("div");
         contentTxt.id="contentWrapperTxt";
         contentTxt.innerHTML = `<h4></h4>${text}`;
+        contentTxt.style = "font-size: 15px";
         contentWrapper.appendChild(contentTxt);
       }
         
@@ -56,6 +58,7 @@ mainPopup = function () {
       checkbox.id="contentWrapper";
       checkbox.classList = "checkbox";
       checkbox.innerHTML ='<label><input type="checkbox" id="popupCheckbox" name="popupCheckbox">No volver a mostrar</label>';
+      checkbox.style = "font-size: 15px";
       contentWrapper.appendChild(checkbox); 
   
       let check = document.querySelector("input[name=popupCheckbox]");
