@@ -16,7 +16,7 @@ mainPopup = function () {
       const mainWrapper = document.createElement("div");
       mainWrapper.id="mainWrapper";
       mainWrapper.style="display: flex;align-items: center;"
-      mainWrapper.classList = "container-fluid col-12 col-xs-12 col-sm-6 col-md-3 mt-5 text-center";
+      mainWrapper.classList = "container-fluid col-12 col-xs-12 col-sm-6 col-md-6 col-lg-5 mt-5 text-center";
       $("#main-popup").append(mainWrapper);
       
       let welcomeSign = "¡Bienvenidos a Argenmap!";
