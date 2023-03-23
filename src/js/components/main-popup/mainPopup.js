@@ -25,24 +25,22 @@ mainPopup = function () {
       contentWrapper.innerHTML = '<h4>Bienvenidos a Argenmap!<hr>';
       mainWrapper.appendChild(contentWrapper);
   
-      // const test2 = document.createElement("div");
-      // test2.id="contentWrapper";
-      // test2.innerHTML = '<h4></h4><img src="src/styles/images/argenmap-banner.png" width="100%">';
-      // contentWrapper.appendChild(test2);
-  
-      // const test = document.createElement("div");
-      // test.id="contentWrapper";
-      // test.innerHTML = `<h4></h4>Modify the prefixes of recoverSections() in functions.js.
-      // Modify the prefixes of elevation-profile.js.
-      // Show legends of layers of an added WMS service from the "Add Layers" button.
-      // Add icon and title to report the failure of a WMS layer legend.
-      // Shrink base map preview files.
-      // "Abrir en..." from contextMenu should only work on mobile devices. #183
-      // Geocoder text box expands out of window on mobile. #175
-      // Unifying styles on the map buttons for different types of devices. #178
-      // Use CSS variables for colors. #176`;
-      // contentWrapper.appendChild(test);
-      
+      if (app.mainPopup.image) {
+        const contentImg = document.createElement("div");
+        contentImg.id="contentWrapperImg";
+        let image = app.mainPopup.image
+        contentImg.innerHTML = `<h4></h4><img src='${image}' width="100%">`;
+        contentWrapper.appendChild(contentImg);
+      }
+
+      if (app.mainPopup.text) {
+        let text = app.mainPopup.text
+        const contentTxt = document.createElement("div");
+        contentTxt.id="contentWrapperTxt";
+        contentTxt.innerHTML = `<h4></h4>${text}`;
+        contentWrapper.appendChild(contentTxt);
+      }
+        
       let btncloseWrapper = document.createElement("a");
       btncloseWrapper.id = "btnclose-wrapper";
       btncloseWrapper.href = "javascript:void(0)";
