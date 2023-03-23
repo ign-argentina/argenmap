@@ -5,6 +5,7 @@ var tableFeatureCount = 20;
 var loadCharts = false;
 var loadSearchbar = false;
 var loadLogin = false;
+var mainPopup = false;
 var loadElevationProfile = false;
 var loadLayerOptions = false;
 var currentlyDrawing = false;
@@ -28,6 +29,10 @@ function setSearchbar(cond) {
 
 function setLogin(cond) {
   loadLogin = cond;
+}
+
+function setMainPopup(cond) {
+  mainPopup = cond;
 }
 
 function setElevationProfile(cond) {
