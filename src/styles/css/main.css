@@ -1,5 +1,6 @@
 :root {
   --main-bg-color: #fff;
+  --bg-color: #0db2e0;
   --active-bg-color: #33b560;
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
@@ -155,6 +156,7 @@ Menu principal
 }
 .panel-default>.panel-heading {
   color: white;
+  background-color: var(--bg-color);
   font-size: var(--group-title-fnt-size, 15px);
 }
 .panel-default>.panel-heading>.panel-title>a {
@@ -249,6 +251,7 @@ li.active>div>a {
 }
 .item-group-title {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   font-family: "Encode Sans Semi Bold", sans-serif;
   font-size: var(--group-title-fnt-size, 15px);
