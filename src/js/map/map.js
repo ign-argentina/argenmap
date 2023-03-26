@@ -46,7 +46,7 @@ var unordered = '';
 var ordered = ['','','','','','','','','','','','','',''];
 var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
-var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenGeoSelector = 14;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenGroupLayerSelector = 14;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -95,8 +95,8 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'pdfPrinter':
 			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
 			break;
-			case 'geoSelector':
-			ordered.splice(ordenGeoSelector, 1, plugin.pluginName);
+			case 'groupLayerSelector':
+			ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
 			break;
 		default :
 			// Add unordered plugins
@@ -133,8 +133,8 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
- 	if(visiblesActivar && gestorMenu.pluginExists('geoSelector')) {
-		if(gestorMenu.plugins['geoSelector'].getStatus() == 'ready' || gestorMenu.plugins['geoSelector'].getStatus() == 'fail'){
+ 	if(visiblesActivar && gestorMenu.pluginExists('groupLayerSelector')) {
+		if(gestorMenu.plugins['groupLayerSelector'].getStatus() == 'ready' || gestorMenu.plugins['groupLayerSelector'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
@@ -393,9 +393,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						pdfP.createComponent();
 					}
 					break;
-					case 'geoSelector':
-					const geoSelector = new GeoSelector();
-					geoSelector.createComponent();
+				case 'groupLayerSelector':
+					//const groupLayerSelector = new GroupLayerSelector();
+					//groupLayerSelector.createComponent();
 					break;
 				case 'Draw':
 
@@ -546,7 +546,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							geoProcessingManager.updateLayerSelect(layer.name, true);
 						}
 
-						updateGroupBtn();
+						//updateGroupBtn();
 					});
 
 					mapa.on('draw:edited', (e) => {
@@ -692,7 +692,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							});
 						}
 
-						if (Object.values(drawnItems._layers).length != 0) {
+						/* if (Object.values(drawnItems._layers).length != 0) {
 							contextMenu.createOption({
 								isDisabled: false,
 								text: 'Descargar todas las capas',
@@ -701,7 +701,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									mapa.downloadAllActiveLayer();
 								}
 							});
-						}
+						} */
 
 						/* contextMenu.createOption({
 							isDisabled: false,
@@ -942,7 +942,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						});
 
-						if (Object.values(drawnItems._layers).length != 0) {
+						/* if (Object.values(drawnItems._layers).length != 0) {
 							contextMenu.createOption({
 								isDisabled: false,
 								text: 'Descargar todas la capas',
@@ -951,7 +951,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									mapa.downloadAllActiveLayer();
 								}
 							});
-						}
+						} */
 
 						contextMenu.createOption({
 							isDisabled: false,
@@ -2176,8 +2176,8 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.downloadAllActiveLayer = () => {
-						let layername = "group_" + counterGeoSelector;
-						counterGeoSelector++;
+						let layername = "group_" + counterLayer;
+						counterLayer++;
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []

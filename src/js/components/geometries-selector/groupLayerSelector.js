@@ -1,5 +1,5 @@
-let counterGeoSelector = 0;
-class GeoSelector {
+let counterGroupLayerSelector = 0;
+class GroupLayerSelector {
     constructor() {
         this.component = `
         <a id="iconGS-container" class="leaflet-disabled" title="No hay capas para agrupar">
@@ -11,7 +11,7 @@ class GeoSelector {
     createComponent() {
         const elem = document.createElement("div");
         elem.className = "leaflet-bar leaflet-control";
-        elem.id = "geoSelector";
+        elem.id = "groupLayerSelector";
         elem.innerHTML = this.component;
         elem.onclick = takeAllGeometries;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
@@ -25,8 +25,8 @@ if (Object.values(drawnItems._layers).length === 0){
     /* let drawingRectangle = new L.Draw.Rectangle(mapa, { shapeOptions: { color: 'black', opacity: 0.8, fill: false, weight: 2, dashArray: 6 } });
     drawingRectangle.enable(); */
 
-    let layername = "group_" + counterGeoSelector;
-    counterGeoSelector++;
+    let layername = "group_" + counterGroupLayerSelector;
+    counterGroupLayerSelector++;
     const jsonToDownload = {
         type: "FeatureCollection",
         features: []
@@ -34,7 +34,7 @@ if (Object.values(drawnItems._layers).length === 0){
 
     Object.values(drawnItems._layers).forEach(lyr => {
         var cont = 0;
-        lyr.name = lyr.name + counterGeoSelector;
+        lyr.name = lyr.name + counterGroupLayerSelector;
 
         const layer = mapa.getEditableLayer(lyr.name, true);
         const geoJSON = layer.toGeoJSON();
