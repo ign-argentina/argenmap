@@ -3,6 +3,7 @@ loginatic = function () {
   this.notLoggedTxt =
     app.login.notLogged || "Contraseña no válida, intente nuevamente";
   this.noPassword = app.login.noPassword || "Campo vacío, ingrese su contraseña";
+  this.external_link = null;
   this.init = (conf) => {
     if (getCookie("autologin") == null) {
       setCookie("autologin", 0);
@@ -89,6 +90,17 @@ loginatic = function () {
         }
       }
 
+      if (result.external_link) {
+        menu_ui.add_btn_Layer_combobox("sidebar", "OT", "", "Abrir OT", false);
+        /* menu_ui.addLayerOption({
+          color: "#474b4e",
+          classList: "far fa-question-circle",
+          title: "Layer option",
+          onclick: window.open(result.external_link)
+        }); */
+        //addLinkButton(result.external_link);
+      }
+
       if (!logged) {
         alert(this.notLoggedTxt);
       }
@@ -98,6 +110,9 @@ loginatic = function () {
   this.logout = () => {
     this.currentLogin = false;
     setCookie("autologin", 0);
+    if (this.external_link === null) {
+      
+    }
     /* 
         let lat = -40;
         let lon = -59;
