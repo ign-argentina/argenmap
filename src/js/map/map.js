@@ -444,6 +444,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						position: 'topright'
 					});
 
+					const jsonToDownload = {
+						type: "FeatureCollection",
+						features: []
+					};
 
 					//Customizing language and text in Leaflet.draw
 					L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
@@ -520,7 +524,40 @@ $("body").on("pluginLoad", function(event, plugin){
 							mapa.downloadLayerGeoJSON(layer);
 						}
 
+						/* var cont = 0;
+						lyr.name = lyr.name + counterGroupLayerSelector; */
 						mapa.editableLayers[type].push(layer);
+
+						const layer1 = mapa.getEditableLayer(name, true);
+						const geoJSON = layer1.toGeoJSON();
+						const styleOptions = { ...layer1.options };
+						geoJSON.properties.styles = styleOptions;
+						geoJSON.properties.type = layer1.type;
+						(layer1.value) ? geoJSON.properties.value = layer1.value : 0;
+						jsonToDownload.features.push(geoJSON);
+if(true){
+console.log(layer);
+}
+						if (Object.values(drawnItems._layers).length === 0) {
+							if (mapa.groupLayers["dibujos"] === undefined) {
+								mapa.groupLayers["dibujos"] = [];
+							}
+							mapa.addLayerToGroup(name, "dibujos");
+							addedLayers.push({
+								id: "dibujos",
+								layer: jsonToDownload,
+								name: "dibujos",
+								type: "dibujos",
+								isActive: true,
+								section: "Dibujos"
+							});
+							menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true); updateNumberofLayers("Dibujos");
+						} else {
+							mapa.addLayerToGroup(name, "dibujos");
+							addedLayers.layer = jsonToDownload;
+							updateNumberofLayers("Dibujos");
+						}
+
 
 						// if (perfilTopografico.isActive) {
 						// 	// check if profile was clicked
@@ -580,7 +617,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								deleteLayerFromMenu(deletedLayer);
 							}
 						});
-						updateGroupBtn();
+						//updateGroupBtn();
 						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
@@ -2681,7 +2718,7 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 });
 
-function updateGroupBtn() {
+function updateGroupBtn() { //en desuso
 	let control = document.getElementById('iconGS-container');
 	if (Object.values(drawnItems._layers).length === 0) {
 		control.title = "No hay capas para agrupar";
