@@ -136,15 +136,25 @@ class UImf {
           name = stringShortener(fileLayer.getFileName(), 16, true);
         }
 
-
         // Add to current layers to add to the layers menu later
-        currentLayers.push({
-          id: fileLayer.getId(),
-          layer: fileLayer.getGeoJSON(),
-          name: name,
-          file_name: fileLayer.getFileName(),
-          kb: fileLayer.getFileSize('kb')
-        });
+        if (fileLayer.layerData.process) {
+          currentLayers.push({
+            id: fileLayer.getId(),
+            layer: fileLayer.getGeoJSON(),
+            name: name,
+            process: fileLayer.layerData.process,
+            file_name: fileLayer.getFileName(),
+            kb: fileLayer.getFileSize('kb')
+          });
+        } else {
+          currentLayers.push({
+            id: fileLayer.getId(),
+            layer: fileLayer.getGeoJSON(),
+            name: name,
+            file_name: fileLayer.getFileName(),
+            kb: fileLayer.getFileSize('kb')
+          });
+        }
 
         // Show in the dialog
         ui_upload.addFileItem(fileLayer.getId());
@@ -459,28 +469,93 @@ class UImf {
 
 let uimodalfs = new UImf();
 
-function addLayersfromFiles() {
-  let sectionName = "Archivos",
-      typeName = "file";
-  currentLayers.forEach((e) => {
-    // Draw the layer in the map
-    mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
-    // Add the layer to the Menu
-    // Save layer to check its existence in the next layer load
-    addedLayers.push({
-      id: e.id,
-      layer: e.layer,
-      name: e.name,
-      file_name: e.file_name,
-      kb: e.kb,
-      isActive: true,
-      type: typeName,
-      section: sectionName
-    });
-    menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
-    updateNumberofLayers(sectionName);
-    $("#item_uf_" + e.id).remove();
+function addProcessfromFiles(e, sectionName, typeName, counter) {
+  switch (e.process) {
+    case geoProcessingManager.GEOPROCESS.contour:
+      counter = counterContour;
+      counterContour++;
+      break;
+    case geoProcessingManager.GEOPROCESS.waterRise:
+      counter = counterHeight;
+      counterHeight++;
+      break;
+    case geoProcessingManager.GEOPROCESS.buffer:
+      counter = counterBuffer;
+      counterBuffer++;
+      break;
+    case geoProcessingManager.GEOPROCESS.elevationProfile:
+      counter = counterElevProfile;
+      counterElevProfile++;
+      break;
+    default:
+      break;
+  }
 
+  sectionName = "Geoprocesos",
+  typeName = "geoprocess";
+  let nameId = e.process + counter;
+  addedLayers.push({
+    id: nameId,
+    layer: e.layer,
+    name:  nameId,
+    file_name: nameId,
+    process: e.process,
+    kb: e.kb,
+    isActive: true,
+    type: typeName,
+    section: sectionName
+  });
+  mapa.addGeoJsonLayerToDrawedLayers(e.layer, nameId, true, true);
+
+  if (e.process == geoProcessingManager.GEOPROCESS.contour) {
+    let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
+    selectedRectangle._uneditable = true; //aux to disallow editing the layer
+    selectedRectangle.process = nameId; //aux to relate contour with waterRise
+  } else if (e.process == geoProcessingManager.GEOPROCESS.buffer) {
+    mapa.editableLayers.polygon.forEach(lyr => {
+      if (lyr.id === nameId) {
+        lyr._uneditable = true; //aux to disallow editing the layer
+      }
+    })
+  } 
+  // else if (e.process == geoProcessingManager.GEOPROCESS.waterRise) {
+  //   mapa.editableLayers.cota.forEach(lyr => {
+  //     if (lyr.id === nameId) {
+  //       lyr._uneditable = true; //aux to disallow editing the layer
+  //     }
+  //   })
+  // }
+
+  menu_ui.addFileLayer(sectionName, typeName, nameId, nameId, nameId, true);
+  updateNumberofLayers(sectionName);
+  $("#item_uf_" + nameId).remove();
+}
+
+function addLayersfromFiles() {
+  let sectionName, typeName, counter;
+
+  currentLayers.forEach((e) => {
+    if (e.process) {
+      addProcessfromFiles(e, sectionName, typeName, counter);
+    } else {
+      sectionName = "Archivos",
+      typeName = "file";
+
+      addedLayers.push({
+        id: e.id,
+        layer: e.layer,
+        name: e.name,
+        file_name: e.file_name,
+        kb: e.kb,
+        isActive: true,
+        type: typeName,
+        section: sectionName
+      });
+      mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
+      menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
+      updateNumberofLayers(sectionName);
+      $("#item_uf_" + e.id).remove();
+    }
   });
   currentLayers = [];
   showTotalNumberofLayers();

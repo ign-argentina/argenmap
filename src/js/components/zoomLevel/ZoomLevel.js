@@ -1,4 +1,4 @@
-const zoomTemplate = `
+/* const zoomTemplate = `
     <div class="center-flex" id="zoom-level" title="Zoom" data-html2canvas-ignore="true">
         <div class="center-flex" id="icon-container">
             <i class="fa fa-search" aria-hidden="true"></i>
@@ -7,7 +7,7 @@ const zoomTemplate = `
             <p id="zoom-value"></p>
         </div>
     </div>
-`;
+`; */
 
 class ZoomLevel {
     constructor(zoomLevel) {
@@ -20,24 +20,21 @@ class ZoomLevel {
         this.updateZoomLevel();
     }
 
-    getTemplate(){
+    getTemplate() {
         const zoomLevel = document.createElement('div');
         zoomLevel.id = 'zoom-level';
         zoomLevel.title = 'Zoom';
-        zoomLevel.classList.add('center-flex');
-        zoomLevel.setAttribute('data-html2canvas-ignore', 'true');
+        zoomLevel.className = 'leaflet-bar leaflet-control';
 
-        const iconContainer = document.createElement('div');
+        const iconContainer = document.createElement('a');
         iconContainer.id = 'icon-container';
-        iconContainer.classList.add('center-flex');
 
         const zoomIcon = document.createElement('i');
         zoomIcon.classList = 'fa fa-search-plus';
         zoomIcon.setAttribute('aria-hidden', 'true');
 
-        const valueContainer = document.createElement('div');
+        const valueContainer = document.createElement('a');
         valueContainer.id = 'zoom-container';
-        valueContainer.classList.add('center-flex');
 
         const zoomValue = document.createElement('p');
         zoomValue.id = 'zoom-value';
@@ -53,14 +50,14 @@ class ZoomLevel {
     createComponent() {
         let zoom = this.getTemplate();
         L.Control.zoomLevel = L.Control.extend({
-            onAdd: function(map) {
+            onAdd: function (map) {
                 return zoom;
             }
         });
-        L.control.zoomLevel = function(opts) {
+        L.control.zoomLevel = function (opts) {
             return new L.Control.zoomLevel(opts);
         }
-        L.control.zoomLevel({ position: 'bottomleft'}).addTo(mapa);
+        L.control.zoomLevel({ position: 'bottomleft' }).addTo(mapa);
 
         this._zoomLevelDomElement = document.getElementById('zoom-value');
         this._zoomLevelDomElement.style.margin = 0;

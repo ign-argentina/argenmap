@@ -186,6 +186,7 @@ class Geoprocessing {
 
         let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
         selectedRectangle._uneditable = true; //aux to disallow editing the layer
+        selectedRectangle.process = layername; //aux to relate contour with waterRise
         mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
         addedLayers.push({
@@ -193,7 +194,7 @@ class Geoprocessing {
           layer: result,
           name: layername,
           file_name: layername,
-          rectangle: selectedRectangle,
+          //rectangle: selectedRectangle,
           type: layerType,
           isActive: true,
           section: sectionName
@@ -223,9 +224,9 @@ class Geoprocessing {
         counterHeight++;
 
         let selectedRectangle;
-        addedLayers.forEach(lyr => {
-          if (lyr.id === this.getCapaValue()) {
-            selectedRectangle = lyr.rectangle
+        mapa.editableLayers.rectangle.forEach(rect => {
+          if (rect.process === this.getCapaValue()) {
+            selectedRectangle = rect;
           }
         });
 
@@ -399,7 +400,7 @@ class Geoprocessing {
     document.getElementById("sliderValue").classList.remove("hidden");
     let arraySlider = []; //Array that contains all unique values
     sliderLayer.layer.features.forEach((element) => {
-      if (!arraySlider.includes(element.properties.value)) {
+      if (!arraySlider.includes(element.properties.value) && element.geometry.type == "LineString") {
         arraySlider.push(element.properties.value);
       }
     });
@@ -426,7 +427,7 @@ class Geoprocessing {
     let arraySlider = []; //Array that contains all unique values
 
     sliderLayer.layer.features.forEach((element) => {
-      if (!arraySlider.includes(element.properties.value)) {
+      if (!arraySlider.includes(element.properties.value) && element.geometry.type == "LineString") {
         arraySlider.push(element.properties.value);
       }
     });
@@ -604,17 +605,26 @@ class Geoprocessing {
 
 
   checkLayersForBuffer() {
+    let isBuffer = false;
     gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
       if (layer) {
-        $("#msgNoLayer").addClass("hidden");
+        isBuffer = true;
+      }
+    });
+    addedLayers.forEach(lyr => {
+      if (lyr.type === "WMS") {
+        isBuffer = true;
+      }
+    })
+    if (isBuffer) {
+      $("#msgNoLayer").addClass("hidden");
         $("#msgRectangle").removeClass("hidden");
         //$("#drawRectangleBtn").removeClass("disabledbutton");
         $('label[for="input-equidistancia"]').show();
         document
           .getElementById("input-equidistancia")
           .classList.remove("hidden");
-      }
-    });
+    }
   }
 
   buildOptionFormMessages(sliderLayer) {
@@ -742,6 +752,14 @@ class Geoprocessing {
                     });
                   }
                 });
+                addedLayers.forEach(lyr => {
+                  if (lyr.type === "WMS") {
+                    options.push({
+                      value: lyr.name,
+                      text: lyr.layer.title,
+                    });
+                  }
+                });
               } else if (this.geoprocessId === "elevationProfile") {
                 const polylines = mapa.editableLayers.polyline;
                 if (polylines.length > 0) {
@@ -773,7 +791,7 @@ class Geoprocessing {
                       return;
                     }
                     addedLayers.forEach((lyr) => {
-                      lyr.file_name == element.value
+                      lyr.id == element.value
                         ? (selectedLayer = lyr)
                         : null;
                     });
@@ -790,6 +808,7 @@ class Geoprocessing {
                       $("#drawRectangleBtn").addClass("disabledbutton");
                       $("#ejec_gp").addClass("disabledbutton");
                     } else {
+                      this.checkLayersForBuffer()
                       $("#drawRectangleBtn").removeClass("disabledbutton");
                     }
                   } else if (this.geoprocessId === "elevationProfile") {
@@ -926,12 +945,29 @@ class Geoprocessing {
       drawnRectangle = lyr;
     });
     let layerSelected;
-    gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
-      let selctedLayerName = document.getElementById("select-capa").value;
-      layer.name === selctedLayerName
-        ? (layerSelected = layer)
-        : console.info("Layer not found.");
-    });
+    // gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+    //   let selctedLayerName = document.getElementById("select-capa").value;
+    //   layer.name === selctedLayerName
+    //     ? (layerSelected = layer)
+    //     : 0;
+    // });
+
+    // addedLayers.forEach(lyr => {
+    //   if (lyr.type === "WMS") {
+    //     let selctedLayerName = document.getElementById("select-capa").value;
+    //     lyr.name === selctedLayerName
+    //     ? (layerSelected = lyr.layer)
+    //     : 0;
+    //   }
+    // });
+
+    let allLayers = getAllActiveLayers();
+    let selctedLayerName = document.getElementById("select-capa").value;
+    allLayers.forEach(lyr => {
+      if (lyr.name === selctedLayerName ) {
+        layerSelected = lyr.layer;
+      }
+    })
 
     let coords = getGeometryCoords(drawnRectangle);
 
@@ -985,17 +1021,17 @@ class Geoprocessing {
             break;
           }
           case "waterRise": {
-            addedLayers.forEach((layer) => {
-              if (layer.id == document.getElementById("select-capa").value) {
-                layer.rectangle._latlngs[0].forEach((coord) => {
+            mapa.editableLayers.rectangle.forEach(rect => {
+              if (rect.process === document.getElementById("select-capa").value) {
+                rect._latlngs[0].forEach((coord) => {
                   arrayWaterRise += coord.lng + " " + coord.lat + ",";
                 });
                 arrayWaterRise +=
-                  layer.rectangle._latlngs[0][0].lng +
+                rect._latlngs[0][0].lng +
                   " " +
-                  layer.rectangle._latlngs[0][0].lat;
+                  rect._latlngs[0][0].lat;
               }
-            });
+            })
 
             let waterRiseValue =
               document.getElementById("sliderValue").innerHTML;
