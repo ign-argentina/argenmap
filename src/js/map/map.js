@@ -444,11 +444,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 						position: 'topright'
 					});
 
-					const jsonDrawing = {
-						type: "FeatureCollection",
-						features: []
-					};
-
 					//Customizing language and text in Leaflet.draw
 					L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
 					L.drawLocal.draw.toolbar.finish.text = 'Finalizar';
@@ -524,17 +519,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							mapa.downloadLayerGeoJSON(layer);
 						}
 
-						/* var cont = 0;
-						lyr.name = lyr.name + counterGroupLayerSelector; */
 						mapa.editableLayers[type].push(layer);
-
-						/* const layer1 = mapa.getEditableLayer(name, true);
-						const geoJSON = layer1.toGeoJSON();
-						const styleOptions = { ...layer1.options };
-						geoJSON.properties.styles = styleOptions;
-						geoJSON.properties.type = layer1.type;
-						(layer1.value) ? geoJSON.properties.value = layer1.value : 0;
-						jsonDrawing.features.push(geoJSON); */
 
 						if (Object.values(drawnItems._layers).length === 0) {
 							if (mapa.groupLayers["dibujos"] === undefined) {
@@ -559,7 +544,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 							});
 							updateNumberofLayers("Dibujos");
 						}
-
 
 						// if (perfilTopografico.isActive) {
 						// 	// check if profile was clicked
