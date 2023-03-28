@@ -1471,3 +1471,12 @@ function getAllActiveLayers() {
   })
   return allActiveLayers;
 }
+
+function whenClicked(e) {
+  if (e.target.activeData === true) {
+    console.log(e.target.name);
+    console.log(e.target);
+  } else {
+
+  }
+}

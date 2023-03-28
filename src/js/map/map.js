@@ -394,8 +394,8 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 					break;
 				case 'groupLayerSelector':
-					//const groupLayerSelector = new GroupLayerSelector();
-					//groupLayerSelector.createComponent();
+					const groupLayerSelector = new GroupLayerSelector();
+					groupLayerSelector.createComponent();
 					break;
 				case 'Draw':
 
@@ -519,6 +519,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(layer);
 						}
+
+						layer.on({
+							click: whenClicked
+						});
 
 						mapa.editableLayers[type].push(layer);
 
@@ -2529,7 +2533,11 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.id = groupName;
 						layer.name = name;
 						layer.type = type;
-						layer.data = {};
+						//layer.data = {activeData: false};
+						layer.activeData = false
+						layer.on({
+							click: whenClicked
+						});
 
 						mapa.groupLayers[groupName].push(name);
 
