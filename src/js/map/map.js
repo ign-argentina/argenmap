@@ -444,7 +444,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						position: 'topright'
 					});
 
-					const jsonToDownload = {
+					const jsonDrawing = {
 						type: "FeatureCollection",
 						features: []
 					};
@@ -534,10 +534,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						geoJSON.properties.styles = styleOptions;
 						geoJSON.properties.type = layer1.type;
 						(layer1.value) ? geoJSON.properties.value = layer1.value : 0;
-						jsonToDownload.features.push(geoJSON);
-if(true){
-console.log(layer);
-}
+						jsonDrawing.features.push(geoJSON);
+
 						if (Object.values(drawnItems._layers).length === 0) {
 							if (mapa.groupLayers["dibujos"] === undefined) {
 								mapa.groupLayers["dibujos"] = [];
@@ -545,7 +543,7 @@ console.log(layer);
 							mapa.addLayerToGroup(name, "dibujos");
 							addedLayers.push({
 								id: "dibujos",
-								layer: jsonToDownload,
+								layer: jsonDrawing,
 								name: "dibujos",
 								type: "dibujos",
 								isActive: true,
@@ -554,7 +552,11 @@ console.log(layer);
 							menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true); updateNumberofLayers("Dibujos");
 						} else {
 							mapa.addLayerToGroup(name, "dibujos");
-							addedLayers.layer = jsonToDownload;
+							addedLayers.forEach(lyr => {
+								if (lyr.id === "dibujos") {
+									lyr.layer = jsonDrawing;
+								}
+							});
 							updateNumberofLayers("Dibujos");
 						}
 
