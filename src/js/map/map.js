@@ -545,8 +545,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (geoProcessingManager) {
 							geoProcessingManager.updateLayerSelect(layer.name, true);
 						}
-
-						//updateGroupBtn();
 					});
 
 					mapa.on('draw:edited', (e) => {
@@ -580,7 +578,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								deleteLayerFromMenu(deletedLayer);
 							}
 						});
-						updateGroupBtn();
+
 						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
@@ -2680,17 +2678,6 @@ $("body").on("pluginLoad", function(event, plugin){
 			break;
 	}
 });
-
-function updateGroupBtn() {
-	let control = document.getElementById('iconGS-container');
-	if (Object.values(drawnItems._layers).length === 0) {
-		control.title = "No hay capas para agrupar";
-		control.classList.add("leaflet-disabled");
-	} else {
-		control.title = "Agrupar geometrías";
-		control.classList.remove("leaflet-disabled");
-	}
-}
 
 function addSelectionLayersMenuToLayer(layer) {
 	const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
