@@ -91,7 +91,8 @@ loginatic = function () {
       }
 
       if (result.external_link) {
-        menu_ui.addButton({ link: result.external_link });
+        menu_ui.removeButton("external-link-li"); // in case if exists, remove it first
+        menu_ui.addButton({ id: "external-link-li", link: result.external_link });
       }
 
       if (!logged) {
@@ -103,13 +104,8 @@ loginatic = function () {
   this.logout = () => {
     this.currentLogin = false;
     setCookie("autologin", 0);
-    if (this.external_link === null) {
-      
-    }
-    let externalBtn = document.getElementById("external-link-li");
-    if (externalBtn) {
-      externalBtn.remove();
-    }
+    
+    menu_ui.removeButton("external-link-li");
     /* 
         let lat = -40;
         let lon = -59;
