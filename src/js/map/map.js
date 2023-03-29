@@ -2533,8 +2533,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.id = groupName;
 						layer.name = name;
 						layer.type = type;
-						//layer.data = {activeData: false};
-						layer.activeData = false
+						layer.data = {geoJSON};
+						layer.activeData = false;
+						
 						layer.on({
 							click: getVectorData
 						});
