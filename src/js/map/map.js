@@ -2724,17 +2724,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 	}
 });
 
-function updateGroupBtn() { //en desuso
-	let control = document.getElementById('iconGS-container');
-	if (Object.values(drawnItems._layers).length === 0) {
-		control.title = "No hay capas para agrupar";
-		control.classList.add("leaflet-disabled");
-	} else {
-		control.title = "Agrupar geometrías";
-		control.classList.remove("leaflet-disabled");
-	}
-}
-
 function addSelectionLayersMenuToLayer(layer) {
 	const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
 	layer.bindPopup(popUpDiv).openPopup();

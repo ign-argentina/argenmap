@@ -566,13 +566,15 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         //setProperStyleToCtrlBtns();
 
+/*      
         let bm = document.getElementById("collapseBaseMapLayers");
         bm.addEventListener("dblclick", function () {
           event.stopPropagation();
         });
         bm.addEventListener("click", function () {
           event.stopPropagation();
-        });
+        }); 
+*/
 
       }
     }, 100);
