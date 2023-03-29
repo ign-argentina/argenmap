@@ -4102,6 +4102,12 @@ class Menu_UI {
     if (serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
     addCounterForSection(groupname, layerType);
   }
+
+  addButton ({ parent = "sidebar", text = "Abrir visor OT", link = "#", title = "Abrir OT" }) {
+    let btnHtml = `<div id="external-link-li" class="panel-body"><li class="capa list-group-item" style="padding: 10px 1px;"><div class="capa-title"><div class="name-layer" onclick="window.open('${link}', '_blank');" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li></div>`
+    let sections = document.getElementsByClassName('menu5 panel-default');
+    sections[0].insertAdjacentHTML('beforebegin', btnHtml);
+  }
 }
 
 class Geometry {
