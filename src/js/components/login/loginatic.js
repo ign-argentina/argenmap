@@ -3,6 +3,7 @@ loginatic = function () {
   this.notLoggedTxt =
     app.login.notLogged || "Contraseña no válida, intente nuevamente";
   this.noPassword = app.login.noPassword || "Campo vacío, ingrese su contraseña";
+  this.external_link = null;
   this.init = (conf) => {
     if (getCookie("autologin") == null) {
       setCookie("autologin", 0);
@@ -89,6 +90,17 @@ loginatic = function () {
         }
       }
 
+      if (result.external_link) {
+        menu_ui.removeButton("external-link-li"); // in case if exists, remove it first
+        menu_ui.addButton({ 
+          id: "external-link-li", 
+          link: result.external_link, 
+          text: "Abrir visor OT",
+          title: "Abrir visor OT",
+          location: "top"
+        });
+      }
+
       if (!logged) {
         alert(this.notLoggedTxt);
       }
@@ -98,6 +110,8 @@ loginatic = function () {
   this.logout = () => {
     this.currentLogin = false;
     setCookie("autologin", 0);
+    
+    menu_ui.removeButton("external-link-li");
     /* 
         let lat = -40;
         let lon = -59;
