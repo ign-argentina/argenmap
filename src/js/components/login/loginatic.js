@@ -95,8 +95,8 @@ loginatic = function () {
         menu_ui.addButton({ 
           id: "external-link-li", 
           link: result.external_link, 
-          text: "Abrir visor OT",
-          title: "Abrir visor OT",
+          text: "Visor OT " + result.nam,
+          title: "Abrir visor Ordenamiento Territorial " + result.nam,
           location: "top"
         });
       }
