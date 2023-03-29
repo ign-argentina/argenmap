@@ -28,7 +28,6 @@ function activateDataConsult() {
                 }
             });
         });
-        console.log("Ver Datos Activado!")
         document.getElementById("iconCD-container").style.backgroundColor = "#00ff04";
         consultDataBtnClose = false;
     } else {
@@ -39,7 +38,6 @@ function activateDataConsult() {
                 }
             });
         });
-        console.log("Ver Datos Desctivado!")
         document.getElementById("iconCD-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         consultDataBtnClose = true;
     }

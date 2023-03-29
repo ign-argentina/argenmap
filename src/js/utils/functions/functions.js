@@ -1475,7 +1475,6 @@ function getAllActiveLayers() {
 function getVectorData(e) {
   if (e.target.activeData === true) {
     let layer = e.target;
-    console.log(layer.name);
-    console.log(layer);
+    console.log(layer.data.geoJSON.properties);
   }
 }
