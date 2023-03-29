@@ -65,7 +65,7 @@ const PLUGINS = {
   FullScreen: "src/js/components/fullscreen/fullscreen.js",
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
   loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
-  groupLayerSelector: "src/js/components/groupLayerSelector/groupLayerSelector.js"
+  consultData: "src/js/components/groupLayerSelector/groupLayerSelector.js"
 };
 
 const MESSAGE_TIME = 4000;

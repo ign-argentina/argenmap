@@ -1,11 +1,10 @@
-let counterGroupLayerSelector = 0;
 let consultDataBtnClose = true;
 
-class GroupLayerSelector {
+class ConsultData {
     constructor() {
         this.component = `
-        <a id="iconGS-container" class="leaflet-disabled" title="No hay capas para agrupar">
-              <i id="iconGS" class="fa-regular fa-object-group" aria-hidden="true"></i>
+        <a id="iconCD-container" class="leaflet-disabled" title="Consultar Datos">
+              <i id="iconCD" class="fa-regular fa-object-group" aria-hidden="true"></i>
         </a>
         `;
     }
@@ -13,7 +12,7 @@ class GroupLayerSelector {
     createComponent() {
         const elem = document.createElement("div");
         elem.className = "leaflet-bar leaflet-control";
-        elem.id = "groupLayerSelector";
+        elem.id = "consultData";
         elem.innerHTML = this.component;
         elem.onclick = activateDataConsult;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
@@ -30,7 +29,7 @@ function activateDataConsult() {
             });
         });
         console.log("Ver Datos Activado!")
-        document.getElementById("iconGS-container").style.backgroundColor = "#00ff04";
+        document.getElementById("iconCD-container").style.backgroundColor = "#00ff04";
         consultDataBtnClose = false;
     } else {
         Object.values(mapa.editableLayers).forEach(editLayer => {
@@ -41,7 +40,7 @@ function activateDataConsult() {
             });
         });
         console.log("Ver Datos Desctivado!")
-        document.getElementById("iconGS-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        document.getElementById("iconCD-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         consultDataBtnClose = true;
     }
 }

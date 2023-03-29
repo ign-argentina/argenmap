@@ -1,8 +1,8 @@
-#groupLayerSelector :hover {
+#consultData :hover {
     cursor: pointer;
   }
   
-  #iconGS {
+  #iconCD {
     font-size: 17px;
     line-height: inherit;
   }

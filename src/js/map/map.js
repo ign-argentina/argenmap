@@ -46,7 +46,7 @@ var unordered = '';
 var ordered = ['','','','','','','','','','','','','',''];
 var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
-var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenGroupLayerSelector = 14;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -95,8 +95,8 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'pdfPrinter':
 			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
 			break;
-			case 'groupLayerSelector':
-			ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
+		case 'consultData':
+			ordered.splice(ordenConsultData, 1, plugin.pluginName);
 			break;
 		default :
 			// Add unordered plugins
@@ -133,8 +133,8 @@ $("body").on("pluginLoad", function(event, plugin){
 		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
- 	if(visiblesActivar && gestorMenu.pluginExists('groupLayerSelector')) {
-		if(gestorMenu.plugins['groupLayerSelector'].getStatus() == 'ready' || gestorMenu.plugins['groupLayerSelector'].getStatus() == 'fail'){
+ 	if(visiblesActivar && gestorMenu.pluginExists('consultData')) {
+		if(gestorMenu.plugins['consultData'].getStatus() == 'ready' || gestorMenu.plugins['consultData'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
@@ -393,9 +393,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						pdfP.createComponent();
 					}
 					break;
-				case 'groupLayerSelector':
-					const groupLayerSelector = new GroupLayerSelector();
-					groupLayerSelector.createComponent();
+				case 'consultData':
+					const consultData = new ConsultData();
+					consultData.createComponent();
 					break;
 				case 'Draw':
 
