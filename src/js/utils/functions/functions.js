@@ -1472,11 +1472,10 @@ function getAllActiveLayers() {
   return allActiveLayers;
 }
 
-function whenClicked(e) {
+function getVectorData(e) {
   if (e.target.activeData === true) {
-    console.log(e.target.name);
-    console.log(e.target);
-  } else {
-
+    let layer = e.target;
+    console.log(layer.name);
+    console.log(layer);
   }
 }

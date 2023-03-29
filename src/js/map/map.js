@@ -520,9 +520,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							mapa.downloadLayerGeoJSON(layer);
 						}
 
-						layer.on({
-							click: whenClicked
-						});
+						// layer.on({
+						// 	click: whenClicked
+						// });
 
 						mapa.editableLayers[type].push(layer);
 
@@ -2536,7 +2536,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						//layer.data = {activeData: false};
 						layer.activeData = false
 						layer.on({
-							click: whenClicked
+							click: getVectorData
 						});
 
 						mapa.groupLayers[groupName].push(name);
