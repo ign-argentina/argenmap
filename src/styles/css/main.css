@@ -219,6 +219,12 @@ li.active>div>a {
 .list-group-item.active {
   border-color: #ccc;
 }
+.list-group-item:hover, .file-layer:hover {
+  background-color: var(--hoverSelect-bg-color);
+}
+.list-group-item:hover span, .file-layer:hover a {
+  color: var(--text-color);
+}
 .active-layers-counter {
   height: 20px;
   width: 20px;
