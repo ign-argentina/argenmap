@@ -50,6 +50,8 @@
     top: 0;
     left: 0;
     background: RGBA(255, 255, 255, .6);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     z-index: 1050;
     display: none;
 }
@@ -58,9 +60,9 @@
     padding: 2rem;
     background: #37bbec;
     border-radius: 10px;
-    box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
     -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
     color: white;
 }
 
