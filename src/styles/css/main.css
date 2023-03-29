@@ -9,6 +9,7 @@
   --body-fnt-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
+  --layer-btn-hover-color: #969393; 
 }
 /*******************************
 General
@@ -216,11 +217,23 @@ li.active>div>a {
   position: initial;
   font-family: "Encode Sans Medium", sans-serif;
 }
+.menu-button {
+  background-color: #6e6d6d;
+  position: sticky;
+}
+.menu-button:hover {
+  background-color: #4d5358 !important;
+}
+.menu-button a span {
+  color: var(--text-color) !important;
+  padding-left: 15px;
+  font-weight: bold;
+}
 .list-group-item.active {
   border-color: #ccc;
 }
 .list-group-item:hover, .file-layer:hover {
-  background-color: var(--hoverSelect-bg-color);
+  background-color: var(--layer-btn-hover-color);
 }
 .list-group-item:hover span, .file-layer:hover a {
   color: var(--text-color);

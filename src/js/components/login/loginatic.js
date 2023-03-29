@@ -92,7 +92,13 @@ loginatic = function () {
 
       if (result.external_link) {
         menu_ui.removeButton("external-link-li"); // in case if exists, remove it first
-        menu_ui.addButton({ id: "external-link-li", link: result.external_link });
+        menu_ui.addButton({ 
+          id: "external-link-li", 
+          link: result.external_link, 
+          text: "Abrir visor OT",
+          title: "Abrir visor OT",
+          location: "top"
+        });
       }
 
       if (!logged) {

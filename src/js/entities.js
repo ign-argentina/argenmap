@@ -4106,21 +4106,21 @@ class Menu_UI {
   addButton({ 
       id = "custom-btn", 
       location = "top", 
-      text = "Abrir visor OT", 
+      text = "A custom button", 
       link = "#", 
-      title = "Abrir OT" 
+      title = "A custom button" 
     }) {
     let btn = document.getElementById(id);
 
     if (!btn) { 
-      let btnHtml = `<div id="${id}" class="panel-body"><li onclick="window.open('${link}', '_blank');" class="capa list-group-item" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li></div>`
+      let btnHtml = `<li id="${id}" onclick="window.open('${link}', '_blank');" class="list-group-item menu-button" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li>`
       
-      let sections = document.getElementsByClassName('menu5 panel-default');
+      let menuItems = document.getElementById("sidebar"); //document.getElementsByClassName('menu5 panel-default');
       if (location === "top") {
-        sections[0].insertAdjacentHTML("beforebegin", btnHtml)
+        menuItems.insertAdjacentHTML("beforebegin", btnHtml)
       }
       if (location === "bottom") {
-        sections[sections.length -1].insertAdjacentHTML("afterend", btnHtml);
+        menuItems.insertAdjacentHTML("afterend", btnHtml);
       }
     }
   }
