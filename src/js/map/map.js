@@ -582,7 +582,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 					mapa.on('draw:deleted', function (e) {
 						var layers = e.layers;
-						Object.values(layers._layers).forEach(deletedLayer => {
+						/* Object.values(layers._layers).forEach(deletedLayer => {
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
 							if (lyrIdx >= 0) {
 								let layerSection;
@@ -595,31 +595,18 @@ $("body").on("pluginLoad", function (event, plugin) {
 											updateNumberofLayers(layerSection);
 											showTotalNumberofLayers();
 										}
-									} else if (lyr.id === "dibujos") {
-										lyr.layer.forEach(e => {
-											if (e.id === deletedLayer.id) {
-												console.log(e);
-											}
-											let index = addedLayers.indexOf(e);
-											console.log(index);
-											if (index > -1) {
-												layerSection = e.section;
-												addedLayers.splice(index, 1);
-												updateNumberofLayers(layerSection);
-												showTotalNumberofLayers();
-											}
-										})
 									}
 								});
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
 							}
 						});
-						//updateGroupBtn();
+
 						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
 						}*/
+
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
@@ -2110,21 +2097,28 @@ $("body").on("pluginLoad", function (event, plugin) {
 								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 							}
 						}
-						/* addedLayers.forEach(lyr => {
+						let layerSection;
+						addedLayers.forEach(lyr => {
+							i = 0;
 							if (lyr.id === "dibujos") {
 								lyr.layer.forEach(e => {
-									if (e.name === layerName) {
-										let index = addedLayers.indexOf(e);
-										console.log(index);
-										if (index > -1) {
-											lyr.layer.splice(index, 1);
-											updateNumberofLayers("dibujos");
-											showTotalNumberofLayers();
-										}
+									if (layerName === e.name) {
+										layerSection = lyr.section;
+										lyr.layer.splice(i, 1);
+										updateNumberofLayers(layerSection);
+										showTotalNumberofLayers();
 									}
+									i++;
 								})
 							}
-						}); */
+							if (lyr.layer.length === 0) {
+								let index = addedLayers.indexOf(lyr);
+								if (index > -1) {
+									addedLayers.splice(index, 1);
+									showTotalNumberofLayers();
+								}
+							}
+						});
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 						controlSeccionGeom();
 					}

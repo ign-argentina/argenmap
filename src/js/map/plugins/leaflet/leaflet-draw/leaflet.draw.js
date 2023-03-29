@@ -2975,7 +2975,7 @@
         let isFile = e.id ? e.id.includes('json') || e.id.includes('zip') || e.id.includes('kml') : false;
         if (typeof e != "string" && !e._uneditable && !e.value && !isFile) {
           //this._deletableLayers.removeLayer(e),
-          mapa.deleteLayer(e.name), //remove geometry from groupLayer[dibujos], drawItem and editableLayers
+          mapa.deleteLayer(e.name), //remove geometry from groupLayer[dibujos], drawItem, editableLayers and addedLayers
             this._deletedLayers.addLayer(e),
             e.fire("deleted");
         }
