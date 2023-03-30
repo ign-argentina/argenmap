@@ -2534,7 +2534,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.name = name;
 						layer.type = type;
 						layer.data = {geoJSON};
-						layer.activeData = false;
+						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
 						
 						layer.on({
 							click: getVectorData

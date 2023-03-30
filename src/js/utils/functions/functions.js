@@ -340,7 +340,7 @@ function parseFeatureInfoHTML(info, idTxt) {
 //Parse FeatureInfo to display into popup (if info is application/json)
 function parseFeatureInfoJSON(info, idTxt, title) {
   info = JSON.parse(info);
-  console.log(info)
+
   if (info.features.length > 0) {
     // check if info has any content, if so shows popup
 
@@ -371,7 +371,6 @@ function parseFeatureInfoJSON(info, idTxt, title) {
 
     infoAux += "</ul>";
     infoAux += "</div></div></div>";
-    console.log(infoAux)
 
     return infoAux;
   }
@@ -1477,74 +1476,46 @@ function getAllActiveLayers() {
 function getVectorData(e) {
   if (e.target.activeData === true) {
     let layer = e.target;
-    dataWrapper(layer.data.geoJSON.properties)
+    createPopupForVector(layer);
   }
 }
 
-function dataWrapper(properties) {
-	if (document.getElementById("dataWrapper")) {
-		document.getElementById("dataWrapper").remove()
-	}
+function createPopupForVector(layer) {
+  //console.log(layer)
+  let title = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase()
+  var infoAux =
+    '<div class="featureInfo" id="featureInfoPopup' + title + '">';
+  infoAux += '<div class="featureGroup">';
+  infoAux += '<div style="padding:1em" class="individualFeature">';
+  infoAux +=
+    '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
+    title +
+    "</h4>";
+  infoAux += "<ul>";
 
-	const wrapper = document.createElement("div");
-	wrapper.id="dataWrapper";
-	wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white !important"
-	wrapper.innerHTML="Ver Data"
-	
-	let btncloseWrapper = document.createElement("a");
-	btncloseWrapper.id = "btnclose-wrapper";
-	btncloseWrapper.href = "javascript:void(0)";
-	btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
-	btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
-	btncloseWrapper.onclick = () => {
-		wrapper.remove();
-	};
-	wrapper.appendChild(btncloseWrapper);
-	
-	const data = document.createElement("div");
-	data.id="dataInfo";
-	wrapper.appendChild(data);
+  Object.keys(layer.data.geoJSON.properties).forEach(function (k) {
+    let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
+    if (k != "bbox" && !ignoredField) {
+      //Do not show bbox property
+      infoAux += "<li>";
+      infoAux += "<b>" + ucwords(k.replace(/_/g, " ")) + ":</b>";
+      if (layer.data.geoJSON.properties[k] != null) {
+        infoAux += " " + layer.data.geoJSON.properties[k];
+      }
+      infoAux += "<li>";
+    }
+  });
+  
+  infoAux += "</ul>";
+  infoAux += "</div></div></div>";
+  popupInfo.push(infoAux); //First info for popup
 
-	document.body.appendChild(wrapper);
-	$("#dataWrapper").draggable({scroll: false, cancel: '#dataInfo', containment: "body"}); 
-							
-	showAllData(properties);
-
-}
-
-function showAllData(data) {		
-	const type = data.objeto[0].toUpperCase() + data.objeto.slice(1).toLowerCase();
-	showData("Archivo",type);
-
-	const fdc = data.fdc;
-	showData("fdc",fdc);
-			
-	const fna = data.fna;
-	showData("fna",fna);	
-											
-	const gid = data.gid;
-	showData("gid",gid);
-											
-	const gna = data.gna;
-	showData("gna",gna);
-											
-	const nam = data.nam;
-	showData("nam",nam);
-											
-	const sag = data.sag;
-	showData("sag",sag);
-}
-
-function showData(name,data) {
-	const wrapper = document.getElementById("dataInfo"),
-		newDiv = document.createElement("tr"),
-
-		infoName = document.createElement("td");
-		infoName.innerHTML = `${name}:`;
-		infoDesc = document.createElement("td");
-		infoDesc.innerHTML = `${data}`;
-
-	newDiv.appendChild(infoName);
-	newDiv.appendChild(infoDesc);
-	wrapper.appendChild(newDiv);
+  let center;
+  if (layer._latlng) {
+    center = layer._latlng;
+  } else if (layer._latlngs){
+    center = layer.getBounds().getCenter();
+  }
+  //console.log(center)
+  layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show all info
 }

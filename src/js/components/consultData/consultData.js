@@ -4,7 +4,7 @@ class ConsultData {
     constructor() {
         this.component = `
         <a id="iconCD-container" class="leaflet-disabled" title="Consultar Datos">
-              <i id="iconCD" class="fa-regular fa-object-group" aria-hidden="true"></i>
+              <i id="iconCD" class="fa fa-question-circle" aria-hidden="true"></i>
         </a>
         `;
     }
