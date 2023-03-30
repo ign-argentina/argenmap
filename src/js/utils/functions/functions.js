@@ -1482,9 +1482,11 @@ function getVectorData(e) {
 
 function createPopupForVector(layer) {
   //console.log(layer)
-  let title = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase()
+  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase(),
+      title = layer.data.geoJSON.properties.objeto;
+
   var infoAux =
-    '<div class="featureInfo" id="featureInfoPopup' + title + '">';
+    '<div class="featureInfo" id="featureInfoPopup' + id + '">';
   infoAux += '<div class="featureGroup">';
   infoAux += '<div style="padding:1em" class="individualFeature">';
   infoAux +=
@@ -1495,7 +1497,7 @@ function createPopupForVector(layer) {
 
   Object.keys(layer.data.geoJSON.properties).forEach(function (k) {
     let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
-    if (k != "bbox" && !ignoredField) {
+    if (k != "bbox" && !ignoredField && k != "objeto") {
       //Do not show bbox property
       infoAux += "<li>";
       infoAux += "<b>" + ucwords(k.replace(/_/g, " ")) + ":</b>";
