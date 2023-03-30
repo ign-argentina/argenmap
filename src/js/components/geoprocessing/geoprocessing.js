@@ -357,6 +357,16 @@ class Geoprocessing {
 
     if (mapa.groupLayers["dibujos"].length === 0) {
       delete mapa.groupLayers["dibujos"];
+      let section;
+      addedLayers.forEach(lyr => {
+        if (lyr.id === "dibujos") {
+          section = lyr.section;
+        }
+      });
+      delFileItembyID("dibujos");
+      deleteLayerGeometry("dibujos", true);
+      updateNumberofLayers(section);
+      showTotalNumberofLayers();
     }
   }
 
