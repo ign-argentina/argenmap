@@ -200,6 +200,8 @@ class Geoprocessing {
           section: sectionName
         });
 
+        this.removeRectangleFromDrawingsGroup(selectedRectangle);
+
         // ** Avoiding Leaflet Draw object test **
         // first comment addGeoJsonLayerToDrawedLayers() call
 
@@ -329,6 +331,33 @@ class Geoprocessing {
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
     geoProcessingManager.geoprocessId = null;
+  }
+
+  removeRectangleFromDrawingsGroup(selectedRectangle) {
+    if (mapa.groupLayers.hasOwnProperty("dibujos")) {
+      const layerIdx = mapa.groupLayers["dibujos"].findIndex(lyr => lyr === selectedRectangle.name);
+      if (layerIdx >= 0)
+        mapa.groupLayers["dibujos"].splice(layerIdx, 1);
+    }
+    let layerSection;
+    addedLayers.forEach(lyr => {
+      let i = 0;
+      if (lyr.id === "dibujos") {
+        lyr.layer.forEach(e => {
+          if (selectedRectangle.name === e.name) {
+            layerSection = lyr.section;
+            lyr.layer.splice(i, 1);
+            updateNumberofLayers(layerSection);
+            showTotalNumberofLayers();
+          }
+          i++;
+        });
+      }
+    });
+
+    if (mapa.groupLayers["dibujos"].length === 0) {
+      delete mapa.groupLayers["dibujos"];
+    }
   }
 
   updateReferencedDrawedLayers(event, layers) {

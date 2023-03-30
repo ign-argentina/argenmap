@@ -521,29 +521,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 						mapa.editableLayers[type].push(layer);
 
-						if (Object.values(drawnItems._layers).length === 0) {
-							if (mapa.groupLayers["dibujos"] === undefined) {
-								mapa.groupLayers["dibujos"] = [];
-							}
-							mapa.addLayerToGroup(name, "dibujos");
-							addedLayers.push({
-								id: "dibujos",
-								layer: [layer],
-								name: "dibujos",
-								type: "dibujos",
-								isActive: true,
-								section: "Dibujos"
-							});
-							menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true); updateNumberofLayers("Dibujos");
-						} else {
-							mapa.addLayerToGroup(name, "dibujos");
-							addedLayers.forEach(lyr => {
-								if (lyr.id === "dibujos") {
-									lyr.layer.push(layer);
-								}
-							});
-							updateNumberofLayers("Dibujos");
-						}
+						addLayerToDrawingsGroup(name, layer);
 
 						// if (perfilTopografico.isActive) {
 						// 	// check if profile was clicked
@@ -607,7 +585,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							geoProcessingManager.updateLayerSelect(layerName, false);
 						}*/
 
-						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
+						//mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
 					deleteLayerFromMenu = (deletedLayer) => {// Delete layers entries from menu if exists
@@ -2723,6 +2701,48 @@ $("body").on("pluginLoad", function (event, plugin) {
 			break;
 	}
 });
+
+function addLayerToDrawingsGroup(name, layer) {
+	if (Object.values(drawnItems._layers).length === 0) {
+		if (mapa.groupLayers["dibujos"] === undefined) {
+			mapa.groupLayers["dibujos"] = [];
+		}
+		mapa.addLayerToGroup(name, "dibujos");
+		addedLayers.push({
+			id: "dibujos",
+			layer: [layer],
+			name: "dibujos",
+			type: "dibujos",
+			isActive: true,
+			section: "Dibujos"
+		});
+		menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true);
+		updateNumberofLayers("Dibujos");
+	} else {
+		if (mapa.groupLayers["dibujos"] === undefined) {
+			mapa.groupLayers["dibujos"] = [];
+			mapa.addLayerToGroup(name, "dibujos");
+			addedLayers.push({
+				id: "dibujos",
+				layer: [layer],
+				name: "dibujos",
+				type: "dibujos",
+				isActive: true,
+				section: "Dibujos"
+			});
+			menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true);
+			updateNumberofLayers("Dibujos");
+		} else {
+			mapa.addLayerToGroup(name, "dibujos");
+			addedLayers.forEach(lyr => {
+				if (lyr.id === "dibujos") {
+					lyr.layer.push(layer);
+				}
+			});
+			updateNumberofLayers("Dibujos");
+		}
+	}
+}
 
 function addSelectionLayersMenuToLayer(layer) {
 	const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
