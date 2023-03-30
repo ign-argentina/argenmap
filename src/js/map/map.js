@@ -2806,7 +2806,7 @@ function showMainMenuTpl() {
 	gestorMenu.setMenuDOM(".nav.nav-sidebar");
 	gestorMenu.setLoadingDOM(".loading");
 	gestorMenu.setPrintCallback(printFinished);
-	gestorMenu.setLazyInitialization(false);
+	gestorMenu.setLazyInitialization(true);
 	gestorMenu.setShowSearcher(app.hasOwnProperty('showSearchBar') ? app.showSearchBar : false);
 	gestorMenu.print();
 }
@@ -2949,22 +2949,16 @@ var popupInfoPage = 0;
 var latlngTmp = '';
 
 function loadGeojsonTpl(url, layer) {
-
 	if (overlayMaps.hasOwnProperty(layer)) {
-
 		overlayMaps[layer].removeFrom(mapa);
 		delete overlayMaps[layer];
-
 	} else {
-
 		overlayMaps[layer] = new L.GeoJSON.AJAX(url, {
 			onEachFeature: onEachFeature,
 			pointToLayer: pointToLayer,
 		});
 		overlayMaps[layer].addTo(mapa);
-
 	}
-
 }
 
 //function loadWmsTpl (wmsUrl, layer) {

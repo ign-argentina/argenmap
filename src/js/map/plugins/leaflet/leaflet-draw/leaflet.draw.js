@@ -2943,6 +2943,25 @@
       },
       revertLayers: function () {
         this._deletedLayers.eachLayer(function (t) {
+          if (Object.values(drawnItems._layers).length === 0) {
+            addedLayers.push({
+              id: "dibujos",
+              layer: [t],
+              name: "dibujos",
+              type: "dibujos",
+              isActive: true,
+              section: "Dibujos"
+            });
+            menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true);
+            updateNumberofLayers("Dibujos");
+          } else {
+            addedLayers.forEach(lyr => {
+              if (lyr.id === "dibujos") {
+                lyr.layer.push(t);
+              }
+            });
+            updateNumberofLayers("Dibujos");
+          }
           this._deletableLayers.addLayer(t),
             mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
             mapa.addLayerToGroup(t, "dibujos"), //add layer to groupLayer[dibujos] from _deletableLayers
