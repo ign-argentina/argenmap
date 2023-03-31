@@ -2703,22 +2703,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 });
 
 function addLayerToDrawingsGroup(name, layer) {
-	if (Object.values(drawnItems._layers).length === 0) {
-		if (mapa.groupLayers["dibujos"] === undefined) {
-			mapa.groupLayers["dibujos"] = [];
-		}
-		mapa.addLayerToGroup(name, "dibujos");
-		addedLayers.push({
-			id: "dibujos",
-			layer: [layer],
-			name: "dibujos",
-			type: "dibujos",
-			isActive: true,
-			section: "Dibujos"
-		});
-		menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true);
-		updateNumberofLayers("Dibujos");
-	} else {
 		if (mapa.groupLayers["dibujos"] === undefined) {
 			mapa.groupLayers["dibujos"] = [];
 			mapa.addLayerToGroup(name, "dibujos");
@@ -2740,7 +2724,6 @@ function addLayerToDrawingsGroup(name, layer) {
 				}
 			});
 			updateNumberofLayers("Dibujos");
-		}
 	}
 }
 

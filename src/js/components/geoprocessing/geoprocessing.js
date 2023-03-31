@@ -334,16 +334,17 @@ class Geoprocessing {
   }
 
   removeRectangleFromDrawingsGroup(selectedRectangle) {
-    if (mapa.groupLayers.hasOwnProperty("dibujos")) {
+    if (mapa.groupLayers.hasOwnProperty("dibujos")) { // Remove the rectangle from groupLayers["dibujos"]
       const layerIdx = mapa.groupLayers["dibujos"].findIndex(lyr => lyr === selectedRectangle.name);
       if (layerIdx >= 0)
         mapa.groupLayers["dibujos"].splice(layerIdx, 1);
     }
+
     let layerSection;
     addedLayers.forEach(lyr => {
       let i = 0;
       if (lyr.id === "dibujos") {
-        lyr.layer.forEach(e => {
+        lyr.layer.forEach(e => { // Remove rectangle from addedLayers whith "dibujos" id
           if (selectedRectangle.name === e.name) {
             layerSection = lyr.section;
             lyr.layer.splice(i, 1);
@@ -355,7 +356,7 @@ class Geoprocessing {
       }
     });
 
-    if (mapa.groupLayers["dibujos"].length === 0) {
+    if (mapa.groupLayers["dibujos"].length === 0) { // If the rectangle was the only one on the map, remove groupLayers["dibujos"], addedLayers whith "dibujos" id and "Dibujos" section.
       delete mapa.groupLayers["dibujos"];
       let section;
       addedLayers.forEach(lyr => {
