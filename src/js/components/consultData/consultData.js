@@ -42,3 +42,14 @@ function activateDataConsult() {
         consultDataBtnClose = true;
     }
 }
+//deactivate btn if there is no drawn items
+// function updateConsultBtn() {
+// 	let control = document.getElementById('iconCD-container');
+// 	if (Object.values(drawnItems._layers).length === 0) {
+// 		control.title = "No Hay Capas Para Consultar";
+// 		control.classList.add("leaflet-disabled");
+// 	} else {
+// 		control.title = "Consultar Datos";
+// 		control.classList.remove("leaflet-disabled");
+// 	}
+// }
