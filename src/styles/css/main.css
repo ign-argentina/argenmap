@@ -1,5 +1,6 @@
 :root {
   --main-bg-color: #fff;
+  --bg-color: #0db2e0;
   --active-bg-color: #33b560;
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
@@ -8,15 +9,14 @@
   --body-fnt-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
+  --layer-btn-hover-color: #969393; 
 }
-
 /*******************************
 General
 *******************************/
 html {
   height: 100%;
 }
-
 .loader-line {
   display: flex;
   justify-content: center;
@@ -31,19 +31,16 @@ html {
   z-index: 1600;
   animation: moveGradient 0.4s linear infinite;
 }
-
 @keyframes moveGradient {
   0% {
     background-position: 0% 0%;
   }
-
   /* 50% {
       background-position: -200% 0%;
   } */
   100% {
     background-position: -200% 0%;
   }
-
   /* 0% {
       left: -40%;
   }
@@ -56,56 +53,46 @@ html {
       width: 100%;
   } */
 }
-
 @font-face {
   font-family: "Encode Sans";
   src: url("../../../dist/fonts/EncodeSans-Regular.ttf");
 }
-
 @font-face {
   font-family: "Encode Sans Medium";
   src: url("../../../dist/fonts/EncodeSans-Medium.ttf");
 }
-
 @font-face {
   font-family: "Encode Sans Semi Bold";
   src: url("../../../dist/fonts/EncodeSans-SemiBold.ttf");
 }
-
 @font-face {
   font-family: "Encode Sans Bold";
   src: url("../../../dist/fonts/EncodeSans-Bold.ttf");
 }
-
 body {
   font-family: "Encode Sans", sans-serif;
   overflow: hidden;
   height: 100% !important;
   font-size: var(--body-fnt-size, 14px);
 }
-
 @media (max-width: 600px) {
   body {
     overflow-y: scroll;
   }
 }
-
 .container-fluid,
 .row {
   height: 100%;
 }
-
 #wms-combo-list {
   display: none;
 }
-
 .capa-info {
   vertical-align: top;
   width: 100%;
   display: flex;
   flex-direction: row;
 }
-
 .map-container {
   display: flex;
   justify-content: center;
@@ -113,39 +100,32 @@ body {
   width: 100%;
   height: 100%;
 }
-
 #mapa {
   position: relative;
   height: 100%;
   background-color: var(--main-bg-color, white) !important;
 }
-
 #top-left-logo {
   width: 170px;
   height: 50px;
 }
-
 @media (max-width: 800px) {
   .map-container {
     position: fixed;
   }
-
   .leaflet-bottom,
   #zoom-level {
     margin-bottom: 51px;
   }
-
   #zoom-level {
     bottom: -20px !important;
   }
 }
-
 @media (min-width: 1367px) {
   #modalgeojson {
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   }
 }
-
 .sticky {
   position: -webkit-sticky;
   /* Safari */
@@ -154,13 +134,11 @@ body {
   z-index: 1;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02);
 }
-
 .center-flex {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 /*******************************
 Menu principal
 *******************************/
@@ -168,101 +146,98 @@ Menu principal
   z-index: 2000;
   /* A value higher than 1010 that solves the problem */
 }
-
 .loading {
   width: 100%;
   text-align: center;
   margin-top: 10px;
   margin-bottom: 10px;
 }
-
 .loading>img {
   width: 70px;
 }
-
 .panel-default>.panel-heading {
   color: white;
+  background-color: var(--bg-color);
   font-size: var(--group-title-fnt-size, 15px);
 }
-
 .panel-default>.panel-heading>.panel-title>a {
   font-size: var(--group-title-fnt-size, 15px);
 }
-
 #sidebar-container {
   z-index: 500;
 }
-
 #sidebar .nav {
   border: 1px;
 }
-
 .navbar-header>button {
   display: block;
 }
-
 .navbar-brand {
   padding-top: 7px;
 }
-
 .nav-sidebar>.active>a {
   background-color: inherit !important;
 }
-
 .navbar-header>a>img {
   width: 50px;
   position: absolute;
 }
-
 .nav-tabs {
   border-bottom: var(--layer-border-color);
 }
-
 .nav-tabs>.active {
   background-color: transparent !important;
 }
-
 .nav-tabs>li>a {
   color: white;
   border: var(--layer-border-color);
   padding: 5px 15px;
 }
-
 .nav-tabs>li>a:hover {
   color: #444444;
 }
-
 .nav-tabs>li.active>a {
   background-color: var(--active-bg-color, #33b560) !important;
   color: white !important;
 }
-
 .tab-content {
   border: var(--layer-border-color);
 }
-
 .panel-heading {
   border-bottom: 1px solid white;
   font-family: "Encode Sans", sans-serif;
 }
-
 .active {
   background-color: var(--active-bg-color, #33b560) !important;
 }
-
 li.active>div>a {
   color: white !important;
 }
-
 .list-group-item {
   position: initial;
   font-family: "Encode Sans Medium", sans-serif;
 }
-
+.menu-button {
+  background-color: #6e6d6d;
+  position: sticky;
+}
+.menu-button:hover {
+  background-color: #4d5358 !important;
+}
+.menu-button a span {
+  color: var(--text-color) !important;
+  padding-left: 15px;
+  font-weight: bold;
+}
 .list-group-item.active {
   border-color: #ccc;
 }
-
+.list-group-item:hover, .file-layer:hover {
+  background-color: var(--layer-btn-hover-color);
+}
+.list-group-item:hover span, .file-layer:hover a {
+  color: var(--text-color);
+}
 .active-layers-counter {
   height: 20px;
   width: 20px;
@@ -274,7 +249,6 @@ li.active>div>a {
   border-radius: 100%;
   background-color: var(--active-bg-color, #33b560) !important;
 }
-
 .total-active-layers-counter {
   display: inline-block;
   font-size: var(--layer-cont-fnt-size, 11px);
@@ -286,24 +260,21 @@ li.active>div>a {
   color: white;
   margin-left: 3px;
 }
-
 .item-group-short-desc {
   font-size: 11px;
   line-height: 11px;
 }
-
 .item-group-short-desc a {
   font-size: 11px;
   color: white;
 }
-
 .item-group-title {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   font-family: "Encode Sans Semi Bold", sans-serif;
   font-size: var(--group-title-fnt-size, 15px);
 }
-
 .legend-layer {
   width: 15%;
   display: table-cell;
@@ -315,14 +286,12 @@ li.active>div>a {
   padding-top: 2px;
   padding-right: 2px;
 }
-
 .expand-legend-graphic {
   border-left: var(--layer-border-color);
   border-right: var(--layer-border-color);
   padding: 2px 5px;
   overflow-x: auto;
 }
-
 .name-layer {
   padding-left: 5px;
   width: 80%;
@@ -331,112 +300,91 @@ li.active>div>a {
   user-select: none;
   cursor: pointer;
 }
-
 .active>div>div>a {
   color: white;
 }
-
 .capa-title {
   vertical-align: top;
   width: 100%;
   display: flex;
   flex-direction: row;
 }
-
 .icon-layer-geo {
   color: silver;
   margin-left: 15px;
 }
-
 .icon-layer-geo :hover {
   color: black;
 }
-
 .layer-menu-ui {
   color: silver;
   margin-left: 15px;
 }
-
 .layer-menu-ui :hover {
   color: black;
 }
-
 .zoom-layer {
   cursor: pointer;
   width: 10%;
   color: silver;
   margin-left: 5%;
 }
-
 .zoom-layer:hover {
   color: black;
 }
-
 .zoom-layer-combobox {
   cursor: pointer;
   width: 10%;
   color: silver;
   margin-left: 5%;
 }
-
 .zoom-layer-combobox:hover {
   color: black;
 }
-
 .resize-legend-combobox {
   cursor: pointer;
   color: silver;
 }
-
 .resize-legend-combobox:hover {
   color: black;
 }
-
 .layer-options-icon {
   cursor: pointer;
   width: 10%;
   color: silver;
   margin-left: 5%;
 }
-
 .layer-options-icon:hover {
   color: black;
 }
-
 .option-tab-icon:hover {
   color: grey;
 }
-
 .display-none {
   display: none;
 }
-
 .layer-options-active {
   display: block;
   width: 100%;
   margin-top: 5px;
 }
-
 .options-container {
   background-color: var(--main-bg-color, white) !important;
   display: flex;
   flex-direction: initial;
 }
-
 .options-tabs {
   width: 20%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
 .options-panel {
   width: 80%;
   border-top: var(--layer-border-color);
   border-bottom: var(--layer-border-color);
   border-right: var(--layer-border-color);
 }
-
 .option-tab-icon {
   height: 30px;
   text-align: center;
@@ -445,7 +393,6 @@ li.active>div>a {
   padding: 2px;
   border: var(--layer-border-color);
 }
-
 .option-tab-icon-active {
   height: 40px;
   text-align: center;
@@ -455,38 +402,31 @@ li.active>div>a {
   border-left: var(--layer-border-color);
   padding: 2px;
 }
-
 /* .option-panel-active {
   background-color: yellowgreen;
 } */
-
 @media (max-width: 390px) {
   .leaflet-control-minimap {
     display: none;
   }
-
   .navbar-header>a>img {
     left: 50px;
   }
 }
-
 @media (max-width: 768px) {
   .navbar-header a {
     font-size: 13px;
     font-weight: bold;
   }
-
   .tooltip {
     display: none !important;
   }
 }
-
 @media (min-width: 768px) {
   #sidebar-container.collapse {
     height: 93% !important;
   }
 }
-
 @media (max-width: 767px) {
   #sidebar-container.collapse {
     height: initial;
@@ -495,50 +435,41 @@ li.active>div>a {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
   }
 }
-
 .wms-combobox-selector {
   width: 100%;
   height: 35px;
   margin: 10px 0px 10px 0px;
 }
-
 .visible {
   visibility: visible !important;
 }
-
 .hidden {
   visibility: hidden !important;
 }
-
 /*******************************
 Searcher
 *******************************/
 ::-ms-clear {
   display: none;
 }
-
 .form-control-clear {
   z-index: 10;
   pointer-events: auto;
   cursor: pointer;
 }
-
 .btn-search {
   background-color: var(--main-bg-color, white);
 }
-
 .btn-search:hover {
   background-color: var(--hoverSelect-bg-color, rgb(97, 202, 134));
   color: rgb(255, 255, 255);
 }
-
 /*******************************
 JQuery Autocomplete
 *******************************/
 .ui-widget.ui-widget-content {
   z-index: 3000;
 }
-
 /*******************************
 Login
 *******************************/
@@ -548,11 +479,9 @@ Login
   padding: 15px;
   margin: 0 auto;
 }
-
 .form-signin .checkbox {
   font-weight: 400;
 }
-
 .form-signin .form-control {
   position: relative;
   box-sizing: border-box;
@@ -560,29 +489,24 @@ Login
   padding: 10px;
   font-size: 16px;
 }
-
 .form-signin .form-control:focus {
   z-index: 999;
 }
-
 .form-signin input[type="text"] {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-
 .form-signin input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-
 .top-right-btn {
   position: absolute;
   top: 8px !important;
   right: 10px;
 }
-
 /*******************************
 Leaflet
 *******************************/
@@ -591,23 +515,18 @@ Leaflet
     top: 5px;
   }
 }
-
 .leaflet-container {
   font-family: "Encode Sans", sans-serif;
 }
-
 .leaflet-control-measure-interaction h3 {
   font-size: 17px !important;
 }
-
 .leaflet-popup-content h3 {
   font-size: 17px !important;
 }
-
 .individualFeature h4 {
   text-decoration: none !important;
 }
-
 .leaflet-control-minimap {
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
@@ -616,12 +535,10 @@ Leaflet
   border-radius: 4px;
   box-sizing: border-box;
 }
-
 /* The following rule adds shadows to overlay layers elements */
 /* .leaflet-pane .leaflet-overlay-pane:not(:first-child) {
   filter: drop-shadow(5px -2px 1.5px rgba(5,15,5,0.3));
 } */
-
 /*******************************
 Leaflet popup featureInfo
 *******************************/
@@ -630,65 +547,53 @@ Leaflet popup featureInfo
   font-size: var(--popup-fnt-size, 12px);
   width: 100%;
 }
-
 .featureInfo>li>b {
   font-weight: 500;
 }
-
 .featureInfo img {
   display: block;
   float: none;
 }
-
 .featureInfo h3 {
   margin-bottom: 1em;
 }
-
 .featureInfo h4 {
   margin: 1em;
 }
-
 .individualFeature h4 {
   margin: 9px 0px !important;
 }
-
 .individualFeature ul {
   list-style-type: none;
   padding-left: 0px;
 }
-
 .leaflet-popup-content {
   max-width: 250px;
   font-family: "Encode Sans", sans-serif;
   letter-spacing: 0.02em;
 }
-
 #popupPageSeeker {
   float: left;
   width: 100%;
 }
-
 #popupPageSeekerNext {
   float: right;
   padding-right: 10px;
 }
-
 #popupPageSeekerPrev {
   float: left;
   padding-left: 10px;
 }
-
 /*******************************
 Popup geometría
 *******************************/
 .active-layer:hover {
   background-color: rgb(0, 141, 201, 0.1);
 }
-
 .active-layer-label {
   user-select: none;
+  -webkit-user-select: none;
 }
-
 .popup-btn {
   width: 100%;
   height: 26px;
@@ -700,64 +605,65 @@ Popup geometría
   margin-top: 7px;
   transition: 0.2s;
 }
-
 .popup-btn-text {
   user-select: none;
+  -webkit-user-select: none;
   margin: 0 !important;
   font-weight: 700;
 }
-
 .btn-active {
   border-color: rgb(0, 141, 201);
   color: rgb(0, 141, 201);
 }
-
 .btn-active:hover {
   background-color: rgb(0, 141, 201);
   color: white;
 }
-
 .btn-active:active {
   background-color: rgb(0, 92, 131);
   color: white;
 }
-
 .btn-disabled {
   border-color: rgb(107, 109, 110);
   color: rgb(107, 109, 110);
 }
-
 .edit-style-popup {
   left: 20px !important;
   top: 20px;
 }
-
-.edit-style-popup-container {
-  width: 350px;
-  background-color: var(--main-bg-color, white) !important;
-  border-radius: 5px;
+#editContainer{
+  top: 100px;
+  left: 30%;
   position: absolute;
   display: flex;
+  width: 280px;
+  background-color: var(--main-bg-color, white) !important;
+  border-radius: 6px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
-  left: -20px;
-  top: -15px;
   padding: 7px;
   box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
 }
-
 .edit-style-popup-container .section-popup .section-title,
 .edit-style-popup-container .section-popup .section-item label {
   user-select: none;
+  -webkit-user-select: none;
 }
-
+.edit-style-popup>.leaflet-popup-content-wrapper,
+.edit-style-popup>.leaflet-popup-tip-container>.leaflet-popup-tip {
+  background-color: transparent;
+  box-shadow: none;
+}
+#btnclose-wrapper {
+  color: #676767;
+  display: flex;
+  align-self: flex-end;
+}
 div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   position: relative;
   top: 50px;
 }
-
 .section-popup {
   position: relative;
   display: flex;
@@ -767,39 +673,36 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   align-items: center;
   text-align: center;
   width: 100%;
-  margin-top: 25px;
-  margin-bottom: 15px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
-
 .section-title {
   position: absolute;
   align-self: center;
   left: 50%;
   transform: translate(-50%, -50%);
-  top: -30px;
+  top: -10px;
   font-weight: bold;
-  font-size: var(--body-fnt-size, 14px);
+  font-size: var(--group-title-fnt-size, 15px);
+  margin-top: 5px;
 }
-
 .section-item {
-  flex-basis: 45%;
-  height: 58px;
+  flex-basis: 48%;
+  height: 55px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-
 .section-item-input {
   width: 95% !important;
   height: 22px;
+  padding: 0;
 }
-
 .popup-parent {
   height: 0px !important;
   width: 0px !important;
 }
-
 .download-item {
   display: flex;
   flex-direction: row;
@@ -807,7 +710,6 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   align-items: center;
   width: 95%;
 }
-
 .download-btn {
   width: 49%;
   height: 22px;
@@ -816,27 +718,22 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   justify-content: center;
   align-items: center;
 }
-
 .download-btn-active {
   color: rgb(0, 141, 201);
   border-color: rgb(0, 141, 201);
 }
-
 .download-btn-active:hover {
   background-color: rgb(0, 141, 201);
   color: white;
 }
-
 .download-btn-active:active {
   background-color: rgb(0, 92, 131);
   color: white;
 }
-
 .download-btn-disable {
   color: rgb(107, 109, 110);
   border-color: rgb(107, 109, 110);
 }
-
 .zoom-info-icon {
   width: 20px;
   height: 20px;
@@ -846,7 +743,6 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   position: relative;
   cursor: pointer;
 }
-
 .switch {
   height: 0;
   width: 0;
@@ -855,20 +751,16 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   justify-content: center;
   align-items: center;
 }
-
 input:checked.switch+label {
   background: #37bbed;
 }
-
 input:checked.switch+label:after {
   left: calc(100% - 1px);
   transform: translateX(-100%);
 }
-
 .switch+label:active:after {
   width: 30px;
 }
-
 .switch+label {
   cursor: pointer;
   width: 35px;
@@ -878,7 +770,6 @@ input:checked.switch+label:after {
   border-radius: 100px;
   position: relative;
 }
-
 .switch+label:after {
   content: "";
   position: absolute;
@@ -890,7 +781,6 @@ input:checked.switch+label:after {
   border-radius: 90px;
   transition: 0.3s;
 }
-
 .hillshade+label:after {
   color: #252525;
   background-image: url("../images/mountains.webp");
@@ -898,16 +788,13 @@ input:checked.switch+label:after {
   background-size: 75%;
   background-position: center;
 }
-
 .a-base-layer {
   pointer-events: none;
   cursor: default;
 }
-
 .tooltip {
   position: relative;
 }
-
 .tooltiptext {
   visibility: hidden;
   display: flex;
@@ -927,70 +814,58 @@ input:checked.switch+label:after {
   left: 150%;
   z-index: 50000;
 }
-
 .switch:hover+label .tooltiptext {
   visibility: visible;
 }
-
 .base-layer-item {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
-
 .base-layer-item-info {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
 }
-
 .map-tooltip {
   background-color: #000000;
   color: #fafafa;
 }
-
 @media (max-width: 700px) {
   .zoom-info-icon {
     visibility: hidden;
   }
 }
-
 /*******************************
 Control mapa base
 *******************************/
 #basemap-selector .leaflet-control-layers-toggle:hover {
   background-color: #f4f4f4;
 }
-
 #collapseBaseMapLayers {
   position: absolute;
   padding: 0 !important;
   margin-left: 40px;
 }
-
 #collapseBaseMapLayers .list-group-item {
   padding: 5px;
   background: rgba(255, 255, 255, 0.9);
   font-size: var(--body-fnt-size, 14px);
   width: 245px;
 }
-
 #collapseBaseMapLayers .list-group-item:hover {
   background: rgb(97, 202, 134);
   color: white;
 }
-
 #collapseBaseMapLayers .img-rounded {
   width: 50px;
   margin-right: 5px;
 }
-
 .basemap-selector .leaflet-control-layers-toggle {
   background-image: none !important;
 }
-
 .basemap-selector .leaflet-control-layers-toggle::after {
   display: inline;
   content: "\f5fd";
@@ -1001,16 +876,13 @@ Control mapa base
   vertical-align: middle;
   line-height: 1.75em;
 }
-
 .list-inline {
   margin-bottom: 0px;
 }
-
 .list-inline li {
   width: 230px;
   display: block;
 }
-
 /*******************************
 Control graticula
 *******************************/
@@ -1020,135 +892,108 @@ Control graticula
   background-repeat: no-repeat;
   background-position: center;
 }
-
 .leaflet-control-customgraticule:hover {
   cursor: pointer;
 }
-
 /*******************************
 SideBar
 *******************************/
 .leaflet-bottom .leaflet-control-scale {
   margin-left: 10px !important;
 }
-
 @media (max-width: 768px) {
   .leaflet-control-minimap {
     display: none;
   }
 }
-
 @media (max-width: 600px) {
   .leaflet-control {
     margin-left: 0px !important;
     margin-top: 0px !important;
   }
-
   div .leaflet-draw-toolbar {
     margin-top: 0px !important;
   }
-
   .leaflet-right .leaflet-control {
     margin-right: 0px !important;
     margin-top: 0px !important;
   }
-
   .leaflet-bottom .leaflet-control-scale {
     margin-left: 5px !important;
   }
 }
-
 @media (max-height: 500px) {
   .leaflet-bottom:not(.leaflet-control-scale) {
     display: none;
   }
-
   .leaflet-control-scale {
     margin-left: 5px !important;
   }
-
   #collapseBaseMapLayers .list-group-item {
     padding: 0px !important;
   }
-
   #collapseBaseMapLayers {
     margin-left: 40px !important;
   }
-
   div .leaflet-control-geo {
     left: 34px !important;
     top: 195px !important;
     position: absolute;
   }
-
   div .leaflet-control-scrshot {
     left: 0px !important;
     top: 195px !important;
     position: absolute;
   }
-
   .leaflet-control-minimap {
     display: none;
   }
-
   .leaflet-control {
     margin-left: 0px !important;
     margin-top: 0px !important;
   }
-
   .leaflet-control .basemap-selector {
     border: none !important;
   }
-
   .leaflet-draw-toolbar .leaflet-bar {
     bottom: 150px !important;
     position: relative;
   }
-
   div .leaflet-draw-toolbar {
     margin-top: 0px !important;
   }
-
   .leaflet-right .leaflet-control {
     margin-right: 0px !important;
     margin-top: 0px !important;
   }
-
   .leaflet-control-measure-interaction div h3 {
     font-size: var(--popup-fnt-size, 12px) !important;
   }
 }
-
 @media (max-height: 550px) {
   .leaflet-control-minimap {
     display: none;
   }
-
   #zoom-level {
     display: none;
   }
 }
-
 /* @media (max-height: 400px) {
   .leaflet-bottom {
     margin-right: 40px !important;
   }
 } */
-
 .leaflet-oldie .leaflet-popup-content-wrapper {
   transform: scale(1);
 }
-
 /*******************************
 New navbar
 *******************************/
-
 @media (max-width: 390px) {
   .navbar-new-content {
     margin: 0% 4px !important;
   }
 }
-
 .navbar-new {
   display: flex;
   width: 100%;
@@ -1156,36 +1001,30 @@ New navbar
   justify-content: space-between;
   overflow: hidden;
 }
-
 .navbar-new-content {
   flex: inherit;
   margin: 0.1rem 1.5rem;
   text-align: inherit;
 }
-
 .navbar-button {
   margin-right: -20px;
 }
-
 #logo-navbar {
   display: flex;
   background-size: cover;
   background-repeat: no-repeat;
 }
-
 #logo-help {
   background-repeat: no-repeat;
   background-position-y: center;
   align-self: center;
 }
-
 #logo-navbar>div>a,
 #logo-help>a {
   display: block;
   height: 100%;
   width: 100%;
 }
-
 #logoText {
   align-self: center;
   text-align: right;
@@ -1197,20 +1036,16 @@ New navbar
   white-space: nowrap;
   text-decoration: none;
 }
-
 #search-navbar {
   align-self: center;
 }
-
 .btn-reset-layers {
   background-color: var(--main-bg-color, #fff);
 }
-
 .btn-reset-layers:hover {
   background-color: var(--hoverSelect-bg-color, rgb(97, 202, 134));
   color: rgb(255, 255, 255);
 }
-
 /*******************************
 SearchForm & Buttons
 *******************************/
@@ -1219,11 +1054,9 @@ SearchForm & Buttons
   flex-direction: column-reverse;
   justify-content: space-evenly;
 }
-
 .formBtns {
   width: 100%;
 }
-
 /*******************************
 Perfil Topografico
 *******************************/
@@ -1234,7 +1067,6 @@ Perfil Topografico
   z-index: 99999;
   display: none;
 }
-
 .pt {
   padding: 2rem;
   background: RGBA(255, 255, 255, .95) !important;
@@ -1245,12 +1077,10 @@ Perfil Topografico
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
   color: white;
 }
-
 #pt-inner {
   width: 100%;
   min-height: 400px;
 }
-
 /*******************************
 Measurement Info
 *******************************/
@@ -1266,7 +1096,6 @@ Measurement Info
   z-index: 99999;
   background-color: var(--main-bg-color, white);
 }
-
 #measurementInfo {
   background-color: #d7f2f7;
   border: 1px solid #525252;
@@ -1277,15 +1106,12 @@ Measurement Info
   -moz-user-select: text;
   user-select: text;
 }
-
 #measurementInfo td {
   padding: 3px;
 }
-
 #measurementInfo tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
-
 /*******************************
 ESRI
 *******************************/
@@ -1300,7 +1126,6 @@ ESRI
   user-select: text;
   z-index: 99999;
 }
-
 #esriInfo {
   background-color: #d7f2f7;
   border: 1px solid #525252;
@@ -1311,15 +1136,12 @@ ESRI
   -moz-user-select: text;
   user-select: text;
 }
-
 #esriTable td {
   padding: 3px;
 }
-
 #esriTable tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
-
 /*******************************
 Icons and Btns
 *******************************/
@@ -1327,9 +1149,7 @@ Icons and Btns
 .leaflet-bar a:hover {
   color: #303030 !important;
 }
-
 /* leaflet- control and leaflet-bar determines the style of the buttons on the map */
-
 /* .leaflet-bar {
   box-shadow: 0 1px 5px rgb(0 0 0 / 65%) !important;
   border: none !important;
@@ -1352,23 +1172,19 @@ Icons and Btns
   border-top-left-radius: 4px !important;
   border-top-right-radius: 4px !important;
 } */
-
 /*******************************
 ScreenShot
 *******************************/
 #screenShoter {
   font-size: 1.3em;
 }
-
 #screenShoter :hover {
   cursor: pointer;
 }
-
 /*******************************
 Print
 *******************************/
 @media print {
-
   .navbar,
   .sidebar,
   .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)),
@@ -1380,7 +1196,6 @@ Print
   div[id^="sidebar-toolbar-icon-"] {
     display: none !important;
   }
-
   #mapa {
     display: block;
     width: 100%;

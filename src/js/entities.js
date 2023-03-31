@@ -4102,6 +4102,35 @@ class Menu_UI {
     if (serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
     addCounterForSection(groupname, layerType);
   }
+
+  addButton({ 
+      id = "custom-btn", 
+      location = "top", 
+      text = "A custom button", 
+      link = "#", 
+      title = "A custom button" 
+    }) {
+    let btn = document.getElementById(id);
+
+    if (!btn) { 
+      let btnHtml = `<li id="${id}" onclick="window.open('${link}', '_blank');" class="list-group-item menu-button" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li>`
+      
+      let menuItems = document.getElementById("sidebar"); //document.getElementsByClassName('menu5 panel-default');
+      if (location === "top") {
+        menuItems.insertAdjacentHTML("beforebegin", btnHtml)
+      }
+      if (location === "bottom") {
+        menuItems.insertAdjacentHTML("afterend", btnHtml);
+      }
+    }
+  }
+
+  removeButton(id) {
+    let btn = document.getElementById(id);
+    if (btn) {
+      btn.remove();
+    }
+  }
 }
 
 class Geometry {

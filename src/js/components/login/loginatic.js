@@ -3,6 +3,7 @@ loginatic = function () {
   this.notLoggedTxt =
     app.login.notLogged || "Contraseña no válida, intente nuevamente";
   this.noPassword = app.login.noPassword || "Campo vacío, ingrese su contraseña";
+  this.external_link = null;
   this.init = (conf) => {
     if (getCookie("autologin") == null) {
       setCookie("autologin", 0);
@@ -89,6 +90,17 @@ loginatic = function () {
         }
       }
 
+      if (result.external_link) {
+        menu_ui.removeButton("external-link-li"); // in case if exists, remove it first
+        menu_ui.addButton({ 
+          id: "external-link-li", 
+          link: result.external_link, 
+          text: "Visor OT " + result.nam,
+          title: "Abrir visor Ordenamiento Territorial " + result.nam,
+          location: "top"
+        });
+      }
+
       if (!logged) {
         alert(this.notLoggedTxt);
       }
@@ -98,6 +110,8 @@ loginatic = function () {
   this.logout = () => {
     this.currentLogin = false;
     setCookie("autologin", 0);
+    
+    menu_ui.removeButton("external-link-li");
     /* 
         let lat = -40;
         let lon = -59;
@@ -148,13 +162,13 @@ loginatic = function () {
 
   this._addLogoutButton = () => {
     const logoutButton = document.createElement("div");
-    logoutButton.className = "center-flex btn-logout";
+    logoutButton.className = "leaflet-bar leaflet-control btn-logout";
     logoutButton.id = "btn-logout";
     logoutButton.title = "Cerrar sesión";
     logoutButton.onclick = function () {
       loginatic.logout();
     };
-    logoutButton.innerHTML = `<div class="center-flex" id="icon-container"><span class="fa fa-sign-out-alt" aria-hidden="true"></span></div>`;
+    logoutButton.innerHTML = `<a ><span class="fa fa-sign-out-alt" aria-hidden="true"></span></a>`;
 
     document.getElementById("mapa").append(logoutButton);
   };

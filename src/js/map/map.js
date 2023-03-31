@@ -43,10 +43,10 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['','','','','','','','','','','','',''];
+var ordered = ['','','','','','','','','','','','','',''];
 var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
-var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenGroupLayerSelector = 14;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function(event, plugin){
 	unordered = '';
@@ -95,6 +95,9 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'pdfPrinter':
 			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
 			break;
+			case 'groupLayerSelector':
+			ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
+			break;
 		default :
 			// Add unordered plugins
 			unordered = plugin.pluginName;
@@ -128,6 +131,10 @@ $("body").on("pluginLoad", function(event, plugin){
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('pdfPrinter')) {
 		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
+		} else { visiblesActivar = false; }
+	}
+ 	if(visiblesActivar && gestorMenu.pluginExists('groupLayerSelector')) {
+		if(gestorMenu.plugins['groupLayerSelector'].getStatus() == 'ready' || gestorMenu.plugins['groupLayerSelector'].getStatus() == 'fail'){
 		} else { visiblesActivar = false; }
 	}
 	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
@@ -381,8 +388,14 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 					break;
 				case 'pdfPrinter':
-					const pdfP = new PdfPrinter();
-					pdfP.createComponent();
+					if (!L.Browser.safari) {
+						const pdfP = new PdfPrinter();
+						pdfP.createComponent();
+					}
+					break;
+				case 'groupLayerSelector':
+					//const groupLayerSelector = new GroupLayerSelector();
+					//groupLayerSelector.createComponent();
 					break;
 				case 'Draw':
 
@@ -527,12 +540,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
 
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
-							mapa.addSelectionLayersMenuToLayer(layer);
-						}
 						mapa.addContextMenuToLayer(layer);
 
-						if(geoProcessingManager){
+						if (geoProcessingManager) {
 							geoProcessingManager.updateLayerSelect(layer.name, true);
 						}
 					});
@@ -568,6 +578,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								deleteLayerFromMenu(deletedLayer);
 							}
 						});
+
 						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
@@ -632,10 +643,10 @@ $("body").on("pluginLoad", function(event, plugin){
 						var count = 0;
 						
 						var imagen = ""
-						$.each(e.target._zoomBoundLayers,function(clave,valor){
-							$.each(valor._tiles,function(key,value){
-								if (count==0) {
-									
+						$.each(e.target._zoomBoundLayers, function (clave, valor) {
+							$.each(valor._tiles, function (key, value) {
+								if (count == 0) {
+
 									imagen = value.el.currentSrc;
 								}
 								count++;
@@ -662,8 +673,8 @@ $("body").on("pluginLoad", function(event, plugin){
 							isDisabled: false,
 							text: 'Mas información',
 							onclick: (option) => {
-								mapa.closePopup(contextPopup);	
-									 $("#search_bar").val(lat+","+lng).focus();
+								mapa.closePopup(contextPopup);
+								$("#search_bar").val(lat + "," + lng).focus();
 							}
 						});
 
@@ -679,6 +690,17 @@ $("body").on("pluginLoad", function(event, plugin){
 							});
 						}
 
+						/* if (Object.values(drawnItems._layers).length != 0) {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Descargar todas las capas',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									mapa.downloadAllActiveLayer();
+								}
+							});
+						} */
+
 						/* contextMenu.createOption({
 							isDisabled: false,
 							text: "Share",
@@ -688,7 +710,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								window.open(_url);
 								}
 							}); */
-						
+
 						/* contextMenu.createOption({
 							isDisabled: false,
 							text: "Save",
@@ -710,46 +732,46 @@ $("body").on("pluginLoad", function(event, plugin){
 								new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
 							},
 							}); */
-						
+
 						contextMenu.createOption({
-            			  isDisabled: false,
-            			  text: "Agregar marcador",
-            			  onclick: (option) => {
-            			    let name = "marker_";
+							isDisabled: false,
+							text: "Agregar marcador",
+							onclick: (option) => {
+								let name = "marker_";
 
-            			    if (mapa.editableLayers["marker"].length === 0) {
-            			      name += "1";
-            			    } else {
-            			      const lastLayerName =
-            			        mapa.editableLayers["marker"][mapa.editableLayers["marker"].length - 1].name;
-            			      name += parseInt(lastLayerName.split("_")[1]) + 1;
-            			    }
-						
-            			    let geojsonMarker = {
-            			      type: "Feature",
-            			      properties: {},
-            			      geometry: { type: "Point", coordinates: [lng, lat] },
-            			    };
-							
-            			    mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "addedMarker_" + name, false);
-            			    mapa.closePopup(contextPopup);
-            			  },
-            			});
+								if (mapa.editableLayers["marker"].length === 0) {
+									name += "1";
+								} else {
+									const lastLayerName =
+										mapa.editableLayers["marker"][mapa.editableLayers["marker"].length - 1].name;
+									name += parseInt(lastLayerName.split("_")[1]) + 1;
+								}
 
-							if (gestorMenu.getActiveBasemap() === "esri_imagery") {
-								contextMenu.createOption({
-									isDisabled: false,
-									text: 'Datos de imagen satelital',
-									onclick: (option) => {
-										mapa.closePopup(contextPopup);
-										mapa.esriImagery(lat,lng,zoom);
-									}
-								});
-							}
+								let geojsonMarker = {
+									type: "Feature",
+									properties: {},
+									geometry: { type: "Point", coordinates: [lng, lat] },
+								};
+
+								mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "addedMarker_" + name, false);
+								mapa.closePopup(contextPopup);
+							},
+						});
+
+						if (gestorMenu.getActiveBasemap() === "esri_imagery") {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Datos de imagen satelital',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									mapa.esriImagery(lat, lng, zoom);
+								}
+							});
+						}
 
 						contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
-						.setLatLng(e.latlng)
-						.setContent(contextMenu.menu);
+							.setLatLng(e.latlng)
+							.setContent(contextMenu.menu);
 						mapa.openPopup(contextPopup);
 					});
 
@@ -816,17 +838,6 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.methodsEvents[event].push(method);
 					};
 
-					mapa.addSelectionLayersMenuToLayer = (layer) => {
-							const popUpDiv = mapa.createPopUp(layer);
-							layer.bindPopup(popUpDiv);
-	
-							layer.on('click', (e) => {
-								const layer = e.target;
-								const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
-								layer.bindPopup(popUpDiv);
-							});
-					}
-
 					mapa.centerLayer = (layer) => {
 						if (!layer) {
 							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
@@ -846,9 +857,6 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.addContextMenuToLayer = (layer) => {
 						let contextPopup = null;
 
-						const editStylePopup = L.popup({ closeButton: false, className: 'edit-style-popup' });
-						const editStylePopupContent = mapa.createEditStylePopup(layer, editStylePopup);
-
 						const contextMenu = new ContextMenu();
 
 						contextMenu.createOption({
@@ -866,12 +874,25 @@ $("body").on("pluginLoad", function(event, plugin){
 							text: 'Editar estilos',
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
-								editStylePopup.setContent(editStylePopupContent)
-								.setLatLng(layer.type !== "marker" && layer.type !== "circlemarker" && layer.type !== "label" ? layer.getBounds().getCenter() : layer.getLatLng());
-								mapa.openPopup(editStylePopup);
-								const parent = editStylePopupContent.parentElement;
-								parent.className = 'leaflet-popup-content popup-parent';
-								$("#editContainer").draggable({scroll: false, containment: "body"});
+								if (document.getElementById("editContainer")) {
+									document.getElementById("editContainer").remove()
+								}
+
+								const wrapper = document.createElement("div");
+								wrapper.id = "editContainer";
+
+								let btncloseWrapper = document.createElement("a");
+								btncloseWrapper.id = "btnclose-wrapper";
+								btncloseWrapper.href = "javascript:void(0)";
+								btncloseWrapper.innerHTML = '<i class="fa fa-times"></i>';
+								btncloseWrapper.onclick = () => {
+									wrapper.remove();
+								};
+
+								wrapper.appendChild(btncloseWrapper);
+								wrapper.appendChild(mapa.createEditStylePopup(layer));
+								document.body.appendChild(wrapper);
+								$("#editContainer").draggable({ scroll: false, containment: "#mapa" });
 							}
 						});
 						
@@ -887,6 +908,17 @@ $("body").on("pluginLoad", function(event, plugin){
 								}
 							}
 						});
+
+						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Usar como filtro de capas',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									addSelectionLayersMenuToLayer(layer);
+								}
+							})
+						};
 
 						/* contextMenu.createOption({
 							isDisabled: true,
@@ -907,6 +939,17 @@ $("body").on("pluginLoad", function(event, plugin){
 								layer.downloadGeoJSON();
 							}
 						});
+
+						/* if (Object.values(drawnItems._layers).length != 0) {
+							contextMenu.createOption({
+								isDisabled: false,
+								text: 'Descargar todas la capas',
+								onclick: (option) => {
+									mapa.closePopup(contextPopup);
+									mapa.downloadAllActiveLayer();
+								}
+							});
+						} */
 
 						contextMenu.createOption({
 							isDisabled: false,
@@ -940,9 +983,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							L.DomEvent.stopPropagation(e);
 						});
 
-						L.DomEvent.on(editStylePopup, 'click', function (e) {
+						/* L.DomEvent.on(editStylePopup, 'click', function (e) {
 							L.DomEvent.stopPropagation(e);
-						});
+						}); */
 					}
 
 					mapa.measurementsWrapper = (layer) => {
@@ -1089,17 +1132,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						return boundingBox.innerHTML;
 					}
 
-					mapa.createEditStylePopup = (layer, popup) => {
+					mapa.createEditStylePopup = (layer) => {
 						const container = document.createElement('div');
 						container.className = 'edit-style-popup-container';
-						container.id = "editContainer";
-						
-						const closeBtn = document.createElement('a');
-						closeBtn.innerHTML = '<a class="leaflet-popup-close-button" href="#" style="outline: none;">×</a>';
-						closeBtn.onclick = () => {
-							mapa.closePopup(popup);
-						};
-						container.appendChild(closeBtn);
 						
 						//Lines
 						const lineSection = document.createElement('div');
@@ -1692,9 +1727,9 @@ $("body").on("pluginLoad", function(event, plugin){
 							colorInputDiv6.className = 'section-item';
 							const transparentLabel = document.createElement('input');
 							transparentLabel.className = 'section-item-input';
-							transparentLabel.id = 'enable-marker-input';
+							transparentLabel.id = 'remove-bg-input';
 							transparentLabel.type = 'button';
-							transparentLabel.value = 'Quitar color de relleno'
+							transparentLabel.value = 'Quitar fondo'
 							transparentLabel.onclick = function () {
 								layer.options.icon.options.html.style.backgroundColor = "transparent";
 							};
@@ -1725,42 +1760,35 @@ $("body").on("pluginLoad", function(event, plugin){
 						switch (layer.type) {
 							case 'marker': {
 								container.appendChild(markerSection);
-								container.style.height = '240px';
 							}
 							break;
 							case 'label': {
 								container.appendChild(labelSection);
-								container.style.height = '280px';
 							}
 							break;
 							case 'circlemarker': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
-								container.style.height = '270px';
 							}
 							break;
 							case 'circle': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
 								container.appendChild(circleSection);
-								container.style.height = '370px';
 							}
 							break;
 							case 'polyline': {
 								container.appendChild(lineSection);
-								container.style.height = '240px';
 							}
 							break;
 							case 'polygon': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
-								container.style.height = '330px';
 							}
 							break;
 							case 'rectangle': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
-								container.style.height = '330px';
 							}
 							break;
 						}
@@ -2107,15 +2135,15 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.remove();
 					}
 					
-					mapa.downloadMultiLayerGeoJSON = (groupLayer) => {
+					mapa.downloadMultiLayerGeoJSON = (id) => {
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []
 						};
-
-						mapa.groupLayers[groupLayer].forEach(layerName => {
+						let geoJSON;
+						mapa.groupLayers[id].forEach(layerName => {
 							const layer = mapa.getEditableLayer(layerName, true);
-							const geoJSON = layer.toGeoJSON();
+							geoJSON = layer.toGeoJSON();
 							const styleOptions = { ...layer.options };
 							geoJSON.properties.styles = styleOptions;
 							geoJSON.properties.type = layer.type;
@@ -2124,10 +2152,51 @@ $("body").on("pluginLoad", function(event, plugin){
 							jsonToDownload.features.push(geoJSON);
 						});
 
+						addedLayers.forEach(lyr => {
+							if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.contour)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.contour;
+							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.waterRise)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.waterRise;
+							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.buffer)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.buffer;
+							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.elevationProfile)) {
+								jsonToDownload.process = geoProcessingManager.GEOPROCESS.elevationProfile;
+							}
+						});
+
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
-						downloadANode.setAttribute("download", groupLayer + ".geojson");
+						downloadANode.setAttribute("download", id + ".geojson");
+						document.body.appendChild(downloadANode);
+						downloadANode.click();
+						downloadANode.remove();
+					}
+
+					mapa.downloadAllActiveLayer = () => {
+						let layername = "group_" + counterLayer;
+						counterLayer++;
+						const jsonToDownload = {
+							type: "FeatureCollection",
+							features: []
+						};
+
+						Object.values(drawnItems._layers).forEach(lyr => {
+							const layer = mapa.getEditableLayer(lyr.name, true);
+							const geoJSON = layer.toGeoJSON();
+							const styleOptions = { ...layer.options };
+							const labelText = { ...geoJSON.properties.Text };
+							geoJSON.properties.styles = styleOptions;
+							//geoJSON.properties.Text = labelText;
+							geoJSON.properties.type = layer.type;
+							(layer.value) ? geoJSON.properties.value = layer.value : 0;
+							jsonToDownload.features.push(geoJSON);
+						});
+
+						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
+						const downloadANode = document.createElement('a');
+						downloadANode.setAttribute("href", dataStr);
+						downloadANode.setAttribute("download", layername + ".geojson");
 						document.body.appendChild(downloadANode);
 						downloadANode.click();
 						downloadANode.remove();
@@ -2293,7 +2362,7 @@ $("body").on("pluginLoad", function(event, plugin){
 										}
 										break;
 										case 'circlemarker': {
-											layer = L.circlemarker(invertedCoords, options);
+											layer = L.circleMarker(invertedCoords, options);
 											type = 'circlemarker';
 										};
 										break;
@@ -2492,10 +2561,6 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						}
 
-						//Left-click
-						if (layer.type !== 'marker' && layer.type !== 'circlemarker' && layer.type !== 'polyline' && layer.type !== 'label') {
-							mapa.addSelectionLayersMenuToLayer(layer, file);
-						}
 						//Right-click
 						mapa.addContextMenuToLayer(layer, file);
 
@@ -2545,7 +2610,6 @@ $("body").on("pluginLoad", function(event, plugin){
 				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
 				/* renderer: L.svg() */
 			});
-			
 
 			//Available events
 			mapa.methodsEvents = {
@@ -2614,6 +2678,14 @@ $("body").on("pluginLoad", function(event, plugin){
 			break;
 	}
 });
+
+function addSelectionLayersMenuToLayer(layer) {
+	const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
+	layer.bindPopup(popUpDiv).openPopup();
+	if (layer._popup) {
+		layer.unbindPopup(popUpDiv);
+	}
+}
 
 function getGeometryCoords(layer) {
 	let coords = null;
@@ -2689,8 +2761,8 @@ function showMainMenuTpl() {
     gestorMenu.setMenuDOM(".nav.nav-sidebar");
     gestorMenu.setLoadingDOM(".loading");
     gestorMenu.setPrintCallback(printFinished);
-    gestorMenu.setLazyInitialization(true);
-	gestorMenu.setShowSearcher(app.hasOwnProperty('showSearchBar') ? app.showSearchBar : false);
+    gestorMenu.setLazyInitialization(false);
+    gestorMenu.setShowSearcher(app.hasOwnProperty('showSearchBar') ? app.showSearchBar : false);
     gestorMenu.print();
 }
 

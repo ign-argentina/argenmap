@@ -49,6 +49,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         setLogin(app.login.isActive);
       }
 
+      if (app.hasOwnProperty("mainPopup")) {
+        setMainPopup(app.mainPopup.isActive);
+      }
+
       if (app.hasOwnProperty("layer_options")) {
         setLayerOptions(app.layer_options.isActive);
       }
@@ -562,13 +566,15 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         //setProperStyleToCtrlBtns();
 
+/*      
         let bm = document.getElementById("collapseBaseMapLayers");
         bm.addEventListener("dblclick", function () {
           event.stopPropagation();
         });
         bm.addEventListener("click", function () {
           event.stopPropagation();
-        });
+        }); 
+*/
 
       }
     }, 100);
@@ -589,6 +595,17 @@ async function loadTemplate(data, isDefaultTemplate) {
         });
       });
     }
+
+    if (mainPopup) {
+      $("head").append(
+        '<link rel="stylesheet" type="text/css" href="src/js/components/main-popup/mainPopup.css">'
+      );
+      $.getScript("src/js/components/main-popup/mainPopup.js").done(function () {
+        mainPopup = new mainPopup();
+        mainPopup.check();
+        mainPopup._addPopupWrapper();
+      });
+  }
 
     //load elevationProfile
     if (loadElevationProfile) {
