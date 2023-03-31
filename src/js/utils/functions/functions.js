@@ -1481,9 +1481,9 @@ function getVectorData(e) {
 }
 
 function createPopupForVector(layer, clickLatlng) {
-  //console.log(layer)
-  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase(),
-      title = layer.data.geoJSON.properties.objeto;
+  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase();
+  let popupName = layer.data.geoJSON.properties.objeto;
+  popupName ? title = popupName : title = id;
 
   var infoAux =
     '<div class="featureInfo" id="featureInfoPopup' + id + '">';
@@ -1497,8 +1497,7 @@ function createPopupForVector(layer, clickLatlng) {
 
   Object.keys(layer.data.geoJSON.properties).forEach(function (k) {
     let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
-    if (k != "bbox" && !ignoredField && k != "objeto") {
-      //Do not show bbox property
+    if (k != "bbox" && !ignoredField && k != "objeto" && k != "styles") { //ignore this rows
       infoAux += "<li>";
       infoAux += "<b>" + ucwords(k.replace(/_/g, " ")) + ":</b>";
       if (layer.data.geoJSON.properties[k] != null) {
@@ -1510,7 +1509,7 @@ function createPopupForVector(layer, clickLatlng) {
   
   infoAux += "</ul>";
   infoAux += "</div></div></div>";
-  popupInfo.push(infoAux); //First info for popup
+  popupInfo.push(infoAux); //Add info for popup
 
   let center;
   if (layer._latlng) {
@@ -1518,6 +1517,5 @@ function createPopupForVector(layer, clickLatlng) {
   } else {
     center = clickLatlng;
   }
-  //console.log(center)
-  layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show all info
+  layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show info
 }
