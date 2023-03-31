@@ -1476,11 +1476,11 @@ function getAllActiveLayers() {
 function getVectorData(e) {
   if (e.target.activeData === true) {
     let layer = e.target;
-    createPopupForVector(layer);
+    createPopupForVector(layer, e.latlng);
   }
 }
 
-function createPopupForVector(layer) {
+function createPopupForVector(layer, clickLatlng) {
   //console.log(layer)
   let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase(),
       title = layer.data.geoJSON.properties.objeto;
@@ -1515,8 +1515,8 @@ function createPopupForVector(layer) {
   let center;
   if (layer._latlng) {
     center = layer._latlng;
-  } else if (layer._latlngs){
-    center = layer.getBounds().getCenter();
+  } else {
+    center = clickLatlng;
   }
   //console.log(center)
   layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show all info
