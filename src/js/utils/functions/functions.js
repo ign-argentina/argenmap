@@ -1306,16 +1306,14 @@ function loadDeveloperLogo() {
   L.Control.DeveloperLogo = L.Control.extend({
     onAdd: function (map) {
       let link = L.DomUtil.create("a");
-      //link.href = "https://www.ign.gob.ar/";
       link.target = "_blank";
       link.id = "developerLogo"
-      link.title =
-        "Desarrollado por el Instituto Geográfico Nacional de la República Argentina";
+      link.title = "Argenmap";
       link.style.cursor = "pointer";
       let img = L.DomUtil.create("img");
       img.src = "src/styles/images/noimage.webp";
-      img.alt = "Instituto Geográfico Nacional de la República Argentina";
-      img.style = "width: 64px; background-size: cover";
+      img.alt = "Argenmap logo";
+      img.classList = "brand"
       img.style.backgroundImage = `url('${APP_IMG}')`;
       link.appendChild(img);
       link.addEventListener('click', function() {

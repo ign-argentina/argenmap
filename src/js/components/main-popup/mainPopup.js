@@ -19,7 +19,7 @@ mainPopup = function () {
       const mainWrapper = document.createElement("div");
       mainWrapper.id="mainWrapper";
       mainWrapper.style="display: flex;align-items: center;"
-      mainWrapper.classList = "container-fluid col-12 col-xs-11 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
+      mainWrapper.classList = "container-fluid col-12 col-xs-12 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
       $("#main-popup").append(mainWrapper);
       
       
@@ -54,7 +54,7 @@ mainPopup = function () {
       let popupExitBtn = document.createElement("a");
       popupExitBtn.id = "popupExitBtn";
       popupExitBtn.href = "javascript:void(0)";
-      popupExitBtn.style = "float:right; color:#676767; overflow-y:auto;";
+      popupExitBtn.classList = "exit-btn";
       popupExitBtn.innerHTML ='<i class="fa fa-times"></i>';
       popupExitBtn.onclick = () => {
         mainWrapper.remove();
@@ -64,7 +64,7 @@ mainPopup = function () {
       //Checkbox
       let checkbox = document.createElement("div");
       checkbox.id="contentWrapper";
-      checkbox.classList = "checkbox";
+      checkbox.classList = "not-again-check";
       checkbox.innerHTML ='<label><input type="checkbox" id="popupCheckbox" name="popupCheckbox">No volver a mostrar</label>';
       checkbox.style = "font-size: 15px";
       contentWrapper.appendChild(checkbox); 
