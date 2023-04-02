@@ -19,7 +19,7 @@ mainPopup = function () {
       const mainWrapper = document.createElement("div");
       mainWrapper.id="mainWrapper";
       mainWrapper.style="display: flex;align-items: center;"
-      mainWrapper.classList = "container-fluid col-12 col-xs-11 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
+      mainWrapper.classList = "container-fluid col-12 col-xs-12 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
       $("#main-popup").append(mainWrapper);
       
       
