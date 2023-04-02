@@ -109,6 +109,14 @@ body {
   width: 170px;
   height: 50px;
 }
+.brand {
+  height: 48px; 
+  background-size: cover; 
+  opacity: .7
+}
+.brand:hover {
+  opacity: 1
+}
 @media (max-width: 800px) {
   .map-container {
     position: fixed;
