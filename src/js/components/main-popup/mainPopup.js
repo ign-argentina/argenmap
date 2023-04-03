@@ -25,7 +25,7 @@ mainPopup = function () {
       
       const contentWrapper = document.createElement("div");
       contentWrapper.id="contentWrapper";
-      contentWrapper.classList = "popup";
+      contentWrapper.classList = "mainPopup";
       contentWrapper.style = "font-size: 18px";
       //let welcomeSign = "¡Bienvenidos a Argenmap!";
       if (app.mainPopup.welcomeSign) {
