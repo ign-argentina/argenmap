@@ -521,7 +521,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 						mapa.editableLayers[type].push(layer);
 
-						addLayerToDrawingsGroup(name, layer);
+						addLayerToDrawingsGroup(name, layer, "Dibujos", "dibujos", "dibujos");
 
 						// if (perfilTopografico.isActive) {
 						// 	// check if profile was clicked
@@ -578,7 +578,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
 							}
-						});
+						}); */
 
 						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
@@ -839,19 +839,15 @@ $("body").on("pluginLoad", function (event, plugin) {
 					};
 
 					mapa.centerLayer = (layer) => {
+						console.log(layer);
 						if (!layer) {
 							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
 						}
-						if (layer.type === 'marker' || layer.type === 'circlemarker') {
-							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
+						if (layer.hasOwnProperty("_layers")) {
+							layer = layer.toGeoJSON();
 						}
-						else if (layer.type === "FeatureCollection" || layer.type === "Feature") {
-							let bbox = turf.bbox(layer);
-							mapa.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-						}
-						else {
-							mapa.fitBounds(layer.getBounds());
-						}
+						let bbox = turf.bbox(layer);
+						mapa.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
 					}
 
 					mapa.addContextMenuToLayer = (layer) => {
@@ -2075,25 +2071,21 @@ $("body").on("pluginLoad", function (event, plugin) {
 								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 							}
 						}
-						let layerSection;
 						addedLayers.forEach(lyr => {
-							i = 0;
 							if (lyr.id === "dibujos") {
-								lyr.layer.forEach(e => {
+								Object.values(lyr.layer._layers).forEach(e => {
 									if (layerName === e.name) {
-										layerSection = lyr.section;
-										lyr.layer.splice(i, 1);
-										updateNumberofLayers(layerSection);
+										lyr.layer.removeLayer(e);
+										updateNumberofLayers(lyr.section);
 										showTotalNumberofLayers();
 									}
-									i++;
 								})
-							}
-							if (lyr.layer.length === 0) {
-								let index = addedLayers.indexOf(lyr);
-								if (index > -1) {
-									addedLayers.splice(index, 1);
-									showTotalNumberofLayers();
+								if (Object.values(lyr.layer._layers).length === 0) {
+									let index = addedLayers.indexOf(lyr);
+									if (index > -1) {
+										addedLayers.splice(index, 1);
+										showTotalNumberofLayers();
+									}
 								}
 							}
 						});
@@ -2157,7 +2149,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						downloadANode.remove();
 					}
 
-					mapa.downloadMultiLayerGeoJSON = (id) => {
+					mapa.downloadMultiLayerGeoJSON = (id, fileName) => {
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []
@@ -2189,7 +2181,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
-						downloadANode.setAttribute("download", id + ".geojson");
+						downloadANode.setAttribute("download", fileName + ".geojson");
 						document.body.appendChild(downloadANode);
 						downloadANode.click();
 						downloadANode.remove();
@@ -2702,29 +2694,28 @@ $("body").on("pluginLoad", function (event, plugin) {
 	}
 });
 
-function addLayerToDrawingsGroup(name, layer) {
-		if (mapa.groupLayers["dibujos"] === undefined) {
-			mapa.groupLayers["dibujos"] = [];
-			mapa.addLayerToGroup(name, "dibujos");
-			addedLayers.push({
-				id: "dibujos",
-				layer: [layer],
-				name: "dibujos",
-				type: "dibujos",
-				isActive: true,
-				section: "Dibujos"
-			});
-			menu_ui.addFileLayer("Dibujos", "dibujos", "dibujos", "dibujos", "dibujos", true);
-			updateNumberofLayers("Dibujos");
-		} else {
-			mapa.addLayerToGroup(name, "dibujos");
-			addedLayers.forEach(lyr => {
-				if (lyr.id === "dibujos") {
-					lyr.layer.push(layer);
-				}
-			});
-			updateNumberofLayers("Dibujos");
+function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
+	if (mapa.groupLayers[group] === undefined) {
+		mapa.groupLayers[group] = [];
+		mapa.addLayerToGroup(name, group);
+		addedLayers.push({
+			id: groupId,
+			layer: L.layerGroup([layer]),
+			name: groupId,
+			type: groupId,
+			isActive: true,
+			section: section
+		});
+		menu_ui.addFileLayer(section, groupId, groupId, groupId, groupId, true);
+	} else {
+		mapa.addLayerToGroup(name, group);
+		addedLayers.forEach(lyr => {
+			if (lyr.id === groupId) {
+				lyr.layer.addLayer(layer);
+			}
+		});
 	}
+	updateNumberofLayers(section);
 }
 
 function addSelectionLayersMenuToLayer(layer) {

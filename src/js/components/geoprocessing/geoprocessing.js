@@ -340,18 +340,14 @@ class Geoprocessing {
         mapa.groupLayers["dibujos"].splice(layerIdx, 1);
     }
 
-    let layerSection;
     addedLayers.forEach(lyr => {
-      let i = 0;
       if (lyr.id === "dibujos") {
-        lyr.layer.forEach(e => { // Remove rectangle from addedLayers whith "dibujos" id
+        Object.values(lyr.layer._layers).forEach(e => { // Remove rectangle from addedLayers whith "dibujos" id
           if (selectedRectangle.name === e.name) {
-            layerSection = lyr.section;
-            lyr.layer.splice(i, 1);
-            updateNumberofLayers(layerSection);
+            lyr.layer.removeLayer(e);
+            updateNumberofLayers(lyr.section);
             showTotalNumberofLayers();
           }
-          i++;
         });
       }
     });

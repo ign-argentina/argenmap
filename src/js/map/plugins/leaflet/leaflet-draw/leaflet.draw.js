@@ -2943,7 +2943,7 @@
       },
       revertLayers: function () {
         this._deletedLayers.eachLayer(function (t) {
-          addLayerToDrawingsGroup(t.name, t); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
+          addLayerToDrawingsGroup(t.name, t, "Dibujos", "dibujos", "dibujos"); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
           this._deletableLayers.addLayer(t),
             mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
             t.fire("revert-deleted", { layer: t });
