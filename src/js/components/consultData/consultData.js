@@ -3,9 +3,13 @@ let consultDataBtnClose = true;
 class ConsultData {
     constructor() {
         this.component = `
-        <a id="iconCD-container" class="leaflet-disabled" title="Consultar Datos">
-              <i id="iconCD" class="fa fa-question-circle" aria-hidden="true"></i>
-        </a>
+        <div id="iconCD-container" class="leaflet-disabled" title="Consultar Datos">
+            <a id="iconCD" class="fa fa-circle-question" aria-hidden="true"></a>
+            <i id="dropdownCD" class="dropdown-contentCD hidden">
+                <a href="#" id="cdOption1" class="fas fa-question " title="Consulta Singular"></a>
+                <a href="#" id="cdOption2" class="fas fa-question " title="in development"></a>
+            </i>
+        </div>
         `;
     }
 
@@ -14,9 +18,18 @@ class ConsultData {
         elem.className = "leaflet-bar leaflet-control";
         elem.id = "consultData";
         elem.innerHTML = this.component;
-        elem.onclick = activateDataConsult;
+        elem.onmouseover = showConsultList;
+        elem.onmouseout = hideConsultList;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
+        document.getElementById("cdOption1").onclick = activateDataConsult;
     }
+}
+
+function showConsultList() {
+    document.getElementById("dropdownCD").classList.remove("hidden");
+}
+function hideConsultList() {
+    document.getElementById("dropdownCD").classList.add("hidden");
 }
 
 function activateDataConsult() {
@@ -28,7 +41,8 @@ function activateDataConsult() {
                 }
             });
         });
-        document.getElementById("iconCD-container").style.backgroundColor = "#00ff04";
+        document.getElementById("cdOption1").style.backgroundColor = "#00ff04";
+        document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
     } else {
         Object.values(mapa.editableLayers).forEach(editLayer => {
@@ -38,7 +52,8 @@ function activateDataConsult() {
                 }
             });
         });
-        document.getElementById("iconCD-container").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        document.getElementById("cdOption1").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = true;
     }
 }
