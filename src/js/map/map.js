@@ -966,7 +966,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 					};
 
 					mapa.centerLayer = (layer) => {
-						console.log(layer);
 						if (!layer) {
 							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
 						}
