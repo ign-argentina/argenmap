@@ -2685,35 +2685,17 @@
           : L.EditToolbar.Edit.include(L.Mixin.Events);
       },
       enable: function () {
-        let _nodes = null,
-          _complexGeom = ["polyline", "rectangle", "polygon"];
-        this._featureGroup.eachLayer((lyr) => {
-          let isComplex = _complexGeom.find((elem) => elem === lyr.type);
+        let _nodes = null, _complexGeom = ["polyline", "rectangle", "polygon"];
+        this._featureGroup.eachLayer(lyr => {
+          let isComplex = _complexGeom.find(elem => elem === lyr.type)
           if (isComplex) {
-            if (lyr.type === "polyline") {
-              _nodes += lyr._latlngs.length;
-            } else {
-              _nodes += lyr._latlngs[0].length;
-            }
-          } //else {console.log(lyr.type + " single coordinate geom")}
+            _nodes += lyr._latlngs.length;
+          }/*  else {
+        console.log(lyr.type + " single coordinate geom")
+    } */
         });
 
-        if (_nodes > 3000) {
-          if (
-            window.confirm(
-              `ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`
-            )
-          ) {
-            !this._enabled &&
-              this._hasAvailableLayers() &&
-              (this.fire("enabled", { handler: this.type }),
-                this._map.fire(L.Draw.Event.EDITSTART, { handler: this.type }),
-                L.Handler.prototype.enable.call(this),
-                this._featureGroup
-                  .on("layeradd", this._enableLayerEdit, this)
-                  .on("layerremove", this._disableLayerEdit, this));
-          }
-        } else {
+        if (_nodes < 5) {
           !this._enabled &&
             this._hasAvailableLayers() &&
             (this.fire("enabled", { handler: this.type }),
@@ -2722,6 +2704,8 @@
               this._featureGroup
                 .on("layeradd", this._enableLayerEdit, this)
                 .on("layerremove", this._disableLayerEdit, this));
+        } else {
+          alert(`${_nodes} elements..`);
         }
       },
       disable: function () {

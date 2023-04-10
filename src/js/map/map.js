@@ -444,6 +444,61 @@ $("body").on("pluginLoad", function (event, plugin) {
 						position: 'topright'
 					});
 
+					L.EditToolbar.Edit.include({
+						enable: function () {
+							let _nodes = null,
+								_complexGeom = ["polyline", "rectangle", "polygon"];
+							this._featureGroup.eachLayer((lyr) => {
+								let isComplex = _complexGeom.find((elem) => elem === lyr.type);
+								if (isComplex) {
+									if (lyr.type === "polyline") {
+										_nodes += lyr._latlngs.length;
+									} else {
+										_nodes += lyr._latlngs[0].length;
+									}
+								}
+							});
+
+							if (_nodes > 3000) {
+								if (
+									window.confirm(
+										`ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`
+									)
+								) {
+									!this._enabled &&
+										this._hasAvailableLayers() &&
+										(this.fire("enabled", { handler: this.type }),
+											this._map.fire(L.Draw.Event.EDITSTART, { handler: this.type }),
+											L.Handler.prototype.enable.call(this),
+											this._featureGroup
+												.on("layeradd", this._enableLayerEdit, this)
+												.on("layerremove", this._disableLayerEdit, this));
+								}
+							} else {
+								!this._enabled &&
+									this._hasAvailableLayers() &&
+									(this.fire("enabled", { handler: this.type }),
+										this._map.fire(L.Draw.Event.EDITSTART, { handler: this.type }),
+										L.Handler.prototype.enable.call(this),
+										this._featureGroup
+											.on("layeradd", this._enableLayerEdit, this)
+											.on("layerremove", this._disableLayerEdit, this));
+							}
+						}
+					});
+
+					L.EditToolbar.Delete.include({
+						revertLayers: function () {
+							this._deletedLayers.eachLayer(function (t) {
+								console.log("object");
+								addLayerToDrawingsGroup(t.name, t, "Dibujos", "dibujos", "dibujos"); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
+								this._deletableLayers.addLayer(t),
+									mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
+									t.fire("revert-deleted", { layer: t });
+							}, this);
+						}
+					});
+
 					//Customizing language and text in Leaflet.draw
 					L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
 					L.drawLocal.draw.toolbar.finish.text = 'Finalizar';
