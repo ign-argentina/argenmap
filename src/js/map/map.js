@@ -1,8 +1,8 @@
 var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
-    baseMaps = {},
-    overlayMaps = new Object(),
-    layerName,
-    layerData;
+	baseMaps = {},
+	overlayMaps = new Object(),
+	layerName,
+	layerData;
 var argenmap = "";
 var mapa = "";
 
@@ -10,7 +10,7 @@ let currentBaseMap = null;
 
 let countour_styles = false;
 
-gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function() {
+gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
 	for (const plugin in PLUGINS) {
 		if (!app.hasOwnProperty('excluded_plugins') || !app.excluded_plugins.find(excluded_plugin => excluded_plugin === plugin)) {
 			gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
@@ -43,20 +43,20 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['','','','','','','','','','','','','',''];
-var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4;var ordenLocate = 5;
+var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 5;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
 var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenGroupLayerSelector = 14;
 var visiblesActivar = true;
-$("body").on("pluginLoad", function(event, plugin){
+$("body").on("pluginLoad", function (event, plugin) {
 	unordered = '';
 	visiblesActivar = true;
-	switch(plugin.pluginName) {
+	switch (plugin.pluginName) {
 		// Add ordered plugins in order
 		case 'leaflet':
 			unordered = plugin.pluginName;
 			break;
-        case 'menuPrinter':
+		case 'menuPrinter':
 			showMainMenu();
 			break;
 		case 'ZoomHome':
@@ -95,74 +95,74 @@ $("body").on("pluginLoad", function(event, plugin){
 		case 'pdfPrinter':
 			ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
 			break;
-			case 'groupLayerSelector':
+		case 'groupLayerSelector':
 			ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
 			break;
-		default :
+		default:
 			// Add unordered plugins
 			unordered = plugin.pluginName;
 			break;
 	}
 	// oredered plugins status chek
-	if(visiblesActivar && gestorMenu.pluginExists('leaflet')) {
-		if(gestorMenu.plugins['leaflet'].getStatus() != 'visible') {
+	if (visiblesActivar && gestorMenu.pluginExists('leaflet')) {
+		if (gestorMenu.plugins['leaflet'].getStatus() != 'visible') {
 			visiblesActivar = false;
 		}
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('ZoomHome')) {
-		if(gestorMenu.plugins['ZoomHome'].getStatus() == 'ready' || gestorMenu.plugins['ZoomHome'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('ZoomHome')) {
+		if (gestorMenu.plugins['ZoomHome'].getStatus() == 'ready' || gestorMenu.plugins['ZoomHome'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('FullScreen')) {
-		if(gestorMenu.plugins['FullScreen'].getStatus() == 'ready' || gestorMenu.plugins['FullScreen'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('FullScreen')) {
+		if (gestorMenu.plugins['FullScreen'].getStatus() == 'ready' || gestorMenu.plugins['FullScreen'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('locate')){
-		if(gestorMenu.plugins['locate'].getStatus() == 'ready' || gestorMenu.plugins['locate'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('locate')) {
+		if (gestorMenu.plugins['locate'].getStatus() == 'ready' || gestorMenu.plugins['locate'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('graticula')) {
-		if(gestorMenu.plugins['graticula'].getStatus() == 'ready' || gestorMenu.plugins['graticula'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('graticula')) {
+		if (gestorMenu.plugins['graticula'].getStatus() == 'ready' || gestorMenu.plugins['graticula'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('Measure')) {
-		if(gestorMenu.plugins['Measure'].getStatus() == 'ready' || gestorMenu.plugins['Measure'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('Measure')) {
+		if (gestorMenu.plugins['Measure'].getStatus() == 'ready' || gestorMenu.plugins['Measure'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('pdfPrinter')) {
-		if(gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('pdfPrinter')) {
+		if (gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
- 	if(visiblesActivar && gestorMenu.pluginExists('groupLayerSelector')) {
-		if(gestorMenu.plugins['groupLayerSelector'].getStatus() == 'ready' || gestorMenu.plugins['groupLayerSelector'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('groupLayerSelector')) {
+		if (gestorMenu.plugins['groupLayerSelector'].getStatus() == 'ready' || gestorMenu.plugins['groupLayerSelector'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('Draw')) {
-		if(gestorMenu.plugins['Draw'].getStatus() == 'ready' || gestorMenu.plugins['Draw'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('Draw')) {
+		if (gestorMenu.plugins['Draw'].getStatus() == 'ready' || gestorMenu.plugins['Draw'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('betterScale')) {
-		if(gestorMenu.plugins['betterScale'].getStatus() == 'ready' || gestorMenu.plugins['betterScale'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('betterScale')) {
+		if (gestorMenu.plugins['betterScale'].getStatus() == 'ready' || gestorMenu.plugins['betterScale'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('minimap')) {
-		if(gestorMenu.plugins['minimap'].getStatus() == 'ready' || gestorMenu.plugins['minimap'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('minimap')) {
+		if (gestorMenu.plugins['minimap'].getStatus() == 'ready' || gestorMenu.plugins['minimap'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('screenShoter')) {
-		if(gestorMenu.plugins['screenShoter'].getStatus() == 'ready' || gestorMenu.plugins['screenShoter'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('screenShoter')) {
+		if (gestorMenu.plugins['screenShoter'].getStatus() == 'ready' || gestorMenu.plugins['screenShoter'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('geoprocessing')) {
-		if(gestorMenu.plugins['geoprocessing'].getStatus() == 'ready' || gestorMenu.plugins['geoprocessing'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('geoprocessing')) {
+		if (gestorMenu.plugins['geoprocessing'].getStatus() == 'ready' || gestorMenu.plugins['geoprocessing'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar && gestorMenu.pluginExists('loadLayer')) {
-		if(gestorMenu.plugins['loadLayer'].getStatus() == 'ready' || gestorMenu.plugins['loadLayer'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('loadLayer')) {
+		if (gestorMenu.plugins['loadLayer'].getStatus() == 'ready' || gestorMenu.plugins['loadLayer'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if(visiblesActivar){
-		ordered.forEach(function(e){
+	if (visiblesActivar) {
+		ordered.forEach(function (e) {
 			switch (e) {
 				case 'screenShoter':
 					if (L.Browser.webkit) {
@@ -170,36 +170,36 @@ $("body").on("pluginLoad", function(event, plugin){
 						let n = d.getTime();
 						L.simpleMapScreenshoter({
 							hideElementsWithSelectors: [
-							".leaflet-top.leaflet-left",
-							".leaflet-top.leaflet-right",
-							".leaflet-bottom.leaflet-right",
-							"#zoom-level",
-							"#sidebar-toolbar-icon-left",
-							"#sidebar-toolbar-icon-right",
-							"#btn-logout"
+								".leaflet-top.leaflet-left",
+								".leaflet-top.leaflet-right",
+								".leaflet-bottom.leaflet-right",
+								"#zoom-level",
+								"#sidebar-toolbar-icon-left",
+								"#sidebar-toolbar-icon-right",
+								"#btn-logout"
 							],
 							screenName: "mapaIGN" + n,
 						}).addTo(mapa);
 
 						document.getElementsByClassName(
-						"leaflet-control-simpleMapScreenshoter"
+							"leaflet-control-simpleMapScreenshoter"
 						)[0].id = "screenShoter";
 						let screenShoter = document.getElementById("screenShoter");
 						screenShoter.classList.remove(
-						"leaflet-control-simpleMapScreenshoter"
+							"leaflet-control-simpleMapScreenshoter"
 						);
 						screenShoter.classList.add("leaflet-bar");
 						screenShoter.children[0].id = "screenShoter-btn";
 						screenShoter.title = "Captura de pantalla";
-						
+
 						let screenShoterBtn = document.getElementById("screenShoter-btn");
 						screenShoterBtn.classList.remove(
-						"leaflet-control-simpleMapScreenshoter-btn"
+							"leaflet-control-simpleMapScreenshoter-btn"
 						);
 						screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
 						gestorMenu.plugins["screenShoter"].setStatus("visible");
-    			    }
+					}
 					break;
 				case 'ZoomHome':
 					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
@@ -220,7 +220,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					break;
 				case 'loadLayer':
 					const loadLayersModal = new LoadLayersModal();
-        			loadLayersModal.createComponent();
+					loadLayersModal.createComponent();
 					break;
 				case 'betterScale':
 					// Leaflet BetterScale plugin
@@ -229,7 +229,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						metric: true,
 						imperial: false
 					}).addTo(mapa);
-					*/ 
+					*/
 					L.control.scale({
 						metric: true,
 						imperial: false
@@ -262,81 +262,81 @@ $("body").on("pluginLoad", function(event, plugin){
 				case 'locate':
 					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 					var locateControl = L.control.locate({
-					    position: "topleft",
-					    drawCircle: true,
-					    follow: true,
-					    setView: true,
-					    keepCurrentZoomLevel: true,
-					    markerStyle: {
-					        weight: 1,
-					        opacity: 0.8,
-					        fillOpacity: 0.8
-					    },
-					    circleStyle: {
-					        weight: 1,
-					        clickable: false
-					    },
-					    icon: "fa fa-crosshairs",
-					    metric: true,
-					    strings: {
-					        title: "Mi posición",
-					        popup: "Usted se encuentra a {distance} {unit} desde este punto",
-					        outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
-					    },
-					    locateOptions: {
-					        maxZoom: 21,
-					        watch: true,
-					        enableHighAccuracy: true,
-					        maximumAge: 10000,
-					        timeout: 10000
-					    }
+						position: "topleft",
+						drawCircle: true,
+						follow: true,
+						setView: true,
+						keepCurrentZoomLevel: true,
+						markerStyle: {
+							weight: 1,
+							opacity: 0.8,
+							fillOpacity: 0.8
+						},
+						circleStyle: {
+							weight: 1,
+							clickable: false
+						},
+						icon: "fa fa-crosshairs",
+						metric: true,
+						strings: {
+							title: "Mi posición",
+							popup: "Usted se encuentra a {distance} {unit} desde este punto",
+							outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
+						},
+						locateOptions: {
+							maxZoom: 21,
+							watch: true,
+							enableHighAccuracy: true,
+							maximumAge: 10000,
+							timeout: 10000
+						}
 					}).addTo(mapa);
 					gestorMenu.plugins['locate'].setStatus('visible');
 					break;
 				case 'graticula':
 					// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
-                    var customGraticule = null;
+					var customGraticule = null;
 					L.Control.CustomGraticule = L.Control.extend({
-					  onAdd: function (map) {
-						var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
-						container.title = 'Cuadrícula';
-						var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
-						container.appendChild(icon);
-						
-						container.onclick = function() {
-							if (customGraticule == null) {
-								//drawGrid(mapa.getZoom());
-								var options = {
-									interval: 10,
-									showshowOriginLabel: true,
-									labelsFormat: 'dms',
-									zoomIntervals: [
-										{start: 2, end: 3, interval: 20},
-										{start: 4, end: 5, interval: 5},
-										{start: 6, end: 6, interval: 3},
-										{start: 7, end: 8, interval: 0.8},
-										{start: 9, end: 9, interval: 0.5},
-										{start: 10, end: 10, interval: 0.2},
-										{start: 11, end: 12, interval: 0.08},
-										{start: 13, end: 13, interval: 0.02},
-										{start: 14, end: 14, interval: 0.01},
-										{start: 15, end: 15, interval: 0.008},
-										{start: 16, end: 16, interval: 0.004},
-										{start: 17, end: 20, interval: 0.001}
-									],
-									redraw: 'move'
-								};
-								customGraticule = L.simpleGraticule(options).addTo(mapa);
-							} else {
-								mapa.removeControl(customGraticule);
-								customGraticule = null;
+						onAdd: function (map) {
+							var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
+							container.title = 'Cuadrícula';
+							var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
+							container.appendChild(icon);
+
+							container.onclick = function () {
+								if (customGraticule == null) {
+									//drawGrid(mapa.getZoom());
+									var options = {
+										interval: 10,
+										showshowOriginLabel: true,
+										labelsFormat: 'dms',
+										zoomIntervals: [
+											{ start: 2, end: 3, interval: 20 },
+											{ start: 4, end: 5, interval: 5 },
+											{ start: 6, end: 6, interval: 3 },
+											{ start: 7, end: 8, interval: 0.8 },
+											{ start: 9, end: 9, interval: 0.5 },
+											{ start: 10, end: 10, interval: 0.2 },
+											{ start: 11, end: 12, interval: 0.08 },
+											{ start: 13, end: 13, interval: 0.02 },
+											{ start: 14, end: 14, interval: 0.01 },
+											{ start: 15, end: 15, interval: 0.008 },
+											{ start: 16, end: 16, interval: 0.004 },
+											{ start: 17, end: 20, interval: 0.001 }
+										],
+										redraw: 'move'
+									};
+									customGraticule = L.simpleGraticule(options).addTo(mapa);
+								} else {
+									mapa.removeControl(customGraticule);
+									customGraticule = null;
+								}
 							}
+							return container;
 						}
-						return container;
-					  }
 					});
-					L.control.customgraticule = function(opts) {
-					    return new L.Control.CustomGraticule(opts);
+					L.control.customgraticule = function (opts) {
+						return new L.Control.CustomGraticule(opts);
 					}
 					L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
 					gestorMenu.plugins['graticula'].setStatus('visible');
@@ -356,35 +356,35 @@ $("body").on("pluginLoad", function(event, plugin){
 					break;
 				case "geoprocessing":
 					if (loadGeoprocessing) {
-					  let HTMLhead = document.querySelector("head");
-					  HTMLhead.insertAdjacentHTML("beforeend",
-						'<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
-					  HTMLhead.insertAdjacentHTML("beforeend",
-						'<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
-					  HTMLhead.insertAdjacentHTML("beforeend",
-						'<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">');
-					  $.getScript(
-						"src/js/plugins/geoprocess-executor/geoprocess-executor.js"
-					  ).done(function () {
-						$.getScript("src/js/components/form-builder/form-builder.js").done(
-						  function () {
-							geoProcessingManager = new Geoprocessing();
-							geoProcessingManager.createIcon();
-							geoProcessingManager.setAvailableGeoprocessingConfig(
-							app.geoprocessing
+						let HTMLhead = document.querySelector("head");
+						HTMLhead.insertAdjacentHTML("beforeend",
+							'<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
+						HTMLhead.insertAdjacentHTML("beforeend",
+							'<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
+						HTMLhead.insertAdjacentHTML("beforeend",
+							'<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">');
+						$.getScript(
+							"src/js/plugins/geoprocess-executor/geoprocess-executor.js"
+						).done(function () {
+							$.getScript("src/js/components/form-builder/form-builder.js").done(
+								function () {
+									geoProcessingManager = new Geoprocessing();
+									geoProcessingManager.createIcon();
+									geoProcessingManager.setAvailableGeoprocessingConfig(
+										app.geoprocessing
+									);
+									geoProcessingManager.getProcesses().forEach((process) => {
+										if (process.geoprocess === "waterRise") {
+											// script loading test without jQuery
+											app._loadScript(
+												"./src/js/components/geoprocessing/IHeight.js"
+											);
+										}
+										geoProcessingManager.getNewProcessPrefix();
+									});
+								}
 							);
-							geoProcessingManager.getProcesses().forEach((process) => {
-							if (process.geoprocess === "waterRise") {
-								// script loading test without jQuery
-								app._loadScript(
-								"./src/js/components/geoprocessing/IHeight.js"
-								);
-							}
-							geoProcessingManager.getNewProcessPrefix();
-							});
-						  }
-						);
-					  });
+						});
 					}
 					break;
 				case 'pdfPrinter':
@@ -399,20 +399,20 @@ $("body").on("pluginLoad", function(event, plugin){
 					break;
 				case 'Draw':
 
-				    var orgReadbleDistance = L.GeometryUtil.readableArea;
-					
+					var orgReadbleDistance = L.GeometryUtil.readableArea;
+
 					L.GeometryUtil.readableArea = function (area, isMetric, precision) { // adapts area unit from m2 to ha to km2 based on its size
 						let _area = L.GeometryUtil.formattedNumber(area, 2) + ' m²';
-						if(area >= 10000 && area < 1000000){
+						if (area >= 10000 && area < 1000000) {
 							_area = L.GeometryUtil.formattedNumber(area / 10000, 2) + ' ha';
 						}
-						if(area >= 1000000){
+						if (area >= 1000000) {
 							_area = L.GeometryUtil.formattedNumber(area / 1000000, 2) + ' km²';
 						}
-						return _area;	
+						return _area;
 					};
 
-				    drawnItems = L.featureGroup().addTo(mapa);
+					drawnItems = L.featureGroup().addTo(mapa);
 
 					mapa.editableLayers = {
 						marker: [],
@@ -423,7 +423,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						polyline: [],
 						label: []
 					};
-					
+
 					mapa.groupLayers = {};
 
 					mapa.drawControl = new L.Control.Draw({
@@ -434,16 +434,142 @@ $("body").on("pluginLoad", function(event, plugin){
 							}
 						},
 						draw: {
-							polygon: {metric: true},
-							circlemarker: {metric: true},
-					        polyline: {metric: true},
-					        circle:{metric: true},
-					        rectangle: {metric: true},
-							label: {metric:true}
+							polygon: { metric: true },
+							circlemarker: { metric: true },
+							polyline: { metric: true },
+							circle: { metric: true },
+							rectangle: { metric: true },
+							label: { metric: true }
 						},
 						position: 'topright'
 					});
 
+					L.EditToolbar.Edit.include({
+						enable: function () {
+							let _nodes = null,
+								_complexGeom = ["polyline", "rectangle", "polygon"];
+							this._featureGroup.eachLayer((lyr) => {
+								let isComplex = _complexGeom.find((elem) => elem === lyr.type);
+								if (isComplex) {
+									if (lyr.type === "polyline") {
+										_nodes += lyr._latlngs.length;
+									} else {
+										_nodes += lyr._latlngs[0].length;
+									}
+								}
+							});
+
+							if (_nodes > 3000) {
+								if (
+									window.confirm(
+										`ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`
+									)
+								) {
+									!this._enabled &&
+										this._hasAvailableLayers() &&
+										(this.fire("enabled", { handler: this.type }),
+											this._map.fire(L.Draw.Event.EDITSTART, { handler: this.type }),
+											L.Handler.prototype.enable.call(this),
+											this._featureGroup
+												.on("layeradd", this._enableLayerEdit, this)
+												.on("layerremove", this._disableLayerEdit, this));
+								}
+							} else {
+								!this._enabled &&
+									this._hasAvailableLayers() &&
+									(this.fire("enabled", { handler: this.type }),
+										this._map.fire(L.Draw.Event.EDITSTART, { handler: this.type }),
+										L.Handler.prototype.enable.call(this),
+										this._featureGroup
+											.on("layeradd", this._enableLayerEdit, this)
+											.on("layerremove", this._disableLayerEdit, this));
+							}
+						},
+						_enableLayerEdit: function (t) {
+							var e,
+								i,
+								o = t.layer || t.target || t;
+							if (typeof o != "string" && !o._uneditable) { //to disallow editing in geoprocesses
+								this._backupLayer(o),
+									this.options.poly &&
+									((i = L.Util.extend({}, this.options.poly)),
+										(o.options.poly = i)),
+									this.options.selectedPathOptions &&
+									((e = L.Util.extend({}, this.options.selectedPathOptions)),
+										e.maintainColor &&
+										((e.color = o.options.color),
+											(e.fillColor = o.options.fillColor)),
+										(o.options.original = L.extend({}, o.options)),
+										(o.options.editing = e)),
+									o instanceof L.Marker
+										? (o.editing && o.editing.enable(),
+											o.dragging.enable(),
+											o
+												.on("dragend", this._onMarkerDragEnd)
+												.on("touchmove", this._onTouchMove, this)
+												.on("MSPointerMove", this._onTouchMove, this)
+												.on("touchend", this._onMarkerDragEnd, this)
+												.on("MSPointerUp", this._onMarkerDragEnd, this))
+										: o.editing.enable();
+							}
+						},
+						_disableLayerEdit: function (t) {
+							var e = t.layer || t.target || t;
+							if (typeof e != "string" && !e._uneditable) { //to disallow editing in geoprocesses
+								(e.edited = !1),
+									e.editing && e.editing.disable(),
+									delete e.options.editing,
+									delete e.options.original,
+									this._selectedPathOptions &&
+									(e instanceof L.Marker
+										? this._toggleMarkerHighlight(e)
+										: (e.setStyle(e.options.previousOptions),
+											delete e.options.previousOptions)),
+									e instanceof L.Marker
+										? (e.dragging.disable(),
+											e
+												.off("dragend", this._onMarkerDragEnd, this)
+												.off("touchmove", this._onTouchMove, this)
+												.off("MSPointerMove", this._onTouchMove, this)
+												.off("touchend", this._onMarkerDragEnd, this)
+												.off("MSPointerUp", this._onMarkerDragEnd, this))
+										: e.editing.disable();
+							}
+						}
+					});
+
+					L.EditToolbar.Delete.include({
+						revertLayers: function () {
+							this._deletedLayers.eachLayer(function (t) {
+								addLayerToDrawingsGroup(t.name, t, "Dibujos", "dibujos", "dibujos"); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
+								this._deletableLayers.addLayer(t),
+									mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
+									t.fire("revert-deleted", { layer: t });
+							}, this);
+						},
+						_enableLayerDelete: function (t) {
+							var e = t.layer || t.target || t;
+							if (typeof e != "string" && !e._uneditable && !e.value)
+								e.on("click", this._removeLayer, this);
+						},
+						_disableLayerDelete: function (t) {
+							var e = t.layer || t.target || t;
+							if (typeof e != "string" && !e._uneditable && !e.value) {
+								e.off("click", this._removeLayer, this),
+									this._deletedLayers.removeLayer(e);
+							}
+						},
+						_removeLayer: function (t) {
+							var e = t.layer || t.target || t;
+							let isFile = e.id ? e.id.includes('json') || e.id.includes('zip') || e.id.includes('kml') : false;
+							if (typeof e != "string" && !e._uneditable && !e.value && !isFile) {
+								//this._deletableLayers.removeLayer(e),
+								mapa.deleteLayer(e.name), //remove geometry from groupLayer[dibujos], drawItem, editableLayers and addedLayers
+									this._deletedLayers.addLayer(e),
+									e.fire("deleted");
+							}
+						}
+					});
 
 					//Customizing language and text in Leaflet.draw
 					L.drawLocal.draw.toolbar.finish.title = 'Finalizar dibujo';
@@ -486,11 +612,11 @@ $("body").on("pluginLoad", function(event, plugin){
 					L.drawLocal.edit.handlers.remove.tooltip.text = 'Click sobre la característica a eliminar';
 					mapa.addControl(mapa.drawControl);
 
-					
+
 					mapa.on('draw:drawstart', (e) => {
 						currentlyDrawing = true;
 					});
-					
+
 					mapa.on('draw:editstart', (e) => {
 						currentlyDrawing = true;
 					});
@@ -498,7 +624,7 @@ $("body").on("pluginLoad", function(event, plugin){
 					mapa.on('draw:created', (e) => {
 						const layer = e.layer;
 						const type = e.layerType;
-						
+
 						let name = type + '_';
 						if (mapa.editableLayers[type].length === 0) {
 							name += '1';
@@ -506,7 +632,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
 							name += parseInt(lastLayerName.split('_')[1]) + 1;
 						}
-						
+
 						layer.name = name;
 						layer.type = type;
 						layer.data = {};
@@ -522,17 +648,19 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						mapa.editableLayers[type].push(layer);
 
+						addLayerToDrawingsGroup(name, layer, "Dibujos", "dibujos", "dibujos");
+
 						// if (perfilTopografico.isActive) {
 						// 	// check if profile was clicked
 						// 	mapa.capaPerfilTopografico.clearLayers();
 						// 	mapa.capaPerfilTopografico.addLayer(layer);
 						// 	perfilTopografico.process(layer.getGeoJSON());
-                        // } else {
-							drawnItems.addLayer(layer);		
-                        // }
- 
+						// } else {
+						drawnItems.addLayer(layer);
+						// }
+
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
-						
+
 						if (layer.type === 'marker') {
 							//Default marker styles
 							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
@@ -559,7 +687,7 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.on('draw:deleted', function (e) {
 						var layers = e.layers;
-						Object.values(layers._layers).forEach(deletedLayer => {
+						/* Object.values(layers._layers).forEach(deletedLayer => {
 							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
 							if (lyrIdx >= 0) {
 								let layerSection;
@@ -577,20 +705,21 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
 								deleteLayerFromMenu(deletedLayer);
 							}
-						});
+						}); */
 
 						/*if(geoProcessingManager){
 							let layerName = Object.values(layers._layers)[0].name;
 							geoProcessingManager.updateLayerSelect(layerName, false);
 						}*/
-						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
+
+						//mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 					});
 
 					deleteLayerFromMenu = (deletedLayer) => {// Delete layers entries from menu if exists
 						Object.entries(mapa.groupLayers).forEach(([k, v]) => {
 							v.forEach(e => {
-								if(e === deletedLayer.name) {
-									deleteLayerGeometry(k,true)
+								if (e === deletedLayer.name) {
+									deleteLayerGeometry(k, true)
 								}
 							});
 						});
@@ -610,7 +739,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						currentlyDrawing = false;
 					});
 
-					
+
 					mapa.on('zoomend', (e) => {
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
@@ -627,26 +756,24 @@ $("body").on("pluginLoad", function(event, plugin){
 
 
 					mapa.on('contextmenu', (e) => {
-						
+
 						var capa = "";
 						$.each(mapa._layers, function (ml) {
 							$.each(mapa._layers[ml], function (v) {
-								if (mapa._layers[ml]._url!=undefined) {
+								if (mapa._layers[ml]._url != undefined) {
 									capa = mapa._layers[ml]._url;
 								}
-								 
-						   	})
-						 })
-						
+							})
+						})
+
 
 						var zoom = e.target._zoom;
 						var count = 0;
-						
+
 						var imagen = ""
 						$.each(e.target._zoomBoundLayers, function (clave, valor) {
 							$.each(valor._tiles, function (key, value) {
 								if (count == 0) {
-
 									imagen = value.el.currentSrc;
 								}
 								count++;
@@ -775,7 +902,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						mapa.openPopup(contextPopup);
 					});
 
-					mapa.esriImagery = (lat,lng,zoom) => {		
+					mapa.esriImagery = (lat, lng, zoom) => {
 						//Close
 						if (document.getElementById("esriwrapper")) {
 							document.getElementById("esriwrapper").remove();
@@ -783,36 +910,36 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						//Main Wrapper
 						const wrapper = document.createElement("div");
-						wrapper.id="esriwrapper";
-						wrapper.style="top: 150px; left: 600px; position: absolute; background-color: white !important";
-						wrapper.innerHTML="Datos de imagen satelital";
+						wrapper.id = "esriwrapper";
+						wrapper.style = "top: 150px; left: 600px; position: absolute; background-color: white !important";
+						wrapper.innerHTML = "Datos de imagen satelital";
 
 						//Close Button
 						let btncloseWrapper = document.createElement("a");
 						btncloseWrapper.id = "btnclose-wrapper";
 						btncloseWrapper.href = "javascript:void(0)";
 						btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
-						btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
+						btncloseWrapper.innerHTML = '<i class="fa fa-times"></i>';
 						btncloseWrapper.onclick = () => {
 							wrapper.remove();
 						};
 						wrapper.appendChild(btncloseWrapper);
-						
+
 						//Data				
-						let imgData = new Fechaimagen(lat,lng,zoom).area;
+						let imgData = new Fechaimagen(lat, lng, zoom).area;
 						let esriTable = document.createElement("table");
-						esriTable.id="esriTable";
-						esriTable.style="width: 300px;text-align:left;align=left";
-						esriTable.innerHTML= 'No existen datos a este nivel de zoom.';
-						
-						let copytoClipboard = 
+						esriTable.id = "esriTable";
+						esriTable.style = "width: 300px;text-align:left;align=left";
+						esriTable.innerHTML = 'No existen datos a este nivel de zoom.';
+
+						let copytoClipboard =
 							`<a onclick=
 								"copytoClipboard(\'Imagen satelital tomada el ${imgData.date}. Una resolución espacial de ${imgData.resolution} m. La Exactitud es de ${imgData.accuracy} m y el sensor es ${imgData.sensor_texto}. El proveedor es ${imgData.provider_texto} y el producto ${imgData.product}. \');" 
 								href="#"><i class="far fa-copy" aria-hidden="true"></i> Copiar datos</a>`;
-							
-						if (imgData!="") {
-							esriTable.innerHTML = 
-								copytoClipboard + 
+
+						if (imgData != "") {
+							esriTable.innerHTML =
+								copytoClipboard +
 								`<tr><td>Fecha:</td><td>${imgData.date}</td></tr>
 								<tr><td title="Relación de metros por lado de pixel">Resolución espacial:</td><td>${imgData.resolution} m</td></tr>
 								<tr><td>Exactitud:</td><td>${imgData.accuracy} m</td></tr>
@@ -822,15 +949,15 @@ $("body").on("pluginLoad", function(event, plugin){
 								<tr><td>Zoom mínimo:</td><td>${imgData.minZoom}</td></tr>
 								<tr><td>Zoom máximo:</td><td>${imgData.maxZoom}</td></tr>`;
 						}
-						
+
 						//Info Wrapper
 						const esriInfo = document.createElement("div");
-						esriInfo.id="esriInfo";
-						esriInfo.appendChild(esriTable);								
+						esriInfo.id = "esriInfo";
+						esriInfo.appendChild(esriTable);
 						wrapper.appendChild(esriInfo);
 
 						document.body.appendChild(wrapper);
-						$("#esriwrapper").draggable({scroll: false, cancel: '#esriInfo', containment: "body"}); 
+						$("#esriwrapper").draggable({ scroll: false, cancel: '#esriInfo', containment: "body" });
 
 					}
 
@@ -842,16 +969,11 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (!layer) {
 							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
 						}
-						if (layer.type === 'marker' || layer.type === 'circlemarker') {
-							mapa.fitBounds(L.latLngBounds([layer.getLatLng()]));
-						} 
-						else if (layer.type === "FeatureCollection" || layer.type === "Feature") {
-							let bbox = turf.bbox(layer);
-							mapa.fitBounds([[bbox[1],bbox[0]],[bbox[3],bbox[2]]]);
+						if (layer.hasOwnProperty("_layers")) {
+							layer = layer.toGeoJSON();
 						}
-						else {
-							mapa.fitBounds(layer.getBounds());
-						}
+						let bbox = turf.bbox(layer);
+						mapa.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
 					}
 
 					mapa.addContextMenuToLayer = (layer) => {
@@ -895,7 +1017,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								$("#editContainer").draggable({ scroll: false, containment: "#mapa" });
 							}
 						});
-						
+
 						contextMenu.createOption({
 							isDisabled: false,
 							text: 'Acercar',
@@ -930,7 +1052,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								}
 							}
 						}); */
-						
+
 						contextMenu.createOption({
 							isDisabled: false,
 							text: 'Descargar geometría',
@@ -959,7 +1081,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.measurementsWrapper(layer);
 							}
 						});
-						
+
 						contextMenu.createOption({
 							isDisabled: false,
 							text: STRINGS.delete_geometry,
@@ -973,8 +1095,8 @@ $("body").on("pluginLoad", function(event, plugin){
 
 						layer.on('contextmenu', (e) => {
 							contextPopup = L.popup({ closeButton: false, className: 'context-popup' })
-							.setLatLng(e.latlng)
-							.setContent(contextMenu.menu);
+								.setLatLng(e.latlng)
+								.setContent(contextMenu.menu);
 							mapa.openPopup(contextPopup);
 							L.DomEvent.stopPropagation(e);
 						});
@@ -994,68 +1116,68 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 
 						const wrapper = document.createElement("div");
-						wrapper.id="measurementWrapper";
-						wrapper.style="top: 100px; left: 300px; position: absolute;"
-						wrapper.innerHTML="Medidas"
-						
+						wrapper.id = "measurementWrapper";
+						wrapper.style = "top: 100px; left: 300px; position: absolute;"
+						wrapper.innerHTML = "Medidas"
+
 						let btncloseWrapper = document.createElement("a");
 						btncloseWrapper.id = "btnclose-wrapper";
 						btncloseWrapper.href = "javascript:void(0)";
 						btncloseWrapper.style = "float:right; color:#676767; overflow-y:auto;";
-						btncloseWrapper.innerHTML ='<i class="fa fa-times"></i>';
+						btncloseWrapper.innerHTML = '<i class="fa fa-times"></i>';
 						btncloseWrapper.onclick = () => {
 							wrapper.remove();
 						};
 						wrapper.appendChild(btncloseWrapper);
-						
+
 						const measurement = document.createElement("div");
-						measurement.id="measurementInfo";
+						measurement.id = "measurementInfo";
 						wrapper.appendChild(measurement);
 
 						document.body.appendChild(wrapper);
-						$("#measurementWrapper").draggable({scroll: false, cancel: '#measurementInfo', containment: "body"}); 
-												
+						$("#measurementWrapper").draggable({ scroll: false, cancel: '#measurementInfo', containment: "body" });
+
 						mapa.getMeasurementsInfo(layer);
 
 					}
 
-					mapa.getMeasurementsInfo = (layer) => { 
+					mapa.getMeasurementsInfo = (layer) => {
 						//TODO:usar funciones de calculo para extender
 
 						const type = layer.type[0].toUpperCase() + layer.type.slice(1).toLowerCase();
-						mapa.showMeasurements("Tipo",type,"");
+						mapa.showMeasurements("Tipo", type, "");
 						try {
 							if (layer.type === "polyline") {
 								const longitude = mapa.getLongitude(layer).toFixed(3);
-								const boundingBox= mapa.getBoundingBox(layer);
-								mapa.showMeasurements("Longitud",longitude,"km");
-								mapa.showMeasurements("BoundingBox",boundingBox,"");
+								const boundingBox = mapa.getBoundingBox(layer);
+								mapa.showMeasurements("Longitud", longitude, "km");
+								mapa.showMeasurements("BoundingBox", boundingBox, "");
 							}
-							if (layer.type === "polygon" ||  layer.type === "rectangle") {
+							if (layer.type === "polygon" || layer.type === "rectangle") {
 								const area = mapa.getAreaPolygon(layer).toFixed(7);
 								const centroid = mapa.getCentroidPolygon(layer);
 								const perimeter = mapa.getPerimeter(layer).toFixed(3);
-								const boundingBox= mapa.getBoundingBox(layer);
-								mapa.showMeasurements("Área",area,"km²");
-								mapa.showMeasurements("Centroide",centroid,"");
-								mapa.showMeasurements("Perímetro",perimeter,"km");
-								mapa.showMeasurements("BoundingBox",boundingBox,"");
+								const boundingBox = mapa.getBoundingBox(layer);
+								mapa.showMeasurements("Área", area, "km²");
+								mapa.showMeasurements("Centroide", centroid, "");
+								mapa.showMeasurements("Perímetro", perimeter, "km");
+								mapa.showMeasurements("BoundingBox", boundingBox, "");
 							}
 							if (layer.type === "circle") {
-								const radius = (layer.getRadius()/1000).toFixed(3);
+								const radius = (layer.getRadius() / 1000).toFixed(3);
 								const centroid = mapa.getCentroidCircle(layer);
-								const cricumference = (mapa.getCricumference(layer)/1000).toFixed(3);
-								const area = (mapa.getAreaCircle(layer)/1000000).toFixed(7);
-								const boundingBox= mapa.getBoundingBox(layer);
-								mapa.showMeasurements("Área",area,"km²");
-								mapa.showMeasurements("Centroide",centroid,"");
-								mapa.showMeasurements("Circunferencia",cricumference,"km");
-								mapa.showMeasurements("Radio",radius,"km");
-								mapa.showMeasurements("BoundingBox",boundingBox,"");
+								const cricumference = (mapa.getCricumference(layer) / 1000).toFixed(3);
+								const area = (mapa.getAreaCircle(layer) / 1000000).toFixed(7);
+								const boundingBox = mapa.getBoundingBox(layer);
+								mapa.showMeasurements("Área", area, "km²");
+								mapa.showMeasurements("Centroide", centroid, "");
+								mapa.showMeasurements("Circunferencia", cricumference, "km");
+								mapa.showMeasurements("Radio", radius, "km");
+								mapa.showMeasurements("BoundingBox", boundingBox, "");
 							}
 							if (layer.type === "marker" || layer.type === "circlemarker" || layer.type === "label") {
 								const centroid = mapa.getCentroidCircle(layer);
-								mapa.showMeasurements("Centroide",centroid,"");
+								mapa.showMeasurements("Centroide", centroid, "");
 							}
 
 						} catch (error) {
@@ -1063,56 +1185,56 @@ $("body").on("pluginLoad", function(event, plugin){
 						}
 					}
 
-					mapa.showMeasurements = (name,measurement,unit) => {
+					mapa.showMeasurements = (name, measurement, unit) => {
 						const wrapper = document.getElementById("measurementInfo"),
 							newDiv = document.createElement("tr"),
 
 							infoName = document.createElement("td");
-							infoName.innerHTML = `${name}:`;
-							infoDesc = document.createElement("td");
-							infoDesc.innerHTML = `${measurement} ${unit}`;
+						infoName.innerHTML = `${name}:`;
+						infoDesc = document.createElement("td");
+						infoDesc.innerHTML = `${measurement} ${unit}`;
 
 						newDiv.appendChild(infoName);
 						newDiv.appendChild(infoDesc);
 						wrapper.appendChild(newDiv);
 					}
-					
+
 					mapa.getLongitude = (layer) => {
 						let geojson = layer.getGeoJSON(),
 							longitude = turf.length(geojson);
 						return longitude;
 					}
-					
+
 					mapa.getPerimeter = (layer) => {
 						let geojson = layer.getGeoJSON(),
-						perimeter = turf.length(geojson);
+							perimeter = turf.length(geojson);
 						return perimeter;
 					}
-					
+
 					mapa.getAreaPolygon = (layer) => {
 						let geojson = layer.getGeoJSON(),
-						area = turf.area(geojson) / 1000000;
+							area = turf.area(geojson) / 1000000;
 						return area;
 					}
-					
+
 					mapa.getCentroidPolygon = (layer) => {
 						let geojson = layer.getGeoJSON(),
-						centroid0 = turf.centroid(geojson).geometry.coordinates[0],
-						centroid1 = turf.centroid(geojson).geometry.coordinates[1],
-						resultado = `${centroid1.toFixed(6)}, ${centroid0.toFixed(6)}`;
+							centroid0 = turf.centroid(geojson).geometry.coordinates[0],
+							centroid1 = turf.centroid(geojson).geometry.coordinates[1],
+							resultado = `${centroid1.toFixed(6)}, ${centroid0.toFixed(6)}`;
 						return resultado;
 					}
-					
+
 					mapa.getCentroidCircle = (layer) => {
 						let lat = layer.getLatLng().lat,
-						lng = layer.getLatLng().lng,
-						resultado = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+							lng = layer.getLatLng().lng,
+							resultado = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 						return resultado;
 					}
 
 					mapa.getAreaCircle = (layer) => {
 						let radius = layer.getRadius(),
-							area = (Math.PI * (radius*radius));
+							area = (Math.PI * (radius * radius));
 						return area;
 					}
 
@@ -1128,18 +1250,18 @@ $("body").on("pluginLoad", function(event, plugin){
 							south = layer.getBounds().getSouth().toFixed(8),
 							west = layer.getBounds().getWest().toFixed(8),
 							boundingBox = document.createElement("div")
-							boundingBox.innerHTML= `<div>northEast: ${north}, ${east}<br>southWest: ${south}, ${west}</div>`
+						boundingBox.innerHTML = `<div>northEast: ${north}, ${east}<br>southWest: ${south}, ${west}</div>`
 						return boundingBox.innerHTML;
 					}
 
 					mapa.createEditStylePopup = (layer) => {
 						const container = document.createElement('div');
 						container.className = 'edit-style-popup-container';
-						
+
 						//Lines
 						const lineSection = document.createElement('div');
 						lineSection.className = 'section-popup';
-						
+
 						//Title
 						const title = document.createElement('p');
 						title.className = 'section-title non-selectable-text';
@@ -1401,7 +1523,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						//Marker
 						const markerSection = document.createElement('div');
 						markerSection.className = 'section-popup';
-						
+
 						if (layer.type === 'marker') {
 
 							//Title
@@ -1600,7 +1722,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							downloadDiv.appendChild(downloadBtnsDiv);
 							markerSection.appendChild(downloadDiv);
 						}
-						
+
 						//Labels
 						const labelSection = document.createElement('div');
 						labelSection.className = 'section-popup';
@@ -1735,7 +1857,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							};
 							colorInputDiv6.appendChild(transparentLabel);
 							labelSection.appendChild(colorInputDiv6);
-							
+
 							//Text color
 							const colorInputDiv5 = document.createElement('div');
 							colorInputDiv5.className = 'section-item';
@@ -1761,36 +1883,36 @@ $("body").on("pluginLoad", function(event, plugin){
 							case 'marker': {
 								container.appendChild(markerSection);
 							}
-							break;
+								break;
 							case 'label': {
 								container.appendChild(labelSection);
 							}
-							break;
+								break;
 							case 'circlemarker': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
 							}
-							break;
+								break;
 							case 'circle': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
 								container.appendChild(circleSection);
 							}
-							break;
+								break;
 							case 'polyline': {
 								container.appendChild(lineSection);
 							}
-							break;
+								break;
 							case 'polygon': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
 							}
-							break;
+								break;
 							case 'rectangle': {
 								container.appendChild(lineSection);
 								container.appendChild(fillSection);
 							}
-							break;
+								break;
 						}
 						return container;
 					};
@@ -1841,7 +1963,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						const activeLayersDiv = document.getElementById('activeLayers');
 						if (!activeLayersDiv)
 							return;
-					
+
 						const activeLayersDivChilds = Array.from(activeLayersDiv.childNodes);
 						const containerIdx = activeLayersDivChilds.findIndex(layerDiv => layerDiv.id.split('container_')[1] === layer);
 						if (containerIdx >= 0 && !addToList) {
@@ -1849,7 +1971,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						} else if (containerIdx === -1 && addToList) {
 							mapa.addLayerToPopUp(activeLayersDiv, layer);
 						}
-					
+
 						const showInfoBtn = document.getElementById('btn-show-info');
 						if (gestorMenu.getActiveLayersWithoutBasemap().length > 0) {
 							showInfoBtn.classList.remove("btn-disabled");
@@ -1970,7 +2092,7 @@ $("body").on("pluginLoad", function(event, plugin){
 							if (selectedLayer.checked)
 								selectedLayers.push(selectedLayer.id);
 						});
-						
+
 						layer.closePopup();
 
 						mapa.checkLayersInDrawedGeometry(layer, selectedLayers);
@@ -1999,22 +2121,22 @@ $("body").on("pluginLoad", function(event, plugin){
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
 								getLayerDataByWFS(coords, layer.type, activeLayer)
-								.then(data => {
+									.then(data => {
 
-									if (!data) {
-										throw new Error('Error fetching to server');
-									};
+										if (!data) {
+											throw new Error('Error fetching to server');
+										};
 
-									layer.data[activeLayer.name] = data;
-									layer.coords = coords;
+										layer.data[activeLayer.name] = data;
+										layer.coords = coords;
 
-									//Load data in table
-									const table = new Datatable(data, coords);
-									createTabulator(table, activeLayer.name);
-								})
-								.catch(err => {
-									console.error(err);
-								});
+										//Load data in table
+										const table = new Datatable(data, coords);
+										createTabulator(table, activeLayer.name);
+									})
+									.catch(err => {
+										console.error(err);
+									});
 							});
 						}
 					}
@@ -2043,9 +2165,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						});
 					}
 
-					
+
 					mapa.showGroupLayer = (group) => {
-						if (mapa.groupLayers.hasOwnProperty(group)){
+						if (mapa.groupLayers.hasOwnProperty(group)) {
 							mapa.groupLayers[group].forEach(layer => {
 								mapa.showLayer(layer);
 							});
@@ -2054,27 +2176,45 @@ $("body").on("pluginLoad", function(event, plugin){
 
 					mapa.hideGroupLayer = (group) => {
 						if (mapa.groupLayers.hasOwnProperty(group))
-						mapa.groupLayers[group].forEach(layer => {
+							mapa.groupLayers[group].forEach(layer => {
 								mapa.hideLayer(layer);
-						});
+							});
 					}
 
-					mapa.deleteLayer = (layer) => {
-						const type = layer.split('_')[0];
-						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layer);
-						
+					mapa.deleteLayer = (layerName) => {
+						const type = layerName.split('_')[0];
+						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layerName);
+
 						if (lyrIdx >= 0) {
-						drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
-						mapa.editableLayers[type].splice(lyrIdx, 1);
+							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
+							mapa.editableLayers[type].splice(lyrIdx, 1);
 						}
-						
+
 						//Delete from groups
 						for (const group in mapa.groupLayers) {
-							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layer);
+							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layerName);
 							if (lyrInGrpIdx >= 0) {
 								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 							}
 						}
+						addedLayers.forEach(lyr => {
+							if (lyr.id === "dibujos") {
+								Object.values(lyr.layer._layers).forEach(e => {
+									if (layerName === e.name) {
+										lyr.layer.removeLayer(e);
+										updateNumberofLayers(lyr.section);
+										showTotalNumberofLayers();
+									}
+								})
+								if (Object.values(lyr.layer._layers).length === 0) {
+									let index = addedLayers.indexOf(lyr);
+									if (index > -1) {
+										addedLayers.splice(index, 1);
+										showTotalNumberofLayers();
+									}
+								}
+							}
+						});
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 						controlSeccionGeom();
 					}
@@ -2092,10 +2232,10 @@ $("body").on("pluginLoad", function(event, plugin){
 					}
 
 					mapa.addLayerToGroup = (layer, group) => {
-						let feature = null ; 
-						feature = ( typeof layer === "object" ) ? feature = layer.name : feature = layer;
-						if ( mapa.groupLayers.hasOwnProperty(group) ) {
-							if ( mapa.groupLayers[group].find(layerName => layerName === feature) ) {
+						let feature = null;
+						feature = (typeof layer === "object") ? feature = layer.name : feature = layer;
+						if (mapa.groupLayers.hasOwnProperty(group)) {
+							if (mapa.groupLayers[group].find(layerName => layerName === feature)) {
 								return; // feature already exist in group
 							}
 							mapa.groupLayers[group].push(feature);
@@ -2112,7 +2252,7 @@ $("body").on("pluginLoad", function(event, plugin){
 								mapa.groupLayers[group].splice(layerIdx, 1);
 						}
 					}
-					
+
 					mapa.downloadLayerGeoJSON = (layer) => {
 						const geoJSON = {
 							type: "FeatureCollection",
@@ -2134,8 +2274,8 @@ $("body").on("pluginLoad", function(event, plugin){
 						downloadANode.click();
 						downloadANode.remove();
 					}
-					
-					mapa.downloadMultiLayerGeoJSON = (id) => {
+
+					mapa.downloadMultiLayerGeoJSON = (id, fileName) => {
 						const jsonToDownload = {
 							type: "FeatureCollection",
 							features: []
@@ -2167,7 +2307,7 @@ $("body").on("pluginLoad", function(event, plugin){
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
-						downloadANode.setAttribute("download", id + ".geojson");
+						downloadANode.setAttribute("download", fileName + ".geojson");
 						document.body.appendChild(downloadANode);
 						downloadANode.click();
 						downloadANode.remove();
@@ -2220,40 +2360,40 @@ $("body").on("pluginLoad", function(event, plugin){
 						borderGradient.setAttribute('x2', '0');
 						borderGradient.setAttribute('y1', '0');
 						borderGradient.setAttribute('y2', '1');
-				
+
 						const stop1 = document.createElementNS(svgNS, 'stop');
 						stop1.setAttribute('offset', '0');
 						stop1.setAttribute('stop-color', color1);
 						borderGradient.appendChild(stop1);
-						
+
 						const stop2 = document.createElementNS(svgNS, 'stop');
 						stop2.setAttribute('offset', '1');
 						stop2.setAttribute('stop-color', getDarkerColorTone(color1, -0.3));
 						borderGradient.appendChild(stop2);
-				
+
 						const fillGradient = document.createElementNS(svgNS, 'linearGradient');
 						fillGradient.setAttribute('id', 'fillGradient');
 						fillGradient.setAttribute('x1', '0');
 						fillGradient.setAttribute('x2', '0');
 						fillGradient.setAttribute('y1', '0');
 						fillGradient.setAttribute('y2', '1');
-				
+
 						const stop3 = document.createElementNS(svgNS, 'stop');
 						stop3.setAttribute('offset', '0');
 						stop3.setAttribute('stop-color', color2);
 						fillGradient.appendChild(stop3);
-						
+
 						const stop4 = document.createElementNS(svgNS, 'stop');
 						stop4.setAttribute('offset', '1');
 						stop4.setAttribute('stop-color', getDarkerColorTone(color2, -0.3));
 						fillGradient.appendChild(stop4);
-				
+
 						defs.appendChild(borderGradient);
 						defs.appendChild(fillGradient);
 
 						const g = document.createElementNS(svgNS, "g");
 						marker.appendChild(g);
-						
+
 						const path = document.createElementNS(svgNS, "path");
 						path.setAttribute('d', 'm27.3 3.1c-13.694 0-25.092 11.382-25.092 23.732 0 5.556 3.258 12.616 5.613 17.492l19.388 35.744 19.296-35.744c2.354-4.876 5.704-11.582 5.704-17.492 0-12.35-11.215-23.732-24.908-23.732zm0 14.31c5.383.034 9.748 4.244 9.748 9.42s-4.365 9.326-9.748 9.358c-5.383-.034-9.748-4.18-9.748-9.358 0-5.176 4.365-9.386 9.748-9.42z');
 						path.setAttribute('stroke', `url(#strokeGradient)`);
@@ -2273,13 +2413,13 @@ $("body").on("pluginLoad", function(event, plugin){
 						let ctx = canvas.getContext("2d");
 						let DOMURL = self.URL || self.webkitURL || self;
 						let img = new Image();
-						let svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+						let svg = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
 						let url = DOMURL.createObjectURL(svg);
 						return new Promise((resolve, reject) => {
-							img.onload = function() {
+							img.onload = function () {
 								ctx.drawImage(img, 0, 0);
 								let png = canvas.toDataURL("image/png", 1);
-								markerSvg.innerHTML = '<img src="'+png+'"/>';
+								markerSvg.innerHTML = '<img src="' + png + '"/>';
 								DOMURL.revokeObjectURL(png);
 								resolve(png);
 							};
@@ -2293,18 +2433,18 @@ $("body").on("pluginLoad", function(event, plugin){
 						switch (format) {
 							case 'svg': {
 								let svgData = markerSVG.outerHTML;
-								let svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+								let svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
 								let svgUrl = URL.createObjectURL(svgBlob);
 								downloadLink.href = svgUrl;
 								downloadLink.download = "marker.svg";
 							}
-							break;
+								break;
 							case 'png': {
 								const markerPNG = await mapa.convertMarkerToPng(markerSVG);
 								downloadLink.href = markerPNG;
 								downloadLink.download = "marker.png";
 							}
-							break;
+								break;
 						}
 						document.body.appendChild(downloadLink);
 						downloadLink.click();
@@ -2360,22 +2500,22 @@ $("body").on("pluginLoad", function(event, plugin){
 											layer = L.circle(invertedCoords, options);
 											type = 'circle';
 										}
-										break;
+											break;
 										case 'circlemarker': {
 											layer = L.circleMarker(invertedCoords, options);
 											type = 'circlemarker';
 										};
-										break;
+											break;
 										case 'marker': {
 											layer = L.marker(invertedCoords);
 											type = 'marker';
 										};
-										break;
+											break;
 										case 'label': {
 											layer = L.marker(invertedCoords, { icon: L.divIcon(divIcon) });
 											type = 'label';
 										};
-										break;
+											break;
 										default: {
 											layer = L.marker(invertedCoords);
 											type = 'marker';
@@ -2386,41 +2526,42 @@ $("body").on("pluginLoad", function(event, plugin){
 									type = 'marker';
 								}
 							}
-							break;
+								break;
 							case 'linestring': {
 								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
 								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
 									let n = geoJSON.properties.value
 									let value = geoJSON.properties.value + ' m'
-									
-									if(!countour_styles) countour_styles = getStyleContour()
-									
+
+									if (!countour_styles) countour_styles = getStyleContour()
+
 
 									if (n % countour_styles.d_line_m === 0) {
 										let colord = ""
-										if(countour_styles.d_line_color === "multi"){
+										if (countour_styles.d_line_color === "multi") {
 											colord = getMulticolorContour(n)
 										}
-										else{colord = countour_styles.d_line_color}
+										else { colord = countour_styles.d_line_color }
 
 										options = {
 											color: colord,
 											weight: countour_styles.d_weigth,
 											smoothFactor: countour_styles.smoothFactor,
 											'font-weight': 'bold'
-												}
-									}else{
+										}
+									} else {
 										let colorc = ""
-										if(countour_styles.line_color === "multi"){
+										if (countour_styles.line_color === "multi") {
 											colorc = getMulticolorContour(n)
-										} else{ colorc = countour_styles.line_color}
+										} else { colorc = countour_styles.line_color }
 
 
-										options = { color: colorc,
-													weight: countour_styles.line_weight,
-													smoothFactor: countour_styles.smoothFactor,
-													'font-weight': 'regular'
-												}
+										options = {
+											color: colorc,
+											weight: countour_styles.line_weight,
+											smoothFactor: countour_styles.smoothFactor,
+											'font-weight': 'regular'
+										}
 									}
 									//if (n % 100 === 0 ||n % 50 === 0) 
 
@@ -2428,7 +2569,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									type = 'polyline';
 									layer.layer = groupName;
 									layer.value = geoJSON.properties.value
-									if (n % 100 === 0 ||n % 50 === 0) {
+									if (n % 100 === 0 || n % 50 === 0) {
 										// textPath
 										layer.setText(value, {
 											repeat: false,
@@ -2457,15 +2598,15 @@ $("body").on("pluginLoad", function(event, plugin){
 											className: 'map-tooltip'
 										};
 										layer.bindTooltip(`<div><b>${elevation}</b></div>`,
-										 tooltipStyle);
+											tooltipStyle);
 									});
 								} else {
 									layer = L.polyline(invertedCoords, options);
 									type = 'polyline';
 								}
-								
+
 							}
-							break;
+								break;
 							case 'polygon': {
 								const invertedCoords = geoJSON.geometry.coordinates[0].map(coords => [coords[1], coords[0]]);
 								if (geoJSON.properties.hasOwnProperty('type') && geoJSON.properties.type.toLowerCase() === 'rectangle') {
@@ -2476,7 +2617,7 @@ $("body").on("pluginLoad", function(event, plugin){
 									type = 'polygon';
 								}
 							}
-							break;
+								break;
 							case 'multipoint': {
 								geoJSON.geometry.coordinates.forEach(coords => {
 									const point = {
@@ -2512,18 +2653,18 @@ $("body").on("pluginLoad", function(event, plugin){
 								layer = L.polygon(reversedCoords);
 								type = 'polygon';
 							}
-							break;
+								break;
 						}
 
 						let name = type + '_';
-						
+
 						if (mapa.editableLayers[type].length === 0) {
 							name += '1';
 						} else {
 							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
 							name += parseInt(lastLayerName.split('_')[1]) + 1;
 						}
-						
+
 						layer.id = groupName;
 						layer.name = name;
 						layer.type = type;
@@ -2534,9 +2675,9 @@ $("body").on("pluginLoad", function(event, plugin){
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
 						}
-						
+
 						layer.downloadGeoJSON = () => {
-								mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
 						}
 
 						mapa.editableLayers[type].push(layer);
@@ -2574,13 +2715,13 @@ $("body").on("pluginLoad", function(event, plugin){
 			}
 		});
 	}
-	switch(unordered) {
+	switch (unordered) {
 		case 'leaflet':
 			if (selectedBasemap.hasOwnProperty('key')) {
 				const interval = setInterval(() => {
 					if (L.tileLayer.bing) {
 						window.clearInterval(interval);
-						currentBaseMap = L.tileLayer.bing({ 
+						currentBaseMap = L.tileLayer.bing({
 							bingMapsKey: selectedBasemap.key,
 							culture: 'es_AR',
 							minZoom: selectedBasemap.hasOwnProperty('zoom') ? selectedBasemap.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
@@ -2607,7 +2748,7 @@ $("body").on("pluginLoad", function(event, plugin){
 				layers: currentBaseMap ? [currentBaseMap] : undefined,
 				zoomControl: false,
 				minZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
-				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max: DEFAULT_MAX_ZOOM_LEVEL,
+				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max : DEFAULT_MAX_ZOOM_LEVEL,
 				/* renderer: L.svg() */
 			});
 
@@ -2620,9 +2761,9 @@ $("body").on("pluginLoad", function(event, plugin){
 
 			mapa.resetView = () => {
 				mapa.setView(
-					[app.mapConfig.center.latitude, app.mapConfig.center.longitude], 
+					[app.mapConfig.center.latitude, app.mapConfig.center.longitude],
 					app.mapConfig.zoom.initial
-					);
+				);
 			}
 
 			setValidZoomLevel(selectedBasemap.nombre);
@@ -2632,52 +2773,76 @@ $("body").on("pluginLoad", function(event, plugin){
 			// Base Map Control
 			L.Control.Watermark = L.Control.extend({
 
-			  onAdd: function (map) {
-				var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar basemap-selector');
-				return container;
-			  }
+				onAdd: function (map) {
+					var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar basemap-selector');
+					return container;
+				}
 			});
-			L.control.watermark = function(opts) {
-			    return new L.Control.Watermark(opts);
+			L.control.watermark = function (opts) {
+				return new L.Control.Watermark(opts);
 			}
 			L.control.watermark({ position: 'topleft' }).addTo(mapa);
-            
-			mapa.on('click', function(e) {
-                setTimeout(function(){
-                    popupInfo = new Array();
-                }, 2000);
-            });
-            
-            showMainMenuTpl();
-            
+
+			mapa.on('click', function (e) {
+				setTimeout(function () {
+					popupInfo = new Array();
+				}, 2000);
+			});
+
+			showMainMenuTpl();
+
 			break;
 		case 'MousePosition':
 			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
 			L.control.mousePosition({
-				position: 'bottomright', 
+				position: 'bottomright',
 				separator: ' , ',
 				emptyString: '&nbsp;',
 				numDigits: 10,
-				lngFormatter: function(num) {
+				lngFormatter: function (num) {
 					var direction = (num < 0) ? 'O' : 'E';
-					return deg_to_dms(Math.abs(num)) + direction; 
+					return deg_to_dms(Math.abs(num)) + direction;
 				},
-				latFormatter: function(num) {
+				latFormatter: function (num) {
 					var direction = (num < 0) ? 'S' : 'N';
-					return deg_to_dms(Math.abs(num)) + direction; 
+					return deg_to_dms(Math.abs(num)) + direction;
 				}
 			}).addTo(mapa);
 			gestorMenu.plugins['MousePosition'].setStatus('visible');
 			loadDeveloperLogo();
 			break;
 		case 'BingLayer':
-			if(gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready' ){	
-		        gestorMenu.plugins['BingLayer'].setStatus('visible');
+			if (gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready') {
+				gestorMenu.plugins['BingLayer'].setStatus('visible');
 			}
 		default:
 			break;
 	}
 });
+
+function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
+	if (mapa.groupLayers[group] === undefined) {
+		mapa.groupLayers[group] = [];
+		mapa.addLayerToGroup(name, group);
+		addedLayers.push({
+			id: groupId,
+			layer: L.layerGroup([layer]),
+			name: groupId,
+			type: groupId,
+			isActive: true,
+			section: section
+		});
+		menu_ui.addFileLayer(section, groupId, groupId, groupId, groupId, true);
+	} else {
+		mapa.addLayerToGroup(name, group);
+		addedLayers.forEach(lyr => {
+			if (lyr.id === groupId) {
+				lyr.layer.addLayer(layer);
+			}
+		});
+	}
+	updateNumberofLayers(section);
+}
 
 function addSelectionLayersMenuToLayer(layer) {
 	const popUpDiv = mapa.createPopUp(mapa.editableLayers[layer.type].find(lyr => lyr.name === layer.name));
@@ -2713,188 +2878,188 @@ function getGeometryCoords(layer) {
 
 // -- Plugins
 function onEachFeature(feature, layer) {
-    if (feature.properties) {
-        var datos = new Array();
-        $.each(feature.properties, function (index, value) {
-            if (value) {
-                datos.push(index + ": " + value + "<br>");
-            }
-        });
-        layer.bindPopup(datos.toString().replace(",", ""));
-    }
+	if (feature.properties) {
+		var datos = new Array();
+		$.each(feature.properties, function (index, value) {
+			if (value) {
+				datos.push(index + ": " + value + "<br>");
+			}
+		});
+		layer.bindPopup(datos.toString().replace(",", ""));
+	}
 }
 
 function miniMap_Minimize() {
-  miniMap._minimize();
+	miniMap._minimize();
 }
 
 function style(geoJsonFeature) {
-    return [
-        { 'color': 'red' }
-    ]
+	return [
+		{ 'color': 'red' }
+	]
 }
 
 function pointToLayer(feature, latlng) {
-    // Creates a red marker with the coffee icon
-    var markerIcon = L.AwesomeMarkers.icon({
-        icon: feature.properties.icon || 'star',
-        prefix: 'fa',
-        markerColor: feature.properties.iconColor || 'red'
-    });
+	// Creates a red marker with the coffee icon
+	var markerIcon = L.AwesomeMarkers.icon({
+		icon: feature.properties.icon || 'star',
+		prefix: 'fa',
+		markerColor: feature.properties.iconColor || 'red'
+	});
 
-    return L.marker(latlng, {
-        icon: markerIcon
-    })
+	return L.marker(latlng, {
+		icon: markerIcon
+	})
 }
 
 function printFinished() {
-    //Agregar tooltip resumen
-    $("[data-toggle2='tooltip']").tooltip({
-        placement: "right",
-        trigger: "hover",
-        container: "body"
-    });
+	//Agregar tooltip resumen
+	$("[data-toggle2='tooltip']").tooltip({
+		placement: "right",
+		trigger: "hover",
+		container: "body"
+	});
 }
 
 function showMainMenuTpl() {
-    //Imprimir menú
-    gestorMenu.setMenuDOM(".nav.nav-sidebar");
-    gestorMenu.setLoadingDOM(".loading");
-    gestorMenu.setPrintCallback(printFinished);
-    gestorMenu.setLazyInitialization(true);
-    gestorMenu.setShowSearcher(app.hasOwnProperty('showSearchBar') ? app.showSearchBar : false);
-    gestorMenu.print();
+	//Imprimir menú
+	gestorMenu.setMenuDOM(".nav.nav-sidebar");
+	gestorMenu.setLoadingDOM(".loading");
+	gestorMenu.setPrintCallback(printFinished);
+	gestorMenu.setLazyInitialization(true);
+	gestorMenu.setShowSearcher(app.hasOwnProperty('showSearchBar') ? app.showSearchBar : false);
+	gestorMenu.print();
 }
 
 /****** Misc functions ******/
 function exportToCSV(filename, rows) {
-    var processRow = function (row) {
-        var finalVal = '';
-        for (var j = 0; j < row.length; j++) {
-            var innerValue = row[j] === null ? '' : row[j].toString();
-            if (row[j] instanceof Date) {
-                innerValue = row[j].toLocaleString();
-            };
-            var result = innerValue.replace(/"/g, '""');
-            if (result.search(/("|,|\n)/g) >= 0)
-                result = '"' + result + '"';
-            if (j > 0)
-                finalVal += ',';
-            finalVal += result;
-        }
-        return finalVal + '\n';
-    };
+	var processRow = function (row) {
+		var finalVal = '';
+		for (var j = 0; j < row.length; j++) {
+			var innerValue = row[j] === null ? '' : row[j].toString();
+			if (row[j] instanceof Date) {
+				innerValue = row[j].toLocaleString();
+			};
+			var result = innerValue.replace(/"/g, '""');
+			if (result.search(/("|,|\n)/g) >= 0)
+				result = '"' + result + '"';
+			if (j > 0)
+				finalVal += ',';
+			finalVal += result;
+		}
+		return finalVal + '\n';
+	};
 
-    var csvFile = '';
-    for (var i = 0; i < rows.length; i++) {
-        csvFile += processRow(rows[i]);
-    }
+	var csvFile = '';
+	for (var i = 0; i < rows.length; i++) {
+		csvFile += processRow(rows[i]);
+	}
 
-    var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-    if (navigator.msSaveBlob) { // IE 10+
-        navigator.msSaveBlob(blob, filename);
-    } else {
-        var link = document.createElement("a");
-        if (link.download !== undefined) { // feature detection
-            // Browsers that support HTML5 download attribute
-            var url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
+	var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+	if (navigator.msSaveBlob) { // IE 10+
+		navigator.msSaveBlob(blob, filename);
+	} else {
+		var link = document.createElement("a");
+		if (link.download !== undefined) { // feature detection
+			// Browsers that support HTML5 download attribute
+			var url = URL.createObjectURL(blob);
+			link.setAttribute("href", url);
+			link.setAttribute("download", filename);
+			link.style.visibility = 'hidden';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	}
 }
 
 function exportToHTML(filename, rows) {
-    var processRow = function (row) {
-        var finalVal = '';
-        for (var j = 0; j < row.length; j++) {
-            var innerValue = row[j] === null ? '' : row[j].toString();
-            if (row[j] instanceof Date) {
-                innerValue = row[j].toLocaleString();
-            };
-            finalVal += innerValue;
-        }
-        return finalVal;
-    };
+	var processRow = function (row) {
+		var finalVal = '';
+		for (var j = 0; j < row.length; j++) {
+			var innerValue = row[j] === null ? '' : row[j].toString();
+			if (row[j] instanceof Date) {
+				innerValue = row[j].toLocaleString();
+			};
+			finalVal += innerValue;
+		}
+		return finalVal;
+	};
 
-    var htmlFile = '<table border="1">';
-    for (var i = 0; i < rows.length; i++) {
-        htmlFile += processRow(rows[i]);
-    }
-    htmlFile += '</table>';
+	var htmlFile = '<table border="1">';
+	for (var i = 0; i < rows.length; i++) {
+		htmlFile += processRow(rows[i]);
+	}
+	htmlFile += '</table>';
 
-    var blob = new Blob([htmlFile], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-    if (navigator.msSaveBlob) { // IE 10+
-        navigator.msSaveBlob(blob, filename);
-    } else {
-        var link = document.createElement("a");
-        if (link.download !== undefined) { // feature detection
-            // Browsers that support HTML5 download attribute
-            var url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
+	var blob = new Blob([htmlFile], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+	if (navigator.msSaveBlob) { // IE 10+
+		navigator.msSaveBlob(blob, filename);
+	} else {
+		var link = document.createElement("a");
+		if (link.download !== undefined) { // feature detection
+			// Browsers that support HTML5 download attribute
+			var url = URL.createObjectURL(blob);
+			link.setAttribute("href", url);
+			link.setAttribute("download", filename);
+			link.style.visibility = 'hidden';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	}
 }
 
 function getFeatureInfoAsCSV(info) {
-    var lines = [];
-    
-    var lineAux = [];
-    lineAux[0] = [];
-    lineAux[1] = [];
-    $( "#" + info + " li" ).each(function( index ) {
-        let sAux = $( this ).text();
-        if (sAux != '') {
-            aAux = sAux.split(':');
-            lineAux[0].push(aAux[0].trim());
-            aAux.shift();
-            lineAux[1].push(aAux.join(':').trim());
-        }
-    });
-    lines.push(lineAux[0].join(','));
-    lines.push(lineAux[1].join(','));
-    
-    exportToCSV('export.csv', lineAux);
+	var lines = [];
+
+	var lineAux = [];
+	lineAux[0] = [];
+	lineAux[1] = [];
+	$("#" + info + " li").each(function (index) {
+		let sAux = $(this).text();
+		if (sAux != '') {
+			aAux = sAux.split(':');
+			lineAux[0].push(aAux[0].trim());
+			aAux.shift();
+			lineAux[1].push(aAux.join(':').trim());
+		}
+	});
+	lines.push(lineAux[0].join(','));
+	lines.push(lineAux[1].join(','));
+
+	exportToCSV('export.csv', lineAux);
 }
 
 function getFeatureInfoAsXLS(info) {
-    var lines = [];
-    
-    var lineAux = [];
-    lineAux[0] = [];
-    lineAux[1] = [];
-    lineAux[0].push('<tr>');
-    lineAux[1].push('<tr>');
-    $( "#" + info + " li" ).each(function( index ) {
-        let sAux = $( this ).text();
-        if (sAux != '') {
-            aAux = sAux.split(':');
-            lineAux[0].push('<td><b>' + aAux[0].trim() + '</b></td>');
-            aAux.shift();
-            lineAux[1].push('<td>' + aAux.join(':').trim() + '</td>');
-        }
-    });
-    lineAux[0].push('</tr>');
-    lineAux[1].push('</tr>');
-    lines.push(lineAux[0].join(','));
-    lines.push(lineAux[1].join(','));
-    
-    exportToHTML('export.xls', lineAux);
+	var lines = [];
+
+	var lineAux = [];
+	lineAux[0] = [];
+	lineAux[1] = [];
+	lineAux[0].push('<tr>');
+	lineAux[1].push('<tr>');
+	$("#" + info + " li").each(function (index) {
+		let sAux = $(this).text();
+		if (sAux != '') {
+			aAux = sAux.split(':');
+			lineAux[0].push('<td><b>' + aAux[0].trim() + '</b></td>');
+			aAux.shift();
+			lineAux[1].push('<td>' + aAux.join(':').trim() + '</td>');
+		}
+	});
+	lineAux[0].push('</tr>');
+	lineAux[1].push('</tr>');
+	lines.push(lineAux[0].join(','));
+	lines.push(lineAux[1].join(','));
+
+	exportToHTML('export.xls', lineAux);
 }
 
 /****** Misc functions ******/
 //Capture map click to clear popinfo array before fill it
-$('#mapa').on( "click", function() {
-  popupInfo = [];
+$('#mapa').on("click", function () {
+	popupInfo = [];
 });
 
 /****** Enveloped functions ******/
@@ -2903,144 +3068,138 @@ var popupInfoToPaginate = new Array();
 var popupInfoPage = 0;
 var latlngTmp = '';
 
-function loadGeojsonTpl (url, layer) {
-
-    if (overlayMaps.hasOwnProperty(layer)) {
-
-        overlayMaps[layer].removeFrom(mapa);
-        delete overlayMaps[layer];
-
-    } else {
-
-        overlayMaps[layer] = new L.GeoJSON.AJAX(url, {
-            onEachFeature: onEachFeature,
-            pointToLayer: pointToLayer,
-        });
-        overlayMaps[layer].addTo(mapa);
-
-    }
-
+function loadGeojsonTpl(url, layer) {
+	if (overlayMaps.hasOwnProperty(layer)) {
+		overlayMaps[layer].removeFrom(mapa);
+		delete overlayMaps[layer];
+	} else {
+		overlayMaps[layer] = new L.GeoJSON.AJAX(url, {
+			onEachFeature: onEachFeature,
+			pointToLayer: pointToLayer,
+		});
+		overlayMaps[layer].addTo(mapa);
+	}
 }
 
 //function loadWmsTpl (wmsUrl, layer) {
-function loadWmsTpl (objLayer) {
-    wmsUrl = objLayer.capa.host;
-    layer = objLayer.nombre;
+function loadWmsTpl(objLayer) {
+	wmsUrl = objLayer.capa.host;
+	layer = objLayer.nombre;
 	if (overlayMaps.hasOwnProperty(layer)) {
-        overlayMaps[layer].removeFrom(mapa);
-        delete overlayMaps[layer];
-    } else {
+		overlayMaps[layer].removeFrom(mapa);
+		delete overlayMaps[layer];
+	} else {
 		//createWmsLayer(wmsUrl, layer);
 		let service = objLayer.capa.servicio;
 		if (service == "wms") {
 			createWmsLayer(objLayer);
-		} else if (service == "wmts"){
+		} else if (service == "wmts") {
 			createWmtsLayer(objLayer);
 		}
 		overlayMaps[layer].addTo(mapa);
 	}
-    
-    function ucwords (str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
 
-    //Parse FeatureInfo to display into popup (if info is text/html)
-    function parseFeatureInfoHTML(info, idTxt) {
-        infoAux = info.search("<ul>"); // search if info has a list
-        if (infoAux > 0) { // check if info has any content, if so shows popup
-            $(info).find('li').each(function( index ) {
-                var aux = $( this ).text().split(':');
-                info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
-            });
-            
-            info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
-            
-            return info;
-        } else {
-            infoAux = info.search("<table"); // search if info has a table
-            if (infoAux > 0) { // check if info has any content, if so shows popup
-                //info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
-                return '<div class="featureInfo" id="featureInfoPopup' + idTxt + '"><div class="featureGroup"><div style="padding:1em;overflow:scroll-x;overflow-y:hidden" class="individualFeature">' + info + '</div></div></div>';
-            }
-        }
-        
-        return '';
-    }
-    
-    //Parse FeatureInfo to display into popup (if info is application/json)
-    function parseFeatureInfoJSON(info, idTxt, title) {
-        info = JSON.parse(info);
-        if (info.features.length > 0) { // check if info has any content, if so shows popup
-            
-            var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
-            infoAux += '<div class="featureGroup">';
+	function ucwords(str) {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
+
+	//Parse FeatureInfo to display into popup (if info is text/html)
+	function parseFeatureInfoHTML(info, idTxt) {
+		infoAux = info.search("<ul>"); // search if info has a list
+		if (infoAux > 0) { // check if info has any content, if so shows popup
+			$(info).find('li').each(function (index) {
+				var aux = $(this).text().split(':');
+				info = info.replace('<b>' + aux[0] + '</b>:', '<b>' + ucwords(aux[0].replace(/_/g, ' ')) + ':</b>');
+			});
+
+			info = info.replace('class="featureInfo"', 'class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+
+			return info;
+		} else {
+			infoAux = info.search("<table"); // search if info has a table
+			if (infoAux > 0) { // check if info has any content, if so shows popup
+				//info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
+				return '<div class="featureInfo" id="featureInfoPopup' + idTxt + '"><div class="featureGroup"><div style="padding:1em;overflow:scroll-x;overflow-y:hidden" class="individualFeature">' + info + '</div></div></div>';
+			}
+		}
+
+		return '';
+	}
+
+	//Parse FeatureInfo to display into popup (if info is application/json)
+	function parseFeatureInfoJSON(info, idTxt, title) {
+		info = JSON.parse(info);
+		if (info.features.length > 0) { // check if info has any content, if so shows popup
+
+			var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
+			infoAux += '<div class="featureGroup">';
 			infoAux += '<div style="padding:1em;" class="individualFeature">';
-            //infoAux += '<div style="padding:1em;overflow-y:scroll;max-height:200px" class="individualFeature">';
-            infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
-            infoAux += '<ul id="featureInfoPopupUL' + idTxt + '">';
-                        
-            for (i in info.features) {
-                Object.keys(info.features[i].properties).forEach(function(k){
-                    if (k != 'bbox') { //Do not show bbox property
-                        infoAux += '<li>';
-                        infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
-                        if (info.features[i].properties[k] != null) {
-                            infoAux += ' ' + info.features[i].properties[k];
-                        }
-                        infoAux += '<li>';
-                    }
-                });
-            }
-                        
-            infoAux += '</ul>';
-            infoAux += '</div></div></div>';
-            //infoAux += '</div></div>Descargar como: <a href="javascript:;" onclick="getFeatureInfoAsCSV(\'featureInfoPopupUL' + idTxt + '\')">csv</a> | <a href="javascript:;" onclick="getFeatureInfoAsXLS(\'featureInfoPopupUL' + idTxt + '\')">xls</a></div>';
-            
-            return infoAux;
-        }
-        
-        return '';
-    }
-    
-    //function createWmsLayer(wmsUrl, layer) {
-    function createWmsLayer(objLayer) {
-        //Extends WMS.Source to customize popup behavior
-        var MySource = L.WMS.Source.extend({
-            'showFeatureInfo': function(latlng, info) {
-                if (!this._map) {
-                    return;
-                }
-                if (this.options.INFO_FORMAT == 'text/html') {
-                    var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
-                } else {
-                    var infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
-                }
-                if (infoParsed != '') { // check if info has any content, if so shows popup
-                    var popupContent = $('.leaflet-popup').html();
-                    popupInfo.push(infoParsed); //First info for popup
-                }
-                if (popupInfo.length > 0) {
-                    popupInfoToPaginate = popupInfo.slice();
-                    latlngTmp = latlng;
-                    this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
-                    popupInfoPage = 0;
-                }
-                return;
-            }
-        });
-        //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
-        var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
-            transparent: true,
-            tiled: true,
-            maxZoom: 21,
-            'title': objLayer.titulo,
-            format: 'image/png',
-            INFO_FORMAT: objLayer.capa.featureInfoFormat
-        });
-        overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
-    }
+			//infoAux += '<div style="padding:1em;overflow-y:scroll;max-height:200px" class="individualFeature">';
+			infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
+			infoAux += '<ul id="featureInfoPopupUL' + idTxt + '">';
 
-    function createWmtsLayer(objLayer) {
+			for (i in info.features) {
+				Object.keys(info.features[i].properties).forEach(function (k) {
+					if (k != 'bbox') { //Do not show bbox property
+						infoAux += '<li>';
+						infoAux += '<b>' + ucwords(k.replace(/_/g, ' ')) + ':</b>';
+						if (info.features[i].properties[k] != null) {
+							infoAux += ' ' + info.features[i].properties[k];
+						}
+						infoAux += '<li>';
+					}
+				});
+			}
+
+			infoAux += '</ul>';
+			infoAux += '</div></div></div>';
+			//infoAux += '</div></div>Descargar como: <a href="javascript:;" onclick="getFeatureInfoAsCSV(\'featureInfoPopupUL' + idTxt + '\')">csv</a> | <a href="javascript:;" onclick="getFeatureInfoAsXLS(\'featureInfoPopupUL' + idTxt + '\')">xls</a></div>';
+
+			return infoAux;
+		}
+
+		return '';
+	}
+
+	//function createWmsLayer(wmsUrl, layer) {
+	function createWmsLayer(objLayer) {
+		//Extends WMS.Source to customize popup behavior
+		var MySource = L.WMS.Source.extend({
+			'showFeatureInfo': function (latlng, info) {
+				if (!this._map) {
+					return;
+				}
+				if (this.options.INFO_FORMAT == 'text/html') {
+					var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+				} else {
+					var infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
+				}
+				if (infoParsed != '') { // check if info has any content, if so shows popup
+					var popupContent = $('.leaflet-popup').html();
+					popupInfo.push(infoParsed); //First info for popup
+				}
+				if (popupInfo.length > 0) {
+					popupInfoToPaginate = popupInfo.slice();
+					latlngTmp = latlng;
+					this._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), latlng); //Show all info
+					popupInfoPage = 0;
+				}
+				return;
+			}
+		});
+		//var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+		var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
+			transparent: true,
+			tiled: true,
+			maxZoom: 21,
+			'title': objLayer.titulo,
+			format: 'image/png',
+			INFO_FORMAT: objLayer.capa.featureInfoFormat
+		});
+		overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
+	}
+
+	function createWmtsLayer(objLayer) {
 		// tilematrix, style and format should be set by a method
 		let wmts_maxZoom = app.hasOwnProperty('service') ? app.service.wmts.maxZoom : DEFAULT_WMTS_MAX_ZOOM_LEVEL
 		let _style = "", _tilematrixSet = "EPSG:3857", _format = "image/png";
@@ -3080,7 +3239,7 @@ function createTmsLayer(tmsUrl, layer, attribution) {
 }
 
 function createBingLayer(bingKey, layer, attribution) {
-    currentBaseMap = L.tileLayer.bing({ 
+	currentBaseMap = L.tileLayer.bing({
 		bingMapsKey: bingKey,
 		culture: 'es_AR',
 		attribution: attribution
@@ -3093,7 +3252,7 @@ function loadMapaBaseTpl(tmsUrl, layer, attribution) {
 	currentBaseMap.addTo(mapa);
 }
 
-function loadMapaBaseBingTpl (bingKey, layer, attribution) {
+function loadMapaBaseBingTpl(bingKey, layer, attribution) {
 	mapa.removeLayer(currentBaseMap);
 	createBingLayer(bingKey, layer, attribution);
 	currentBaseMap.addTo(mapa);
@@ -3101,51 +3260,51 @@ function loadMapaBaseBingTpl (bingKey, layer, attribution) {
 
 //Paginate FeatureInfo into popup
 function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
-    var infoStr = infoArray.join('');
-    if (infoArray.length > 1) {
-        for (var i = 0; i < infoArray.length; i++) {
-            if (i == actualPage) {
-                var sAux = '';
-                if (hasPrev == true) {
-                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i> capa ant.</a>';
-                }
-                if (hasNext == true) {
-                    sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext">capa sig.<i class="fas fa-arrow-right"></i></a>';
-                }
-                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div id="popupPageSeeker">' + sAux + '</div><div class="featureInfo" id="featureInfoPopup' + i + '">');
-            } else {
-                infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div class="featureInfo" style="display:none" id="featureInfoPopup' + i + '">');
-            }
-        }
-    }
-    return infoStr;
-}
-    
-function changePopupPage(changeType) {
-    
-    var hasNext = false;
-    var hasPrev = false;
-    if (changeType == 'next') {
-        if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
-            popupInfoPage = popupInfoPage + 1;
-        }
-    } else {
-        if ((popupInfoPage - 1) >= 0) {
-            popupInfoPage = popupInfoPage - 1;
-        }
-    }
-    
-    if ((popupInfoPage - 1) >= 0) {
-        hasPrev = true;
-    }
-    if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
-        hasNext = true;
-    }
-    
-    mapa.openPopup(paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext), latlngTmp); //Show all info
+	var infoStr = infoArray.join('');
+	if (infoArray.length > 1) {
+		for (var i = 0; i < infoArray.length; i++) {
+			if (i == actualPage) {
+				var sAux = '';
+				if (hasPrev == true) {
+					sAux += '<a href="javascript:;" onClick="changePopupPage(\'prev\')" id="popupPageSeekerPrev"><i class="fas fa-arrow-left"></i> capa ant.</a>';
+				}
+				if (hasNext == true) {
+					sAux += '<a href="javascript:;" onClick="changePopupPage(\'next\')" id="popupPageSeekerNext">capa sig.<i class="fas fa-arrow-right"></i></a>';
+				}
+				infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div id="popupPageSeeker">' + sAux + '</div><div class="featureInfo" id="featureInfoPopup' + i + '">');
+			} else {
+				infoStr = infoStr.replace('<div class="featureInfo" id="featureInfoPopup' + i + '">', '<div class="featureInfo" style="display:none" id="featureInfoPopup' + i + '">');
+			}
+		}
+	}
+	return infoStr;
 }
 
-function copytoClipboard(coords){
+function changePopupPage(changeType) {
+
+	var hasNext = false;
+	var hasPrev = false;
+	if (changeType == 'next') {
+		if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
+			popupInfoPage = popupInfoPage + 1;
+		}
+	} else {
+		if ((popupInfoPage - 1) >= 0) {
+			popupInfoPage = popupInfoPage - 1;
+		}
+	}
+
+	if ((popupInfoPage - 1) >= 0) {
+		hasPrev = true;
+	}
+	if (popupInfoToPaginate.length > (popupInfoPage + 1)) {
+		hasNext = true;
+	}
+
+	mapa.openPopup(paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext), latlngTmp); //Show all info
+}
+
+function copytoClipboard(coords) {
 	var aux = document.createElement("input");
 	aux.setAttribute("value", coords);
 	document.body.appendChild(aux);

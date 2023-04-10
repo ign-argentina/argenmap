@@ -257,6 +257,8 @@ function recoverSections() {
       }
       menu_ui.addLayerToGroup(layer.section, layer.type, layer.name, layer.id, layer.file_name, layer.layer);
       showTotalNumberofLayers();
+    } else if (layer.type == "dibujos") {
+      menu_ui.addFileLayer("Dibujos", layer.id, layer.id, layer.id, layer.id, isActive);
     } else if (layer.groupname) {
       menu_ui.addLayerToGroup(
         layer.groupname,

@@ -110,8 +110,8 @@ class IElevationProfile {
                 layerType = "geoprocess",
                 sectionName = "Geoprocesos";
 
-            let uneditablePolyline = mapa.editableLayers.polyline.at(-1);
-            uneditablePolyline._uneditable = true; //aux to disallow editing the layer
+            let polylineLayer = mapa.editableLayers.polyline.at(-1);
+            polylineLayer._uneditable = true; //Aux to disallow editing/delete the polyline
                 
             addedLayers.push({
                 id: layername,
@@ -124,22 +124,59 @@ class IElevationProfile {
                 type: layerType,
                 section: sectionName
             });
+
+            
             this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
             showTotalNumberofLayers();
             updateNumberofLayers(sectionName);
-
+            
             this._displayResult(dataForDisplay, selectedPolyline);
             loadingBtn("off", "ejec_gp");
-
+            
             document.getElementById("select-process").selectedIndex = 0;
             document.getElementsByClassName("form")[1].innerHTML = "";
             new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
+            
+            this.removePolylineFromDrawingsGroup(polylineLayer);
         })
         .catch((error) => {
             console.log('Hay error: ', error);
             new UserMessage(error, true, 'error');
             loadingBtn("off", "ejec_gp");
         });
+    }
+
+    removePolylineFromDrawingsGroup(polylineLyr) {
+        if (mapa.groupLayers.hasOwnProperty("dibujos")) { // Remove the polyline from groupLayers["dibujos"]
+            const layerIdx = mapa.groupLayers["dibujos"].findIndex(lyr => lyr === polylineLyr.name);
+            if (layerIdx >= 0)
+                mapa.groupLayers["dibujos"].splice(layerIdx, 1);
+        }
+        addedLayers.forEach(lyr => {
+            if (lyr.id === "dibujos") {
+                Object.values(lyr.layer._layers).forEach(e => { // Remove polyline from addedLayers whith "dibujos" id
+                    if (polylineLyr.name === e.name) {
+                        lyr.layer.removeLayer(e);
+                        updateNumberofLayers(lyr.section);
+                        showTotalNumberofLayers();
+                    }
+                });
+            }
+        });
+
+        if (mapa.groupLayers["dibujos"].length === 0) { // If the polyline was the only one on the map, remove groupLayers["dibujos"], addedLayers whith "dibujos" id and "Dibujos" section.
+            delete mapa.groupLayers["dibujos"];
+            let section;
+            addedLayers.forEach(lyr => {
+                if (lyr.id === "dibujos") {
+                    section = lyr.section;
+                }
+            });
+            delFileItembyID("dibujos");
+            deleteLayerGeometry("dibujos", true);
+            updateNumberofLayers(section);
+            showTotalNumberofLayers();
+        }
     }
 
     clickDisplayResult(id) {
