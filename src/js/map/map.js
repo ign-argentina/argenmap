@@ -484,6 +484,57 @@ $("body").on("pluginLoad", function (event, plugin) {
 											.on("layeradd", this._enableLayerEdit, this)
 											.on("layerremove", this._disableLayerEdit, this));
 							}
+						},
+						_enableLayerEdit: function (t) {
+							var e,
+								i,
+								o = t.layer || t.target || t;
+							if (typeof o != "string" && !o._uneditable) { //to disallow editing in geoprocesses
+								this._backupLayer(o),
+									this.options.poly &&
+									((i = L.Util.extend({}, this.options.poly)),
+										(o.options.poly = i)),
+									this.options.selectedPathOptions &&
+									((e = L.Util.extend({}, this.options.selectedPathOptions)),
+										e.maintainColor &&
+										((e.color = o.options.color),
+											(e.fillColor = o.options.fillColor)),
+										(o.options.original = L.extend({}, o.options)),
+										(o.options.editing = e)),
+									o instanceof L.Marker
+										? (o.editing && o.editing.enable(),
+											o.dragging.enable(),
+											o
+												.on("dragend", this._onMarkerDragEnd)
+												.on("touchmove", this._onTouchMove, this)
+												.on("MSPointerMove", this._onTouchMove, this)
+												.on("touchend", this._onMarkerDragEnd, this)
+												.on("MSPointerUp", this._onMarkerDragEnd, this))
+										: o.editing.enable();
+							}
+						},
+						_disableLayerEdit: function (t) {
+							var e = t.layer || t.target || t;
+							if (typeof e != "string" && !e._uneditable) { //to disallow editing in geoprocesses
+								(e.edited = !1),
+									e.editing && e.editing.disable(),
+									delete e.options.editing,
+									delete e.options.original,
+									this._selectedPathOptions &&
+									(e instanceof L.Marker
+										? this._toggleMarkerHighlight(e)
+										: (e.setStyle(e.options.previousOptions),
+											delete e.options.previousOptions)),
+									e instanceof L.Marker
+										? (e.dragging.disable(),
+											e
+												.off("dragend", this._onMarkerDragEnd, this)
+												.off("touchmove", this._onTouchMove, this)
+												.off("MSPointerMove", this._onTouchMove, this)
+												.off("touchend", this._onMarkerDragEnd, this)
+												.off("MSPointerUp", this._onMarkerDragEnd, this))
+										: e.editing.disable();
+							}
 						}
 					});
 
@@ -496,6 +547,28 @@ $("body").on("pluginLoad", function (event, plugin) {
 									mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
 									t.fire("revert-deleted", { layer: t });
 							}, this);
+						},
+						_enableLayerDelete: function (t) {
+							var e = t.layer || t.target || t;
+							if (typeof e != "string" && !e._uneditable && !e.value)
+								e.on("click", this._removeLayer, this);
+						},
+						_disableLayerDelete: function (t) {
+							var e = t.layer || t.target || t;
+							if (typeof e != "string" && !e._uneditable && !e.value) {
+								e.off("click", this._removeLayer, this),
+									this._deletedLayers.removeLayer(e);
+							}
+						},
+						_removeLayer: function (t) {
+							var e = t.layer || t.target || t;
+							let isFile = e.id ? e.id.includes('json') || e.id.includes('zip') || e.id.includes('kml') : false;
+							if (typeof e != "string" && !e._uneditable && !e.value && !isFile) {
+								//this._deletableLayers.removeLayer(e),
+								mapa.deleteLayer(e.name), //remove geometry from groupLayer[dibujos], drawItem, editableLayers and addedLayers
+									this._deletedLayers.addLayer(e),
+									e.fire("deleted");
+							}
 						}
 					});
 
