@@ -541,7 +541,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 					L.EditToolbar.Delete.include({
 						revertLayers: function () {
 							this._deletedLayers.eachLayer(function (t) {
-								console.log("object");
 								addLayerToDrawingsGroup(t.name, t, "Dibujos", "dibujos", "dibujos"); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
 								this._deletableLayers.addLayer(t),
 									mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
