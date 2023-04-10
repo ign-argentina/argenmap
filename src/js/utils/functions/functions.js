@@ -286,7 +286,7 @@ function loadGeojson(url, layer) {
   }
 }
 
-function loadWmsTplAux(objLayer, param) {
+function loadWmsTplAux(objLayer) {
   wmsUrl = objLayer.capa.host;
   layer = objLayer.capa.nombre;
   if (overlayMaps.hasOwnProperty(layer)) {
@@ -294,6 +294,7 @@ function loadWmsTplAux(objLayer, param) {
     delete overlayMaps[layer];
   } else {
     createWmsLayer(objLayer);
+    overlayMaps[layer]._source.options.identify = false;
     overlayMaps[layer].addTo(mapa);
   }
 }
