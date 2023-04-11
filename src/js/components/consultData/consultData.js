@@ -33,7 +33,6 @@ function hideConsultList() {
 }
 
 function activateDataConsult() {
-    let itemNames = [], itemCapa = [];
     if (consultDataBtnClose) {
         Object.values(mapa.editableLayers).forEach(editLayer => {
             editLayer.forEach(layer => {
@@ -45,30 +44,7 @@ function activateDataConsult() {
         document.getElementById("cdOption1").style.backgroundColor = "#00ff04";
         document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
-
-        Object.values(overlayMaps).forEach(lyr => {
-            if (!itemNames.includes(lyr._name)) itemNames.push(lyr._name);
-        });
-        Object.values(gestorMenu.items).forEach(item => {
-            Object.values(item.itemsComposite).forEach(itemComposite => {
-                if (itemNames.includes(itemComposite.nombre)) {
-                    if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
-                }
-            });
-        });
-
-        itemCapa.forEach(item => {
-            layer = item.capa.nombre;
-            overlayMaps[layer].removeFrom(mapa);
-            delete overlayMaps[layer];
-
-            createWmsLayer(item);
-            overlayMaps[layer]._source.options.identify = true;
-            overlayMaps[layer].addTo(mapa);   
-        });
-        // console.log(itemNames)
-        // console.log(itemCapa)
-
+        getPopupForWMS(true);
     } else {
         Object.values(mapa.editableLayers).forEach(editLayer => {
             editLayer.forEach(layer => {
@@ -80,29 +56,33 @@ function activateDataConsult() {
         document.getElementById("cdOption1").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = true;
-
-
-        Object.values(overlayMaps).forEach(lyr => {
-            if (!itemNames.includes(lyr._name)) itemNames.push(lyr._name);
-        });
-        Object.values(gestorMenu.items).forEach(item => {
-            Object.values(item.itemsComposite).forEach(itemComposite => {
-                if (itemNames.includes(itemComposite.nombre)) {
-                    if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
-                }
-            });
-        });
-
-        itemCapa.forEach(item => {
-            layer = item.capa.nombre;
-            overlayMaps[layer].removeFrom(mapa);
-            delete overlayMaps[layer];
-
-            createWmsLayer(item);
-            overlayMaps[layer]._source.options.identify = false;
-            overlayMaps[layer].addTo(mapa);   
-        });
-        // console.log(itemNames)
-        // console.log(itemCapa)
+        getPopupForWMS(false);
     }
+}
+
+function getPopupForWMS(isActive) {
+    let itemNames = [], itemCapa = [];
+
+    Object.values(overlayMaps).forEach(lyr => {
+        if (!itemNames.includes(lyr._name)) itemNames.push(lyr._name);
+    });
+    Object.values(gestorMenu.items).forEach(item => {
+        Object.values(item.itemsComposite).forEach(itemComposite => {
+            if (itemNames.includes(itemComposite.nombre)) {
+                if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
+            }
+        });
+    });
+
+    itemCapa.forEach(item => {
+        layer = item.capa.nombre;
+        overlayMaps[layer].removeFrom(mapa);
+        delete overlayMaps[layer];
+
+        createWmsLayer(item);
+        overlayMaps[layer]._source.options.identify = isActive;
+        overlayMaps[layer].addTo(mapa);   
+    });
+    // console.log(itemNames)
+    // console.log(itemCapa)
 }
