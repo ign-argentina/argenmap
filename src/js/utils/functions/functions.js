@@ -294,7 +294,13 @@ function loadWmsTplAux(objLayer) {
     delete overlayMaps[layer];
   } else {
     createWmsLayer(objLayer);
-    overlayMaps[layer]._source.options.identify = false;
+    if (consultDataBtnClose == false) {
+      overlayMaps[layer]._source.options.identify = true;    
+    } else if (consultDataBtnClose == true) {
+      overlayMaps[layer]._source.options.identify = false;    
+    } else {
+      overlayMaps[layer]._source.options.identify = false;    
+    }
     overlayMaps[layer].addTo(mapa);
   }
 }

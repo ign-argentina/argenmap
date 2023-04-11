@@ -83,6 +83,4 @@ function getPopupForWMS(isActive) {
         overlayMaps[layer]._source.options.identify = isActive;
         overlayMaps[layer].addTo(mapa);   
     });
-    // console.log(itemNames)
-    // console.log(itemCapa)
 }
