@@ -47,12 +47,12 @@ function activateDataConsult() {
         consultDataBtnClose = false;
 
         Object.values(overlayMaps).forEach(lyr => {
-            itemNames.push(lyr._name)
+            if (!itemNames.includes(lyr._name)) itemNames.push(lyr._name);
         });
         Object.values(gestorMenu.items).forEach(item => {
             Object.values(item.itemsComposite).forEach(itemComposite => {
                 if (itemNames.includes(itemComposite.nombre)) {
-                    itemCapa.push(itemComposite);
+                    if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
                 }
             });
         });
@@ -65,7 +65,9 @@ function activateDataConsult() {
             createWmsLayer(item);
             overlayMaps[layer]._source.options.identify = true;
             overlayMaps[layer].addTo(mapa);   
-        })
+        });
+        // console.log(itemNames)
+        // console.log(itemCapa)
 
     } else {
         Object.values(mapa.editableLayers).forEach(editLayer => {
@@ -78,16 +80,29 @@ function activateDataConsult() {
         document.getElementById("cdOption1").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = true;
+
+
+        Object.values(overlayMaps).forEach(lyr => {
+            if (!itemNames.includes(lyr._name)) itemNames.push(lyr._name);
+        });
+        Object.values(gestorMenu.items).forEach(item => {
+            Object.values(item.itemsComposite).forEach(itemComposite => {
+                if (itemNames.includes(itemComposite.nombre)) {
+                    if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
+                }
+            });
+        });
+
+        itemCapa.forEach(item => {
+            layer = item.capa.nombre;
+            overlayMaps[layer].removeFrom(mapa);
+            delete overlayMaps[layer];
+
+            createWmsLayer(item);
+            overlayMaps[layer]._source.options.identify = false;
+            overlayMaps[layer].addTo(mapa);   
+        });
+        // console.log(itemNames)
+        // console.log(itemCapa)
     }
 }
-//deactivate btn if there is no drawn items
-// function updateConsultBtn() {
-// 	let control = document.getElementById('iconCD-container');
-// 	if (Object.values(drawnItems._layers).length === 0) {
-// 		control.title = "No Hay Capas Para Consultar";
-// 		control.classList.add("leaflet-disabled");
-// 	} else {
-// 		control.title = "Consultar Datos";
-// 		control.classList.remove("leaflet-disabled");
-// 	}
-// }
