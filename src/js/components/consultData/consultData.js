@@ -7,7 +7,6 @@ class ConsultData {
             <a id="iconCD" class="fa fa-circle-question" aria-hidden="true"></a>
             <i id="dropdownCD" class="dropdown-contentCD hidden">
                 <a href="#" id="cdOption1" class="fas fa-question " title="Consulta Singular"></a>
-                <a href="#" id="cdOption2" class="fas fa-question " title="in development"></a>
             </i>
         </div>
         `;
@@ -18,15 +17,16 @@ class ConsultData {
         elem.className = "leaflet-bar leaflet-control";
         elem.id = "consultData";
         elem.innerHTML = this.component;
-        elem.onmouseover = showConsultList;
-        elem.onmouseout = hideConsultList;
+        elem.onclick = showConsultList;
+        //elem.onmouseover = showConsultList;
+        //elem.onmouseout = hideConsultList;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
         document.getElementById("cdOption1").onclick = activateDataConsult;
     }
 }
 
 function showConsultList() {
-    document.getElementById("dropdownCD").classList.remove("hidden");
+    document.getElementById("dropdownCD").classList.toggle("hidden");
 }
 function hideConsultList() {
     document.getElementById("dropdownCD").classList.add("hidden");
