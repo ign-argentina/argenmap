@@ -935,13 +935,68 @@ function clickWMSLayer(layer, layer_item, fileName) {
     layer_item.classList.value = "file-layer active";
     layer.active = true;
 
-    layer.L_layer = L.tileLayer
-      .wms(layer.host, {
-        layers: layer.name,
-        format: "image/png",
-        transparent: true,
-      })
-      .addTo(mapa);
+    //********************************************************** */
+    //TEST
+    var MySource = L.WMS.Source.extend({
+      showFeatureInfo: function (latlng, info) {
+        let layername = layer.title;
+  
+        if (!this._map) {
+          return;
+        }
+        console.log(info)
+        if (!loadTableAsPopUp) {
+          if (this.options.INFO_FORMAT == "text/html") {
+            var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+          } else {
+            var infoParsed = parseFeatureInfoJSON(
+              info,
+              popupInfo.length,
+              this.options.title
+            );
+          }
+          if (infoParsed != "") {
+            // check if info has any content, if so shows popup
+            var popupContent = $(".leaflet-popup").html();
+            popupInfo.push(infoParsed); //First info for popup
+          }
+          if (popupInfo.length > 0) {
+            popupInfoToPaginate = popupInfo.slice();
+            latlngTmp = latlng;
+            this._map.openPopup(
+              paginateFeatureInfo(popupInfo, 0, false, true),
+              latlng
+            ); //Show all info
+            popupInfoPage = 0;
+          }
+        } else {
+          let tableD = new Datatable(JSON.parse(info), latlng);
+          createTabulator(tableD, layername);
+        }
+        return;
+      },
+    });
+
+    var testing = new MySource(layer.host, {
+      transparent: true,
+      tiled: true,
+      maxZoom: 21,
+      title: layer.title,
+      format: "image/png",
+    });
+    console.log(testing)
+    overlayMaps[layer.name] = testing.getLayer(layer.name);
+    overlayMaps[layer.name].addTo(mapa);
+    //********************************************************** */
+
+    //Oirignal
+    // layer.L_layer = L.tileLayer
+    //   .wms(layer.host, {
+    //     layers: layer.name,
+    //     format: "image/png",
+    //     transparent: true,
+    //   })
+    //   .addTo(mapa);
 
     gestorMenu.layersDataForWfs[layer.name] = {
       name: layer.name,
