@@ -74,6 +74,7 @@ function getPopupForWMS(isActive) {
         });
     });
 
+    //Menu WMS
     itemCapa.forEach(item => {
         layer = item.capa.nombre;
         overlayMaps[layer].removeFrom(mapa);
@@ -83,4 +84,71 @@ function getPopupForWMS(isActive) {
         overlayMaps[layer]._source.options.identify = isActive;
         overlayMaps[layer].addTo(mapa);   
     });
+
+    //Import WMS
+    let importedWMS;
+    addedLayers.forEach(lyr => {
+        if (lyr.type === "WMS") {
+            importedWMS = lyr.layer;
+            overlayMaps[importedWMS.name].removeFrom(mapa);
+            delete overlayMaps[importedWMS.name];
+
+            createImportWmsLayer(importedWMS);
+            //overlayMaps[importedWMS.name]._source.options.identify = isActive;
+            overlayMaps[importedWMS.name].addTo(mapa);
+        }
+    });
+
+}
+
+function createImportWmsLayer(importedWMS) {
+    var MySource = L.WMS.Source.extend({
+        showFeatureInfo: function (latlng, info) {
+          let layername = importedWMS.title;
+    
+          if (!this._map) {
+            return;
+          }
+
+          if (!loadTableAsPopUp) {
+            if (this.options.INFO_FORMAT == "text/html") {
+              var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+            } else {              
+                var infoParsed = parseFeatureInfoJSON(
+                info,
+                popupInfo.length,
+                this.options.title
+              ); 
+            }
+            if (infoParsed != "") {
+              // check if info has any content, if so shows popup
+              var popupContent = $(".leaflet-popup").html();
+              popupInfo.push(infoParsed); //First info for popup
+            }
+            if (popupInfo.length > 0) {
+              popupInfoToPaginate = popupInfo.slice();
+              latlngTmp = latlng;
+              this._map.openPopup(
+                paginateFeatureInfo(popupInfo, 0, false, true),
+                latlng
+              ); //Show all info
+              popupInfoPage = 0;
+            }
+          } else {
+            let tableD = new Datatable(JSON.parse(info), latlng);
+            createTabulator(tableD, layername);
+          }
+          return;
+        },
+      });
+  
+      var testing = new MySource(importedWMS.host, {
+        transparent: true,
+        tiled: true,
+        maxZoom: 21,
+        title: importedWMS.title,
+        format: "image/png",
+        INFO_FORMAT: "application/json"
+      });
+      overlayMaps[importedWMS.name] = testing.getLayer(importedWMS.name);
 }

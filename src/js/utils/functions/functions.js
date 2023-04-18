@@ -922,6 +922,8 @@ function clickWMSLayer(layer, layer_item, fileName) {
   if (layer_item.classList.value === "file-layer active" && layer.active) {
     layer_item.classList.value = "file-layer";
     mapa.removeLayer(layer.L_layer);
+    delete overlayMaps[layer.name];
+
     layer.active = false;
 
     addedLayers.forEach(lyr => {
@@ -935,69 +937,25 @@ function clickWMSLayer(layer, layer_item, fileName) {
     layer_item.classList.value = "file-layer active";
     layer.active = true;
 
-    //********************************************************** */
-    //TEST
-    var MySource = L.WMS.Source.extend({
-      showFeatureInfo: function (latlng, info) {
-        let layername = layer.title;
-  
-        if (!this._map) {
-          return;
-        }
-        console.log(info)
-        if (!loadTableAsPopUp) {
-          if (this.options.INFO_FORMAT == "text/html") {
-            var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
-          } else {
-            var infoParsed = parseFeatureInfoJSON(
-              info,
-              popupInfo.length,
-              this.options.title
-            );
-          }
-          if (infoParsed != "") {
-            // check if info has any content, if so shows popup
-            var popupContent = $(".leaflet-popup").html();
-            popupInfo.push(infoParsed); //First info for popup
-          }
-          if (popupInfo.length > 0) {
-            popupInfoToPaginate = popupInfo.slice();
-            latlngTmp = latlng;
-            this._map.openPopup(
-              paginateFeatureInfo(popupInfo, 0, false, true),
-              latlng
-            ); //Show all info
-            popupInfoPage = 0;
-          }
-        } else {
-          let tableD = new Datatable(JSON.parse(info), latlng);
-          createTabulator(tableD, layername);
-        }
-        return;
-      },
-    });
+    layer.L_layer = L.tileLayer
+      .wms(layer.host, {
+        layers: layer.name,
+        format: "image/png",
+        transparent: true,
+      })
+      .addTo(mapa);
 
-    var testing = new MySource(layer.host, {
-      transparent: true,
-      tiled: true,
-      maxZoom: 21,
-      title: layer.title,
-      format: "image/png",
-    });
-    console.log(testing)
-    overlayMaps[layer.name] = testing.getLayer(layer.name);
-    overlayMaps[layer.name].addTo(mapa);
-    //********************************************************** */
+      overlayMaps[layer.name] = layer.L_layer;
+      overlayMaps[layer.name].popUpActive = false;
 
-    //Oirignal
-    // layer.L_layer = L.tileLayer
-    //   .wms(layer.host, {
-    //     layers: layer.name,
-    //     format: "image/png",
-    //     transparent: true,
-    //   })
-    //   .addTo(mapa);
-
+      // if (consultDataBtnClose == false) {
+      //   overlayMaps[layer.name]._source.options.identify = true;    
+      // } else if (consultDataBtnClose == true) {
+      //   overlayMaps[layer.name]._source.options.identify = false;    
+      // } else {
+      //   overlayMaps[layer.name]._source.options.identify = false;   
+      // }
+      
     gestorMenu.layersDataForWfs[layer.name] = {
       name: layer.name,
       section: layer.title,
