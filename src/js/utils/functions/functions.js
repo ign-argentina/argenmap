@@ -921,9 +921,9 @@ function clickWMSLayer(layer, layer_item, fileName) {
   let sectionName;
   if (layer_item.classList.value === "file-layer active" && layer.active) {
     layer_item.classList.value = "file-layer";
-    mapa.removeLayer(layer.L_layer);
-    delete overlayMaps[layer.name];
 
+    mapa.removeLayer(overlayMaps[layer.name]);
+    delete overlayMaps[layer.name];
     layer.active = false;
 
     addedLayers.forEach(lyr => {
@@ -937,25 +937,25 @@ function clickWMSLayer(layer, layer_item, fileName) {
     layer_item.classList.value = "file-layer active";
     layer.active = true;
 
-    layer.L_layer = L.tileLayer
-      .wms(layer.host, {
-        layers: layer.name,
-        format: "image/png",
-        transparent: true,
-      })
-      .addTo(mapa);
+    createImportWmsLayer(layer);
 
-      overlayMaps[layer.name] = layer.L_layer;
-      overlayMaps[layer.name].popUpActive = false;
+    if (consultDataBtnClose == false) {
+      overlayMaps[layer.name]._source.options.identify = true;    
+    } else if (consultDataBtnClose == true) {
+      overlayMaps[layer.name]._source.options.identify = false;    
+    } else {
+      overlayMaps[layer.name]._source.options.identify = false;    
+    }
+    overlayMaps[layer.name].addTo(mapa);
 
-      // if (consultDataBtnClose == false) {
-      //   overlayMaps[layer.name]._source.options.identify = true;    
-      // } else if (consultDataBtnClose == true) {
-      //   overlayMaps[layer.name]._source.options.identify = false;    
-      // } else {
-      //   overlayMaps[layer.name]._source.options.identify = false;   
-      // }
-      
+    //Original
+    // layer.L_layer = L.tileLayer
+    //   .wms(layer.host, {
+    //     layers: layer.name,
+    //     format: "image/png",
+    //     transparent: true,
+    //   })
+    //   .addTo(mapa);
     gestorMenu.layersDataForWfs[layer.name] = {
       name: layer.name,
       section: layer.title,

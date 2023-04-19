@@ -88,24 +88,23 @@ function getPopupForWMS(isActive) {
     //Import WMS
     let importedWMS;
     addedLayers.forEach(lyr => {
-        if (lyr.type === "WMS") {
+        if (lyr.type === "WMS" && lyr.isActive === true) {
             importedWMS = lyr.layer;
             overlayMaps[importedWMS.name].removeFrom(mapa);
             delete overlayMaps[importedWMS.name];
 
             createImportWmsLayer(importedWMS);
-            //overlayMaps[importedWMS.name]._source.options.identify = isActive;
+            overlayMaps[importedWMS.name]._source.options.identify = isActive;
             overlayMaps[importedWMS.name].addTo(mapa);
         }
     });
 
 }
 
-function createImportWmsLayer(importedWMS) {
+function createImportWmsLayer(layer) {
     var MySource = L.WMS.Source.extend({
         showFeatureInfo: function (latlng, info) {
-          let layername = importedWMS.title;
-    
+          let layername = layer.name;
           if (!this._map) {
             return;
           }
@@ -142,13 +141,13 @@ function createImportWmsLayer(importedWMS) {
         },
       });
   
-      var testing = new MySource(importedWMS.host, {
+      var layerPopUp = new MySource(layer.host, {
         transparent: true,
         tiled: true,
         maxZoom: 21,
-        title: importedWMS.title,
+        title: layer.name,
         format: "image/png",
         INFO_FORMAT: "application/json"
       });
-      overlayMaps[importedWMS.name] = testing.getLayer(importedWMS.name);
+      overlayMaps[layer.name] = layerPopUp.getLayer(layer.name);
 }
