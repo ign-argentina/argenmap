@@ -239,7 +239,7 @@ function recoverSections() {
         break;
       case "WMS":
         if (isActive) {
-          mapa.removeLayer(layerObj.L_layer);
+          mapa.removeLayer(overlayMaps[layer.name]);
           layer.isActive = false;
         }
         menu_ui.addLayerToGroup(section, type, name, id, file_name, layerObj);
