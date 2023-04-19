@@ -181,7 +181,7 @@ function hideAddedLayers() {
           mapa.hideGroupLayer(layer.id);
           gestorMenu.cleanAllLayers();
           layer.layer.active = false;
-          mapa.removeLayer(layer.layer.L_layer);
+          mapa.removeLayer(overlayMaps[layer.name]);
           updateNumberofLayers(layer.section);
         }
         if (layer.isActive) {
