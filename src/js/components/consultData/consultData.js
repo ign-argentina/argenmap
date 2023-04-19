@@ -145,7 +145,7 @@ function createImportWmsLayer(layer) {
         transparent: true,
         tiled: true,
         maxZoom: 21,
-        title: layer.name,
+        title: layer.title,
         format: "image/png",
         INFO_FORMAT: "application/json"
       });
