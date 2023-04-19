@@ -1,0 +1,8 @@
+#consultData :hover {
+    cursor: pointer;
+  }
+  
+#iconCD {
+  font-size: 17px;
+  line-height: inherit;
+}

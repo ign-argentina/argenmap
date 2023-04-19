@@ -285,7 +285,7 @@ function loadGeojson(url, layer) {
   }
 }
 
-function loadWmsTplAux(objLayer, param) {
+function loadWmsTplAux(objLayer) {
   wmsUrl = objLayer.capa.host;
   layer = objLayer.capa.nombre;
   if (overlayMaps.hasOwnProperty(layer)) {
@@ -293,6 +293,13 @@ function loadWmsTplAux(objLayer, param) {
     delete overlayMaps[layer];
   } else {
     createWmsLayer(objLayer);
+    if (consultDataBtnClose == false) {
+      overlayMaps[layer]._source.options.identify = true;    
+    } else if (consultDataBtnClose == true) {
+      overlayMaps[layer]._source.options.identify = false;    
+    } else {
+      overlayMaps[layer]._source.options.identify = false;    
+    }
     overlayMaps[layer].addTo(mapa);
   }
 }
@@ -339,6 +346,7 @@ function parseFeatureInfoHTML(info, idTxt) {
 //Parse FeatureInfo to display into popup (if info is application/json)
 function parseFeatureInfoJSON(info, idTxt, title) {
   info = JSON.parse(info);
+
   if (info.features.length > 0) {
     // check if info has any content, if so shows popup
 
@@ -912,7 +920,9 @@ function clickWMSLayer(layer, layer_item, fileName) {
   let sectionName;
   if (layer_item.classList.value === "file-layer active" && layer.active) {
     layer_item.classList.value = "file-layer";
-    mapa.removeLayer(layer.L_layer);
+
+    mapa.removeLayer(overlayMaps[layer.name]);
+    delete overlayMaps[layer.name];
     layer.active = false;
 
     addedLayers.forEach(lyr => {
@@ -926,14 +936,25 @@ function clickWMSLayer(layer, layer_item, fileName) {
     layer_item.classList.value = "file-layer active";
     layer.active = true;
 
-    layer.L_layer = L.tileLayer
-      .wms(layer.host, {
-        layers: layer.name,
-        format: "image/png",
-        transparent: true,
-      })
-      .addTo(mapa);
+    createImportWmsLayer(layer);
 
+    if (consultDataBtnClose == false) {
+      overlayMaps[layer.name]._source.options.identify = true;    
+    } else if (consultDataBtnClose == true) {
+      overlayMaps[layer.name]._source.options.identify = false;    
+    } else {
+      overlayMaps[layer.name]._source.options.identify = false;    
+    }
+    overlayMaps[layer.name].addTo(mapa);
+
+    //Original
+    // layer.L_layer = L.tileLayer
+    //   .wms(layer.host, {
+    //     layers: layer.name,
+    //     format: "image/png",
+    //     transparent: true,
+    //   })
+    //   .addTo(mapa);
     gestorMenu.layersDataForWfs[layer.name] = {
       name: layer.name,
       section: layer.title,
@@ -1467,4 +1488,51 @@ function getAllActiveLayers() {
     }
   })
   return allActiveLayers;
+}
+
+function getVectorData(e) {
+  if (e.target.activeData === true) {
+    let layer = e.target;
+    createPopupForVector(layer, e.latlng);
+  }
+}
+
+function createPopupForVector(layer, clickLatlng) {
+  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase();
+  let popupName = layer.data.geoJSON.properties.objeto;
+  popupName ? title = popupName : title = id;
+
+  var infoAux =
+    '<div class="featureInfo" id="featureInfoPopup' + id + '">';
+  infoAux += '<div class="featureGroup">';
+  infoAux += '<div style="padding:1em" class="individualFeature">';
+  infoAux +=
+    '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
+    title +
+    "</h4>";
+  infoAux += "<ul>";
+
+  Object.keys(layer.data.geoJSON.properties).forEach(function (k) {
+    let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
+    if (k != "bbox" && !ignoredField && k != "objeto" && k != "styles") { //ignore this rows
+      infoAux += "<li>";
+      infoAux += "<b>" + ucwords(k.replace(/_/g, " ")) + ":</b>";
+      if (layer.data.geoJSON.properties[k] != null) {
+        infoAux += " " + layer.data.geoJSON.properties[k];
+      }
+      infoAux += "<li>";
+    }
+  });
+  
+  infoAux += "</ul>";
+  infoAux += "</div></div></div>";
+  popupInfo.push(infoAux); //Add info for popup
+
+  let center;
+  if (layer._latlng) {
+    center = layer._latlng;
+  } else {
+    center = clickLatlng;
+  }
+  layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show info
 }
