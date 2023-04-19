@@ -1026,13 +1026,13 @@ function bindZoomLayer() {
       await getWmsLyrParams(layer); // gets layer atribtutes from WMS
     }
     
-    console.log("layer: ", layer)
+    //console.log("layer: ", layer)
     let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
     noBbox = bbox.some((el) => { 
       return el === null || el === undefined;
     });
     
-    console.log("bbox: ", bbox)
+    //console.log("bbox: ", bbox)
     if ( noBbox ) {
       for (i = 0; i < this.childNodes.length; i++) {
         if (this.childNodes[i].className == "fas fa-search-plus") {
@@ -1226,7 +1226,7 @@ async function getWmsLyrParams(lyr) {
   }
   let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
     sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
-  console.log(url)
+  //console.log(url)
   await fetch(url)
     .then((res) => res.text())
     .then((str) => {

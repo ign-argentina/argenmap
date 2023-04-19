@@ -466,7 +466,7 @@ class IElevationProfile {
             geoJSON.features[0].geometry.coordinates.push(coord);
         });
 
-        console.log(geoJSON);
+        //console.log(geoJSON);
     }
 
     editElevProfileName(id){
