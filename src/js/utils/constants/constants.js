@@ -68,7 +68,7 @@ const PLUGINS = {
   consultData: "src/js/components/consultData/consultData.js"
 };
 
-const MESSAGE_TIME = 4000;
+const MESSAGE_TIME = 10000;
 const MESSAGE_COLORS = {
   information: {
     background: "rgba(0,141,201, 0.75)",
