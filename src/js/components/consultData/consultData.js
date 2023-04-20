@@ -4,9 +4,11 @@ class ConsultData {
     constructor() {
         this.component = `
         <div id="iconCD-container" class="leaflet-disabled" title="Consultar Datos">
-            <a id="iconCD" class="fa fa-message" aria-hidden="true"></a>
+            <a id="iconCD" aria-hidden="true">
+                <img src="src/styles/images/cursorQuery.png" width="60%">
+            </a>
             <i id="dropdownCD" class="dropdown-contentCD hidden">
-                <a href="#" id="cdOption1" class="fas fa-question " title="Consulta Singular"></a>
+                <a href="#" id="cdOption1" class="fa fa-message" title="Consulta Singular"></a>
             </i>
         </div>
         `;
