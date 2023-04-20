@@ -1,17 +1,18 @@
 .message-container {
-    width: 420px;
-    height: 40px;
+    /* width: 420px;
+    height: 40px; */
     border-radius: 4px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     position: absolute;
-    bottom: 50px;
-    left: 50%;
-    transform: translate(-50%, 0);
-    padding: 5px;
-    z-index: 1500;
+    bottom: 1.5rem;
+    margin: 2rem;
+    /* left: 50%; */
+    /* transform: translate(-50%, 0); */
+    padding: 2rem;
+    z-index: 10000;
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
     cursor: default;
 }
@@ -21,23 +22,29 @@
     font-size: 1.1em;
 }
 .message-close-btn {
-    width: 22px;
-    height: 22px;
-    border-radius: 11px;
+    width: 55px;
+    height: 25px;
+    border-radius: 15px;
     margin: 0;
     padding: 0;
     margin-top: 1px;
+    text-align: center;
+    font-weight: bolder;
     cursor: pointer;
-    background-image: url(../../../styles/images/close.webp);
+    font-size: medium;
+    color:antiquewhite;
+    align-self: flex-start;
+    /* background-image: url(../../../styles/images/close.webp);
     background-size: 45% 45%;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center; */
 } 
 .message-close-btn:hover {
     background-color: white !important;
-    border: solid 1px black;
+    border: solid 1px #750b0b;
+    color: #a52a2a;
 }
- 
+
 @media (max-width: 769px) {
     .message-container {
         width: 100%;
