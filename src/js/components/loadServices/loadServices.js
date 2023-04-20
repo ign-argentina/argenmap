@@ -401,6 +401,8 @@ function handleAllLayersCheck(e) {
 				if (layer.section === groupName) {
 					let index = addedLayers.indexOf(layer);
 					if (index > -1) {
+						if (layer.isActive) mapa.removeLayer(overlayMaps[layer.name]);
+						delete overlayMaps[layer.name];
 						addedLayers.splice(index, 1);
 					}
 				}
@@ -440,6 +442,8 @@ function handleLayerCheck(e) {
 	} else {
 		addedLayers.forEach((layer) => {
 			if (layer.name == e.target.value) {
+				if (layer.isActive) mapa.removeLayer(overlayMaps[layer.name]);
+				delete overlayMaps[layer.name];
 				let index = addedLayers.indexOf(layer);
 				if (index > -1) {
 					addedLayers.splice(index, 1);
