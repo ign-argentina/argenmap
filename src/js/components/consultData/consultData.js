@@ -111,9 +111,7 @@ function createImportWmsLayer(layer) {
             return;
           }
 
-          if (info.includes("ServiceException")) {
-            new UserMessage(`ServiceException: WMS server error. WMS request not enabled.`, true, "error");
-          } else if (!loadTableAsPopUp) {
+          if (!loadTableAsPopUp) {
             if (this.options.INFO_FORMAT == "text/html") {
               var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
             } else {              
