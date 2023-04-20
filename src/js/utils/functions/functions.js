@@ -347,6 +347,11 @@ function parseFeatureInfoHTML(info, idTxt) {
 function parseFeatureInfoJSON(info, idTxt, title) {
   info = JSON.parse(info);
 
+  if(info.exceptions) {
+    new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
+    return 0;
+  }
+
   if (info.features.length > 0) {
     // check if info has any content, if so shows popup
 
@@ -427,10 +432,12 @@ function createWmsLayer(objLayer) {
   });
   var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
     transparent: true,
+    version: '1.3.0',
     tiled: true,
     maxZoom: 21,
     title: objLayer.capa.titulo,
     format: "image/png",
+    exceptions: objLayer.capa.featureInfoFormat,
     INFO_FORMAT: objLayer.capa.featureInfoFormat,
   });
   overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
