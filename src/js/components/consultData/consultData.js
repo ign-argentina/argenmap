@@ -4,7 +4,7 @@ class ConsultData {
     constructor() {
         this.component = `
         <div id="iconCD-container" class="leaflet-disabled" title="Consultar Datos">
-            <a id="iconCD" class="fa fa-circle-question" aria-hidden="true"></a>
+            <a id="iconCD" class="fa fa-message" aria-hidden="true"></a>
             <i id="dropdownCD" class="dropdown-contentCD hidden">
                 <a href="#" id="cdOption1" class="fas fa-question " title="Consulta Singular"></a>
             </i>
