@@ -172,16 +172,6 @@ class UI{
   }  
   
   createTable(data){
-    let _columnsConfig = [];
-    data.forEach(row => {
-      Object.keys(row).forEach( key => {
-        let col = { title: key, field: key, editor: true }
-        _columnsConfig.push(col);
-      })
-    });
-    
-    console.log(_columnsConfig);
-    
     let pagination = 10
     
     if (ISCelular){
@@ -194,26 +184,34 @@ class UI{
     
     table = new Tabulator("#example-table", {
       data: data, //assign data to table
-      columns: _columnsConfig,
-      autoColumns:true, //create columns from data field names
-      tooltips:true,            //show tool tips on cells
-      pagination:"local",       //paginate the data
-      paginationSize: pagination,         //allow 10 rows per page of data
-      movableColumns: false,      //allow column order to be changed
-      locale:true,
-      resizableRows:false,
-      resizableColumns:false/* ,
-      rowDblClick:function(e, row){
-        if(row._row.data.Longitud){
+      autoColumns: true, //create columns from data field names
+      tooltips: true, //show tool tips on cells
+      pagination: "local", //paginate the data
+      paginationSize: pagination, //allow 10 rows per page of data
+      movableColumns: false, //allow column order to be changed
+      locale: true,
+      resizableRows: false,
+      resizableColumns: false,
+      history: true,
+      rowDblClick: function (e, row) {
+        if (row._row.data.Longitud) {
           let lon = row._row.data.Longitud
           let lat = row._row.data.Latitud
-          mapa.flyTo([lat, lon],10)}
-        } */,
-        
-        langs:{
-          "es-es":{
+          mapa.flyTo([lat, lon], 10)
+        }
+      },
+      autoColumnsDefinitions: function (definitions) {
+        //definitions - array of column definition objects
+        definitions.forEach((column) => {
+          column.editor = true; // add edito to every column
+        });
+        return definitions;
+      },
+  
+      langs:{
+        "es-es":{
             "pagination":{
-              "first":"Primera", //text for the first page button
+                "first":"Primera", //text for the first page button
                 "first_title":"Primera", //tooltip text for the first page button
                 "last":"Ultima",
                 "last_title":"Ultima",
