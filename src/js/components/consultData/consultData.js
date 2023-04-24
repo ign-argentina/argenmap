@@ -43,7 +43,7 @@ function activateDataConsult() {
                 }
             });
         });
-        document.getElementById("cdOption1").style.backgroundColor = "#00ff04";
+        document.getElementById("cdOption1").style.backgroundColor = "#33b560";
         document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
         getPopupForWMS(true);
