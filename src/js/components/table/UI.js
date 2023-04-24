@@ -95,6 +95,8 @@ class UI{
         btnsaveCSV.onclick = function(){
           table.download("csv", "data.csv", {bom:true});
         };
+        
+        this.addUndoRedoBtn()
 
         //if charts is avaible in menu.json
         if(loadCharts) {
@@ -108,12 +110,30 @@ class UI{
        }
         
         //document.getElementById("icons-table").append(btnsave)
-        document.getElementById("icons-table").append(btnsaveGJSON)
-        document.getElementById("icons-table").append(btnsaveCSV)
-        document.getElementById("icons-table").append(btnmax)
-        document.getElementById("icons-table").append(btnmin)
-        document.getElementById("icons-table").append(btnclose)
+        document.getElementById("icons-table").append(btnsaveGJSON);
+        document.getElementById("icons-table").append(btnsaveCSV);
+        document.getElementById("icons-table").append(btnmax);
+        document.getElementById("icons-table").append(btnmin);
+        document.getElementById("icons-table").append(btnclose);
+  }
 
+  addUndoRedoBtn() {
+    let undoBtn = this.createElement("a", "undoBtn", "icon-table");
+    undoBtn.style.float = 'left';
+    undoBtn.innerHTML = '<span id="undo" class="fa-solid fa-rotate-left" aria-hidden="true"></span>';
+    undoBtn.addEventListener("click", function () {
+      table.undo();
+    });
+
+    let redoBtn = this.createElement("a", "redoBtn", "icon-table");
+    redoBtn.style.float = 'left';
+    redoBtn.innerHTML = '<span id="redo" class="fa-solid fa-rotate-right" aria-hidden="true"></span>';
+    redoBtn.addEventListener("click", function () {
+      table.redo();
+    });
+    
+    document.getElementById("icons-table").append(undoBtn);
+    document.getElementById("icons-table").append(redoBtn);
   }
 
   addSearchBar(){
@@ -276,6 +296,4 @@ class UI{
     }
 
   }
-   
 }
-
