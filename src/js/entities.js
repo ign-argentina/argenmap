@@ -3547,6 +3547,16 @@ class Menu_UI {
       return;
     };
 
+    let edit_data_opt = document.createElement("li");
+    edit_data_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar datos</a>`;
+    edit_data_opt.onclick = function () {
+      const index_file = getIndexFileLayerbyID(id);
+      const data = addedLayers[index_file];
+      let dTable = new Datatable(data.layer);
+      createTabulator(dTable, data.file_name, { editable:true });
+      return;
+    };
+
     let edit_name_opt = document.createElement("li");
     edit_name_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar Nombre</a>`;
     edit_name_opt.onclick = function () {
@@ -3596,6 +3606,7 @@ class Menu_UI {
 
     mainul.append(zoom_layer_opt);
     mainul.append(edit_name_opt);
+    mainul.append(edit_data_opt);
     mainul.append(download_opt);
     //mainul.append(query_opt)
     //mainul.append(copy_opt)
