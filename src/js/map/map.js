@@ -451,7 +451,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						position: 'topright'
 					});
 
-					L.EditToolbar.Edit.extend({
+					L.EditToolbar.Edit.include({
 						enable: function () {
 							let _nodes = null,
 								_complexGeom = ["polyline", "rectangle", "polygon"];
@@ -545,7 +545,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						}
 					});
 
-					L.EditToolbar.Delete.extend({
+					L.EditToolbar.Delete.include({
 						revertLayers: function () {
 							this._deletedLayers.eachLayer(function (t) {
 								addLayerToDrawingsGroup(t.name, t, "Dibujos", "dibujos", "dibujos"); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
