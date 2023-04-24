@@ -154,6 +154,9 @@ Menu principal
   z-index: 2000;
   /* A value higher than 1010 that solves the problem */
 }
+.panel-body {
+  padding: 5px;
+}
 .loading {
   width: 100%;
   text-align: center;
