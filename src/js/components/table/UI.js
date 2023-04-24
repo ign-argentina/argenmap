@@ -237,8 +237,13 @@ class UI{
       }
     },
      });
+    table.isEditable = (boolean) => {
+      table.columnManager.columns.forEach(col => {
+        col.modules.edit.blocked = !boolean;
+      })
+    };
+    table.isEditable(false);
      if(table.columnManager.columnsByField["bbox"]){table.deleteColumn("bbox");}
-     
   }
   
   createFilters(data){
