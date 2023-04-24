@@ -2,362 +2,349 @@
 	display: -ms-flex;
 	display: -webkit-flex;
 	display: flex;
-	width: 100%;
-	height: 40px;
-	padding: 0px;
-	border: 0px;
+	width  : 100%;
+	height : 40px;
+	padding: 0;
+	border : 0
 }
 
 #btn-left-tabtable {
-	width: 5%;
+	width        : 5%;
 	border-radius: 4px;
-	border-width: 1px;
-	height: 40px;
-	border-color: silver;
+	border-width : 1px;
+	height       : 40px;
+	border-color : silver
 }
 
 #btn-left-tabtable:hover {
-	background-color: silver;
+	background-color: silver
 }
 
 #tabs-table {
-	width: 90%;
+	width: 90%
 }
 
 #btn-right-tabtable {
-	width: 5%;
+	width        : 5%;
 	border-radius: 4px;
-	border-width: 1px;
-	height: 40px;
-	border-color: silver;
+	border-width : 1px;
+	height       : 40px;
+	border-color : silver
 }
 
 #btn-right-tabtable:hover {
-	background-color: silver;
+	background-color: silver
 }
 
 #ContainerTable {
-	overflow: hidden;
-	right: 300px;
-	width: 450px;
-	height: fit-content;
-	top: 20%;
-	text-align: right;
-	float: none;
-	border-radius: 8px;
-	z-index: 1200;
-	border: 3px;
-	padding: 5px;
-	background-color: white !important;
-	flex-flow: column;
-	position: absolute;
-	margin-bottom: 10px;
-	-moz-box-shadow: inset 0 0 10px #000000;
-	-webkit-box-shadow: inset 0 0 10px #000000;
-	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+	overflow          : hidden;
+	bottom            : 20px;
+	left              : 15%;
+	width             : 70%;
+	height            : fit-content;
+	text-align        : right;
+	float             : none;
+	border-radius     : 8px;
+	z-index           : 1200;
+	border            : 3px;
+	padding           : 5px;
+	background-color  : #fff !important;
+	flex-flow         : column;
+	position          : absolute;
+	margin-bottom     : 10px;
+	-moz-box-shadow   : inset 0 0 10px #000;
+	-webkit-box-shadow: inset 0 0 10px #000;
+	box-shadow        : 0 4px 10px 0 rgba(0, 0, 0, .2), 0 4px 20px 0 rgba(0, 0, 0, .19)
 }
 
 #search-table {
-	text-align: left;
-	display: -ms-flex;
-	display: -webkit-flex;
-	display: flex;
-	justify-content: center;
-	padding: 5px;
-	background-color: #EFEFEF;
-
+	text-align      : left;
+	display         : -ms-flex;
+	display         : -webkit-flex;
+	display         : flex;
+	justify-content : center;
+	padding         : 5px;
+	background-color: #efefef
 }
 
 #containerTableHeader {
 	height: 40px;
-	cursor: move;
+	cursor: move
 }
 
 #icons-table {
-	font-size: 14px;
+	font-size: 14px
 }
 
 #header-tabletabulator {
-	cursor: move;
+	cursor: move
 }
 
 #tab-content-table {
-	overflow: auto;
+	overflow: auto
 }
 
 #indextabulator {
-	height: 40px;
+	height  : 40px;
 	overflow: auto;
-	z-index: 5000;
-	cursor: pointer;
+	z-index : 5000;
+	cursor  : pointer
 }
 
 #indextabulator::-webkit-scrollbar {
-	display: none;
+	display: none
 }
 
 #filter-tabletabulator {
-	text-align: center;
+	text-align: center
 }
 
 .icon-table {
-	margin: 5px;
+	margin: 5px
 }
 
 .filteritems {
 	height: 25px;
-	margin: 0px;
+	margin: 0
 }
 
 #filter-field {
-	border-color: #EFEFEF !important;
-	color: #666666 !important;
-	border-top-left-radius: 8px;
+	border-color             : #efefef !important;
+	color                    : #666 !important;
+	border-top-left-radius   : 8px;
 	border-bottom-left-radius: 8px;
-	font-size: 12px;
+	font-size                : 12px
 }
 
 #filter-value {
-	border-color: #EFEFEF !important;
-	border: 0px;
-	border-top-right-radius: 8px;
+	border-color              : #efefef !important;
+	border                    : 0;
+	border-top-right-radius   : 8px;
 	border-bottom-right-radius: 8px;
-	font-size: 12px;
+	font-size                 : 12px
 }
 
-@media only screen and (max-width: 1400px) and (min-width: 800px) {
+@media only screen and (max-width:1400px) and (min-width:800px) {
 	#ContainerTable {
-		right: 30%;
+		right: 30%
 	}
 }
 
-@media only screen and (max-width: 799px) and (min-width: 479px) {
+@media only screen and (max-width:799px) and (min-width:479px) {
 	#ContainerTable {
-		right: 15%;
+		right: 15%
 	}
 }
 
-
-@media (max-width: 480px) {
+@media (max-width:480px) {
 	#indextabulator {
-		font-size: 10px;
+		font-size: 10px
 	}
 
 	#ContainerTable {
-		width: 100%;
+		width     : 100%;
 		max-height: 50%;
-		top: 50%;
-		right: 0px;
-		overflow: auto;
+		right     : 0;
+		overflow  : auto
 	}
 
 	#filter-field {
-		width: 80px;
+		width: 80px
 	}
 
 	#filter-value {
-		width: 100px;
+		width: 100px
 	}
 
 	#btn-left-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#btn-right-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#tabs-table {
-		width: 80%;
+		width: 80%
 	}
 
 	#btnmin {
-		display: none;
+		display: none
 	}
 }
 
-@media (max-width: 360px) {
+@media (max-width:360px) {
 	#indextabulator {
-		font-size: 10px;
+		font-size: 10px
 	}
 
 	#ContainerTable {
-		width: 100%;
-		height: 50%;
-		top: 50%;
-		overflow: auto;
-
+		width   : 100%;
+		overflow: auto
 	}
 
 	#filter-field {
-		width: 80px;
+		width: 80px
 	}
 
 	#filter-value {
-		width: 100px;
+		width: 100px
 	}
 
 	#btn-left-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#btn-right-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#tabs-table {
-		width: 80%;
+		width: 80%
 	}
 
 	#btnmin {
-		display: none;
+		display: none
 	}
-
 }
 
-@media (max-height: 480px) {
-
+@media (max-height:480px) {
 	#ContainerTable {
-		bottom: 0px !important;
-		right: 0px;
+		bottom    : 0 !important;
+		right     : 0;
 		max-height: 50%;
-		max-width: 100%;
-		overflow: auto;
+		max-width : 100%;
+		overflow  : auto
 	}
 
 	#btn-left-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#btn-right-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#tabs-table {
-		width: 80%;
+		width: 80%
 	}
 
 	#filter-field {
-		width: 80px;
+		width: 80px
 	}
 
 	#filter-value {
-		width: 100px;
+		width: 100px
 	}
 
 	#btnmin {
-		display: none;
+		display: none
 	}
 }
 
-@media (max-height: 420px) {
+@media (max-height:420px) {
 	#indextabulator {
-		font-size: 10px;
+		font-size: 10px
 	}
 
 	#ContainerTable {
 		max-height: 100% !important;
-		max-width: 60% !important;
-		top: 53px;
-		bottom: 20px !important;
-		right: 0px !important;
-		overflow: auto;
+		max-width : 60% !important;
+		top       : 53px;
+		bottom    : 20px !important;
+		right     : 0 !important;
+		overflow  : auto
 	}
 
 	#btn-left-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#btn-right-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#tabs-table {
-		width: 80%;
+		width: 80%
 	}
 
 	#btnmin {
-		display: none;
+		display: none
 	}
 }
 
-@media (max-height: 360px) {
+@media (max-height:360px) {
 	#indextabulator {
-		font-size: 10px;
+		font-size: 10px
 	}
 
 	#ContainerTablel {
-		bottom: 0px !important;
+		bottom    : 0 !important;
 		max-height: 60% !important;
-		top: 53px;
-		right: 0px !important;
-		;
-		bottom: 20px !important;
-		overflow: auto;
+		top       : 53px;
+		right     : 0 !important;
+		bottom    : 20px !important;
+		overflow  : auto
 	}
 
 	#btn-left-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#btn-right-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#tabs-table {
-		width: 80%;
+		width: 80%
 	}
 
 	#btnmin {
-		display: none;
+		display: none
 	}
 }
 
-@media (max-height: 320px) {
+@media (max-height:320px) {
 	#ContainerTablel {
-		bottom: 0px !important;
-		right: 0px !important;
-		;
-		width: 100% !important;
-		;
+		bottom    : 0 !important;
+		right     : 0 !important;
+		width     : 100% !important;
 		max-height: 50% !important;
-		;
-		overflow: auto;
+		overflow  : auto
 	}
 
 	#indextabulator {
-		font-size: 10px;
+		font-size: 10px
 	}
 
 	#btn-left-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#btn-right-tabtable {
-		width: 10%;
+		width: 10%
 	}
 
 	#tabs-table {
-		width: 80%;
+		width: 80%
 	}
 
 	#btnmin {
-		display: none;
+		display: none
 	}
 }
 
-.icon-geo,
-.icon-csv {
-	width: 22px;
-	height: 15px;
-	border-radius: 3px;
+.icon-csv,
+.icon-geo {
+	width        : 22px;
+	height       : 15px;
+	border-radius: 3px
 }
 
 .icon-geo {
-	content: url("icon-geo.png");
+	content: url(icon-geo.png)
 }
 
 .icon-csv {
-	content: url("icon-csv.png");
-
+	content: url(icon-csv.png)
 }
