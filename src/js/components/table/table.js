@@ -53,9 +53,3 @@ function newTable(data) {
   ui.createTable(data)
   ui.createFilters(data)
 }
-
-if (table) {
-  table.on("cellEdited", function (cell) {
-    console.log("hola");
-  });
-}
