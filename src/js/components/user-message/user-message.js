@@ -20,6 +20,7 @@ class UserMessage {
 
         const closeBtn = document.createElement('div');
         closeBtn.className = 'message-close-btn';
+        closeBtn.innerText = 'x';
         closeBtn.onclick = () => {
             messageContainer.remove();
         };

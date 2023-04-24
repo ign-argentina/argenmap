@@ -635,3 +635,11 @@ let conaeCheck = setInterval(() => {
     }
   }
 }, 1000);
+
+document.addEventListener("contextmenu", (e) => {
+  if( e.target.classList.contains("leaflet-container") ) {
+    return 0;
+  }
+  e.preventDefault();
+  ui_component.getContextMenu(e.target.classList);
+});

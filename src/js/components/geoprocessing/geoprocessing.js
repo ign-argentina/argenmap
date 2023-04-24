@@ -200,6 +200,8 @@ class Geoprocessing {
           section: sectionName
         });
 
+        this.removeRectangleFromDrawingsGroup(selectedRectangle);
+
         // ** Avoiding Leaflet Draw object test **
         // first comment addGeoJsonLayerToDrawedLayers() call
 
@@ -329,6 +331,40 @@ class Geoprocessing {
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
     geoProcessingManager.geoprocessId = null;
+  }
+
+  removeRectangleFromDrawingsGroup(selectedRectangle) {
+    if (mapa.groupLayers.hasOwnProperty("dibujos")) { // Remove the rectangle from groupLayers["dibujos"]
+      const layerIdx = mapa.groupLayers["dibujos"].findIndex(lyr => lyr === selectedRectangle.name);
+      if (layerIdx >= 0)
+        mapa.groupLayers["dibujos"].splice(layerIdx, 1);
+    }
+
+    addedLayers.forEach(lyr => {
+      if (lyr.id === "dibujos") {
+        Object.values(lyr.layer._layers).forEach(e => { // Remove rectangle from addedLayers whith "dibujos" id
+          if (selectedRectangle.name === e.name) {
+            lyr.layer.removeLayer(e);
+            updateNumberofLayers(lyr.section);
+            showTotalNumberofLayers();
+          }
+        });
+      }
+    });
+
+    if (mapa.groupLayers["dibujos"].length === 0) { // If the rectangle was the only one on the map, remove groupLayers["dibujos"], addedLayers whith "dibujos" id and "Dibujos" section.
+      delete mapa.groupLayers["dibujos"];
+      let section;
+      addedLayers.forEach(lyr => {
+        if (lyr.id === "dibujos") {
+          section = lyr.section;
+        }
+      });
+      delFileItembyID("dibujos");
+      deleteLayerGeometry("dibujos", true);
+      updateNumberofLayers(section);
+      showTotalNumberofLayers();
+    }
   }
 
   updateReferencedDrawedLayers(event, layers) {

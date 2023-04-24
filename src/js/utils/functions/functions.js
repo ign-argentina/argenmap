@@ -181,7 +181,7 @@ function hideAddedLayers() {
           mapa.hideGroupLayer(layer.id);
           gestorMenu.cleanAllLayers();
           layer.layer.active = false;
-          mapa.removeLayer(layer.layer.L_layer);
+          mapa.removeLayer(overlayMaps[layer.name]);
           updateNumberofLayers(layer.section);
         }
         if (layer.isActive) {
@@ -216,9 +216,9 @@ function showTotalNumberofLayers() {
   if (activeLayers > 0) {
     $("#cleanTrash").html(
       "<div class='glyphicon glyphicon-th-list'></div>" +
-        "<span class='total-active-layers-counter'>" +
-        activeLayers +
-        "</span>"
+      "<span class='total-active-layers-counter'>" +
+      activeLayers +
+      "</span>"
     );
   } else {
     $("#cleanTrash").html("<span class='glyphicon glyphicon-th-list'></span>");
@@ -226,45 +226,44 @@ function showTotalNumberofLayers() {
 }
 
 function recoverSections() {
-  let elevProfileRecover = new IElevationProfile(),
-      geoprocessRecover = new Geoprocessing();
-      geoprocessRecover.setAvailableGeoprocessingConfig(app.geoprocessing);
-      geoprocessRecover.getNewProcessPrefix();
+  const elevProfileRecover = new IElevationProfile();
+  const geoprocessRecover = new Geoprocessing();
+  geoprocessRecover.setAvailableGeoprocessingConfig(app.geoprocessing);
+  geoprocessRecover.getNewProcessPrefix();
 
   addedLayers.forEach((layer) => {
-    let isActive;
-    if (layer.isActive === false) {
-      isActive = false
-    } else {
-      isActive = true
-    }
-
-    if (
-      layer.id.includes(geoprocessRecover.GEOPROCESS.contour) ||
-      layer.id.includes(geoprocessRecover.GEOPROCESS.waterRise) ||
-      layer.id.includes(geoprocessRecover.GEOPROCESS.buffer)
-    ) {
-      menu_ui.addFileLayer("Geoprocesos", "geoprocess", layer.id, layer.id, layer.id, isActive);
-    } else if (layer.id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
-      let layername = layer.id
-      elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", layername, layername, layername, isActive);
-    } else if (layer.type == "file") {
-      menu_ui.addFileLayer("Archivos", "file", layer.id, layer.id, layer.id, isActive);
-    } else if (layer.type == "WMS") {
-      if (isActive) {
-        mapa.removeLayer(layer.layer.L_layer);
-        layer.isActive = false;
-      }
-      menu_ui.addLayerToGroup(layer.section, layer.type, layer.name, layer.id, layer.file_name, layer.layer);
-      showTotalNumberofLayers();
-    } else if (layer.groupname) {
-      menu_ui.addLayerToGroup(
-        layer.groupname,
-        layer.name,
-        layer.id,
-        layer.layer.title,
-        layer.layer
-      );
+    const { id, isActive, type, section, name, file_name, layer: layerObj } = layer;
+    switch (type) {
+      case "file":
+        menu_ui.addFileLayer("Archivos", "file", id, id, id, isActive);
+        break;
+      case "WMS":
+        if (isActive) {
+          mapa.removeLayer(overlayMaps[layer.name]);
+          layer.isActive = false;
+        }
+        menu_ui.addLayerToGroup(section, type, name, id, file_name, layerObj);
+        showTotalNumberofLayers();
+        break;
+      case "dibujos":
+        menu_ui.addFileLayer("Dibujos", id, id, id, id, isActive);
+        break;
+      case "geoprocess":
+        if (
+          id.includes(geoprocessRecover.GEOPROCESS.contour) ||
+          id.includes(geoprocessRecover.GEOPROCESS.waterRise) ||
+          id.includes(geoprocessRecover.GEOPROCESS.buffer)
+        ) {
+          menu_ui.addFileLayer("Geoprocesos", "geoprocess", id, id, id, isActive);
+        } else if (id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
+          elevProfileRecover.addGeoprocessLayer("Geoprocesos", "geoprocess", id, id, id, isActive);
+        }
+        break;
+      default:
+        if (layer.groupname) {
+          menu_ui.addLayerToGroup(layer.groupname, name, id, layerObj.title, layerObj);
+        }
+        break;
     }
   });
 }
@@ -286,7 +285,7 @@ function loadGeojson(url, layer) {
   }
 }
 
-function loadWmsTplAux(objLayer, param) {
+function loadWmsTplAux(objLayer) {
   wmsUrl = objLayer.capa.host;
   layer = objLayer.capa.nombre;
   if (overlayMaps.hasOwnProperty(layer)) {
@@ -294,6 +293,13 @@ function loadWmsTplAux(objLayer, param) {
     delete overlayMaps[layer];
   } else {
     createWmsLayer(objLayer);
+    if (consultDataBtnClose == false) {
+      overlayMaps[layer]._source.options.identify = true;    
+    } else if (consultDataBtnClose == true) {
+      overlayMaps[layer]._source.options.identify = false;    
+    } else {
+      overlayMaps[layer]._source.options.identify = false;    
+    }
     overlayMaps[layer].addTo(mapa);
   }
 }
@@ -340,6 +346,12 @@ function parseFeatureInfoHTML(info, idTxt) {
 //Parse FeatureInfo to display into popup (if info is application/json)
 function parseFeatureInfoJSON(info, idTxt, title) {
   info = JSON.parse(info);
+
+  if(info.exceptions) {
+    new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
+    return 0;
+  }
+
   if (info.features.length > 0) {
     // check if info has any content, if so shows popup
 
@@ -420,10 +432,12 @@ function createWmsLayer(objLayer) {
   });
   var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
     transparent: true,
+    version: '1.3.0',
     tiled: true,
     maxZoom: 21,
     title: objLayer.capa.titulo,
     format: "image/png",
+    exceptions: objLayer.capa.featureInfoFormat,
     INFO_FORMAT: objLayer.capa.featureInfoFormat,
   });
   overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
@@ -913,7 +927,9 @@ function clickWMSLayer(layer, layer_item, fileName) {
   let sectionName;
   if (layer_item.classList.value === "file-layer active" && layer.active) {
     layer_item.classList.value = "file-layer";
-    mapa.removeLayer(layer.L_layer);
+
+    mapa.removeLayer(overlayMaps[layer.name]);
+    delete overlayMaps[layer.name];
     layer.active = false;
 
     addedLayers.forEach(lyr => {
@@ -927,14 +943,25 @@ function clickWMSLayer(layer, layer_item, fileName) {
     layer_item.classList.value = "file-layer active";
     layer.active = true;
 
-    layer.L_layer = L.tileLayer
-      .wms(layer.host, {
-        layers: layer.name,
-        format: "image/png",
-        transparent: true,
-      })
-      .addTo(mapa);
+    createImportWmsLayer(layer);
 
+    if (consultDataBtnClose == false) {
+      overlayMaps[layer.name]._source.options.identify = true;    
+    } else if (consultDataBtnClose == true) {
+      overlayMaps[layer.name]._source.options.identify = false;    
+    } else {
+      overlayMaps[layer.name]._source.options.identify = false;    
+    }
+    overlayMaps[layer.name].addTo(mapa);
+
+    //Original
+    // layer.L_layer = L.tileLayer
+    //   .wms(layer.host, {
+    //     layers: layer.name,
+    //     format: "image/png",
+    //     transparent: true,
+    //   })
+    //   .addTo(mapa);
     gestorMenu.layersDataForWfs[layer.name] = {
       name: layer.name,
       section: layer.title,
@@ -1006,13 +1033,13 @@ function bindZoomLayer() {
       await getWmsLyrParams(layer); // gets layer atribtutes from WMS
     }
     
-    console.log("layer: ", layer)
+    //console.log("layer: ", layer)
     let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
     noBbox = bbox.some((el) => { 
       return el === null || el === undefined;
     });
     
-    console.log("bbox: ", bbox)
+    //console.log("bbox: ", bbox)
     if ( noBbox ) {
       for (i = 0; i < this.childNodes.length; i++) {
         if (this.childNodes[i].className == "fas fa-search-plus") {
@@ -1206,7 +1233,7 @@ async function getWmsLyrParams(lyr) {
   }
   let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
     sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
-  console.log(url)
+  //console.log(url)
   await fetch(url)
     .then((res) => res.text())
     .then((str) => {
@@ -1468,4 +1495,51 @@ function getAllActiveLayers() {
     }
   })
   return allActiveLayers;
+}
+
+function getVectorData(e) {
+  if (e.target.activeData === true) {
+    let layer = e.target;
+    createPopupForVector(layer, e.latlng);
+  }
+}
+
+function createPopupForVector(layer, clickLatlng) {
+  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase();
+  let popupName = layer.data.geoJSON.properties.objeto;
+  popupName ? title = popupName : title = id;
+
+  var infoAux =
+    '<div class="featureInfo" id="featureInfoPopup' + id + '">';
+  infoAux += '<div class="featureGroup">';
+  infoAux += '<div style="padding:1em" class="individualFeature">';
+  infoAux +=
+    '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
+    title +
+    "</h4>";
+  infoAux += "<ul>";
+
+  Object.keys(layer.data.geoJSON.properties).forEach(function (k) {
+    let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
+    if (k != "bbox" && !ignoredField && k != "objeto" && k != "styles") { //ignore this rows
+      infoAux += "<li>";
+      infoAux += "<b>" + ucwords(k.replace(/_/g, " ")) + ":</b>";
+      if (layer.data.geoJSON.properties[k] != null) {
+        infoAux += " " + layer.data.geoJSON.properties[k];
+      }
+      infoAux += "<li>";
+    }
+  });
+  
+  infoAux += "</ul>";
+  infoAux += "</div></div></div>";
+  popupInfo.push(infoAux); //Add info for popup
+
+  let center;
+  if (layer._latlng) {
+    center = layer._latlng;
+  } else {
+    center = clickLatlng;
+  }
+  layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show info
 }
