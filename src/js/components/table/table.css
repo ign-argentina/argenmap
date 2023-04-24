@@ -38,10 +38,10 @@
 
 #ContainerTable {
 	overflow: hidden;
-	right: 300px;
-	width: 450px;
+	bottom: 20px;
+	left: 15%;
+	width: 70%; /* 450px; */
 	height: fit-content;
-	top: 20%;
 	text-align: right;
 	float: none;
 	border-radius: 8px;
@@ -146,7 +146,7 @@
 	#ContainerTable {
 		width: 100%;
 		max-height: 50%;
-		top: 50%;
+		/* top: 50%; */
 		right: 0px;
 		overflow: auto;
 	}
@@ -183,8 +183,8 @@
 
 	#ContainerTable {
 		width: 100%;
-		height: 50%;
-		top: 50%;
+		/* height: 50%; */
+		/* top: 50%; */
 		overflow: auto;
 
 	}
