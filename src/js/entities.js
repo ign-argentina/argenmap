@@ -3548,7 +3548,7 @@ class Menu_UI {
     };
 
     let edit_data_opt = document.createElement("li");
-    edit_data_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar datos</a>`;
+    edit_data_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-table" aria-hidden="true" style="width:20px;"></i>Ver Datos</a>`;
     edit_data_opt.onclick = function () {
       const index_file = getIndexFileLayerbyID(id);
       const data = addedLayers[index_file];
