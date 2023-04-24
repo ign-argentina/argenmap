@@ -602,8 +602,8 @@ Popup geometría
   background-color: rgb(0, 141, 201, 0.1);
 }
 .active-layer-label {
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
 }
 .popup-btn {
   width: 100%;
@@ -617,8 +617,8 @@ Popup geometría
   transition: 0.2s;
 }
 .popup-btn-text {
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
   margin: 0 !important;
   font-weight: 700;
 }
@@ -658,8 +658,8 @@ Popup geometría
 }
 .edit-style-popup-container .section-popup .section-title,
 .edit-style-popup-container .section-popup .section-item label {
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
 }
 .edit-style-popup>.leaflet-popup-content-wrapper,
 .edit-style-popup>.leaflet-popup-tip-container>.leaflet-popup-tip {
