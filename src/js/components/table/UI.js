@@ -144,14 +144,15 @@ class UI{
     
     let activedata = datatable[datatable.length - 1]; // gets lats active table in array
     
-    let tabLink = document.createElement('a');
+    let tabTitle = gestorMenu.getLayerData(layername).title ?? layername,
+      tabLink = document.createElement('a');
     tabLink.id = layername + '-tab';
     tabLink.classList.add('tabEvent');
     tabLink.style = 'height:38px; padding:10px !important; overflow:hidden; white-space: nowrap; direction: rtl;text-overflow: ellipsis;';
     tabLink.setAttribute('data-toggle', 'tab');
     tabLink.setAttribute('istabletab', 'true');
     tabLink.setAttribute('aria-expanded', 'true');
-    tabLink.innerHTML = `${gestorMenu.getLayerData(layername).title} (${activedata.length})`;
+    tabLink.innerHTML = `${tabTitle} (${activedata.length})`;
 
     aux.appendChild(tabLink);
     
