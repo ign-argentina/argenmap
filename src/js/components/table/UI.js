@@ -142,6 +142,79 @@ class UI {
     document.getElementById("icons-table").append(editBtn);
   }
 
+  addColumnBtn() {
+    const addColumnBtn = this.createElement("button", "addColumnBtn", "icon-table");
+    addColumnBtn.style.float = 'left';
+    addColumnBtn.id = "addColumnBtn";
+    addColumnBtn.innerHTML = '+ Columna';
+    addColumnBtn.onclick = () => {
+      document.getElementById("addColumnBtn").classList.toggle("hidden");
+      document.getElementById("removeColumnBtn").classList.toggle("hidden");
+      document.getElementById("undo").classList.toggle("hidden");
+      document.getElementById("redo").classList.toggle("hidden");
+      document.getElementById("editTableData").classList.toggle("hidden");
+
+      this.addInput();
+    }
+    document.getElementById("icons-table").append(addColumnBtn);
+  }
+
+  removeColumnBtn() {
+    const removeColumnBtn = this.createElement("button", "removeColumnBtn", "icon-table");
+    removeColumnBtn.style.float = 'left';
+    removeColumnBtn.id = "removeColumnBtn";
+    removeColumnBtn.innerHTML = '- Columna';
+    //removeColumnBtn.onclick = () => 
+    document.getElementById("icons-table").append(removeColumnBtn);
+  }
+
+  addColumn(name) {
+    table.addColumn({title:name, field:name, editor:true} , false);
+  }
+
+  addInput() {
+    const iconsTable = document.getElementById("icons-table");
+
+    const addInput = this.createElement("input", "addInput", "icon-table");
+    addInput.style.float = 'left';
+    addInput.id = "columnInputName";
+    addInput.innerHTML = '+ Columna';
+    addInput.placeholder = "Escribe nombre";
+    iconsTable.append(addInput);
+
+    const saveBtn = this.createElement("a", "saveBtn", "icon-table");
+    saveBtn.style.float = "left";
+    saveBtn.innerHTML = '<span id="saveBtn" class="fa-solid fa-check" aria-hidden="true"></span>'; 
+    saveBtn.addEventListener("click", () => {
+      let name = document.getElementById("columnInputName").value;
+      if (name !== "") {
+        this.addColumn(name);
+      }
+      this.showHideColumnBtns();
+    });
+    iconsTable.appendChild(saveBtn);
+
+    const cancelBtn = this.createElement("a", "cancelBtn", "icon-table");
+    cancelBtn.style.float = "left";
+    cancelBtn.innerHTML = '<span id="cancelBtn" class="fa-solid fa-xmark" aria-hidden="true"></span>'; 
+    cancelBtn.addEventListener("click", () => {
+      this.showHideColumnBtns();
+    });
+    iconsTable.appendChild(cancelBtn);
+  }
+
+  showHideColumnBtns() {
+    document.getElementById("addColumnBtn").classList.toggle("hidden");
+    document.getElementById("removeColumnBtn").classList.toggle("hidden");
+    document.getElementById("undo").classList.toggle("hidden");
+    document.getElementById("redo").classList.toggle("hidden");
+    document.getElementById("editTableData").classList.toggle("hidden");
+
+    document.getElementById("columnInputName").remove();
+    document.getElementById("saveBtn").remove();
+    document.getElementById("cancelBtn").remove();
+  }
+
   toggleEditTableData() {
     var editBtn = document.querySelector("#editTableData")
     if (table.editing) {
@@ -150,9 +223,14 @@ class UI {
       editBtn.title = "Editar datos de la tabla"
       document.getElementById("undoBtn").remove()
       document.getElementById("redoBtn").remove()
+
+      document.getElementById("addColumnBtn").remove()
+      document.getElementById("removeColumnBtn").remove()
     } else {
-      this.addUndoRedoBtn()
-      table.isEditable(true)
+      this.addUndoRedoBtn();
+      this.addColumnBtn();
+      this.removeColumnBtn();
+      table.isEditable(true);
       editBtn.innerHTML = "Guardar"
       editBtn.title = "Guardar cambios"
     }
