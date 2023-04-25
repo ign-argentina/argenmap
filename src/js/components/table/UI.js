@@ -154,7 +154,7 @@ class UI {
       document.getElementById("redo").classList.toggle("hidden");
       document.getElementById("editTableData").classList.toggle("hidden");
 
-      this.addInput();
+      this.addInput("add");
     }
     document.getElementById("icons-table").append(addColumnBtn);
   }
@@ -170,11 +170,14 @@ class UI {
       document.getElementById("undo").classList.toggle("hidden");
       document.getElementById("redo").classList.toggle("hidden");
       document.getElementById("editTableData").classList.toggle("hidden");
+
+      this.addInput("remove");
     }
     document.getElementById("icons-table").append(removeColumnBtn);
   }
 
   removeColumn(field) {
+    table.deleteColumn(field);
     addedLayers.forEach(lyr => {
       if (lyr.layer.features[0] === tableData.features[0]) {
         lyr.layer.features.forEach(feat => {
@@ -190,22 +193,24 @@ class UI {
     table.addColumn({ title: name, field: name, editor: true }, false);
   }
 
-  addInput() {
+  addInput(action) {
     const iconsTable = document.getElementById("icons-table");
 
-    const addInput = this.createElement("input", "columnInputName", "icon-table");
-    addInput.type = "text";
-    addInput.style.float = 'left';
-    addInput.placeholder = "Escribe nombre de la columna";
-    iconsTable.appendChild(addInput);
+    const addInputBtn = this.createElement("input", "columnInputName", "icon-table");
+    addInputBtn.type = "text";
+    addInputBtn.style.float = 'left';
+    addInputBtn.placeholder = "Nombre de columna";
+    iconsTable.appendChild(addInputBtn);
 
     const saveBtn = this.createElement("a", "saveBtn", "icon-table");
     saveBtn.style.float = "left";
     saveBtn.innerHTML = '<span class="fa-solid fa-check" aria-hidden="true"></span>';
     saveBtn.addEventListener("click", () => {
-      let name = addInput.value.trim();
-      if (name !== "") {
+      let name = addInputBtn.value.trim();
+      if (name !== "" && action === "add") {
         this.addColumn(name);
+      } else if (name !== "" && action === "remove") {
+        this.removeColumn(name);
       }
       this.showHideColumnBtns();
     });
@@ -219,7 +224,7 @@ class UI {
     });
     iconsTable.appendChild(cancelBtn);
 
-    addInput.focus();
+    addInputBtn.focus();
   }
 
   showHideColumnBtns() {
