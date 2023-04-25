@@ -44,7 +44,7 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
 var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-var ordenZoomHome = 1; var ordenFullScreen = 2; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 5;
+var ordenZoomHome = 1; var ordenFullScreen = 5; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 2;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
 var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14;
 var visiblesActivar = true;

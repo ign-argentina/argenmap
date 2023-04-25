@@ -4,6 +4,8 @@
   --active-bg-color: #33b560;
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
+  --map-btn-color: #303030;
+  --map-btn-bg-color: #fff;
   --popup-fnt-size: 12px;
   --group-title-fnt-size: 15px;
   --body-fnt-size: 14px;
@@ -531,6 +533,12 @@ Leaflet
 }
 .leaflet-control-measure-interaction h3 {
   font-size: 17px !important;
+}
+.leaflet-control-measure-interaction.js-interaction {
+  background-color: var(--map-btn-bg-color);
+}
+.leaflet-control-measure {
+  background-color: transparent;
 }
 .leaflet-popup-content h3 {
   font-size: 17px !important;
@@ -1160,8 +1168,10 @@ ESRI
 Icons and Btns
 *******************************/
 .leaflet-bar a,
+.leaflet-bar a.leaflet-disabled,
 .leaflet-bar a:hover {
-  color: #303030 !important;
+  color: var(--map-btn-color) !important;
+  background-color: var(--map-btn-bg-color);
 }
 /* leaflet- control and leaflet-bar determines the style of the buttons on the map */
 /* .leaflet-bar {
