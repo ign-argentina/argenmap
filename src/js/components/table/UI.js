@@ -164,8 +164,26 @@ class UI {
     removeColumnBtn.style.float = 'left';
     removeColumnBtn.id = "removeColumnBtn";
     removeColumnBtn.innerHTML = '- Columna';
-    //removeColumnBtn.onclick = () => 
+    removeColumnBtn.onclick = () => {
+      document.getElementById("addColumnBtn").classList.toggle("hidden");
+      document.getElementById("removeColumnBtn").classList.toggle("hidden");
+      document.getElementById("undo").classList.toggle("hidden");
+      document.getElementById("redo").classList.toggle("hidden");
+      document.getElementById("editTableData").classList.toggle("hidden");
+    }
     document.getElementById("icons-table").append(removeColumnBtn);
+  }
+
+  removeColumn(field) {
+    addedLayers.forEach(lyr => {
+      if (lyr.layer.features[0] === tableData.features[0]) {
+        lyr.layer.features.forEach(feat => {
+          if (Object.keys(feat.properties).includes(field)) {
+            delete feat.properties[field]
+          }
+        });
+      }
+    });
   }
 
   addColumn(name) {
