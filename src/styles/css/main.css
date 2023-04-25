@@ -825,6 +825,9 @@ input:checked.switch+label:after {
   left: 150%;
   z-index: 50000;
 }
+.tooltiptext, #argenmap-tooltip span, #argenmap-tooltip span button:hover {
+  color: var(--bg-color) !important;
+}
 .switch:hover+label .tooltiptext {
   visibility: visible;
 }
