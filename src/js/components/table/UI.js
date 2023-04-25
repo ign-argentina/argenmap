@@ -187,24 +187,23 @@ class UI {
   }
 
   addColumn(name) {
-    table.addColumn({title:name, field:name, editor:true} , false);
+    table.addColumn({ title: name, field: name, editor: true }, false);
   }
 
   addInput() {
     const iconsTable = document.getElementById("icons-table");
 
-    const addInput = this.createElement("input", "addInput", "icon-table");
+    const addInput = this.createElement("input", "columnInputName", "icon-table");
+    addInput.type = "text";
     addInput.style.float = 'left';
-    addInput.id = "columnInputName";
-    addInput.innerHTML = '+ Columna';
-    addInput.placeholder = "Escribe nombre";
-    iconsTable.append(addInput);
+    addInput.placeholder = "Escribe nombre de la columna";
+    iconsTable.appendChild(addInput);
 
     const saveBtn = this.createElement("a", "saveBtn", "icon-table");
     saveBtn.style.float = "left";
-    saveBtn.innerHTML = '<span id="saveBtn" class="fa-solid fa-check" aria-hidden="true"></span>'; 
+    saveBtn.innerHTML = '<span class="fa-solid fa-check" aria-hidden="true"></span>';
     saveBtn.addEventListener("click", () => {
-      let name = document.getElementById("columnInputName").value;
+      let name = addInput.value.trim();
       if (name !== "") {
         this.addColumn(name);
       }
@@ -214,11 +213,13 @@ class UI {
 
     const cancelBtn = this.createElement("a", "cancelBtn", "icon-table");
     cancelBtn.style.float = "left";
-    cancelBtn.innerHTML = '<span id="cancelBtn" class="fa-solid fa-xmark" aria-hidden="true"></span>'; 
+    cancelBtn.innerHTML = '<span class="fa-solid fa-xmark" aria-hidden="true"></span>';
     cancelBtn.addEventListener("click", () => {
       this.showHideColumnBtns();
     });
     iconsTable.appendChild(cancelBtn);
+
+    addInput.focus();
   }
 
   showHideColumnBtns() {
