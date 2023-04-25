@@ -13,8 +13,10 @@ let ISmaxheight = window.matchMedia("(max-height: 415px)").matches
 let ISCelular = (ISportrait && ISmaxwidth) || (ISlandscape && ISmaxheight)
 
 function createTabulator(tableD, layername) {
+  if (tableD.data.hasOwnProperty('_layers')) {
+    // dibujos
+  }
   if (tableD.data.features.length != 0) {
-
     tableData = tableD.data;
     tableArray.push(tableData)
     let datos = tableD.getDataForTabulator();
@@ -23,7 +25,7 @@ function createTabulator(tableD, layername) {
     if (document.getElementById("ContainerTable") !== null) {
       ui.addTabs(layername)
     } else {
-      ui.createModal()
+      ui.createModal(!tableData.hasOwnProperty('crs'))
       ui.createTable(datos)
       ui.createFilters(datos)
       ui.addTabs(layername)

@@ -7,7 +7,7 @@ class UI {
     return aux
   }
 
-  createModal() {
+  createModal(boolean) {
     let divContainer = this.createElement("div", "ContainerTable", "ContainerTable")
     divContainer.appendChild(this.createElement("div", "icons-table"))
     let ul = this.createElement("ul", "indextabulator", "nav nav-pills")
@@ -33,10 +33,10 @@ class UI {
     divContainer.appendChild(this.createElement("div", "search-table"));
     divContainer.appendChild(this.createElement("div", "example-table"));
     document.body.appendChild(divContainer);
-    this.addButtons();
+    this.addButtons(boolean);
   }
 
-  addButtons() {
+  addButtons(boolean) {
     let _containerTable = document.getElementById("ContainerTable");
     let btnmax = this.createElement("a", "btnmax", "icon-table")
     btnmax.hidden = true
@@ -95,7 +95,7 @@ class UI {
       table.download("csv", "data.csv", { bom: true });
     };
 
-    this.addEditTableDataBtn();
+    if (boolean) { this.addEditTableDataBtn(); }
 
     let iconsTable = document.getElementById("icons-table");
 
