@@ -47,7 +47,6 @@ function activateDataConsult() {
         });
         let control = document.getElementById("iconCD");
         control.style.backgroundColor = "#33b560";
-        console.log(control.querySelector("img"));
         control.querySelector("img").style.filter = "invert()";
         //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
