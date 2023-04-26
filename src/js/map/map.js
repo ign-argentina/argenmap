@@ -548,10 +548,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 					L.EditToolbar.Delete.include({
 						revertLayers: function () {
 							this._deletedLayers.eachLayer(function (t) {
-								addLayerToDrawingsGroup(t.name, t, "Dibujos", "dibujos", "dibujos"); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
 								this._deletableLayers.addLayer(t),
 									mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
 									t.fire("revert-deleted", { layer: t });
+								addLayerToDrawingsGroup(t.name, t, "Dibujos", "dibujos", "dibujos"); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
 							}, this);
 						},
 						_enableLayerDelete: function (t) {
@@ -570,7 +570,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 							var e = t.layer || t.target || t;
 							let isFile = e.id ? e.id.includes('json') || e.id.includes('zip') || e.id.includes('kml') : false;
 							if (typeof e != "string" && !e._uneditable && !e.value && !isFile) {
-								//this._deletableLayers.removeLayer(e),
 								mapa.deleteLayer(e.name), //remove geometry from groupLayer[dibujos], drawItem, editableLayers and addedLayers
 									this._deletedLayers.addLayer(e),
 									e.fire("deleted");
@@ -2192,43 +2191,47 @@ $("body").on("pluginLoad", function (event, plugin) {
 							});
 					}
 
+					/**
+					 * This function deletes a given layer from the map and related data structures.
+					 * @param {string} layerName - The name of the layer to delete.
+					 */
 					mapa.deleteLayer = (layerName) => {
-						const type = layerName.split('_')[0];
-						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layerName);
+						const type = layerName.split('_')[0]; // Extract layer type from layerName
 
-						if (lyrIdx >= 0) {
-							drawnItems.removeLayer(mapa.editableLayers[type][lyrIdx]);
-							mapa.editableLayers[type].splice(lyrIdx, 1);
+						const idx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layerName); // Find the index of the layer to delete in the editableLayers array
+
+						// If the layer exists in the editableLayers array, remove it from the map and editableLayers array
+						if (idx >= 0) {
+							drawnItems.removeLayer(mapa.editableLayers[type][idx]);
+							mapa.editableLayers[type].splice(idx, 1);
 						}
 
-						//Delete from groups
-						for (const group in mapa.groupLayers) {
-							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layerName);
-							if (lyrInGrpIdx >= 0) {
-								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
+						// Remove the layer from all groupLayers arrays
+						Object.values(mapa.groupLayers).forEach(group => {
+							const idx = group.findIndex(lyr => lyr === layerName);
+							if (idx >= 0) {
+								group.splice(idx, 1);
 							}
-						}
+						});
+
+						// Remove the layer from the addedLayers array, if it exists
 						addedLayers.forEach(lyr => {
 							if (lyr.id === "dibujos") {
-								Object.values(lyr.layer._layers).forEach(e => {
-									if (layerName === e.name) {
-										lyr.layer.removeLayer(e);
-										updateNumberofLayers(lyr.section);
-										showTotalNumberofLayers();
-									}
-								})
-								if (Object.values(lyr.layer._layers).length === 0) {
-									let index = addedLayers.indexOf(lyr);
-									if (index > -1) {
-										addedLayers.splice(index, 1);
+								const idx = lyr.layer.features.findIndex(e => e.properties.name === layerName);
+								if (idx >= 0) {
+									lyr.layer.features.splice(idx, 1);
+									// If the addedLayers array is now empty, remove it from the addedLayers array and update the UI
+									if (lyr.layer.features.length === 0) {
+										addedLayers.splice(addedLayers.indexOf(lyr), 1);
 										showTotalNumberofLayers();
 									}
 								}
 							}
 						});
+
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 						controlSeccionGeom();
-					}
+					};
 
 					mapa.removeGroup = (group, deleteLayers) => {
 						if (mapa.groupLayers.hasOwnProperty(group)) {
@@ -2264,58 +2267,81 @@ $("body").on("pluginLoad", function (event, plugin) {
 						}
 					}
 
+					/**
+					* Downloads a GeoJSON file for the given layer.
+					* @param {Object} layer - The layer to download GeoJSON for.
+					*/
 					mapa.downloadLayerGeoJSON = (layer) => {
+						const geoJSON = layer.toGeoJSON(); // Convert layer to GeoJSON.
 
-						const geoJSON = {
-							type: "FeatureCollection",
-							features: [layer.toGeoJSON()]
-						};
+						// Extract style options from layer options.
 						const styleOptions = { ...layer.options };
-						geoJSON.features[0].properties.styles = { ...styleOptions };
-						geoJSON.features[0].properties.type = layer.type;
-						if (layer.type === 'marker') {
-							if (geoJSON.features[0].properties.styles.hasOwnProperty('icon')) {
-								delete geoJSON.features[0].properties.styles.icon;
-							}
-						}
-						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geoJSON));
+						delete styleOptions.icon;
+
+						const fileName = layer.name + ".geojson"; // Create file name.
+
+						// Create GeoJSON string with features and style options.
+						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+							type: "FeatureCollection",
+							features: [{
+								...geoJSON,
+								properties: {
+									...geoJSON.properties,
+									styles: styleOptions,
+									type: layer.type
+								}
+							}]
+						}));
+
+						// Create download link and click it to download the file.
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
-						downloadANode.setAttribute("download", layer.name + ".geojson");
+						downloadANode.setAttribute("download", fileName);
 						document.body.appendChild(downloadANode);
 						downloadANode.click();
 						downloadANode.remove();
 					}
 
+					/**
+					 * Downloads the GeoJSON file for the specified group of layers.
+					 * @param {string} id - The ID of the group of layers.
+					 * @param {string} fileName - The name of the file to download.
+					 */
 					mapa.downloadMultiLayerGeoJSON = (id, fileName) => {
-						const jsonToDownload = {
-							type: "FeatureCollection",
-							features: []
-						};
-						let geoJSON;
-						mapa.groupLayers[id].forEach(layerName => {
+						const jsonToDownload = { type: "FeatureCollection", features: [] }; // Create an object to store the GeoJSON data of all the layers in the group.
+						let cont = 0; // Counter used to iterate through the added layers.
+
+						for (const layerName of mapa.groupLayers[id]) { // Iterate through each layer in the group and add its GeoJSON data to the jsonToDownload object.
+							// Get the GeoJSON data of the layer.
 							const layer = mapa.getEditableLayer(layerName, true);
-							geoJSON = layer.toGeoJSON();
-							geoJSON.properties = layer.data.geoJSON.properties;
-							const styleOptions = { ...layer.options };
-							geoJSON.properties.styles = styleOptions;
-							geoJSON.properties.type = layer.type;
-							(layer.value) ? geoJSON.properties.value = layer.value : 0;
-							jsonToDownload.features.push(geoJSON);
-						});
+							const geoJSON = layer.toGeoJSON();
 
-						addedLayers.forEach(lyr => {
-							if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.contour)) {
-								jsonToDownload.process = geoProcessingManager.GEOPROCESS.contour;
-							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.waterRise)) {
-								jsonToDownload.process = geoProcessingManager.GEOPROCESS.waterRise;
-							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.buffer)) {
-								jsonToDownload.process = geoProcessingManager.GEOPROCESS.buffer;
-							} else if (lyr.id === id && lyr.id.includes(geoProcessingManager.GEOPROCESS.elevationProfile)) {
-								jsonToDownload.process = geoProcessingManager.GEOPROCESS.elevationProfile;
+							// Add the layer options to the GeoJSON properties.
+							const addedLayer = addedLayers.find(layer => layer.id === id);
+							if (addedLayer) {
+								geoJSON.properties.styles = { ...layer.options };
+								geoJSON.properties.type = layer.type;
+								if (layer.value) geoJSON.properties.value = layer.value;
+								geoJSON.properties = { ...geoJSON.properties, ...addedLayer.layer.features[cont].properties };
+								cont++;
 							}
-						});
+							jsonToDownload.features.push(geoJSON); // Add the GeoJSON data to the jsonToDownload object.
+						}
 
+						// An array of objects that define the geoprocessing types and their IDs.
+						const geoProcessingTypes = [
+							{ id: geoProcessingManager.GEOPROCESS.contour, process: "contour" },
+							{ id: geoProcessingManager.GEOPROCESS.waterRise, process: "waterRise" },
+							{ id: geoProcessingManager.GEOPROCESS.buffer, process: "buffer" },
+							{ id: geoProcessingManager.GEOPROCESS.elevationProfile, process: "elevationProfile" },
+						];
+
+						// Determine the geoprocessing type of the layer group, if it has one.
+						const addedLayer = addedLayers.find(layer => layer.id === id);
+						const geoProcessingType = geoProcessingTypes.find(type => addedLayer && addedLayer.id.includes(type.id));
+						if (geoProcessingType) jsonToDownload.process = geoProcessingType.process;
+
+						// Create a data URI for the GeoJSON data and download the file.
 						const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jsonToDownload));
 						const downloadANode = document.createElement('a');
 						downloadANode.setAttribute("href", dataStr);
@@ -2837,13 +2863,27 @@ $("body").on("pluginLoad", function (event, plugin) {
 	}
 });
 
+/**
+ * Add a layer to a drawings group.
+ * @param {string} name - Name of the layer.
+ * @param {object} layer - Layer to be added to the group.
+ * @param {string} section - Section of the layer.
+ * @param {string} groupId - ID of the group.
+ * @param {string} group - Group where the layer will be added.
+ */
 function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
-	if (mapa.groupLayers[group] === undefined) {
-		mapa.groupLayers[group] = [];
-		mapa.addLayerToGroup(name, group);
+	// If the group doesn't exist, create it and add the layer to it.
+	if (!mapa.groupLayers[group]) {
+		// Create a new GeoJSON feature with the layer and its name.
+		const geoJSON = {
+			type: "FeatureCollection",
+			features: [mapa.getLayerGeoJSON(layer.name)]
+		};
+		geoJSON.features[0].properties.name = name;
+		// Add the layer to the addedLayers array and the UI menu.
 		addedLayers.push({
 			id: groupId,
-			layer: L.layerGroup([layer]),
+			layer: geoJSON,
 			name: groupId,
 			type: groupId,
 			isActive: true,
@@ -2851,14 +2891,20 @@ function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
 		});
 		menu_ui.addFileLayer(section, groupId, groupId, groupId, groupId, true);
 	} else {
-		mapa.addLayerToGroup(name, group);
+		// If the group already exists, find the corresponding layer and add the new layer to it.
 		addedLayers.forEach(lyr => {
 			if (lyr.id === groupId) {
-				lyr.layer.addLayer(layer);
+				lyr.layer.features.push(mapa.getLayerGeoJSON(layer.name));
+				lyr.layer.features[lyr.layer.features.length - 1].properties.name = name;
 			}
 		});
 	}
-	updateNumberofLayers(section);
+	// Add the layer name to the groupLayers array and add the layer to the group.
+	mapa.groupLayers[group] = mapa.groupLayers[group] || [];
+	mapa.groupLayers[group].push(layer.name);
+	mapa.addLayerToGroup(name, group);
+
+	updateNumberofLayers(section); // Update the number of layers in the section.
 }
 
 function addSelectionLayersMenuToLayer(layer) {

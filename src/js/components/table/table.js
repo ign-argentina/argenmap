@@ -13,9 +13,6 @@ let ISmaxheight = window.matchMedia("(max-height: 415px)").matches
 let ISCelular = (ISportrait && ISmaxwidth) || (ISlandscape && ISmaxheight)
 
 function createTabulator(tableD, layername) {
-  if (tableD.data.hasOwnProperty('_layers')) {
-    // dibujos
-  }
   if (tableD.data.features.length != 0) {
     tableData = tableD.data;
     tableArray.push(tableData)
