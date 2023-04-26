@@ -165,7 +165,7 @@ class Geoprocessing {
     return result;
   }
 
-  displayResult(result) {
+  displayResult(result, chosenRectangle) {
     let layerType = "geoprocess",
       sectionName = "Geoprocesos"
 
@@ -227,7 +227,7 @@ class Geoprocessing {
 
         let selectedRectangle;
         mapa.editableLayers.rectangle.forEach(rect => {
-          if (rect.process === this.getCapaValue()) {
+          if (rect.process === chosenRectangle.process) {
             selectedRectangle = rect;
           }
         });
@@ -1034,6 +1034,7 @@ class Geoprocessing {
     let arrayWaterRise = "";
     let valueOfWaterRise;
     contourRectangles = [];
+    let selectedRectangle;
     for (let i = 0; i < formFields.length; i++) {
       if (
         formFields[i].hasAttribute("references") &&
@@ -1059,6 +1060,7 @@ class Geoprocessing {
           case "waterRise": {
             mapa.editableLayers.rectangle.forEach(rect => {
               if (rect.process === document.getElementById("select-capa").value) {
+                selectedRectangle = rect;
                 rect._latlngs[0].forEach((coord) => {
                   arrayWaterRise += coord.lng + " " + coord.lat + ",";
                 });
@@ -1105,7 +1107,7 @@ class Geoprocessing {
       waterRise
         .execute(arrayWaterRise, valueOfWaterRise)
         .then((result) => {
-          this.displayResult(result);
+          this.displayResult(result, selectedRectangle);
         })
         .catch((error) => {
           new UserMessage(error.message, true, "error");
@@ -1133,12 +1135,13 @@ class Geoprocessing {
           }
           this.geoprocessId = element.value;
           this.namePrefix = this.geoprocessId;
-          //Auto show layer for waterRise and buffer
+
+          //Auto show layer
           if (this.geoprocessId == "waterRise") {
             addedLayers.forEach((layer) => {
               if (layer.id.includes(this.GEOPROCESS.contour)) {
                 setTimeout(function () {
-                  $("#select-capa").val(layer.name).change();
+                  $("#select-capa").val(layer.id).change();
                 }, 500);
               }
             });
