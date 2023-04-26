@@ -45,7 +45,10 @@ function activateDataConsult() {
                 }
             });
         });
-        document.getElementById("iconCD").style.backgroundColor = "#33b560";
+        let control = document.getElementById("iconCD");
+        control.style.backgroundColor = "#33b560";
+        console.log(control.querySelector("img"));
+        control.querySelector("img").style.filter = "invert()";
         //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
         getPopupForWMS(true);
@@ -55,9 +58,12 @@ function activateDataConsult() {
                 if (layer.activeData === true) {
                     layer.activeData = false;
                 }
-            });
+            });                                                                 
         });
-        document.getElementById("iconCD").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        
+        let control = document.getElementById("iconCD");
+        control.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        control.querySelector("img").style.removeProperty("filter");
         //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = true;
         getPopupForWMS(false);
