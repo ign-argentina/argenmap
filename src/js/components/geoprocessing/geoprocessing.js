@@ -159,12 +159,6 @@ class Geoprocessing {
     return this._namePrefix;
   }
 
-  getCapaValue() {
-    let selectedCapa = document.getElementById("select-capa");
-    let result = selectedCapa.options[selectedCapa.selectedIndex].text;
-    return result;
-  }
-
   displayResult(result, chosenRectangle) {
     let layerType = "geoprocess",
       sectionName = "Geoprocesos"
