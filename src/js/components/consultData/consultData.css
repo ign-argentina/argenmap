@@ -8,6 +8,9 @@
   border-bottom-right-radius: 3px !important; 
   border: none !important;*/
 }
+#iconCD img {
+  filter: contrast(70%);
+}
 #cdOption1 {
   border-top-left-radius: 0px !important;
   border-top-right-radius: 0px !important;
