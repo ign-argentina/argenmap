@@ -187,13 +187,13 @@ class UI {
         });
       }
     });
-    new UserMessage(`Columna removida!`, true, "information");
+    new UserMessage(`Columna removida exitosamente.`, true, "information");
   }
 
   addColumn(name) {
     name = name.toLowerCase();
     table.addColumn({ title: name, field: name, editor: true }, false);
-    new UserMessage(`Columna agregada!`, true, "information");
+    new UserMessage(`Columna agregada exitosamente.`, true, "information");
   }
 
   addInput(action) {
