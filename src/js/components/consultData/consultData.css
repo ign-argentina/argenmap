@@ -2,11 +2,11 @@
   cursor: pointer;
 }
 #iconCD {
-  font-size: 17px;
+  font-size: 16px;
   line-height: inherit;
-  border-bottom-left-radius: 3px !important;
-  border-bottom-right-radius: 3px !important;
-  border: none !important;
+  /* border-bottom-left-radius: 3px !important;
+  border-bottom-right-radius: 3px !important; 
+  border: none !important;*/
 }
 #cdOption1 {
   border-top-left-radius: 0px !important;
