@@ -7,23 +7,25 @@ class ConsultData {
             <a id="iconCD" aria-hidden="true">
                 <img src="src/styles/images/cursorQuery.png" width="60%">
             </a>
-            <i id="dropdownCD" class="dropdown-contentCD hidden">
-                <a href="#" id="cdOption1" class="fa fa-message" title="Consulta Singular"></a>
-            </i>
+
         </div>
         `;
     }
+
+//     <i id="dropdownCD" class="dropdown-contentCD hidden">
+//     <a href="#" id="cdOption1" class="fa fa-message" title="Consulta Singular"></a>
+// </i>
 
     createComponent() {
         const elem = document.createElement("div");
         elem.className = "leaflet-bar leaflet-control";
         elem.id = "consultData";
         elem.innerHTML = this.component;
-        elem.onclick = showConsultList;
+        elem.onclick = activateDataConsult;
         //elem.onmouseover = showConsultList;
         //elem.onmouseout = hideConsultList;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
-        document.getElementById("cdOption1").onclick = activateDataConsult;
+        //document.getElementById("cdOption1").onclick = activateDataConsult;
     }
 }
 
@@ -43,8 +45,8 @@ function activateDataConsult() {
                 }
             });
         });
-        document.getElementById("cdOption1").style.backgroundColor = "#33b560";
-        document.getElementById("dropdownCD").classList.add("hidden");
+        document.getElementById("iconCD").style.backgroundColor = "#33b560";
+        //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
         getPopupForWMS(true);
     } else {
@@ -55,8 +57,8 @@ function activateDataConsult() {
                 }
             });
         });
-        document.getElementById("cdOption1").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-        document.getElementById("dropdownCD").classList.add("hidden");
+        document.getElementById("iconCD").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = true;
         getPopupForWMS(false);
     }
