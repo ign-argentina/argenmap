@@ -136,8 +136,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 		if (gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
- 	if(visiblesActivar && gestorMenu.pluginExists('consultData')) {
-		if(gestorMenu.plugins['consultData'].getStatus() == 'ready' || gestorMenu.plugins['consultData'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('consultData')) {
+		if (gestorMenu.plugins['consultData'].getStatus() == 'ready' || gestorMenu.plugins['consultData'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
 	if (visiblesActivar && gestorMenu.pluginExists('groupLayerSelector')) {
@@ -2265,6 +2265,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 					}
 
 					mapa.downloadLayerGeoJSON = (layer) => {
+
 						const geoJSON = {
 							type: "FeatureCollection",
 							features: [layer.toGeoJSON()]
@@ -2295,10 +2296,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 						mapa.groupLayers[id].forEach(layerName => {
 							const layer = mapa.getEditableLayer(layerName, true);
 							geoJSON = layer.toGeoJSON();
+							geoJSON.properties = layer.data.geoJSON.properties;
 							const styleOptions = { ...layer.options };
 							geoJSON.properties.styles = styleOptions;
 							geoJSON.properties.type = layer.type;
-							// TODO: include all properties fields to GeoJSON
 							(layer.value) ? geoJSON.properties.value = layer.value : 0;
 							jsonToDownload.features.push(geoJSON);
 						});
@@ -2679,9 +2680,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.id = groupName;
 						layer.name = name;
 						layer.type = type;
-						layer.data = {geoJSON};
+						layer.data = { geoJSON };
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
-						
+
 						layer.on({
 							click: getVectorData
 						});
