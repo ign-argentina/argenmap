@@ -2216,15 +2216,13 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 						// Remove the layer from the addedLayers array, if it exists
 						addedLayers.forEach(lyr => {
-							if (lyr.id === "dibujos") {
-								const idx = lyr.layer.features.findIndex(e => e.properties.name === layerName);
-								if (idx >= 0) {
-									lyr.layer.features.splice(idx, 1);
-									// If the addedLayers array is now empty, remove it from the addedLayers array and update the UI
-									if (lyr.layer.features.length === 0) {
-										addedLayers.splice(addedLayers.indexOf(lyr), 1);
-										showTotalNumberofLayers();
-									}
+							const idx = lyr.layer.features.findIndex(e => e.properties.name === layerName);
+							if (idx >= 0) {
+								lyr.layer.features.splice(idx, 1);
+								// If the addedLayers array is now empty, remove it from the addedLayers array and update the UI
+								if (lyr.layer.features.length === 0) {
+									addedLayers.splice(addedLayers.indexOf(lyr), 1);
+									showTotalNumberofLayers();
 								}
 							}
 						});
