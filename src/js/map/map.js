@@ -1779,6 +1779,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							opacityInput3.value = layer.options.opacity;
 							opacityInput3.addEventListener("change", (e) => {
 								layer.setOpacity(opacityInput3.value);
+								layer.options.opacity = opacityInput3.value;
 							});
 							opacityInput3.addEventListener("input", (e) => {
 								layer.setOpacity(opacityInput3.value);
@@ -1805,6 +1806,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							weightInput2.addEventListener("input", (e) => {
 								const borderWidth = weightInput2.value;
 								layer.options.icon.options.html.style.borderWidth = borderWidth + 'px';
+								layer.options.weight = borderWidth;
 							});
 							const weightLabel2 = document.createElement('label');
 							weightLabel2.setAttribute('for', 'weight-input-2');
@@ -1826,6 +1828,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput3.addEventListener("input", (e) => {
 								const borderColor = colorInput3.value;
 								layer.options.icon.options.html.style.borderColor = borderColor;
+								layer.options.borderColor = borderColor;
 							});
 							const colorLabel3 = document.createElement('label');
 							colorLabel3.setAttribute('for', 'color-input-3');
@@ -1846,6 +1849,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput4.addEventListener("input", (e) => {
 								const fillColor = colorInput4.value;
 								layer.options.icon.options.html.style.backgroundColor = fillColor;
+								layer.options.fillColor = fillColor;
 							});
 							const colorLabel4 = document.createElement('label');
 							colorLabel4.setAttribute('for', 'color-input-4');
@@ -1864,6 +1868,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							transparentLabel.value = 'Quitar fondo'
 							transparentLabel.onclick = function () {
 								layer.options.icon.options.html.style.backgroundColor = "transparent";
+								layer.options.fillColor = "transparent";
 							};
 							colorInputDiv6.appendChild(transparentLabel);
 							labelSection.appendChild(colorInputDiv6);
@@ -1880,6 +1885,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput5.addEventListener("input", (e) => {
 								const textColor = colorInput5.value;
 								layer.options.icon.options.html.style.color = textColor;
+								layer.options.color = textColor;
 							});
 							const colorLabel5 = document.createElement('label');
 							colorLabel5.setAttribute('for', 'color-input-5');
@@ -2274,7 +2280,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 						// Extract style options from layer options.
 						const styleOptions = { ...layer.options };
-						delete styleOptions.icon;
+
+						if (layer.type === "label") {
+							geoJSON.properties.text = layer.data.properties.text;
+						};
 
 						const fileName = layer.name + ".geojson"; // Create file name.
 
@@ -2321,11 +2330,14 @@ $("body").on("pluginLoad", function (event, plugin) {
 								geoJSON.properties.type = layer.type;
 								if (layer.value) geoJSON.properties.value = layer.value;
 								geoJSON.properties = { ...geoJSON.properties, ...addedLayer.layer.features[cont].properties };
+								if (layer.type === "label") {
+									geoJSON.properties.styles.icon.options.html = layer.options.icon.options.html.outerHTML;
+									geoJSON.properties.text = layer.data.properties.text;
+								};
 								cont++;
 							}
 							jsonToDownload.features.push(geoJSON); // Add the GeoJSON data to the jsonToDownload object.
 						}
-
 						// An array of objects that define the geoprocessing types and their IDs.
 						const geoProcessingTypes = [
 							{ id: geoProcessingManager.GEOPROCESS.contour, process: "contour" },
@@ -2520,11 +2532,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 							options = { ...geoJSON.properties.styles };
 						}
 
-						let divIcon = {};
-						if (geoJSON.properties.hasOwnProperty('Text')) {
-							divIcon = { ...geoJSON.properties.Text };
-						}
-
 						switch (type) {
 							case 'point': {
 								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
@@ -2548,8 +2555,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 										};
 											break;
 										case 'label': {
-											layer = L.marker(invertedCoords, { icon: L.divIcon(divIcon) });
-											type = 'label';
+											const editableLabel = new EditableLabel();
+											editableLabel.uploadLabel(invertedCoords, geoJSON.properties.text, geoJSON.properties.styles.weight, geoJSON.properties.styles.borderColor, geoJSON.properties.styles.fillColor, geoJSON.properties.styles.color, groupName);
+											return
 										};
 											break;
 										default: {
@@ -2744,7 +2752,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						}
 
 						//Right-click
-						mapa.addContextMenuToLayer(layer, file);
+						mapa.addContextMenuToLayer(layer);
 
 						drawnItems.addLayer(layer);
 					}
