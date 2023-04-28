@@ -113,67 +113,72 @@ class UI {
     iconsTable.append(btnsaveGJSON, btnsaveCSV, btnmax, btnmin, btnclose);
   }
 
-  addUndoRedoBtn() {
-    const iconsTable = document.getElementById("icons-table");
+  addEditTableDataBtn() {
+    const editBar = this.createElement("div", "editBar", "");
+    const editBtn = this.createElement("button", "editBtn", "icon-table btn btn-primary");
+    editBtn.type = "button";
+    editBtn.style = "margin: 5px 5px 5px 0; float: left;";
+    editBtn.id = "editTableData";
+    editBtn.innerHTML = 'Editar';
+    editBtn.onclick = () => this.toggleEditTableData();
+    editBar.append(editBtn);
+    document.getElementById("icons-table").append(editBar);
+  }
 
-    const undoBtn = this.createElement("a", "undoBtn", "icon-table");
+  addUndoRedoBtn() {
+    const undoBtn = this.createElement("button", "undoBtn", "icon-table btn btn-primary");
     undoBtn.style.float = "left";
+    undoBtn.type = "button";
+    undoBtn.id = "undoBtn";
     undoBtn.innerHTML = '<span id="undo" class="fa-solid fa-rotate-left" aria-hidden="true"></span>';
     undoBtn.addEventListener("click", () => {
       table.undo();
     });
-    iconsTable.appendChild(undoBtn);
+    editBar.appendChild(undoBtn);
 
-    const redoBtn = this.createElement("a", "redoBtn", "icon-table");
+    const redoBtn = this.createElement("button", "redoBtn", "icon-table btn btn-primary");
     redoBtn.style.float = "left";
+    redoBtn.type = "button";
+    redoBtn.id = "redoBtn";
     redoBtn.innerHTML = '<span id="redo" class="fa-solid fa-rotate-right" aria-hidden="true"></span>';
     redoBtn.addEventListener("click", () => {
       table.redo();
     });
-    iconsTable.appendChild(redoBtn);
-  }
-
-  addEditTableDataBtn() {
-    const editBtn = this.createElement("button", "editBtn", "icon-table");
-    editBtn.style.float = 'left';
-    editBtn.id = "editTableData";
-    editBtn.innerHTML = 'Editar';
-    editBtn.onclick = () => this.toggleEditTableData();
-    document.getElementById("icons-table").append(editBtn);
+    editBar.appendChild(redoBtn);
   }
 
   addColumnBtn() {
-    const addColumnBtn = this.createElement("button", "addColumnBtn", "icon-table");
+    const addColumnBtn = this.createElement("button", "addColumnBtn", "icon-table btn btn-primary");
     addColumnBtn.style.float = 'left';
     addColumnBtn.id = "addColumnBtn";
     addColumnBtn.innerHTML = '+ Columna';
     addColumnBtn.onclick = () => {
       document.getElementById("addColumnBtn").classList.toggle("hidden");
       document.getElementById("removeColumnBtn").classList.toggle("hidden");
-      document.getElementById("undo").classList.toggle("hidden");
-      document.getElementById("redo").classList.toggle("hidden");
+      document.getElementById("undoBtn").classList.toggle("hidden");
+      document.getElementById("redoBtn").classList.toggle("hidden");
       document.getElementById("editTableData").classList.toggle("hidden");
 
       this.addInput("add");
     }
-    document.getElementById("icons-table").append(addColumnBtn);
+    editBar.append(addColumnBtn);
   }
 
   removeColumnBtn() {
-    const removeColumnBtn = this.createElement("button", "removeColumnBtn", "icon-table");
+    const removeColumnBtn = this.createElement("button", "removeColumnBtn", "icon-table btn btn-primary");
     removeColumnBtn.style.float = 'left';
     removeColumnBtn.id = "removeColumnBtn";
     removeColumnBtn.innerHTML = '- Columna';
     removeColumnBtn.onclick = () => {
       document.getElementById("addColumnBtn").classList.toggle("hidden");
       document.getElementById("removeColumnBtn").classList.toggle("hidden");
-      document.getElementById("undo").classList.toggle("hidden");
-      document.getElementById("redo").classList.toggle("hidden");
+      document.getElementById("undoBtn").classList.toggle("hidden");
+      document.getElementById("redoBtn").classList.toggle("hidden");
       document.getElementById("editTableData").classList.toggle("hidden");
 
       this.addInput("remove");
     }
-    document.getElementById("icons-table").append(removeColumnBtn);
+    editBar.append(removeColumnBtn);
   }
 
   removeColumn(field) {
@@ -197,16 +202,16 @@ class UI {
   }
 
   addInput(action) {
-    const iconsTable = document.getElementById("icons-table");
-
-    const addInputBtn = this.createElement("input", "columnInputName", "icon-table");
+    const inputDiv = this.createElement("div", "inputDiv", "icon-table input-group");
+    inputDiv.id = "inputTableDiv";
+    const addInputBtn = this.createElement("input", "columnInputName", "form-control");
     addInputBtn.type = "text";
-    addInputBtn.style.float = 'left';
     addInputBtn.placeholder = "Nombre de columna";
-    iconsTable.appendChild(addInputBtn);
+    inputDiv.appendChild(addInputBtn);
 
-    const saveBtn = this.createElement("a", "saveBtn", "icon-table");
+    const saveBtn = this.createElement("button", "saveBtn", "icon-table btn btn-primary");
     saveBtn.style.float = "left";
+    saveBtn.type = "button";
     saveBtn.innerHTML = '<span class="fa-solid fa-check" aria-hidden="true"></span>';
     saveBtn.addEventListener("click", () => {
       let name = addInputBtn.value.trim();
@@ -217,15 +222,17 @@ class UI {
       }
       this.showHideColumnBtns();
     });
-    iconsTable.appendChild(saveBtn);
+    inputDiv.appendChild(saveBtn);
 
-    const cancelBtn = this.createElement("a", "cancelBtn", "icon-table");
+    const cancelBtn = this.createElement("button", "cancelBtn", "icon-table btn btn-primary");
     cancelBtn.style.float = "left";
+    cancelBtn.type = "button";
     cancelBtn.innerHTML = '<span class="fa-solid fa-xmark" aria-hidden="true"></span>';
     cancelBtn.addEventListener("click", () => {
       this.showHideColumnBtns();
     });
-    iconsTable.appendChild(cancelBtn);
+    inputDiv.appendChild(cancelBtn);
+    editBar.appendChild(inputDiv);
 
     addInputBtn.focus();
   }
@@ -233,8 +240,8 @@ class UI {
   showHideColumnBtns() {
     document.getElementById("addColumnBtn").classList.toggle("hidden");
     document.getElementById("removeColumnBtn").classList.toggle("hidden");
-    document.getElementById("undo").classList.toggle("hidden");
-    document.getElementById("redo").classList.toggle("hidden");
+    document.getElementById("undoBtn").classList.toggle("hidden");
+    document.getElementById("redoBtn").classList.toggle("hidden");
     document.getElementById("editTableData").classList.toggle("hidden");
 
     document.getElementById("columnInputName").remove();

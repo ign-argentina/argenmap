@@ -100,9 +100,26 @@
 }
 
 .icon-table {
-	margin: 5px
+	margin: 5px;
 }
 
+#inputTableDiv{
+	display: flex;
+	flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+	float: left;
+	margin: 5px 5px 5px 0;
+}
+
+button#saveBtn, button#cancelBtn{
+	width: 34px;
+	height: 34px;
+	margin: 0 5px;
+	display: grid;
+    justify-content: center;
+    align-content: center;
+}
 .filteritems {
 	height: 25px;
 	margin: 0
