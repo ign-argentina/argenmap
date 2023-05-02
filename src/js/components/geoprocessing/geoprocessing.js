@@ -4,7 +4,7 @@ let process = {};
 let contourRectangles = [];
 let isValidRectangle = false;
 let counterContour = 0, counterHeight = 0, counterBuffer = 0,
-    counterElevProfile = 0; //soon to be moved to their respective class
+  counterElevProfile = 0; //soon to be moved to their respective class
 
 class Geoprocessing {
   formContainer = null;
@@ -144,18 +144,18 @@ class Geoprocessing {
   }
 
   getNewProcessPrefix() {
-    this.getProcesses().forEach( process => {
+    this.getProcesses().forEach(process => {
       if (process.namePrefix) {
         this.GEOPROCESS[process.geoprocess] = process.namePrefix;
       }
     })
   }
 
-  set namePrefix (processId) {
+  set namePrefix(processId) {
     this._namePrefix = this.GEOPROCESS[processId];
   }
 
-  get namePrefix () {
+  get namePrefix() {
     return this._namePrefix;
   }
 
@@ -216,7 +216,7 @@ class Geoprocessing {
       case "waterRise": {
         btn_modal_loading = true;
         const height = this.lastHeightProcessed;
-        let layername =  `${this.namePrefix + counterHeight}_${height}m`;
+        let layername = `${this.namePrefix + counterHeight}_${height}m`;
         counterHeight++;
 
         let selectedRectangle;
@@ -228,7 +228,7 @@ class Geoprocessing {
 
         const urlCreator = window.URL || window.webkitURL;
         const imageUrl = urlCreator.createObjectURL(result);
-        
+
         let imageBounds = [
           [
             selectedRectangle._bounds._southWest.lat,
@@ -244,23 +244,23 @@ class Geoprocessing {
         if (!hasPane) {
           mapa.createPane("heightPane");
         }
-        const options = {opacity: 0.3, pane: "heightPane"}
-        
+        const options = { opacity: 0.3, pane: "heightPane" }
+
         let imageLayer = L.imageOverlay(imageUrl, imageBounds, options); // makes leaflet image overlay from received blob
         imageLayer.title = layername;
         imageLayer.name = layername;
         imageLayer._uneditable = true;
-        
+
         mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
-        
+
         const type = layername.split('_')[0]; // gets gruop name without count number
 
         if (!mapa.editableLayers[type]) {
-          mapa.editableLayers[type] = [];  
+          mapa.editableLayers[type] = [];
         }
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
-        
+
         const title = `${imageLayer.name}`;
         const download = () => {
           const latlngs = selectedRectangle.getLatLngs()[0];
@@ -287,7 +287,7 @@ class Geoprocessing {
           type: layerType,
           section: sectionName
         });
-        
+
         menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
         updateNumberofLayers(sectionName)
 
@@ -304,7 +304,7 @@ class Geoprocessing {
             lyr._uneditable = true; //aux to disallow editing the layer
           }
         })
-        
+
         addedLayers.push({
           id: layername,
           layer: result,
@@ -334,31 +334,34 @@ class Geoprocessing {
         mapa.groupLayers["dibujos"].splice(layerIdx, 1);
     }
 
-    addedLayers.forEach(lyr => {
+     addedLayers.forEach(lyr => {
+      console.log(lyr);
       if (lyr.id === "dibujos") {
-        Object.values(lyr.layer._layers).forEach(e => { // Remove rectangle from addedLayers whith "dibujos" id
-          if (selectedRectangle.name === e.name) {
-            lyr.layer.removeLayer(e);
-            updateNumberofLayers(lyr.section);
-            showTotalNumberofLayers();
+        lyr.layer.features.forEach(e => { // Remove rectangle from addedLayers whith "dibujos" id
+          const idx = lyr.layer.features.findIndex(e => e.properties.name === selectedRectangle.name);
+          if (idx >= 0) {
+            lyr.layer.features.splice(idx, 1);
           }
+          //updateNumberofLayers(lyr.section);
         });
       }
     });
-
+    
     if (mapa.groupLayers["dibujos"].length === 0) { // If the rectangle was the only one on the map, remove groupLayers["dibujos"], addedLayers whith "dibujos" id and "Dibujos" section.
       delete mapa.groupLayers["dibujos"];
       let section;
-      addedLayers.forEach(lyr => {
-        if (lyr.id === "dibujos") {
-          section = lyr.section;
-        }
-      });
+      // If the addedLayers array is now empty, remove it from the addedLayers array and update the UI
+          addedLayers.forEach(lyr => {
+            if (lyr.id === "dibujos") {
+              section = lyr.section;
+              console.log(section);
+            }
+          });
       delFileItembyID("dibujos");
       deleteLayerGeometry("dibujos", true);
       updateNumberofLayers(section);
       showTotalNumberofLayers();
-    }
+    } 
   }
 
   updateReferencedDrawedLayers(event, layers) {
@@ -620,14 +623,14 @@ class Geoprocessing {
           }
         });
         break;
-        
+
       case "delete-layer":
         document.getElementById("select-capa").selectedIndex = 0;
         $("#ejec_gp").addClass("disabledbutton");
         $("#drawBtn").removeClass("disabledbutton");
         $("#msgRectangle").removeClass("hidden");
         break;
-      
+
       default:
         break;
     }
@@ -648,12 +651,12 @@ class Geoprocessing {
     })
     if (isBuffer) {
       $("#msgNoLayer").addClass("hidden");
-        $("#msgRectangle").removeClass("hidden");
-        //$("#drawRectangleBtn").removeClass("disabledbutton");
-        $('label[for="input-equidistancia"]').show();
-        document
-          .getElementById("input-equidistancia")
-          .classList.remove("hidden");
+      $("#msgRectangle").removeClass("hidden");
+      //$("#drawRectangleBtn").removeClass("disabledbutton");
+      $('label[for="input-equidistancia"]').show();
+      document
+        .getElementById("input-equidistancia")
+        .classList.remove("hidden");
     }
   }
 
@@ -825,7 +828,7 @@ class Geoprocessing {
                         ? (selectedLayer = lyr)
                         : null;
                     });
-                    if (selectedLayer.layer.features.length != 0) {   
+                    if (selectedLayer.layer.features.length != 0) {
                       this.resetHeightLayerColor();
                       mapa.centerLayer(selectedLayer.layer);
 
@@ -947,7 +950,7 @@ class Geoprocessing {
     );
 
     //Execute Button
-    
+
     this.optionsForm.addButton(
       "Ejecutar",
       () => {
@@ -994,7 +997,7 @@ class Geoprocessing {
     let allLayers = getAllActiveLayers();
     let selctedLayerName = document.getElementById("select-capa").value;
     allLayers.forEach(lyr => {
-      if (lyr.name === selctedLayerName ) {
+      if (lyr.name === selctedLayerName) {
         layerSelected = lyr.layer;
       }
     })
@@ -1004,8 +1007,8 @@ class Geoprocessing {
     let distanceBuffer =
       document.getElementById("input-equidistancia").value / 1000;
 
-      loadingBtn("on", "ejec_gp");
-      let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+    loadingBtn("on", "ejec_gp");
+    let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
       .then((data) => {
         if (!data) {
           throw new Error("Error fetching to server");
@@ -1059,7 +1062,7 @@ class Geoprocessing {
                   arrayWaterRise += coord.lng + " " + coord.lat + ",";
                 });
                 arrayWaterRise +=
-                rect._latlngs[0][0].lng +
+                  rect._latlngs[0][0].lng +
                   " " +
                   rect._latlngs[0][0].lat;
               }
@@ -1084,8 +1087,8 @@ class Geoprocessing {
     loadingBtn("on", "ejec_gp");
     if (this.geoprocessId === "contour") {
       this.geoprocessing
-      .execute(...values)
-      .then((result) => {
+        .execute(...values)
+        .then((result) => {
           this.displayResult(result);
         })
         .catch((error) => {
@@ -1227,7 +1230,7 @@ class Geoprocessing {
     option.value = layerName;
     option.innerHTML = gestorMenu.getLayerData(layerName).title;
 
-    if(layerName.includes('polyline') && select !== null){
+    if (layerName.includes('polyline') && select !== null) {
       if (addToList) {
         for (let i = 0; i < select.length; i++) {
           if (select[i].value !== layerName) {
