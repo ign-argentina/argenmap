@@ -123,6 +123,7 @@ class EditableLabel {
     // Update the marker's geoJSON data as the user types.
     textarea.onkeyup = function () {
       textLayer.data.properties.text = textLayer.options.icon.options.html.value;
+      textLayer._icon.lastChild.textContent = textLayer.options.icon.options.html.value;
     };
 
     // Add custom functions to the marker.
@@ -199,6 +200,7 @@ class EditableLabel {
     textLayer.name = name;
     textLayer.type = "label";
     textLayer.data = textLayer.toGeoJSON();
+    textLayer.data.properties.text = text;
     textLayer.id = id;
 
     // Update the label's text content when the user types
