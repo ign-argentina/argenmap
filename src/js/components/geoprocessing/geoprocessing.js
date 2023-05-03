@@ -188,13 +188,13 @@ class Geoprocessing {
           layer: result,
           name: layername,
           file_name: layername,
-          //rectangle: selectedRectangle,
+          rectangle: selectedRectangle,
           type: layerType,
           isActive: true,
           section: sectionName
         });
 
-        this.removeRectangleFromDrawingsGroup(selectedRectangle);
+        removeGeometryFromDrawingsGroup(selectedRectangle);
 
         // ** Avoiding Leaflet Draw object test **
         // first comment addGeoJsonLayerToDrawedLayers() call
@@ -325,43 +325,6 @@ class Geoprocessing {
     document.getElementsByClassName("form")[1].innerHTML = "";
     new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
     geoProcessingManager.geoprocessId = null;
-  }
-
-  removeRectangleFromDrawingsGroup(selectedRectangle) {
-    if (mapa.groupLayers.hasOwnProperty("dibujos")) { // Remove the rectangle from groupLayers["dibujos"]
-      const layerIdx = mapa.groupLayers["dibujos"].findIndex(lyr => lyr === selectedRectangle.name);
-      if (layerIdx >= 0)
-        mapa.groupLayers["dibujos"].splice(layerIdx, 1);
-    }
-
-     addedLayers.forEach(lyr => {
-      console.log(lyr);
-      if (lyr.id === "dibujos") {
-        lyr.layer.features.forEach(e => { // Remove rectangle from addedLayers whith "dibujos" id
-          const idx = lyr.layer.features.findIndex(e => e.properties.name === selectedRectangle.name);
-          if (idx >= 0) {
-            lyr.layer.features.splice(idx, 1);
-          }
-          //updateNumberofLayers(lyr.section);
-        });
-      }
-    });
-    
-    if (mapa.groupLayers["dibujos"].length === 0) { // If the rectangle was the only one on the map, remove groupLayers["dibujos"], addedLayers whith "dibujos" id and "Dibujos" section.
-      delete mapa.groupLayers["dibujos"];
-      let section;
-      // If the addedLayers array is now empty, remove it from the addedLayers array and update the UI
-          addedLayers.forEach(lyr => {
-            if (lyr.id === "dibujos") {
-              section = lyr.section;
-              console.log(section);
-            }
-          });
-      delFileItembyID("dibujos");
-      deleteLayerGeometry("dibujos", true);
-      updateNumberofLayers(section);
-      showTotalNumberofLayers();
-    } 
   }
 
   updateReferencedDrawedLayers(event, layers) {

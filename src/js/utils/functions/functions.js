@@ -145,7 +145,7 @@ function hideAllElevationProfile() { //used to hide all elevPorifle with cleanAl
   if (document.getElementById("pt-wrapper")) {
     let geoprocessRecover = new Geoprocessing();
     geoprocessRecover.setAvailableGeoprocessingConfig(app.geoprocessing);
-    geoprocessRecover.getNewProcessPrefix();  
+    geoprocessRecover.getNewProcessPrefix();
 
     addedLayers.forEach((layer) => {
       if (layer.id.includes(geoprocessRecover.GEOPROCESS.elevationProfile)) {
@@ -294,11 +294,11 @@ function loadWmsTplAux(objLayer) {
   } else {
     createWmsLayer(objLayer);
     if (consultDataBtnClose == false) {
-      overlayMaps[layer]._source.options.identify = true;    
+      overlayMaps[layer]._source.options.identify = true;
     } else if (consultDataBtnClose == true) {
-      overlayMaps[layer]._source.options.identify = false;    
+      overlayMaps[layer]._source.options.identify = false;
     } else {
-      overlayMaps[layer]._source.options.identify = false;    
+      overlayMaps[layer]._source.options.identify = false;
     }
     overlayMaps[layer].addTo(mapa);
   }
@@ -347,7 +347,7 @@ function parseFeatureInfoHTML(info, idTxt) {
 function parseFeatureInfoJSON(info, idTxt, title) {
   info = JSON.parse(info);
 
-  if(info.exceptions) {
+  if (info.exceptions) {
     new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
     return 0;
   }
@@ -475,12 +475,12 @@ function setCoordinatesFormat(coords) {
 
 async function getWfsLayerFields(url, params) {
   let _params = {
-      typeName: params.typeName,
-      service: params.service,
-      version: params.version,
-      request: "DescribeFeatureType",
-      outputFormat: params.outputFormat,
-    },
+    typeName: params.typeName,
+    service: params.service,
+    version: params.version,
+    request: "DescribeFeatureType",
+    outputFormat: params.outputFormat,
+  },
     paramsStr = [],
     res,
     geom;
@@ -758,11 +758,11 @@ function adaptToImage(imgDiv) {
 
     let max_url_img = img.src.replace(/off/g, "on");
     img.src.includes("svg") ||
-    img.src.includes("png") ||
-    img.src.includes("jpg")
+      img.src.includes("png") ||
+      img.src.includes("jpg")
       ? max_url_img
       : (max_url_img +=
-          ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
+        ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
     container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
 
     resize_img_icon.onclick = (event) => {
@@ -846,7 +846,7 @@ function setProperStyleToCtrlBtns() {
         "leaflet-control-layers-toggle"
       )[0];
       btns.push(layersToggleCtrlBtn);
-      
+
       const zoomhomeCtrlBtnIn = document.getElementsByClassName(
         "leaflet-control-zoomhome-in"
       )[0];
@@ -946,11 +946,11 @@ function clickWMSLayer(layer, layer_item, fileName) {
     createImportWmsLayer(layer);
 
     if (consultDataBtnClose == false) {
-      overlayMaps[layer.name]._source.options.identify = true;    
+      overlayMaps[layer.name]._source.options.identify = true;
     } else if (consultDataBtnClose == true) {
-      overlayMaps[layer.name]._source.options.identify = false;    
+      overlayMaps[layer.name]._source.options.identify = false;
     } else {
-      overlayMaps[layer.name]._source.options.identify = false;    
+      overlayMaps[layer.name]._source.options.identify = false;
     }
     overlayMaps[layer.name].addTo(mapa);
 
@@ -1028,19 +1028,19 @@ function bindZoomLayer() {
 
     let layer_name = this.getAttribute("layername");
     let layer = app.layers[layer_name].capa;
-    
-    if ( layer.servicio === "wms" ) {
+
+    if (layer.servicio === "wms") {
       await getWmsLyrParams(layer); // gets layer atribtutes from WMS
     }
-    
+
     //console.log("layer: ", layer)
     let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
-    noBbox = bbox.some((el) => { 
-      return el === null || el === undefined;
-    });
-    
+      noBbox = bbox.some((el) => {
+        return el === null || el === undefined;
+      });
+
     //console.log("bbox: ", bbox)
-    if ( noBbox ) {
+    if (noBbox) {
       for (i = 0; i < this.childNodes.length; i++) {
         if (this.childNodes[i].className == "fas fa-search-plus") {
           this.childNodes[i].classList.remove("fa-search-plus");
@@ -1228,7 +1228,7 @@ function zoomLayer(id_dom) {
 
 async function getWmsLyrParams(lyr) {
   //let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
-  if( lyr.host.charAt(lyr.host.length - 1) !== "?" ) { 
+  if (lyr.host.charAt(lyr.host.length - 1) !== "?") {
     lyr.host += "?"
   }
   let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
@@ -1251,7 +1251,7 @@ function parseXml(str, lyr, sys) {
     xmlNodes;
   try {
     xmlDoc = parser.parseFromString(str, "text/xml");
-  } catch (error) {}
+  } catch (error) { }
   xmlDoc.documentElement.nodeName == "parsererror"
     ? console.error("error while parsing")
     : (xmlNodes = xmlDoc.getElementsByTagName("Name"));
@@ -1343,7 +1343,7 @@ function loadDeveloperLogo() {
       img.classList = "brand"
       img.style.backgroundImage = `url('${APP_IMG}')`;
       link.appendChild(img);
-      link.addEventListener('click', function() {
+      link.addEventListener('click', function () {
         localStorage.removeItem("mainPopup");
         mainPopup.check();
         mainPopup._addPopupWrapper(false);
@@ -1379,23 +1379,23 @@ function downloadBlob(blob, name = "file.txt") {
 
 function changeIsActive(id, isActive) {
   addedLayers.forEach(lyr => {
-      if (lyr.id == id && lyr.isActive) {
-          if (isActive == true) lyr.isActive = false;
-          if (isActive == false) lyr.isActive = true;
-      }
+    if (lyr.id == id && lyr.isActive) {
+      if (isActive == true) lyr.isActive = false;
+      if (isActive == false) lyr.isActive = true;
+    }
   });
 }
 
 function addCounterForSection(groupnamev, layerType) {
   let counter = 0;
   addedLayers.forEach(lyr => {
-    if (lyr.isActive ==true && lyr.type == layerType) {
+    if (lyr.isActive == true && lyr.type == layerType) {
       counter++;
     }
   });
   if (counter > 0) {
-    $("#" + groupnamev + "-a").html(groupnamev +" <span class='active-layers-counter'>" + counter +"</span>");
-  }else {
+    $("#" + groupnamev + "-a").html(groupnamev + " <span class='active-layers-counter'>" + counter + "</span>");
+  } else {
     $("#" + groupnamev + "-a").html(groupnamev);
   }
 }
@@ -1405,7 +1405,7 @@ function updateNumberofLayers(layerSection) {
   let element;
   if (layerSection && layerSection.includes(' ')) {
     element = document.getElementById(layerSection.replace(/ /g, "_") + "-a");
-  }else {      
+  } else {
     element = document.getElementById(layerSection + "-a");
   }
 
@@ -1417,7 +1417,7 @@ function updateNumberofLayers(layerSection) {
 
   if (element) {
     if (activeLayers > 0) {
-      element.innerHTML = layerSection+"<span class='active-layers-counter'>"+ activeLayers +"</span>";
+      element.innerHTML = layerSection + "<span class='active-layers-counter'>" + activeLayers + "</span>";
     } else {
       element.innerHTML = layerSection;
     }
@@ -1426,15 +1426,15 @@ function updateNumberofLayers(layerSection) {
 
 function hideAddedLayersCounter() {
   fileLayerGroup.forEach(lyr => {
-    let element = document.getElementById(lyr+"-a");
-    
+    let element = document.getElementById(lyr + "-a");
+
     if (element) {
       element.innerHTML = lyr;
     }
   })
 }
 
-function deleteAddedLayer (layer) { //Requires layer from editableLayers
+function deleteAddedLayer(layer) { //Requires layer from editableLayers
   let layerSection;
   addedLayers.forEach(lyr => {
     if (lyr.id === layer.id) {
@@ -1455,14 +1455,14 @@ function loadingBtn(status, idBtn, btnName) {
     btn_ejecutar.innerHTML =
       '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
     $("#ejec_gp").addClass("disabledbutton");
-    $('#'+ idBtn).addClass("disabledbutton");
+    $('#' + idBtn).addClass("disabledbutton");
   } else if (status === "off") {
     if (btnName) {
       btn_ejecutar.innerHTML = btnName;
     } else {
       btn_ejecutar.innerHTML = "Ejecutar";
     }
-    $('#'+ idBtn).removeClass("disabledbutton");
+    $('#' + idBtn).removeClass("disabledbutton");
   }
 }
 
@@ -1530,7 +1530,7 @@ function createPopupForVector(layer, clickLatlng) {
       infoAux += "<li>";
     }
   });
-  
+
   infoAux += "</ul>";
   infoAux += "</div></div></div>";
   popupInfo.push(infoAux); //Add info for popup
@@ -1542,4 +1542,46 @@ function createPopupForVector(layer, clickLatlng) {
     center = clickLatlng;
   }
   layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show info
+}
+
+/**
+* Removes a geometry from the drawings group.
+*
+* @param {Object} selectedGeometry - The geometry to remove.
+*/
+function removeGeometryFromDrawingsGroup(selectedGeometry) {
+  let layerIdxToDeleteFrom;
+
+  // Iterate through each addedLayer and remove the feature with the given name
+  addedLayers.forEach((addedLayer, idx) => {
+    const featureIdx = addedLayer.layer.features.findIndex(feature => feature.properties.name === selectedGeometry.name);
+    if (featureIdx >= 0) {
+      // Remove the feature with specific name from the current addedLayer
+      addedLayer.layer.features.splice(featureIdx, 1);
+
+      // Update the index of the addedLayer we modified
+      layerIdxToDeleteFrom = idx;
+
+      // Update layer count and total count display
+      updateNumberofLayers(addedLayer.section);
+      showTotalNumberofLayers();
+    }
+  });
+
+  // Remove the feature from the group layer if it exists
+  const selectedGeometryGroupId = addedLayers[layerIdxToDeleteFrom]?.id;
+  const groupLayer = mapa.groupLayers?.[selectedGeometryGroupId];
+  const layerIdx = groupLayer?.indexOf(selectedGeometry.name);
+  if (layerIdx >= 0) {
+    groupLayer.splice(layerIdx, 1);
+  }
+
+  // Remove the layer and group from the map and file manager if the group layer is empty
+  if (groupLayer?.length === 0) {
+    delete mapa.groupLayers?.[selectedGeometryGroupId];
+    delFileItembyID(selectedGeometryGroupId);
+    deleteLayerGeometry(selectedGeometryGroupId, true);
+    updateNumberofLayers(selectedGeometryGroupId);
+    showTotalNumberofLayers();
+  }
 }

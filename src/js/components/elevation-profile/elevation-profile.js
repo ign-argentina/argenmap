@@ -137,7 +137,7 @@ class IElevationProfile {
             document.getElementsByClassName("form")[1].innerHTML = "";
             new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
             
-            this.removePolylineFromDrawingsGroup(polylineLayer);
+            removeGeometryFromDrawingsGroup(polylineLayer);
         })
         .catch((error) => {
             console.log('Hay error: ', error);
