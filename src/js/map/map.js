@@ -2202,6 +2202,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 					 * @param {string} layerName - The name of the layer to delete.
 					 */
 					mapa.deleteLayer = (layerName) => {
+						console.log(layerName);
 						const type = layerName.split('_')[0]; // Extract layer type from layerName
 
 						const idx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layerName); // Find the index of the layer to delete in the editableLayers array
@@ -2222,7 +2223,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 						// Remove the layer from the addedLayers array, if it exists
 						addedLayers.forEach(lyr => {
-							const idx = lyr.layer.features.findIndex(e => e.properties.name === layerName);
+							const idx = lyr.layer.features?.findIndex(e => e.properties.name === layerName);
 							if (idx >= 0) {
 								lyr.layer.features.splice(idx, 1);
 								// If the addedLayers array is now empty, remove it from the addedLayers array and update the UI

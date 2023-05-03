@@ -12,28 +12,28 @@ class IElevationProfile {
     }
 
     drawPolyline() {
-        const drawPolyline = new L.Draw.Polyline(mapa, {shapeOptions: {color: polylineColor, opacity: 0.8}});
+        const drawPolyline = new L.Draw.Polyline(mapa, { shapeOptions: { color: polylineColor, opacity: 0.8 } });
         $("#drawBtn").addClass("disabledbutton");
         $("#msgRectangle").addClass("hidden");
         drawPolyline.enable();
     }
 
     getFields() {
-        
+
         const inputs = [
-          {
-            name: "Capa",
-            element: "select",
-            references: "drawedLayers",
-            allowedTypes: ["polyline"],
-            points: ["ne", "sw"],
-          },
-          {
-            name: "Dibujar línea",
-            element: "button",
-            id: "drawBtn",
-            onclick: this.drawPolyline
-        }
+            {
+                name: "Capa",
+                element: "select",
+                references: "drawedLayers",
+                allowedTypes: ["polyline"],
+                points: ["ne", "sw"],
+            },
+            {
+                name: "Dibujar línea",
+                element: "button",
+                id: "drawBtn",
+                onclick: this.drawPolyline
+            }
         ];
         this.addWrapper();
         return inputs;
@@ -48,7 +48,7 @@ class IElevationProfile {
             }
         });
 
-        if(layerSelected.getLatLngs().length > this.verticesLimit) {
+        if (layerSelected.getLatLngs().length > this.verticesLimit) {
             const tooMuchVertices = this.verticesLimitMsg + this.verticesLimit;
             return new UserMessage(tooMuchVertices, true, "error");
         }
@@ -58,7 +58,7 @@ class IElevationProfile {
         this._executeProcess();
         geoProcessingManager.geoprocessId = null;
     }
-        
+
     _processLayer(geoJSON) {
         this.values = [];
         let c = geoJSON.geometry.coordinates;
@@ -77,106 +77,74 @@ class IElevationProfile {
             this.serviceURL, this.serviceLayer);
 
         elevationProfile
-        .execute(this.values)
-        .then((result) => {
-            let altura;
-            let distancia = 0.0;
-            let desde = null;
-            let hasta = null;
-    
-            for (let i = 0; i < result.coordinates.length; i++) {
-    
-                altura = result.coordinates[i][2].toFixed(2).toString();
-    
-                this.data.push({
-                    x: Math.floor(distancia * 100) / 100,
-                    lat: result.coordinates[i][0],
-                    lng: result.coordinates[i][1],
-                    y: parseFloat(altura),
-                    dist: 'Distancia: ' + (distancia) + ' (km)'
-                });
-    
-                if ((i + 1) < result.coordinates.length) {
-                    desde = turf.point([result.coordinates[i][0], result.coordinates[i][1]]);
-                    hasta = turf.point([result.coordinates[i + 1][0], result.coordinates[i + 1][1]]);
-    
-                    distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
-                };
-            }
-            let layername = this.namePrefixElevProfile + counterElevProfile;
-            counterElevProfile++;
-            let dataForDisplay = this.data;
-            let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername,
-                layerType = "geoprocess",
-                sectionName = "Geoprocesos";
+            .execute(this.values)
+            .then((result) => {
+                let altura;
+                let distancia = 0.0;
+                let desde = null;
+                let hasta = null;
 
-            let polylineLayer = mapa.editableLayers.polyline.at(-1);
-            polylineLayer._uneditable = true; //Aux to disallow editing/delete the polyline
-                
-            addedLayers.push({
-                id: layername,
-                name: layername,
-                file_name: layername,
-                layer: result,
-                data: dataForDisplay,
-                isActive: true,
-                polyline: selectedPolyline,
-                type: layerType,
-                section: sectionName
-            });
+                for (let i = 0; i < result.coordinates.length; i++) {
 
-            
-            this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
-            showTotalNumberofLayers();
-            updateNumberofLayers(sectionName);
-            
-            this._displayResult(dataForDisplay, selectedPolyline);
-            loadingBtn("off", "ejec_gp");
-            
-            document.getElementById("select-process").selectedIndex = 0;
-            document.getElementsByClassName("form")[1].innerHTML = "";
-            new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
-            
-            removeGeometryFromDrawingsGroup(polylineLayer);
-        })
-        .catch((error) => {
-            console.log('Hay error: ', error);
-            new UserMessage(error, true, 'error');
-            loadingBtn("off", "ejec_gp");
-        });
-    }
+                    altura = result.coordinates[i][2].toFixed(2).toString();
 
-    removePolylineFromDrawingsGroup(polylineLyr) {
-        if (mapa.groupLayers.hasOwnProperty("dibujos")) { // Remove the polyline from groupLayers["dibujos"]
-            const layerIdx = mapa.groupLayers["dibujos"].findIndex(lyr => lyr === polylineLyr.name);
-            if (layerIdx >= 0)
-                mapa.groupLayers["dibujos"].splice(layerIdx, 1);
-        }
-        addedLayers.forEach(lyr => {
-            if (lyr.id === "dibujos") {
-                Object.values(lyr.layer._layers).forEach(e => { // Remove polyline from addedLayers whith "dibujos" id
-                    if (polylineLyr.name === e.name) {
-                        lyr.layer.removeLayer(e);
-                        updateNumberofLayers(lyr.section);
-                        showTotalNumberofLayers();
-                    }
-                });
-            }
-        });
+                    this.data.push({
+                        x: Math.floor(distancia * 100) / 100,
+                        lat: result.coordinates[i][0],
+                        lng: result.coordinates[i][1],
+                        y: parseFloat(altura),
+                        dist: 'Distancia: ' + (distancia) + ' (km)'
+                    });
 
-        if (mapa.groupLayers["dibujos"].length === 0) { // If the polyline was the only one on the map, remove groupLayers["dibujos"], addedLayers whith "dibujos" id and "Dibujos" section.
-            delete mapa.groupLayers["dibujos"];
-            let section;
-            addedLayers.forEach(lyr => {
-                if (lyr.id === "dibujos") {
-                    section = lyr.section;
+                    if ((i + 1) < result.coordinates.length) {
+                        desde = turf.point([result.coordinates[i][0], result.coordinates[i][1]]);
+                        hasta = turf.point([result.coordinates[i + 1][0], result.coordinates[i + 1][1]]);
+
+                        distancia = distancia + turf.distance(desde, hasta, { units: 'kilometers' });
+                    };
                 }
+                let layername = this.namePrefixElevProfile + counterElevProfile;
+                counterElevProfile++;
+                let dataForDisplay = this.data;
+                let selectedPolyline = mapa.editableLayers.polyline.at(-1).idElevProfile = layername,
+                    layerType = "geoprocess",
+                    sectionName = "Geoprocesos";
+
+                let polylineLayer = mapa.editableLayers.polyline.at(-1);
+                polylineLayer._uneditable = true; //Aux to disallow editing/delete the polyline
+
+                addedLayers.push({
+                    id: layername,
+                    name: layername,
+                    file_name: layername,
+                    layer: result,
+                    data: dataForDisplay,
+                    isActive: true,
+                    polyline: selectedPolyline,
+                    type: layerType,
+                    section: sectionName
+                });
+
+
+                this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
+                showTotalNumberofLayers();
+                updateNumberofLayers(sectionName);
+                mapa.groupLayers[layername] = [layername, polylineLayer.name];
+
+                this._displayResult(dataForDisplay, selectedPolyline);
+                loadingBtn("off", "ejec_gp");
+
+                document.getElementById("select-process").selectedIndex = 0;
+                document.getElementsByClassName("form")[1].innerHTML = "";
+                new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
+
+                removeGeometryFromDrawingsGroup(polylineLayer);
+            })
+            .catch((error) => {
+                console.log('Hay error: ', error);
+                new UserMessage(error, true, 'error');
+                loadingBtn("off", "ejec_gp");
             });
-            delFileItembyID("dibujos");
-            deleteLayerGeometry("dibujos", true);
-            updateNumberofLayers(section);
-            showTotalNumberofLayers();
-        }
     }
 
     clickDisplayResult(id) {
@@ -315,7 +283,7 @@ class IElevationProfile {
             }
         });
 
-        $('#'+inner.id).highcharts({
+        $('#' + inner.id).highcharts({
             chart: {
                 zoomType: 'x',
                 backgroundColor: 'rgba(255, 255, 255, 0.0)',
@@ -368,7 +336,7 @@ class IElevationProfile {
                         },
                         stops: [
                             [0, Highcharts.getOptions().colors[0]],
-                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                            [1, new Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
                         ]
                     },
                     marker: {
@@ -406,33 +374,33 @@ class IElevationProfile {
                 }
             }]
         });
-    
+
     }
 
     downloadPolyline(id) {
         let layerData;
         addedLayers.forEach(layer => {
             if (layer.id == id) {
-                layerData = layer.data; 
+                layerData = layer.data;
             }
         });
-        
+
         let geoJSON = {
             type: "FeatureCollection",
             features: [
-              {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "LineString",
-                  coordinates: [],
+                {
+                    type: "Feature",
+                    properties: {},
+                    geometry: {
+                        type: "LineString",
+                        coordinates: [],
+                    },
                 },
-              },
             ],
         };
-      
+
         layerData.forEach(point => {
-            let coord = [ point.lat, point.lng, point.y ];
+            let coord = [point.lat, point.lng, point.y];
             geoJSON.features[0].geometry.coordinates.push(coord);
         });
 
@@ -446,33 +414,33 @@ class IElevationProfile {
     }
 
     getGeoJSON(data) { // would be moved to the Layer class as part of export method
-        
+
         let geoJSON = {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: [],
-              },
-            },
-          ],
+            type: "FeatureCollection",
+            features: [
+                {
+                    type: "Feature",
+                    properties: {},
+                    geometry: {
+                        type: "LineString",
+                        coordinates: [],
+                    },
+                },
+            ],
         };
-    
+
         data.forEach(point => {
-           let coord = [ point.lat, point.lng, point.y ];
+            let coord = [point.lat, point.lng, point.y];
             geoJSON.features[0].geometry.coordinates.push(coord);
         });
 
         //console.log(geoJSON);
     }
 
-    editElevProfileName(id){
-        let index = getIndexFileLayerbyID(id)       
+    editElevProfileName(id) {
+        let index = getIndexFileLayerbyID(id)
         addedLayers[index].laodingname = false
-        let id_i = "flc-"+id
+        let id_i = "flc-" + id
         let container = document.getElementById(id_i)
         let element = container.getElementsByClassName("file-layername")[0]
         let name = element.innerText
@@ -484,50 +452,50 @@ class IElevationProfile {
         input_name.type = element.innerText
         input_name.className = "input_newname form-control"
         input_name.style = "width: 75% !important;"
-        input_name.id = "i-"+id
-        
+        input_name.id = "i-" + id
+
         input_name.autocomplete = "off"
         input_name.style = "height:22px!important;"
-        input_name.onblur= function(e){
-            if(!addedLayers[index].laodingname){
-                $("#i-"+id).remove()
+        input_name.onblur = function (e) {
+            if (!addedLayers[index].laodingname) {
+                $("#i-" + id).remove()
                 let a_new = document.createElement("div")
                 a_new.className = "file-layername"
                 a_new.innerHTML = `<a>${name}</a>`
-                container.insertBefore(a_new,nodo_hijo);
+                container.insertBefore(a_new, nodo_hijo);
             }
         }
 
-        input_name.onkeyup = function(e) {
-            if(e.key === 'Enter' || e.keyCode === 13){
+        input_name.onkeyup = function (e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
                 addedLayers[index].laodingname = true
-                $("#i-"+id).remove()
+                $("#i-" + id).remove()
                 let a_new = document.createElement("div")
                 a_new.className = "file-layername"
                 a_new.title = this.value
-                editDomNameofFileLayerbyID(id,this.value)
+                editDomNameofFileLayerbyID(id, this.value)
                 a_new.innerHTML = `<a>${this.value}</a>`
                 a_new.onclick = () => {
                     let perfilEdit = new IElevationProfile();
                     perfilEdit.clickDisplayResult(id)
                 }
-                container.insertBefore(a_new,nodo_hijo);
+                container.insertBefore(a_new, nodo_hijo);
             }
         }
 
-        container.insertBefore(input_name,nodo_hijo);
+        container.insertBefore(input_name, nodo_hijo);
         $(`#i-${id}`).focus()
     }
 
     removeElevationProfile(id) {
-        
+
         this.removePolyline(id); //Removes drawItems
 
         let polylines = mapa.editableLayers.polyline; //Removes Editable Layer
-        polylines.forEach( lyr => {
+        polylines.forEach(lyr => {
             if (id === lyr.idElevProfile) {
-                polylines.indexOf(lyr) !== -1 && 
-                polylines.splice(polylines.indexOf(lyr), 1);
+                polylines.indexOf(lyr) !== -1 &&
+                    polylines.splice(polylines.indexOf(lyr), 1);
             }
         });
 
@@ -536,8 +504,8 @@ class IElevationProfile {
 
         //Is wrapper empty?
         let layersCount = 0,
-        hiddenCount = 0,
-        wrapper =  document.getElementById("pt-wrapper");
+            hiddenCount = 0,
+            wrapper = document.getElementById("pt-wrapper");
 
         addedLayers.forEach(layer => {
             if (layer.id.includes(this.namePrefixElevProfile)) {
@@ -548,7 +516,7 @@ class IElevationProfile {
         if (elevProfileDiv) {
             hiddenCount = elevProfileDiv.querySelectorAll('.hidden').length;
         }
-        
+
         if (wrapper) {
             if (layersCount == hiddenCount && !wrapper.classList.contains("hidden")) {
                 wrapper.classList.toggle("hidden"); //Hides Wrapper
@@ -570,104 +538,104 @@ class IElevationProfile {
         });
     }
 
-    addGeoprocessLayer(groupname, layerType, textName, id, fileName, isActive){
-        let groupnamev= clearSpecialChars(groupname);
-        let main = document.getElementById("lista-"+groupnamev)  
+    addGeoprocessLayer(groupname, layerType, textName, id, fileName, isActive) {
+        let groupnamev = clearSpecialChars(groupname);
+        let main = document.getElementById("lista-" + groupnamev)
         if (!fileLayerGroup.includes(groupnamev)) {
             fileLayerGroup.push(groupnamev);
         }
-        let id_options_container = "opt-c-"+id
-        if(!main){menu_ui.addSection(groupnamev)}
-        let content = document.getElementById(groupnamev+"-panel-body")
-             let layer_container = document.createElement("div")
-             layer_container.id = "fl-" +id
-             layer_container.className = "file-layer-container"
+        let id_options_container = "opt-c-" + id
+        if (!main) { menu_ui.addSection(groupnamev) }
+        let content = document.getElementById(groupnamev + "-panel-body")
+        let layer_container = document.createElement("div")
+        layer_container.id = "fl-" + id
+        layer_container.className = "file-layer-container"
 
-             let layer_item = document.createElement("div")
-             layer_item.id = "flc-" +id
-             if (isActive) {
-                layer_item.className = "file-layer active"
-             }else if (!isActive) {
-                layer_item.className = "file-layer"
-             }
-              
-             let img_icon =document.createElement("div")
-             img_icon.className = "file-img"
-             img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
-             img_icon.onclick = ()=> {
-                this.clickDisplayResult(id);
-             }
+        let layer_item = document.createElement("div")
+        layer_item.id = "flc-" + id
+        if (isActive) {
+            layer_item.className = "file-layer active"
+        } else if (!isActive) {
+            layer_item.className = "file-layer"
+        }
 
-            let layer_name = document.createElement("div")
-            layer_name.className = "file-layername"
-            layer_name.innerHTML= "<a>"+textName+"</a>"
-            layer_name.title = fileName
-            layer_name.onclick = ()=> {
-                this.clickDisplayResult(id);
-             }
-            
-            let options = document.createElement("div")
-            options.style = "width:10$;padding-right:5px;cursor:pointer;"
-            options.className = "btn-group"
-            options.role ="group"
-            options.id = id_options_container
+        let img_icon = document.createElement("div")
+        img_icon.className = "file-img"
+        img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`
+        img_icon.onclick = () => {
+            this.clickDisplayResult(id);
+        }
 
-            let fdiv = document.createElement("div")
-            fdiv.style = "border: 0px;"
-            fdiv.className = "dropdown-toggle"
-            fdiv.setAttribute('data-toggle', 'dropdown')
-            fdiv.setAttribute('aria-haspopup', 'true')
-            fdiv.setAttribute('aria-expanded', 'false')
-            fdiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16"> <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/> </svg>'
+        let layer_name = document.createElement("div")
+        layer_name.className = "file-layername"
+        layer_name.innerHTML = "<a>" + textName + "</a>"
+        layer_name.title = fileName
+        layer_name.onclick = () => {
+            this.clickDisplayResult(id);
+        }
 
-            let mainul = document.createElement("ul")
-            mainul.className = "dropdown-menu"
-            mainul.style = "right:0px !important;left:auto !important;"
-            mainul.id = "opt-c-"+id
+        let options = document.createElement("div")
+        options.style = "width:10$;padding-right:5px;cursor:pointer;"
+        options.className = "btn-group"
+        options.role = "group"
+        options.id = id_options_container
 
-            let delete_opt = document.createElement("li")
-            delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
-            delete_opt.onclick = () => {
-                let menu = new Menu_UI
-                menu.modalEliminar(id, groupnamev, layerType)
-            }
+        let fdiv = document.createElement("div")
+        fdiv.style = "border: 0px;"
+        fdiv.className = "dropdown-toggle"
+        fdiv.setAttribute('data-toggle', 'dropdown')
+        fdiv.setAttribute('aria-haspopup', 'true')
+        fdiv.setAttribute('aria-expanded', 'false')
+        fdiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16"> <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/> </svg>'
 
-            let download_opt = document.createElement("li")
-            download_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
-            download_opt.onclick = ()=> {
-                this.downloadPolyline(id)
-            }
+        let mainul = document.createElement("ul")
+        mainul.className = "dropdown-menu"
+        mainul.style = "right:0px !important;left:auto !important;"
+        mainul.id = "opt-c-" + id
 
-            let edit_name_opt = document.createElement("li")
-            edit_name_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar Nombre</a>`
-            edit_name_opt.onclick = () => {
-                this.editElevProfileName(id);
-            }
+        let delete_opt = document.createElement("li")
+        delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`
+        delete_opt.onclick = () => {
+            let menu = new Menu_UI
+            menu.modalEliminar(id, groupnamev, layerType)
+        }
 
-            let zoom_layer_opt = document.createElement("li")
-            zoom_layer_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fa fa-search-plus" aria-hidden="true" style="width:20px;"></i>Zoom a capa</a>`
-            zoom_layer_opt.onclick = function(){
-                mapa.editableLayers.polyline.forEach( lyr => {
-                    if( lyr.idElevProfile === id ) {
-                        mapa.centerLayer(lyr);
-                    }
-                });
-            }
+        let download_opt = document.createElement("li")
+        download_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar .geojson</a>`
+        download_opt.onclick = () => {
+            this.downloadPolyline(id)
+        }
 
-            mainul.append(zoom_layer_opt)
-            mainul.append(edit_name_opt)
-            mainul.append(download_opt)
-            mainul.append(delete_opt)
-            
-            options.append(fdiv)
-            options.append(mainul)
-                      
-            layer_item.append(img_icon)
-            layer_item.append(layer_name)
-            layer_item.append(options)
-            layer_container.append(layer_item)
-            content.appendChild(layer_container)
-            addCounterForSection(groupnamev, layerType);
+        let edit_name_opt = document.createElement("li")
+        edit_name_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-edit" aria-hidden="true" style="width:20px;"></i>Editar Nombre</a>`
+        edit_name_opt.onclick = () => {
+            this.editElevProfileName(id);
+        }
+
+        let zoom_layer_opt = document.createElement("li")
+        zoom_layer_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-search-plus" aria-hidden="true" style="width:20px;"></i>Zoom a capa</a>`
+        zoom_layer_opt.onclick = function () {
+            mapa.editableLayers.polyline.forEach(lyr => {
+                if (lyr.idElevProfile === id) {
+                    mapa.centerLayer(lyr);
+                }
+            });
+        }
+
+        mainul.append(zoom_layer_opt)
+        mainul.append(edit_name_opt)
+        mainul.append(download_opt)
+        mainul.append(delete_opt)
+
+        options.append(fdiv)
+        options.append(mainul)
+
+        layer_item.append(img_icon)
+        layer_item.append(layer_name)
+        layer_item.append(options)
+        layer_container.append(layer_item)
+        content.appendChild(layer_container)
+        addCounterForSection(groupnamev, layerType);
     }
 
 }

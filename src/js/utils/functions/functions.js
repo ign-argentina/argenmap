@@ -1554,7 +1554,7 @@ function removeGeometryFromDrawingsGroup(selectedGeometry) {
 
   // Iterate through each addedLayer and remove the feature with the given name
   addedLayers.forEach((addedLayer, idx) => {
-    const featureIdx = addedLayer.layer.features.findIndex(feature => feature.properties.name === selectedGeometry.name);
+    const featureIdx = addedLayer.layer.features?.findIndex(feature => feature.properties.name === selectedGeometry.name);
     if (featureIdx >= 0) {
       // Remove the feature with specific name from the current addedLayer
       addedLayer.layer.features.splice(featureIdx, 1);
