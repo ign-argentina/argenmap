@@ -193,7 +193,6 @@ class IElevationProfile {
         showTotalNumberofLayers();
     }
 
-
     addWrapper() {
         if (document.getElementById("pt-wrapper")) {
             return 0
@@ -487,46 +486,53 @@ class IElevationProfile {
         $(`#i-${id}`).focus()
     }
 
+    /**
+     * Removes an elevation profile layer.
+     * @param {string} id - The ID of the layer to remove.
+     */
     removeElevationProfile(id) {
+        // Remove drawItems
+        this.removePolyline(id);
 
-        this.removePolyline(id); //Removes drawItems
+        // Remove editable layer
+        const polylines = mapa.editableLayers.polyline.filter(lyr => lyr.idElevProfile === id);
+        polylines.forEach(lyr => mapa.deleteLayer(lyr.name));
 
-        let polylines = mapa.editableLayers.polyline; //Removes Editable Layer
-        polylines.forEach(lyr => {
-            if (id === lyr.idElevProfile) {
-                polylines.indexOf(lyr) !== -1 &&
-                    polylines.splice(polylines.indexOf(lyr), 1);
-            }
-        });
+        // Remove from groupLayers
+        delete mapa.groupLayers[id];
 
-        let highchartsGraph = document.getElementById(id);  //Removes Highcharts
-        if (highchartsGraph) highchartsGraph.remove();
+        // Update number of layers in section and total layers count
+        const lyrToRemove = addedLayers.find(lyr => lyr.id === id);
+        if (lyrToRemove) {
+            updateNumberofLayers(lyrToRemove.section);
+            showTotalNumberofLayers();
+        }
 
-        //Is wrapper empty?
-        let layersCount = 0,
-            hiddenCount = 0,
-            wrapper = document.getElementById("pt-wrapper");
+        controlSeccionGeom();
 
-        addedLayers.forEach(layer => {
-            if (layer.id.includes(this.namePrefixElevProfile)) {
-                layersCount++;
-            }
-        });
-        let elevProfileDiv = document.getElementById("elevationProfile");
+        // Remove Highcharts chart
+        const highchartsGraph = document.getElementById(id);
+        if (highchartsGraph) {
+            highchartsGraph.remove();
+        }
+
+        // Check if wrapper can be hidden or removed
+        let layersCount = addedLayers.filter(layer => layer.id.includes(this.namePrefixElevProfile)).length;
+        let hiddenCount = 0;
+        const elevProfileDiv = document.getElementById("elevationProfile");
         if (elevProfileDiv) {
             hiddenCount = elevProfileDiv.querySelectorAll('.hidden').length;
         }
 
+        const wrapper = document.getElementById("pt-wrapper");
         if (wrapper) {
-            if (layersCount == hiddenCount && !wrapper.classList.contains("hidden")) {
-                wrapper.classList.toggle("hidden"); //Hides Wrapper
+            if (layersCount - 1 === hiddenCount && !wrapper.classList.contains("hidden")) {
+                wrapper.classList.toggle("hidden");
             }
-            if (layersCount === 0 && hiddenCount === 0) { //Removes Wrapper
+            if (layersCount - 1 === 0 && hiddenCount === 0) {
                 wrapper.remove();
             }
         }
-
-
     }
 
     removePolyline(id) {
