@@ -80,22 +80,16 @@ function getPopupForWMS(isActive) {
     itemCapa.forEach(item => {
         if (gestorMenu.layerIsWmts(item.nombre)) {
             layer = item.capa.nombre;
-            let capa0 = item.capas[0].nombre
-            let capa1 = item.capas[1].nombre
-            if (overlayMaps[capa1]) {
-                overlayMaps[capa1].removeFrom(mapa);
-                delete overlayMaps[capa1];
+            if (item.capas[1]) {
+                let capaWMS = item.capas[1].nombre
+                if (overlayMaps[capaWMS]) {
+                    overlayMaps[capaWMS].removeFrom(mapa);
+                    delete overlayMaps[capaWMS];
+                }
+                createWmsLayer(item);
+                overlayMaps[capaWMS]._source.options.identify = isActive;
+                overlayMaps[capaWMS].addTo(mapa); 
             }
-            //overlayMaps[capa0].removeFrom(mapa);
-            //delete overlayMaps[capa0];
-      
-            //console.log(capa0)
-            //console.log(capa1)
-            createWmsLayer(item);
-            //overlayMaps[capa0]._source.options.identify = isActive;
-            //overlayMaps[capa0].addTo(mapa); 
-            overlayMaps[capa1]._source.options.identify = isActive;
-            overlayMaps[capa1].addTo(mapa); 
            
         } else { 
             layer = item.capa.nombre;
