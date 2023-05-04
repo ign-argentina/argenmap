@@ -69,6 +69,22 @@ html {
   font-family: "Encode Sans Bold";
   src: url("../../../dist/fonts/EncodeSans-Bold.ttf");
 }
+@font-face {
+  font-family: "Font Awesome 6";
+  src: url("../../../dist/fonts/fa-solid-900.woff2");
+}
+@font-face {
+  font-family: "Star Wars Jedi";
+  src: url("../../../dist/fonts/Starjedi-Regular.ttf");
+}
+@font-face {
+  font-family: "Aurebesh";
+  src: url("../../../dist/fonts/Aurebesh.otf");
+}
+@font-face {
+  font-family: "Aurebesh Bold";
+  src: url("../../../dist/fonts/Aurebesh-Bold.otf");
+}
 body {
   font-family: "Encode Sans", sans-serif;
   overflow: hidden;
@@ -1214,4 +1230,55 @@ Print
     margin: 0;
     z-index: 10000;
   }
+}
+/* mayth4th */
+@keyframes thatsNoMoon {
+  0% {
+    content: "\e033";
+  }
+  25% {
+    opacity: 0.6;
+  }
+  50% {
+    content: "\e4dc";
+  }
+  75% {
+    opacity: 0.6;
+  }
+  100% {
+    content: "\e034";
+  }
+}
+.fa-earth-americas::before {
+  font-family: "Font Awesome 6";
+  content: "\e033";
+  animation: thatsNoMoon 8s linear infinite alternate;
+  opacity: 0.95;
+}
+
+@keyframes maythe4th {
+  0% {
+    font-family: "Aurebesh";
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    font-family: "Star Wars Jedi";
+  }
+}
+.fa-earth-americas:hover::before {
+  animation: unset;
+  content: "\e037";
+}
+.fa-earth-americas:hover::after {
+  font-family: "Aurebesh Bold";
+  content: "May the 4th be with you";
+  margin-left: 15px;
+  font-size: small;
+  color:  #0f00ff;
+  opacity: 0.5;
+  line-height: 0.8;
+  position: absolute;
+  animation: maythe4th 3s linear infinite alternate;
 }
