@@ -561,27 +561,20 @@ function addLayersfromFiles() {
   showTotalNumberofLayers();
 }
 
-function delFileItembyID(id) {
+/**
+ * Removes an item from the `addedLayers` array based on its ID.
+ *
+ * @param {string} id - The ID of the item to be removed.
+ */
+ function delFileItembyID(id) {
+  // Find the index of the item to be removed in the `addedLayers` array
   const indexToDelete = addedLayers.findIndex(e => e.id === id);
+  
+  // If the item is found, remove it from the array
   if (indexToDelete !== -1) {
-    addedLayers.splice(indexToDelete, 1);
+    addedLayers.splice(indexToDelete, 1); // Remove the item from the array using splice
   }
 }
-
-/* function delFileItembyID(id) {
-  // Delete an item from addedLayers based on its ID
-  let del_index = null
-
-  addedLayers.forEach((e, i) => {
-    if (e.id === id) {
-      del_index = i
-    }
-  });
-
-  if (del_index != null) {
-    addedLayers.splice(del_index, 1)
-  }
-} */
 
 function editDomNameofFileLayerbyID(id, name) {
   let edit_index = null
