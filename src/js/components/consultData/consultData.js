@@ -65,9 +65,9 @@ function activateDataConsult() {
 function getPopupForWMS(isActive) {
     let itemNames = [], itemCapa = [];
 
-    Object.values(overlayMaps).forEach(lyr => {
-        if (!itemNames.includes(lyr._name)) itemNames.push(lyr._name);
-    });
+    gestorMenu.getActiveLayersWithoutBasemap().forEach(lyr => {
+        if (!itemNames.includes(lyr.name)) itemNames.push(lyr.name);
+    })
     Object.values(gestorMenu.items).forEach(item => {
         Object.values(item.itemsComposite).forEach(itemComposite => {
             if (itemNames.includes(itemComposite.nombre)) {
@@ -78,13 +78,34 @@ function getPopupForWMS(isActive) {
 
     //Menu WMS
     itemCapa.forEach(item => {
-        layer = item.capa.nombre;
-        overlayMaps[layer].removeFrom(mapa);
-        delete overlayMaps[layer];
+        if (gestorMenu.layerIsWmts(item.nombre)) {
+            layer = item.capa.nombre;
+            let capa0 = item.capas[0].nombre
+            let capa1 = item.capas[1].nombre
+            if (overlayMaps[capa1]) {
+                overlayMaps[capa1].removeFrom(mapa);
+                delete overlayMaps[capa1];
+            }
+            //overlayMaps[capa0].removeFrom(mapa);
+            //delete overlayMaps[capa0];
+      
+            //console.log(capa0)
+            //console.log(capa1)
+            createWmsLayer(item);
+            //overlayMaps[capa0]._source.options.identify = isActive;
+            //overlayMaps[capa0].addTo(mapa); 
+            overlayMaps[capa1]._source.options.identify = isActive;
+            overlayMaps[capa1].addTo(mapa); 
+           
+        } else { 
+            layer = item.capa.nombre;
+            overlayMaps[layer].removeFrom(mapa);
+            delete overlayMaps[layer];
 
-        createWmsLayer(item);
-        overlayMaps[layer]._source.options.identify = isActive;
-        overlayMaps[layer].addTo(mapa);   
+            createWmsLayer(item);
+            overlayMaps[layer]._source.options.identify = isActive;
+            overlayMaps[layer].addTo(mapa);   
+        }
     });
 
     //Import WMS
