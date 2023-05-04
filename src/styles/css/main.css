@@ -1258,13 +1258,10 @@ Print
 
 @keyframes maythe4th {
   0% {
-    font-family: "Aurebesh";
-  }
-  50% {
-    opacity: 0.3;
+    opacity: 0;
   }
   100% {
-    font-family: "Star Wars Jedi";
+    opacity: 0.5;
   }
 }
 .fa-earth-americas:hover::before {
@@ -1280,5 +1277,5 @@ Print
   opacity: 0.5;
   line-height: 0.8;
   position: absolute;
-  animation: maythe4th 3s linear infinite alternate;
+  animation: maythe4th 3s linear;
 }
