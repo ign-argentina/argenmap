@@ -492,12 +492,12 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
   }
 
   sectionName = "Geoprocesos",
-  typeName = "geoprocess";
+    typeName = "geoprocess";
   let nameId = e.process + counter;
   addedLayers.push({
     id: nameId,
     layer: e.layer,
-    name:  nameId,
+    name: nameId,
     file_name: nameId,
     process: e.process,
     kb: e.kb,
@@ -517,7 +517,7 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
         lyr._uneditable = true; //aux to disallow editing the layer
       }
     })
-  } 
+  }
   // else if (e.process == geoProcessingManager.GEOPROCESS.waterRise) {
   //   mapa.editableLayers.cota.forEach(lyr => {
   //     if (lyr.id === nameId) {
@@ -539,7 +539,7 @@ function addLayersfromFiles() {
       addProcessfromFiles(e, sectionName, typeName, counter);
     } else {
       sectionName = "Archivos",
-      typeName = "file";
+        typeName = "file";
 
       addedLayers.push({
         id: e.id,
@@ -562,15 +562,26 @@ function addLayersfromFiles() {
 }
 
 function delFileItembyID(id) {
+  const indexToDelete = addedLayers.findIndex(e => e.id === id);
+  if (indexToDelete !== -1) {
+    addedLayers.splice(indexToDelete, 1);
+  }
+}
 
+/* function delFileItembyID(id) {
+  // Delete an item from addedLayers based on its ID
   let del_index = null
 
   addedLayers.forEach((e, i) => {
-    if (e.id === id) del_index = i
+    if (e.id === id) {
+      del_index = i
+    }
   });
 
-  addedLayers.splice(del_index, 1)
-}
+  if (del_index != null) {
+    addedLayers.splice(del_index, 1)
+  }
+} */
 
 function editDomNameofFileLayerbyID(id, name) {
   let edit_index = null

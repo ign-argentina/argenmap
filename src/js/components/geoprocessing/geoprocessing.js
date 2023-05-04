@@ -183,6 +183,8 @@ class Geoprocessing {
         selectedRectangle.process = layername; //aux to relate contour with waterRise
         mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
 
+        result.features.push(selectedRectangle.getGeoJSON()) //include rectangle in contour lines addedLayers 
+
         addedLayers.push({
           id: layername,
           layer: result,

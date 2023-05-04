@@ -129,7 +129,7 @@ class IElevationProfile {
                 this.addGeoprocessLayer(sectionName, layerType, layername, layername, layername, true);
                 showTotalNumberofLayers();
                 updateNumberofLayers(sectionName);
-                mapa.groupLayers[layername] = [layername, polylineLayer.name];
+                mapa.groupLayers[layername] = [polylineLayer.name];
 
                 this._displayResult(dataForDisplay, selectedPolyline);
                 loadingBtn("off", "ejec_gp");
@@ -526,10 +526,10 @@ class IElevationProfile {
 
         const wrapper = document.getElementById("pt-wrapper");
         if (wrapper) {
-            if (layersCount - 1 === hiddenCount && !wrapper.classList.contains("hidden")) {
+            if (layersCount === hiddenCount && !wrapper.classList.contains("hidden")) {
                 wrapper.classList.toggle("hidden");
             }
-            if (layersCount - 1 === 0 && hiddenCount === 0) {
+            if (layersCount === 0 && hiddenCount === 0) {
                 wrapper.remove();
             }
         }

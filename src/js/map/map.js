@@ -975,16 +975,21 @@ $("body").on("pluginLoad", function (event, plugin) {
 						mapa.methodsEvents[event].push(method);
 					};
 
+					/**
+					 * Centers the map view to the extent of a given layer.
+					 * @param {L.Layer|Object} layer - A Leaflet layer or GeoJSON object.
+					 * @returns {UserMessage|undefined} - Returns a UserMessage object with an error message if the layer is not available, otherwise returns undefined.
+					 */
 					mapa.centerLayer = (layer) => {
 						if (!layer) {
-							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');;
+							return new UserMessage('La capa ya no se encuentra disponible.', true, 'error');
 						}
-						if (layer.hasOwnProperty("_layers")) {
+						if (layer.hasOwnProperty("_leaflet_id")) {
 							layer = layer.toGeoJSON();
 						}
-						let bbox = turf.bbox(layer);
+						const bbox = turf.bbox(layer);
 						mapa.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
-					}
+					};
 
 					mapa.addContextMenuToLayer = (layer) => {
 						let contextPopup = null;
@@ -2201,8 +2206,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 					 * This function deletes a given layer from the map and related data structures.
 					 * @param {string} layerName - The name of the layer to delete.
 					 */
-					mapa.deleteLayer = (layerName) => {
-						console.log(layerName);
+					mapa.deleteLayer = (layerName, groupName) => {
 						const type = layerName.split('_')[0]; // Extract layer type from layerName
 
 						const idx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layerName); // Find the index of the layer to delete in the editableLayers array
@@ -2231,19 +2235,24 @@ $("body").on("pluginLoad", function (event, plugin) {
 									addedLayers.splice(addedLayers.indexOf(lyr), 1);
 									showTotalNumberofLayers();
 								}
+							} else {
+								delFileItembyID(groupName);
 							}
 						});
 
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 						controlSeccionGeom();
+						showTotalNumberofLayers();
 					};
 
 					mapa.removeGroup = (group, deleteLayers) => {
+
 						if (mapa.groupLayers.hasOwnProperty(group)) {
 							if (deleteLayers) {
 								const layersArr = [...mapa.groupLayers[group]];
+
 								layersArr.forEach(layer => {
-									mapa.deleteLayer(layer);
+									mapa.deleteLayer(layer, group);
 								});
 							}
 							delete mapa.groupLayers[group];

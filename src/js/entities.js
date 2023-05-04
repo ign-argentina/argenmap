@@ -3867,23 +3867,24 @@ class Menu_UI {
     btn_si.className = "btn btn-info";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
-      //ElevationProfile
-      if (IElevationProfile) {
-        let perfilDelete = new IElevationProfile();
-        if (id.includes(perfilDelete.namePrefixElevProfile)) {
-          perfilDelete.removeElevationProfile(id);
-        }
-      }
       let section;
       addedLayers.forEach(lyr => {
         if (lyr.id === id) {
           section = lyr.section;
         }
       });
-      delFileItembyID(id);
+
       deleteLayerGeometry(id, true);
       $("#modal_layer_del").remove();
 
+      //ElevationProfile
+      if (IElevationProfile) {
+        let perfilDelete = new IElevationProfile();
+        if (id.includes(perfilDelete.namePrefixElevProfile)) {
+          perfilDelete.removeElevationProfile(id);
+          delFileItembyID(id); //Delete section/group from addedLayer
+        }
+      }
       updateNumberofLayers(section);
       showTotalNumberofLayers();
     };

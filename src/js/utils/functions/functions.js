@@ -988,8 +988,8 @@ function checkIfGeoprocessingIsOpen() {
   }
 }
 
-function deleteLayerGeometry(layer, file) {
-  mapa.removeGroup(layer, true, file);
+function deleteLayerGeometry(layer) {
+  mapa.removeGroup(layer, true); //Remove group from mapa.groupLayers
   let id = "#fl-" + layer;
   let parent = $(id).parent()[0];
 
@@ -1004,11 +1004,11 @@ function deleteLayerGeometry(layer, file) {
   }
 }
 
-function controlSeccionGeom(file) {
+function controlSeccionGeom() {
   let aux = mapa.groupLayers;
   for (n in aux) {
     if (aux[n].length === 0) {
-      deleteLayerGeometry(n, file);
+      deleteLayerGeometry(n);
     }
   }
 }
@@ -1579,8 +1579,8 @@ function removeGeometryFromDrawingsGroup(selectedGeometry) {
   // Remove the layer and group from the map and file manager if the group layer is empty
   if (groupLayer?.length === 0) {
     delete mapa.groupLayers?.[selectedGeometryGroupId];
-    delFileItembyID(selectedGeometryGroupId);
     deleteLayerGeometry(selectedGeometryGroupId, true);
+    delFileItembyID(selectedGeometryGroupId);
     updateNumberofLayers(selectedGeometryGroupId);
     showTotalNumberofLayers();
   }
