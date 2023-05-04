@@ -1,3 +1,36 @@
+@font-face {
+  font-family: "Encode Sans";
+  src: url("../../../dist/fonts/EncodeSans-Regular.ttf");
+}
+@font-face {
+  font-family: "Encode Sans Medium";
+  src: url("../../../dist/fonts/EncodeSans-Medium.ttf");
+}
+@font-face {
+  font-family: "Encode Sans Semi Bold";
+  src: url("../../../dist/fonts/EncodeSans-SemiBold.ttf");
+}
+@font-face {
+  font-family: "Encode Sans Bold";
+  src: url("../../../dist/fonts/EncodeSans-Bold.ttf");
+}
+@font-face {
+  font-family: "Font Awesome 6";
+  src: url("../../../dist/fonts/fa-solid-900.woff2");
+}
+@font-face {
+  font-family: "Star Wars Jedi";
+  src: url("../../../dist/fonts/Starjedi-Regular.ttf");
+}
+@font-face {
+  font-family: "Aurebesh";
+  src: url("../../../dist/fonts/Aurebesh.otf");
+}
+@font-face {
+  font-family: "Aurebesh Bold";
+  src: url("../../../dist/fonts/Aurebesh-Bold.otf");
+}
+
 :root {
   --main-bg-color: #fff;
   --bg-color: #0db2e0;
@@ -10,6 +43,7 @@
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
   --layer-btn-hover-color: #969393; 
+  --main-font-family: "Encode Sans", sans-serif;
 }
 /*******************************
 General
@@ -53,40 +87,9 @@ html {
       width: 100%;
   } */
 }
-@font-face {
-  font-family: "Encode Sans";
-  src: url("../../../dist/fonts/EncodeSans-Regular.ttf");
-}
-@font-face {
-  font-family: "Encode Sans Medium";
-  src: url("../../../dist/fonts/EncodeSans-Medium.ttf");
-}
-@font-face {
-  font-family: "Encode Sans Semi Bold";
-  src: url("../../../dist/fonts/EncodeSans-SemiBold.ttf");
-}
-@font-face {
-  font-family: "Encode Sans Bold";
-  src: url("../../../dist/fonts/EncodeSans-Bold.ttf");
-}
-@font-face {
-  font-family: "Font Awesome 6";
-  src: url("../../../dist/fonts/fa-solid-900.woff2");
-}
-@font-face {
-  font-family: "Star Wars Jedi";
-  src: url("../../../dist/fonts/Starjedi-Regular.ttf");
-}
-@font-face {
-  font-family: "Aurebesh";
-  src: url("../../../dist/fonts/Aurebesh.otf");
-}
-@font-face {
-  font-family: "Aurebesh Bold";
-  src: url("../../../dist/fonts/Aurebesh-Bold.otf");
-}
+
 body {
-  font-family: "Encode Sans", sans-serif;
+  font-family: var(--main-font-family); /* "Encode Sans", sans-serif; */
   overflow: hidden;
   height: 100% !important;
   font-size: var(--body-fnt-size, 14px);
@@ -229,7 +232,7 @@ Menu principal
 }
 .panel-heading {
   border-bottom: 1px solid white;
-  font-family: "Encode Sans", sans-serif;
+  font-family: var(--main-font-family);
 }
 .active {
   background-color: var(--active-bg-color, #33b560) !important;
@@ -296,7 +299,7 @@ li.active>div>a {
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  font-family: "Encode Sans Semi Bold", sans-serif;
+  font-family: var(--main-font-family);
   font-size: var(--group-title-fnt-size, 15px);
 }
 .legend-layer {
@@ -1236,46 +1239,72 @@ Print
   0% {
     content: "\e033";
   }
+
   25% {
     opacity: 0.6;
   }
+
   50% {
     content: "\e4dc";
   }
+
   75% {
     opacity: 0.6;
   }
+
   100% {
     content: "\e034";
   }
 }
+
 .fa-earth-americas::before {
   font-family: "Font Awesome 6";
-  content: "\e033";
-  animation: thatsNoMoon 8s linear infinite alternate;
-  opacity: 0.95;
+  content    : "\e033";
+  animation  : thatsNoMoon 8s linear infinite alternate;
+  opacity    : 0.95;
 }
 
 @keyframes maythe4th {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 0.5;
   }
 }
+
 .fa-earth-americas:hover::before {
   animation: unset;
-  content: "\e037";
+  content  : "\e037";
 }
+
 .fa-earth-americas:hover::after {
   font-family: "Aurebesh Bold";
-  content: "May the 4th be with you";
+  content    : "May the 4th be with you";
   margin-left: 15px;
-  font-size: small;
-  color:  #0f00ff;
-  opacity: 0.5;
+  font-size  : small;
+  color      : #2FF924;
+  opacity    : 0.7;
   line-height: 0.8;
-  position: absolute;
-  animation: maythe4th 3s linear;
+  position   : absolute;
+  animation  : maythe4th 1s linear;
+}
+
+@keyframes glow {
+  to {
+    stroke-width  : 3.3px;
+    -webkit-filter: drop-shadow(0px 0px 7px #2FF924) drop-shadow(0px 0px 15px #198013);
+    filter        : drop-shadow(0px 0px 7px #2FF924) drop-shadow(0px 0px 15px #198013);
+  }
+}
+
+.lightsaber {
+  stroke        : white;
+  stroke-width  : 3px;
+  stroke-opacity: 1;
+  fill          : none;
+  -webkit-filter: drop-shadow(0px 0px 4px #2FF924) drop-shadow(0px 0px 15px #198013);
+  filter        : drop-shadow(0px 0px 4px #2FF924) drop-shadow(0px 0px 15px #198013);
+  animation     : glow 0.1s ease-in-out infinite alternate;
 }

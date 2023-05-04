@@ -220,6 +220,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
+					zoomHome._zoomHomeButton.addEventListener("mouseover", setPathClass("lightsaber")); // enables lightsaber style for geometries (paths)
+					zoomHome._zoomHomeButton.addEventListener("mouseout", setPathClass("leaflet-interactive"));
 					break;
 				case 'FullScreen':
 					const fs = new Fullscreen();
@@ -3330,3 +3332,33 @@ function copytoClipboard(coords) {
 	new UserMessage('Las coordenadas se copiaron al portapapeles', true, 'information');
 }
 
+/* function lightsaber() {
+	console.log("AJA")
+	addedLayers.forEach(layer => {
+		if ( layer.type != "wms" ) {
+			layer._layers.forEach(feature => {
+				feature.setStyle({"className": "lightsaber"})
+			})
+		}
+	})
+} */
+
+function setPathClass(cssClass) {
+	return () => {
+		addedLayers.forEach(obj => {
+			if (obj.type === "dibujos") {
+				for (feature in obj.layer._layers) {
+					if (obj.layer._layers[feature].hasOwnProperty("_path")) {
+						obj.layer._layers[feature]._path.classList = cssClass;
+					}
+				}
+			}
+		});
+	};
+}
+
+function setFontFamily(fontFamily) {
+	let r = document.querySelector(':root');
+	/* let rs = getComputedStyle(r); */
+	r.style.setProperty('--main-font-family', fontFamily)
+}
