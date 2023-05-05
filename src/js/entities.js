@@ -160,8 +160,8 @@ class ImpresorItemHTML extends Impresor {
     btn_tooltip.setAttribute("data-toggle2", "tooltip");
     btn_tooltip.title = item.descripcion;
     btn_tooltip.innerHTML = item.titulo
-    ? item.titulo.replace(/_/g, " ")
-    : "por favor ingrese un nombre";
+      ? item.titulo.replace(/_/g, " ")
+      : "por favor ingrese un nombre";
 
     const btn_zoom = document.createElement("div");
     btn_zoom.className = "zoom-layer";
@@ -702,11 +702,11 @@ class LayersInfoWMS extends LayersInfo {
     // Load geoserver Capabilities, if success Create menu and append to DOM
     $("#temp-menu").load(
       thisObj.getHostOWS() +
-        "?service=" +
-        thisObj.service +
-        "&version=" +
-        thisObj.version +
-        "&request=GetCapabilities",
+      "?service=" +
+      thisObj.service +
+      "&version=" +
+      thisObj.version +
+      "&request=GetCapabilities",
       function () {
         var capability = $("#temp-menu").find("capability");
         var keywordHtml = $("#temp-menu").find("Keyword");
@@ -904,7 +904,7 @@ class LayersInfoWMS extends LayersInfo {
     if (this.tab.listType) {
       ilistType = this.tab.listType;
     }
-   
+
     if (!$("#temp-menu").hasClass("temp")) {
       $("body").append(
         '<div id="temp-menu" class="temp" style="display:none"></div>'
@@ -914,11 +914,11 @@ class LayersInfoWMS extends LayersInfo {
     // Load geoserver Capabilities, if success Create menu and append to DOM
     $("#temp-menu").load(
       thisObj.getHostOWS() +
-        "?service=" +
-        thisObj.service +
-        "&version=" +
-        thisObj.version +
-        "&request=GetCapabilities",
+      "?service=" +
+      thisObj.service +
+      "&version=" +
+      thisObj.version +
+      "&request=GetCapabilities",
       function () {
         var capability = $("#temp-menu").find("capability");
         var keywordHtml = $("#temp-menu").find("Keyword");
@@ -1292,11 +1292,11 @@ class LayersInfoWMTS extends LayersInfoWMS {
     // Load geoserver Capabilities, if success Create menu and append to DOM
     $("#temp-menu").load(
       thisObj.getHost() +
-        "?service=" +
-        thisObj.service +
-        "&version=" +
-        thisObj.version +
-        "&request=GetCapabilities",
+      "?service=" +
+      thisObj.service +
+      "&version=" +
+      thisObj.version +
+      "&request=GetCapabilities",
       function () {
         var content = $("#temp-menu").find("contents");
         var keywordHtml = $("#temp-menu").find("Keyword");
@@ -1683,9 +1683,9 @@ class ItemGroup extends ItemComposite {
     if (iCapasVisibles > 0) {
       $("#" + this.getId() + "-a").html(
         this.nombre +
-          " <span class='active-layers-counter'>" +
-          iCapasVisibles +
-          "</span>"
+        " <span class='active-layers-counter'>" +
+        iCapasVisibles +
+        "</span>"
       );
     } else {
       $("#" + this.getId() + "-a").html(this.nombre);
@@ -1701,7 +1701,7 @@ class ItemGroup extends ItemComposite {
     }
   }
 
-  hideAllLayersExceptOne(item) {}
+  hideAllLayersExceptOne(item) { }
 
   getAvailableTags() {
     var availableTags = [];
@@ -2182,13 +2182,13 @@ class GestorMenu {
     return Object.keys(this.layersDataForWfs).length === 0
       ? []
       : activeLayers.map((activeLayer) => {
-          if (
-            this.layersDataForWfs.hasOwnProperty(activeLayer) &&
-            this.layersDataForWfs[activeLayer]
-          ) {
-            return this.layersDataForWfs[activeLayer];
-          }
-        });
+        if (
+          this.layersDataForWfs.hasOwnProperty(activeLayer) &&
+          this.layersDataForWfs[activeLayer]
+        ) {
+          return this.layersDataForWfs[activeLayer];
+        }
+      });
   }
 
   addActiveLayer(layer_id) {
@@ -2584,7 +2584,7 @@ class GestorMenu {
   }
 
   pluginExists(pluginName) {
-    return this.plugins[pluginName] ? true : false ;
+    return this.plugins[pluginName] ? true : false;
   }
 
   ordenaPorPeso(a, b) {
@@ -2650,23 +2650,23 @@ class GestorMenu {
           for (var keyItem in item.itemsComposite) {
             if (
               item.itemsComposite[keyItem].capa.host ==
-                this._layersJoin[keyJoin].host &&
+              this._layersJoin[keyJoin].host &&
               item.itemsComposite[keyItem].capa.nombre ==
-                this._layersJoin[keyJoin].layer
+              this._layersJoin[keyJoin].layer
             ) {
               //Busca las capas a incluir
               for (var keyJoinInt in this._layersJoin[keyJoin].joins) {
                 var itemInt =
                   this.items[
-                    this._layersJoin[keyJoin].joins[keyJoinInt].seccion
+                  this._layersJoin[keyJoin].joins[keyJoinInt].seccion
                   ];
                 if (itemInt) {
                   for (var keyItemInt in itemInt.itemsComposite) {
                     if (
                       itemInt.itemsComposite[keyItemInt].capa.host ==
-                        this._layersJoin[keyJoin].joins[keyJoinInt].host &&
+                      this._layersJoin[keyJoin].joins[keyJoinInt].host &&
                       itemInt.itemsComposite[keyItemInt].capa.nombre ==
-                        this._layersJoin[keyJoin].joins[keyJoinInt].layer
+                      this._layersJoin[keyJoin].joins[keyJoinInt].layer
                     ) {
                       item.itemsComposite[keyItem].capas = item.itemsComposite[
                         keyItem
@@ -2789,10 +2789,10 @@ class GestorMenu {
       aSections[this._tabs[key].getExtendedId()] = [];
       aSections[this._tabs[key].getExtendedId()].push(
         "<div role='tabpanel' class='tab-pane " +
-          sClassAux +
-          "' id='" +
-          this._tabs[key].getExtendedId() +
-          "'>"
+        sClassAux +
+        "' id='" +
+        this._tabs[key].getExtendedId() +
+        "'>"
       );
       aSections[this._tabs[key].getExtendedId()].push(
         this._tabs[key].getInitialPrint()
@@ -3326,22 +3326,22 @@ class GestorMenu {
       let lyr = layer.capa;
       lyr.nombre === layerName
         ? (layerData = {
-            name: lyr.nombre,
-            title: lyr.titulo,
-            url: lyr.host.substring(0, lyr.host.lastIndexOf("/")),
-            keywords: lyr.keywords ?? [],
-            icon: lyr.legendURL,
-            bbox: {
-              sw: {
-                lng: lyr.minx,
-                lat: lyr.miny,
-              },
-              ne: {
-                lng: lyr.maxx,
-                lat: lyr.maxy,
-              },
+          name: lyr.nombre,
+          title: lyr.titulo,
+          url: lyr.host.substring(0, lyr.host.lastIndexOf("/")),
+          keywords: lyr.keywords ?? [],
+          icon: lyr.legendURL,
+          bbox: {
+            sw: {
+              lng: lyr.minx,
+              lat: lyr.miny,
             },
-          })
+            ne: {
+              lng: lyr.maxx,
+              lat: lyr.maxy,
+            },
+          },
+        })
         : "";
     });
     return layerData ?? {};
@@ -3485,8 +3485,8 @@ class Menu_UI {
     layer_item.id = "flc-" + id;
     if (isActive) {
       layer_item.className = "file-layer active";
-    }else if (!isActive) {
-        layer_item.className = "file-layer";
+    } else if (!isActive) {
+      layer_item.className = "file-layer";
     }
 
     let img_icon = document.createElement("div");
@@ -3553,7 +3553,7 @@ class Menu_UI {
       const index_file = getIndexFileLayerbyID(id);
       const data = addedLayers[index_file];
       let dTable = new Datatable(data.layer);
-      createTabulator(dTable, data.file_name, { editable:true });
+      createTabulator(dTable, data.file_name, { editable: true });
       return;
     };
 
@@ -3873,15 +3873,16 @@ class Menu_UI {
           section = lyr.section;
         }
       });
-      delFileItembyID(id);
+
       deleteLayerGeometry(id, true);
       $("#modal_layer_del").remove();
-      
+
       //ElevationProfile
       if (IElevationProfile) {
         let perfilDelete = new IElevationProfile();
         if (id.includes(perfilDelete.namePrefixElevProfile)) {
           perfilDelete.removeElevationProfile(id);
+          delFileItembyID(id); //Delete section/group from addedLayer
         }
       }
       updateNumberofLayers(section);
@@ -4023,7 +4024,7 @@ class Menu_UI {
       serviceItems[id].layersInMenu++;
       // firstLayerAdded = true; // Yes! First layer added
     }
-    
+
     let groupnamev = clearSpecialChars(groupname);
     if (!fileLayerGroup.includes(groupname)) {
       fileLayerGroup.push(groupname);
@@ -4033,23 +4034,23 @@ class Menu_UI {
     if (!main) {
       this.addSection(groupname);
     }
-    
+
     let content = document.getElementById(groupnamev + "-panel-body");
     let layer_container = document.createElement("div");
     layer_container.id = "fl-" + id;
     layer_container.className = "file-layer-container";
-    
+
     let layer_item = document.createElement("div");
     layer_item.id = "srvcLyr-" + id + textName;
     layer_item.className = "file-layer";
-    
-    if ( !layer.legend ) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in menu methods
+
+    if (!layer.legend) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in menu methods
 
     let imageFormats = ["png", "jpg", "gif", "webp", "svg", "bmp", "ico"],
-    notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
+      notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
 
     if (notLegendFromFile) {
-      layer.legend += "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off" 
+      layer.legend += "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off"
     }
 
     let img_icon = document.createElement("div");
@@ -4114,18 +4115,18 @@ class Menu_UI {
     addCounterForSection(groupname, layerType);
   }
 
-  addButton({ 
-      id = "custom-btn", 
-      location = "top", 
-      text = "A custom button", 
-      link = "#", 
-      title = "A custom button" 
-    }) {
+  addButton({
+    id = "custom-btn",
+    location = "top",
+    text = "A custom button",
+    link = "#",
+    title = "A custom button"
+  }) {
     let btn = document.getElementById(id);
 
-    if (!btn) { 
+    if (!btn) {
       let btnHtml = `<li id="${id}" onclick="window.open('${link}', '_blank');" class="list-group-item menu-button" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li>`
-      
+
       let menuItems = document.getElementById("sidebar"); //document.getElementsByClassName('menu5 panel-default');
       if (location === "top") {
         menuItems.insertAdjacentHTML("beforebegin", btnHtml)
@@ -4270,14 +4271,12 @@ class Fechaimagen {
             resolution: md.SRC_RES,
             accuracy: md.SRC_ACC,
             sensor: sensorData[md.SRC_DESC]
-              ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${
-                  sensorData[md.SRC_DESC].name
-                }</a>`
+              ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${sensorData[md.SRC_DESC].name
+              }</a>`
               : md.SRC_DESC,
             provider: providerData[md.NICE_DESC]
-              ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${
-                  providerData[md.NICE_DESC].name
-                }</a>`
+              ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${providerData[md.NICE_DESC].name
+              }</a>`
               : md.NICE_DESC,
             sensor_texto: sensorData[md.SRC_DESC].name,
             provider_texto: providerData[md.NICE_DESC].name,
