@@ -1543,3 +1543,24 @@ function createPopupForVector(layer, clickLatlng) {
   }
   layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show info
 }
+
+// Sets a CSS class for SVG paths (Leaflet geometries)
+function setPathClass(cssClass) {
+  addedLayers.forEach(obj => {
+    // it only sets a class for drwaings, not for layers imported from files
+    if (obj.type === "dibujos") {  // change this if for using CSS classes with more type of layers
+      for (feature in obj.layer._layers) {
+        if (obj.layer._layers[feature].hasOwnProperty("_path")) {
+          obj.layer._layers[feature]._path.classList = cssClass;
+        }
+      }
+    }
+  });
+}
+
+// Set font-family attribute for all texts in app (font-face should be defined first in CSS) 
+function setFontFamily(fontFamily) {
+  let r = document.querySelector(':root');
+  /* let rs = getComputedStyle(r); */
+  r.style.setProperty('--main-font-family', fontFamily)
+}
