@@ -3104,6 +3104,15 @@ function loadWmsTpl(objLayer) {
 	if (overlayMaps.hasOwnProperty(layer)) {
 		overlayMaps[layer].removeFrom(mapa);
 		delete overlayMaps[layer];
+	
+		Object.values(mapa._layers).forEach(lyr => {
+			if (lyr.options) {
+				if (lyr.options.layer === objLayer.nombre) {
+					lyr.removeFrom(mapa)
+				}
+			}
+		})
+
 	} else {
 		//createWmsLayer(wmsUrl, layer);
 		let service = objLayer.capa.servicio;
