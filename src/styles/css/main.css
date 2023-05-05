@@ -306,6 +306,7 @@ li.active>div>a {
   user-select: none;
   font-family: var(--main-font-family);
   font-size: var(--group-title-fnt-size, 15px);
+  font-weight: bolder;
 }
 .legend-layer {
   width: 15%;
