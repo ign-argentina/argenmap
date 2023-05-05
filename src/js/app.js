@@ -637,9 +637,9 @@ let conaeCheck = setInterval(() => {
 }, 1000);
 
 document.addEventListener("contextmenu", (e) => {
-  if( e.target.classList.contains("leaflet-container") ) {
-    return 0;
+  let allowedInputs = ["text", "search", "number"];
+  if (!e.target.classList.contains("leaflet-container") && !allowedInputs.includes(e.target.type)) {
+    e.preventDefault();
   }
-  e.preventDefault();
   //ui_component.getContextMenu(e.target.classList);
 });
