@@ -91,6 +91,7 @@ loginatic = function () {
       }
 
       if (result.external_link) {
+        result.nam = result.nam.replaceAll("_", " ");
         menu_ui.removeButton("external-link-li"); // in case if exists, remove it first
         menu_ui.addButton({ 
           id: "external-link-li", 
