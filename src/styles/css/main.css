@@ -44,7 +44,8 @@
   --body-fnt-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
-  --layer-btn-hover-color: #969393; 
+  --menu-section-hover-color: #969393; 
+  --layer-btn-hover-color: #d1cccc; 
   --main-font-family: "Encode Sans", sans-serif;
 }
 /*******************************
@@ -243,10 +244,7 @@ Menu principal
   font-family: var(--main-font-family);
 }
 .panel-heading:hover {
-  background-color: var(--layer-btn-hover-color) !important;
-}
-.panel-heading:hover::after {
-  background-color: var(--layer-btn-hover-color) !important;
+  background-color: var(--menu-section-hover-color) !important;
 }
 .active {
   background-color: var(--active-bg-color, #33b560) !important;
@@ -1197,10 +1195,12 @@ ESRI
 Icons and Btns
 *******************************/
 .leaflet-bar a,
-.leaflet-bar a.leaflet-disabled,
-.leaflet-bar a:hover {
+.leaflet-bar a.leaflet-disabled {
   color: var(--map-btn-color) !important;
   background-color: var(--map-btn-bg-color);
+}
+.leaflet-bar a:hover {
+  background-color: var(--layer-btn-hover-color);
 }
 /* leaflet- control and leaflet-bar determines the style of the buttons on the map */
 /* .leaflet-bar {
