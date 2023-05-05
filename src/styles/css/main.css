@@ -1235,6 +1235,7 @@ Print
   }
 }
 /* mayth4th */
+/* 
 @keyframes thatsNoMoon {
   0% {
     content: "\e033";
@@ -1290,7 +1291,9 @@ Print
   position   : absolute;
   animation  : maythe4th 1s linear;
 }
+ */
 
+ /* Lightsaber effect for SVG paths (Leaflet geometries) */
 @keyframes glow {
   to {
     stroke-width  : 3.3px;
