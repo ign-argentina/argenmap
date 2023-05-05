@@ -101,6 +101,9 @@ body {
     overflow-y: scroll;
   }
 }
+a, a:hover, a:focus {
+  text-decoration: none;
+}
 .container-fluid,
 .row {
   height: 100%;
@@ -238,6 +241,12 @@ Menu principal
 .panel-heading {
   border-bottom: 1px solid white;
   font-family: var(--main-font-family);
+}
+.panel-heading:hover {
+  background-color: var(--layer-btn-hover-color) !important;
+}
+.panel-heading:hover::after {
+  background-color: var(--layer-btn-hover-color) !important;
 }
 .active {
   background-color: var(--active-bg-color, #33b560) !important;
