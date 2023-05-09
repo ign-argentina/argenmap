@@ -104,8 +104,7 @@ class ImpresorItemHTML extends Impresor {
     var childId = item.getId();
     let lyr = item.capa,
       legend,
-      legendParams =
-        "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off;fontAntiAliasing:true;dpi:111",
+      legendParams = _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;",
       aux = {
         ...item,
         childid: childId,
@@ -3694,9 +3693,9 @@ class Menu_UI {
   add_btn_Layer_combobox(id_dom, title, url_img, descripcion, options) {
     // reemplazar =title
     let min_url_img =
-      url_img + "&scale=1&&LEGEND_OPTIONS=forceTitles:off;forceLabels:off";
+      url_img + _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
     let max_url_img =
-      url_img + "&scale=1&&LEGEND_OPTIONS=forceTitles:on;forceLabels:on";
+      url_img + _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceLabels:on;";
     let li = document.createElement("li");
     li.id = id_dom;
     li.className = "capa list-group-item";
@@ -4045,7 +4044,7 @@ class Menu_UI {
       notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
 
     if (notLegendFromFile) {
-      layer.legend += "&Transparent=True&scale=1&LEGEND_OPTIONS=forceTitles:off;forceLabels:off"
+      layer.legend +=  _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
     }
 
     let img_icon = document.createElement("div");
