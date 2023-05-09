@@ -630,7 +630,7 @@ let conaeCheck = setInterval(() => {
   if (conaeLayers) {
     if (Object.entries(gestorMenu.items.conae.itemsComposite).length === 12) {
       gestorMenu.printMenu();
-      document.getElementById("temp-menu").remove();
+      //document.getElementById("temp-menu").remove();
       clearInterval(conaeCheck);
     }
   }
