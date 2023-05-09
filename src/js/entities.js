@@ -2858,13 +2858,8 @@ class GestorMenu {
       sClassAux = "";
     }
     sInitialHTML += "</ul>";
-
-    sInitialHTML += this._printSearcher();
-
     sInitialHTML += "<div id='tabContent' class='tab-content'>";
 
-    
-    
     for (var key in aSections) {
       sInitialHTML += aSections[key].join("") + "</div>";
     }
@@ -2872,6 +2867,11 @@ class GestorMenu {
     sInitialHTML += "</div>";
     
     this.getMenuDOM().html(sInitialHTML);
+
+    let sidebar = document.getElementById("sidebar");
+    const searcher = document.createElement("div")
+    searcher.innerHTML = this._printSearcher();
+    sidebar.insertBefore(searcher, sidebar.firstChild);
   }
 
   generateSubFolders(itemsToFolders, folders) {
@@ -3035,8 +3035,6 @@ class GestorMenu {
     if (this._hasMoreTabsThanOne()) {
       this._printWithTabs();
     } else {
-      this.getMenuDOM().html(this._printSearcher());
-
       var itemsAux = new Array();
       var itemsIterator = this._itemsGetter.get(this);
       for (var key in itemsIterator) {
@@ -3055,9 +3053,14 @@ class GestorMenu {
 
         itemsAuxToFolders.push(itemComposite);
       }
-
       //Generate logical folders
       this.generateFolders(itemsAuxToFolders);
+
+
+      let sidebar = document.getElementById("sidebar");
+      const searcher = document.createElement("div")
+      searcher.innerHTML = this._printSearcher();
+      sidebar.insertBefore(searcher, sidebar.firstChild);
     }
 
     this.getLoadingDOM().hide();
