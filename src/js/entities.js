@@ -3711,7 +3711,7 @@ class Menu_UI {
     capa_info.className = "capa-info";
 
     let container_expand_legend_grafic = document.createElement("div");
-    container_expand_legend_grafic.className = "expand_legend_grafic";
+    container_expand_legend_grafic.className = "expand-legend-graphic";
     container_expand_legend_grafic.style = "overflow:hidden;";
     container_expand_legend_grafic.setAttribute("load", false);
 
@@ -3725,7 +3725,7 @@ class Menu_UI {
     img_legend.src = min_url_img;
     img_legend.setAttribute("onerror", "showImageOnError(this)");
     capa_legend_div.append(img_legend);
-
+    
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
     resize_img_icon.style = "align-self: center;font-size: 14px";
