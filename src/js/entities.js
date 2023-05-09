@@ -3712,7 +3712,7 @@ class Menu_UI {
     capa_info.className = "capa-info";
 
     let container_expand_legend_grafic = document.createElement("div");
-    container_expand_legend_grafic.className = "expand-legend-graphic";
+    container_expand_legend_grafic.className = "expand-legend-graphic hidden";
     container_expand_legend_grafic.style = "overflow:hidden;";
     container_expand_legend_grafic.setAttribute("load", false);
 
@@ -3735,6 +3735,7 @@ class Menu_UI {
     resize_img_icon.onclick = () => {
       if (container_expand_legend_grafic.getAttribute("load") === "true") {
         container_expand_legend_grafic.innerHTML = "";
+        container_expand_legend_grafic.classList.toggle("hidden");
         container_expand_legend_grafic.setAttribute("load", false);
         resize_img_icon.innerHTML =
           '<i class="fas fa-angle-down" aria-hidden="true"></i>';
@@ -3744,6 +3745,7 @@ class Menu_UI {
           max_url_img +
           "' onerror='showImageOnError(this);'></img>";
         container_expand_legend_grafic.setAttribute("load", true);
+        container_expand_legend_grafic.classList.toggle("hidden");
         resize_img_icon.innerHTML =
           '<i class="fas fa-angle-up" aria-hidden="true"></i>';
       }
