@@ -3723,7 +3723,7 @@ class Menu_UI {
     img_legend.style = "width:22px;height:22px";
     img_legend.loading = "lazy";
     img_legend.src = min_url_img;
-    img_legend.onerror = showImageOnError(this);
+    img_legend.setAttribute("onerror", "showImageOnError(this)");
     capa_legend_div.append(img_legend);
 
     let resize_img_icon = document.createElement("div");
