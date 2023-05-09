@@ -884,7 +884,7 @@ class LayersInfoWMS extends LayersInfo {
             gestorMenu.allLayersAreLoaded = true;
           }
         }
-        document.getElementById("temp-menu").innerHTML = null;
+        document.getElementById("temp-menu").innerHTML = null;        document.getElementById("temp-menu").innerHTML = "";
         return;
       }
     );
@@ -1091,6 +1091,7 @@ class LayersInfoWMS extends LayersInfo {
         }
 
         nuevo_impresor.addLayers_combobox(groupAux);
+        document.getElementById("temp-menu").innerHTML = "";
         return;
       }
     );
