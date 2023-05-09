@@ -3096,7 +3096,7 @@ class GestorMenu {
         }
         $("#q").trigger("propertychange");
       } else {
-        $("#searchForm").hide();
+        //$("#searchForm").hide();
       }
     });
     if (
@@ -3104,7 +3104,7 @@ class GestorMenu {
       this._selectedTab.isSearcheable == false
     ) {
       //Check if first active tab is searcheable
-      $("#searchForm").hide();
+      //$("#searchForm").hide();
     }
 
     //Searcher
@@ -3441,14 +3441,8 @@ class Menu_UI {
         </div>
         </div>`;
 
-    let searchForm = document.getElementById("searchForm"),
-        menuTabs = document.getElementById("menuTabs");
-
-    if(menuTabs) {
-      menuTabs.before(itemnew);
-    } else {
-      searchForm.before(itemnew);
-    }
+    let searchForm = document.getElementById("searchForm");
+    searchForm.after(itemnew);
   }
 
   addLayerOption({
