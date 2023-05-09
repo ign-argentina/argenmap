@@ -21,7 +21,7 @@ class ConsultData {
         elem.className = "leaflet-bar leaflet-control";
         elem.id = "consultData";
         elem.innerHTML = this.component;
-        elem.onclick = (e) => { showConsultList(), e.stopPropagation()};
+        elem.onclick = (e) => { activateDataConsult(), e.stopPropagation()};
         //elem.onmouseover = showConsultList;
         //elem.onmouseout = hideConsultList;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
