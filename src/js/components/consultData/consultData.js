@@ -72,9 +72,9 @@ function activateDataConsult() {
 function getPopupForWMS(isActive) {
     let itemNames = [], itemCapa = [];
 
-    Object.values(overlayMaps).forEach(lyr => {
-        if (!itemNames.includes(lyr._name)) itemNames.push(lyr._name);
-    });
+    gestorMenu.getActiveLayersWithoutBasemap().forEach(lyr => {
+        if (!itemNames.includes(lyr.name)) itemNames.push(lyr.name);
+    })
     Object.values(gestorMenu.items).forEach(item => {
         Object.values(item.itemsComposite).forEach(itemComposite => {
             if (itemNames.includes(itemComposite.nombre)) {
@@ -85,13 +85,28 @@ function getPopupForWMS(isActive) {
 
     //Menu WMS
     itemCapa.forEach(item => {
-        layer = item.capa.nombre;
-        overlayMaps[layer].removeFrom(mapa);
-        delete overlayMaps[layer];
+        if (gestorMenu.layerIsWmts(item.nombre)) {
+            layer = item.capa.nombre;
+            if (item.capas[1]) {
+                let capaWMS = item.capas[1].nombre
+                if (overlayMaps[capaWMS]) {
+                    overlayMaps[capaWMS].removeFrom(mapa);
+                    delete overlayMaps[capaWMS];
+                }
+                createWmsLayer(item);
+                overlayMaps[capaWMS]._source.options.identify = isActive;
+                overlayMaps[capaWMS].addTo(mapa); 
+            }
+           
+        } else { 
+            layer = item.capa.nombre;
+            overlayMaps[layer].removeFrom(mapa);
+            delete overlayMaps[layer];
 
-        createWmsLayer(item);
-        overlayMaps[layer]._source.options.identify = isActive;
-        overlayMaps[layer].addTo(mapa);   
+            createWmsLayer(item);
+            overlayMaps[layer]._source.options.identify = isActive;
+            overlayMaps[layer].addTo(mapa);   
+        }
     });
 
     //Import WMS
