@@ -3671,6 +3671,7 @@ class Menu_UI {
   async addLayers_combobox(items) {
     let contenedor = document.getElementById("NEW-wms-combo-list");
     let list = document.createElement("div");
+    list.classList = "panel-body";
     let layers = items.itemsComposite;
     for (const property in layers) {
       let id_dom = "child-" + layers[property].seccion;
