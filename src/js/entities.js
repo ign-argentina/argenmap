@@ -3447,7 +3447,7 @@ class Menu_UI {
     if(menuTabs) {
       menuTabs.before(itemnew);
     } else {
-      searchForm.after(itemnew);
+      searchForm.before(itemnew);
     }
   }
 
