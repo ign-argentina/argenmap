@@ -327,6 +327,7 @@ li.active>div>a {
   padding-right: 2px;
 }
 .expand-legend-graphic {
+  background-color: var(--map-btn-bg-color);
   border-left: var(--layer-border-color);
   border-right: var(--layer-border-color);
   padding: 2px 5px;
