@@ -1,21 +1,23 @@
 .message-container {
-    border-radius: 4px;
-    width: 50%;
+    border-radius: 12px;
     display: flex;
-    /* flex-direction: row; */
+    flex-direction: row;
     align-items: center;
-    position: absolute;
     bottom: 1.5rem;
-    margin: 2rem;
-    padding: 2rem;
+    padding: 1rem;
     z-index: 10000;
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
     justify-content: space-between;
+    position: absolute;
+    max-width: 90%;
+    margin: auto;
 }
 .message-text {
     margin: 0;
+    max-height: 100px;
     font-weight: bold;
     font-size: 1.1em;
+    overflow:scroll;
 }
 .message-close-btn {
     width: 25px;
@@ -23,21 +25,26 @@
     line-height: 22px;
     border-radius: 100%;
     margin: 3px;
-    padding: 0;
+    padding: 5px;
     text-align: center;
     font-weight: bolder;
     cursor: pointer;
     font-size: large;
     color:antiquewhite;
+    align-self: center;
+    display: flex;
 } 
 .message-close-btn:hover {
     background-color: white;
     border: solid 1px #444;
-    color: #333;
+    color: #444;
+}
+.message-close-btn i {
+    align-self: center;
 }
 
 @media (max-width: 769px) {
     .message-container {
-        width: 100%;
+        width: 80%;
     }
 }
