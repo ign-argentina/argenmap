@@ -2837,7 +2837,7 @@ class GestorMenu {
       );
     }
 
-    var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
+    var sInitialHTML = "<ul id='menuTabs' class='nav nav-tabs' role='tablist'>";
     for (var key in this._tabs) {
       if (this._selectedTab == null) {
         this.setSelectedTab(this._tabs[key].id);
@@ -2861,14 +2861,16 @@ class GestorMenu {
 
     sInitialHTML += this._printSearcher();
 
-    sInitialHTML += "<div class='tab-content'>";
+    sInitialHTML += "<div id='tabContent' class='tab-content'>";
 
+    
+    
     for (var key in aSections) {
       sInitialHTML += aSections[key].join("") + "</div>";
     }
-
+    
     sInitialHTML += "</div>";
-
+    
     this.getMenuDOM().html(sInitialHTML);
   }
 
@@ -3439,8 +3441,14 @@ class Menu_UI {
         </div>
         </div>`;
 
-    let searchForm = document.getElementById("searchForm");
-    searchForm.after(itemnew);
+    let searchForm = document.getElementById("searchForm"),
+        menuTabs = document.getElementById("menuTabs");
+
+    if(menuTabs) {
+      menuTabs.before(itemnew);
+    } else {
+      searchForm.after(itemnew);
+    }
   }
 
   addLayerOption({
