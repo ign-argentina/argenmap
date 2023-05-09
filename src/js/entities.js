@@ -700,13 +700,10 @@ class LayersInfoWMS extends LayersInfo {
     }
 
     // Load geoserver Capabilities, if success Create menu and append to DOM
+    let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
+    let host = thisObj.getHostOWS() + serviceParams;
     $("#temp-menu").load(
-      thisObj.getHostOWS() +
-      "?service=" +
-      thisObj.service +
-      "&version=" +
-      thisObj.version +
-      "&request=GetCapabilities",
+      host,
       function () {
         var capability = $("#temp-menu").find("capability");
         var keywordHtml = $("#temp-menu").find("Keyword");
@@ -887,7 +884,7 @@ class LayersInfoWMS extends LayersInfo {
             gestorMenu.allLayersAreLoaded = true;
           }
         }
-
+        document.getElementById("temp-menu").innerHTML = null;
         return;
       }
     );
@@ -1290,13 +1287,10 @@ class LayersInfoWMTS extends LayersInfoWMS {
     }
 
     // Load geoserver Capabilities, if success Create menu and append to DOM
+    let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
+    let host = thisObj.getHost() + serviceParams;
     $("#temp-menu").load(
-      thisObj.getHost() +
-      "?service=" +
-      thisObj.service +
-      "&version=" +
-      thisObj.version +
-      "&request=GetCapabilities",
+      host,      
       function () {
         var content = $("#temp-menu").find("contents");
         var keywordHtml = $("#temp-menu").find("Keyword");
