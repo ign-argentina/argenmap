@@ -1,5 +1,5 @@
-const mapID = app.mapConfig.id ?? document.getElementsByClassName("leaflet-container");
-const map = document.getElementById(mapID);
+/* const mapID = app.mapConfig.id ?? document.getElementsByClassName("leaflet-container");
+const map = document.getElementById(mapID); */
 
 var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
 	baseMaps = {},
@@ -2804,7 +2804,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				});
 			};
 
-			mapa = new L.map( mapID, {
+			mapa = new L.map( "mapa", {
 				center: app.hasOwnProperty('mapConfig') ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude] : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
 				zoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.initial : DEFAULT_ZOOM_LEVEL,
 				layers: currentBaseMap ? [currentBaseMap] : undefined,
