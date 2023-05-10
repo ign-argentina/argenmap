@@ -132,6 +132,8 @@ function mainMenuSearch(e) {
   if ($("#q").val().length != 0) {
     gestorMenu.setQuerySearch($("#q").val());
     gestorMenu.printMenu();
+    let tabs = document.getElementById("menuTabs");
+    tabs ? tabs.style.display = "none" : 0
   }
 }
 
