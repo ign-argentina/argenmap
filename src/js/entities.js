@@ -3035,6 +3035,9 @@ class GestorMenu {
     if (this._hasMoreTabsThanOne()) {
       this._printWithTabs();
     } else {
+
+      this.getMenuDOM().html(this._printSearcher());
+
       var itemsAux = new Array();
       var itemsIterator = this._itemsGetter.get(this);
       for (var key in itemsIterator) {
@@ -3055,12 +3058,6 @@ class GestorMenu {
       }
       //Generate logical folders
       this.generateFolders(itemsAuxToFolders);
-
-
-      let sidebar = document.getElementById("sidebar");
-      const searcher = document.createElement("div")
-      searcher.innerHTML = this._printSearcher();
-      sidebar.insertBefore(searcher, sidebar.firstChild);
     }
 
     this.getLoadingDOM().hide();
