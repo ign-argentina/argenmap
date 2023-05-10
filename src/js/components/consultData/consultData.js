@@ -46,6 +46,9 @@ function activateDataConsult() {
             });
         });
         let control = document.getElementById("iconCD");
+        map.classList.toggle("leaflet-grab");
+        map.classList.toggle("leaflet-grabbing");
+        map.classList.toggle("queryLayer");
         control.style.backgroundColor = "#33b560";
         control.querySelector("img").style.filter = "invert()";
         //document.getElementById("dropdownCD").classList.add("hidden");
@@ -61,6 +64,9 @@ function activateDataConsult() {
         });
         
         let control = document.getElementById("iconCD");
+        map.classList.toggle("queryLayer");
+        map.classList.toggle("leaflet-grab");
+        map.classList.toggle("leaflet-grabbing");
         control.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         control.querySelector("img").style.removeProperty("filter");
         //document.getElementById("dropdownCD").classList.add("hidden");

@@ -16,3 +16,6 @@
   border-top-right-radius: 0px !important;
   border-top: 1px solid #ccc;
 }
+.queryLayer {
+  cursor: help !important;
+}
