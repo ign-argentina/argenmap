@@ -165,7 +165,7 @@ a, a:hover, a:focus {
   position: sticky;
   top: 0;
   z-index: 1;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02); */
 }
 .center-flex {
   display: flex;
