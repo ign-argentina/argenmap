@@ -170,7 +170,7 @@ class UImf {
 
     let faicon = document.createElement("i")
     faicon.id = "logo_up"
-    faicon.className = "fas fa-arrow-circle-up"
+    faicon.className = "fas fa-file-circle-plus"
 
     let ptitle = document.createElement("p")
     ptitle.innerHTML = "Abrir Archivo"
