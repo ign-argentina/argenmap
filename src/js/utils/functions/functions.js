@@ -366,6 +366,7 @@ function parseFeatureInfoJSON(info, idTxt, title) {
     infoAux += "<ul>";
 
     for (i in info.features) {
+      /* console.table(info.features[i].properties); */
       Object.keys(info.features[i].properties).forEach(function (k) {
         let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
         if (k != "bbox" && !ignoredField) {
@@ -373,9 +374,9 @@ function parseFeatureInfoJSON(info, idTxt, title) {
           infoAux += "<li>";
           infoAux += "<b>" + ucwords(k.replace(/_/g, " ")) + ":</b>";
           if (info.features[i].properties[k] != null) {
-            infoAux += " " + info.features[i].properties[k];
+            infoAux += "<span>" + info.features[i].properties[k] + "</span>";
           }
-          infoAux += "<li>";
+          infoAux += "</li>";
         }
       });
     }
