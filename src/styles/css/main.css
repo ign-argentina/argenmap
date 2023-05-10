@@ -364,23 +364,16 @@ li.active>div>a {
 .layer-menu-ui :hover {
   color: black;
 }
-.zoom-layer {
+.zoom-layer, .zoom-layer-combobox {
   cursor: pointer;
   width: 10%;
-  color: silver;
+  /* color: silver; */
+  opacity: 0.7;
   margin-left: 5%;
 }
-.zoom-layer:hover {
-  color: black;
-}
-.zoom-layer-combobox {
-  cursor: pointer;
-  width: 10%;
-  color: silver;
-  margin-left: 5%;
-}
-.zoom-layer-combobox:hover {
-  color: black;
+.zoom-layer:hover, .zoom-layer-combobox:hover {
+  /* color: black; */
+  opacity: 1;
 }
 .resize-legend-combobox {
   cursor: pointer;
@@ -615,7 +608,7 @@ Leaflet popup featureInfo
   padding-left: 0px;
 }
 .leaflet-popup-content {
-  max-width: 250px;
+  /* max-width: fit-content; */
   font-family: "Encode Sans", sans-serif;
   letter-spacing: 0.02em;
 }
@@ -701,6 +694,7 @@ Popup geometría
 .edit-style-popup>.leaflet-popup-tip-container>.leaflet-popup-tip {
   background-color: transparent;
   box-shadow: none;
+  width: fit-content;
 }
 #btnclose-wrapper {
   color: #676767;
@@ -1203,6 +1197,9 @@ Icons and Btns
 .leaflet-bar a:hover {
   background-color: var(--layer-btn-hover-color);
 }
+.leaflet-disabled:hover {
+  cursor: not-allowed !important;
+}
 /* leaflet- control and leaflet-bar determines the style of the buttons on the map */
 /* .leaflet-bar {
   box-shadow: 0 1px 5px rgb(0 0 0 / 65%) !important;
@@ -1338,3 +1335,16 @@ Print
   filter        : drop-shadow(0px 0px 4px #2FF924) drop-shadow(0px 0px 15px #198013);
   animation     : glow 0.1s ease-in-out infinite alternate;
 }
+/* .individualFeature > ul > li {
+    padding: 0 10px;
+}
+.individualFeature > ul > li:nth-child(2n) {
+  background-color: #e7e5e5;
+}
+.individualFeature > ul > li > b {
+  text-align: left;
+  margin-right: 10px;
+}
+.individualFeature > ul > li > span {
+  float: right;
+} */
