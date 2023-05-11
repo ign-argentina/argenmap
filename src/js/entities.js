@@ -3445,6 +3445,50 @@ class Menu_UI {
     searchForm.after(itemnew);
   }
 
+  addParentSection(parent, child) {
+    let parentNamev = clearSpecialChars(parent);
+    let childName = clearSpecialChars(child);
+
+    let parentItemnew = document.createElement("div");
+    parentItemnew.innerHTML = `
+      <div id="lista-${parentNamev}" class="menu5 panel-default">
+      <div class="panel-heading">
+          <h4 class="panel-title">
+              <i class="fa-solid fa-folder-tree"></i>
+              <a id="${parentNamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${parentNamev}-content" class="item-group-title">${parent}</a>
+          </h4>
+      </div>
+      <div id='${parentNamev}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">
+          <div class="panel-body" id ="${parentNamev}-panel-body"></div>
+      </div>
+      </div>`;
+
+        
+    let subItemnew = document.createElement("div");
+    subItemnew.innerHTML = `
+      <div id="lista-${childName}" class="menu5 panel-default">
+      <div class="panel-heading">
+      <h4 class="panel-title">
+      <i class="fa-regular fa-folder-open"></i>
+      <a id="${childName}-a" data-toggle="collapse" data-parent="#accordion1" href="#${childName}-content" class="item-group-title">${"hijo"}</a>
+      </h4>
+      </div>
+      <div id='${childName}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">
+      <div class="panel-body" id ="${childName}-panel-body"></div>
+      </div>
+      </div>`;
+    
+    
+    
+    let searchForm = document.getElementById("searchForm"),
+        isParent = document.getElementById(`lista-${parentNamev}`);
+    if(!isParent) {
+      searchForm.after(parentItemnew);
+    }
+    let location = document.getElementById(`${parentNamev}-panel-body`);
+    location.appendChild(subItemnew)    
+  }
+
   addLayerOption({
     color = "#474b4e",
     classList = "far fa-question-circle",

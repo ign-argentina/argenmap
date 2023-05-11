@@ -393,6 +393,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       menu_ui.addSection(name_section);
     },
 
+    addParentSection: function (parent_name, section_name) {
+      menu_ui.addParentSection(parent_name, section_name);
+    },
+
     addLayerBtn: function (name_section, name_layer) {
       menu_ui.addLayer(name_section, name_layer);
     },
