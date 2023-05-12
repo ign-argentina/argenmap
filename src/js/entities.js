@@ -2831,7 +2831,7 @@ class GestorMenu {
       );
     }
 
-    var sInitialHTML = "<ul class='nav nav-tabs' role='tablist'>";
+    var sInitialHTML = "<ul id='menuTabs' class='nav nav-tabs' role='tablist'>";
     for (var key in this._tabs) {
       if (this._selectedTab == null) {
         this.setSelectedTab(this._tabs[key].id);
@@ -2852,18 +2852,20 @@ class GestorMenu {
       sClassAux = "";
     }
     sInitialHTML += "</ul>";
-
-    sInitialHTML += this._printSearcher();
-
-    sInitialHTML += "<div class='tab-content'>";
+    sInitialHTML += "<div id='tabContent' class='tab-content'>";
 
     for (var key in aSections) {
       sInitialHTML += aSections[key].join("") + "</div>";
     }
-
+    
     sInitialHTML += "</div>";
-
+    
     this.getMenuDOM().html(sInitialHTML);
+
+    let sidebar = document.getElementById("sidebar");
+    const searcher = document.createElement("div")
+    searcher.innerHTML = this._printSearcher();
+    sidebar.insertBefore(searcher, sidebar.firstChild);
   }
 
   generateSubFolders(itemsToFolders, folders) {
@@ -3027,6 +3029,7 @@ class GestorMenu {
     if (this._hasMoreTabsThanOne()) {
       this._printWithTabs();
     } else {
+
       this.getMenuDOM().html(this._printSearcher());
 
       var itemsAux = new Array();
@@ -3047,7 +3050,6 @@ class GestorMenu {
 
         itemsAuxToFolders.push(itemComposite);
       }
-
       //Generate logical folders
       this.generateFolders(itemsAuxToFolders);
     }
@@ -3088,7 +3090,7 @@ class GestorMenu {
         }
         $("#q").trigger("propertychange");
       } else {
-        $("#searchForm").hide();
+        //$("#searchForm").hide();
       }
     });
     if (
@@ -3096,7 +3098,7 @@ class GestorMenu {
       this._selectedTab.isSearcheable == false
     ) {
       //Check if first active tab is searcheable
-      $("#searchForm").hide();
+      //$("#searchForm").hide();
     }
 
     //Searcher
@@ -3435,6 +3437,50 @@ class Menu_UI {
 
     let searchForm = document.getElementById("searchForm");
     searchForm.after(itemnew);
+  }
+
+  addParentSection(parent, child) {
+    let parentNamev = clearSpecialChars(parent);
+    let childName = clearSpecialChars(child);
+
+    let parentItemnew = document.createElement("div");
+    parentItemnew.innerHTML = `
+      <div id="lista-${parentNamev}" class="menu5 panel-default">
+      <div class="panel-heading">
+          <h4 class="panel-title">
+              <i class="fa-solid fa-folder-tree"></i>
+              <a id="${parentNamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${parentNamev}-content" class="item-group-title">${parent}</a>
+          </h4>
+      </div>
+      <div id='${parentNamev}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">
+          <div class="panel-body" id ="${parentNamev}-panel-body"></div>
+      </div>
+      </div>`;
+
+        
+    let subItemnew = document.createElement("div");
+    subItemnew.innerHTML = `
+      <div id="lista-${childName}" class="menu5 panel-default">
+      <div class="panel-heading">
+      <h4 class="panel-title">
+      <i class="fa-regular fa-folder-open"></i>
+      <a id="${childName}-a" data-toggle="collapse" data-parent="#accordion1" href="#${childName}-content" class="item-group-title">${"hijo"}</a>
+      </h4>
+      </div>
+      <div id='${childName}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">
+      <div class="panel-body" id ="${childName}-panel-body"></div>
+      </div>
+      </div>`;
+    
+    
+    
+    let searchForm = document.getElementById("searchForm"),
+        isParent = document.getElementById(`lista-${parentNamev}`);
+    if(!isParent) {
+      searchForm.after(parentItemnew);
+    }
+    let location = document.getElementById(`${parentNamev}-panel-body`);
+    location.appendChild(subItemnew)    
   }
 
   addLayerOption({
