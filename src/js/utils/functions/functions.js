@@ -441,6 +441,20 @@ function createWmsLayer(objLayer) {
     INFO_FORMAT: objLayer.capa.featureInfoFormat,
   });
   overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
+  if (gestorMenu.layerIsWmts(objLayer.nombre)) {
+    let secondLayer = objLayer.capas[1]
+    var wmsSource = new MySource(secondLayer.getHostWMS(), {
+      transparent: true,
+      version: '1.3.0',
+      tiled: true,
+      maxZoom: 21,
+      title: secondLayer.titulo,
+      format: "image/png",
+      exceptions: secondLayer.featureInfoFormat,
+      INFO_FORMAT: secondLayer.featureInfoFormat,
+    });  
+    overlayMaps[secondLayer.nombre] = wmsSource.getLayer(secondLayer.nombre);
+  }
 }
 
 function loadWms(callbackFunction, objLayer) {
