@@ -348,7 +348,7 @@ class UImf {
 
   reload_logo() {
     let logo = document.getElementById("logo_up")
-    logo.className = "fas fa-arrow-circle-up"
+    logo.className = "fas fa-file-circle-check"
   }
 
   addFileItem(id) {
