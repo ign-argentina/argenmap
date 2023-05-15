@@ -430,31 +430,26 @@ function createWmsLayer(objLayer) {
       return;
     },
   });
-  var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
+
+  let layerSelected;
+  if (gestorMenu.layerIsWmts(objLayer.nombre)) {  //is WMTS
+    layerSelected = objLayer.capas[1];
+  } else {                                        //is WMS
+    layerSelected = objLayer.capa;
+  }
+  var wmsSource = new MySource(layerSelected.getHostWMS(), {
     transparent: true,
     version: '1.3.0',
     tiled: true,
     maxZoom: 21,
-    title: objLayer.capa.titulo,
+    title: layerSelected.titulo,
     format: "image/png",
-    exceptions: objLayer.capa.featureInfoFormat,
-    INFO_FORMAT: objLayer.capa.featureInfoFormat,
-  });
-  overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
-  if (gestorMenu.layerIsWmts(objLayer.nombre)) {
-    let secondLayer = objLayer.capas[1]
-    var wmsSource = new MySource(secondLayer.getHostWMS(), {
-      transparent: true,
-      version: '1.3.0',
-      tiled: true,
-      maxZoom: 21,
-      title: secondLayer.titulo,
-      format: "image/png",
-      exceptions: secondLayer.featureInfoFormat,
-      INFO_FORMAT: secondLayer.featureInfoFormat,
-    });  
-    overlayMaps[secondLayer.nombre] = wmsSource.getLayer(secondLayer.nombre);
-  }
+    exceptions: layerSelected.featureInfoFormat,
+    INFO_FORMAT: layerSelected.featureInfoFormat,
+  }); 
+  
+  overlayMaps[layerSelected.nombre] = wmsSource.getLayer(layerSelected.nombre);
+  overlayMaps[layerSelected.nombre]._source.options.identify = true;
 }
 
 function loadWms(callbackFunction, objLayer) {
