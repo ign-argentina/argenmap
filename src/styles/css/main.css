@@ -1258,37 +1258,35 @@ Print
     z-index: 10000;
   }
 }
-/* mayth4th */
-/* 
-@keyframes thatsNoMoon {
+
+/* Spinning globe effect when hover on 'zoom to home' button */
+/* @keyframes spinning-globe {
   0% {
-    content: "\e033";
+    content: "\f57d";
   }
 
-  25% {
-    opacity: 0.6;
+  30% {
+    content: "\f57c";
   }
 
-  50% {
-    content: "\e4dc";
-  }
-
-  75% {
-    opacity: 0.6;
+  60% {
+    content: "\f57e";
   }
 
   100% {
-    content: "\e034";
+    content: "\e47b";
   }
 }
 
-.fa-earth-americas::before {
+.fa-earth-americas:hover::before {
   font-family: "Font Awesome 6";
-  content    : "\e033";
-  animation  : thatsNoMoon 8s linear infinite alternate;
+  content    : "\f57d";
+  animation  : spinning-globe 0.5s linear infinite alternate;
   opacity    : 0.95;
-}
+} */
 
+/* mayth4th */
+/* 
 @keyframes maythe4th {
   0% {
     opacity: 0;
