@@ -136,8 +136,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 		if (gestorMenu.plugins['pdfPrinter'].getStatus() == 'ready' || gestorMenu.plugins['pdfPrinter'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
- 	if(visiblesActivar && gestorMenu.pluginExists('consultData')) {
-		if(gestorMenu.plugins['consultData'].getStatus() == 'ready' || gestorMenu.plugins['consultData'].getStatus() == 'fail'){
+	if (visiblesActivar && gestorMenu.pluginExists('consultData')) {
+		if (gestorMenu.plugins['consultData'].getStatus() == 'ready' || gestorMenu.plugins['consultData'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
 	if (visiblesActivar && gestorMenu.pluginExists('groupLayerSelector')) {
@@ -2203,15 +2203,21 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 						//Delete from groups
 						for (const group in mapa.groupLayers) {
-							const lyrInGrpIdx = mapa.groupLayers[group].findIndex(lyr => lyr === layerName);
+							const lyrInGrpIdx = mapa.groupLayers[group].indexOf(layerName);
 							if (lyrInGrpIdx >= 0) {
 								mapa.groupLayers[group].splice(lyrInGrpIdx, 1);
 							}
+							// Remove empty group layer
+							if (mapa.groupLayers[group].length === 0) {
+								deleteLayerGeometry(group);
+							}
 						}
+
 						addedLayers.forEach(lyr => {
 							if (lyr.id === "dibujos") {
 								Object.values(lyr.layer._layers).forEach(e => {
 									if (layerName === e.name) {
+										if (geoProcessingManager) geoProcessingManager.updateLayerSelect(layerName, false);
 										lyr.layer.removeLayer(e);
 										updateNumberofLayers(lyr.section);
 										showTotalNumberofLayers();
@@ -2219,7 +2225,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 								})
 								if (Object.values(lyr.layer._layers).length === 0) {
 									let index = addedLayers.indexOf(lyr);
-									if (index > -1) {
+									if (index > -1) {						
 										addedLayers.splice(index, 1);
 										showTotalNumberofLayers();
 									}
@@ -2679,9 +2685,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.id = groupName;
 						layer.name = name;
 						layer.type = type;
-						layer.data = {geoJSON};
+						layer.data = { geoJSON };
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
-						
+
 						layer.on({
 							click: getVectorData
 						});
@@ -3104,7 +3110,7 @@ function loadWmsTpl(objLayer) {
 	if (overlayMaps.hasOwnProperty(layer)) {
 		overlayMaps[layer].removeFrom(mapa);
 		delete overlayMaps[layer];
-	
+
 		Object.values(mapa._layers).forEach(lyr => {
 			if (lyr.options) {
 				if (lyr.options.layer === objLayer.nombre) {
