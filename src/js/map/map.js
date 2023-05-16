@@ -2232,7 +2232,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							}
 						});
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
-						//controlSeccionGeom();
+						controlSeccionGeom();
 					}
 
 					mapa.removeGroup = (group, deleteLayers) => {
