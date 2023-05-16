@@ -2217,6 +2217,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							if (lyr.id === "dibujos") {
 								Object.values(lyr.layer._layers).forEach(e => {
 									if (layerName === e.name) {
+										if (geoProcessingManager) geoProcessingManager.updateLayerSelect(layerName, false);
 										lyr.layer.removeLayer(e);
 										updateNumberofLayers(lyr.section);
 										showTotalNumberofLayers();
@@ -2224,7 +2225,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 								})
 								if (Object.values(lyr.layer._layers).length === 0) {
 									let index = addedLayers.indexOf(lyr);
-									if (index > -1) {
+									if (index > -1) {						
 										addedLayers.splice(index, 1);
 										showTotalNumberofLayers();
 									}
