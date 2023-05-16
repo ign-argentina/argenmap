@@ -96,7 +96,7 @@ loginatic = function () {
         menu_ui.addButton({ 
           id: "external-link-li", 
           link: result.external_link, 
-          text: "Visor OT " + result.nam,
+          text: "Plataforma CONAE " + result.nam,
           title: "Abrir visor Ordenamiento Territorial " + result.nam,
           location: "top"
         });
