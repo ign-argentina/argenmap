@@ -1224,7 +1224,7 @@ class Geoprocessing {
     return this.formContainer;
   }
 
-  updateLayerSelect(layerName, addToList) {
+  updateLayerSelect(layerName, addToList) { //updates elvePorfile polylines & buffer
     let select = document.getElementById("select-capa"),
       option = document.createElement("option");
     option.value = layerName;
