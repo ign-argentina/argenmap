@@ -76,29 +76,16 @@ function getPopupForWMS(isActive) {
         });
     });
 
-    //Menu WMS
+    //Menu WMS & WMTS
     itemCapa.forEach(item => {
-        if (gestorMenu.layerIsWmts(item.nombre)) {
-            layer = item.capa.nombre;
-            if (item.capas[1]) {
-                let capaWMS = item.capas[1].nombre
-                if (overlayMaps[capaWMS]) {
-                    overlayMaps[capaWMS].removeFrom(mapa);
-                    delete overlayMaps[capaWMS];
-                }
-                createWmsLayer(item);
-                overlayMaps[capaWMS]._source.options.identify = isActive;
-                overlayMaps[capaWMS].addTo(mapa); 
+        if (gestorMenu.layerIsWmts(item.nombre)) {  //is WMTS
+            chooseLyrType(item, isActive,"lyrJoin");
+        } else {    //is WMS
+            if (item.capas[1]) {    //is double WMS
+                chooseLyrType(item, isActive,"lyrJoin");
+            } else {                //is single WMS
+                chooseLyrType(item, isActive,"singleLyr");
             }
-           
-        } else { 
-            layer = item.capa.nombre;
-            overlayMaps[layer].removeFrom(mapa);
-            delete overlayMaps[layer];
-
-            createWmsLayer(item);
-            overlayMaps[layer]._source.options.identify = isActive;
-            overlayMaps[layer].addTo(mapa);   
         }
     });
 
@@ -116,6 +103,27 @@ function getPopupForWMS(isActive) {
         }
     });
 
+}
+
+function chooseLyrType(item, isActive, lyrType) {
+    if (lyrType === "lyrJoin") {
+        let capaWMS = item.capas[1].nombre
+        if (overlayMaps[capaWMS]) {
+            overlayMaps[capaWMS].removeFrom(mapa);
+            delete overlayMaps[capaWMS];
+        }
+        createWmsLayer(item.capas[1]);
+        overlayMaps[capaWMS]._source.options.identify = isActive;
+        overlayMaps[capaWMS].addTo(mapa);
+    } else {
+        layer = item.capa.nombre;
+        overlayMaps[layer].removeFrom(mapa);
+        delete overlayMaps[layer];
+
+        createWmsLayer(item);
+        overlayMaps[layer]._source.options.identify = isActive;
+        overlayMaps[layer].addTo(mapa);  
+    }
 }
 
 function createImportWmsLayer(layer) {

@@ -348,8 +348,12 @@ function parseFeatureInfoJSON(info, idTxt, title) {
   info = JSON.parse(info);
 
   if(info.exceptions) {
-    new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
-    return 0;
+    if (info.exceptions[0].code === "LayerNotQueryable") {
+      return info.exceptions[0].code;
+    } else {
+      new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
+      return 0;
+    }
   }
 
   if (info.features.length > 0) {
@@ -390,10 +394,27 @@ function parseFeatureInfoJSON(info, idTxt, title) {
 }
 
 function createWmsLayer(objLayer) {
+  let layer, layerSelected, lyrHost;
+
+  if (objLayer.capa) {//for WMTS or single WMS
+    layer = objLayer.capa;
+
+    if (gestorMenu.layerIsWmts(objLayer.nombre)) {//is WMTS
+      layerSelected = objLayer.capas[1];
+    } else {                                      //is WMS
+      layerSelected = objLayer.capa;
+    }
+    lyrHost = layerSelected.getHostWMS()
+
+  } else {//for double WMS
+    layer = objLayer;
+    layerSelected = objLayer;
+    lyrHost = layerSelected.host;
+  }
   //Extends WMS.Source to customize popup behavior
   var MySource = L.WMS.Source.extend({
     showFeatureInfo: function (latlng, info) {
-      let layername = objLayer.capa.titulo;
+      let layername = layer.titulo;
 
       if (!this._map) {
         return;
@@ -408,6 +429,9 @@ function createWmsLayer(objLayer) {
             popupInfo.length,
             this.options.title
           );
+        }
+        if (infoParsed === "LayerNotQueryable") {//if layer is not queryable
+          return 0
         }
         if (infoParsed != "") {
           // check if info has any content, if so shows popup
@@ -430,14 +454,7 @@ function createWmsLayer(objLayer) {
       return;
     },
   });
-
-  let layerSelected;
-  if (gestorMenu.layerIsWmts(objLayer.nombre)) {  //is WMTS
-    layerSelected = objLayer.capas[1];
-  } else {                                        //is WMS
-    layerSelected = objLayer.capa;
-  }
-  var wmsSource = new MySource(layerSelected.getHostWMS(), {
+  var wmsSource = new MySource(lyrHost, {
     transparent: true,
     version: '1.3.0',
     tiled: true,
