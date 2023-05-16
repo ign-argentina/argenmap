@@ -1023,10 +1023,8 @@ function deleteLayerGeometry(layer, file) {
     let index = parent.id.indexOf("-panel-body");
     let lista = "#lista-" + parent.id.substr(0, index);
     $(lista).remove();
-    checkIfGeoprocessingIsOpen();
   } else {
     $(id).remove();
-    checkIfGeoprocessingIsOpen();
   }
 }
 
