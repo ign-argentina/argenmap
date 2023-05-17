@@ -3862,7 +3862,7 @@ class Menu_UI {
           section = lyr.section;
         }
       });
-      //delFileItembyID(id);
+      delFileItembyID(id);
       deleteLayerGeometry(id);
       $("#modal_layer_del").remove();
       
