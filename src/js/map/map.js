@@ -1099,7 +1099,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								if (typeof layer != "string" && !layer._uneditable && !layer.value) {
-									mapa.deleteLayer(layer.name);
+									mapa.deleteLayer(layer.name, layer.id);
 								}
 							}
 						});
@@ -2192,7 +2192,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							});
 					}
 
-					mapa.deleteLayer = (layerName) => {
+					mapa.deleteLayer = (layerName, id) => {
 						const type = layerName.split('_')[0];
 						const lyrIdx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layerName);
 
@@ -2230,18 +2230,33 @@ $("body").on("pluginLoad", function (event, plugin) {
 										showTotalNumberofLayers();
 									}
 								}
+							} else if (lyr.id === id) {
+								const layerToRemove = lyr.layer.features[layerName.split('_')[1]];
+								const idx = parseInt(lyr.layer.features.indexOf(layerToRemove)) - 1;
+								if (idx >= 0) {
+									lyr.layer.features.splice(idx, 1);
+									if (lyr.layer.features.length === 0) {
+										addedLayers.splice(addedLayers.indexOf(lyr), 1);
+										showTotalNumberofLayers();
+									}
+								} else {
+									delFileItembyID(id);
+									showTotalNumberofLayers();
+								}
 							}
 						});
+
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
 						controlSeccionGeom();
+						showTotalNumberofLayers();
 					}
 
-					mapa.removeGroup = (group, deleteLayers) => {
+					mapa.removeGroup = (group, deleteLayers, id) => {
 						if (mapa.groupLayers.hasOwnProperty(group)) {
 							if (deleteLayers) {
 								const layersArr = [...mapa.groupLayers[group]];
 								layersArr.forEach(layer => {
-									mapa.deleteLayer(layer);
+									mapa.deleteLayer(layer, id);
 								});
 							}
 							delete mapa.groupLayers[group];

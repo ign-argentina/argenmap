@@ -1014,8 +1014,8 @@ function checkIfGeoprocessingIsOpen() {
   }
 }
 
-function deleteLayerGeometry(layer, file) {
-  mapa.removeGroup(layer, true, file);
+function deleteLayerGeometry(layer) {
+  mapa.removeGroup(layer, true, layer);
   let id = "#fl-" + layer;
   let parent = $(id).parent()[0];
 
