@@ -1,0 +1,8 @@
+#help :hover {
+    cursor: pointer;
+  }
+  
+  #iconHelp {
+    font-size: 18px;
+    line-height: inherit;
+  }

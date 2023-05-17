@@ -46,10 +46,11 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
 var ordenZoomHome = 1; var ordenFullScreen = 5; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 2;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
-var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14; var ordenHelp = 15;
+var visiblesActivar = true;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function (event, plugin) {
 	unordered = '';
@@ -103,6 +104,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 			break;
 		case 'groupLayerSelector':
 			ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
+			break;
+		case 'helpTooltip':
+			ordered.splice(ordenHelp, 1, plugin.pluginName);
 			break;
 		default:
 			// Add unordered plugins
@@ -171,6 +175,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 		if (gestorMenu.plugins['loadLayer'].getStatus() == 'ready' || gestorMenu.plugins['loadLayer'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
+	if (visiblesActivar && gestorMenu.pluginExists('helpTooltip')) {
+		if (gestorMenu.plugins['helpTooltip'].getStatus() == 'ready' || gestorMenu.plugins['helpTooltip'].getStatus() == 'fail') {
+		} else { visiblesActivar = false; }
+	}
 	if (visiblesActivar) {
 		ordered.forEach(function (e) {
 			switch (e) {
@@ -227,6 +235,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 				case 'FullScreen':
 					const fs = new Fullscreen();
 					fs.createComponent();
+					break;
+				case 'helpTooltip':
+					const help = new HelpTooltip;
+					help.createComponent();
 					break;
 				case 'loadLayer':
 					const loadLayersModal = new LoadLayersModal();
@@ -2805,7 +2817,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				});
 			};
 
-			mapa = new L.map( "mapa", {
+			mapa = new L.map("mapa", {
 				center: app.hasOwnProperty('mapConfig') ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude] : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
 				zoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.initial : DEFAULT_ZOOM_LEVEL,
 				layers: currentBaseMap ? [currentBaseMap] : undefined,
@@ -3171,7 +3183,7 @@ function loadWmsTpl(objLayer) {
 	if (overlayMaps.hasOwnProperty(layer)) {
 		overlayMaps[layer].removeFrom(mapa);
 		delete overlayMaps[layer];
-	
+
 		Object.values(mapa._layers).forEach(lyr => {
 			if (lyr.options) {
 				if (lyr.options.layer === objLayer.nombre) {
