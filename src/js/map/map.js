@@ -2220,14 +2220,12 @@ $("body").on("pluginLoad", function (event, plugin) {
 										if (geoProcessingManager) geoProcessingManager.updateLayerSelect(layerName, false);
 										lyr.layer.removeLayer(e);
 										updateNumberofLayers(lyr.section);
-										showTotalNumberofLayers();
 									}
 								})
 								if (Object.values(lyr.layer._layers).length === 0) {
 									let index = addedLayers.indexOf(lyr);
 									if (index > -1) {						
 										addedLayers.splice(index, 1);
-										showTotalNumberofLayers();
 									}
 								}
 							} else if (lyr.id === id) {
@@ -2237,11 +2235,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 									lyr.layer.features.splice(idx, 1);
 									if (lyr.layer.features.length === 0) {
 										addedLayers.splice(addedLayers.indexOf(lyr), 1);
-										showTotalNumberofLayers();
 									}
 								} else {
 									delFileItembyID(id);
-									showTotalNumberofLayers();
 								}
 								updateNumberofLayers(lyr.section);
 							}
