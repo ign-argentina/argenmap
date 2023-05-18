@@ -1106,7 +1106,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								if (typeof layer != "string" && !layer._uneditable && !layer.value) {
-									mapa.deleteLayer(layer.name);
+									mapa.deleteLayer(layer.name, layer.id);
 								}
 							}
 						});
@@ -2209,7 +2209,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 					 * This function deletes a given layer from the map and related data structures.
 					 * @param {string} layerName - The name of the layer to delete.
 					 */
-					mapa.deleteLayer = (layerName, groupName) => {
+					mapa.deleteLayer = (layerName, id) => {
 						const type = layerName.split('_')[0]; // Extract layer type from layerName
 
 						const idx = mapa.editableLayers[type].findIndex(lyr => lyr.name === layerName); // Find the index of the layer to delete in the editableLayers array
@@ -2237,11 +2237,11 @@ $("body").on("pluginLoad", function (event, plugin) {
 								// If the addedLayers array is now empty, remove it from the addedLayers array and update the UI
 								if (lyr.layer.features.length === 0) {
 									addedLayers.splice(addedLayers.indexOf(lyr), 1);
-									showTotalNumberofLayers();
 								}
 							} else {
-								delFileItembyID(groupName);
+								delFileItembyID(id);
 							}
+							updateNumberofLayers(lyr.section)
 						});
 
 						mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
