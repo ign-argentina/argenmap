@@ -2243,6 +2243,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 									delFileItembyID(id);
 									showTotalNumberofLayers();
 								}
+								updateNumberofLayers(lyr.section);
 							}
 						});
 
