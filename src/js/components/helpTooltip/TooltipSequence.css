@@ -1,6 +1,6 @@
-*, ::after, ::before {
+/* *, ::after, ::before {
     box-sizing: border-box;
-}
+} */
 .stop-scroll {
     overflow: hidden;
     -webkit-overflow-scrolling: hidden;
