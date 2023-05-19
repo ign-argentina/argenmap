@@ -1,10 +1,27 @@
-const options1 = {
-    welcomeText: "¿Quieres iniciar un tutorial rápido?",
-    confirmText: "Si",
-    cancelText: "No",
-    backdropColor: '#6262625d',
-    sequence: [{ element: '#fullscreen', description: "<h2>Don't forget to import!</h2><div>Add these lines when using in a front end framework.</div>", placement: 'right' }, { element: '#help', description: "<h2>Color, color, everywhere! ❤️🧡💛💚💙💜💗🖤</h2><div>Option to choose the backdrop color.</div>", placement: 'left' }],
-    onComplete: function () { console.log("Completed!") }
+'use strict';
+
+class HelpTooltip {
+    constructor() {
+        this.component = `
+            <a id="iconHelp-container" title="Ayuda">
+                  <i id="iconHelp" class="fa-solid fa-question" aria-hidden="true"></i>
+            </a>
+            `;
+    }
+
+    createComponent() {
+        const elem = document.createElement("div");
+        elem.className = "leaflet-bar leaflet-control";
+        elem.id = "help";
+        elem.innerHTML = this.component;
+        elem.addEventListener("click", function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+            const tooltipHelper = new TooltipHelper();
+            tooltipHelper.initTour(options);
+        });
+        document.querySelector(".leaflet-top.leaflet-right").append(elem);
+    }
 }
 
 class TooltipHelper {
@@ -12,10 +29,10 @@ class TooltipHelper {
         this.cont = 0;
         this.data = {
             welcomeText: "Do you want to take the tour of the page?",
-            confirmText: "SI",
+            confirmText: "Yes",
             cancelText: "No",
             backdropColor: "#1b1b1b8e",
-            sequence: [{ element: '#help', description: "<h2>Color, color, everywhere! ❤️🧡💛💚💙💜💗🖤</h2><div>Option to choose the backdrop color.</div>", placement: 'left' }],
+            sequence: [{ element: '#help', description: "<h2>Title</h2><div>Description</div>", placement: 'left' }],
             onComplete: function () { },
         };
     }
@@ -32,32 +49,15 @@ class TooltipHelper {
         window.innerWidth <= 400 && ("left" === arrowPos || "right" === arrowPos) && (arrowPos = "bottom"); //Chequea tamaño de pantalla y lo cambia si necesita
 
         const item = document.querySelector(elemId); //Toma el id del elemento
-        if (!item) return this.close(); // Consulta si existe ele elemento
+        if (!item) return this.closeHelp(); // Consulta si existe ele elemento
 
         document.querySelector("body").classList.add("stop-scroll");
         item.scrollIntoView({ behaviour: "smooth", block: "center" });
 
         const style = getComputedStyle(item); //Tomas los estilos
         const itemSize = item.getBoundingClientRect();
-        const highlightItem = ((tooltipContainer, itemSize, style) => {
-            const { backdropColor: backdropColor } = this.data;
-            let tooltipActive = document.querySelector(
-                "#tooltip-helper-backdrop .tooltip-helper-active"
-            );
-            if (!tooltipActive) {
-                tooltipActive = document.createElement("div");
-                tooltipActive.setAttribute("id", "tooltip-helper-active");
-                tooltipActive.classList.add("tooltip-helper-active");
-                tooltipContainer.append(tooltipActive);
-            }
-            tooltipActive.style.top = Math.round(itemSize.top) + "px";
-            tooltipActive.style.left = Math.round(itemSize.left) + "px";
-            tooltipActive.style.height = itemSize.height + "px";
-            tooltipActive.style.width = itemSize.width + "px";
-            tooltipActive.style.borderRadius = style.borderRadius;
-            tooltipActive.style.boxShadow = "0 0 0 9999px " + backdropColor;
-            return tooltipActive;
-        })(tooltipContainer, itemSize, style);
+
+        const highlightItem = this.highlightItem(tooltipContainer, itemSize, style);
 
         const tooltipDiv = ((tooltipContainer, description) => {
             const { sequence: sequence } = this.data;
@@ -206,9 +206,39 @@ class TooltipHelper {
     };
 
     /**
+      * Creates and highlights an active tooltip item.
+      * @param {HTMLElement} tooltipContainer - The tooltip container element.
+      * @param {DOMRect} itemSize - The size of the item.
+      * @param {CSSStyleDeclaration} style - The computed styles of the item.
+      * @returns {HTMLElement} The created and highlighted tooltip item.
+      */
+    highlightItem = (tooltipContainer, itemSize, style) => {
+        const { backdropColor } = this.data;
+        let tooltipActive = document.querySelector("#tooltip-helper-backdrop .tooltip-helper-active"); // Check if an active tooltip item already exists
+
+        // If no active tooltip item exists, create a new one
+        if (!tooltipActive) {
+            tooltipActive = document.createElement("div");
+            tooltipActive.setAttribute("id", "tooltip-helper-active");
+            tooltipActive.classList.add("tooltip-helper-active");
+            tooltipContainer.append(tooltipActive);
+        }
+
+        // Set the position, size, border radius, and box shadow of the tooltip item
+        tooltipActive.style.top = Math.round(itemSize.top) + "px";
+        tooltipActive.style.left = Math.round(itemSize.left) + "px";
+        tooltipActive.style.height = itemSize.height + "px";
+        tooltipActive.style.width = itemSize.width + "px";
+        tooltipActive.style.borderRadius = style.borderRadius;
+        tooltipActive.style.boxShadow = `0 0 0 9999px ${backdropColor}`;
+
+        return tooltipActive;
+    };
+
+    /**
       * Closes the tooltip helper and performs cleanup actions.
       */
-    close = () => {
+    closeHelp = () => {
         document.querySelector("body").classList.remove("stop-scroll"); // Remove the "stop-scroll" class from the body element
 
         const backdrop = document.getElementById("tooltip-helper-backdrop"); // Find the backdrop element by its ID
@@ -237,55 +267,90 @@ class TooltipHelper {
 
             document.getElementById("tooltip-helper-backdrop").removeEventListener("click", this.handleBackdropClick); // Remove the event listener for backdrop click
 
-            this.close(); // Close the tooltip helper
+            this.closeHelp(); // Close the tooltip helper
         }
     };
 
-
-    createSequence = (options) => {
+    /**
+      * Initializes the tour with the given options.
+      * @param {Object} options - The options for the tour.
+      */
+    initTour = (options) => {
         this.data = { ...this.data, ...options };
+
+        // Create tooltip backdrop element
         const tooltipBackdrop = document.createElement('div');
         tooltipBackdrop.id = 'tooltip-helper-backdrop';
         tooltipBackdrop.classList.add('tooltip-helper-backdrop');
-
         document.querySelector('body').appendChild(tooltipBackdrop);
 
-        document.getElementById("tooltip-helper-backdrop").addEventListener("click", e => {
-            switch (e.target.id) {
-                case "tooltip-helper-next-sequence": return this.secuncyPos(1);
-                case "tooltip-helper-prev-sequence": return this.secuncyPos(-1);
-                case "tooltip-helper-end-sequence":
-                case "tooltip-helper-active":
-                case "tooltip-helper-backdrop": return this.close();
-                default: return
-            }
-        })
+        // Create initialization modal
+        const initModal = document.createElement('div');
+        initModal.id = 'initModal';
+        initModal.classList.add('initModal');
+        initModal.innerHTML = `
+            <h3>Ayuda Rápida</h3>
+            <br>
+            <p>${this.data.welcomeText}</p>
+            <div class="initModalBtn">
+                <button id="initModalBtnConfirm" class="btn btn-primary">${this.data.confirmText}</button>
+                <button id="initModalBtnCancel" class="btn btn-primary">${this.data.cancelText}</button>
+            </div>
+            `;
+        tooltipBackdrop.appendChild(initModal);
 
+        // Event listener for cancel button click
+        const cancelButton = document.getElementById("initModalBtnCancel");
+        cancelButton.addEventListener("click", () => {
+            document.getElementById("initModal").remove();
+            this.closeHelp();
+        });
+
+        // Event listener for confirm button click
+        const confirmButton = document.getElementById("initModalBtnConfirm");
+        confirmButton.addEventListener("click", () => {
+            document.getElementById("initModal").remove();
+            this.createSequence(options);
+        });
+    };
+
+    /**
+      * Creates the sequence for the tour with the given options.
+      * @param {Object} options - The options and elements for the sequence.
+      */
+    createSequence = (options) => {
+        this.data = { ...this.data, ...options };
+
+        // Add event listener to the tooltip backdrop for click events
+        document.getElementById("tooltip-helper-backdrop").addEventListener("click", (e) => {
+            switch (e.target.id) {
+                case "tooltip-helper-next-sequence":
+                    return this.secuncyPos(1);
+                case "tooltip-helper-prev-sequence":
+                    return this.secuncyPos(-1);
+                case "tooltip-helper-end-sequence":
+                    return this.closeHelp();
+                case "tooltip-helper-active":
+                case "tooltip-helper-backdrop":
+                default:
+                    return;
+            }
+        });
+
+        // Create the tooltip
         this.createTooltip();
     };
 
 };
-class HelpTooltip {
-    constructor() {
-        this.component = `
-            <a id="iconHelp-container" title="Ayuda" onclick="handleClick(event)">
-                  <i id="iconHelp" class="fa-solid fa-question" aria-hidden="true"></i>
-            </a>
-            `;
-    }
 
-    createComponent() {
-        const elem = document.createElement("div");
-        elem.className = "leaflet-bar leaflet-control";
-        elem.id = "help";
-        elem.innerHTML = this.component;
-        document.querySelector(".leaflet-top.leaflet-right").append(elem);
-    }
+const options = {
+    welcomeText: "¿Quieres iniciar un tutorial rápido?",
+    confirmText: "Si",
+    cancelText: "No",
+    backdropColor: '#6262625d',
+    sequence: [
+        { element: '#fullscreen', description: "<h2>Pantalla Completa</h2><div>Entra en el modo de pantalla completa, para salir se debe voler a oprimir</div>", placement: 'right' },
+        { element: '#help', description: "<h2>Ayuda Rápida</h2><div>Comineza el un breve tour por el visor y sus funciones</div>", placement: 'left' }
+    ],
+    onComplete: function () { console.log("FIN?") }
 }
-
-function handleClick(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    const tooltipHelper = new TooltipHelper();
-    tooltipHelper.createSequence(options1);
-};
