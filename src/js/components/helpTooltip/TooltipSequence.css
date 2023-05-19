@@ -32,10 +32,10 @@
     z-index: 9999;
 }
 .tooltip-helper-active-description {
-    background-color: rgb(36, 36, 36);
+    background-color: #f6f6f6ee;
     position: absolute;
     font-size: 15px;
-    border-radius: 5px;
+    border-radius: 6px;
     height: 170px;
     max-width: 500px;
     z-index: 9998;
@@ -46,7 +46,7 @@
     transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .tooltip-helper-active-description p {
-    color: #fff;
+    color: #000;
     overflow-y: auto;
     height: 75%;
     padding: 10px;
@@ -77,31 +77,32 @@
 }
 .tooltip-helper-next-sequence,
 .tooltip-helper-prev-sequence {
-    background-color: rgb(22, 121, 251);
+    background-color: #dbdbdb;
     border: none;
-    border-radius: 2px;
+    border-radius: 4px;
     outline: none;
     padding: 3px 10px;
-    color: #fff;
+    color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 25px;
+    margin: 0 10px;
 }
 .tooltip-helper-end-sequence {
-    background-color: rgb(131, 131, 131);
+    background-color: #dbdbdb;
     border: none;
-    border-radius: 2px;
+    border-radius: 4px;
     outline: none;
     padding: 3px 10px;
-    color: #fff;
+    color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 25px;
 }
 .tooltip-disabled-btn {
-    background-color: rgb(92, 92, 92) !important;
+    background-color: rgb(168, 168, 168) !important;
     user-select: none !important;
     color: rgba(255, 255, 255, 0.671);
 }
@@ -119,20 +120,20 @@
 .tooltip-helper-arrow-up {
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
-    border-bottom: 20px solid rgb(36, 36, 36);
+    border-bottom: 20px solid #f6f6f6ee;
 }
 .tooltip-helper-arrow-down {
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
-    border-top: 20px solid rgb(36, 36, 36);
+    border-top: 20px solid #f6f6f6ee;
 }
 .tooltip-helper-arrow-left {
     border-top: 20px solid transparent;
     border-bottom: 20px solid transparent;
-    border-right: 20px solid rgb(36, 36, 36);
+    border-right: 20px solid #f6f6f6ee;
 }
 .tooltip-helper-arrow-right {
     border-top: 20px solid transparent;
     border-bottom: 20px solid transparent;
-    border-left: 20px solid rgb(36, 36, 36);
+    border-left: 20px solid #f6f6f6ee;
 }
