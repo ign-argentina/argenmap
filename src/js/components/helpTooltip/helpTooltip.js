@@ -17,14 +17,14 @@ class HelpTooltip {
         elem.addEventListener("click", function (event) {
             event.stopPropagation();
             event.preventDefault();
-            const tooltipHelper = new TooltipHelper();
+            const tooltipHelper = new TooltipTourMaker();
             tooltipHelper.initTour(options);
         });
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
     }
 }
 
-class TooltipHelper {
+class TooltipTourMaker {
     constructor() {
         this.cont = 0;
         this.data = {
@@ -37,172 +37,217 @@ class TooltipHelper {
         };
     }
 
+    /**
+    * Creates a tooltip based on the current sequence item.
+    */
     createTooltip() {
-        const { sequence: sequence } = this.data; //Toma las secuencias
-        const element = sequence[this.cont]; //Toma un elemento del array de secuencias
-        const { element: elemId, description: description } = element; //Toma el id y el contendido del elemento
-        const tooltipContainer = document.getElementById("tooltip-helper-backdrop"); //toma el fondo
+        const { sequence } = this.data; // Get the sequence array
+        const element = sequence[this.cont]; // Get the current sequence item
+        const { element: elemId, description } = element; // Get the element id and description
+
+        const tooltipContainer = document.getElementById("tooltip-helper-backdrop"); // Get the tooltip container element
         let divPos = { x: 0, y: 0 };
-        let correctedPos = { x: 0, y: 0 };
-        let arrowPos = element.hasOwnProperty("placement") ? element.placement : "bottom"; //Toma la posicion de la fecla
+        let arrowPos = { x: 0, y: 0 };
+        let getArrowPos = element.placement || "bottom"; // Get the arrow position, default to "bottom"
 
-        window.innerWidth <= 400 && ("left" === arrowPos || "right" === arrowPos) && (arrowPos = "bottom"); //Chequea tamaño de pantalla y lo cambia si necesita
+        // Adjust arrow position for small screens if it's "left" or "right"
+        if (window.innerWidth <= 400 && (getArrowPos === "left" || getArrowPos === "right")) {
+            getArrowPos = "bottom";
+        }
 
-        const item = document.querySelector(elemId); //Toma el id del elemento
-        if (!item) return this.closeHelp(); // Consulta si existe ele elemento
+        const item = document.querySelector(elemId); // Get the target element
+        if (!item) {
+            return this.closeHelp();
+        }
 
         document.querySelector("body").classList.add("stop-scroll");
-        item.scrollIntoView({ behaviour: "smooth", block: "center" });
+        item.scrollIntoView({ behavior: "smooth", block: "center" });
 
-        const style = getComputedStyle(item); //Tomas los estilos
+        const style = getComputedStyle(item); // Get the computed styles of the element
         const itemSize = item.getBoundingClientRect();
 
         const highlightItem = this.highlightItem(tooltipContainer, itemSize, style);
 
-        const tooltipDiv = ((tooltipContainer, description) => {
-            const { sequence: sequence } = this.data;
-            let descriptionDiv = document.querySelector(
-                "#tooltip-helper-backdrop .tooltip-helper-active-description"
-            );
-            if (!descriptionDiv) {
-                descriptionDiv = document.createElement("div");
-                descriptionDiv.style.willChange = "transform";
-                descriptionDiv.classList.add("tooltip-helper-active-description");
-                descriptionDiv.innerHTML += "<p id='tooltip-helper-active-description-text'></p>";
-                descriptionDiv.innerHTML +=
-                    '<div class="tooltip-helper-footer"><button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">Cerrar</button><div><button id="tooltip-helper-prev-sequence" class="tooltip-helper-prev-sequence">Anterior</button><button id="tooltip-helper-next-sequence" class="tooltip-helper-next-sequence ml-2">Siguiente</button></div></div>';
-                tooltipContainer.append(descriptionDiv);
-            }
+        const tooltipDiv = this.createTooltipDiv(tooltipContainer, description);
 
-            const prevSequence = document.getElementById("tooltip-helper-prev-sequence");
-            const nextSequence = document.getElementById("tooltip-helper-next-sequence");
+        const helperArrow = this.getHelperArrow(tooltipContainer);
 
-            if (this.cont === 0) {
-                prevSequence.setAttribute("disabled", true);
-                prevSequence.classList.add("tooltip-disabled-btn");
-                nextSequence.innerText = sequence.length === 1 ? "Finalizar" : "Siguiente";
-            } else {
-                prevSequence.removeAttribute("disabled", true);
-                prevSequence.classList.remove("tooltip-disabled-btn");
-                nextSequence.innerText = this.cont === sequence.length - 1 ? "Finalizar" : "Siguiente";
-            }
-            document.getElementById("tooltip-helper-active-description-text").innerHTML = description;
-            return descriptionDiv;
-        })(tooltipContainer, description);
-
-        const helperArrow = (tooltipContainer => {
-            let helperArrow = document.querySelector("#tooltip-helper-backdrop #tooltip-helper-arrow");
-            if (!helperArrow) {
-                helperArrow = document.createElement("div");
-                helperArrow.setAttribute("id", "tooltip-helper-arrow");
-                tooltipContainer.append(helperArrow);
-            }
-            return helperArrow;
-        })(tooltipContainer);
-
-        divPos = ((item, tooltipDiv, arrowPos) => {
-            let _itemSize = item.getBoundingClientRect();
-            let _tooltipDivSize = tooltipDiv.getBoundingClientRect();
-            let pos = { x: 0, y: 0 };
-            let sizeDifference = _tooltipDivSize.width > _itemSize.width ? -1 : 1;
-            const _width = Math.round(
-                _itemSize.x + sizeDifference * Math.abs(_itemSize.width - _tooltipDivSize.width) / 2
-            );
-            switch (arrowPos) {
-                case "top":
-                    pos.x = _width;
-                    pos.y = Math.round(_itemSize.y - _tooltipDivSize.height - 15);
-                    break;
-                case "right":
-                    pos.x = Math.round(_itemSize.x + _itemSize.width + 15);
-                    pos.y = Math.round(_itemSize.y + _itemSize.height / 2 - _tooltipDivSize.height / 2);
-                    break;
-                case "bottom":
-                    pos.x = _width;
-                    pos.y = Math.round(_itemSize.y + _itemSize.height + 15);
-                    break;
-                case "left":
-                    pos.x = Math.round(_itemSize.x - _tooltipDivSize.width - 15);
-                    pos.y = Math.round(_itemSize.y + _itemSize.height / 2 - _tooltipDivSize.height / 2);
-                    break;
-                default:
-                    pos.x = _width;
-                    pos.y = Math.round(_itemSize.y - _tooltipDivSize.height - 15);
-            }
-            return pos;
-        })(item, tooltipDiv, arrowPos);
+        divPos = this.calculateTooltipPosition(item, tooltipDiv, getArrowPos);
 
         let divSize = tooltipDiv.getBoundingClientRect();
 
+        // Adjust tooltip position if it exceeds the viewport width
         if (divPos.x + divSize.width >= window.innerWidth) {
             divPos.x = Math.round(itemSize.right - divSize.width + 15);
         } else if (divPos.x <= 0) {
             divPos.x = Math.round(itemSize.x - 15);
             if (divSize.width >= window.innerWidth) {
-                tooltipDiv.style.width = window.innerWidth - 2 * divPos.x + "px";
+                tooltipDiv.style.width = `${window.innerWidth - 2 * divPos.x}px`;
             }
         }
 
-        tooltipDiv.style.transform = "translate3d(" + divPos.x + "px, " + divPos.y + "px, 0px)";
+        tooltipDiv.style.transform = `translate3d(${divPos.x}px, ${divPos.y}px, 0px)`;
 
-        correctedPos = ((helperArrow, arrowPos, divPos, highlightItem, tooltipDiv) => {
-            let pos = { x: 0, y: 0 };
-            let highlightItemSize = highlightItem.getBoundingClientRect();
-            let tooltipDivSize = tooltipDiv.getBoundingClientRect();
-            switch (arrowPos) {
-                case "top":
-                    helperArrow.removeAttribute("class");
-                    helperArrow.classList.add(
-                        "tooltip-helper-arrow",
-                        "tooltip-helper-arrow-down"
-                    );
-                    pos.x = Math.round(highlightItemSize.x + highlightItemSize.width / 2 - 20);
-                    pos.y = Math.round(divPos.y + tooltipDivSize.height - 10);
-                    break;
-                case "right":
-                    helperArrow.removeAttribute("class");
-                    helperArrow.classList.add(
-                        "tooltip-helper-arrow",
-                        "tooltip-helper-arrow-left"
-                    );
-                    pos.x = Math.round(divPos.x - 10);
-                    pos.y = Math.round(highlightItemSize.y + highlightItemSize.height / 2 - 20);
-                    break;
-                case "bottom":
-                    helperArrow.removeAttribute("class");
-                    helperArrow.classList.add(
-                        "tooltip-helper-arrow",
-                        "tooltip-helper-arrow-up"
-                    );
-                    pos.x = Math.round(highlightItemSize.x + highlightItemSize.width / 2 - 20);
-                    pos.y = Math.round(divPos.y - 10);
-                    break;
-                case "left":
-                    helperArrow.removeAttribute("class");
-                    helperArrow.classList.add(
-                        "tooltip-helper-arrow",
-                        "tooltip-helper-arrow-right"
-                    );
-                    pos.x = Math.round(divPos.x + tooltipDivSize.width - 10);
-                    pos.y = Math.round(highlightItemSize.y + highlightItemSize.height / 2 - 20);
-                    break;
-                default:
-                    helperArrow.removeAttribute("class");
-                    helperArrow.classList.add(
-                        "tooltip-helper-arrow",
-                        "tooltip-helper-arrow-up"
-                    );
-                    pos.x = Math.round(highlightItemSize.x + highlightItemSize.width / 2 - 20);
-                    pos.y = Math.round(divPos.y - 10);
-            }
-            return pos;
-        })(helperArrow, arrowPos, divPos, highlightItem, tooltipDiv);
-        helperArrow.style.transform =
-            "translate3d(" + correctedPos.x + "px, " + correctedPos.y + "px, 0px)";
+        arrowPos = this.getArrowPosition(helperArrow, getArrowPos, divPos, highlightItem, tooltipDiv);
 
-        if (sequence.hasOwnProperty("events") && sequence.events.hasOwnProperty("on")) {
+        helperArrow.style.transform = `translate3d(${arrowPos.x}px, ${arrowPos.y}px, 0px)`;
+
+        if (sequence.events?.on) {
             sequence.events.on(sequence);
         }
+    }
+
+    /**
+    * Calculates the position for the helper arrow based on arrow position, element positions, and sizes.
+    * @param {HTMLElement} helperArrow - The helper arrow element.
+    * @param {string} arrowPos - The arrow position ("top", "right", "bottom", "left").
+    * @param {DOMRect} divPos - The position and size of the tooltipDiv element.
+    * @param {HTMLElement} highlightItem - The highlight item element.
+    * @param {HTMLElement} tooltipDiv - The tooltipDiv element.
+    * @returns {Object} The position for the helper arrow.
+    */
+    getArrowPosition = (helperArrow, arrowPos, divPos, highlightItem, tooltipDiv) => {
+        let pos = { x: 0, y: 0 };
+        const highlightItemSize = highlightItem.getBoundingClientRect();
+        const tooltipDivSize = tooltipDiv.getBoundingClientRect();
+
+        // Set arrow classes and calculate the x and y coordinates for the corrected position
+        switch (arrowPos) {
+            case "top":
+                helperArrow.removeAttribute("class");
+                helperArrow.classList.add("tooltip-helper-arrow", "tooltip-helper-arrow-down");
+                pos.x = Math.round(highlightItemSize.x + highlightItemSize.width / 2 - 20);
+                pos.y = Math.round(divPos.y + tooltipDivSize.height - 10);
+                break;
+            case "right":
+                helperArrow.removeAttribute("class");
+                helperArrow.classList.add("tooltip-helper-arrow", "tooltip-helper-arrow-left");
+                pos.x = Math.round(divPos.x - 10);
+                pos.y = Math.round(highlightItemSize.y + highlightItemSize.height / 2 - 20);
+                break;
+            case "bottom":
+                helperArrow.removeAttribute("class");
+                helperArrow.classList.add("tooltip-helper-arrow", "tooltip-helper-arrow-up");
+                pos.x = Math.round(highlightItemSize.x + highlightItemSize.width / 2 - 20);
+                pos.y = Math.round(divPos.y - 10);
+                break;
+            case "left":
+                helperArrow.removeAttribute("class");
+                helperArrow.classList.add("tooltip-helper-arrow", "tooltip-helper-arrow-right");
+                pos.x = Math.round(divPos.x + tooltipDivSize.width - 10);
+                pos.y = Math.round(highlightItemSize.y + highlightItemSize.height / 2 - 20);
+                break;
+            default:
+                helperArrow.removeAttribute("class");
+                helperArrow.classList.add("tooltip-helper-arrow", "tooltip-helper-arrow-up");
+                pos.x = Math.round(highlightItemSize.x + highlightItemSize.width / 2 - 20);
+                pos.y = Math.round(divPos.y - 10);
+        }
+        return pos;
+    };
+
+    /**
+     * Creates or retrieves the helper arrow element.
+     * @param {HTMLElement} tooltipContainer - The tooltip container element.
+     * @returns {HTMLElement} The helper arrow element.
+     */
+    getHelperArrow = (tooltipContainer) => {
+        let helperArrow = document.querySelector("#tooltip-helper-backdrop #tooltip-helper-arrow");
+
+        // If the helper arrow element does not exist, create it
+        if (!helperArrow) {
+            helperArrow = document.createElement("div");
+            helperArrow.setAttribute("id", "tooltip-helper-arrow");
+            tooltipContainer.append(helperArrow);
+        }
+        return helperArrow;
+    };
+
+    /**
+     * Creates or retrieves the tooltip div element with the provided description.
+     * @param {HTMLElement} tooltipContainer - The tooltip container element.
+     * @param {string} description - The description text for the tooltip.
+     * @returns {HTMLElement} The tooltip div element.
+     */
+    createTooltipDiv = (tooltipContainer, description) => {
+        const { sequence } = this.data;
+        let descriptionDiv = document.querySelector("#tooltip-helper-backdrop .tooltip-helper-active-description");
+
+        // If the tooltip div element does not exist, create it
+        if (!descriptionDiv) {
+            descriptionDiv = document.createElement("div");
+            descriptionDiv.style.willChange = "transform";
+            descriptionDiv.classList.add("tooltip-helper-active-description");
+            descriptionDiv.innerHTML = `
+        <p id="tooltip-helper-active-description-text"></p>
+        <div class="tooltip-helper-footer">
+          <button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">Cerrar</button>
+          <div>
+            <button id="tooltip-helper-prev-sequence" class="tooltip-helper-prev-sequence">Anterior</button>
+            <button id="tooltip-helper-next-sequence" class="tooltip-helper-next-sequence ml-2">Siguiente</button>
+          </div>
+        </div>
+      `;
+            tooltipContainer.append(descriptionDiv);
+        }
+
+        const prevSequence = document.getElementById("tooltip-helper-prev-sequence");
+        const nextSequence = document.getElementById("tooltip-helper-next-sequence");
+
+        // Update the previous and next buttons based on the current state
+        if (this.cont === 0) {
+            prevSequence.setAttribute("disabled", true);
+            prevSequence.classList.add("tooltip-disabled-btn");
+            nextSequence.innerText = sequence.length === 1 ? "Finalizar" : "Siguiente";
+        } else {
+            prevSequence.removeAttribute("disabled", true);
+            prevSequence.classList.remove("tooltip-disabled-btn");
+            nextSequence.innerText = this.cont === sequence.length - 1 ? "Finalizar" : "Siguiente";
+        }
+
+        document.getElementById("tooltip-helper-active-description-text").innerHTML = description; // Set the description text
+
+        return descriptionDiv;
+    };
+
+    /**
+    * Calculates the position for the tooltip div based on the item, tooltip div, and arrow position.
+    * @param {HTMLElement} item - The item element.
+    * @param {HTMLElement} tooltipDiv - The tooltip div element.
+    * @param {string} arrowPos - The arrow position ("top", "right", "bottom", "left").
+    * @returns {Object} The position {x, y} for the tooltip div.
+    */
+    calculateTooltipPosition = (item, tooltipDiv, arrowPos) => {
+        const itemSize = item.getBoundingClientRect();
+        const tooltipDivSize = tooltipDiv.getBoundingClientRect();
+        const pos = { x: 0, y: 0 };
+        const sizeDifference = tooltipDivSize.width > itemSize.width ? -1 : 1;
+        const width = Math.round(
+            itemSize.x + sizeDifference * Math.abs(itemSize.width - tooltipDivSize.width) / 2
+        );
+
+        switch (arrowPos) {
+            case "top":
+                pos.x = width;
+                pos.y = Math.round(itemSize.y - tooltipDivSize.height - 15);
+                break;
+            case "right":
+                pos.x = Math.round(itemSize.x + itemSize.width + 15);
+                pos.y = Math.round(itemSize.y + itemSize.height / 2 - tooltipDivSize.height / 2);
+                break;
+            case "bottom":
+                pos.x = width;
+                pos.y = Math.round(itemSize.y + itemSize.height + 15);
+                break;
+            case "left":
+                pos.x = Math.round(itemSize.x - tooltipDivSize.width - 15);
+                pos.y = Math.round(itemSize.y + itemSize.height / 2 - tooltipDivSize.height / 2);
+                break;
+            default:
+                pos.x = width;
+                pos.y = Math.round(itemSize.y - tooltipDivSize.height - 15);
+        }
+        return pos;
     };
 
     /**
