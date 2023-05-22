@@ -179,15 +179,15 @@ class TooltipTourMaker {
             descriptionDiv.style.willChange = "transform";
             descriptionDiv.classList.add("tooltip-helper-active-description");
             descriptionDiv.innerHTML = `
-        <p id="tooltip-helper-active-description-text"></p>
-        <div class="tooltip-helper-footer">
-          <button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">Cerrar</button>
-          <div>
-            <button id="tooltip-helper-prev-sequence" class="tooltip-helper-prev-sequence">Anterior</button>
-            <button id="tooltip-helper-next-sequence" class="tooltip-helper-next-sequence ml-2">Siguiente</button>
-          </div>
-        </div>
-      `;
+            <p id="tooltip-helper-active-description-text"></p>
+            <div class="tooltip-helper-footer">
+              <button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">Cerrar</button>
+              <div>
+                <button id="tooltip-helper-prev-sequence" class="tooltip-helper-prev-sequence">Anterior</button>
+                <button id="tooltip-helper-next-sequence" class="tooltip-helper-next-sequence ml-2">Siguiente</button>
+              </div>
+            </div>
+          `;
             tooltipContainer.append(descriptionDiv);
         }
 
@@ -205,7 +205,7 @@ class TooltipTourMaker {
             nextSequence.innerText = this.cont === sequence.length - 1 ? "Finalizar" : "Siguiente";
         }
 
-        document.getElementById("tooltip-helper-active-description-text").innerHTML = description; // Set the description text
+        document.getElementById("tooltip-helper-active-description-text").innerHTML = `<h3>${description.title}</h3><div>${description.text}</div>`; // Set the description text
 
         return descriptionDiv;
     };
@@ -285,6 +285,8 @@ class TooltipTourMaker {
       */
     closeHelp = () => {
         document.querySelector("body").classList.remove("stop-scroll"); // Remove the "stop-scroll" class from the body element
+
+        document.removeEventListener("keydown", this.arrowsKeyShortcuts, false); // Removes the EventListener for the "keydown" event with the handler function "this.arrowsKeyShortcuts"
 
         const backdrop = document.getElementById("tooltip-helper-backdrop"); // Find the backdrop element by its ID
 
@@ -382,10 +384,28 @@ class TooltipTourMaker {
             }
         });
 
+        // Add event listeners to handle keyboard arrow keys
+        document.addEventListener("keydown", this.arrowsKeyShortcuts);
+
         // Create the tooltip
         this.createTooltip();
     };
 
+    /**
+    * Handles the keyboard shortcuts for arrow keys.
+    * @param {KeyboardEvent} event - The keyboard event object.
+    */
+    arrowsKeyShortcuts = (event) => {
+        const prevSequence = document.getElementById("tooltip-helper-prev-sequence");
+
+        if (event.key === "ArrowLeft" && !prevSequence.disabled) {
+            // Left arrow key
+            this.secuncyPos(-1);
+        } else if (event.key === "ArrowRight") {
+            // Right arrow key
+            this.secuncyPos(1);
+        }
+    }
 };
 
 const options = {
@@ -394,8 +414,78 @@ const options = {
     cancelText: "No",
     backdropColor: '#6262625d',
     sequence: [
-        { element: '#fullscreen', description: "<h2>Pantalla Completa</h2><div>Entra en el modo de pantalla completa, para salir se debe voler a oprimir</div>", placement: 'right' },
-        { element: '#help', description: "<h2>Ayuda Rápida</h2><div>Comineza el un breve tour por el visor y sus funciones</div>", placement: 'left' }
+        {
+            element: '.leaflet-control-layers-toggle',
+            description: {
+                title: "Selector de mapas base",
+                text: "Cambia el mapa base seleccionando el deseado"
+            },
+            placement: 'right'
+        },
+        {
+            element: '.leaflet-control-zoomhome',
+            description: {
+                title: "Zoom",
+                text: "Modifica el nivel de zoom del mapa. Cliquea el boton <span class='fa-solid fa-earth-americas'></span>para volver a la posicion de inicio"
+            },
+            placement: 'right'
+        },
+        {
+            element: '.leaflet-control-locate',
+            description: {
+                title: "Localización",
+                text: "Indica en el mapa tu posición"
+            },
+            placement: 'right'
+        },
+        {
+            element: '.leaflet-control-measure-toggle',
+            description: {
+                title: "Mediciones",
+                text: "Toma medidas de distancia y área"
+            },
+            placement: 'right'
+        },
+        {
+            element: '.leaflet-control-customgraticule',
+            description: {
+                title: "Cuadrícula",
+                text: "Aplica una cuadricula sobre el mapa"
+            },
+            placement: 'right'
+        },
+        {
+            element: '.#fullscreen',
+            description: {
+                title: "Pantalla Completa",
+                text: "Entra en el modo de pantalla completa, para salir se debe volver a oprimir el mismo botón"
+            },
+            placement: 'right'
+        },
+        {
+            element: '#loadLayersButtonContent',
+            description: {
+                title: "Agregar capas",
+                text: "Permite cargar capas desde archivo o desde URL"
+            },
+            placement: 'right'
+        },
+        {
+            element: '#geoPIcon',
+            description: {
+                title: "Geoprocesos",
+                text: "Procesa los datos para obtener nuevas capas"
+            },
+            placement: 'right'
+        },
+        {
+            element: '#iconCD-container',
+            description: {
+                title: "Consultar Datos",
+                text: "Haz click sobre el elemento que desees consultar sus datos"
+            },
+            placement: 'left'
+        }
     ],
     onComplete: function () { console.log("FIN?") }
 }
