@@ -1,6 +1,6 @@
 'use strict';
 
-class HelpTooltip {
+class HelpTour {
     constructor() {
         this.component = `
             <a id="iconHelp-container" title="Ayuda">

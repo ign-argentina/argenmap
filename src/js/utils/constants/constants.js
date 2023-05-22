@@ -78,7 +78,7 @@ const PLUGINS = {
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
   loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
   consultData: "src/js/components/consultData/consultData.js",
-  helpTooltip: "src/js/components/helpTooltip/helpTooltip.js"
+  helpTour: "src/js/components/helpTour/helpTour.js"
 };
 
 const MESSAGE_TIME = 10000;

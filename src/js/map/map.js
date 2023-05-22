@@ -105,7 +105,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 		case 'groupLayerSelector':
 			ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
 			break;
-		case 'helpTooltip':
+		case 'helpTour':
 			ordered.splice(ordenHelp, 1, plugin.pluginName);
 			break;
 		default:
@@ -175,8 +175,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 		if (gestorMenu.plugins['loadLayer'].getStatus() == 'ready' || gestorMenu.plugins['loadLayer'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
-	if (visiblesActivar && gestorMenu.pluginExists('helpTooltip')) {
-		if (gestorMenu.plugins['helpTooltip'].getStatus() == 'ready' || gestorMenu.plugins['helpTooltip'].getStatus() == 'fail') {
+	if (visiblesActivar && gestorMenu.pluginExists('helpTour')) {
+		if (gestorMenu.plugins['helpTour'].getStatus() == 'ready' || gestorMenu.plugins['helpTour'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
 	if (visiblesActivar) {
@@ -236,8 +236,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 					const fs = new Fullscreen();
 					fs.createComponent();
 					break;
-				case 'helpTooltip':
-					const help = new HelpTooltip;
+				case 'helpTour':
+					const help = new HelpTour;
 					help.createComponent();
 					break;
 				case 'loadLayer':
