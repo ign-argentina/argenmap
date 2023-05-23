@@ -1,29 +1,4 @@
 'use strict';
-
-class HelpTour {
-    constructor() {
-        this.component = `
-            <a id="iconHelp-container" title="Ayuda">
-                  <i id="iconHelp" class="fa-solid fa-question" aria-hidden="true"></i>
-            </a>
-            `;
-    }
-
-    createComponent() {
-        const elem = document.createElement("div");
-        elem.className = "leaflet-bar leaflet-control";
-        elem.id = "help";
-        elem.innerHTML = this.component;
-        elem.addEventListener("click", function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            const tooltipHelper = new TooltipTourMaker();
-            tooltipHelper.initTour(options);
-        });
-        document.querySelector(".leaflet-top.leaflet-right").append(elem);
-    }
-}
-
 class TooltipTourMaker {
     constructor() {
         this.cont = 0;
@@ -32,7 +7,13 @@ class TooltipTourMaker {
             confirmText: "Yes",
             cancelText: "No",
             backdropColor: "#1b1b1b8e",
-            sequence: [{ element: '#help', description: "<h2>Title</h2><div>Description</div>", placement: 'left' }],
+            sequence: [{
+                element: '#help', description: {
+                    title: "Title",
+                    text: "Description"
+                },
+                placement: 'left'
+            }],
             onComplete: function () { },
         };
     }
@@ -78,11 +59,21 @@ class TooltipTourMaker {
 
         // Adjust tooltip position if it exceeds the viewport width
         if (divPos.x + divSize.width >= window.innerWidth) {
-            divPos.x = Math.round(itemSize.right - divSize.width + 15);
+            divPos.x = Math.round(window.innerWidth - divSize.width - 10);
         } else if (divPos.x <= 0) {
-            divPos.x = Math.round(itemSize.x - 15);
+            divPos.x = 10;
             if (divSize.width >= window.innerWidth) {
                 tooltipDiv.style.width = `${window.innerWidth - 2 * divPos.x}px`;
+            }
+        }
+
+        // Adjust tooltip position if it exceeds the viewport height
+        if (divPos.y + divSize.height >= window.innerHeight) {
+            divPos.y = Math.round(itemSize.top - divSize.height + 15);
+        } else if (divPos.y <= 0) {
+            divPos.y = Math.round(itemSize.y - 15);
+            if (divSize.height >= window.innerHeight) {
+                tooltipDiv.style.height = `${window.innerHeight - 2 * divPos.y}px`;
             }
         }
 
@@ -205,7 +196,7 @@ class TooltipTourMaker {
             nextSequence.innerText = this.cont === sequence.length - 1 ? "Finalizar" : "Siguiente";
         }
 
-        document.getElementById("tooltip-helper-active-description-text").innerHTML = `<h3>${description.title}</h3><div>${description.text}</div>`; // Set the description text
+        document.getElementById("tooltip-helper-active-description-text").innerHTML = `<div><h3>${description.title}</h3><span>${this.cont+1}/${sequence.length}</span></div><div>${description.text}</div>`; // Set the description text
 
         return descriptionDiv;
     };
@@ -407,85 +398,3 @@ class TooltipTourMaker {
         }
     }
 };
-
-const options = {
-    welcomeText: "¿Quieres iniciar un tutorial rápido?",
-    confirmText: "Si",
-    cancelText: "No",
-    backdropColor: '#6262625d',
-    sequence: [
-        {
-            element: '.leaflet-control-layers-toggle',
-            description: {
-                title: "Selector de mapas base",
-                text: "Cambia el mapa base seleccionando el deseado"
-            },
-            placement: 'right'
-        },
-        {
-            element: '.leaflet-control-zoomhome',
-            description: {
-                title: "Zoom",
-                text: "Modifica el nivel de zoom del mapa. Cliquea el boton <span class='fa-solid fa-earth-americas'></span>para volver a la posicion de inicio"
-            },
-            placement: 'right'
-        },
-        {
-            element: '.leaflet-control-locate',
-            description: {
-                title: "Localización",
-                text: "Indica en el mapa tu posición"
-            },
-            placement: 'right'
-        },
-        {
-            element: '.leaflet-control-measure-toggle',
-            description: {
-                title: "Mediciones",
-                text: "Toma medidas de distancia y área"
-            },
-            placement: 'right'
-        },
-        {
-            element: '.leaflet-control-customgraticule',
-            description: {
-                title: "Cuadrícula",
-                text: "Aplica una cuadricula sobre el mapa"
-            },
-            placement: 'right'
-        },
-        {
-            element: '.#fullscreen',
-            description: {
-                title: "Pantalla Completa",
-                text: "Entra en el modo de pantalla completa, para salir se debe volver a oprimir el mismo botón"
-            },
-            placement: 'right'
-        },
-        {
-            element: '#loadLayersButtonContent',
-            description: {
-                title: "Agregar capas",
-                text: "Permite cargar capas desde archivo o desde URL"
-            },
-            placement: 'right'
-        },
-        {
-            element: '#geoPIcon',
-            description: {
-                title: "Geoprocesos",
-                text: "Procesa los datos para obtener nuevas capas"
-            },
-            placement: 'right'
-        },
-        {
-            element: '#iconCD-container',
-            description: {
-                title: "Consultar Datos",
-                text: "Haz click sobre el elemento que desees consultar sus datos"
-            },
-            placement: 'left'
-        }
-    ],
-    onComplete: function () { console.log("FIN?") }
-}

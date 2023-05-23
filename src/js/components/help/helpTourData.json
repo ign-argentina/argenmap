@@ -1,0 +1,104 @@
+{
+    "welcomeText": "¿Quieres iniciar un tutorial rápido?",
+    "confirmText": "Si",
+    "cancelText": "No",
+    "backdropColor": "#6262625d",
+    "sequence": [
+        {
+            "element": "#developerLogo",
+            "description": {
+                "title": "ArgenMap",
+                "text": "Seccion de informacion de la aplicación"
+            },
+            "placement": "top"
+        },
+        {
+            "element": "#q",
+            "description": {
+                "title": "Buscador de capas",
+                "text": "Ingresa una capa buscada"
+            },
+            "placement": "bottom"
+        },
+        {
+            "element": "#searchbar",
+            "description": {
+                "title": "Buscador de localidades",
+                "text": "Ingresa una localidad buscada y se mostrata con un marcador en el mapa"
+            },
+            "placement": "bottom"
+        },
+        {
+            "element": ".leaflet-control-layers-toggle",
+            "description": {
+                "title": "Selector de mapas base",
+                "text": "Cambia el mapa base seleccionando el deseado"
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".leaflet-control-zoomhome",
+            "description": {
+                "title": "Zoom",
+                "text": "Modifica el nivel de zoom del mapa. Cliquea el boton <span class='fa-solid fa-earth-americas'></span> para volver a la posicion de inicio"
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".leaflet-control-locate",
+            "description": {
+                "title": "Localización",
+                "text": "Indica en el mapa tu posición"
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".leaflet-control-measure-toggle",
+            "description": {
+                "title": "Mediciones",
+                "text": "Toma medidas de distancia y área"
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".leaflet-control-customgraticule",
+            "description": {
+                "title": "Cuadrícula",
+                "text": "Aplica una cuadricula sobre el mapa"
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#fullscreen",
+            "description": {
+                "title": "Pantalla Completa",
+                "text": "Entra en el modo de pantalla completa, para salir se debe volver a oprimir el mismo botón"
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#loadLayersButtonContent",
+            "description": {
+                "title": "Agregar capas",
+                "text": "Permite cargar capas desde archivo o desde URL"
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#geoPIcon",
+            "description": {
+                "title": "Geoprocesos",
+                "text": "Procesa los datos para obtener nuevas capas"
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#iconCD-container",
+            "description": {
+                "title": "Consultar Datos",
+                "text": "Haz click sobre el elemento que desees consultar sus datos"
+            },
+            "placement": "left"
+        }
+    ]
+}

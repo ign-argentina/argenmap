@@ -37,7 +37,8 @@
     font-size: 15px;
     border-radius: 6px;
     height: 170px;
-    max-width: 500px;
+    min-width: 400px;
+    max-width: 400px;
     z-index: 9998;
     transition-property: transform;
     will-change: transform;
@@ -51,6 +52,12 @@
     height: 75%;
     padding: 10px;
     margin: 0 !important;
+}
+#tooltip-helper-active-description-text > div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 .tooltip-helper-footer {
     height: 25%;
