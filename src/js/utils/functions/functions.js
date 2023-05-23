@@ -1573,3 +1573,47 @@ function createPopupForVector(layer, clickLatlng) {
   }
   layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show info
 }
+
+function addNewMenu(name) {
+  let menuNew = document.getElementById("sidebarButtonList"),
+    newContent = document.getElementById("sidebarContent"),
+    btnId = "newBtnMenu-" + name,
+    contentId = "newListadoDe-" + name;
+
+  if (document.getElementById(btnId)) {
+    return new UserMessage('El elemento ya fué agregado', true, 'warning');
+  }
+
+  const newMenu = new FormBuilder();
+  menuNew.appendChild(newMenu.form);
+
+  newMenu.addButton(
+    name,
+    () => {
+      let children = newContent.children;
+      for (let i = 0; i < children.length; i++) {
+        let tableChild = children[i];
+        tableChild.classList.add("hidden");
+      }
+      content.classList.remove("hidden");
+    },
+    btnId
+  );
+  
+
+  const content = document.createElement("div");
+  content.id = contentId;
+  content.innerHTML = name + "!";
+  if (newContent.firstChild) {
+    content.classList.add("hidden");
+  }
+  newContent.appendChild(content);
+}
+
+function deleteNewMenu(name) {
+  let btnId = "newBtnMenu-" + name;
+  let contentId = "newListadoDe-" + name;
+
+  document.getElementById(btnId).remove();
+  document.getElementById(contentId).remove();
+}
