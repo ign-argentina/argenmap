@@ -1319,9 +1319,9 @@ Print
 .newSideBar {
   position: fixed;
   height: 100%;
-  width: 260px;
+  width: 25%;
   background: #1380A6;
-  padding: 10px;
+  padding: 15px;
   z-index: 99;
   left: 50%;
 }
@@ -1333,26 +1333,27 @@ Print
 }
 
 .menuButton {
+  background-color: #EBB322;
+  border-radius: 3px;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
   display: flex;
+  font-size: 20px;
+  height: 40px;
   justify-content: center;
   margin-bottom: 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  background-color: #EBB322;
-  width: 26px;
-  height: 26px;
-  line-height: 26px;
-  color: rgb(255, 255, 255);
+  line-height: 40px;
+  width: 40px;
 }
 
 .sidebarContent {
   position: absolute;
   height: 50%;
-  width: 70%;
+  width: 82%;
   background: #ffffff;
   padding: 15px;
   z-index: 99;
-  left: 25%;
+  left: 15%;
 }
 
 .displayMenuBtn {
