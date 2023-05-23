@@ -40,7 +40,7 @@
             "element": ".leaflet-control-zoomhome",
             "description": {
                 "title": "Zoom",
-                "text": "Modifica el nivel de zoom del mapa. Cliquea el boton <span class='fa-solid fa-earth-americas'></span> para volver a la posicion de inicio"
+                "text": "Modifica el nivel de zoom del mapa. Cliquea el boton central para volver a la posicion de inicio"
             },
             "placement": "right"
         },

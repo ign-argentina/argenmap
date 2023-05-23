@@ -1,7 +1,7 @@
 'use strict';
 class TooltipTourMaker {
-    constructor() {
-        this.cont = 0;
+    cont = 0;
+    constructor(options) {
         this.data = {
             welcomeText: "Do you want to take the tour of the page?",
             confirmText: "Yes",
@@ -16,6 +16,7 @@ class TooltipTourMaker {
             }],
             onComplete: function () { },
         };
+        this.initTour(options ?? this.data);
     }
 
     /**
@@ -196,7 +197,7 @@ class TooltipTourMaker {
             nextSequence.innerText = this.cont === sequence.length - 1 ? "Finalizar" : "Siguiente";
         }
 
-        document.getElementById("tooltip-helper-active-description-text").innerHTML = `<div><h3>${description.title}</h3><span>${this.cont+1}/${sequence.length}</span></div><div>${description.text}</div>`; // Set the description text
+        document.getElementById("tooltip-helper-active-description-text").innerHTML = `<div><h3>${description.title}</h3><span>${this.cont + 1}/${sequence.length}</span></div><div>${description.text}</div>`; // Set the description text
 
         return descriptionDiv;
     };

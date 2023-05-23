@@ -1,19 +1,24 @@
 'use strict';
 
 let options;
-async function fetchHelpTour() {
-    const response = await fetch('src/js/components/help/helpTourData.json');
 
-    if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        console.error(message)
+/*
+Fetches the help tour data from a JSON file asynchronously and assigns it to the options variable.
+*/
+(async () => {
+    try {
+        const response = await fetch('src/js/components/help/helpTourData.json');
+
+        if (!response.ok) {
+            throw new Error(`An error has occurred: ${response.status}`);
+        }
+
+        options = await response.json();
+    } catch (error) {
+        console.error('Failed to fetch help tour data:', error);
     }
+})();
 
-    const data = await response.json();
-    options = data;
-    return data;
-}
-fetchHelpTour()
 class HelpTour {
     constructor() {
         this.component = `
@@ -29,12 +34,9 @@ class HelpTour {
         elem.id = "help";
         elem.innerHTML = this.component;
         elem.addEventListener("click", function (event) {
-            event.stopPropagation();
             event.preventDefault();
-            const tooltipHelper = new TooltipTourMaker();
-            tooltipHelper.initTour(options);
+            new TooltipTourMaker(options);
         });
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
     }
 }
-
