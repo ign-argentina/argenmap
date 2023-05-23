@@ -1600,7 +1600,6 @@ function addNewMenu(name) {
     btnId
   );
   
-
   const content = document.createElement("div");
   content.id = contentId;
   content.innerHTML = name + "!";
@@ -1614,6 +1613,10 @@ function deleteNewMenu(name) {
   let btnId = "newBtnMenu-" + name;
   let contentId = "newListadoDe-" + name;
 
-  document.getElementById(btnId).remove();
-  document.getElementById(contentId).remove();
+  if (document.getElementById(btnId)) {
+    document.getElementById(btnId).remove();
+    document.getElementById(contentId).remove();
+  } else {
+    return new UserMessage('El elemento no existe', true, 'warning');
+  }
 }
