@@ -1321,7 +1321,7 @@ Print
   height: 100%;
   width: 260px;
   background: #0a5385;
-  padding: 15px;
+  padding: 10px;
   z-index: 99;
   left: 50%;
 }
@@ -1335,11 +1335,11 @@ Print
 .sidebarContent {
   position: absolute;
   height: 50%;
-  width: 150px;
+  width: 70%;
   background: #ffffff;
   padding: 15px;
   z-index: 99;
-  left: 35%;
+  left: 25%;
 }
 
 .displayMenuBtn {
