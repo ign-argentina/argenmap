@@ -35,7 +35,7 @@ class HelpTour {
         elem.innerHTML = this.component;
         elem.addEventListener("click", function (event) {
             event.preventDefault();
-            new TooltipTourMaker(options);
+            new TooltipTourMaker(app.helpTourData ?? options);
         });
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
     }
