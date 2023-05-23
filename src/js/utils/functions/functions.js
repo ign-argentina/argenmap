@@ -1587,8 +1587,9 @@ function addNewMenu(name) {
   const newMenu = new FormBuilder();
   menuNew.appendChild(newMenu.form);
 
+  //add button
   newMenu.addButton(
-    name,
+    "",
     () => {
       let children = newContent.children;
       for (let i = 0; i < children.length; i++) {
@@ -1599,7 +1600,9 @@ function addNewMenu(name) {
     },
     btnId
   );
-  
+  document.getElementById(btnId).classList = "menuButton fa-solid fa-layer-group";
+
+  //add element content
   const content = document.createElement("div");
   content.id = contentId;
   content.innerHTML = name + "!";

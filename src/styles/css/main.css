@@ -1320,7 +1320,7 @@ Print
   position: fixed;
   height: 100%;
   width: 260px;
-  background: #0a5385;
+  background: #1380A6;
   padding: 10px;
   z-index: 99;
   left: 50%;
@@ -1330,6 +1330,19 @@ Print
   display: flex;
   position: fixed;
   flex-direction: column;
+}
+
+.menuButton {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  background-color: #EBB322;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  color: rgb(255, 255, 255);
 }
 
 .sidebarContent {
