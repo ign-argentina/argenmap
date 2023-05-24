@@ -600,6 +600,9 @@ Leaflet popup featureInfo
 .featureInfo h4 {
   margin: 1em;
 }
+.individualFeature {
+  word-wrap: break-word;
+}
 .individualFeature h4 {
   margin: 9px 0px !important;
 }

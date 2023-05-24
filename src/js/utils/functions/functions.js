@@ -350,8 +350,12 @@ function parseFeatureInfoJSON(info, idTxt, title) {
   info = JSON.parse(info);
 
   if (info.exceptions) {
-    new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
-    return 0;
+    if (info.exceptions[0].code === "LayerNotQueryable") {
+      return info.exceptions[0].code;
+    } else {
+      new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
+      return 0;
+    }
   }
 
   if (info.features.length > 0) {
@@ -393,10 +397,27 @@ function parseFeatureInfoJSON(info, idTxt, title) {
 }
 
 function createWmsLayer(objLayer) {
+  let layer, layerSelected, lyrHost;
+
+  if (objLayer.capa) {//for WMTS or single WMS
+    layer = objLayer.capa;
+
+    if (gestorMenu.layerIsWmts(objLayer.nombre)) {//is WMTS
+      layerSelected = objLayer.capas[1];
+    } else {                                      //is WMS
+      layerSelected = objLayer.capa;
+    }
+    lyrHost = layerSelected.getHostWMS()
+
+  } else {//for double WMS
+    layer = objLayer;
+    layerSelected = objLayer;
+    lyrHost = layerSelected.host;
+  }
   //Extends WMS.Source to customize popup behavior
   var MySource = L.WMS.Source.extend({
     showFeatureInfo: function (latlng, info) {
-      let layername = objLayer.capa.titulo;
+      let layername = layer.titulo;
 
       if (!this._map) {
         return;
@@ -411,6 +432,9 @@ function createWmsLayer(objLayer) {
             popupInfo.length,
             this.options.title
           );
+        }
+        if (infoParsed === "LayerNotQueryable") {//if layer is not queryable
+          return 0
         }
         if (infoParsed != "") {
           // check if info has any content, if so shows popup
@@ -433,31 +457,19 @@ function createWmsLayer(objLayer) {
       return;
     },
   });
-  var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
+  var wmsSource = new MySource(lyrHost, {
     transparent: true,
     version: '1.3.0',
     tiled: true,
     maxZoom: 21,
-    title: objLayer.capa.titulo,
+    title: layerSelected.titulo,
     format: "image/png",
-    exceptions: objLayer.capa.featureInfoFormat,
-    INFO_FORMAT: objLayer.capa.featureInfoFormat,
-  });
-  overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
-  if (gestorMenu.layerIsWmts(objLayer.nombre)) {
-    let secondLayer = objLayer.capas[1]
-    var wmsSource = new MySource(secondLayer.getHostWMS(), {
-      transparent: true,
-      version: '1.3.0',
-      tiled: true,
-      maxZoom: 21,
-      title: secondLayer.titulo,
-      format: "image/png",
-      exceptions: secondLayer.featureInfoFormat,
-      INFO_FORMAT: secondLayer.featureInfoFormat,
-    });  
-    overlayMaps[secondLayer.nombre] = wmsSource.getLayer(secondLayer.nombre);
-  }
+    exceptions: layerSelected.featureInfoFormat,
+    INFO_FORMAT: layerSelected.featureInfoFormat,
+  }); 
+  
+  overlayMaps[layerSelected.nombre] = wmsSource.getLayer(layerSelected.nombre);
+  overlayMaps[layerSelected.nombre]._source.options.identify = true;
 }
 
 function loadWms(callbackFunction, objLayer) {
@@ -1012,7 +1024,7 @@ function closeGeoprocessModal() {
 }
 
 function deleteLayerGeometry(layer) {
-  mapa.removeGroup(layer, true); //Remove group from mapa.groupLayers
+  mapa.removeGroup(layer, true, layer);
   let id = "#fl-" + layer;
   let parent = $(id).parent()[0];
 
