@@ -792,7 +792,7 @@ function adaptToImage(imgDiv) {
       ? max_url_img
       : (max_url_img +=
         ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
-    container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
+    container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}' onerror='showImageOnError(this);this.parentNode.append(" Image not found")'></img>`;
 
     resize_img_icon.onclick = (event) => {
       if (container_expand_legend_grafic.getAttribute("load") === "true") {
