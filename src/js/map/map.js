@@ -1106,7 +1106,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								if (typeof layer != "string" && !layer._uneditable && !layer.value) {
-									mapa.deleteLayer(layer.name, layer.id);
+									mapa.deleteLayer(layer.name);
 								}
 							}
 						});
@@ -2235,11 +2235,11 @@ $("body").on("pluginLoad", function (event, plugin) {
 							if (idx >= 0) {
 								lyr.layer.features.splice(idx, 1);
 								// If the addedLayers array is now empty, remove it from the addedLayers array and update the UI
-								if (lyr.layer.features.length === 0) {
-									addedLayers.splice(addedLayers.indexOf(lyr), 1);
-								}
 							} else {
 								delFileItembyID(id);
+							}
+							if (lyr.layer.features.length === 0) {
+								addedLayers.splice(addedLayers.indexOf(lyr), 1);
 							}
 							updateNumberofLayers(lyr.section)
 						});
@@ -2727,6 +2727,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.name = name;
 						layer.type = type;
 						layer.data = { geoJSON };
+						layer.data.geoJSON.properties.name = name;
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
 
 						layer.on({
@@ -2805,7 +2806,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				});
 			};
 
-			mapa = new L.map( "mapa", {
+			mapa = new L.map("mapa", {
 				center: app.hasOwnProperty('mapConfig') ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude] : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
 				zoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.initial : DEFAULT_ZOOM_LEVEL,
 				layers: currentBaseMap ? [currentBaseMap] : undefined,
