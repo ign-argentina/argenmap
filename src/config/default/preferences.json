@@ -59,14 +59,14 @@
     "height":"31px"
   },
   "theme": {
-    "bodyBackground": "#37bbed",
-    "headerBackground": "#37bbed",
-    "menuBackground": "#37bbed",
+    "bodyBackground": "#0db2e0",
+    "headerBackground": "#0db2e0",
+    "menuBackground": "#0db2e0",
     "activeLayer": "#33b560",
     "textMenu":"white",
-    "textMenuStyle":"text-shadow: #103847 1px 1px 15px",
-    "textLegendMenu":"#dddddd",
-    "textLegendMenuStyle":"text-shadow: #103847 1px 1px 15px",
+    "textMenuStyle":"",
+    "textLegendMenu":"#fafafa",
+    "textLegendMenuStyle":"",
     "iconBar":"#4f4f4f"
     },
   "logo": {
@@ -74,11 +74,17 @@
     "src": "src/styles/images/argenmap-banner-white.webp",
     "height": "",
     "width": "",
-    "style": "background-size: 160px",
-    "srcLogoMini": "src/config/default/styles/images/logo_RESPONSIVE.png",
+    "style": "background-size: 160px;",
+    "srcLogoMini": "src/styles/images/argenmap-banner-white.webp",
     "miniHeight": "",
     "miniWidth": "",
-    "ministyle": ";"
+    "ministyle": "filter: drop-shadow(1px 1px 1px #103847); width: 128px;",
+    "link": "https://github.com/ign-argentina/argenmap"
+  },
+  "logoText": {
+    "content": "Lorem Ipsum",
+    "title":"Lorem Ipsum",
+    "link": "#"
   },
   "title": "Argenmap",
   "website": "https://github.com/ign-argentina/argenmap",
@@ -95,9 +101,9 @@
       {
         "name": "Curvas de Nivel",
         "geoprocess": "contour",
-        "namePrefix": "Curvas_de_Nivel_",
         "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0",
         "layer": "alos_unificado",
+        "namePrefix": "curvas_de_nivel_",
         "styles": {
           "line_color": "#e0b44c",
           "line_weight": 0.8,
@@ -110,14 +116,19 @@
       {
         "name": "Cota",
         "geoprocess": "waterRise",
-        "namePrefix": "Cota_",
-        "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
+        "namePrefix": "cota_",
+        "layer": "geoprocesos:alos_unificado",
+        "baseUrl": "https://imagenes.ign.gob.ar/geoserver/ows?service=WPS&version=1.0.0"
       },
       {
-        "name": "Área de Influencia",
+        "name": "Área de influencia",
         "geoprocess": "buffer",
-        "namePrefix": "Area_de_Influencia_",
-        "baseUrl": "https://imagenes.ign.gob.ar/geoserver/geoprocesos/ows?service=WPS&version=1.0.0"
+        "namePrefix": "area_de_influencia_"
+      },
+      {
+        "name": "Perfil de Elevación",
+        "geoprocess": "elevationProfile",
+        "namePrefix": "profile_"
       }
     ]
   },
@@ -125,8 +136,14 @@
     "name": "hillshade",
     "attribution": "sombra de montaña <a target='_blank' href='https://www.arcgis.com/home/item.html?id=1b243539f4514b6ba35e7d995890db1d'>©Esri</a>",
     "url": "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}.png",
-    "addTo": ["argenmap"],
+    "addTo": ["argenmap", "argenmap_gris"],
     "icon": "src/styles/images/mountains.svg",
-    "switchLabel": "Agregar sombra de montaña"
+    "switchLabel": "Agregar sombra de montaña Esri"
+  },
+  "strings": {
+    "basemap_min_zoom": "Zoom mínimo de ",
+    "basemap_max_zoom": " y máximo de ",
+    "basemap_legend_button_text": "Ver leyenda del mapa",
+    "delete_geometry": "Eliminar geometría"
   }
 }
