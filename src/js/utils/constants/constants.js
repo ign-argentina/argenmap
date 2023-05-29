@@ -77,7 +77,8 @@ const PLUGINS = {
   FullScreen: "src/js/components/fullscreen/fullscreen.js",
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
   loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
-  consultData: "src/js/components/consultData/consultData.js"
+  consultData: "src/js/components/consultData/consultData.js",
+  aboutButton: "src/js/components/about/about.js"
 };
 
 const MESSAGE_TIME = 10000;

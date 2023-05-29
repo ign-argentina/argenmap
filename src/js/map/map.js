@@ -46,10 +46,10 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
 var ordenZoomHome = 1; var ordenFullScreen = 5; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 2;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
-var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14; var ordenAboutButton = 15;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function (event, plugin) {
 	unordered = '';
@@ -76,6 +76,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 			break;
 		case 'FullScreen':
 			ordered.splice(ordenFullScreen, 1, plugin.pluginName);
+			break;
+		case 'aboutButton':
+			ordered.splice(ordenAboutButton, 1, plugin.pluginName);
 			break;
 		case 'Draw':
 			ordered.splice(ordenDraw, 1, plugin.pluginName);
@@ -121,6 +124,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 	}
 	if (visiblesActivar && gestorMenu.pluginExists('FullScreen')) {
 		if (gestorMenu.plugins['FullScreen'].getStatus() == 'ready' || gestorMenu.plugins['FullScreen'].getStatus() == 'fail') {
+		} else { visiblesActivar = false; }
+	}
+	if (visiblesActivar && gestorMenu.pluginExists('aboutButton')) {
+		if (gestorMenu.plugins['aboutButton'].getStatus() == 'ready' || gestorMenu.plugins['aboutButton'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
 	if (visiblesActivar && gestorMenu.pluginExists('locate')) {
@@ -227,6 +234,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 				case 'FullScreen':
 					const fs = new Fullscreen();
 					fs.createComponent();
+					break;
+				case 'aboutButton':
+					const ab = new AboutButton();
+					ab.createComponent();
 					break;
 				case 'loadLayer':
 					const loadLayersModal = new LoadLayersModal();
