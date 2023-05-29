@@ -1007,15 +1007,21 @@ function clickWMSLayer(layer, layer_item, fileName) {
   showTotalNumberofLayers();
 }
 
-function checkIfGeoprocessingIsOpen() {
+function geoprocessModalIsOpen() {
+  if (document.getElementById("select-process")) {
+    return true
+  } else return false
+}
+
+function closeGeoprocessModal() {
   if (document.getElementById("select-process")) {
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
   }
 }
 
-function deleteLayerGeometry(layer, file) {
-  mapa.removeGroup(layer, true, file);
+function deleteLayerGeometry(layer) {
+  mapa.removeGroup(layer, true, layer);
   let id = "#fl-" + layer;
   let parent = $(id).parent()[0];
 
