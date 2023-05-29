@@ -17,7 +17,7 @@ const DEFAULT_LONGITUDE = -59;
 let _antialias = true,
   _dpi = '111',
   _font = 'verdana',
-  _hideEmpty=true,
+  _hideEmpty=false,
   _labelMargin= '5';
 const _LEGEND_OPTIONS = `&LEGEND_OPTIONS=fontAntiAliasing:${_antialias};dpi:${_dpi};fontName:${_font};hideEmptyRules:${_hideEmpty};labelMargin:${_labelMargin};`;
 //GetLegendGraphic params
