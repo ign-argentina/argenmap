@@ -19,6 +19,22 @@ Fetches the help tour data from a JSON file asynchronously and assigns it to the
     }
 })();
 
+function removeElementsNotInArray(json) {
+    if (!json || !Array.isArray(json.sequence)) {
+        return;
+    }
+    const sequence = json.sequence;
+
+    for (let i = sequence.length - 1; i >= 0; i--) {
+        const id = sequence[i];
+        const element = document.querySelector(id.element);
+
+        if (!element) {
+            sequence.splice(i, 1);
+        }
+    }
+};
+
 class HelpTour {
     constructor() {
         this.component = `
@@ -35,6 +51,7 @@ class HelpTour {
         elem.innerHTML = this.component;
         elem.addEventListener("click", function (event) {
             event.preventDefault();
+            removeElementsNotInArray(app.helpTourData ?? options);
             new TooltipTourMaker(app.helpTourData ?? options);
         });
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
