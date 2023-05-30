@@ -328,8 +328,8 @@ class TooltipTourMaker {
         initModal.id = 'initModal';
         initModal.classList.add('initModal');
         initModal.innerHTML = `
-            <h3>Ayuda Rápida</h3>
-            <br>
+            <h3>${this.data.welcomeTitle}</h3>
+            
             <p>${this.data.welcomeText}</p>
             <div class="initModalBtn">
                 <button id="initModalBtnConfirm" class="btn btn-primary">${this.data.confirmText}</button>

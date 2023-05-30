@@ -4,7 +4,7 @@
     align-items: center;
     flex-direction: column;
     width: 400px;
-    height: 150px;
+    height: auto;
     background-color: #f6f6f6ee;
     color: black;
     box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
@@ -16,8 +16,11 @@
     z-index: 9999;
 }
 .initModalBtn button {
-    width: 100px;
+    width: auto;
     margin: 5px 20px;
+}
+.initModal p {
+    text-align: center;
 }
 .stop-scroll {
     overflow: hidden;
@@ -36,7 +39,7 @@
     position: absolute;
     font-size: 15px;
     border-radius: 6px;
-    height: 170px;
+    height: auto;
     min-width: 400px;
     max-width: 400px;
     z-index: 9998;
@@ -53,7 +56,7 @@
     padding: 10px;
     margin: 0 !important;
 }
-#tooltip-helper-active-description-text > div{
+#tooltip-helper-active-description-text>div {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
