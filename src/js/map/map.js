@@ -236,8 +236,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 					fs.createComponent();
 					break;
 				case 'aboutButton':
-					const ab = new AboutButton();
-					ab.createComponent();
+					const aboutconst = new AboutButton();
+					aboutconst.createComponent();
 					break;
 				case 'loadLayer':
 					const loadLayersModal = new LoadLayersModal();
