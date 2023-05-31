@@ -2,11 +2,11 @@ class MenuUI {
     menuUI = null;
     //elements = {};
 
-    constructor(id, name, nodeType) {
-        this.name = name;
+    constructor(id, name, nodeType, className) {
         this.menuUI = document.createElement(nodeType);
         this.menuUI.id = id;
-        //this.menuUI.className;
+        this.menuUI.name = name;
+        this.menuUI.className = className;
     }
 
     getMenuUI() {
@@ -16,30 +16,30 @@ class MenuUI {
     addTo(parentID) {
         let _parent = document.getElementById(parentID);
         if (!_parent) {
-            return new UserMessage("el nodo HTML de destino no existe", true, "error");
-            // _parent += _parent + "_" + Math.random();
+            return new UserMessage("El nodo HTML de destino no existe.", true, "error");
         }
         _parent.appendChild(this.menuUI);
     }
-    remove(id) {
-        let _element = document.getElementById(id);
-        _element.remove();
+    remove() {
+        this.menuUI.remove();
     }
     setStyle(cssClass) {
         // validar si la clase existe
-        // si existe cambaitar, sino arroja advertencia
         this.menuUI.className = cssClass;
     }
 }
-
 class Menu extends MenuUI {
-    constructor(type) {
-        super()
-        this.type = type;
+    constructor(options, callback) {
+        super(options.id, options.name, options.nodeType, options.className)
     }
     sort() {
     }
-    getElements() {
+}
+class LayerMenu extends Menu {
+    constructor(options, callback) {
+        super(options.id, options.name, options.nodeType, options.className)
+    }
+    sort() {
     }
 }
 
@@ -47,14 +47,19 @@ function navbarBehavior() {
     //escucha al evento click de los hijos y mostara el menu de cada uno
 }
 
-// //Menus
-// let menuOptions = {id: "navbar", className: "navbar-submenu"};
+//Example
+// let navbar1 = new MenuUI("navbarUI", "navbarTest", "button");
+//navbar1.addTo("sidebar-container");
+
+
+//Menus
+// let menuOptions = {id: "navbar", className: "navbar-submenu", nodeType: "div"};
 // let navbar = new Menu(menuOptions, navbarBehavior);
 // navbar.addTo("navbar-container");
 
-// let layerMenuOptions = {id: "layer-menu", className: "navbar-submenu", nodeType: "ul"};
-// let layerMenu = new Menu(layerMenuOptions);
-// layerMenu.addTo("navbar");
+let layerMenuOptions = {id: "layer-menu", className: "navbar-submenu", nodeType: "ul"};
+let layerMenu = new LayerMenu(layerMenuOptions);
+//layerMenu.addTo("navbar");
 
 // let helpMenuOptions = {id: "help-menu", className: "navbar-submenu", };
 // let helpMenu = new Menu(helpMenuOptions);
