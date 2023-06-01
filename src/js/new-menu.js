@@ -9,7 +9,7 @@ class MenuUI {
         this.menuUI.className = className;
     }
 
-    getMenuUI() {
+    getContent() {
         return this.menuUI;
     }
 
@@ -31,6 +31,7 @@ class MenuUI {
 class Menu extends MenuUI {
     constructor(options, callback) {
         super(options.id, options.name, options.nodeType, options.className)
+        this.menuUI.type = options.type
     }
     sort() {
     }
@@ -53,8 +54,8 @@ function navbarBehavior() {
 
 
 //Menus
-// let menuOptions = {id: "navbar", className: "navbar-submenu", nodeType: "div"};
-// let navbar = new Menu(menuOptions, navbarBehavior);
+let menuOptions = {id: "navbar", className: "navbar-submenu", nodeType: "div", type: "esUnString"};
+let navbar = new Menu(menuOptions, navbarBehavior);
 // navbar.addTo("navbar-container");
 
 let layerMenuOptions = {id: "layer-menu", className: "navbar-submenu", nodeType: "ul"};
@@ -75,19 +76,18 @@ let layerMenu = new LayerMenu(layerMenuOptions);
 // navbar.addTo("layer-menu");
 
 
-
+//Item
 // class Item extends MenuUI {
 //     constructor(options, callback) {
-//         this.super();
+//         super(options.id, options.name, options.nodeType, options.className)
 //     }
 //     onclick() {
 //         //detecta el click y llama a callback
 //     }
 // }
 
-// class Layer extends ParentClass {
+// class Layer {
 //     constructor() {
-//         this.super();
 //     }
 //     add(_mapId) {
 //         this.addTo(_mapId)
@@ -98,10 +98,9 @@ let layerMenu = new LayerMenu(layerMenuOptions);
 //         let _layer = new Layer(layer);
         
 //         //genero un boton por capa
-//         let itemOptions = {id: layer.id + "_btn", className: "layer-btn"}
+//         let itemOptions = {id: layer.id + "_btn", className: "layer-btn", nodeType: "button"}
 //         let item = new Item(itemOptions, _layer.add())
 //         //agrega el boton al menu de capas
 //         item.addTo("layer-menu");
 //     });
-    
 // }
