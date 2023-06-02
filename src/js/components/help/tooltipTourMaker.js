@@ -7,8 +7,15 @@ class TooltipTourMaker {
             confirmText: "Yes",
             cancelText: "No",
             backdropColor: "#1b1b1b8e",
+            tooltipsBtns: {
+                prevBtn: "Previous",
+                nextBtn: "Next",
+                closeBtn: "Close",
+                endBtn: "Finish"
+            },
             sequence: [{
-                element: '#help', description: {
+                element: '#help',
+                description: {
                     title: "Title",
                     text: "Description"
                 },
@@ -35,6 +42,10 @@ class TooltipTourMaker {
         // Adjust arrow position for small screens if it's "left" or "right"
         if (window.innerWidth <= 400 && (getArrowPos === "left" || getArrowPos === "right")) {
             getArrowPos = "bottom";
+        }
+
+        if (element.needClickToOpen) {
+            document.querySelector(element.needClickToOpen).click()
         }
 
         const item = document.querySelector(elemId); // Get the target element
@@ -98,7 +109,7 @@ class TooltipTourMaker {
     * @param {HTMLElement} tooltipDiv - The tooltipDiv element.
     * @returns {Object} The position for the helper arrow.
     */
-    getArrowPosition = (helperArrow, arrowPos, divPos, highlightItem, tooltipDiv) => {
+    getArrowPosition(helperArrow, arrowPos, divPos, highlightItem, tooltipDiv) {
         let pos = { x: 0, y: 0 };
         const highlightItemSize = highlightItem.getBoundingClientRect();
         const tooltipDivSize = tooltipDiv.getBoundingClientRect();
@@ -143,7 +154,7 @@ class TooltipTourMaker {
      * @param {HTMLElement} tooltipContainer - The tooltip container element.
      * @returns {HTMLElement} The helper arrow element.
      */
-    getHelperArrow = (tooltipContainer) => {
+    getHelperArrow(tooltipContainer) {
         let helperArrow = document.querySelector("#tooltip-helper-backdrop #tooltip-helper-arrow");
 
         // If the helper arrow element does not exist, create it
@@ -161,7 +172,7 @@ class TooltipTourMaker {
      * @param {string} description - The description text for the tooltip.
      * @returns {HTMLElement} The tooltip div element.
      */
-    createTooltipDiv = (tooltipContainer, description) => {
+    createTooltipDiv(tooltipContainer, description) {
         const { sequence } = this.data;
         let descriptionDiv = document.querySelector("#tooltip-helper-backdrop .tooltip-helper-active-description");
 
@@ -173,10 +184,10 @@ class TooltipTourMaker {
             descriptionDiv.innerHTML = `
             <p id="tooltip-helper-active-description-text"></p>
             <div class="tooltip-helper-footer">
-              <button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">Cerrar</button>
+              <button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">${this.data.tooltipsBtns.closeBtn}.</button>
               <div>
-                <button id="tooltip-helper-prev-sequence" class="tooltip-helper-prev-sequence">Anterior</button>
-                <button id="tooltip-helper-next-sequence" class="tooltip-helper-next-sequence ml-2">Siguiente</button>
+                <button id="tooltip-helper-prev-sequence" class="tooltip-helper-prev-sequence">${this.data.tooltipsBtns.prevBtn}</button>
+                <button id="tooltip-helper-next-sequence" class="tooltip-helper-next-sequence ml-2">${this.data.tooltipsBtns.nextBtn}</button>
               </div>
             </div>
           `;
@@ -190,11 +201,11 @@ class TooltipTourMaker {
         if (this.cont === 0) {
             prevSequence.setAttribute("disabled", true);
             prevSequence.classList.add("tooltip-disabled-btn");
-            nextSequence.innerText = sequence.length === 1 ? "Finalizar" : "Siguiente";
+            nextSequence.innerText = sequence.length === 1 ? this.data.tooltipsBtns.endBtn : this.data.tooltipsBtns.nextBtn;
         } else {
             prevSequence.removeAttribute("disabled", true);
             prevSequence.classList.remove("tooltip-disabled-btn");
-            nextSequence.innerText = this.cont === sequence.length - 1 ? "Finalizar" : "Siguiente";
+            nextSequence.innerText = this.cont === sequence.length - 1 ? this.data.tooltipsBtns.endBtn : this.data.tooltipsBtns.nextBtn;
         }
 
         document.getElementById("tooltip-helper-active-description-text").innerHTML = `<div><h3>${description.title}</h3><span>${this.cont + 1}/${sequence.length}</span></div><div>${description.text}</div>`; // Set the description text
@@ -209,7 +220,7 @@ class TooltipTourMaker {
     * @param {string} arrowPos - The arrow position ("top", "right", "bottom", "left").
     * @returns {Object} The position {x, y} for the tooltip div.
     */
-    calculateTooltipPosition = (item, tooltipDiv, arrowPos) => {
+    calculateTooltipPosition(item, tooltipDiv, arrowPos) {
         const itemSize = item.getBoundingClientRect();
         const tooltipDivSize = tooltipDiv.getBoundingClientRect();
         const pos = { x: 0, y: 0 };
@@ -243,13 +254,13 @@ class TooltipTourMaker {
     };
 
     /**
-      * Creates and highlights an active tooltip item.
-      * @param {HTMLElement} tooltipContainer - The tooltip container element.
-      * @param {DOMRect} itemSize - The size of the item.
-      * @param {CSSStyleDeclaration} style - The computed styles of the item.
-      * @returns {HTMLElement} The created and highlighted tooltip item.
-      */
-    highlightItem = (tooltipContainer, itemSize, style) => {
+    * Creates and highlights an active tooltip item.
+    * @param {HTMLElement} tooltipContainer - The tooltip container element.
+    * @param {DOMRect} itemSize - The size of the item.
+    * @param {CSSStyleDeclaration} style - The computed styles of the item.
+    * @returns {HTMLElement} The created and highlighted tooltip item.
+    */
+    highlightItem(tooltipContainer, itemSize, style) {
         const { backdropColor } = this.data;
         let tooltipActive = document.querySelector("#tooltip-helper-backdrop .tooltip-helper-active"); // Check if an active tooltip item already exists
 
@@ -273,9 +284,9 @@ class TooltipTourMaker {
     };
 
     /**
-      * Closes the tooltip helper and performs cleanup actions.
-      */
-    closeHelp = () => {
+    * Closes the tooltip helper and performs cleanup actions.
+    */
+    closeHelp() {
         document.querySelector("body").classList.remove("stop-scroll"); // Remove the "stop-scroll" class from the body element
 
         document.removeEventListener("keydown", this.arrowsKeyShortcuts, false); // Removes the EventListener for the "keydown" event with the handler function "this.arrowsKeyShortcuts"
@@ -290,10 +301,10 @@ class TooltipTourMaker {
     };
 
     /**
-      * Moves to the next or previous tooltip in the sequence based on the given offset.
-      * @param {number} secuncyPos - The offset to move in the sequence. Positive for next, negative for previous.
-      */
-    secuncyPos = (secuncyPos) => {
+    * Moves to the next or previous tooltip in the sequence based on the given offset.
+    * @param {number} secuncyPos - The offset to move in the sequence. Positive for next, negative for previous.
+    */
+    secuncyPos(secuncyPos) {
         const { sequence } = this.data;
 
         this.cont += secuncyPos; // Update the counter by adding the offset
@@ -311,10 +322,10 @@ class TooltipTourMaker {
     };
 
     /**
-      * Initializes the tour with the given options.
-      * @param {Object} options - The options for the tour.
-      */
-    initTour = (options) => {
+    * Initializes the tour with the given options.
+    * @param {Object} options - The options for the tour.
+    */
+    initTour(options) {
         this.data = { ...this.data, ...options };
 
         // Create tooltip backdrop element
@@ -354,10 +365,10 @@ class TooltipTourMaker {
     };
 
     /**
-      * Creates the sequence for the tour with the given options.
-      * @param {Object} options - The options and elements for the sequence.
-      */
-    createSequence = (options) => {
+    * Creates the sequence for the tour with the given options.
+    * @param {Object} options - The options and elements for the sequence.
+    */
+    createSequence(options) {
         this.data = { ...this.data, ...options };
 
         // Add event listener to the tooltip backdrop for click events
@@ -377,7 +388,7 @@ class TooltipTourMaker {
         });
 
         // Add event listeners to handle keyboard arrow keys
-        document.addEventListener("keydown", this.arrowsKeyShortcuts);
+        document.addEventListener("keydown", (e) => { this.arrowsKeyShortcuts(e) });
 
         // Create the tooltip
         this.createTooltip();
@@ -387,8 +398,9 @@ class TooltipTourMaker {
     * Handles the keyboard shortcuts for arrow keys.
     * @param {KeyboardEvent} event - The keyboard event object.
     */
-    arrowsKeyShortcuts = (event) => {
+    arrowsKeyShortcuts(event) {
         const prevSequence = document.getElementById("tooltip-helper-prev-sequence");
+        const currentElement = this.data.sequence[this.cont];
 
         if (event.key === "ArrowLeft" && !prevSequence.disabled) {
             // Left arrow key
@@ -396,6 +408,9 @@ class TooltipTourMaker {
         } else if (event.key === "ArrowRight") {
             // Right arrow key
             this.secuncyPos(1);
+        }
+        if (currentElement.needClickToOpen) {
+            document.querySelector(currentElement.needClickToOpen).click();
         }
     }
 };

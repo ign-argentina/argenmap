@@ -4,6 +4,12 @@
     "confirmText": "Comenzar tutorial",
     "cancelText": "Cerrar",
     "backdropColor": "#6262625d",
+    "tooltipsBtns": {
+        "prevBtn": "Anterior",
+        "nextBtn": "Siguiente",
+        "closeBtn": "Cerrar",
+        "endBtn": "Finalizar"
+    },
     "sequence": [
         {
             "element": "#mapa",
@@ -22,7 +28,7 @@
             "placement": "right"
         },
         {
-            "element": "#tabContent",
+            "element": ".menu5.panel-default",
             "description": {
                 "title": "Panel de capas",
                 "text": "Selecciona una de las unidades temáticas de tu interés y se desplegarán las capas disponibles. Al hacer clic en alguna ellas, se superpondrán en el mapa."
@@ -46,7 +52,8 @@
             "placement": "bottom"
         },
         {
-            "element": ".leaflet-control-layers-toggle",
+            "element": ".list-inline",
+            "needClickToOpen": ".leaflet-control-layers-toggle",
             "description": {
                 "title": "Selector de mapas base",
                 "text": "Elige entre distintos mapas base incluyendo mapas topográficos e imágenes satelitales."
@@ -79,6 +86,7 @@
         },
         {
             "element": ".leaflet-control-customgraticule",
+            "needClickToOpen": ".leaflet-control-customgraticule",
             "description": {
                 "title": "Cuadrícula",
                 "text": "Aplica una cuadrícula graduada sobre el mapa"
