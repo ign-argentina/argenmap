@@ -30,36 +30,41 @@ class MenuUI {
 }
 class Menu extends MenuUI {
     constructor(options, callback) {
-        super(options.id, options.name, options.nodeType, options.className)
-        this.menuUI.type = options.type
+        super(options.id, options.name, options.nodeType, options.className);
+        this.menuUI.type = options.type;
     }
-    sort() {
+
+    sort() {}
+
+    addItem(options) {
+        let item = new ItemUI(options);
+        //agrega el boton al  menu de capas
+        item.addTo()
     }
+
 }
-class LayerMenu extends Menu {
-    constructor(options, callback) {
-        super(options.id, options.name, options.nodeType, options.className)
-    }
-    sort() {
-    }
-}
+// class LayerMenu extends Menu {
+//     constructor(options, callback) {
+//         super(options, callback);
+//     }
+//     sort() {}
+// }
 
 function navbarBehavior() {
-    //escucha al evento click de los hijos y mostara el menu de cada uno
+    //escucha al evento click de los hijos y mostrara el menu de cada uno
 }
 
-//Example
-// let navbar1 = new MenuUI("navbarUI", "navbarTest", "button");
+//MenuUI
+let navbar1 = new MenuUI("navbar-ui", "navbarUI", "button", "navbar-ui");
 //navbar1.addTo("sidebar-container");
-
 
 //Menus
 let menuOptions = {id: "navbar", className: "navbar-submenu", nodeType: "div", type: "esUnString"};
 let navbar = new Menu(menuOptions, navbarBehavior);
 // navbar.addTo("navbar-container");
 
-let layerMenuOptions = {id: "layer-menu", className: "navbar-submenu", nodeType: "ul"};
-let layerMenu = new LayerMenu(layerMenuOptions);
+// let layerMenuOptions = {id: "layer-menu", className: "navbar-submenu", nodeType: "ul"};
+// let layerMenu = new LayerMenu(layerMenuOptions);
 //layerMenu.addTo("navbar");
 
 // let helpMenuOptions = {id: "help-menu", className: "navbar-submenu", };
@@ -76,8 +81,8 @@ let layerMenu = new LayerMenu(layerMenuOptions);
 // navbar.addTo("layer-menu");
 
 
-//Item
-// class Item extends MenuUI {
+//ItemUI
+// class ItemUI extends MenuUI {
 //     constructor(options, callback) {
 //         super(options.id, options.name, options.nodeType, options.className)
 //     }
@@ -99,7 +104,7 @@ let layerMenu = new LayerMenu(layerMenuOptions);
         
 //         //genero un boton por capa
 //         let itemOptions = {id: layer.id + "_btn", className: "layer-btn", nodeType: "button"}
-//         let item = new Item(itemOptions, _layer.add())
+//         let item = new ItemUI(itemOptions, _layer.add())
 //         //agrega el boton al menu de capas
 //         item.addTo("layer-menu");
 //     });
