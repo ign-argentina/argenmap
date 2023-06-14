@@ -1,6 +1,3 @@
-/* const mapID = app.mapConfig.id ?? document.getElementsByClassName("leaflet-container");
-const map = document.getElementById(mapID); */
-
 var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
 	baseMaps = {},
 	overlayMaps = new Object(),
@@ -1106,7 +1103,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							onclick: (option) => {
 								mapa.closePopup(contextPopup);
 								if (typeof layer != "string" && !layer._uneditable && !layer.value) {
-									mapa.deleteLayer(layer.name);
+									mapa.deleteLayer(layer.name, layer.id);
 								}
 							}
 						});
@@ -2250,7 +2247,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 					};
 
 					mapa.removeGroup = (group, deleteLayers) => {
-
 						if (mapa.groupLayers.hasOwnProperty(group)) {
 							if (deleteLayers) {
 								const layersArr = [...mapa.groupLayers[group]];
