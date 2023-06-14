@@ -347,6 +347,9 @@ function parseFeatureInfoHTML(info, idTxt) {
 
 //Parse FeatureInfo to display into popup (if info is application/json)
 function parseFeatureInfoJSON(info, idTxt, title) {
+  if(info.includes("Either no layer was queryable, or no layers were specified using QUERY_LAYERS")) {
+    return "LayerNotQueryable";
+  }
   info = JSON.parse(info);
 
   if (info.exceptions) {
