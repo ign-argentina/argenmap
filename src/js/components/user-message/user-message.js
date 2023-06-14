@@ -20,8 +20,9 @@ class UserMessage {
 
         const closeBtn = document.createElement('div');
         closeBtn.className = 'message-close-btn';
-        closeBtn.innerText = 'x';
-        closeBtn.onclick = () => {
+        closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        closeBtn.onclick = (e) => {
+            e.stopPropagation();
             messageContainer.remove();
         };
         messageContainer.appendChild(closeBtn);

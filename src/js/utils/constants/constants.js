@@ -13,6 +13,18 @@ const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
 
+//GetLegendGraphic options
+let _antialias = true,
+  _dpi = '111',
+  _font = 'verdana',
+  _hideEmpty=false,
+  _labelMargin= '5';
+const _LEGEND_OPTIONS = `&LEGEND_OPTIONS=fontAntiAliasing:${_antialias};dpi:${_dpi};fontName:${_font};hideEmptyRules:${_hideEmpty};labelMargin:${_labelMargin};`;
+//GetLegendGraphic params
+let _LEGEND_TRANSPARENT=true,
+  _LEGEND_SCALE=1;
+const _LEGEND_PARAMS = `&transparent=${_LEGEND_TRANSPARENT}&scale=${_LEGEND_SCALE}`;
+
 const STRINGS = {
   basemap_legend_button_text: "View basemap legend",
   basemap_max_zoom: " to max zoom ",

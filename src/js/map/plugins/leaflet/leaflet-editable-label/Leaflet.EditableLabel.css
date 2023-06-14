@@ -21,7 +21,9 @@
   height: 32px;
 }
 
-.my-div-icon {
+.div-icon {
+  width: auto !important;
+  height: auto !important;
   background-color: transparent;
   display: flex;
 }
