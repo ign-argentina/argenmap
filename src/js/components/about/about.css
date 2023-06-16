@@ -1,8 +1,4 @@
-* {
 
-    font-family: 'Times New Roman', Times, serif;
-
-}
 
 
 .about-header {
@@ -55,7 +51,9 @@
     
     font-family: monospace; /*revisar*/
     
-    padding: 1%;
+    user-select: none;
+    cursor :pointer;
+    padding: 0.5%;
     padding-bottom: 0%;
     color: #37BBED;
     border: solid #94D6E9;
@@ -95,17 +93,41 @@
 
 
 .content-about-tab{
-    border: dotted 2px blue;
+    height: 250px;
 
+    
+    color: #37BBED;
+    border: solid #94D6E9;
     border-radius: 10px;
-    padding-bottom: 10%;
+    border-width: 3px; 
+    
+    background: white;
+    overflow: auto; 
 }
+
+
+.divC-temp{
+    display: flex;
+    flex-wrap: wrap;
+}
+
 
 .content-about-deactivate{
 
     display: none;
 
     
+}
+
+.all-function-div{
+
+    color: #000000;
+    padding-left: 15px;
+
+}
+
+.even-function{
+    background-color: #94D6E9;
 }
 
 
@@ -130,6 +152,58 @@
 
     /*left: 10%;*/
 }
+
+
+
+.temp-card{
+    border-radius: 8px;
+    color: #FFFFFF;
+    background-color: #37BBED;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin: 5%;
+    margin-bottom: 1%;
+    margin-top: 2%;
+    width: 23%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    
+
+}
+
+.temp-card:hover{
+    background-color: #1a4570;
+    transition: 200ms;
+
+}
+
+.temp-img{
+
+    border-radius: 25px;
+    object-fit: cover;
+    width : 90%;
+    
+
+}
+
+.temp-user{
+
+    margin-top: 3px;
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 670px) {
@@ -160,8 +234,9 @@
 
 @media (min-width: 1260px) {
     #whole-about {
-        background-color: rgb(242, 242, 242) !important;
-        width: 37%;
-        left: 43%;
+        background-color: white !important;
+        width: 43%;
+        left: 40%;
     }
+
 }
