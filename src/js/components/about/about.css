@@ -1,0 +1,167 @@
+* {
+
+    font-family: 'Times New Roman', Times, serif;
+
+}
+
+
+.about-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 12px;
+    /*justify-content: space-between;*/
+}
+
+.about-logo {
+    z-index: 1100;
+    min-width: 90%;
+    transform: translate(4%, 0%);
+}
+
+.about-exit {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    
+    z-index: 1200;
+    min-width: 1%;
+    max-width: 4%;
+}
+
+.about-main-section{
+    
+   
+    display: flex;
+    
+    flex-direction: column;
+}
+
+.about-tabs-bar{
+
+
+
+    min-width: 100%;
+    margin-top: 3%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+   
+
+}
+
+.tab-prueba{
+    
+    font-family: monospace; /*revisar*/
+    
+    padding: 1%;
+    padding-bottom: 0%;
+    color: #37BBED;
+    border: solid #94D6E9;
+    border-radius: 10px 10px 0px 0px;
+    border-width: 3px 3px 0px 3px; 
+    
+}
+
+.tab-prueba:hover{
+
+    color: #FFFFFF;
+    border: solid #37BBED;
+    border-width: 3px 3px 0px 3px;
+    background-color: #37BBED;
+    
+    
+}
+
+.tab-active{
+
+    color: #FFFFFF;
+    border: solid #37BBED;
+    border-width: 3px 3px 0px 3px;
+    background-color: #37BBED;
+    
+}
+
+.tab-onclik{
+
+    color: #FFFFFF;
+    border: solid #37BBED;
+    border-width: 3px 3px 0px 3px;
+    background-color: #37BBED;
+    
+    
+}
+
+
+.content-about-tab{
+    border: dotted 2px blue;
+
+    border-radius: 10px;
+    padding-bottom: 10%;
+}
+
+.content-about-deactivate{
+
+    display: none;
+
+    
+}
+
+
+
+
+#whole-about {
+
+    overflow: hidden;
+    float: none;
+    border-radius: 6px;
+    z-index: 1000;
+    padding: 8px 12px;
+    background-color: white !important;
+    position: absolute;
+    top: 15%;
+    margin-bottom: 10px;
+    -moz-box-shadow: inset 0 0 10px #000000;
+    -webkit-box-shadow: inset 0 0 10px #000000;
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 80%;
+
+
+    /*left: 10%;*/
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 670px) {
+    #whole-about {
+        background-color: yellow !important;
+        width: 60%;
+        left: 21%;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    #whole-about {
+        background-color: blue !important;
+        width: 50%;
+        left: 37%;
+    }
+}
+
+/* Large devices (tablets, 768px and up)  */
+@media (min-width: 992px) {
+    #whole-about {
+        background-color: red !important;
+        width: 40%;
+        left: 43%;
+    }
+}
+
+@media (min-width: 1260px) {
+    #whole-about {
+        background-color: rgb(242, 242, 242) !important;
+        width: 37%;
+        left: 43%;
+    }
+}
