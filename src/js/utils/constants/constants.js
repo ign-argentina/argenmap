@@ -80,19 +80,21 @@ const PLUGINS = {
   consultData: "src/js/components/consultData/consultData.js"
 };
 
-const MESSAGE_TIME = 10000;
-const MESSAGE_COLORS = {
+const MESSAGE_PROPERTIES = {
   information: {
     background: "rgba(0,141,201, 0.75)",
     text: "white",
+    time: 2000
   },
   error: {
     background: "rgba(255, 0, 0, 0.75)",
     text: "white",
+    time: 10000
   },
   warning: {
     text: "#856404",
     background: "rgba(247,226,58,0.75)",
+    time: 5000
   },
 };
 
