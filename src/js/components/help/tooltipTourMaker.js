@@ -20,9 +20,11 @@ class TooltipTourMaker {
                     text: "Description"
                 },
                 placement: 'left'
-            }],
-            onComplete: function () { },
+            }]
         };
+        
+        this.boundArrowsKeyShortcuts = this.arrowsKeyShortcuts.bind(this);
+        
         this.initTour(options ?? this.data);
     }
 
@@ -289,7 +291,7 @@ class TooltipTourMaker {
     closeHelp() {
         document.querySelector("body").classList.remove("stop-scroll"); // Remove the "stop-scroll" class from the body element
 
-        document.removeEventListener("keydown", this.arrowsKeyShortcuts, false); // Removes the EventListener for the "keydown" event with the handler function "this.arrowsKeyShortcuts"
+        document.removeEventListener("keydown", this.boundArrowsKeyShortcuts); // Removes the EventListener for the "keydown" event with the handler function "this.arrowsKeyShortcuts"
 
         const backdrop = document.getElementById("tooltip-helper-backdrop"); // Find the backdrop element by its ID
 
@@ -297,7 +299,7 @@ class TooltipTourMaker {
 
         this.cont = 0; // Reset the counter
 
-        this.data.onComplete(); // Call the onComplete callback function
+        this.data = {}; // Reset data
     };
 
     /**
@@ -388,7 +390,7 @@ class TooltipTourMaker {
         });
 
         // Add event listeners to handle keyboard arrow keys
-        document.addEventListener("keydown", (e) => { this.arrowsKeyShortcuts(e) });
+        document.addEventListener("keydown", this.boundArrowsKeyShortcuts);
 
         // Create the tooltip
         this.createTooltip();
