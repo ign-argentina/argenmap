@@ -41,7 +41,7 @@
                 "title": "Buscador de capas",
                 "text": "Busca y filtra las capas según el texto ingresado."
             },
-            "placement": "bottom"
+            "placement": "right"
         },
         {
             "element": "#cleanTrash",
@@ -49,7 +49,7 @@
                 "title": "Limpiar mapa",
                 "text": "Desactiva y esconde todas las capas superpuestas sobre el mapa."
             },
-            "placement": "bottom"
+            "placement": "right"
         },
         {
             "element": ".list-inline",
@@ -58,7 +58,7 @@
                 "title": "Selector de mapas base",
                 "text": "Elige entre distintos mapas base incluyendo mapas topográficos e imágenes satelitales."
             },
-            "placement": "right"
+            "placement": "bottom"
         },
         {
             "element": ".leaflet-control-zoomhome",

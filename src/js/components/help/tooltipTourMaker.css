@@ -147,3 +147,15 @@
     border-bottom: 20px solid transparent;
     border-left: 20px solid #f6f6f6ee;
 }
+@media (max-width: 440px) {
+    .initModal {
+        width: 95%;
+    }
+    .initModal h3 {
+        text-align: center;
+    }
+    .tooltip-helper-active-description {
+        min-width: 200px;
+        max-width: 330px;
+    }
+}

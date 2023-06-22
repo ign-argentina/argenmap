@@ -1,15 +1,15 @@
 'use strict';
 
 /**
-HelpTour class for managing the help tour functionality.
+* HelpTour class for managing the help tour functionality.
 */
 class HelpTour {
     constructor() { }
 
     /**
-    Fetches the help tour data from a JSON file.
-    @returns {Promise<Object|null>} A promise that resolves to the help tour data object, or null if an error occurs.
-    */
+     * Fetches the help tour data from a JSON file.
+     * @returns {Promise<Object|null>} A promise that resolves to the help tour data object, or null if an error occurs.
+     */
     async fetchHelpTourData() {
         try {
             const response = await fetch('src/js/components/help/helpTourData.json');
@@ -26,9 +26,9 @@ class HelpTour {
     }
 
     /**
-    Creates the Help Tour component and attaches event listeners.
-    @param {Object} data - The help tour data object.
-    */
+     * Creates the Help Tour component and attaches event listeners.
+     * @param {Object} data - The help tour data object.
+     */
     createComponent(data) {
         const aElement = document.createElement('a');
         aElement.id = 'iconHelp-container';
@@ -57,20 +57,34 @@ class HelpTour {
     }
 
     /**
-    Removes elements not present in the app from the provided JSON object.
-    @param {Object} json - The JSON object to modify.
-    */
+     * Removes elements not present in the app from the provided JSON object.
+     * @param {Object} json - The JSON object to modify.
+     */
     removeElementsNotInApp(json) {
         if (!json || !Array.isArray(json.sequence)) {
             return;
         }
+
         const sequence = json.sequence;
+
         for (let i = sequence.length - 1; i >= 0; i--) {
             const step = sequence[i];
-            const element = document.querySelector(step.element) || document.querySelector(step.needClickToOpen);
+            const element = document.querySelector(step.needClickToOpen) || document.querySelector(step.element);
+
             if (!element) {
+                // If the element is not found, remove the step from the sequence
+                sequence.splice(i, 1);
+                continue;
+            }
+
+            const elementRect = element.getBoundingClientRect();
+
+            if (!(elementRect && elementRect.height > 0)) {
+                // If the element does not have a positive height, remove the step from the sequence
                 sequence.splice(i, 1);
             }
         }
     }
+
+
 }

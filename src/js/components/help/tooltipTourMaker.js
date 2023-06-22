@@ -51,7 +51,11 @@ class TooltipTourMaker {
         const currentElement = this.data.sequence[this.cont];
 
         this.cont += secuncyPos; // Update the counter by adding the offset
-        //console.log(this.cont, sequence.length, this.cont >= 0 && this.cont <= sequence.length - 1);
+
+        if (currentElement.needClickToOpen) {
+            document.querySelector(currentElement.needClickToOpen).click();
+        }
+
         // Check if the counter is within the valid sequence range
         if (this.cont >= 0 && this.cont <= sequence.length - 1) {
             let tour = new Tooltip(this.data, this.cont);
@@ -62,9 +66,6 @@ class TooltipTourMaker {
             document.getElementById("tooltip-helper-backdrop").removeEventListener("click", this.handleBackdropClick); // Remove the event listener for backdrop click
 
             this.closeHelp(); // Close the tooltip helper
-        }
-        if (currentElement.needClickToOpen) {
-            document.querySelector(currentElement.needClickToOpen).click();
         }
     };
 
@@ -196,10 +197,6 @@ class Tooltip {
         }
 
         const item = document.querySelector(elemId); // Get the target element
-        /* if (!item || !tooltipContainer) {
-            let close = new TooltipTourMaker;
-            return close.closeHelp();
-        } */
 
         document.querySelector("body").classList.add("stop-scroll");
         item.scrollIntoView({ behavior: "smooth", block: "center" });
