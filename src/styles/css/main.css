@@ -1069,6 +1069,22 @@ New navbar
   height: 100%;
   width: 100%;
 }
+#nav-help-btn {
+    width: 35px;
+    height: 35px;
+    background-color: #eee;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    box-shadow: 2px 1px 2px #999;
+    cursor: pointer;
+}
+#nav-help-btn a {
+    line-height: 35px;
+}
+#nav-help-btn svg {
+    height: 35px;
+}
 #logoText {
   align-self: center;
   text-align: right;

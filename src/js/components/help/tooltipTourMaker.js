@@ -1,7 +1,7 @@
 'use strict';
 class TooltipTourMaker {
     cont = 0;
-    constructor(options) {
+    constructor() {
         this.data = {
             welcomeText: "Do you want to take the tour of the page?",
             confirmText: "Yes",
@@ -22,10 +22,154 @@ class TooltipTourMaker {
                 placement: 'left'
             }]
         };
-        
         this.boundArrowsKeyShortcuts = this.arrowsKeyShortcuts.bind(this);
-        
-        this.initTour(options ?? this.data);
+    }
+
+    /**
+    * Closes the tooltip helper and performs cleanup actions.
+    */
+    closeHelp() {
+        document.querySelector("body").classList.remove("stop-scroll"); // Remove the "stop-scroll" class from the body element
+
+        document.removeEventListener("keydown", this.boundArrowsKeyShortcuts); // Removes the EventListener for the "keydown" event with the handler function "this.arrowsKeyShortcuts"
+
+        const backdrop = document.getElementById("tooltip-helper-backdrop"); // Find the backdrop element by its ID
+
+        backdrop.remove(); // Remove the backdrop element from the DOM
+
+        this.cont = 0; // Reset the counter
+
+        this.data = {} // Reset data
+    };
+
+    /**
+    * Moves to the next or previous tooltip in the sequence based on the given offset.
+    * @param {number} secuncyPos - The offset to move in the sequence. Positive for next, negative for previous.
+    */
+    secuncyPos(secuncyPos) {
+        const { sequence } = this.data;
+        const currentElement = this.data.sequence[this.cont];
+
+        this.cont += secuncyPos; // Update the counter by adding the offset
+        //console.log(this.cont, sequence.length, this.cont >= 0 && this.cont <= sequence.length - 1);
+        // Check if the counter is within the valid sequence range
+        if (this.cont >= 0 && this.cont <= sequence.length - 1) {
+            let tour = new Tooltip(this.data, this.cont);
+            tour.createTooltip(); // Create the tooltip for the current step in the sequence
+        } else {
+            document.querySelector(sequence[this.cont - 1 * secuncyPos].element).classList.remove("tooltip-helper-active-element"); // Remove the "tooltip-helper-active-element" class from the previous element
+
+            document.getElementById("tooltip-helper-backdrop").removeEventListener("click", this.handleBackdropClick); // Remove the event listener for backdrop click
+
+            this.closeHelp(); // Close the tooltip helper
+        }
+        if (currentElement.needClickToOpen) {
+            document.querySelector(currentElement.needClickToOpen).click();
+        }
+    };
+
+    /**
+    * Initializes the tour with the given options.
+    * @param {Object} options - The options for the tour.
+    */
+    initTour(options) {
+        this.data = { ...this.data, ...options };
+
+        new Modal(this.data.welcomeTitle, this.data.welcomeText, this.data.confirmText, this.data.cancelText);
+
+        // Event listener for cancel button click
+        const cancelButton = document.getElementById("initModalBtnCancel");
+        cancelButton.addEventListener("click", () => {
+            document.getElementById("initModal").remove();
+            this.closeHelp();
+        });
+
+        // Event listener for confirm button click
+        const confirmButton = document.getElementById("initModalBtnConfirm");
+        confirmButton.addEventListener("click", () => {
+            document.getElementById("initModal").remove();
+            this.createSequence(options, this.cont);
+        });
+    };
+
+    /**
+    * Creates the sequence for the tour with the given options.
+    * @param {Object} options - The options and elements for the sequence.
+    */
+    createSequence(options) {
+        this.data = { ...this.data, ...options };
+
+        // Add event listener to the tooltip backdrop for click events
+        document.getElementById("tooltip-helper-backdrop").addEventListener("click", (e) => {
+            switch (e.target.id) {
+                case "tooltip-helper-next-sequence":
+                    return this.secuncyPos(1);
+                case "tooltip-helper-prev-sequence":
+                    return this.secuncyPos(-1);
+                case "tooltip-helper-end-sequence":
+                    return this.closeHelp();
+                case "tooltip-helper-active":
+                case "tooltip-helper-backdrop":
+                default:
+                    return;
+            }
+        });
+
+        // Add event listeners to handle keyboard arrow keys
+        document.addEventListener("keydown", this.boundArrowsKeyShortcuts);
+
+        // Create the tooltip
+        let tour = new Tooltip(this.data, this.cont);
+        tour.createTooltip();
+    };
+
+    /**
+    * Handles the keyboard shortcuts for arrow keys.
+    * @param {KeyboardEvent} event - The keyboard event object.
+    */
+    arrowsKeyShortcuts(event) {
+        const prevSequence = document.getElementById("tooltip-helper-prev-sequence");
+
+        if (event.key === "ArrowLeft" && !prevSequence.disabled) {
+            // Left arrow key
+            this.secuncyPos(-1);
+        } else if (event.key === "ArrowRight") {
+            // Right arrow key
+            this.secuncyPos(1);
+        }
+    }
+};
+
+class Modal {
+
+    constructor(title, question, confirmText, cancelText) {
+
+        const tooltipBackdrop = document.createElement('div');
+        tooltipBackdrop.id = 'tooltip-helper-backdrop';
+        tooltipBackdrop.classList.add('tooltip-helper-backdrop');
+        document.querySelector('body').appendChild(tooltipBackdrop);
+
+        // Create initialization modal
+        const initModal = document.createElement('div');
+        initModal.id = 'initModal';
+        initModal.classList.add('initModal');
+        initModal.innerHTML = `
+            <h3>${title}</h3>
+            
+            <p>${question}</p>
+            <div class="initModalBtn">
+                <button id="initModalBtnConfirm" class="btn btn-primary">${confirmText}</button>
+                <button id="initModalBtnCancel" class="btn btn-primary">${cancelText}</button>
+            </div>
+            `;
+        tooltipBackdrop.appendChild(initModal);
+    }
+}
+
+class Tooltip {
+    constructor(data, cont) {
+        this.data = data;
+        this.cont = cont;
     }
 
     /**
@@ -37,6 +181,7 @@ class TooltipTourMaker {
         const { element: elemId, description } = element; // Get the element id and description
 
         const tooltipContainer = document.getElementById("tooltip-helper-backdrop"); // Get the tooltip container element
+
         let divPos = { x: 0, y: 0 };
         let arrowPos = { x: 0, y: 0 };
         let getArrowPos = element.placement || "bottom"; // Get the arrow position, default to "bottom"
@@ -51,9 +196,10 @@ class TooltipTourMaker {
         }
 
         const item = document.querySelector(elemId); // Get the target element
-        if (!item) {
-            return this.closeHelp();
-        }
+        /* if (!item || !tooltipContainer) {
+            let close = new TooltipTourMaker;
+            return close.closeHelp();
+        } */
 
         document.querySelector("body").classList.add("stop-scroll");
         item.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -186,7 +332,7 @@ class TooltipTourMaker {
             descriptionDiv.innerHTML = `
             <p id="tooltip-helper-active-description-text"></p>
             <div class="tooltip-helper-footer">
-              <button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">${this.data.tooltipsBtns.closeBtn}.</button>
+              <button id="tooltip-helper-end-sequence" class="tooltip-helper-end-sequence">${this.data.tooltipsBtns.closeBtn}</button>
               <div>
                 <button id="tooltip-helper-prev-sequence" class="tooltip-helper-prev-sequence">${this.data.tooltipsBtns.prevBtn}</button>
                 <button id="tooltip-helper-next-sequence" class="tooltip-helper-next-sequence ml-2">${this.data.tooltipsBtns.nextBtn}</button>
@@ -284,135 +430,4 @@ class TooltipTourMaker {
 
         return tooltipActive;
     };
-
-    /**
-    * Closes the tooltip helper and performs cleanup actions.
-    */
-    closeHelp() {
-        document.querySelector("body").classList.remove("stop-scroll"); // Remove the "stop-scroll" class from the body element
-
-        document.removeEventListener("keydown", this.boundArrowsKeyShortcuts); // Removes the EventListener for the "keydown" event with the handler function "this.arrowsKeyShortcuts"
-
-        const backdrop = document.getElementById("tooltip-helper-backdrop"); // Find the backdrop element by its ID
-
-        backdrop.remove(); // Remove the backdrop element from the DOM
-
-        this.cont = 0; // Reset the counter
-
-        this.data = {}; // Reset data
-    };
-
-    /**
-    * Moves to the next or previous tooltip in the sequence based on the given offset.
-    * @param {number} secuncyPos - The offset to move in the sequence. Positive for next, negative for previous.
-    */
-    secuncyPos(secuncyPos) {
-        const { sequence } = this.data;
-
-        this.cont += secuncyPos; // Update the counter by adding the offset
-
-        // Check if the counter is within the valid sequence range
-        if (this.cont >= 0 && this.cont <= sequence.length - 1) {
-            this.createTooltip(sequence[this.cont]); // Create the tooltip for the current step in the sequence
-        } else {
-            document.querySelector(sequence[this.cont - 1 * secuncyPos].element).classList.remove("tooltip-helper-active-element"); // Remove the "tooltip-helper-active-element" class from the previous element
-
-            document.getElementById("tooltip-helper-backdrop").removeEventListener("click", this.handleBackdropClick); // Remove the event listener for backdrop click
-
-            this.closeHelp(); // Close the tooltip helper
-        }
-    };
-
-    /**
-    * Initializes the tour with the given options.
-    * @param {Object} options - The options for the tour.
-    */
-    initTour(options) {
-        this.data = { ...this.data, ...options };
-
-        // Create tooltip backdrop element
-        const tooltipBackdrop = document.createElement('div');
-        tooltipBackdrop.id = 'tooltip-helper-backdrop';
-        tooltipBackdrop.classList.add('tooltip-helper-backdrop');
-        document.querySelector('body').appendChild(tooltipBackdrop);
-
-        // Create initialization modal
-        const initModal = document.createElement('div');
-        initModal.id = 'initModal';
-        initModal.classList.add('initModal');
-        initModal.innerHTML = `
-            <h3>${this.data.welcomeTitle}</h3>
-            
-            <p>${this.data.welcomeText}</p>
-            <div class="initModalBtn">
-                <button id="initModalBtnConfirm" class="btn btn-primary">${this.data.confirmText}</button>
-                <button id="initModalBtnCancel" class="btn btn-primary">${this.data.cancelText}</button>
-            </div>
-            `;
-        tooltipBackdrop.appendChild(initModal);
-
-        // Event listener for cancel button click
-        const cancelButton = document.getElementById("initModalBtnCancel");
-        cancelButton.addEventListener("click", () => {
-            document.getElementById("initModal").remove();
-            this.closeHelp();
-        });
-
-        // Event listener for confirm button click
-        const confirmButton = document.getElementById("initModalBtnConfirm");
-        confirmButton.addEventListener("click", () => {
-            document.getElementById("initModal").remove();
-            this.createSequence(options);
-        });
-    };
-
-    /**
-    * Creates the sequence for the tour with the given options.
-    * @param {Object} options - The options and elements for the sequence.
-    */
-    createSequence(options) {
-        this.data = { ...this.data, ...options };
-
-        // Add event listener to the tooltip backdrop for click events
-        document.getElementById("tooltip-helper-backdrop").addEventListener("click", (e) => {
-            switch (e.target.id) {
-                case "tooltip-helper-next-sequence":
-                    return this.secuncyPos(1);
-                case "tooltip-helper-prev-sequence":
-                    return this.secuncyPos(-1);
-                case "tooltip-helper-end-sequence":
-                    return this.closeHelp();
-                case "tooltip-helper-active":
-                case "tooltip-helper-backdrop":
-                default:
-                    return;
-            }
-        });
-
-        // Add event listeners to handle keyboard arrow keys
-        document.addEventListener("keydown", this.boundArrowsKeyShortcuts);
-
-        // Create the tooltip
-        this.createTooltip();
-    };
-
-    /**
-    * Handles the keyboard shortcuts for arrow keys.
-    * @param {KeyboardEvent} event - The keyboard event object.
-    */
-    arrowsKeyShortcuts(event) {
-        const prevSequence = document.getElementById("tooltip-helper-prev-sequence");
-        const currentElement = this.data.sequence[this.cont];
-
-        if (event.key === "ArrowLeft" && !prevSequence.disabled) {
-            // Left arrow key
-            this.secuncyPos(-1);
-        } else if (event.key === "ArrowRight") {
-            // Right arrow key
-            this.secuncyPos(1);
-        }
-        if (currentElement.needClickToOpen) {
-            document.querySelector(currentElement.needClickToOpen).click();
-        }
-    }
-};
+}

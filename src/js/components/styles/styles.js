@@ -121,10 +121,10 @@ class StylesUI {
       clickReferencias(image)
     };
   } 
-  else {
-    let toprightlogo = document.getElementById("logo-help")
-    toprightlogo.style.display= "none"
-  }
+  /* else {
+      let toprightlogo = document.getElementById("logo-help");
+      toprightlogo.style.display = "none";
+  } */
  }
 
  createdarktheme(){

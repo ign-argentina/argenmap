@@ -180,7 +180,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 		} else { visiblesActivar = false; }
 	}
 	if (visiblesActivar) {
-		ordered.forEach(function (e) {
+		ordered.forEach(async function (e) {
 			switch (e) {
 				case 'screenShoter':
 					if (L.Browser.webkit) {
@@ -236,9 +236,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 					const fs = new Fullscreen();
 					fs.createComponent();
 					break;
-				case 'helpTour':
-					const help = new HelpTour;
-					help.createComponent();
+                case 'helpTour':
+                    const help = new HelpTour;
+					const helpData = await help.fetchHelpTourData();
+					help.createComponent(helpData);
 					break;
 				case 'loadLayer':
 					const loadLayersModal = new LoadLayersModal();
