@@ -393,6 +393,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       menu_ui.addSection(name_section);
     },
 
+    addParentSection: function (parent_name, section_name) {
+      menu_ui.addParentSection(parent_name, section_name);
+    },
+
     addLayerBtn: function (name_section, name_layer) {
       menu_ui.addLayer(name_section, name_layer);
     },
@@ -630,16 +634,16 @@ let conaeCheck = setInterval(() => {
   if (conaeLayers) {
     if (Object.entries(gestorMenu.items.conae.itemsComposite).length === 12) {
       gestorMenu.printMenu();
-      document.getElementById("temp-menu").remove();
+      //document.getElementById("temp-menu").remove();
       clearInterval(conaeCheck);
     }
   }
 }, 1000);
 
 document.addEventListener("contextmenu", (e) => {
-  if( e.target.classList.contains("leaflet-container") ) {
-    return 0;
+  let allowedInputs = ["text", "search", "number"];
+  if (!e.target.classList.contains("leaflet-container") && !allowedInputs.includes(e.target.type)) {
+    e.preventDefault();
   }
-  e.preventDefault();
   //ui_component.getContextMenu(e.target.classList);
 });

@@ -13,6 +13,18 @@ const DEFAULT_ZOOM_LEVEL = 4;
 const DEFAULT_LATITUDE = -40;
 const DEFAULT_LONGITUDE = -59;
 
+//GetLegendGraphic options
+let _antialias = true,
+  _dpi = '111',
+  _font = 'verdana',
+  _hideEmpty=false,
+  _labelMargin= '5';
+const _LEGEND_OPTIONS = `&LEGEND_OPTIONS=fontAntiAliasing:${_antialias};dpi:${_dpi};fontName:${_font};hideEmptyRules:${_hideEmpty};labelMargin:${_labelMargin};`;
+//GetLegendGraphic params
+let _LEGEND_TRANSPARENT=true,
+  _LEGEND_SCALE=1;
+const _LEGEND_PARAMS = `&transparent=${_LEGEND_TRANSPARENT}&scale=${_LEGEND_SCALE}`;
+
 const STRINGS = {
   basemap_legend_button_text: "View basemap legend",
   basemap_max_zoom: " to max zoom ",
@@ -68,19 +80,21 @@ const PLUGINS = {
   consultData: "src/js/components/consultData/consultData.js"
 };
 
-const MESSAGE_TIME = 10000;
-const MESSAGE_COLORS = {
+const MESSAGE_PROPERTIES = {
   information: {
     background: "rgba(0,141,201, 0.75)",
     text: "white",
+    time: 2000
   },
   error: {
     background: "rgba(255, 0, 0, 0.75)",
     text: "white",
+    time: 10000
   },
   warning: {
     text: "#856404",
     background: "rgba(247,226,58,0.75)",
+    time: 5000
   },
 };
 

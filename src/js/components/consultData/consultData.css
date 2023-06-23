@@ -2,14 +2,20 @@
   cursor: pointer;
 }
 #iconCD {
-  font-size: 17px;
+  font-size: 16px;
   line-height: inherit;
-  border-bottom-left-radius: 3px !important;
-  border-bottom-right-radius: 3px !important;
-  border: none !important;
+  /* border-bottom-left-radius: 3px !important;
+  border-bottom-right-radius: 3px !important; 
+  border: none !important;*/
+}
+#iconCD img {
+  filter: contrast(70%);
 }
 #cdOption1 {
   border-top-left-radius: 0px !important;
   border-top-right-radius: 0px !important;
   border-top: 1px solid #ccc;
+}
+.queryLayer {
+  cursor: help !important;
 }

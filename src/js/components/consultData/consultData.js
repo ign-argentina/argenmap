@@ -1,5 +1,5 @@
 let consultDataBtnClose = true;
-
+let map = document.getElementById("mapa");
 class ConsultData {
     constructor() {
         this.component = `
@@ -7,23 +7,25 @@ class ConsultData {
             <a id="iconCD" aria-hidden="true">
                 <img src="src/styles/images/cursorQuery.png" width="60%">
             </a>
-            <i id="dropdownCD" class="dropdown-contentCD hidden">
-                <a href="#" id="cdOption1" class="fa fa-message" title="Consulta Singular"></a>
-            </i>
+
         </div>
         `;
     }
+
+//     <i id="dropdownCD" class="dropdown-contentCD hidden">
+//     <a href="#" id="cdOption1" class="fa fa-message" title="Consulta Singular"></a>
+// </i>
 
     createComponent() {
         const elem = document.createElement("div");
         elem.className = "leaflet-bar leaflet-control";
         elem.id = "consultData";
         elem.innerHTML = this.component;
-        elem.onclick = (e) => { showConsultList(), e.stopPropagation()};
+        elem.onclick = (e) => { activateDataConsult(), e.stopPropagation()};
         //elem.onmouseover = showConsultList;
         //elem.onmouseout = hideConsultList;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
-        document.getElementById("cdOption1").onclick = activateDataConsult;
+        //document.getElementById("cdOption1").onclick = activateDataConsult;
     }
 }
 
@@ -43,8 +45,13 @@ function activateDataConsult() {
                 }
             });
         });
-        document.getElementById("cdOption1").style.backgroundColor = "#33b560";
-        document.getElementById("dropdownCD").classList.add("hidden");
+        let control = document.getElementById("iconCD");
+        map.classList.toggle("leaflet-grab");
+        map.classList.toggle("leaflet-grabbing");
+        map.classList.toggle("queryLayer");
+        control.style.backgroundColor = "#33b560";
+        control.querySelector("img").style.filter = "invert()";
+        //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
         getPopupForWMS(true);
     } else {
@@ -53,10 +60,16 @@ function activateDataConsult() {
                 if (layer.activeData === true) {
                     layer.activeData = false;
                 }
-            });
+            });                                                                 
         });
-        document.getElementById("cdOption1").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-        document.getElementById("dropdownCD").classList.add("hidden");
+        
+        let control = document.getElementById("iconCD");
+        map.classList.toggle("queryLayer");
+        map.classList.toggle("leaflet-grab");
+        map.classList.toggle("leaflet-grabbing");
+        control.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+        control.querySelector("img").style.removeProperty("filter");
+        //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = true;
         getPopupForWMS(false);
     }
@@ -143,6 +156,9 @@ function createImportWmsLayer(layer) {
                 popupInfo.length,
                 this.options.title
               ); 
+            }
+            if (infoParsed === "LayerNotQueryable") {//if layer is not queryable
+              return 0
             }
             if (infoParsed != "") {
               // check if info has any content, if so shows popup
