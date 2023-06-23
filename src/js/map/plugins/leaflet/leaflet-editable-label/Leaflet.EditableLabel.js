@@ -50,6 +50,7 @@ class EditableLabel {
       icon.classList = "fa-solid fa-pen";
 
       controlUI.title = this.options.title;
+      controlUI.id = "editableLabelBtn";
       controlUI.appendChild(icon);
       return controlDiv;
     },
