@@ -180,6 +180,21 @@ class UI {
       document.getElementById("undoBtn").classList.toggle("hidden");
       document.getElementById("redoBtn").classList.toggle("hidden");
       document.getElementById("editTableData").classList.toggle("hidden");
+
+      this.columnSelection();
+
+      let selectedColumn = "";
+      let columns = document.getElementsByClassName("tabulator-col tabulator-sortable");
+      for (let i = 0; i < columns.length; i++) {
+        columns[i].onclick = () => {
+          selectedColumn = columns[i].innerText;
+          let columnInputName = document.getElementById("colTxt");
+          if (columnInputName) columnInputName.innerText = selectedColumn;
+          //table.getColumn(selectedColumn).getElement().style.background = "#7dbef2";
+          //console.log(columns[i])
+        }
+      }
+
     }
     editBar.append(removeColumnBtn);
   }
@@ -202,6 +217,50 @@ class UI {
     name = name.toLowerCase();
     table.addColumn({ title: name, field: name, editor: true }, false);
     new UserMessage(`Columna agregada exitosamente.`, true, "information");
+  }
+
+  columnSelection() {
+    const inputDiv = this.createElement("div", "inputDiv", "icon-table input-group");
+    inputDiv.id = "inputTableDiv";
+
+    let txt;
+    txt = this.createElement("a", "txtColumn", );
+    txt.type = "text";
+    txt.innerText = "Seleccione la columna a borrar:";
+    txt.style = "padding-right: 5px; font-weight: bold; color: red;"
+    inputDiv.appendChild(txt);
+
+    let addInputBtn;
+    addInputBtn = this.createElement("a", "colTxt", );
+    addInputBtn.type = "text";
+    addInputBtn.style = "font-weight: bold";
+    inputDiv.appendChild(addInputBtn);
+
+    const saveBtn = this.createElement("button", "saveBtn", "icon-table btn btn-primary");
+    saveBtn.style.float = "left";
+    saveBtn.type = "button";
+    saveBtn.title = "Aceptar";
+    saveBtn.innerHTML = '<span class="fa-solid fa-check" aria-hidden="true"></span>';
+    saveBtn.addEventListener("click", () => {
+      if (addInputBtn.innerText != "") {
+        this.removeColumn(addInputBtn.innerText);  
+      }
+      this.showHideColumnBtns();
+    });
+    inputDiv.appendChild(saveBtn);
+
+    const cancelBtn = this.createElement("button", "cancelBtn", "icon-table btn btn-primary");
+    cancelBtn.style.float = "left";
+    cancelBtn.type = "button";
+    cancelBtn.title = "Cancelar";
+    cancelBtn.innerHTML = '<span class="fa-solid fa-xmark" aria-hidden="true"></span>';
+    cancelBtn.addEventListener("click", () => {
+      this.showHideColumnBtns();
+    });
+    inputDiv.appendChild(cancelBtn);
+    editBar.appendChild(inputDiv);
+
+    addInputBtn.focus();
   }
 
   addInput() {
