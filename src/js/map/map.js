@@ -1978,7 +1978,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 						};
 
 						const label = document.createElement('label');
-						label.innerHTML = gestorMenu.getLayerData(activeLayer).title;
+						gestorMenu.getLayerData(activeLayer).title ?
+						label.innerHTML = gestorMenu.getLayerData(activeLayer).title :
+						label.innerHTML = activeLayer;
 						label.className = 'active-layer-label';
 						label.setAttribute("for", activeLayer);
 						label.style.marginBottom = '0px';
@@ -2074,7 +2076,14 @@ $("body").on("pluginLoad", function (event, plugin) {
 						inputDiv.appendChild(label);
 						selectedLayersDiv.appendChild(inputDiv);
 
-						gestorMenu.getActiveLayersWithoutBasemap().forEach(activeLayer => {
+						let consultLayers = [];
+						getAllActiveLayers().forEach(lyr => {
+							if (lyr.type != "dibujos") {
+								consultLayers.push(lyr);
+							}
+						});
+
+						consultLayers.forEach(activeLayer => {
 							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer.name);
 						});
 
@@ -2082,11 +2091,11 @@ $("body").on("pluginLoad", function (event, plugin) {
 						popUpBtn.className = 'popup-btn';
 						popUpBtn.setAttribute('id', 'btn-show-info');
 						popUpBtn.onclick = () => {
-							if (gestorMenu.getActiveLayersWithoutBasemap().length > 0)
+							if (consultLayers.length > 0)
 								mapa.showInfoLayer(layer.name, false);
 						};
 						popUpBtn.innerHTML = '<p class="popup-btn-text">Consultar capas seleccionadas en área</p>';
-						popUpBtn.classList.add(gestorMenu.getActiveLayersWithoutBasemap().length === 0 ? 'btn-disabled' : 'btn-active');
+						popUpBtn.classList.add(consultLayers.length === 0 ? 'btn-disabled' : 'btn-active');
 
 						popUpDiv.appendChild(selectedLayersDiv);
 						popUpDiv.appendChild(popUpBtn);
@@ -2144,7 +2153,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
-						const filteredActiveLayers = gestorMenu.getActiveLayersWithoutBasemap().filter(activeLayer => {
+						const filteredActiveLayers = getAllActiveLayers().filter(activeLayer => {
 							return selectedLayers.find(selectedLayer => selectedLayer === activeLayer.name) ? true : false;
 						});
 
