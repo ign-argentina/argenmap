@@ -1356,7 +1356,7 @@ function loadDeveloperLogo() {
       let link = L.DomUtil.create("a");
       link.target = "_blank";
       link.id = "developerLogo"
-      link.title = "Argenmap";
+      link.title = STRINGS.about;
       link.style.cursor = "pointer";
       let img = L.DomUtil.create("img");
       img.src = "src/styles/images/noimage.webp";
