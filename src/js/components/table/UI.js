@@ -120,6 +120,7 @@ class UI {
     editBtn.style = "margin: 5px 5px 5px 0; float: left;";
     editBtn.id = "editTableData";
     editBtn.innerHTML = 'Editar';
+    editBtn.title = "Editar filas y columnas";
     editBtn.onclick = () => this.toggleEditTableData();
     editBar.append(editBtn);
     document.getElementById("icons-table").append(editBar);
@@ -130,6 +131,7 @@ class UI {
     undoBtn.style.float = "left";
     undoBtn.type = "button";
     undoBtn.id = "undoBtn";
+    undoBtn.title = "Deshacer";
     undoBtn.innerHTML = '<span id="undo" class="fa-solid fa-rotate-left" aria-hidden="true"></span>';
     undoBtn.addEventListener("click", () => {
       table.undo();
@@ -140,6 +142,7 @@ class UI {
     redoBtn.style.float = "left";
     redoBtn.type = "button";
     redoBtn.id = "redoBtn";
+    redoBtn.title = "Rehacer";
     redoBtn.innerHTML = '<span id="redo" class="fa-solid fa-rotate-right" aria-hidden="true"></span>';
     redoBtn.addEventListener("click", () => {
       table.redo();
@@ -152,6 +155,7 @@ class UI {
     addColumnBtn.style.float = 'left';
     addColumnBtn.id = "addColumnBtn";
     addColumnBtn.innerHTML = '+ Columna';
+    addColumnBtn.title = 'Agregar Columna';
     addColumnBtn.onclick = () => {
       document.getElementById("addColumnBtn").classList.toggle("hidden");
       document.getElementById("removeColumnBtn").classList.toggle("hidden");
@@ -159,7 +163,7 @@ class UI {
       document.getElementById("redoBtn").classList.toggle("hidden");
       document.getElementById("editTableData").classList.toggle("hidden");
 
-      this.addInput("add");
+      this.addInput();
     }
     editBar.append(addColumnBtn);
   }
@@ -169,6 +173,7 @@ class UI {
     removeColumnBtn.style.float = 'left';
     removeColumnBtn.id = "removeColumnBtn";
     removeColumnBtn.innerHTML = '- Columna';
+    removeColumnBtn.title = 'Eliminar Columna';
     removeColumnBtn.onclick = () => {
       document.getElementById("addColumnBtn").classList.toggle("hidden");
       document.getElementById("removeColumnBtn").classList.toggle("hidden");
@@ -176,7 +181,20 @@ class UI {
       document.getElementById("redoBtn").classList.toggle("hidden");
       document.getElementById("editTableData").classList.toggle("hidden");
 
-      this.addInput("remove");
+      this.columnSelection();
+
+      let selectedColumn = "";
+      let columns = document.getElementsByClassName("tabulator-col tabulator-sortable");
+      for (let i = 0; i < columns.length; i++) {
+        columns[i].onclick = () => {
+          selectedColumn = columns[i].innerText;
+          let columnInputName = document.getElementById("colTxt");
+          if (columnInputName) columnInputName.innerText = selectedColumn;
+          //table.getColumn(selectedColumn).getElement().style.background = "#7dbef2";
+          //console.log(columns[i])
+        }
+      }
+
     }
     editBar.append(removeColumnBtn);
   }
@@ -192,7 +210,7 @@ class UI {
         });
       }
     });
-    new UserMessage(`Columna removida exitosamente.`, true, "information");
+    new UserMessage(`Columna eliminada exitosamente.`, true, "information");
   }
 
   addColumn(name) {
@@ -201,7 +219,51 @@ class UI {
     new UserMessage(`Columna agregada exitosamente.`, true, "information");
   }
 
-  addInput(action) {
+  columnSelection() {
+    const inputDiv = this.createElement("div", "inputDiv", "icon-table input-group");
+    inputDiv.id = "inputTableDiv";
+
+    let txt;
+    txt = this.createElement("a", "txtColumn", );
+    txt.type = "text";
+    txt.innerText = "Seleccione la columna a borrar:";
+    txt.style = "padding-right: 5px; font-weight: bold; color: red;"
+    inputDiv.appendChild(txt);
+
+    let addInputBtn;
+    addInputBtn = this.createElement("a", "colTxt", );
+    addInputBtn.type = "text";
+    addInputBtn.style = "font-weight: bold";
+    inputDiv.appendChild(addInputBtn);
+
+    const saveBtn = this.createElement("button", "saveBtn", "icon-table btn btn-primary");
+    saveBtn.style.float = "left";
+    saveBtn.type = "button";
+    saveBtn.title = "Aceptar";
+    saveBtn.innerHTML = '<span class="fa-solid fa-check" aria-hidden="true"></span>';
+    saveBtn.addEventListener("click", () => {
+      if (addInputBtn.innerText != "") {
+        this.removeColumn(addInputBtn.innerText);  
+      }
+      this.showHideColumnBtns();
+    });
+    inputDiv.appendChild(saveBtn);
+
+    const cancelBtn = this.createElement("button", "cancelBtn", "icon-table btn btn-primary");
+    cancelBtn.style.float = "left";
+    cancelBtn.type = "button";
+    cancelBtn.title = "Cancelar";
+    cancelBtn.innerHTML = '<span class="fa-solid fa-xmark" aria-hidden="true"></span>';
+    cancelBtn.addEventListener("click", () => {
+      this.showHideColumnBtns();
+    });
+    inputDiv.appendChild(cancelBtn);
+    editBar.appendChild(inputDiv);
+
+    addInputBtn.focus();
+  }
+
+  addInput() {
     const inputDiv = this.createElement("div", "inputDiv", "icon-table input-group");
     inputDiv.id = "inputTableDiv";
     const addInputBtn = this.createElement("input", "columnInputName", "form-control");
@@ -212,14 +274,11 @@ class UI {
     const saveBtn = this.createElement("button", "saveBtn", "icon-table btn btn-primary");
     saveBtn.style.float = "left";
     saveBtn.type = "button";
+    saveBtn.title = "Aceptar";
     saveBtn.innerHTML = '<span class="fa-solid fa-check" aria-hidden="true"></span>';
     saveBtn.addEventListener("click", () => {
       let name = addInputBtn.value.trim();
-      if (name !== "" && action === "add") {
-        this.addColumn(name);
-      } else if (name !== "" && action === "remove") {
-        this.removeColumn(name);
-      }
+      if (name !== "") { this.addColumn(name) }
       this.showHideColumnBtns();
     });
     inputDiv.appendChild(saveBtn);
@@ -227,6 +286,7 @@ class UI {
     const cancelBtn = this.createElement("button", "cancelBtn", "icon-table btn btn-primary");
     cancelBtn.style.float = "left";
     cancelBtn.type = "button";
+    cancelBtn.title = "Cancelar";
     cancelBtn.innerHTML = '<span class="fa-solid fa-xmark" aria-hidden="true"></span>';
     cancelBtn.addEventListener("click", () => {
       this.showHideColumnBtns();
@@ -244,9 +304,15 @@ class UI {
     document.getElementById("redoBtn").classList.toggle("hidden");
     document.getElementById("editTableData").classList.toggle("hidden");
 
-    document.getElementById("columnInputName").remove();
     document.getElementById("saveBtn").remove();
     document.getElementById("cancelBtn").remove();
+
+    if (document.getElementById("colTxt")) {
+      document.getElementById("colTxt").remove();
+      document.getElementById("txtColumn").remove();
+    } else {
+      document.getElementById("columnInputName").remove();
+    }
   }
 
   toggleEditTableData() {

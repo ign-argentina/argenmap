@@ -14,6 +14,7 @@
     justify-content: center;
     box-shadow: 2px 1px 2px #999;
     cursor: pointer;
+    margin-left: 3px;
 }
 #nav-help-btn a {
     line-height: 35px;

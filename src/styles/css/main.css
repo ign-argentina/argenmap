@@ -1070,6 +1070,7 @@ New navbar
   background-repeat: no-repeat;
   background-position-y: center;
   align-self: center;
+  display: flex;
 }
 #logo-navbar>div>a,
 #logo-help>a {
