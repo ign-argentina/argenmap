@@ -43,10 +43,11 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = '';
-var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+var ordered = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
 var ordenZoomHome = 1; var ordenFullScreen = 5; var ordenMeasure = 3; var ordenGraticula = 4; var ordenLocate = 2;
 var ordenDraw = 6; var ordenBetterScale = 7; var ordenMinimap = 8; var ordenScreenShoter = 9; var ordenPrint = 10;
-var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14;
+var ordenPdfPriner = 11; var ordenLoadLayer = 12; var ordenGeoprocessing = 13; var ordenConsultData = 14; var ordenHelp = 15;
+var visiblesActivar = true;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function (event, plugin) {
 	unordered = '';
@@ -100,6 +101,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 			break;
 		case 'groupLayerSelector':
 			ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
+			break;
+		case 'helpTour':
+			ordered.splice(ordenHelp, 1, plugin.pluginName);
 			break;
 		default:
 			// Add unordered plugins
@@ -168,8 +172,12 @@ $("body").on("pluginLoad", function (event, plugin) {
 		if (gestorMenu.plugins['loadLayer'].getStatus() == 'ready' || gestorMenu.plugins['loadLayer'].getStatus() == 'fail') {
 		} else { visiblesActivar = false; }
 	}
+	if (visiblesActivar && gestorMenu.pluginExists('helpTour')) {
+		if (gestorMenu.plugins['helpTour'].getStatus() == 'ready' || gestorMenu.plugins['helpTour'].getStatus() == 'fail') {
+		} else { visiblesActivar = false; }
+	}
 	if (visiblesActivar) {
-		ordered.forEach(function (e) {
+		ordered.forEach(async function (e) {
 			switch (e) {
 				case 'screenShoter':
 					if (L.Browser.webkit) {
@@ -224,6 +232,11 @@ $("body").on("pluginLoad", function (event, plugin) {
 				case 'FullScreen':
 					const fs = new Fullscreen();
 					fs.createComponent();
+					break;
+                case 'helpTour':
+                    const help = new HelpTour;
+					const helpData = await help.fetchHelpTourData();
+					help.createComponent(helpData);
 					break;
 				case 'loadLayer':
 					const loadLayersModal = new LoadLayersModal();

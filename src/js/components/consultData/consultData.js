@@ -157,6 +157,9 @@ function createImportWmsLayer(layer) {
                 this.options.title
               ); 
             }
+            if (infoParsed === "LayerNotQueryable") {//if layer is not queryable
+              return 0
+            }
             if (infoParsed != "") {
               // check if info has any content, if so shows popup
               var popupContent = $(".leaflet-popup").html();

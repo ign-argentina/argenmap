@@ -1,0 +1,38 @@
+#help :hover {
+    cursor: pointer;
+}
+#iconHelp {
+    font-size: 18px;
+    line-height: inherit;
+}
+#nav-help-btn {
+    width: 35px;
+    height: 35px;
+    background-color: #eee;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    box-shadow: 2px 1px 2px #999;
+    cursor: pointer;
+}
+#nav-help-btn a {
+    line-height: 35px;
+}
+#nav-help-btn svg {
+    height: 35px;
+}
+@media (max-width: 470px) {
+    #nav-help-btn {
+        width: 25px;
+        height: 25px;
+    }
+    #nav-help-btn a {
+        line-height: 25px;
+    }
+    #nav-help-btn svg {
+        height: 25px;
+    }
+    .navbar-new-content {
+        margin: 0 0.2rem;
+    }
+}
