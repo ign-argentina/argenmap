@@ -137,7 +137,7 @@ class modalAbout {
 
     const functionsConteiner = document.createElement('div');
     functionsConteiner.classList.add('content-about-tab', 'content-about-deactivate');
-    functionsConteiner.style.overflow = "hidden";
+    functionsConteiner.style.overflow = "auto";
 
     this.loadMD("src/docs/features.md", 2, 16)
       .then(selectedText => {
