@@ -1364,11 +1364,11 @@ function loadDeveloperLogo() {
       img.classList = "brand"
       img.style.backgroundImage = `url('${APP_IMG}')`;
       link.appendChild(img);
+
       link.addEventListener('click', function () {
-        localStorage.removeItem("mainPopup");
-        mainPopup.check();
-        mainPopup._addPopupWrapper(false);
+        modalAboutUs.toggleOpen();
       });
+     
       return link;
     },
   });

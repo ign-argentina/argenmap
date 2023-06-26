@@ -1,18 +1,17 @@
-
-
-
 .about-header {
     display: flex;
     align-items: center;
     width: 100%;
     margin-bottom: 12px;
-    /*justify-content: space-between;*/
 }
 
 .about-logo {
-    z-index: 1100;
-    min-width: 90%;
-    transform: translate(4%, 0%);
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -0%);
+    width: 375px;
+
 }
 
 .about-exit {
@@ -20,118 +19,105 @@
     top: 8px;
     right: 12px;
     background: none;
-    
+
     z-index: 1200;
     min-width: 1%;
     max-width: 4%;
 }
 
-.about-main-section{
-    
-   
+.about-main-section {
     display: flex;
-    
+
     flex-direction: column;
 }
 
-.about-tabs-bar{
-
-
-
+.about-tabs-bar {
     min-width: 100%;
     margin-top: 3%;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
-   
+    justify-content: left;
 
 }
 
-.tab-prueba{
-    
-    font-family: monospace; /*revisar*/
-    
+.tab {
     user-select: none;
-    cursor :pointer;
-    padding: 0.5%;
+    cursor: pointer;
+    margin-left: 4%;
+    padding: 10px;
+    padding-top: 0.25%;
     padding-bottom: 0%;
     color: #37BBED;
     border: solid #94D6E9;
     border-radius: 10px 10px 0px 0px;
-    border-width: 3px 3px 0px 3px; 
-    
+    border-width: 3px 3px 0px 3px;
+
 }
 
-.tab-prueba:hover{
+.tab:hover {
 
     color: #FFFFFF;
     border: solid #37BBED;
     border-width: 3px 3px 0px 3px;
     background-color: #37BBED;
-    
-    
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+
+
 }
 
-.tab-active{
+.tab-active {
 
     color: #FFFFFF;
     border: solid #37BBED;
     border-width: 3px 3px 0px 3px;
     background-color: #37BBED;
-    
+
 }
 
-.tab-onclik{
+.tab-onclik {
 
     color: #FFFFFF;
     border: solid #37BBED;
     border-width: 3px 3px 0px 3px;
     background-color: #37BBED;
-    
-    
+
+
 }
 
 
-.content-about-tab{
-    height: 250px;
+.content-about-tab {
+    height: 300px;
 
-    
+
     color: #37BBED;
-    border: solid #94D6E9;
+    border: solid #37BBED;
     border-radius: 10px;
-    border-width: 3px; 
-    
-    background: white;
-    overflow: auto; 
+    border-width: 3px;
+
+    background: innerReadmeTextwhite;
+    overflow: auto;
 }
 
-
-.divC-temp{
+.contributor-conteiner {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
     flex-wrap: wrap;
 }
 
-
-.content-about-deactivate{
-
+.content-about-deactivate {
     display: none;
-
-    
 }
 
-.all-function-div{
-
+.all-function-div {
     color: #000000;
     padding-left: 15px;
-
 }
 
-.even-function{
+.even-function {
     background-color: #94D6E9;
 }
-
-
-
 
 #whole-about {
 
@@ -149,84 +135,88 @@
     box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
     width: 80%;
 
-
-    /*left: 10%;*/
 }
 
 
-
-.temp-card{
-    border-radius: 8px;
-    color: #FFFFFF;
-    background-color: #37BBED;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin: 5%;
-    margin-bottom: 1%;
-    margin-top: 2%;
-    width: 23%;
+.contributor-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: hidden;
-    
+
+    font-size: 12px;
+    color: #000000;
+
+    background-color: #3074BA;
+    border-radius: 8px;
+
+    width: 18%;
+    height: 80px;
+
+    cursor:pointer; cursor: hand;
+
+
+    padding-top: 5px;
+
+    margin-top: 10px;
+
+
 
 }
 
-.temp-card:hover{
+.contributor-card:hover {
     background-color: #1a4570;
     transition: 200ms;
 
 }
 
-.temp-img{
+.contributor-img {
 
-    border-radius: 25px;
+    border-radius: 10px;
     object-fit: cover;
-    width : 90%;
-    
+    width: 50px;
+
 
 }
 
-.temp-user{
+.contributor-user {
 
-    margin-top: 3px;
+    margin-top: 0px;
+
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 670px) {
     #whole-about {
-        background-color: yellow !important;
         width: 60%;
         left: 21%;
+    }
+
+    .content-about-tab {
+        height: 100px;
+
     }
 }
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
     #whole-about {
-        background-color: blue !important;
         width: 50%;
         left: 37%;
+    }
+
+
+    .content-about-tab {
+        height: 300px;
+
     }
 }
 
 /* Large devices (tablets, 768px and up)  */
 @media (min-width: 992px) {
     #whole-about {
-        background-color: red !important;
         width: 40%;
         left: 43%;
     }
@@ -234,7 +224,6 @@
 
 @media (min-width: 1260px) {
     #whole-about {
-        background-color: white !important;
         width: 43%;
         left: 40%;
     }
