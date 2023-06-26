@@ -158,6 +158,7 @@
 }
 
 
+
 @media (max-width: 460px) {
     #whole-about {
         width         : 75%;
@@ -182,6 +183,39 @@
     }  
     .about-logo {
         width         : 200px;
+    }
+}
+
+
+
+@media (max-width: 309px) {
+    #whole-about {
+        width         : 75%;
+        left          : 12%;
+    }
+    .contributor-card{
+        width         : 35px;
+        height        : 35px;
+        border-radius : 2px;
+    }
+    .contributor-img {
+        border-radius : 2px;
+        width         : 15px;
+    }
+    .contributor-user {
+        margin-top    : 5px;
+        font-size     : 5px;
+    }
+    .tab {
+        font-size     : 5px;
+        border        : solid #3174BF;
+        border-radius : 2px 2px 0px 0px;
+        border-width  : 1px 1px 0px 1px;
+        margin-left   : 7px;
+        padding       : 1px;        
+    }  
+    .about-logo {
+        width         : 90px;
     }
 }
 
