@@ -2257,7 +2257,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							} else {
 								delFileItembyID(id);
 							}
-							if (lyr.layer.features.length === 0) {
+							if (lyr.layer.features && lyr.layer.features.length === 0) {
 								addedLayers.splice(addedLayers.indexOf(lyr), 1);
 							}
 							updateNumberofLayers(lyr.section)
