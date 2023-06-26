@@ -83,8 +83,8 @@ class modalAbout {
 
   createModalAbout() {
 
-    const principalConteiner = document.createElement("div");
-    principalConteiner.id = "whole-about"
+    const principalContainer = document.createElement("div");
+    principalContainer.id = "whole-about"
 
     const aboutHeader = document.createElement("div");
     aboutHeader.className = "about-header"
@@ -98,15 +98,15 @@ class modalAbout {
     aboutExitBtn.classList = "about-exit";
     aboutExitBtn.innerHTML = '<i class="fa fa-times"></i>';
     aboutExitBtn.onclick = () => {
-      principalConteiner.remove();
+      principalContainer.remove();
       this.isVisible = false;
     };
 
     const aboutMainSection = document.createElement("div")
     aboutMainSection.className = "about-main-section"
 
-    const aboutTabsConteiner = document.createElement("div");
-    aboutTabsConteiner.className = "about-tabs-bar"
+    const aboutTabsContainer = document.createElement("div");
+    aboutTabsContainer.className = "about-tabs-bar"
 
     this.tabs.forEach((tabs, i) => {
       const tab = document.createElement('div');
@@ -121,19 +121,19 @@ class modalAbout {
       tab.addEventListener('click', function () {
         modalAboutUs.showTab(i);
       })
-      aboutTabsConteiner.appendChild(tab);
+      aboutTabsContainer.appendChild(tab);
     })
 
-    const readmeConteiner = document.createElement('div');
-    readmeConteiner.className = "content-about-tab";
-    readmeConteiner.classList.add('content-about-deactivate');
+    const readmeContainer = document.createElement('div');
+    readmeContainer.className = "content-about-tab";
+    readmeContainer.classList.add('content-about-deactivate');
     const innerReadmeText = document.createElement('div');
     innerReadmeText.style.margin = "10px"
     this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
       .then(selectedText => {
         innerReadmeText.innerHTML = selectedText;
       });
-    readmeConteiner.appendChild(innerReadmeText)
+    readmeContainer.appendChild(innerReadmeText)
 
     
     let repoLink = document.createElement("a");
@@ -151,11 +151,11 @@ class modalAbout {
     repoDiv.appendChild(repoLink);
     repoDiv.style.textAlign = "center";
 
-    readmeConteiner.appendChild(repoDiv);
+    readmeContainer.appendChild(repoDiv);
 
-    const functionsConteiner = document.createElement('div');
-    functionsConteiner.classList.add('content-about-tab', 'content-about-deactivate');
-    functionsConteiner.style.overflow = "auto";
+    const functionsContainer = document.createElement('div');
+    functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
+    functionsContainer.style.overflow = "auto";
 
     this.loadMD("src/docs/features.md", 2, 16)
       .then(selectedText => {
@@ -169,12 +169,12 @@ class modalAbout {
           if (i % 2 == 0) {
             divFuncion.classList.add('even-function')
           }
-          functionsConteiner.appendChild(divFuncion);
+          functionsContainer.appendChild(divFuncion);
         });
       });
 
-    const contributorConteiner = document.createElement('div');
-    contributorConteiner.classList.add('content-about-tab', 'contributor-conteiner', 'content-about-deactivate');
+    const contributorContainer = document.createElement('div');
+    contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
 
     this.contributors.forEach((contributors, i) => {
       const card = document.createElement('div');
@@ -196,23 +196,23 @@ class modalAbout {
 
       card.appendChild(presentImg);
       card.appendChild(userName);
-      contributorConteiner.appendChild(card)
+      contributorContainer.appendChild(card)
     })
 
     aboutHeader.appendChild(aboutLogo);
     aboutHeader.appendChild(aboutExitBtn);
 
-    principalConteiner.appendChild(aboutHeader)
+    principalContainer.appendChild(aboutHeader)
 
-    aboutMainSection.appendChild(aboutTabsConteiner)
+    aboutMainSection.appendChild(aboutTabsContainer)
 
-    principalConteiner.appendChild(aboutMainSection)
+    principalContainer.appendChild(aboutMainSection)
 
-    aboutMainSection.appendChild(readmeConteiner);
-    aboutMainSection.appendChild(functionsConteiner);
-    aboutMainSection.appendChild(contributorConteiner);
+    aboutMainSection.appendChild(readmeContainer);
+    aboutMainSection.appendChild(functionsContainer);
+    aboutMainSection.appendChild(contributorContainer);
 
-    document.body.appendChild(principalConteiner);
+    document.body.appendChild(principalContainer);
   }
 
   goTo(urlIndex) {

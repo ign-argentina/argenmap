@@ -82,7 +82,7 @@
     overflow     : auto;
 }
 
-.contributor-conteiner {
+.contributor-container {
     display       : flex;
     flex-direction: column;
     align-items   : center;
