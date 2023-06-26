@@ -72,6 +72,7 @@
     left: 50px;
     top: 5px;
     max-height: 300px;
+    width: 120px;
   }
 
   #logoText {
@@ -97,4 +98,13 @@
   #searchbar {
     max-width: 300px
   }
+}
+
+@media (max-width: 470px) {
+    #searchbar {
+        width: 110px;
+    }
+    #search_bar{
+        padding-left: 0;
+      } 
 }

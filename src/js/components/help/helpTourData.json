@@ -1,0 +1,193 @@
+{
+    "welcomeTitle": "Explora el visor de mapas ArgenMap",
+    "welcomeText": "Descubre todas las herramientas y funcionalidades que ofrece para navegar, interactuar y producir mapas.<br>¿Te gustaría iniciar un tutorial rápido?",
+    "confirmText": "Comenzar tutorial",
+    "cancelText": "Cerrar",
+    "backdropColor": "#6262625d",
+    "tooltipsBtns": {
+        "prevBtn": "Anterior",
+        "nextBtn": "Siguiente",
+        "closeBtn": "Cerrar",
+        "endBtn": "Finalizar"
+    },
+    "sequence": [
+        {
+            "element": "#mapa",
+            "description": {
+                "title": "Mapa",
+                "text": "Este es el sector principal del visor donde se encuentran las herramientas. Además, aquí podrás visualizar las capas superpuestas y dibujos que se agreguen, permitiendo explorar y analizar la información geográfica."
+            },
+            "placement": "top"
+        },
+        {
+            "element": "#sidebar-container",
+            "description": {
+                "title": "Menú de capas",
+                "text": "Aquí se encuentran las capas con elementos geográficos que pueden ser superpuestos sobre el mapa. Estas capas te permitirán visualizar información adicional, como puntos de interés, límites territoriales, datos ambientales, entre otros, en combinación con los mapas base."
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".menu5.panel-default",
+            "description": {
+                "title": "Panel de capas",
+                "text": "Selecciona una de las unidades temáticas de tu interés y se desplegarán las capas disponibles. Al hacer clic en alguna ellas, se superpondrán en el mapa."
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#q",
+            "description": {
+                "title": "Buscador de capas",
+                "text": "Busca y filtra las capas según el texto ingresado."
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#cleanTrash",
+            "description": {
+                "title": "Limpiar mapa",
+                "text": "Desactiva y esconde todas las capas superpuestas sobre el mapa."
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".list-inline",
+            "needClickToOpen": ".leaflet-control-layers-toggle",
+            "description": {
+                "title": "Selector de mapas base",
+                "text": "Elige entre distintos mapas base incluyendo mapas topográficos e imágenes satelitales."
+            },
+            "placement": "bottom"
+        },
+        {
+            "element": ".leaflet-control-zoomhome",
+            "description": {
+                "title": "Zoom",
+                "text": "Modifica el nivel de zoom del mapa. Cliquea el botón central para volver a la posición de inicio."
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".leaflet-control-locate",
+            "description": {
+                "title": "Localización",
+                "text": "Indica tu posición aproximada en el mapa."
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".leaflet-control-measure-toggle",
+            "description": {
+                "title": "Mediciones",
+                "text": "Toma medidas de distancia dibujando una recta o de área dibujando un polígono."
+            },
+            "placement": "right"
+        },
+        {
+            "element": ".leaflet-control-customgraticule",
+            "needClickToOpen": ".leaflet-control-customgraticule",
+            "description": {
+                "title": "Cuadrícula",
+                "text": "Aplica una cuadrícula graduada sobre el mapa"
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#fullscreen",
+            "description": {
+                "title": "Pantalla Completa",
+                "text": "Entra en el modo de pantalla completa. Para salir, vuelve a hacer clic sobre el mismo botón o presiona la tecla de escape."
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#screenShoter",
+            "description": {
+                "title": "Captura de pantalla",
+                "text": "Toma una captura de pantalla del mapa con las capas y dibujos agregados, se realizará automáticamente una descarga de la imagen en formato JPG, la cual incluirá la escala gráfica."
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#pdfPrinter",
+            "description": {
+                "title": "Imprimir o guardar PDF",
+                "text": "Imprime el mapa con las capas y dibujos agregados utilizando el asistente de impresión propio del navegador. También permite guardar la imagen como PDF."
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#loadLayersButtonContent",
+            "description": {
+                "title": "Agregar capas",
+                "text": "Es posible cargar capas desde archivos en formato KML, GeoJSON, GPX, SHP (en formato .zip), WKT (en formato .txt o .wkt) y TopoJSON (en formato .json). También se pueden agregar capas a través de un WMS proporcionando su URL."
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#geoPIcon",
+            "description": {
+                "title": "Geoprocesos",
+                "text": "Herramientas de procesamiento para generar nueva información a partir de capas. Entre las opciones disponibles incluyen opciones para crear curvas de nivel, cotas, perfiles de elevación y áreas de influencia."
+            },
+            "placement": "right"
+        },
+        {
+            "element": "#searchbar",
+            "description": {
+                "title": "Buscador de localidades",
+                "text": "Encuentra la localidad que buscas ingresando su nombre."
+            },
+            "placement": "bottom"
+        },
+        {
+            "element": ".leaflet-draw.leaflet-control",
+            "description": {
+                "title": "Herramientas de dibujo y edición",
+                "text": "Herramientas para agregar, editar y eliminar diferentes tipos de geometrías."
+            },
+            "placement": "left"
+        },
+        {
+            "element": "#editableLabelBtn",
+            "description": {
+                "title": "Etiquetas",
+                "text": "Agrega texto en el mapa con etiquetas y edita sus colores y estilos haciendo clic derecho en una de ellas."
+            },
+            "placement": "left"
+        },
+        {
+            "element": ".leaflet-draw-section",
+            "description": {
+                "title": "Geometrías",
+                "text": "Elige entre polígonos, rectángulos, líneas, círculos, marcadores o puntos para agregar al mapa. Edita sus estilos y colores haciendo clic derecho sobre ellos."
+            },
+            "placement": "left"
+        },
+        {
+            "element": ".leaflet-draw-edit-edit",
+            "description": {
+                "title": "Editar dibujos",
+                "text": "Edita la posición y dimensiones de las distintas geometrías en el mapa. Puedes guardar los cambios o revertirlos a su estado original."
+            },
+            "placement": "left"
+        },
+        {
+            "element": ".leaflet-draw-edit-remove",
+            "description": {
+                "title": "Eliminar dibujos",
+                "text": "Elimina los dibujos agregados individualmente o todos juntos con la opción 'Limpiar todo'. Puedes restaurar todas las geometrías eliminadas al cancelar. Ten en cuenta que esta opción no afecta a las capas de geoprocesos ni a los archivos subidos."
+            },
+            "placement": "left"
+        },
+        {
+            "element": "#iconCD",
+            "description": {
+                "title": "Consultar Datos",
+                "text": "Activa el modo de consulta para obtener los datos de las capas incluidas en el mapa, los cuales se mostrarán en un popup haciendo clic en el elemento de interés."
+            },
+            "placement": "left"
+        }
+    ]
+}
