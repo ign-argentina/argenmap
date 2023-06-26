@@ -3,7 +3,7 @@ class modalAbout {
   constructor() {
     this.tabs = [
       {
-        name: 'Readme',
+        name: 'Acerca',
         id: 'load-readme',
       },
       {
@@ -135,6 +135,24 @@ class modalAbout {
       });
     readmeConteiner.appendChild(innerReadmeText)
 
+    
+    let repoLink = document.createElement("a");
+    repoLink.target = "_blank";
+    repoLink.href = "https://github.com/ign-argentina/argenmap"
+    repoLink.textContent = "Repositorio en GitHub";
+    
+    let gitHubMark = document.createElement("img");
+    gitHubMark.src = "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+    gitHubMark.alt = "GitHub Logo";
+    gitHubMark.style = "width: 24px; margin: 0 5px;";
+
+    let repoDiv = document.createElement("div");
+    repoDiv.appendChild(gitHubMark);
+    repoDiv.appendChild(repoLink);
+    repoDiv.style.textAlign = "center";
+
+    readmeConteiner.appendChild(repoDiv);
+
     const functionsConteiner = document.createElement('div');
     functionsConteiner.classList.add('content-about-tab', 'content-about-deactivate');
     functionsConteiner.style.overflow = "auto";
@@ -155,7 +173,6 @@ class modalAbout {
         });
       });
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const contributorConteiner = document.createElement('div');
     contributorConteiner.classList.add('content-about-tab', 'contributor-conteiner', 'content-about-deactivate');
 
@@ -181,8 +198,6 @@ class modalAbout {
       card.appendChild(userName);
       contributorConteiner.appendChild(card)
     })
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     aboutHeader.appendChild(aboutLogo);
     aboutHeader.appendChild(aboutExitBtn);
