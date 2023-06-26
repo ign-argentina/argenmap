@@ -1,109 +1,93 @@
 .about-header {
-    display: flex;
-    align-items: center;
-    width: 100%;
+    display      : flex;
+    align-items  : center;
+    width        : 100%;
     margin-bottom: 12px;
 }
 
 .about-logo {
-    position: relative;
-    top: 50%;
-    left: 50%;
+    position : relative;
+    top      : 50%;
+    left     : 50%;
     transform: translate(-50%, -0%);
-    width: 375px;
-
+    width    : 375px;
 }
 
 .about-exit {
-    position: absolute;
-    top: 8px;
-    right: 12px;
+    position  : absolute;
+    top       : 8px;
+    right     : 12px;
     background: none;
-
-    z-index: 1200;
-    min-width: 1%;
-    max-width: 4%;
+    z-index   : 1200;
+    min-width : 1%;
+    max-width : 4%;
 }
 
 .about-main-section {
-    display: flex;
-
+    display       : flex;
     flex-direction: column;
 }
 
 .about-tabs-bar {
-    min-width: 100%;
-    margin-top: 3%;
-    display: flex;
-    flex-direction: row;
+    min-width      : 100%;
+    margin-top     : 3%;
+    display        : flex;
+    flex-direction : row;
     justify-content: left;
-
 }
 
 .tab {
-    user-select: none;
-    cursor: pointer;
-    margin-left: 4%;
-    padding: 10px;
-    padding-top: 0.25%;
+    user-select   : none;
+    cursor        : pointer;
+    margin-left   : 4%;
+    padding       : 10px;
+    padding-top   : 0.25%;
     padding-bottom: 0%;
-    color: #37BBED;
-    border: solid #94D6E9;
-    border-radius: 10px 10px 0px 0px;
-    border-width: 3px 3px 0px 3px;
-
+    color         : #3174BF;
+    border        : solid #3174BF;
+    border-radius : 10px 10px 0px 0px;
+    border-width  : 3px 3px 0px 3px;
 }
 
 .tab:hover {
-
-    color: #FFFFFF;
-    border: solid #37BBED;
-    border-width: 3px 3px 0px 3px;
-    background-color: #37BBED;
-    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-
-
+    color           : #FFFFFF;
+    border          : solid #3174BF;
+    border-width    : 3px 3px 0px 3px;
+    background-color: #3174BF;
+    box-shadow      : 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .tab-active {
-
-    color: #FFFFFF;
-    border: solid #37BBED;
-    border-width: 3px 3px 0px 3px;
-    background-color: #37BBED;
-
+    color           : #FFFFFF;
+    border          : solid #3174BF;
+    border-width    : 3px 3px 0px 3px;
+    background-color: #3174BF;
 }
 
 .tab-onclik {
-
-    color: #FFFFFF;
-    border: solid #37BBED;
-    border-width: 3px 3px 0px 3px;
-    background-color: #37BBED;
-
-
+    color           : #FFFFFF;
+    border          : solid #3174BF;
+    border-width    : 3px 3px 0px 3px;
+    background-color: #3174BF;
 }
 
 
 .content-about-tab {
-    height: 300px;
-
-
-    color: #37BBED;
-    border: solid #37BBED;
+    height       : 300px;
+    color        : #3174BF;
+    border       : solid #3174BF;
     border-radius: 10px;
-    border-width: 3px;
-
-    background: innerReadmeTextwhite;
-    overflow: auto;
+    border-width : 3px;
+    background   : innerReadmeTextwhite;
+    overflow     : auto;
 }
 
 .contributor-conteiner {
-    display: flex;
+    display       : flex;
     flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-    flex-wrap: wrap;
+    align-items   : center;
+    overflow      : hidden;
+    flex-wrap     : wrap;
 }
 
 .content-about-deactivate {
@@ -111,8 +95,12 @@
 }
 
 .all-function-div {
-    color: #000000;
+    color       : #000000;
     padding-left: 15px;
+}
+
+.all-function-div li {
+    list-style-type: none;
 }
 
 .even-function {
@@ -120,70 +108,53 @@
 }
 
 #whole-about {
-
-    overflow: hidden;
-    float: none;
-    border-radius: 6px;
-    z-index: 1000;
-    padding: 8px 12px;
-    background-color: white !important;
-    position: absolute;
-    top: 15%;
-    margin-bottom: 10px;
-    -moz-box-shadow: inset 0 0 10px #000000;
+    overflow          : hidden;
+    float             : none;
+    border-radius     : 6px;
+    z-index           : 1000;
+    padding           : 8px 12px;
+    background-color  : white !important;
+    position          : absolute;
+    top               : 15%;
+    margin-bottom     : 10px;
+    -moz-box-shadow   : inset 0 0 10px #000000;
     -webkit-box-shadow: inset 0 0 10px #000000;
-    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-    width: 80%;
-
+    box-shadow        : 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+    width             : 80%;
 }
 
 
 .contributor-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-
-    font-size: 12px;
-    color: #000000;
-
+    display         : flex;
+    flex-direction  : column;
+    align-items     : center;
+    overflow        : hidden;
+    font-size       : 12px;
+    color           : #000000;
     background-color: #3074BA;
-    border-radius: 8px;
-
-    width: 18%;
-    height: 80px;
-
-    cursor:pointer; cursor: hand;
-
-
-    padding-top: 5px;
-
-    margin-top: 10px;
-
-
-
+    border-radius   : 8px;
+    width           : 18%;
+    height          : 80px;
+    cursor          : pointer;
+    cursor          : hand;
+    padding-top     : 5px;
+    margin-top      : 10px;
 }
 
 .contributor-card:hover {
     background-color: #1a4570;
-    transition: 200ms;
-
+    transition      : 200ms;
 }
 
 .contributor-img {
-
     border-radius: 10px;
-    object-fit: cover;
-    width: 50px;
-
-
+    object-fit   : cover;
+    width        : 50px;
 }
 
 .contributor-user {
-
     margin-top: 0px;
-
-
+    color     : white;
 }
 
 
@@ -191,12 +162,11 @@
 @media (min-width: 670px) {
     #whole-about {
         width: 60%;
-        left: 21%;
+        left : 21%;
     }
 
     .content-about-tab {
         height: 100px;
-
     }
 }
 
@@ -204,13 +174,11 @@
 @media (min-width: 768px) {
     #whole-about {
         width: 50%;
-        left: 37%;
+        left : 37%;
     }
-
 
     .content-about-tab {
         height: 300px;
-
     }
 }
 
@@ -218,14 +186,13 @@
 @media (min-width: 992px) {
     #whole-about {
         width: 40%;
-        left: 43%;
+        left : 43%;
     }
 }
 
 @media (min-width: 1260px) {
     #whole-about {
         width: 43%;
-        left: 40%;
+        left : 40%;
     }
-
 }

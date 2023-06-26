@@ -77,13 +77,9 @@ class modalAbout {
         name: 'InMunken',
         profilePicture: 'https://avatars.githubusercontent.com/u/69722315?v=4',
         url: 'https://github.com/InMunken'
-      },
-
-
-
+      }
     ]
   }
-
 
   createModalAbout() {
 
@@ -111,7 +107,7 @@ class modalAbout {
 
     const aboutTabsConteiner = document.createElement("div");
     aboutTabsConteiner.className = "about-tabs-bar"
-    
+
     this.tabs.forEach((tabs, i) => {
       const tab = document.createElement('div');
 
@@ -128,9 +124,6 @@ class modalAbout {
       aboutTabsConteiner.appendChild(tab);
     })
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     const readmeConteiner = document.createElement('div');
     readmeConteiner.className = "content-about-tab";
     readmeConteiner.classList.add('content-about-deactivate');
@@ -142,8 +135,6 @@ class modalAbout {
       });
     readmeConteiner.appendChild(innerReadmeText)
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
     const functionsConteiner = document.createElement('div');
     functionsConteiner.classList.add('content-about-tab', 'content-about-deactivate');
     functionsConteiner.style.overflow = "hidden";
@@ -164,7 +155,6 @@ class modalAbout {
         });
       });
 
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const contributorConteiner = document.createElement('div');
     contributorConteiner.classList.add('content-about-tab', 'contributor-conteiner', 'content-about-deactivate');
@@ -172,14 +162,13 @@ class modalAbout {
     this.contributors.forEach((contributors, i) => {
       const card = document.createElement('div');
       card.className = "contributor-card"
-      card.title= "visitar GitHub"
+      card.title = "visitar GitHub"
 
       const presentImg = document.createElement('img');
       presentImg.src = contributors.profilePicture;
 
       const userName = document.createElement('div');
       userName.innerHTML = contributors.name;
-
 
       presentImg.className = "contributor-img"
       userName.className = "contributor-user"
@@ -195,19 +184,14 @@ class modalAbout {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
     aboutHeader.appendChild(aboutLogo);
     aboutHeader.appendChild(aboutExitBtn);
 
     principalConteiner.appendChild(aboutHeader)
 
-
     aboutMainSection.appendChild(aboutTabsConteiner)
 
-
     principalConteiner.appendChild(aboutMainSection)
-
 
     aboutMainSection.appendChild(readmeConteiner);
     aboutMainSection.appendChild(functionsConteiner);
@@ -215,7 +199,6 @@ class modalAbout {
 
     document.body.appendChild(principalConteiner);
   }
-
 
   goTo(urlIndex) {
     window.open(this.contributors[urlIndex].url, "_blank");
@@ -226,15 +209,12 @@ class modalAbout {
     contentToDisplay.forEach(el => el.classList.add('content-about-deactivate'));
     contentToDisplay[tabIndex].classList.remove('content-about-deactivate');
 
-
     const tabsToDisplay = document.querySelectorAll('.tab');
     tabsToDisplay.forEach(el => el.classList.remove('tab-active'));
     tabsToDisplay[tabIndex].classList.add('tab-active');
   }
 
   toggleOpen() {
-
-
     if (!this.isVisible) {
       this.createModalAbout();
       this.showTab(0);
@@ -266,6 +246,3 @@ class modalAbout {
 
 }
 const modalAboutUs = new modalAbout();
-
-
-
