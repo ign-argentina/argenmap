@@ -591,7 +591,10 @@ function getCRSByWFSCapabilities(capabilitiesUrl, layerName) {
 
 function getLayerDataByWFS(filterCoords, type, layerData) {
   return new Promise((resolve) => {
-    const host = layerData.host.replace(/\/wms\?*$/, ""); // removes /wms? endpoint from URI
+    //console.log(layerData.host)
+    let layerHost;
+    layerData.host ? layerHost = layerData.host : layerHost = layerData.layer.host;
+    const host = layerHost.replace(/\/wms\?*$/, ""); // removes /wms? endpoint from URI
     const layerName = window.encodeURI(layerData.name.replace(":", "/")); // if layer name includes the workspace name, replaces colon with a slash
     const capabilitiesUrl = `${host}/${layerName}/ows?service=wfs&request=GetCapabilities`;
 
