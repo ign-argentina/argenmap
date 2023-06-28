@@ -2163,23 +2163,33 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.data = {};
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
-								getLayerDataByWFS(coords, layer.type, activeLayer)
-									.then(data => {
+								if (!activeLayer.layer.host) {
 
-										if (!data) {
-											throw new Error('Error fetching to server');
-										};
+									let data = activeLayer.layer;
+									layer.data[activeLayer.name] = data;
+									layer.coords = coords;
 
-										layer.data[activeLayer.name] = data;
-										layer.coords = coords;
-
-										//Load data in table
-										const table = new Datatable(data, coords);
-										createTabulator(table, activeLayer.name);
-									})
-									.catch(err => {
-										console.error(err);
-									});
+									//Load data in table
+									const table = new Datatable(data, coords);
+									createTabulator(table, activeLayer.name);
+									
+								} else {
+									getLayerDataByWFS(coords, layer.type, activeLayer)
+										.then(data => {
+											if (!data) {
+												throw new Error('Error fetching to server');
+											};	
+											layer.data[activeLayer.name] = data;
+											layer.coords = coords;
+	
+											//Load data in table
+											const table = new Datatable(data, coords);
+											createTabulator(table, activeLayer.name);
+										})
+										.catch(err => {
+											console.error(err);
+										});
+								}
 							});
 						}
 					}
