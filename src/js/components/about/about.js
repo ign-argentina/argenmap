@@ -125,8 +125,7 @@ class modalAbout {
     })
 
     const readmeContainer = document.createElement('div');
-    readmeContainer.className = "content-about-tab";
-    readmeContainer.classList.add('content-about-deactivate');
+    readmeContainer.classList.add('content-about-tab','content-about-deactivate', 'readme-conteiner');
     const innerReadmeText = document.createElement('div');
     innerReadmeText.style.margin = "10px"
     this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
@@ -136,20 +135,23 @@ class modalAbout {
     readmeContainer.appendChild(innerReadmeText)
 
     
-    let repoLink = document.createElement("a");
-    repoLink.target = "_blank";
-    repoLink.href = "https://github.com/ign-argentina/argenmap"
-    repoLink.textContent = "Repositorio en GitHub";
+    let repoIdication = document.createElement("p");
+    repoIdication.textContent = "Repositorio en GitHub";
+    repoIdication.style.margin = "0px";
     
     let gitHubMark = document.createElement("img");
-    gitHubMark.src = "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+    gitHubMark.src = "src/styles/images/github-mark-white.png"
     gitHubMark.alt = "GitHub Logo";
     gitHubMark.style = "width: 24px; margin: 0 5px;";
 
     let repoDiv = document.createElement("div");
     repoDiv.appendChild(gitHubMark);
-    repoDiv.appendChild(repoLink);
+    repoDiv.appendChild(repoIdication);
     repoDiv.style.textAlign = "center";
+    repoDiv.id = "link-to-repo"
+    repoDiv.addEventListener('click', function () {
+      modalAboutUs.goTo("https://github.com/ign-argentina/argenmap");
+    })
 
     readmeContainer.appendChild(repoDiv);
 
@@ -184,15 +186,14 @@ class modalAbout {
       const presentImg = document.createElement('img');
       presentImg.src = contributors.profilePicture;
 
-      const userName = document.createElement('div');
+      const userName = document.createElement('p');
       userName.innerHTML = contributors.name;
+      
 
       presentImg.className = "contributor-img"
       userName.className = "contributor-user"
 
-      card.addEventListener('click', function () {
-        modalAboutUs.goTo(i);
-      })
+      
 
       card.appendChild(presentImg);
       card.appendChild(userName);
@@ -216,7 +217,7 @@ class modalAbout {
   }
 
   goTo(urlIndex) {
-    window.open(this.contributors[urlIndex].url, "_blank");
+    window.open(urlIndex, "_blank");
   }
 
   showTab(tabIndex) {
