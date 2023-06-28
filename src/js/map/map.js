@@ -656,6 +656,10 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.type = type;
 						layer.data = {};
 						layer.options.fillColor = !layer.options.fillColor ? layer.options.color : layer.options.fillColor;
+						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
+						layer.on({
+							click: getVectorData
+						});
 
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
@@ -664,10 +668,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(layer);
 						}
-
-						// layer.on({
-						// 	click: whenClicked
-						// });
 
 						mapa.editableLayers[type].push(layer);
 
@@ -2924,15 +2924,18 @@ function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
 	// If the group doesn't exist, create it and add the layer to it.
 	if (!mapa.groupLayers[group]) {
 		// Create a new GeoJSON feature with the layer and its name.
-		const geoJSON = {
+		const geoJSONCollection = {
 			type: "FeatureCollection",
 			features: [mapa.getLayerGeoJSON(layer.name)]
 		};
-		geoJSON.features[0].properties.name = name;
+		let geoJSON = geoJSONCollection.features[0]
+		layer.data = { geoJSON }
+		geoJSONCollection.features[0].properties.name = name;
+		geoJSONCollection.features[0].properties.type = layer.type;
 		// Add the layer to the addedLayers array and the UI menu.
 		addedLayers.push({
 			id: groupId,
-			layer: geoJSON,
+			layer: geoJSONCollection,
 			name: groupId,
 			type: groupId,
 			isActive: true,
@@ -2943,8 +2946,18 @@ function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
 		// If the group already exists, find the corresponding layer and add the new layer to it.
 		addedLayers.forEach(lyr => {
 			if (lyr.id === groupId) {
+
+				const geoJSONCollection = {
+					type: "FeatureCollection",
+					features: [mapa.getLayerGeoJSON(layer.name)]
+				};
+				let geoJSON = geoJSONCollection.features[0];
+				layer.data = { geoJSON };
+				geoJSONCollection.features[0].properties.name = name;
+				geoJSONCollection.features[0].properties.type = layer.type;
+
 				lyr.layer.features.push(mapa.getLayerGeoJSON(layer.name));
-				lyr.layer.features[lyr.layer.features.length - 1].properties.name = name;
+				lyr.layer.features[lyr.layer.features.length - 1] = geoJSONCollection.features[0];
 			}
 		});
 	}
