@@ -1036,11 +1036,11 @@ SideBar
 /*******************************
 New navbar
 *******************************/
-/* @media (max-width: 390px) {
+@media (max-width: 390px) {
   .navbar-new-content {
     margin: 0% 4px !important;
   }
-} */
+}
 .navbar-new {
   display: flex;
   width: 100%;
@@ -1056,11 +1056,11 @@ New navbar
 .navbar-button {
   margin-right: -20px;
 }
-@media (max-width: 470px) {
+/* @media (max-width: 470px) {
     .navbar-toggle {
         padding: 1px 5px;
     }
-}
+} */
 #logo-navbar {
   display: flex;
   background-size: cover;
