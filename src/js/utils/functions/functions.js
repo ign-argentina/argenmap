@@ -460,6 +460,7 @@ function createWmsLayer(objLayer) {
       return;
     },
   });
+  console.log(layerSelected.featureInfoFormat)
   var wmsSource = new MySource(lyrHost, {
     transparent: true,
     version: '1.3.0',
@@ -467,7 +468,7 @@ function createWmsLayer(objLayer) {
     maxZoom: 21,
     title: layerSelected.titulo,
     format: "image/png",
-    exceptions: layerSelected.featureInfoFormat,
+    exceptions: "xml",
     INFO_FORMAT: layerSelected.featureInfoFormat,
   }); 
   
