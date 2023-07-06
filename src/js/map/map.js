@@ -2092,7 +2092,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 						});
 
 						consultLayers.forEach(activeLayer => {
-							console.log(activeLayer)
 							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer);
 						});
 
