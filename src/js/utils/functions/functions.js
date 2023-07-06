@@ -1375,7 +1375,7 @@ function loadDeveloperLogo() {
       let link = L.DomUtil.create("a");
       link.target = "_blank";
       link.id = "developerLogo"
-      link.title = "Argenmap";
+      link.title = STRINGS.about;
       link.style.cursor = "pointer";
       let img = L.DomUtil.create("img");
       img.src = "src/styles/images/noimage.webp";
@@ -1383,11 +1383,11 @@ function loadDeveloperLogo() {
       img.classList = "brand"
       img.style.backgroundImage = `url('${APP_IMG}')`;
       link.appendChild(img);
+
       link.addEventListener('click', function () {
-        localStorage.removeItem("mainPopup");
-        mainPopup.check();
-        mainPopup._addPopupWrapper(false);
+        modalAboutUs.toggleOpen();
       });
+     
       return link;
     },
   });
