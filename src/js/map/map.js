@@ -1952,9 +1952,13 @@ $("body").on("pluginLoad", function (event, plugin) {
 					};
 
 					mapa.addLayerToPopUp = (container, activeLayer) => {
+						let layerName;
+						activeLayer.name ? 
+						layerName = activeLayer.name : layerName = activeLayer;
+
 						const inputDiv = document.createElement('div');
 						inputDiv.className = 'active-layer';
-						inputDiv.id = 'container_' + activeLayer;
+						inputDiv.id = 'container_' + layerName;
 						inputDiv.style.display = 'flex';
 						inputDiv.style.flexDirection = 'row';
 						inputDiv.style.justifyContent = 'flex-start';
@@ -1964,30 +1968,34 @@ $("body").on("pluginLoad", function (event, plugin) {
 						inputDiv.style.borderRadius = '3px';
 						inputDiv.style.transition = '0.2s';
 						inputDiv.onclick = () => {
-							onClickActiveLayer(activeLayer);
+							onClickActiveLayer(layerName);
 						};
 
 						const input = document.createElement('input');
 						input.type = 'checkbox';
-						input.id = activeLayer;
-						input.name = activeLayer;
-						input.value = activeLayer;
+						input.id = layerName;
+						input.name = layerName;
+						input.value = layerName;
 						input.style.margin = '0px 3px 0px 0px';
 						input.onclick = () => {
-							onClickActiveLayer(activeLayer);
+							onClickActiveLayer(layerName);
 						};
-
+						
 						const label = document.createElement('label');
-						gestorMenu.getLayerData(activeLayer).title ?
-						label.innerHTML = gestorMenu.getLayerData(activeLayer).title :
-						label.innerHTML = activeLayer;
+						if (gestorMenu.getLayerData(layerName).title) {
+							label.innerHTML = gestorMenu.getLayerData(layerName).title;
+						} else if (activeLayer.layer.title) {
+							label.innerHTML = activeLayer.layer.title;
+						} else {
+							label.innerHTML = activeLayer.name; 
+						}	
 						label.className = 'active-layer-label';
-						label.setAttribute("for", activeLayer);
+						label.setAttribute("for", layerName);
 						label.style.marginBottom = '0px';
 						label.style.overflow = 'hidden';
 						label.style.textOverflow = 'ellipsis';
 						label.onclick = () => {
-							onClickActiveLayer(activeLayer);
+							onClickActiveLayer(layerName);
 						};
 
 						inputDiv.appendChild(input);
@@ -2084,7 +2092,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 						});
 
 						consultLayers.forEach(activeLayer => {
-							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer.name);
+							console.log(activeLayer)
+							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer);
 						});
 
 						const popUpBtn = document.createElement('div');
