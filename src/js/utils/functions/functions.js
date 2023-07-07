@@ -523,31 +523,43 @@ async function getWfsLayerFields(url, params) {
   });
   url += "/ows?" + paramsStr.join("&");
 
-  let response = await fetch(url);
-  
-  if ((await response.clone().text()).includes("Service WFS is disabled")) {
-    return new UserMessage("Service WFS is disabled", true, "warning");
-  }
-
-  if (response.ok) {      
-    res = await response.json();
-    res.featureTypes[0].properties.forEach((field) => {
-      // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
-      let lc = field.localType;
-      if (
-        lc === "Geometry" ||
-        lc === "Point" ||
-        lc === "MultiPoint" ||
-        lc === "Polygon" ||
-        lc === "MultilineString" ||
-        lc === "MultiPolygon"
-      ) {
-        geom = field.name;
-      }
-    });
-  } else {
-    alert("HTTP-Error: " + response.status);
-  }
+  await fetch(url)
+  .then(response => {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      return response.json().then(data => {
+        // The response was a JSON object
+        // Process your data as a JavaScript object
+        if (response.ok) {      
+          res = data;
+          res.featureTypes[0].properties.forEach((field) => {
+            // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
+            let lc = field.localType;
+            if (
+              lc === "Geometry" ||
+              lc === "Point" ||
+              lc === "MultiPoint" ||
+              lc === "Polygon" ||
+              lc === "MultilineString" ||
+              lc === "MultiPolygon"
+            ) {
+              geom = field.name;
+            }
+          });
+        } else {
+          alert("HTTP-Error: " + response.status);
+        }
+      });
+    } else {
+       response.text().then(text => {
+        // The response wasn't a JSON object
+        // Process your text as a String
+        if (text.includes("Service WFS is disabled")) {
+           return new UserMessage("El servicio WFS está deshabilitado.", true, "warning");
+        }
+      });
+    }
+  });
 
   return geom;
 }
