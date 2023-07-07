@@ -31,7 +31,8 @@ const STRINGS = {
   basemap_min_zoom: "Min zoom ",
   delete_geometry: "Delete geometry",
   url_required: "URL parameter is required",
-  no_bbox: "Invalid or empty bounding box"
+  no_bbox: "Invalid or empty bounding box",
+  about: "Acerca de Argenmap" 
 }
 
 //Default Services Values
@@ -78,7 +79,7 @@ const PLUGINS = {
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
   loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
   consultData: "src/js/components/consultData/consultData.js",
-  helpTour: "src/js/components/help/helpTour.js"
+  aboutButton: "src/js/components/about/about.js"
 };
 
 const MESSAGE_PROPERTIES = {
