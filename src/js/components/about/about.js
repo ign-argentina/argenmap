@@ -182,6 +182,9 @@ class modalAbout {
       const card = document.createElement('div');
       card.className = "contributor-card"
       card.title = "visitar GitHub"
+      card.addEventListener("click", e => {
+        this.goTo(contributors.url);
+      } )
 
       const presentImg = document.createElement('img');
       presentImg.src = contributors.profilePicture;
