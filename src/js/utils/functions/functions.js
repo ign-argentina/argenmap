@@ -523,8 +523,12 @@ async function getWfsLayerFields(url, params) {
   url += "/ows?" + paramsStr.join("&");
 
   let response = await fetch(url);
+  
+  if ((await response.clone().text()).includes("Service WFS is disabled")) {
+    return new UserMessage("Service WFS is disabled", true, "warning");
+  }
 
-  if (response.ok) {
+  if (response.ok) {      
     res = await response.json();
     res.featureTypes[0].properties.forEach((field) => {
       // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
