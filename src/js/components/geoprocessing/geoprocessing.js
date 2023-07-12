@@ -971,7 +971,7 @@ class Geoprocessing {
           within;
         
         turf.featureEach(layerSelected, function (feature) {
-          within = turf.booleanWithin(feature, selecCoords);
+          within = turf.booleanIntersects(feature, selecCoords);
           if (within) {
             console.log("within? ", within)
             arrayBuffer.push(feature)
@@ -980,14 +980,14 @@ class Geoprocessing {
         console.log("arrayBuffer: ", arrayBuffer)
         let bufferFeature = turf.featureCollection(arrayBuffer);
         console.log("bufferFeature: ", bufferFeature)
-        let buffer = turf.buffer(bufferFeature, distanceBuffer)
-        this.displayResult(buffer);
+        buffer = turf.buffer(bufferFeature, distanceBuffer)
         
       } catch (error) {        
-          console.error(error);
-          new UserMessage(error.message, true, "error");
-          loadingBtn("off", "ejec_gp");
+        console.error(error);
+        new UserMessage(error.message, true, "error");
+        loadingBtn("off", "ejec_gp");
       }
+      this.displayResult(buffer);
 
     } else {
       buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
