@@ -965,15 +965,29 @@ class Geoprocessing {
 
     let buffer;
     if (!layerSelected.host ) {
-      let vectorLayer = layerSelected.features[0];
       try {
-        buffer = turf.buffer(vectorLayer, distanceBuffer);
+        let arrayBuffer = [],
+          selecCoords = drawnRectangle.getGeoJSON(),
+          within;
+        
+        turf.featureEach(layerSelected, function (feature) {
+          within = turf.booleanWithin(feature, selecCoords);
+          if (within) {
+            console.log("within? ", within)
+            arrayBuffer.push(feature)
+          }
+        });
+        console.log("arrayBuffer: ", arrayBuffer)
+        let bufferFeature = turf.featureCollection(arrayBuffer);
+        console.log("bufferFeature: ", bufferFeature)
+        let buffer = turf.buffer(bufferFeature, distanceBuffer)
+        this.displayResult(buffer);
+        
       } catch (error) {        
           console.error(error);
           new UserMessage(error.message, true, "error");
           loadingBtn("off", "ejec_gp");
       }
-      this.displayResult(buffer);
 
     } else {
       buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
