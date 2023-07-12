@@ -188,9 +188,9 @@ class Tooltip {
         let getArrowPos = element.placement || "bottom"; // Get the arrow position, default to "bottom"
 
         // Adjust arrow position for small screens if it's "left" or "right"
-        if (window.innerWidth <= 400 && (getArrowPos === "left" || getArrowPos === "right")) {
+        /* if (window.innerWidth <= 400 && (getArrowPos === "left" || getArrowPos === "right")) {
             getArrowPos = "bottom";
-        }
+        } */
 
         if (element.needClickToOpen) {
             document.querySelector(element.needClickToOpen).click()
