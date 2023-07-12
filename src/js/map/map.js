@@ -2172,8 +2172,20 @@ $("body").on("pluginLoad", function (event, plugin) {
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
 								if (!activeLayer.layer.host) {
+									let arrayData = [],
+										selecCoords = layer.getGeoJSON(),
+										within;
 
-									let data = activeLayer.layer;
+									turf.featureEach(activeLayer.layer, function (feature) {
+										within = turf.booleanIntersects(feature, selecCoords);
+										if (within) {
+										  arrayData.push(feature)
+										}
+									});
+
+									let arrayFeature = turf.featureCollection(arrayData);
+
+									let data = arrayFeature;
 									layer.data[activeLayer.name] = data;
 									layer.coords = coords;
 
