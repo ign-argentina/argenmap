@@ -973,13 +973,10 @@ class Geoprocessing {
         turf.featureEach(layerSelected, function (feature) {
           within = turf.booleanIntersects(feature, selecCoords);
           if (within) {
-            console.log("within? ", within)
             arrayBuffer.push(feature)
           }
         });
-        console.log("arrayBuffer: ", arrayBuffer)
         let bufferFeature = turf.featureCollection(arrayBuffer);
-        console.log("bufferFeature: ", bufferFeature)
         buffer = turf.buffer(bufferFeature, distanceBuffer)
         
       } catch (error) {        
