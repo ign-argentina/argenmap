@@ -100,11 +100,16 @@
 }
 
 .all-function-div {
+    display: flex;
     color       : #000000;
     padding-left: 15px;
+    padding-right: 15px;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .all-function-div li {
+    max-width: 90%;
     list-style-type: none;
 }
 
@@ -181,6 +186,62 @@
     background-color : #1a4570;
     transition       : 200ms;
 }
+
+.bottton{
+    user-select   : none;
+    cursor        : pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 10px;
+
+    background-color: #F49705;
+    border-radius: 50px;
+    width: 13px;
+    height: 13px;
+    
+    
+    box-shadow        : 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 3px 0 rgba(0, 0, 0, 0.99);
+    margin-left: 10px;
+}
+
+.bottton:hover{
+    transition: 200ms;
+    width: 15px;
+    height: 15px;
+}
+
+.explanation{
+    
+    height: 50%;
+    width: 100%;
+    display: flex;
+    
+}
+
+
+.explanation-hidden{
+    display: none;
+}
+
+.notification-dot {
+    position:absolute;
+
+    bottom: 74%;
+    left: 38%;
+    
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+  }
+
+ .new-function{
+    background-color:  red;
+ }
+
 
 @media (max-width: 9060px) {
     #whole-about {

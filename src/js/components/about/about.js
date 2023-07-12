@@ -1,6 +1,10 @@
 class modalAbout {
 
   constructor() {
+
+    this.imgInDisplay = -1;
+    this.thereIsAImg = false;
+
     this.tabs = [
       {
         name: 'Acerca',
@@ -79,9 +83,117 @@ class modalAbout {
         url: 'https://github.com/InMunken'
       }
     ]
+
+    this.functionsDemostration = [
+      {
+        name: "Agregar capas desde servicios WMS y WMTS",
+        imgSurce: "src/styles/images/demostrations/Agregar_capas_desde_servicios_WMS.gif",
+      },
+      {
+        name: "Agregar mapas base desde servicios TMS y XYZ",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "Dibujar y descargar geometrías",
+        imgSurce: "src/styles/images/demostrations/Dibujar_y_descargar_geometrías.gif",
+      },
+      {
+        name: "Modificar estilo de las geometrías dibujadas",
+        imgSurce: "src/styles/images/demostrations/editar_capas_de_geometria.gif",
+      },
+      {
+        name: "Consultar datos de las capas activas con click o usando una geometría como filtro",
+        imgSurce: "src/styles/images/demostrations/consultar_datos_de_capa.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/demostrations/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+
+      {
+        name: "falalalalala",
+        imgSurce: "src/styles/images/gif_500.gif",
+      },
+
+
+    ]
   }
 
   createModalAbout() {
+    
 
     const principalContainer = document.createElement("div");
     principalContainer.id = "whole-about"
@@ -113,6 +225,7 @@ class modalAbout {
 
       if (tabs.name) {
         tab.innerHTML = tabs.name;
+        tab.id = tabs.id;
 
       } else { tab.innerHTML = "TODPN" /*Te Olvidaste De Ponerle Nombre*/ }
 
@@ -125,7 +238,7 @@ class modalAbout {
     })
 
     const readmeContainer = document.createElement('div');
-    readmeContainer.classList.add('content-about-tab','content-about-deactivate', 'readme-conteiner');
+    readmeContainer.classList.add('content-about-tab', 'content-about-deactivate', 'readme-conteiner');
     const innerReadmeText = document.createElement('div');
     innerReadmeText.style.margin = "10px"
     this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
@@ -134,11 +247,11 @@ class modalAbout {
       });
     readmeContainer.appendChild(innerReadmeText)
 
-    
-    let repoIdication = document.createElement("p");
-    repoIdication.textContent = "Repositorio en GitHub";
-    repoIdication.style.margin = "0px";
-    
+
+    let repoIndication = document.createElement("p");
+    repoIndication.textContent = "Repositorio en GitHub";
+    repoIndication.style.margin = "0px";
+
     let gitHubMark = document.createElement("img");
     gitHubMark.src = "src/styles/images/github-mark-white.png"
     gitHubMark.alt = "GitHub Logo";
@@ -146,7 +259,7 @@ class modalAbout {
 
     let repoDiv = document.createElement("div");
     repoDiv.appendChild(gitHubMark);
-    repoDiv.appendChild(repoIdication);
+    repoDiv.appendChild(repoIndication);
     repoDiv.style.textAlign = "center";
     repoDiv.id = "link-to-repo"
     repoDiv.addEventListener('click', function () {
@@ -159,41 +272,87 @@ class modalAbout {
     functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
     functionsContainer.style.overflow = "auto";
 
-    this.loadMD("src/docs/features.md", 2, 16)
+    this.loadMD("src/docs/features.md", 2, Infinity)
       .then(selectedText => {
         const lines = selectedText.split('\n');
+        const lastIndex = lines.length - 4; // Índice de la antepenúltima línea
+
 
         lines.forEach((line, i) => {
+          if (i > lastIndex) {
+            localStorage.setItem('lastFunctionSeen', (i-3)); 
+            console.log('hola')
+            return; // Ignorar las líneas después de la antepenúltima
+            
+          }
           const divFuncion = document.createElement('div');
           divFuncion.innerHTML = line;
           divFuncion.classList.add('all-function-div')
+          
+          const ImagenDescripcion = document.createElement('img');
+          ImagenDescripcion.src = this.functionsDemostration[i].imgSurce;
+          ImagenDescripcion.classList.add('explanation', 'explanation-hidden');
 
           if (i % 2 == 0) {
             divFuncion.classList.add('even-function')
           }
+
+          
+          const bottonn = document.createElement('div');
+
+          bottonn.innerHTML = "i";
+          bottonn.className = 'bottton';
+          
+          bottonn.addEventListener('click', function () {
+
+          modalAboutUs.showImg(i);
+
+          
+          })
+          
+          
+          //primera vez aquí o algún cambio desde la última vez?
+          const getExited = localStorage.getItem('lastFunctionSeen') ;  
+         
+          if ((getExited != null) && (parseInt(getExited) < i)){
+            
+            divFuncion.classList.add('new-function');
+
+            modalAboutUs.notificationAdder('load-functions');
+           
+            
+          }
+          
+       
           functionsContainer.appendChild(divFuncion);
+          functionsContainer.appendChild(ImagenDescripcion);
         });
       });
+     
+
 
     const contributorContainer = document.createElement('div');
     contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
 
-    this.contributors.forEach((contributors, i) => {
+    this.contributors.forEach((contributor, i) => {
       const card = document.createElement('div');
       card.className = "contributor-card"
       card.title = "visitar GitHub"
+      card.addEventListener('click', function () {
+        modalAboutUs.goTo(contributor.url);
+      })
 
       const presentImg = document.createElement('img');
-      presentImg.src = contributors.profilePicture;
+      presentImg.src = contributor.profilePicture;
 
       const userName = document.createElement('p');
-      userName.innerHTML = contributors.name;
-      
+      userName.innerHTML = contributor.name;
+
 
       presentImg.className = "contributor-img"
       userName.className = "contributor-user"
 
-      
+
 
       card.appendChild(presentImg);
       card.appendChild(userName);
@@ -230,6 +389,26 @@ class modalAbout {
     tabsToDisplay[tabIndex].classList.add('tab-active');
   }
 
+  showImg(imgIndex) {
+    console.log(this.imgInDisplay, this.thereIsAImg);
+
+    if ((imgIndex != this.imgInDisplay) || (this.thereIsAImg == false)) {
+      const imgToDisplay = document.querySelectorAll('.explanation');
+      imgToDisplay.forEach(el => el.classList.add('explanation-hidden'));
+      imgToDisplay[imgIndex].classList.remove('explanation-hidden');
+      this.imgInDisplay = imgIndex;
+      this.thereIsAImg = true;
+    } else {
+      const imgToDisplay = document.querySelectorAll('.explanation');
+      imgToDisplay.forEach(el => el.classList.add('explanation-hidden'));
+      this.thereIsAImg = false;
+    }
+
+    console.log(this, this.thereIsAImg);
+
+
+  }
+
   toggleOpen() {
     if (!this.isVisible) {
       this.createModalAbout();
@@ -258,6 +437,17 @@ class modalAbout {
       .catch(error => {
         console.error('Error al cargar el archivo Markdown:', error);
       });
+  }
+
+  notificationAdder(id){ //toggeler?
+
+    const temporalyNotification = document.createElement("div");
+    temporalyNotification.classList.add('notification-dot')
+
+    const termporalyDivToChange = document.getElementById(id)
+    termporalyDivToChange.appendChild(temporalyNotification);
+
+
   }
 
 }
