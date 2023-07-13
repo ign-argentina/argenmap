@@ -1845,7 +1845,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput3.disabled = !enableLabelInput.checked;
 							colorInput3.addEventListener("input", (e) => {
 								const borderColor = colorInput3.value;
-								layer.options.icon.options.html.style.borderColor = borderColor;
+								layer.options.icon.options.html.style.setProperty('border-color', borderColor, 'important')
 								layer.options.borderColor = borderColor;
 							});
 							const colorLabel3 = document.createElement('label');
@@ -1866,7 +1866,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput4.disabled = !enableLabelInput.checked;
 							colorInput4.addEventListener("input", (e) => {
 								const fillColor = colorInput4.value;
-								layer.options.icon.options.html.style.backgroundColor = fillColor;
+								layer.options.icon.options.html.style.setProperty('background-color', fillColor, 'important')
 								layer.options.fillColor = fillColor;
 							});
 							const colorLabel4 = document.createElement('label');
@@ -1902,7 +1902,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput5.disabled = !enableLabelInput.checked;
 							colorInput5.addEventListener("input", (e) => {
 								const textColor = colorInput5.value;
-								layer.options.icon.options.html.style.color = textColor;
+								layer.options.icon.options.html.style.setProperty('color', textColor, 'important')
 								layer.options.color = textColor;
 							});
 							const colorLabel5 = document.createElement('label');
