@@ -460,7 +460,6 @@ function createWmsLayer(objLayer) {
       return;
     },
   });
-  console.log(layerSelected.featureInfoFormat)
   var wmsSource = new MySource(lyrHost, {
     transparent: true,
     version: '1.3.0',
