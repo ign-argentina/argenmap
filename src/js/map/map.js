@@ -2775,7 +2775,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.name = name;
 						layer.type = type;
 						layer.data = { geoJSON };
-						layer.data.geoJSON.properties.name = name;
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
 
 						layer.on({
