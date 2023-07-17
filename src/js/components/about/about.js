@@ -1,4 +1,4 @@
-class modalAbout {
+class AboutUs {
 
     constructor() {
 
@@ -195,72 +195,24 @@ class modalAbout {
     createModalAbout() {
 
         const principalContainer = new AboutUsModal;
-        principalContainer.createElement();
+        principalContainer.createElement(this.tabs);
 
-        /*         const principalContainer = document.createElement("div");
-                principalContainer.id = "whole-about"
-        
-                const aboutHeader = document.createElement("div");
-                aboutHeader.className = "about-header"
-        
-                const aboutLogo = document.createElement("img")
-                aboutLogo.src = "src/styles/images/argenmap-banner.webp"
-                aboutLogo.className = "about-logo"
-        
-                const aboutExitBtn = document.createElement("a");
-                aboutExitBtn.id = "aboutExitBtn";
-                aboutExitBtn.classList = "about-exit";
-                aboutExitBtn.innerHTML = '<i class="fa fa-times"></i>';
-                aboutExitBtn.onclick = () => {
-                    principalContainer.remove();
-                    this.isVisible = false;
-                };
-        
-                const aboutMainSection = document.createElement("div")
-                aboutMainSection.className = "about-main-section"
-        
-                const aboutTabsContainer = document.createElement("div");
-                aboutTabsContainer.className = "about-tabs-bar"
-        
-                */
-        this.tabs.forEach((tab, i) => {
+        const innerReadmeText = document.createElement('div');
+        innerReadmeText.style.margin = "10px"
+        this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
+            .then(selectedText => {
+                innerReadmeText.innerHTML = selectedText;
+            });
 
-            const tabItem = new AboutUsTab;
-            tabItem.createElement(tab, i)
+        let readmeContainer = document.getElementById("readme-container");
+        readmeContainer.prepend(innerReadmeText);
 
-        })
+        let linkRepo = document.getElementById("link-to-repo");
+        linkRepo.addEventListener('click', () => {
+            this.goTo("https://github.com/ign-argentina/argenmap");
+        });
+
         /*
-                const readmeContainer = document.createElement('div');
-                readmeContainer.classList.add('content-about-tab', 'content-about-deactivate', 'readme-conteiner');
-                const innerReadmeText = document.createElement('div');
-                innerReadmeText.style.margin = "10px"
-                this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
-                    .then(selectedText => {
-                        innerReadmeText.innerHTML = selectedText;
-                    });
-                readmeContainer.appendChild(innerReadmeText)
-        
-        
-                let repoIndication = document.createElement("p");
-                repoIndication.textContent = "Repositorio en GitHub";
-                repoIndication.style.margin = "0px";
-        
-                let gitHubMark = document.createElement("img");
-                gitHubMark.src = "src/styles/images/github-mark-white.png"
-                gitHubMark.alt = "GitHub Logo";
-                gitHubMark.style = "width: 24px; margin: 0 5px;";
-        
-                let repoDiv = document.createElement("div");
-                repoDiv.appendChild(gitHubMark);
-                repoDiv.appendChild(repoIndication);
-                repoDiv.style.textAlign = "center";
-                repoDiv.id = "link-to-repo"
-                repoDiv.addEventListener('click', function () {
-                    modalAboutUs.goTo("https://github.com/ign-argentina/argenmap");
-                })
-        
-                readmeContainer.appendChild(repoDiv);
-        
                 const functionsContainer = document.createElement('div');
                 functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
                 functionsContainer.style.overflow = "auto";
@@ -361,11 +313,11 @@ class modalAbout {
         
                 principalContainer.appendChild(aboutMainSection)
         
-                aboutMainSection.appendChild(readmeContainer);
                 aboutMainSection.appendChild(functionsContainer);
                 aboutMainSection.appendChild(contributorContainer);
-        
+                
                 document.body.appendChild(principalContainer); */
+
     }
 
     goTo(urlIndex) {
@@ -444,4 +396,4 @@ class modalAbout {
     }
 
 }
-const modalAboutUs = new modalAbout();
+const modalAboutUs = new AboutUs();

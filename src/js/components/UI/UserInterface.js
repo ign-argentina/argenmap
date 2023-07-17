@@ -18,7 +18,7 @@ class AboutUsModal extends UserInterface {
         super()
     }
 
-    createElement() {
+    createElement(tabs) {
         const principalContainer = document.createElement("div");
         principalContainer.id = "whole-about"
 
@@ -53,36 +53,86 @@ class AboutUsModal extends UserInterface {
 
         principalContainer.appendChild(aboutMainSection)
 
-        /* aboutMainSection.appendChild(readmeContainer);
-        aboutMainSection.appendChild(functionsContainer);
+        /* 
+         aboutMainSection.appendChild(functionsContainer);
         aboutMainSection.appendChild(contributorContainer); */
 
         document.body.appendChild(principalContainer);
+
+        tabs.forEach((tab, i) => {
+            const tabItem = new AboutUsTab;
+            tabItem.createElement(tab, i)
+        })
+
+        const tabContent = new AboutUsTab;
+
+        const readmeContainer = tabContent.createReadmeContainer();
+
+        aboutMainSection.appendChild(readmeContainer);
     }
 
 }
 
+/**
+ * Represents the About Us tab in the user interface.
+ * @extends UserInterface
+ */
 class AboutUsTab extends UserInterface {
     constructor() {
-        super()
+        super();
     }
 
+    /**
+     * Creates and appends a tab element to the about-tabs-bar container.
+     * @param {Object} tab - The tab object containing name and id properties.
+     * @param {number} i - The index of the tab.
+     */
     createElement(tab, i) {
-        const tabElemt = document.createElement('div');
+        const tabElement = document.createElement('div');
+        tabElement.classList.add('tab');
+
         if (tab.name) {
-            tabElemt.innerHTML = tab.name;
-            tabElemt.id = tab.id;
+            tabElement.innerHTML = tab.name;
+            tabElement.id = tab.id;
+        } else {
+            tabElement.innerHTML = "TODPN"; // Te Olvidaste De Ponerle Nombre
+        }
 
-        } else { tabElemt.innerHTML = "TODPN" } //Te Olvidaste De Ponerle Nombre
-
-        tabElemt.classList.add('tab')
-
-        tabElemt.addEventListener('click', function () {
+        tabElement.addEventListener('click', function () {
             modalAboutUs.showTab(i);
-        })
-        document.querySelector(".about-tabs-bar").appendChild(tabElemt);
+        });
+
+        document.querySelector(".about-tabs-bar").appendChild(tabElement);
     }
 
+    /**
+     * Creates the readme container element.
+     * @returns {HTMLElement} - The created readme container element.
+     */
+    createReadmeContainer() {
+        const readmeContainer = document.createElement('div');
+        readmeContainer.classList.add('content-about-tab', 'content-about-deactivate', 'readme-container');
+        readmeContainer.id = "readme-container";
+
+        const repoIndication = document.createElement("p");
+        repoIndication.textContent = "Repositorio en GitHub";
+        repoIndication.style.margin = "0";
+
+        const gitHubMark = document.createElement("img");
+        gitHubMark.src = "src/styles/images/github-mark-white.png";
+        gitHubMark.alt = "GitHub Logo";
+        gitHubMark.style.width = "24px";
+        gitHubMark.style.margin = "0 5px";
+
+        const repoDiv = document.createElement("div");
+        repoDiv.appendChild(gitHubMark);
+        repoDiv.appendChild(repoIndication);
+        repoDiv.style.textAlign = "center";
+        repoDiv.id = "link-to-repo";
+
+        readmeContainer.appendChild(repoDiv);
+        return readmeContainer;
+    }
 }
 
 class NotificationPoint extends UserInterface {
