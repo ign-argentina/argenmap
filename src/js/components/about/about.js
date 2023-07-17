@@ -194,192 +194,178 @@ class modalAbout {
 
     createModalAbout() {
 
-        /*       const principalContainer = new GeneralWindow;
-              principalContainer.render(); */
+        const principalContainer = new AboutUsModal;
+        principalContainer.createElement();
 
-        const principalContainer = document.createElement("div");
-        principalContainer.id = "whole-about"
-
-        const aboutHeader = document.createElement("div");
-        aboutHeader.className = "about-header"
-
-        const aboutLogo = document.createElement("img")
-        aboutLogo.src = "src/styles/images/argenmap-banner.webp"
-        aboutLogo.className = "about-logo"
-
-        const aboutExitBtn = document.createElement("a");
-        aboutExitBtn.id = "aboutExitBtn";
-        aboutExitBtn.classList = "about-exit";
-        aboutExitBtn.innerHTML = '<i class="fa fa-times"></i>';
-        aboutExitBtn.onclick = () => {
-            principalContainer.remove();
-            this.isVisible = false;
-        };
-
-        const aboutMainSection = document.createElement("div")
-        aboutMainSection.className = "about-main-section"
-
-        const aboutTabsContainer = document.createElement("div");
-        aboutTabsContainer.className = "about-tabs-bar"
-
+        /*         const principalContainer = document.createElement("div");
+                principalContainer.id = "whole-about"
         
-        this.tabs.forEach((tabs, i) => {
+                const aboutHeader = document.createElement("div");
+                aboutHeader.className = "about-header"
+        
+                const aboutLogo = document.createElement("img")
+                aboutLogo.src = "src/styles/images/argenmap-banner.webp"
+                aboutLogo.className = "about-logo"
+        
+                const aboutExitBtn = document.createElement("a");
+                aboutExitBtn.id = "aboutExitBtn";
+                aboutExitBtn.classList = "about-exit";
+                aboutExitBtn.innerHTML = '<i class="fa fa-times"></i>';
+                aboutExitBtn.onclick = () => {
+                    principalContainer.remove();
+                    this.isVisible = false;
+                };
+        
+                const aboutMainSection = document.createElement("div")
+                aboutMainSection.className = "about-main-section"
+        
+                const aboutTabsContainer = document.createElement("div");
+                aboutTabsContainer.className = "about-tabs-bar"
+        
+                */
+        this.tabs.forEach((tab, i) => {
 
-            /* const tab = new AboutUsTab;
-            tab.add(tabs.name, tab.id) */
-            
-            const tab = document.createElement('div');
+            const tabItem = new AboutUsTab;
+            tabItem.createElement(tab, i)
 
-            if (tabs.name) {
-                tab.innerHTML = tabs.name;
-                tab.id = tabs.id;
-
-            } else { tab.innerHTML = "TODPN" /*Te Olvidaste De Ponerle Nombre*/ }
-
-            tab.classList.add('tab')
-
-            tab.addEventListener('click', function () {
-                modalAboutUs.showTab(i);
-            })
-            aboutTabsContainer.appendChild(tab);
         })
-
-        const readmeContainer = document.createElement('div');
-        readmeContainer.classList.add('content-about-tab', 'content-about-deactivate', 'readme-conteiner');
-        const innerReadmeText = document.createElement('div');
-        innerReadmeText.style.margin = "10px"
-        this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
-            .then(selectedText => {
-                innerReadmeText.innerHTML = selectedText;
-            });
-        readmeContainer.appendChild(innerReadmeText)
-
-
-        let repoIndication = document.createElement("p");
-        repoIndication.textContent = "Repositorio en GitHub";
-        repoIndication.style.margin = "0px";
-
-        let gitHubMark = document.createElement("img");
-        gitHubMark.src = "src/styles/images/github-mark-white.png"
-        gitHubMark.alt = "GitHub Logo";
-        gitHubMark.style = "width: 24px; margin: 0 5px;";
-
-        let repoDiv = document.createElement("div");
-        repoDiv.appendChild(gitHubMark);
-        repoDiv.appendChild(repoIndication);
-        repoDiv.style.textAlign = "center";
-        repoDiv.id = "link-to-repo"
-        repoDiv.addEventListener('click', function () {
-            modalAboutUs.goTo("https://github.com/ign-argentina/argenmap");
-        })
-
-        readmeContainer.appendChild(repoDiv);
-
-        const functionsContainer = document.createElement('div');
-        functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
-        functionsContainer.style.overflow = "auto";
-
-        this.loadMD("src/docs/features.md", 2, Infinity)
-            .then(selectedText => {
-                const lines = selectedText.split('\n');
-                const lastIndex = lines.length - 4; // Índice de la antepenúltima línea
-
-
-                lines.forEach((line, i) => {
-                    if (i > lastIndex) {
-                        localStorage.setItem('lastFunctionSeen', (i - 3));
-                        console.log('hola')
-                        return; // Ignorar las líneas después de la antepenúltima
-
-                    }
-                    const divFuncion = document.createElement('div');
-                    divFuncion.innerHTML = line;
-                    divFuncion.classList.add('all-function-div')
-
-                    const ImagenDescripcion = document.createElement('img');
-                    ImagenDescripcion.src = this.functionsDemostration[i].imgSurce;
-                    ImagenDescripcion.classList.add('explanation', 'explanation-hidden');
-
-                    if (i % 2 == 0) {
-                        divFuncion.classList.add('even-function')
-                    }
-
-
-                    const bottonn = document.createElement('div');
-
-                    bottonn.innerHTML = "i";
-                    bottonn.className = 'bottton';
-
-                    bottonn.addEventListener('click', function () {
-
-                        modalAboutUs.showImg(i);
-
-
+        /*
+                const readmeContainer = document.createElement('div');
+                readmeContainer.classList.add('content-about-tab', 'content-about-deactivate', 'readme-conteiner');
+                const innerReadmeText = document.createElement('div');
+                innerReadmeText.style.margin = "10px"
+                this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
+                    .then(selectedText => {
+                        innerReadmeText.innerHTML = selectedText;
+                    });
+                readmeContainer.appendChild(innerReadmeText)
+        
+        
+                let repoIndication = document.createElement("p");
+                repoIndication.textContent = "Repositorio en GitHub";
+                repoIndication.style.margin = "0px";
+        
+                let gitHubMark = document.createElement("img");
+                gitHubMark.src = "src/styles/images/github-mark-white.png"
+                gitHubMark.alt = "GitHub Logo";
+                gitHubMark.style = "width: 24px; margin: 0 5px;";
+        
+                let repoDiv = document.createElement("div");
+                repoDiv.appendChild(gitHubMark);
+                repoDiv.appendChild(repoIndication);
+                repoDiv.style.textAlign = "center";
+                repoDiv.id = "link-to-repo"
+                repoDiv.addEventListener('click', function () {
+                    modalAboutUs.goTo("https://github.com/ign-argentina/argenmap");
+                })
+        
+                readmeContainer.appendChild(repoDiv);
+        
+                const functionsContainer = document.createElement('div');
+                functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
+                functionsContainer.style.overflow = "auto";
+        
+                this.loadMD("src/docs/features.md", 2, Infinity)
+                    .then(selectedText => {
+                        const lines = selectedText.split('\n');
+                        const lastIndex = lines.length - 4; // Índice de la antepenúltima línea
+        
+        
+                        lines.forEach((line, i) => {
+                            if (i > lastIndex) {
+                                localStorage.setItem('lastFunctionSeen', (i - 3));
+                                console.log('hola')
+                                return; // Ignorar las líneas después de la antepenúltima
+        
+                            }
+                            const divFuncion = document.createElement('div');
+                            divFuncion.innerHTML = line;
+                            divFuncion.classList.add('all-function-div')
+        
+                            const ImagenDescripcion = document.createElement('img');
+                            ImagenDescripcion.src = this.functionsDemostration[i].imgSurce;
+                            ImagenDescripcion.classList.add('explanation', 'explanation-hidden');
+        
+                            if (i % 2 == 0) {
+                                divFuncion.classList.add('even-function')
+                            }
+        
+        
+                            const bottonn = document.createElement('div');
+        
+                            bottonn.innerHTML = "i";
+                            bottonn.className = 'bottton';
+        
+                            bottonn.addEventListener('click', function () {
+        
+                                modalAboutUs.showImg(i);
+        
+        
+                            })
+        
+        
+                            //primera vez aquí o algún cambio desde la última vez?
+                            const getExited = localStorage.getItem('lastFunctionSeen');
+        
+                            if ((getExited != null) && (parseInt(getExited) < i)) {
+        
+                                divFuncion.classList.add('new-function');
+        
+                                modalAboutUs.notificationAdder('load-functions');
+        
+        
+                            }
+        
+        
+                            functionsContainer.appendChild(divFuncion);
+                            functionsContainer.appendChild(ImagenDescripcion);
+                        });
+                    });
+        
+        
+        
+                const contributorContainer = document.createElement('div');
+                contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
+        
+                this.contributors.forEach((contributor, i) => {
+                    const card = document.createElement('div');
+                    card.className = "contributor-card"
+                    card.title = "visitar GitHub"
+                    card.addEventListener('click', function () {
+                        modalAboutUs.goTo(contributor.url);
                     })
-
-
-                    //primera vez aquí o algún cambio desde la última vez?
-                    const getExited = localStorage.getItem('lastFunctionSeen');
-
-                    if ((getExited != null) && (parseInt(getExited) < i)) {
-
-                        divFuncion.classList.add('new-function');
-
-                        modalAboutUs.notificationAdder('load-functions');
-
-
-                    }
-
-
-                    functionsContainer.appendChild(divFuncion);
-                    functionsContainer.appendChild(ImagenDescripcion);
-                });
-            });
-
-
-
-        const contributorContainer = document.createElement('div');
-        contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
-
-        this.contributors.forEach((contributor, i) => {
-            const card = document.createElement('div');
-            card.className = "contributor-card"
-            card.title = "visitar GitHub"
-            card.addEventListener('click', function () {
-                modalAboutUs.goTo(contributor.url);
-            })
-
-            const presentImg = document.createElement('img');
-            presentImg.src = contributor.profilePicture;
-
-            const userName = document.createElement('p');
-            userName.innerHTML = contributor.name;
-
-
-            presentImg.className = "contributor-img"
-            userName.className = "contributor-user"
-
-
-
-            card.appendChild(presentImg);
-            card.appendChild(userName);
-            contributorContainer.appendChild(card)
-        })
-
-        aboutHeader.appendChild(aboutLogo);
-        aboutHeader.appendChild(aboutExitBtn);
-
-        principalContainer.appendChild(aboutHeader)
-
-        aboutMainSection.appendChild(aboutTabsContainer)
-
-        principalContainer.appendChild(aboutMainSection)
-
-        aboutMainSection.appendChild(readmeContainer);
-        aboutMainSection.appendChild(functionsContainer);
-        aboutMainSection.appendChild(contributorContainer);
-
-        document.body.appendChild(principalContainer);
+        
+                    const presentImg = document.createElement('img');
+                    presentImg.src = contributor.profilePicture;
+        
+                    const userName = document.createElement('p');
+                    userName.innerHTML = contributor.name;
+        
+        
+                    presentImg.className = "contributor-img"
+                    userName.className = "contributor-user"
+        
+        
+        
+                    card.appendChild(presentImg);
+                    card.appendChild(userName);
+                    contributorContainer.appendChild(card)
+                })
+        
+                aboutHeader.appendChild(aboutLogo);
+                aboutHeader.appendChild(aboutExitBtn);
+        
+                principalContainer.appendChild(aboutHeader)
+        
+                aboutMainSection.appendChild(aboutTabsContainer)
+        
+                principalContainer.appendChild(aboutMainSection)
+        
+                aboutMainSection.appendChild(readmeContainer);
+                aboutMainSection.appendChild(functionsContainer);
+                aboutMainSection.appendChild(contributorContainer);
+        
+                document.body.appendChild(principalContainer); */
     }
 
     goTo(urlIndex) {
