@@ -50,6 +50,7 @@ class EditableLabel {
       icon.classList = "fa-solid fa-pen";
 
       controlUI.title = this.options.title;
+      controlUI.id = "editableLabelBtn";
       controlUI.appendChild(icon);
       return controlDiv;
     },
@@ -122,7 +123,8 @@ class EditableLabel {
 
     // Update the marker's geoJSON data as the user types.
     textarea.onkeyup = function () {
-      textLayer.data.properties.text = textLayer.options.icon.options.html.value;
+      console.log(textLayer)
+      textLayer.data.geoJSON.properties.text = textLayer.options.icon.options.html.value;
       textLayer._icon.lastChild.textContent = textLayer.options.icon.options.html.value;
     };
 
@@ -205,7 +207,7 @@ class EditableLabel {
 
     // Update the label's text content when the user types
     textarea.onkeyup = function () {
-      textLayer.data.properties.text = textLayer.options.icon.options.html.value;
+      textLayer.data.geoJSON.properties.text = textLayer.options.icon.options.html.value;
       textLayer._icon.lastChild.textContent = textLayer.options.icon.options.html.value;
     };
 

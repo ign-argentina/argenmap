@@ -1,3 +1,8 @@
+:root {
+    --border-width: 1px;
+    --border-width-tab: 1px 1px 0px 1px;
+  }
+
 .about-header {
     display      : flex;
     align-items  : center;
@@ -46,14 +51,14 @@
     color         : #3174BF;
     border        : solid #3174BF;
     border-radius : 10px 10px 0px 0px;
-    border-width  : 2px 2px 0px 2px;
+    border-width  : var(--border-width-tab);
 }
 
 .tab:hover {
     transition      : 200ms;
     color           : #FFFFFF;
     border          : solid #3174BF;
-    border-width    : 3px 3px 0px 3px;
+    border-width    : var(--border-width-tab);
     background-color: #3174BF;
     box-shadow      : 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
@@ -61,14 +66,14 @@
 .tab-active {
     color           : #FFFFFF;
     border          : solid #3174BF;
-    border-width    : 3px 3px 0px 3px;
+    border-width    : var(--border-width-tab);
     background-color: #3174BF;
 }
 
 .tab-onclik {
     color           : #FFFFFF;
     border          : solid #3174BF;
-    border-width    : 3px 3px 0px 3px;
+    border-width    : var(--border-width-tab);
     background-color: #3174BF;
 }
 
@@ -78,7 +83,7 @@
     color        : #3174BF;
     border       : solid #3174BF;
     border-radius: 10px;
-    border-width : 2px;
+    border-width : var(--border-width);
     background   : white;
     overflow     : auto;
 }
@@ -313,7 +318,7 @@
         font-size     : 5px;
         border        : solid #3174BF;
         border-radius : 2px 2px 0px 0px;
-        border-width  : 1px 1px 0px 1px;
+        border-width  : var(--border-width-tab);
         margin-left   : 7px;
         padding       : 1px;        
     }  

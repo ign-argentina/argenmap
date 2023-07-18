@@ -347,11 +347,18 @@ function parseFeatureInfoHTML(info, idTxt) {
 
 //Parse FeatureInfo to display into popup (if info is application/json)
 function parseFeatureInfoJSON(info, idTxt, title) {
+  if(info.includes("Either no layer was queryable, or no layers were specified using QUERY_LAYERS")) {
+    return "LayerNotQueryable";
+  }
   info = JSON.parse(info);
 
   if (info.exceptions) {
-    new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
-    return 0;
+    if (info.exceptions[0].code === "LayerNotQueryable") {
+      return info.exceptions[0].code;
+    } else {
+      new UserMessage("WMS error: " + info.exceptions[0].text, true, 'error');
+      return 0;
+    }
   }
 
   if (info.features.length > 0) {
@@ -393,10 +400,27 @@ function parseFeatureInfoJSON(info, idTxt, title) {
 }
 
 function createWmsLayer(objLayer) {
+  let layer, layerSelected, lyrHost;
+
+  if (objLayer.capa) {//for WMTS or single WMS
+    layer = objLayer.capa;
+
+    if (gestorMenu.layerIsWmts(objLayer.nombre)) {//is WMTS
+      layerSelected = objLayer.capas[1];
+    } else {                                      //is WMS
+      layerSelected = objLayer.capa;
+    }
+    lyrHost = layerSelected.getHostWMS()
+
+  } else {//for double WMS
+    layer = objLayer;
+    layerSelected = objLayer;
+    lyrHost = layerSelected.host;
+  }
   //Extends WMS.Source to customize popup behavior
   var MySource = L.WMS.Source.extend({
     showFeatureInfo: function (latlng, info) {
-      let layername = objLayer.capa.titulo;
+      let layername = layer.titulo;
 
       if (!this._map) {
         return;
@@ -411,6 +435,9 @@ function createWmsLayer(objLayer) {
             popupInfo.length,
             this.options.title
           );
+        }
+        if (infoParsed === "LayerNotQueryable") {//if layer is not queryable
+          return 0
         }
         if (infoParsed != "") {
           // check if info has any content, if so shows popup
@@ -433,31 +460,19 @@ function createWmsLayer(objLayer) {
       return;
     },
   });
-  var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
+  var wmsSource = new MySource(lyrHost, {
     transparent: true,
     version: '1.3.0',
     tiled: true,
     maxZoom: 21,
-    title: objLayer.capa.titulo,
+    title: layerSelected.titulo,
     format: "image/png",
-    exceptions: objLayer.capa.featureInfoFormat,
-    INFO_FORMAT: objLayer.capa.featureInfoFormat,
-  });
-  overlayMaps[objLayer.capa.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
-  if (gestorMenu.layerIsWmts(objLayer.nombre)) {
-    let secondLayer = objLayer.capas[1]
-    var wmsSource = new MySource(secondLayer.getHostWMS(), {
-      transparent: true,
-      version: '1.3.0',
-      tiled: true,
-      maxZoom: 21,
-      title: secondLayer.titulo,
-      format: "image/png",
-      exceptions: secondLayer.featureInfoFormat,
-      INFO_FORMAT: secondLayer.featureInfoFormat,
-    });  
-    overlayMaps[secondLayer.nombre] = wmsSource.getLayer(secondLayer.nombre);
-  }
+    exceptions: "xml",
+    INFO_FORMAT: layerSelected.featureInfoFormat,
+  }); 
+  
+  overlayMaps[layerSelected.nombre] = wmsSource.getLayer(layerSelected.nombre);
+  overlayMaps[layerSelected.nombre]._source.options.identify = true;
 }
 
 function loadWms(callbackFunction, objLayer) {
@@ -507,27 +522,43 @@ async function getWfsLayerFields(url, params) {
   });
   url += "/ows?" + paramsStr.join("&");
 
-  let response = await fetch(url);
-
-  if (response.ok) {
-    res = await response.json();
-    res.featureTypes[0].properties.forEach((field) => {
-      // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
-      let lc = field.localType;
-      if (
-        lc === "Geometry" ||
-        lc === "Point" ||
-        lc === "MultiPoint" ||
-        lc === "Polygon" ||
-        lc === "MultilineString" ||
-        lc === "MultiPolygon"
-      ) {
-        geom = field.name;
-      }
-    });
-  } else {
-    alert("HTTP-Error: " + response.status);
-  }
+  await fetch(url)
+  .then(response => {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      return response.json().then(data => {
+        // The response was a JSON object
+        // Process your data as a JavaScript object
+        if (response.ok) {      
+          res = data;
+          res.featureTypes[0].properties.forEach((field) => {
+            // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
+            let lc = field.localType;
+            if (
+              lc === "Geometry" ||
+              lc === "Point" ||
+              lc === "MultiPoint" ||
+              lc === "Polygon" ||
+              lc === "MultilineString" ||
+              lc === "MultiPolygon"
+            ) {
+              geom = field.name;
+            }
+          });
+        } else {
+          alert("HTTP-Error: " + response.status);
+        }
+      });
+    } else {
+       response.text().then(text => {
+        // The response wasn't a JSON object
+        // Process your text as a String
+        if (text.includes("Service WFS is disabled")) {
+           return new UserMessage("El servicio WFS está deshabilitado.", true, "warning");
+        }
+      });
+    }
+  });
 
   return geom;
 }
@@ -576,7 +607,10 @@ function getCRSByWFSCapabilities(capabilitiesUrl, layerName) {
 
 function getLayerDataByWFS(filterCoords, type, layerData) {
   return new Promise((resolve) => {
-    const host = layerData.host.replace(/\/wms\?*$/, ""); // removes /wms? endpoint from URI
+    //console.log(layerData.host)
+    let layerHost;
+    layerData.host ? layerHost = layerData.host : layerHost = layerData.layer.host;
+    const host = layerHost.replace(/\/wms\?*$/, ""); // removes /wms? endpoint from URI
     const layerName = window.encodeURI(layerData.name.replace(":", "/")); // if layer name includes the workspace name, replaces colon with a slash
     const capabilitiesUrl = `${host}/${layerName}/ows?service=wfs&request=GetCapabilities`;
 
@@ -780,7 +814,7 @@ function adaptToImage(imgDiv) {
       ? max_url_img
       : (max_url_img +=
         ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
-    container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}'></img>`;
+    container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}' onerror='showImageOnError(this);this.parentNode.append(" Image not found")'></img>`;
 
     resize_img_icon.onclick = (event) => {
       if (container_expand_legend_grafic.getAttribute("load") === "true") {
@@ -1012,7 +1046,7 @@ function closeGeoprocessModal() {
 }
 
 function deleteLayerGeometry(layer) {
-  mapa.removeGroup(layer, true); //Remove group from mapa.groupLayers
+  mapa.removeGroup(layer, true, layer);
   let id = "#fl-" + layer;
   let parent = $(id).parent()[0];
 

@@ -17,7 +17,7 @@ const DEFAULT_LONGITUDE = -59;
 let _antialias = true,
   _dpi = '111',
   _font = 'verdana',
-  _hideEmpty=true,
+  _hideEmpty=false,
   _labelMargin= '5';
 const _LEGEND_OPTIONS = `&LEGEND_OPTIONS=fontAntiAliasing:${_antialias};dpi:${_dpi};fontName:${_font};hideEmptyRules:${_hideEmpty};labelMargin:${_labelMargin};`;
 //GetLegendGraphic params
@@ -79,22 +79,25 @@ const PLUGINS = {
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
   loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
   consultData: "src/js/components/consultData/consultData.js",
-  aboutButton: "src/js/components/about/about.js"
+  aboutButton: "src/js/components/about/about.js",
+  helpTour: "src/js/components/help/helpTour.js"
 };
 
-const MESSAGE_TIME = 10000;
-const MESSAGE_COLORS = {
+const MESSAGE_PROPERTIES = {
   information: {
     background: "rgba(0,141,201, 0.75)",
     text: "white",
+    time: 2000
   },
   error: {
     background: "rgba(255, 0, 0, 0.75)",
     text: "white",
+    time: 10000
   },
   warning: {
     text: "#856404",
     background: "rgba(247,226,58,0.75)",
+    time: 5000
   },
 };
 

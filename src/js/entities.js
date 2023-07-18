@@ -3916,8 +3916,8 @@ class Menu_UI {
           section = lyr.section;
         }
       });
-
-      deleteLayerGeometry(id, true);
+      delFileItembyID(id);
+      deleteLayerGeometry(id);
       $("#modal_layer_del").remove();
 
       //ElevationProfile

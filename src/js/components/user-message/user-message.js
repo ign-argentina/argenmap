@@ -10,12 +10,12 @@ class UserMessage {
 
         const messageContainer = document.createElement('div');
         messageContainer.className = 'message-container';
-        messageContainer.style.background = MESSAGE_COLORS[type].background;
+        messageContainer.style.background = MESSAGE_PROPERTIES[type].background;
 
         const messageText = document.createElement('p');
         messageText.className = 'non-selectable-text message-text';
         messageText.textContent = message;
-        messageText.style.color = MESSAGE_COLORS[type].text;
+        messageText.style.color = MESSAGE_PROPERTIES[type].text;
         messageContainer.appendChild(messageText);
 
         const closeBtn = document.createElement('div');
@@ -37,6 +37,6 @@ class UserMessage {
             if (messageContainer) {
                 messageContainer.remove();
             }
-        }, MESSAGE_TIME);
+        }, MESSAGE_PROPERTIES[type].time);
     }
 };
