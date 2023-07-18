@@ -5,6 +5,7 @@ class AboutUs {
     constructor() {
         this.imgInDisplay = -1;
         this.thereIsAImg = false;
+        this.contributors;
         this.tabs = [
             {
                 name: 'Acerca',
@@ -19,178 +20,6 @@ class AboutUs {
                 id: 'load-colaboradores',
             }
         ];
-
-        // https://api.github.com/repos/ign-argentina/argenmap/contributors
-        this.contributors = [
-            {
-                name: 'afcirillo96',
-                profilePicture: 'https://avatars.githubusercontent.com/u/87725395?v=4',
-                url: 'https://github.com/afcirillo96'
-            },
-            {
-                name: 'Zalitoar',
-                profilePicture: 'https://avatars.githubusercontent.com/u/3695043?v=4',
-                url: 'https://github.com/Zalitoar'
-            },
-
-            {
-                name: 'daf111',
-                profilePicture: 'https://avatars.githubusercontent.com/u/3924657?v=4',
-                url: 'https://github.com/daf111'
-            },
-            {
-                name: 'damianlopez',
-                profilePicture: 'https://avatars.githubusercontent.com/u/49733149?v=4',
-                url: 'https://github.com/damianlopez95'
-            },
-            {
-                name: 'andreazomoza',
-                profilePicture: 'https://avatars.githubusercontent.com/u/61470409?v=4',
-                url: 'https://github.com/andreazomoza'
-            },
-            {
-                name: 'GSC996',
-                profilePicture: 'https://avatars.githubusercontent.com/u/95931791?v=4',
-                url: 'https://github.com/GSC996'
-            },
-            {
-                name: 'gvarela1981',
-                profilePicture: 'https://avatars.githubusercontent.com/u/9384999?v=4',
-                url: 'https://github.com/gvarela1981'
-            },
-            {
-                name: 'yamilvernet',
-                profilePicture: 'https://avatars.githubusercontent.com/u/16062027?v=4',
-                url: 'https://github.com/yamilvernet'
-            },
-            {
-                name: 'lucasvallejo',
-                profilePicture: 'https://avatars.githubusercontent.com/u/47434650?v=4',
-                url: 'https://github.com/lucasvallejo'
-            },
-            {
-                name: 'kant',
-                profilePicture: 'https://avatars.githubusercontent.com/u/32717?v=4',
-                url: 'https://github.com/kant'
-            },
-            {
-                name: 'hcastellaro',
-                profilePicture: 'https://avatars.githubusercontent.com/u/39769968?v=4',
-                url: 'https://github.com/hcastellaro'
-            },
-            {
-                name: 'InMunken',
-                profilePicture: 'https://avatars.githubusercontent.com/u/69722315?v=4',
-                url: 'https://github.com/InMunken'
-            }
-        ];
-
-        this.functionsDemostration = [
-            {
-                name: "Agregar capas desde servicios WMS y WMTS",
-                imgSurce: "src/styles/images/demostrations/Agregar_capas_desde_servicios_WMS.gif",
-            },
-            {
-                name: "Agregar mapas base desde servicios TMS y XYZ",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "Dibujar y descargar geometrías",
-                imgSurce: "src/styles/images/demostrations/Dibujar_y_descargar_geometrías.gif",
-            },
-            {
-                name: "Modificar estilo de las geometrías dibujadas",
-                imgSurce: "src/styles/images/demostrations/editar_capas_de_geometria.gif",
-            },
-            {
-                name: "Consultar datos de las capas activas con click o usando una geometría como filtro",
-                imgSurce: "src/styles/images/demostrations/consultar_datos_de_capa.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/demostrations/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-
-            {
-                name: "falalalalala",
-                imgSurce: "src/styles/images/gif_500.gif",
-            },
-
-
-        ]
     }
 
     /**
@@ -214,14 +43,14 @@ class AboutUs {
             card.className = "contributor-card";
             card.title = "Visitar GitHub";
             card.addEventListener('click', () => {
-                this.goTo(contributor.url);
+                this.goTo(contributor.html_url);
             });
 
             const presentImg = document.createElement('img');
-            presentImg.src = contributor.profilePicture;
+            presentImg.src = contributor.avatar_url;
 
             const userName = document.createElement('p');
-            userName.innerHTML = contributor.name;
+            userName.innerHTML = contributor.login;
 
             presentImg.className = "contributor-img";
             userName.className = "contributor-user";
@@ -253,20 +82,9 @@ class AboutUs {
                     divFuncion.innerHTML = line;
                     divFuncion.classList.add('all-function-div');
 
-                    /* const ImagenDescripcion = document.createElement('img');
-                    ImagenDescripcion.src = this.functionsDemostration[i].imgSurce;
-                    ImagenDescripcion.classList.add('explanation', 'explanation-hidden'); */
-
                     if (i % 2 == 0) {
                         divFuncion.classList.add('even-function');
                     }
-
-                    /* const bottonn = document.createElement('div');
-                    bottonn.innerHTML = "i";
-                    bottonn.className = 'bottton';
-                    bottonn.addEventListener('click', function () {
-                        modalAboutUs.showImg(i);
-                    }) */
 
                     const getExited = localStorage.getItem('lastFunctionSeen'); //First time here or any change since last time?
 
@@ -303,6 +121,24 @@ class AboutUs {
     }
 
     /**
+    * Fetches the contributors data from the GitHub API.
+    * @returns {Promise<Array<Object>>} - A promise that resolves with the contributors data as an array of objects,or null if an error occurs.
+    */
+    async fetchContributorsData() {
+        try {
+            const response = await fetch('https://api.github.com/repos/ign-argentina/argenmap/contributors');
+            if (!response.ok) {
+                throw new Error(`An error has occurred: ${ response.status }`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Failed to fetch GitHub contributors data:', error);
+            return null;
+        }
+    }
+
+    /**
      * Navigates to the specified URL.
      * @param {string} url - The URL to navigate to.
      */
@@ -322,28 +158,6 @@ class AboutUs {
         const tabsToDisplay = document.querySelectorAll('.tab');
         tabsToDisplay.forEach(el => el.classList.remove('tab-active'));
         tabsToDisplay[tabIndex].classList.add('tab-active');
-    }
-
-    /**
-     * Shows or hides the specified image.
-     * @param {number} imgIndex - The index of the image to show or hide.
-     */
-    showImg(imgIndex) {
-        console.log(this.imgInDisplay, this.thereIsAImg);
-
-        if ((imgIndex != this.imgInDisplay) || (this.thereIsAImg === false)) {
-            const imgToDisplay = document.querySelectorAll('.explanation');
-            imgToDisplay.forEach(el => el.classList.add('explanation-hidden'));
-            imgToDisplay[imgIndex].classList.remove('explanation-hidden');
-            this.imgInDisplay = imgIndex;
-            this.thereIsAImg = true;
-        } else {
-            const imgToDisplay = document.querySelectorAll('.explanation');
-            imgToDisplay.forEach(el => el.classList.add('explanation-hidden'));
-            this.thereIsAImg = false;
-        }
-
-        console.log(this, this.thereIsAImg);
     }
 
     /**
@@ -399,3 +213,13 @@ class AboutUs {
 }
 
 const modalAboutUs = new AboutUs();
+
+(async function initializeAboutUs() {
+    const contributorsData = await modalAboutUs.fetchContributorsData();
+    modalAboutUs.contributors = contributorsData;
+})();
+
+/* modalAboutUs.loadMD("src/docs/features.md", 2, Infinity)
+    .then(selectedText => {
+
+    }) */

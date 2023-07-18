@@ -219,11 +219,9 @@
 }
 
 .explanation{
-    
     height: 50%;
     width: 100%;
     display: flex;
-    
 }
 
 
@@ -250,7 +248,6 @@
 
 @media (max-width: 9060px) {
     #whole-about {
-        
         width : 43%;
         left  : 40%;
     }
@@ -281,7 +278,6 @@
 @media (max-width: 670px) {
     #whole-about {
         left  : 23%;
-        
     }
     .contributor-user {
         margin-top    : 5px;
