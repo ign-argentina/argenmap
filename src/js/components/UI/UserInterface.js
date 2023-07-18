@@ -13,21 +13,29 @@ class UserInterface {
 
 }
 
+/**
+ * Represents the About Us modal in the user interface.
+ * @extends UserInterface
+ */
 class AboutUsModal extends UserInterface {
     constructor() {
-        super()
+        super();
     }
 
+    /**
+     * Creates the About Us modal element and appends it to the document body.
+     * @param {Array} tabs - The array of tab objects.
+     */
     createElement(tabs) {
         const principalContainer = document.createElement("div");
-        principalContainer.id = "whole-about"
+        principalContainer.id = "whole-about";
 
         const aboutHeader = document.createElement("div");
-        aboutHeader.className = "about-header"
+        aboutHeader.className = "about-header";
 
-        const aboutLogo = document.createElement("img")
-        aboutLogo.src = "src/styles/images/argenmap-banner.webp"
-        aboutLogo.className = "about-logo"
+        const aboutLogo = document.createElement("img");
+        aboutLogo.src = "src/styles/images/argenmap-banner.webp";
+        aboutLogo.className = "about-logo";
 
         const aboutExitBtn = document.createElement("a");
         aboutExitBtn.id = "aboutExitBtn";
@@ -38,29 +46,27 @@ class AboutUsModal extends UserInterface {
             this.isVisible = false;
         };
 
-        const aboutMainSection = document.createElement("div")
-        aboutMainSection.className = "about-main-section"
+        const aboutMainSection = document.createElement("div");
+        aboutMainSection.className = "about-main-section";
 
         const aboutTabsContainer = document.createElement("div");
-        aboutTabsContainer.className = "about-tabs-bar"
+        aboutTabsContainer.className = "about-tabs-bar";
 
         aboutHeader.appendChild(aboutLogo);
         aboutHeader.appendChild(aboutExitBtn);
 
-        principalContainer.appendChild(aboutHeader)
-
-        aboutMainSection.appendChild(aboutTabsContainer)
-
-        principalContainer.appendChild(aboutMainSection)
+        principalContainer.appendChild(aboutHeader);
+        aboutMainSection.appendChild(aboutTabsContainer);
+        principalContainer.appendChild(aboutMainSection);
 
         document.body.appendChild(principalContainer);
 
         tabs.forEach((tab, i) => {
-            const tabItem = new AboutUsTab;
-            tabItem.createElement(tab, i)
-        })
+            const tabItem = new AboutUsTab();
+            tabItem.createElement(tab, i);
+        });
 
-        const tabContent = new AboutUsTab;
+        const tabContent = new AboutUsTab();
 
         const readmeContainer = tabContent.createReadmeContainer();
         const functionContainer = tabContent.createFunctionsContainer();
@@ -70,7 +76,6 @@ class AboutUsModal extends UserInterface {
         aboutMainSection.appendChild(functionContainer);
         aboutMainSection.appendChild(contributorContainer);
     }
-
 }
 
 /**
@@ -98,7 +103,7 @@ class AboutUsTab extends UserInterface {
             tabElement.innerHTML = "TODPN"; // Te Olvidaste De Ponerle Nombre
         }
 
-        tabElement.addEventListener('click', function () {
+        tabElement.addEventListener('click', () => {
             modalAboutUs.showTab(i);
         });
 
@@ -134,6 +139,10 @@ class AboutUsTab extends UserInterface {
         return readmeContainer;
     }
 
+    /**
+     * Creates the functions container element.
+     * @returns {HTMLElement} - The created functions container element.
+     */
     createFunctionsContainer() {
         const functionsContainer = document.createElement('div');
         functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
@@ -142,6 +151,10 @@ class AboutUsTab extends UserInterface {
         return functionsContainer;
     }
 
+    /**
+     * Creates the contributors container element.
+     * @returns {HTMLElement} - The created contributors container element.
+     */
     createContributorsContainer() {
         const contributorContainer = document.createElement('div');
         contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');

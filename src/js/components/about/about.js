@@ -1,10 +1,10 @@
+/**
+ * Represents the About Us section.
+ */
 class AboutUs {
-
     constructor() {
-
         this.imgInDisplay = -1;
         this.thereIsAImg = false;
-
         this.tabs = [
             {
                 name: 'Acerca',
@@ -18,7 +18,7 @@ class AboutUs {
                 name: 'Colaboradores',
                 id: 'load-colaboradores',
             }
-        ]
+        ];
 
         // https://api.github.com/repos/ign-argentina/argenmap/contributors
         this.contributors = [
@@ -83,7 +83,7 @@ class AboutUs {
                 profilePicture: 'https://avatars.githubusercontent.com/u/69722315?v=4',
                 url: 'https://github.com/InMunken'
             }
-        ]
+        ];
 
         this.functionsDemostration = [
             {
@@ -193,66 +193,26 @@ class AboutUs {
         ]
     }
 
+    /**
+     * Creates the About Us modal and its content.
+     */
     createModalAbout() {
-
-        const principalContainer = new AboutUsModal;
+        const principalContainer = new AboutUsModal();
         principalContainer.createElement(this.tabs);
 
-        this.addReadmecontent();
-
+        this.addReadmeContent();
         this.addFunctionsContent();
-
         this.addContributorsContent();
-
-        /*      const contributorContainer = document.createElement('div');
-                contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
-        
-                this.contributors.forEach((contributor, i) => {
-                    const card = document.createElement('div');
-                    card.className = "contributor-card"
-                    card.title = "visitar GitHub"
-                    card.addEventListener('click', function () {
-                        modalAboutUs.goTo(contributor.url);
-                    })
-        
-                    const presentImg = document.createElement('img');
-                    presentImg.src = contributor.profilePicture;
-        
-                    const userName = document.createElement('p');
-                    userName.innerHTML = contributor.name;
-        
-        
-                    presentImg.className = "contributor-img"
-                    userName.className = "contributor-user"
-        
-        
-        
-                    card.appendChild(presentImg);
-                    card.appendChild(userName);
-                    contributorContainer.appendChild(card)
-                })
-        
-                aboutHeader.appendChild(aboutLogo);
-                aboutHeader.appendChild(aboutExitBtn);
-        
-                principalContainer.appendChild(aboutHeader)
-        
-                aboutMainSection.appendChild(aboutTabsContainer)
-        
-                principalContainer.appendChild(aboutMainSection)
-        
-                aboutMainSection.appendChild(functionsContainer);
-                aboutMainSection.appendChild(contributorContainer);
-                
-                document.body.appendChild(principalContainer); */
-
     }
 
+    /**
+     * Adds the contributors content to the contributors container.
+     */
     addContributorsContent() {
         this.contributors.forEach((contributor, i) => {
             const card = document.createElement('div');
             card.className = "contributor-card";
-            card.title = "visitar GitHub";
+            card.title = "Visitar GitHub";
             card.addEventListener('click', () => {
                 this.goTo(contributor.url);
             });
@@ -274,16 +234,19 @@ class AboutUs {
         });
     }
 
+    /**
+     * Adds the functions content to the functions container.
+     */
     addFunctionsContent() {
         this.loadMD("src/docs/features.md", 2, Infinity)
             .then(selectedText => {
                 const lines = selectedText.split('\n');
-                const lastIndex = lines.length - 4; // Índice de la antepenúltima línea
+                const lastIndex = lines.length - 4; // Index of the antepenultimate line
 
                 lines.forEach((line, i) => {
                     if (i > lastIndex) {
                         localStorage.setItem('lastFunctionSeen', (i - 3));
-                        return; // Ignorar las líneas después de la antepenúltima
+                        return; // Ignore lines after the antepenultimate line
                     }
 
                     const divFuncion = document.createElement('div');
@@ -293,6 +256,7 @@ class AboutUs {
                     /* const ImagenDescripcion = document.createElement('img');
                     ImagenDescripcion.src = this.functionsDemostration[i].imgSurce;
                     ImagenDescripcion.classList.add('explanation', 'explanation-hidden'); */
+
                     if (i % 2 == 0) {
                         divFuncion.classList.add('even-function');
                     }
@@ -304,12 +268,11 @@ class AboutUs {
                         modalAboutUs.showImg(i);
                     }) */
 
-                    //primera vez aquí o algún cambio desde la última vez?
-                    const getExited = localStorage.getItem('lastFunctionSeen');
+                    const getExited = localStorage.getItem('lastFunctionSeen'); //First time here or any change since last time?
 
                     if ((getExited != null) && (parseInt(getExited) < i)) {
                         divFuncion.classList.add('new-function');
-                        modalAboutUs.notificationAdder('load-functions');
+                        this.notificationAdder('load-functions');
                     }
 
                     const functionsContainer = document.getElementById("functions-container");
@@ -318,7 +281,10 @@ class AboutUs {
             });
     }
 
-    addReadmecontent() {
+    /**
+     * Adds the readme content to the readme container.
+     */
+    addReadmeContent() {
         const innerReadmeText = document.createElement('div');
         innerReadmeText.style.margin = "10px";
 
@@ -336,10 +302,18 @@ class AboutUs {
         });
     }
 
-    goTo(urlIndex) {
-        window.open(urlIndex, "_blank");
+    /**
+     * Navigates to the specified URL.
+     * @param {string} url - The URL to navigate to.
+     */
+    goTo(url) {
+        window.open(url, "_blank");
     }
 
+    /**
+     * Shows the specified tab.
+     * @param {number} tabIndex - The index of the tab to show.
+     */
     showTab(tabIndex) {
         const contentToDisplay = document.querySelectorAll('.content-about-tab');
         contentToDisplay.forEach(el => el.classList.add('content-about-deactivate'));
@@ -350,10 +324,14 @@ class AboutUs {
         tabsToDisplay[tabIndex].classList.add('tab-active');
     }
 
+    /**
+     * Shows or hides the specified image.
+     * @param {number} imgIndex - The index of the image to show or hide.
+     */
     showImg(imgIndex) {
         console.log(this.imgInDisplay, this.thereIsAImg);
 
-        if ((imgIndex != this.imgInDisplay) || (this.thereIsAImg == false)) {
+        if ((imgIndex != this.imgInDisplay) || (this.thereIsAImg === false)) {
             const imgToDisplay = document.querySelectorAll('.explanation');
             imgToDisplay.forEach(el => el.classList.add('explanation-hidden'));
             imgToDisplay[imgIndex].classList.remove('explanation-hidden');
@@ -368,6 +346,9 @@ class AboutUs {
         console.log(this, this.thereIsAImg);
     }
 
+    /**
+     * Toggles the visibility of the About Us modal.
+     */
     toggleOpen() {
         if (!this.isVisible) {
             this.createModalAbout();
@@ -382,15 +363,21 @@ class AboutUs {
         }
     }
 
-    loadMD(url, desde, hasta) {
+    /**
+     * Loads the Markdown file from the specified URL and selects the specified lines.
+     * @param {string} url - The URL of the Markdown file.
+     * @param {number} from - The index of the first line to select.
+     * @param {number} to - The index of the last line to select.
+     * @returns {Promise<string>} - A promise that resolves with the selected text.
+     */
+    loadMD(url, from, to) {
         return fetch(url)
             .then(response => response.text())
             .then(markdown => {
                 const html = marked(markdown);
                 const lines = html.split('\n');
-                const selectedLines = lines.slice(desde, hasta);
+                const selectedLines = lines.slice(from, to);
                 const selectedText = selectedLines.join('\n');
-
                 return selectedText;
             })
             .catch(error => {
@@ -398,14 +385,17 @@ class AboutUs {
             });
     }
 
-    notificationAdder(id) { //toggeler?
-        const temporalyNotification = document.createElement("div");
-        temporalyNotification.classList.add('notification-dot')
+    /**
+     * Adds a notification dot to the specified element.
+     * @param {string} id - The ID of the element to add the notification dot to.
+     */
+    notificationAdder(id) {
+        const temporaryNotification = document.createElement("div");
+        temporaryNotification.classList.add('notification-dot');
 
-        const termporalyDivToChange = document.getElementById(id)
-        termporalyDivToChange.appendChild(temporalyNotification);
-
+        const temporaryDivToChange = document.getElementById(id);
+        temporaryDivToChange.appendChild(temporaryNotification);
     }
-
 }
+
 const modalAboutUs = new AboutUs();
