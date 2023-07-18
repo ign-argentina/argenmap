@@ -20,6 +20,7 @@ class AboutUs {
             }
         ]
 
+        // https://api.github.com/repos/ign-argentina/argenmap/contributors
         this.contributors = [
             {
                 name: 'afcirillo96',
@@ -197,86 +198,13 @@ class AboutUs {
         const principalContainer = new AboutUsModal;
         principalContainer.createElement(this.tabs);
 
-        const innerReadmeText = document.createElement('div');
-        innerReadmeText.style.margin = "10px"
-        this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
-            .then(selectedText => {
-                innerReadmeText.innerHTML = selectedText;
-            });
+        this.addReadmecontent();
 
-        let readmeContainer = document.getElementById("readme-container");
-        readmeContainer.prepend(innerReadmeText);
+        this.addFunctionsContent();
 
-        let linkRepo = document.getElementById("link-to-repo");
-        linkRepo.addEventListener('click', () => {
-            this.goTo("https://github.com/ign-argentina/argenmap");
-        });
+        this.addContributorsContent();
 
-        /*
-                const functionsContainer = document.createElement('div');
-                functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
-                functionsContainer.style.overflow = "auto";
-        
-                this.loadMD("src/docs/features.md", 2, Infinity)
-                    .then(selectedText => {
-                        const lines = selectedText.split('\n');
-                        const lastIndex = lines.length - 4; // Índice de la antepenúltima línea
-        
-        
-                        lines.forEach((line, i) => {
-                            if (i > lastIndex) {
-                                localStorage.setItem('lastFunctionSeen', (i - 3));
-                                console.log('hola')
-                                return; // Ignorar las líneas después de la antepenúltima
-        
-                            }
-                            const divFuncion = document.createElement('div');
-                            divFuncion.innerHTML = line;
-                            divFuncion.classList.add('all-function-div')
-        
-                            const ImagenDescripcion = document.createElement('img');
-                            ImagenDescripcion.src = this.functionsDemostration[i].imgSurce;
-                            ImagenDescripcion.classList.add('explanation', 'explanation-hidden');
-        
-                            if (i % 2 == 0) {
-                                divFuncion.classList.add('even-function')
-                            }
-        
-        
-                            const bottonn = document.createElement('div');
-        
-                            bottonn.innerHTML = "i";
-                            bottonn.className = 'bottton';
-        
-                            bottonn.addEventListener('click', function () {
-        
-                                modalAboutUs.showImg(i);
-        
-        
-                            })
-        
-        
-                            //primera vez aquí o algún cambio desde la última vez?
-                            const getExited = localStorage.getItem('lastFunctionSeen');
-        
-                            if ((getExited != null) && (parseInt(getExited) < i)) {
-        
-                                divFuncion.classList.add('new-function');
-        
-                                modalAboutUs.notificationAdder('load-functions');
-        
-        
-                            }
-        
-        
-                            functionsContainer.appendChild(divFuncion);
-                            functionsContainer.appendChild(ImagenDescripcion);
-                        });
-                    });
-        
-        
-        
-                const contributorContainer = document.createElement('div');
+        /*      const contributorContainer = document.createElement('div');
                 contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
         
                 this.contributors.forEach((contributor, i) => {
@@ -320,6 +248,94 @@ class AboutUs {
 
     }
 
+    addContributorsContent() {
+        this.contributors.forEach((contributor, i) => {
+            const card = document.createElement('div');
+            card.className = "contributor-card";
+            card.title = "visitar GitHub";
+            card.addEventListener('click', () => {
+                this.goTo(contributor.url);
+            });
+
+            const presentImg = document.createElement('img');
+            presentImg.src = contributor.profilePicture;
+
+            const userName = document.createElement('p');
+            userName.innerHTML = contributor.name;
+
+            presentImg.className = "contributor-img";
+            userName.className = "contributor-user";
+
+            card.appendChild(presentImg);
+            card.appendChild(userName);
+
+            const contributorContainer = document.getElementById("contributors-container");
+            contributorContainer.appendChild(card);
+        });
+    }
+
+    addFunctionsContent() {
+        this.loadMD("src/docs/features.md", 2, Infinity)
+            .then(selectedText => {
+                const lines = selectedText.split('\n');
+                const lastIndex = lines.length - 4; // Índice de la antepenúltima línea
+
+                lines.forEach((line, i) => {
+                    if (i > lastIndex) {
+                        localStorage.setItem('lastFunctionSeen', (i - 3));
+                        return; // Ignorar las líneas después de la antepenúltima
+                    }
+
+                    const divFuncion = document.createElement('div');
+                    divFuncion.innerHTML = line;
+                    divFuncion.classList.add('all-function-div');
+
+                    /* const ImagenDescripcion = document.createElement('img');
+                    ImagenDescripcion.src = this.functionsDemostration[i].imgSurce;
+                    ImagenDescripcion.classList.add('explanation', 'explanation-hidden'); */
+                    if (i % 2 == 0) {
+                        divFuncion.classList.add('even-function');
+                    }
+
+                    /* const bottonn = document.createElement('div');
+                    bottonn.innerHTML = "i";
+                    bottonn.className = 'bottton';
+                    bottonn.addEventListener('click', function () {
+                        modalAboutUs.showImg(i);
+                    }) */
+
+                    //primera vez aquí o algún cambio desde la última vez?
+                    const getExited = localStorage.getItem('lastFunctionSeen');
+
+                    if ((getExited != null) && (parseInt(getExited) < i)) {
+                        divFuncion.classList.add('new-function');
+                        modalAboutUs.notificationAdder('load-functions');
+                    }
+
+                    const functionsContainer = document.getElementById("functions-container");
+                    functionsContainer.appendChild(divFuncion);
+                });
+            });
+    }
+
+    addReadmecontent() {
+        const innerReadmeText = document.createElement('div');
+        innerReadmeText.style.margin = "10px";
+
+        this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
+            .then(selectedText => {
+                innerReadmeText.innerHTML = selectedText;
+            });
+
+        let readmeContainer = document.getElementById("readme-container");
+        readmeContainer.prepend(innerReadmeText);
+
+        let linkRepo = document.getElementById("link-to-repo");
+        linkRepo.addEventListener('click', () => {
+            this.goTo("https://github.com/ign-argentina/argenmap");
+        });
+    }
+
     goTo(urlIndex) {
         window.open(urlIndex, "_blank");
     }
@@ -350,8 +366,6 @@ class AboutUs {
         }
 
         console.log(this, this.thereIsAImg);
-
-
     }
 
     toggleOpen() {
@@ -385,13 +399,11 @@ class AboutUs {
     }
 
     notificationAdder(id) { //toggeler?
-
         const temporalyNotification = document.createElement("div");
         temporalyNotification.classList.add('notification-dot')
 
         const termporalyDivToChange = document.getElementById(id)
         termporalyDivToChange.appendChild(temporalyNotification);
-
 
     }
 

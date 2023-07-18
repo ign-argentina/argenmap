@@ -53,10 +53,6 @@ class AboutUsModal extends UserInterface {
 
         principalContainer.appendChild(aboutMainSection)
 
-        /* 
-         aboutMainSection.appendChild(functionsContainer);
-        aboutMainSection.appendChild(contributorContainer); */
-
         document.body.appendChild(principalContainer);
 
         tabs.forEach((tab, i) => {
@@ -67,8 +63,12 @@ class AboutUsModal extends UserInterface {
         const tabContent = new AboutUsTab;
 
         const readmeContainer = tabContent.createReadmeContainer();
+        const functionContainer = tabContent.createFunctionsContainer();
+        const contributorContainer = tabContent.createContributorsContainer();
 
         aboutMainSection.appendChild(readmeContainer);
+        aboutMainSection.appendChild(functionContainer);
+        aboutMainSection.appendChild(contributorContainer);
     }
 
 }
@@ -132,6 +132,22 @@ class AboutUsTab extends UserInterface {
 
         readmeContainer.appendChild(repoDiv);
         return readmeContainer;
+    }
+
+    createFunctionsContainer() {
+        const functionsContainer = document.createElement('div');
+        functionsContainer.classList.add('content-about-tab', 'content-about-deactivate');
+        functionsContainer.style.overflow = "auto";
+        functionsContainer.id = "functions-container";
+        return functionsContainer;
+    }
+
+    createContributorsContainer() {
+        const contributorContainer = document.createElement('div');
+        contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
+        contributorContainer.id = "contributors-container";
+
+        return contributorContainer;
     }
 }
 
