@@ -966,17 +966,17 @@ class Geoprocessing {
     let buffer;
     if (!layerSelected.host ) {
       try {
-        let arrayBuffer = [],
+        let arrayForBuffer = [],
           selecCoords = drawnRectangle.getGeoJSON(),
           within;
         
         turf.featureEach(layerSelected, function (feature) {
           within = turf.booleanIntersects(feature, selecCoords);
           if (within) {
-            arrayBuffer.push(feature)
+            arrayForBuffer.push(feature)
           }
         });
-        let bufferFeature = turf.featureCollection(arrayBuffer);
+        let bufferFeature = turf.featureCollection(arrayForBuffer);
         buffer = turf.buffer(bufferFeature, distanceBuffer)
         mapa.deleteLayer(drawnRectangle.name);
 
