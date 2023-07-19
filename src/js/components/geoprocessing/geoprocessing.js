@@ -942,13 +942,13 @@ class Geoprocessing {
 
 
   executeBuffer() {
-    let drawnRectangle;
+    let drawnRectangle,
+      layerSelected,
+      allLayers = getAllActiveLayers(),
+      selctedLayerName = document.getElementById("select-capa").value;
     mapa.editableLayers.rectangle.forEach((lyr) => {
       drawnRectangle = lyr;
     });
-    let layerSelected;
-    let allLayers = getAllActiveLayers();
-    let selctedLayerName = document.getElementById("select-capa").value;
     
     allLayers.forEach(lyr => {
       if (lyr.name === selctedLayerName) {
@@ -978,7 +978,8 @@ class Geoprocessing {
         });
         let bufferFeature = turf.featureCollection(arrayBuffer);
         buffer = turf.buffer(bufferFeature, distanceBuffer)
-        
+        mapa.deleteLayer(drawnRectangle.name);
+
       } catch (error) {        
         console.error(error);
         new UserMessage(error.message, true, "error");
