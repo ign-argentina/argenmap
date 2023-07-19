@@ -668,11 +668,16 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(layer);
 						}
-
+						
 						mapa.editableLayers[type].push(layer);
-
-						addLayerToDrawingsGroup(name, layer, "Dibujos", "dibujos", "dibujos");
-
+						
+						if (isSelectionDrawingActive) {
+							layer.id = "selection_" + Math.floor(Math.random()*(999-100+1)+100).toString();
+							isSelectionDrawingActive = false;
+						} else {
+							addLayerToDrawingsGroup(name, layer, "Dibujos", "dibujos", "dibujos");
+						}
+						
 						// if (perfilTopografico.isActive) {
 						// 	// check if profile was clicked
 						// 	mapa.capaPerfilTopografico.clearLayers();

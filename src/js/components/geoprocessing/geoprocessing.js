@@ -3,6 +3,7 @@ let btn_modal_loading = false;
 let process = {};
 let contourRectangles = [];
 let isValidRectangle = false;
+let isSelectionDrawingActive = false;
 let counterContour = 0, counterHeight = 0, counterBuffer = 0,
   counterElevProfile = 0; //soon to be moved to their respective class
 
@@ -914,6 +915,7 @@ class Geoprocessing {
         $("#drawRectangleBtn").addClass("disabledbutton");
         drawingRectangle.enable();
         this.checkRectangleArea("add-layer");
+        isSelectionDrawingActive = true;
       },
       "drawRectangleBtn"
     );
@@ -947,7 +949,9 @@ class Geoprocessing {
       allLayers = getAllActiveLayers(),
       selctedLayerName = document.getElementById("select-capa").value;
     mapa.editableLayers.rectangle.forEach((lyr) => {
-      drawnRectangle = lyr;
+      if (lyr.id && lyr.id.includes("selection_")) {
+        drawnRectangle = lyr;
+      }
     });
     
     allLayers.forEach(lyr => {
@@ -978,7 +982,6 @@ class Geoprocessing {
         });
         let bufferFeature = turf.featureCollection(arrayForBuffer);
         buffer = turf.buffer(bufferFeature, distanceBuffer)
-        mapa.deleteLayer(drawnRectangle.name);
 
       } catch (error) {        
         console.error(error);
@@ -1003,8 +1006,7 @@ class Geoprocessing {
         });
     }
 
-    let lastRectangle = mapa.getEditableLayers().rectangle.length - 1;
-    mapa.deleteLayer(mapa.getEditableLayers().rectangle[lastRectangle].name);
+    mapa.deleteLayer(drawnRectangle.name);
   }
 
   executeGeoprocess(formFields) {
@@ -1018,19 +1020,21 @@ class Geoprocessing {
         formFields[i].hasAttribute("references") &&
         formFields[i].getAttribute("references") === "drawedLayers"
       ) {
-        let layer;
+        let drawnRectangle;
         mapa.editableLayers.rectangle.forEach((lyr) => {
-          layer = lyr;
+          if (lyr.id && lyr.id.includes("selection_")) {
+            drawnRectangle = lyr;
+          }
         });
 
-        layer != null ? (this.editableLayer_name = layer.name) : null;
+        drawnRectangle != null ? (this.editableLayer_name = drawnRectangle.name) : null;
 
         switch (this.geoprocessId) {
           case "contour": {
-            const sw = layer.getBounds().getSouthWest();
+            const sw = drawnRectangle.getBounds().getSouthWest();
             values.push(sw.lng);
             values.push(sw.lat);
-            const ne = layer.getBounds().getNorthEast();
+            const ne = drawnRectangle.getBounds().getNorthEast();
             values.push(ne.lng);
             values.push(ne.lat);
             break;
