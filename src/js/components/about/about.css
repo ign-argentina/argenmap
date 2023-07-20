@@ -1,6 +1,6 @@
 :root {
-    --border-width: 1px;
-    --border-width-tab: 1px 1px 0px 1px;
+    --border-width: 3px;
+    --border-width-tab: 3px 3px 0px 3px;
 }
 .about-header {
     display: flex;
@@ -36,6 +36,8 @@
     justify-content: left;
 }
 .tab {
+    position: relative;
+
     user-select: none;
     cursor: pointer;
     margin-left: 4%;
@@ -45,26 +47,26 @@
     color: #3174BF;
     border: solid #3174BF;
     border-radius: 10px 10px 0px 0px;
-    border-width: 3px 3px 0px 3px;
+    border-width: var(--border-width-tab);
 }
 .tab:hover {
     transition: 200ms;
     color: #FFFFFF;
     border: solid #3174BF;
-    border-width: 3px 3px 0px 3px;
+    border-width: var(--border-width-tab);
     background-color: #3174BF;
     box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .tab-active {
     color: #FFFFFF;
     border: solid #3174BF;
-    border-width: 3px 3px 0px 3px;
+    border-width: var(--border-width-tab);
     background-color: #3174BF;
 }
 .tab-onclik {
     color: #FFFFFF;
     border: solid #3174BF;
-    border-width: 3px 3px 0px 3px;
+    border-width: var(--border-width-tab);
     background-color: #3174BF;
 }
 .content-about-tab {
@@ -72,7 +74,7 @@
     color: #000000;
     border: solid #3174BF;
     border-radius: 10px;
-    border-width: 3px;
+    border-width: var(--border-width);
     background: white;
     overflow: auto;
 }
@@ -167,11 +169,15 @@
 }
 .notification-dot {
     position: absolute;
-    bottom: 74%;
-    left: 38%;
+    bottom: 85%; 
+    left: 75%; 
+
+    
+
     width: 10px;
     height: 10px;
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.85);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
     border-radius: 50%;
 }
 
