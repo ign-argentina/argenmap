@@ -102,6 +102,7 @@ class Searchbar_UI {
       mapa.removeGroup("markerSearchResult", true);
       if (innerWidth  <= 768) {
         document.getElementById("logo-navbar").style.display= "";
+        helpTour ? helpTour.style.display= "" : 0;
       }
     });
 
@@ -135,6 +136,7 @@ class Searchbar_UI {
         selected_item = false;
         if (innerWidth  <= 768) {
           document.getElementById("logo-navbar").style.display= "";
+          helpTour ? helpTour.style.display= "" : 0;
         }
       } else if (q.length <= 2) {
         results.innerHTML = "";
