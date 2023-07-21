@@ -37,7 +37,6 @@
 }
 .tab {
     position: relative;
-
     user-select: none;
     cursor: pointer;
     margin-left: 4%;
@@ -83,7 +82,6 @@
     grid-template-columns: auto auto auto;
     overflow-x: hidden;
 }
-
 .readme-container {
     display: flex;
     flex-direction: column;
@@ -152,7 +150,6 @@
     margin-left: 2px;
     color: white;
 }
-
 #link-to-repo {
     cursor: pointer;
     color: #FFFFFF;
@@ -162,126 +159,95 @@
     padding-top: 3px;
     margin-bottom: 3px;
 }
-
 #link-to-repo:hover {
     background-color: #1a4570;
     transition: 200ms;
 }
 .notification-dot {
     position: absolute;
-    bottom: 85%; 
-    left: 75%; 
-
-    
-
+    bottom: 85%;
+    left: 75%;
     width: 10px;
     height: 10px;
     background-color: rgba(255, 0, 0, 0.85);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     border-radius: 50%;
 }
-
 .new-function {
     background-color: red;
 }
-
 /*WebKit - Browser */
 .content-about-tab::-webkit-scrollbar-track {
-    display       : none;
-    border-radius : 5px;
+    display: none;
+    border-radius: 5px;
 }
 .content-about-tab::-webkit-scrollbar {
-    width        : 7px;
+    width: 7px;
 }
 .content-about-tab::-webkit-scrollbar-thumb {
     border-radius: 5px;
     background-color: #F29707;
     border-right: 1px solid #ffffff;
-
 }
-
-
-
-
-
-
-
 @media (max-width: 9060px) {
     #whole-about {
         width: 43%;
         left: 40%;
     }
 }
-
 @media (max-width: 916px) {
     #whole-about {
         width: 40%;
         left: 43%;
     }
-
     .contributor-container {
         grid-template-columns: auto auto;
     }
-
     .contributor-card {
         border-radius: 5px;
         padding: 5px;
-
     }
-
     .about-logo {
         width: 300px;
     }
-
     .tab {
         font-size: 16px;
         margin-left: 11px;
         padding: 1px;
     }
-
     .contributor-card {
         margin: 10px;
         padding: 10px;
-
         cursor: pointer;
         cursor: hand;
-
         width: 90%;
         height: 90%;
     }
 }
-
 @media (max-width: 766px) {
     #whole-about {
         width: 50%;
         left: 26%;
     }
-
-
 }
 @media (max-width: 670px) {
     #whole-about {
         left: 23%;
     }
-
     .contributor-card {
         height: 50px;
         margin-bottom: 0px;
     }
-
     .contributor-user {
         margin-top: 5px;
         font-size: 15px;
     }
-
     .contributor-container {
         grid-template-columns: auto;
     }
-
     .about-logo {
         width: 200px;
     }
-
     .tab {
         font-size: 11px;
         margin-left: 9px;
@@ -298,16 +264,13 @@
         padding-bottom: 20px;
         height: 2px;
     }
-
     .contributor-img {
         border-radius: 2px;
         width: 35px;
     }
-
     .contributor-user {
         font-size: 10px;
     }
-
     .tab {
         font-size: 8px;
         border: solid #3174BF;
@@ -316,7 +279,6 @@
         margin-left: 7px;
         padding: 1px;
     }
-
     .about-logo {
         width: 90px;
     }
