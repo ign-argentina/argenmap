@@ -1385,6 +1385,10 @@ function toggleVisibility(elementId) {
 }
 
 function loadDeveloperLogo() {
+  
+  const NotiChek = new NotificationChecker();
+  NotiChek.check();
+
   L.Control.DeveloperLogo = L.Control.extend({
     onAdd: function (map) {
       let link = L.DomUtil.create("a");

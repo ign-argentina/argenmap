@@ -90,7 +90,6 @@ class AboutUs {
 
                     if ((getExited != null) && (parseInt(getExited) < i)) {
                         divFuncion.classList.add('new-function');
-                        this.notificationAdder('load-functions');
                     }
 
                     const functionsContainer = document.getElementById("functions-container");
