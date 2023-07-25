@@ -2836,24 +2836,13 @@ $("body").on("pluginLoad", function (event, plugin) {
 							return;
 						}
 					
-						let type = "";
-						let layer = null;
-						let name = "";
-						let options = {};
-					
-						if (geoJSON.properties.hasOwnProperty('styles')) {
-							options = { ...geoJSON.properties.styles };
-						}
-
-						layer = typeOfLayer(geoJSON, groupName, options);
-						type = layer.type;
-
-						name = nameForLayer(layer.type);
+						let layer = createLayerFromGeoJSON(geoJSON, groupName);
+						//console.log(layer)
+						let type = layer.type;
 						
 
 						layer.id = groupName;
-						layer.name = name;
-						layer.type = type;
+						layer.name = nameForLayer(type);
 						layer.data = { geoJSON };
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
 						layer.on({
@@ -2867,7 +2856,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
 						}
 						
-						mapa.groupLayers[groupName].push(name);
+						mapa.groupLayers[groupName].push(layer.name);
 						mapa.editableLayers[type].push(layer);
 						mapa.addContextMenuToLayer(layer);
 						drawnItems.addLayer(layer);
