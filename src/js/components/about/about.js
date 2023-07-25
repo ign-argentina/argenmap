@@ -1,3 +1,49 @@
+class DataGetter {
+    constructor() {
+
+    }
+
+    /**
+         * Loads the Markdown file from the specified URL and selects the specified lines.
+         * @param {string} url - The URL of the Markdown file.
+         * @param {number} from - The index of the first line to select.
+         * @param {number} to - The index of the last line to select.
+         * @returns {Promise<string>} - A promise that resolves with the selected text.
+         */
+    loadMD(url, from, to) {
+        return fetch(url)
+            .then(response => response.text())
+            .then(markdown => {
+                const html = marked(markdown);
+                const lines = html.split('\n');
+                const selectedLines = lines.slice(from, to);
+                const selectedText = selectedLines.join('\n');
+                return selectedText;
+            })
+            .catch(error => {
+                console.error('Error al cargar el archivo Markdown:', error);
+            });
+    }
+
+    /**
+    * Fetches the contributors data from the GitHub API.
+    * @returns {Promise<Array<Object>>} - A promise that resolves with the contributors data as an array of objects,or null if an error occurs.
+    */
+    async fetchContributorsData(source) {
+        try {
+            const response = await fetch(source);
+            if (!response.ok) {
+                throw new Error(`An error has occurred: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Failed to fetch GitHub contributors data:', error);
+            return null;
+        }
+    }
+}
+
 /**
  * Represents the About Us section.
  */
@@ -20,6 +66,8 @@ class AboutUs {
                 id: 'load-colaboradores',
             }
         ];
+        this.dataGetter = new DataGetter();
+        this.check();
     }
 
     /**
@@ -67,7 +115,7 @@ class AboutUs {
      * Adds the functions content to the functions container.
      */
     addFunctionsContent() {
-        this.loadMD("src/docs/features.md", 2, Infinity)
+        this.dataGetter.loadMD("src/docs/features.md", 2, Infinity)
             .then(selectedText => {
                 const lines = selectedText.split('\n');
                 const lastIndex = lines.length - 4; // Index of the antepenultimate line
@@ -79,21 +127,22 @@ class AboutUs {
                     }
 
                     const divFuncion = document.createElement('div');
-                    divFuncion.innerHTML = line;
                     divFuncion.classList.add('all-function-div');
 
                     if (i % 2 == 0) {
                         divFuncion.classList.add('even-function');
                     }
 
-                    const getExited = localStorage.getItem('lastFunctionSeen'); //First time here or any change since last time?
-
-                    if ((getExited != null) && (parseInt(getExited) < i)) {
+                    if ((this.getExited != null) && (parseInt(this.getExited) < i)) {
+                        divFuncion.innerHTML = "<strong>¡Nuevo!</strong> - " + line;
                         divFuncion.classList.add('new-function');
+                        this.waitForElementAndAddNoti('load-functions');
+                    } else {
+                        divFuncion.innerHTML = line;
                     }
 
                     const functionsContainer = document.getElementById("functions-container");
-                    functionsContainer.appendChild(divFuncion);
+                    functionsContainer.prepend(divFuncion);
                 });
             });
     }
@@ -105,7 +154,7 @@ class AboutUs {
         const innerReadmeText = document.createElement('div');
         innerReadmeText.style.margin = "10px";
 
-        this.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
+        this.dataGetter.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
             .then(selectedText => {
                 innerReadmeText.innerHTML = selectedText;
             });
@@ -117,24 +166,6 @@ class AboutUs {
         linkRepo.addEventListener('click', () => {
             this.goTo("https://github.com/ign-argentina/argenmap");
         });
-    }
-
-    /**
-    * Fetches the contributors data from the GitHub API.
-    * @returns {Promise<Array<Object>>} - A promise that resolves with the contributors data as an array of objects,or null if an error occurs.
-    */
-    async fetchContributorsData() {
-        try {
-            const response = await fetch('https://api.github.com/repos/ign-argentina/argenmap/contributors');
-            if (!response.ok) {
-                throw new Error(`An error has occurred: ${ response.status }`);
-            }
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error('Failed to fetch GitHub contributors data:', error);
-            return null;
-        }
     }
 
     /**
@@ -169,56 +200,79 @@ class AboutUs {
             this.isVisible = true;
         } else {
             const aboutPopup = document.getElementById("whole-about");
+            const notiDot = document.querySelectorAll("notification-dot");
             if (aboutPopup) {
                 aboutPopup.remove();
+                notiDot.remove();
             }
             this.isVisible = false;
         }
     }
 
     /**
-     * Loads the Markdown file from the specified URL and selects the specified lines.
-     * @param {string} url - The URL of the Markdown file.
-     * @param {number} from - The index of the first line to select.
-     * @param {number} to - The index of the last line to select.
-     * @returns {Promise<string>} - A promise that resolves with the selected text.
-     */
-    loadMD(url, from, to) {
-        return fetch(url)
-            .then(response => response.text())
-            .then(markdown => {
-                const html = marked(markdown);
-                const lines = html.split('\n');
-                const selectedLines = lines.slice(from, to);
-                const selectedText = selectedLines.join('\n');
-                return selectedText;
-            })
-            .catch(error => {
-                console.error('Error al cargar el archivo Markdown:', error);
-            });
-    }
-
-    /**
-     * Adds a notification dot to the specified element.
-     * @param {string} id - The ID of the element to add the notification dot to.
-     */
-    notificationAdder(id) {
+ * Adds a notification dot to the specified element.
+ * @param {string} id - The ID of the element to add the notification dot to.
+ */
+    addNoti(id) {
         const temporaryNotification = document.createElement("div");
         temporaryNotification.classList.add('notification-dot');
 
         const temporaryDivToChange = document.getElementById(id);
-        temporaryDivToChange.appendChild(temporaryNotification);
+        if (temporaryDivToChange) {
+            temporaryDivToChange.appendChild(temporaryNotification);
+        } else {
+            this.waitForElementAndAddNoti(id)
+        }
+
+    }
+
+    waitForElementAndAddNoti(id) {
+        const targetNode = document.getElementById(id);
+        if (targetNode) {
+            this.addNoti(id);
+        } else {
+            const observer = new MutationObserver((mutationsList, observer) => {
+                for (const mutation of mutationsList) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        for (const addedNode of mutation.addedNodes) {
+                            if (addedNode.id === id) {
+                                this.addNoti(id);
+                                observer.disconnect();
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+
+    check() {
+        this.dataGetter.loadMD("src/docs/features.md", 2, Infinity)
+            .then(selectedText => {
+                const lines = selectedText.split('\n');
+                const lastIndex = lines.length - 4; // Index of the antepenultimate line
+
+                lines.forEach((line, i) => {
+                    if (i > lastIndex) {
+                        localStorage.setItem('lastFunctionSeen', (i - 3));
+                        return; // Ignore lines after the antepenultimate line
+                    }
+                    this.getExited = localStorage.getItem('lastFunctionSeen'); //First time here or any change since last time?
+
+                    if ((this.getExited != null) && (parseInt(this.getExited) < i)) {
+                        this.addNoti('developerLogo');
+                    }
+                });
+            });
     }
 }
 
 const modalAboutUs = new AboutUs();
+const dataGetter = new DataGetter();
 
 (async function initializeAboutUs() {
-    const contributorsData = await modalAboutUs.fetchContributorsData();
+    const contributorsData = await dataGetter.fetchContributorsData('https://api.github.com/repos/ign-argentina/argenmap/contributors');
     modalAboutUs.contributors = contributorsData;
 })();
-
-/* modalAboutUs.loadMD("src/docs/features.md", 2, Infinity)
-    .then(selectedText => {
-
-    }) */

@@ -163,9 +163,3 @@ class AboutUsTab extends UserInterface {
         return contributorContainer;
     }
 }
-
-class NotificationPoint extends UserInterface {
-    constructor() {
-
-    }
-}

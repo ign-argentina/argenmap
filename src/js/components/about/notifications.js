@@ -1,13 +1,11 @@
-class NotificationChecker {
+/* class NotificationChecker {
 
     constructor() {
         this.notifiManager = new NotificationManager();
     }
 
     check() {
-
-
-        this.loadMD("src/docs/features.md", 2, Infinity)
+        modalAboutUs.loadMD("src/docs/features.md", 2, Infinity)
             .then(selectedText => {
                 const lines = selectedText.split('\n');
                 const lastIndex = lines.length - 4; // Index of the antepenultimate line
@@ -24,31 +22,7 @@ class NotificationChecker {
                         this.notifiManager.addNoti('developerLogo');
                         this.waitForElementAndAddNoti('load-functions'); // Wait for the element to be available
                     }
-
                 });
-            });
-    }
-
-
-    /**
-         * Loads the Markdown file from the specified URL and selects the specified lines.
-         * @param {string} url - The URL of the Markdown file.
-         * @param {number} from - The index of the first line to select.
-         * @param {number} to - The index of the last line to select.
-         * @returns {Promise<string>} - A promise that resolves with the selected text.
-         */
-    loadMD(url, from, to) {
-        return fetch(url)
-            .then(response => response.text())
-            .then(markdown => {
-                const html = marked(markdown);
-                const lines = html.split('\n');
-                const selectedLines = lines.slice(from, to);
-                const selectedText = selectedLines.join('\n');
-                return selectedText;
-            })
-            .catch(error => {
-                console.error('Error al cargar el archivo Markdown:', error);
             });
     }
 
@@ -70,13 +44,10 @@ class NotificationChecker {
                     }
                 }
             });
-
             observer.observe(document.body, { childList: true, subtree: true });
         }
     }
-
 }
-
 
 class NotificationManager {
     constructor() {
@@ -86,8 +57,7 @@ class NotificationManager {
     /**
      * Adds a notification dot to the specified element.
      * @param {string} id - The ID of the element to add the notification dot to.
-     */
-
+     *//*
     addNoti(id) {
         const temporaryNotification = document.createElement("div");
         temporaryNotification.classList.add('notification-dot');
@@ -105,7 +75,6 @@ class NotificationManager {
         if (notificationDot) {
             temporaryDivToChange.removeChild(notificationDot);
         }
-
     }
 
     cleanAllNoti() {
@@ -117,10 +86,9 @@ class NotificationManager {
                 temporaryDivToChange.removeChild(notificationDot);
             }
         });
-
         this.idSet.clear(); // Clear the Set after removing all notifications
     }
-
 }
 
 const NotificationChekerr = new NotificationChecker();
+ */
