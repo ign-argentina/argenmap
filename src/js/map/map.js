@@ -2836,19 +2836,20 @@ $("body").on("pluginLoad", function (event, plugin) {
 							return;
 						}
 					
+						//create layer
 						let layer = createLayerFromGeoJSON(geoJSON, groupName);
-						//console.log(layer)
+						console.log(layer)
 						let type = layer.type;
 						
-
+						//add information & methods to layer
 						layer.id = groupName;
 						layer.name = nameForLayer(type);
 						layer.data = { geoJSON };
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
+
 						layer.on({
 							click: getVectorData
 						});
-						
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
 						}
@@ -2856,6 +2857,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
 						}
 						
+						//add layer to
 						mapa.groupLayers[groupName].push(layer.name);
 						mapa.editableLayers[type].push(layer);
 						mapa.addContextMenuToLayer(layer);
