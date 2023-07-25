@@ -1,15 +1,17 @@
+/**
+ * Represents a utility class to get data from various sources.
+ */
 class DataGetter {
     constructor() {
-
     }
 
     /**
-         * Loads the Markdown file from the specified URL and selects the specified lines.
-         * @param {string} url - The URL of the Markdown file.
-         * @param {number} from - The index of the first line to select.
-         * @param {number} to - The index of the last line to select.
-         * @returns {Promise<string>} - A promise that resolves with the selected text.
-         */
+     * Loads the content of a Markdown file from the specified URL and selects the specified lines.
+     * @param {string} url - The URL of the Markdown file.
+     * @param {number} from - The index of the first line to select.
+     * @param {number} to - The index of the last line to select.
+     * @returns {Promise<string>} - A promise that resolves with the selected text from the Markdown file.
+     */
     loadMD(url, from, to) {
         return fetch(url)
             .then(response => response.text())
@@ -21,27 +23,31 @@ class DataGetter {
                 return selectedText;
             })
             .catch(error => {
-                console.error('Error al cargar el archivo Markdown:', error);
+                console.error('Error loading the Markdown file:', error);
             });
     }
 
     /**
-    * Fetches the contributors data from the GitHub API.
-    * @returns {Promise<Array<Object>>} - A promise that resolves with the contributors data as an array of objects,or null if an error occurs.
-    */
-    async fetchContributorsData(source) {
+     * Fetches data from the specified source URL using the fetch API.
+     * @param {string} source - The URL of the data source.
+     * @returns {Promise<any>} - A promise that resolves with the fetched data or null if an error occurs.
+     */
+    async fetchData(source) {
         try {
             const response = await fetch(source);
+
             if (!response.ok) {
                 throw new Error(`An error has occurred: ${response.status}`);
             }
+
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Failed to fetch GitHub contributors data:', error);
+            console.error(`Failed to fetch data from ${source}:`, error);
             return null;
         }
     }
+
 }
 
 /**
@@ -51,7 +57,7 @@ class AboutUs {
     constructor() {
         this.imgInDisplay = -1;
         this.thereIsAImg = false;
-        this.contributors;
+        this.contributors = [];
         this.tabs = [
             {
                 name: 'Acerca',
@@ -134,7 +140,7 @@ class AboutUs {
                     }
 
                     if ((this.getExited != null) && (parseInt(this.getExited) < i)) {
-                        divFuncion.innerHTML = "<strong>¡Nuevo!</strong> - " + line;
+                        divFuncion.innerHTML = `<strong>¡Nuevo! &nbsp;</strong> ${line}`;
                         divFuncion.classList.add('new-function');
                         this.waitForElementAndAddNoti('load-functions');
                     } else {
@@ -200,22 +206,21 @@ class AboutUs {
             this.isVisible = true;
         } else {
             const aboutPopup = document.getElementById("whole-about");
-            const notiDot = document.querySelectorAll("notification-dot");
             if (aboutPopup) {
                 aboutPopup.remove();
-                notiDot.remove();
             }
             this.isVisible = false;
         }
     }
 
     /**
- * Adds a notification dot to the specified element.
- * @param {string} id - The ID of the element to add the notification dot to.
- */
+     * Adds a notification dot to the specified element.
+     * @param {string} id - The ID of the element to add the notification dot to.
+     */
     addNoti(id) {
         const temporaryNotification = document.createElement("div");
         temporaryNotification.classList.add('notification-dot');
+        temporaryNotification.id = "notification-dot";
 
         const temporaryDivToChange = document.getElementById(id);
         if (temporaryDivToChange) {
@@ -223,9 +228,12 @@ class AboutUs {
         } else {
             this.waitForElementAndAddNoti(id)
         }
-
     }
 
+    /**
+     * Waits for the specified element to appear and adds a notification dot to it.
+     * @param {string} id - The ID of the element to wait for and add the notification dot to.
+     */
     waitForElementAndAddNoti(id) {
         const targetNode = document.getElementById(id);
         if (targetNode) {
@@ -248,6 +256,9 @@ class AboutUs {
         }
     }
 
+    /**
+     * Checks if there are new functions and adds a notification dot if necessary.
+     */
     check() {
         this.dataGetter.loadMD("src/docs/features.md", 2, Infinity)
             .then(selectedText => {
@@ -273,6 +284,6 @@ const modalAboutUs = new AboutUs();
 const dataGetter = new DataGetter();
 
 (async function initializeAboutUs() {
-    const contributorsData = await dataGetter.fetchContributorsData('https://api.github.com/repos/ign-argentina/argenmap/contributors');
+    const contributorsData = await dataGetter.fetchData('https://api.github.com/repos/ign-argentina/argenmap/contributors');
     modalAboutUs.contributors = contributorsData;
 })();

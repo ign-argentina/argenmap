@@ -42,6 +42,8 @@ class AboutUsModal extends UserInterface {
         aboutExitBtn.classList = "about-exit";
         aboutExitBtn.innerHTML = '<i class="fa fa-times"></i>';
         aboutExitBtn.onclick = () => {
+            const notiDots = document.querySelectorAll(".notification-dot");
+            notiDots.forEach((dot) => { dot.remove() });
             principalContainer.remove();
             this.isVisible = false;
         };
