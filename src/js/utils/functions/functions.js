@@ -1385,32 +1385,34 @@ function toggleVisibility(elementId) {
 }
 
 function loadDeveloperLogo() {
-  L.Control.DeveloperLogo = L.Control.extend({
-    onAdd: function (map) {
-      let link = L.DomUtil.create("a");
-      link.target = "_blank";
-      link.id = "developerLogo"
-      link.title = STRINGS.about;
-      link.style.cursor = "pointer";
-      let img = L.DomUtil.create("img");
-      img.src = "src/styles/images/noimage.webp";
-      img.alt = "Argenmap logo";
-      img.classList = "brand"
-      img.style.backgroundImage = `url('${APP_IMG}')`;
-      link.appendChild(img);
 
-      link.addEventListener('click', function () {
-        modalAboutUs.toggleOpen();
-      });
-     
-      return link;
-    },
-  });
-  L.control.developerLogo = function (opts) {
-    return new L.Control.DeveloperLogo(opts);
-  };
-  L.control.developerLogo({ position: "bottomright" }).addTo(mapa);
-}
+    L.Control.DeveloperLogo = L.Control.extend({
+        onAdd: function (map) {
+            let link = L.DomUtil.create("a");
+            link.target = "_blank";
+            link.id = "developerLogo"
+            link.title = STRINGS.about;
+            link.style.cursor = "pointer";
+            let img = L.DomUtil.create("img");
+            img.src = "src/styles/images/noimage.webp";
+            img.alt = "Argenmap logo";
+            img.classList = "brand"
+            img.style.backgroundImage = `url('${APP_IMG}')`;
+            link.appendChild(img);
+
+            link.addEventListener('click', function () {
+                modalAboutUs.toggleOpen();
+            });
+
+            return link;
+        },
+    });
+
+    L.control.developerLogo = function (opts) {
+        return new L.Control.DeveloperLogo(opts);
+    };
+    L.control.developerLogo({ position: "bottomright" }).addTo(mapa);
+} 
 
 function downloadBlob(blob, name = "file.txt") {
   // Convert your blob into a Blob URL

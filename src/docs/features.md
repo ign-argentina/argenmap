@@ -9,7 +9,7 @@
 - Agregar capas desde archivos GeoJSON
 - Medir área y distancia
 - Mostrar grilla
-- Filtrar el panel de capas por meido de un cuadro de búsuqeda
+- Filtrar el panel de capas por medio de un cuadro de búsqueda
 - Consultar la ubicación de usuario/a
 - Capturar imagen del mapa
 - Vista de pantalla completa
