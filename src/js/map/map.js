@@ -2824,6 +2824,56 @@ $("body").on("pluginLoad", function (event, plugin) {
 						drawnItems.addLayer(layer);
 					}
 
+					mapa.addGeoJsonLayerToDrawedLayers2 = (geoJSON, groupName) => {
+						if (mapa.groupLayers[groupName] === undefined) {
+							mapa.groupLayers[groupName] = [];
+						}
+					
+						if (geoJSON.type === 'FeatureCollection') {
+							geoJSON.features.forEach(feature => {
+								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
+							});
+							return;
+						}
+					
+						let type = "";
+						let layer = null;
+						let name = "";
+						let options = {};
+					
+						if (geoJSON.properties.hasOwnProperty('styles')) {
+							options = { ...geoJSON.properties.styles };
+						}
+
+						layer = typeOfLayer(geoJSON, groupName, options);
+						type = layer.type;
+
+						name = nameForLayer(layer.type);
+						
+
+						layer.id = groupName;
+						layer.name = name;
+						layer.type = type;
+						layer.data = { geoJSON };
+						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
+						layer.on({
+							click: getVectorData
+						});
+						
+						layer.getGeoJSON = () => {
+							return mapa.getLayerGeoJSON(layer.name);
+						}
+						layer.downloadGeoJSON = () => {
+							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
+						}
+						
+						mapa.groupLayers[groupName].push(name);
+						mapa.editableLayers[type].push(layer);
+						mapa.addContextMenuToLayer(layer);
+						drawnItems.addLayer(layer);
+					}
+
+
 					gestorMenu.plugins['Draw'].setStatus('visible');
 					break;
 				default:
