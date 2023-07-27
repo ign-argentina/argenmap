@@ -1685,9 +1685,7 @@ function createLayerFromGeoJSON(geoJSON, groupName) {
 	if (geoJSON.properties.hasOwnProperty('styles')) {
 	  options = { ...geoJSON.properties.styles };
 	}
-  
-	console.log(type)
-  
+    
   switch (type) {
     case 'point': {
       const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
@@ -1849,10 +1847,9 @@ function createLayerFromGeoJSON(geoJSON, groupName) {
           properties: geoJSON.properties
         };
 
-        mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, true);
-
+        layer = createLayerFromGeoJSON(point, groupName);
       });
-      return;
+      return layer;
     }
     case 'multilinestring': {
       geoJSON.geometry.coordinates.forEach(coords => {
@@ -1864,9 +1861,10 @@ function createLayerFromGeoJSON(geoJSON, groupName) {
           },
           properties: geoJSON.properties
         };
-        mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, true);
+        
+        layer = createLayerFromGeoJSON(lineString, groupName);
       });
-      return;
+      return layer;
     }
     case 'multipolygon': {
       const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);

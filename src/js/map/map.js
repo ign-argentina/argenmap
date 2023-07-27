@@ -2824,7 +2824,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						drawnItems.addLayer(layer);
 					}
 
-					mapa.addGeoJsonLayerToDrawedLayers2 = (geoJSON, groupName) => {
+					mapa.NEWaddGeoJsonLayerToDrawedLayers = (geoJSON, groupName) => {
 						if (mapa.groupLayers[groupName] === undefined) {
 							mapa.groupLayers[groupName] = [];
 						}
@@ -2838,7 +2838,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 					
 						//create layer
 						let layer = createLayerFromGeoJSON(geoJSON, groupName);
-						console.log(layer)
 						let type = layer.type;
 						
 						//add information & methods to layer
