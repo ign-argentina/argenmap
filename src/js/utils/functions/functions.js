@@ -207,24 +207,24 @@ function hideAddedLayers() {
 }
 
 function showTotalNumberofLayers() {
-  let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
+    let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
 
-  addedLayers.forEach(lyr => {
-    if (lyr.isActive && lyr.isActive == true) {
-      activeLayers++;
+    addedLayers.forEach(lyr => {
+        if (lyr.isActive && lyr.isActive == true) {
+            activeLayers++;
+        }
+    });
+
+    if (activeLayers > 0) {
+        $("#cleanTrash").html(
+            "<div class='glyphicon glyphicon-refresh'></div>" +
+            "<span class='total-active-layers-counter'>" +
+            activeLayers +
+            "</span>"
+        );
+    } else {
+        $("#cleanTrash").html("<span class='glyphicon glyphicon-refresh'></span>");
     }
-  });
-
-  if (activeLayers > 0) {
-    $("#cleanTrash").html(
-      "<div class='glyphicon glyphicon-th-list'></div>" +
-      "<span class='total-active-layers-counter'>" +
-      activeLayers +
-      "</span>"
-    );
-  } else {
-    $("#cleanTrash").html("<span class='glyphicon glyphicon-th-list'></span>");
-  }
 }
 
 function recoverSections() {
