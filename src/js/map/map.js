@@ -2824,14 +2824,14 @@ $("body").on("pluginLoad", function (event, plugin) {
 						drawnItems.addLayer(layer);
 					}
 
-					mapa.NEWaddGeoJsonLayerToDrawedLayers = (geoJSON, groupName) => {
+					mapa.createLayerFromGeoJSON = (geoJSON, groupName) => {
 						if (mapa.groupLayers[groupName] === undefined) {
 							mapa.groupLayers[groupName] = [];
 						}
 					
 						if (geoJSON.type === 'FeatureCollection') {
 							geoJSON.features.forEach(feature => {
-								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName);
+								mapa.createLayerFromGeoJSON(feature, groupName);
 							});
 							return;
 						}
