@@ -1726,7 +1726,7 @@ function createLayerMultilinestring(geoJSON, groupName, layer) {
           properties: geoJSON.properties
         };
   
-        layer = createLayerFromGeoJSON(lineString, groupName);
+        layer = createLayerByType(lineString, groupName);
     });
     return layer;
 }
@@ -1742,7 +1742,7 @@ function createLayerMultipoint(geoJSON, groupName, layer) {
           properties: geoJSON.properties
         };
   
-        layer = createLayerFromGeoJSON(point, groupName);
+        layer = createLayerByType(point, groupName);
     });
     return layer;
 }

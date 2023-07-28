@@ -505,7 +505,7 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
     type: typeName,
     section: sectionName
   });
-  mapa.addGeoJsonLayerToDrawedLayers(e.layer, nameId, true, true);
+  mapa.createLayerFromGeoJSON(e.layer, nameId);
 
   if (e.process == geoProcessingManager.GEOPROCESS.contour) {
     let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
@@ -551,7 +551,7 @@ function addLayersfromFiles() {
         type: typeName,
         section: sectionName
       });
-      mapa.addGeoJsonLayerToDrawedLayers(e.layer, e.id, true, true);
+      mapa.createLayerFromGeoJSON(e.layer, e.id);
       menu_ui.addFileLayer(sectionName, typeName, e.name, e.id, e.file_name, true);
       updateNumberofLayers(sectionName);
       $("#item_uf_" + e.id).remove();

@@ -177,7 +177,7 @@ class Geoprocessing {
         counterContour++;
 
         mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 });
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        mapa.createLayerFromGeoJSON(result, layername);
 
         let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
         selectedRectangle._uneditable = true; //aux to disallow editing the layer
@@ -200,7 +200,7 @@ class Geoprocessing {
         removeGeometryFromDrawingsGroup(selectedRectangle);
 
         // ** Avoiding Leaflet Draw object test **
-        // first comment addGeoJsonLayerToDrawedLayers() call
+        // first comment createLayerFromGeoJSON() call
 
         // makes a Leaflet featureGroup object and add it to the map
         //mapa.featureGroups = L.featureGroup().addTo(mapa);
@@ -301,7 +301,7 @@ class Geoprocessing {
         let layername = this.namePrefix + counterBuffer;
         counterBuffer++;
 
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        mapa.createLayerFromGeoJSON(result, layername);
         mapa.editableLayers.polygon.forEach(lyr => {
           if (lyr.id === layername) {
             lyr._uneditable = true; //aux to disallow editing the layer

@@ -304,11 +304,7 @@ class Searchbar_UI {
       properties: {},
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(
-      geojsonMarker,
-      "markerSearchResult",
-      false
-    );
+    mapa.createLayerFromGeoJSON(geojsonMarker, "markerSearchResult");
 
     let container = document.getElementById("results_search_bar");
     container.style = "margin: 5px";
@@ -424,11 +420,7 @@ const searchById = async () => {
       properties: {},
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(
-      geojsonMarker,
-      "markerSearchResult",
-      false
-    );
+    mapa.createLayerFromGeoJSON(geojsonMarker, "markerSearchResult");
 
     let newcard = new Searchbar_UI();
     newcard.create_card(response_items.features[0]);
