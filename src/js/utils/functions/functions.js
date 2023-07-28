@@ -1688,39 +1688,66 @@ function createLayerFromGeoJSON(geoJSON, groupName) {
     
   //check type
   if (type === "point") {
-    const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
-    //Check if it is circle, circlemarker or marker
-    let geoJsonHasType = geoJSON.properties.hasOwnProperty('type');
-    if (geoJsonHasType) {
-        let geoJsonType = geoJSON.properties.type.toLowerCase();
-        if (geoJsonType === "circle") {
-            layer = L.circle(invertedCoords, options);
-            layer.type = 'circle';
-        }
-        if (geoJsonType === "circlemarker") {
-            layer = L.circleMarker(invertedCoords, options);
-            layer.type = 'circlemarker';
-        }
-        if (geoJsonType === "marker") {
-            layer = L.marker(invertedCoords);
-            layer.type = 'marker';
-            setDefaultMarkerStyles(layer, geoJSON);
-        }
-        if (geoJsonType === "label") {
-            const editableLabel = new EditableLabel();
-            editableLabel.uploadLabel(invertedCoords, geoJSON.properties.text, geoJSON.properties.styles.weight, geoJSON.properties.styles.borderColor, geoJSON.properties.styles.fillColor, geoJSON.properties.styles.color, groupName);
-            return
-        } else {
-            layer = L.marker(invertedCoords);
-            layer.type = 'marker';
-        }
-
-    } else {
-      layer = L.marker(invertedCoords);
-      layer.type = 'marker';
-    }
+    layer = createLayerForPoint(geoJSON, groupName, layer, options);
   }
   if (type === "polygon") {
+    layer = createLayerPolygon(geoJSON, layer, options);
+  }
+  if (type === "linestring") {
+    layer = createLayerLinestring(geoJSON, groupName, layer, options);
+  }
+  if (type === "multipoint") {
+    layer = createLayerMultipoint(geoJSON, groupName, layer);
+  }
+  if (type === "multilinestring") {
+    layer = createLayerMultilinestring(geoJSON, groupName, layer);
+  }
+  if (type === "multipolygon") {
+    layer = createLayerMultilinestring(geoJSON, layer);
+  }
+  return layer;
+}
+
+function createLayerMultilinestring(geoJSON, layer) {
+    const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
+    layer = L.polygon(reversedCoords);
+    layer.type = 'polygon';
+    return layer;
+}
+
+function createLayerMultilinestring(geoJSON, groupName, layer) {
+    geoJSON.geometry.coordinates.forEach(coords => {
+        const lineString = {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: coords
+          },
+          properties: geoJSON.properties
+        };
+  
+        layer = createLayerFromGeoJSON(lineString, groupName);
+    });
+    return layer;
+}
+
+function createLayerMultipoint(geoJSON, groupName, layer) {
+    geoJSON.geometry.coordinates.forEach(coords => {
+        const point = {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: coords
+          },
+          properties: geoJSON.properties
+        };
+  
+        layer = createLayerFromGeoJSON(point, groupName);
+    });
+    return layer;
+}
+
+function createLayerPolygon(geoJSON, layer, options) {
     const invertedCoords = geoJSON.geometry.coordinates[0].map(coords => [coords[1], coords[0]]);
 
     if (geoJSON.properties.hasOwnProperty('type') && geoJSON.properties.type.toLowerCase() === 'rectangle') {
@@ -1730,8 +1757,10 @@ function createLayerFromGeoJSON(geoJSON, groupName) {
       layer = L.polygon(invertedCoords, options);
       layer.type = 'polygon';
     }
-  }
-  if (type === "linestring") {
+    return layer;
+}
+
+function createLayerLinestring(geoJSON, groupName, layer, options) {
     const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
 
     if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
@@ -1776,46 +1805,50 @@ function createLayerFromGeoJSON(geoJSON, groupName) {
           tooltipStyle);
       });
     } else {
-      layer = L.polyline(invertedCoords, newOptions);
+      layer = L.polyline(invertedCoords, options);
       layer.type = 'polyline';
     }
-  }
-  if (type === "multipoint") {
-    geoJSON.geometry.coordinates.forEach(coords => {
-      const point = {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: coords
-        },
-        properties: geoJSON.properties
-      };
 
-      layer = createLayerFromGeoJSON(point, groupName);
-    });
+    return layer;
+}
+
+function createLayerForPoint(geoJSON, groupName, layer, options) {
+  const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
+
+  //Check if it is circle, circlemarker or marker
+  let geoJsonHasType = geoJSON.properties.hasOwnProperty('type');
+  if (geoJsonHasType) {
+    let geoJsonType = geoJSON.properties.type.toLowerCase();
+    if (geoJsonType === "circle") {
+      layer = L.circle(invertedCoords, options);
+      layer.type = 'circle';
+      return layer;
+    }
+    if (geoJsonType === "circlemarker") {
+      layer = L.circleMarker(invertedCoords, options);
+      layer.type = 'circlemarker';
+      return layer;
+    }
+    if (geoJsonType === "marker") {
+      layer = L.marker(invertedCoords);
+      layer.type = 'marker';
+      setDefaultMarkerStyles(layer, geoJSON);
+      return layer;
+    }
+    if (geoJsonType === "label") {
+      const editableLabel = new EditableLabel();
+      editableLabel.uploadLabel(invertedCoords, geoJSON.properties.text, geoJSON.properties.styles.weight, geoJSON.properties.styles.borderColor, geoJSON.properties.styles.fillColor, geoJSON.properties.styles.color, groupName);
+      return
+    } else {
+      layer = L.marker(invertedCoords);
+      layer.type = 'marker';
+      return layer;
+    }
+  } else {
+    layer = L.marker(invertedCoords);
+    layer.type = 'marker';
     return layer;
   }
-  if (type === "multilinestring") {
-    geoJSON.geometry.coordinates.forEach(coords => {
-      const lineString = {
-        type: "Feature",
-        geometry: {
-          type: "LineString",
-          coordinates: coords
-        },
-        properties: geoJSON.properties
-      };
-
-      layer = createLayerFromGeoJSON(lineString, groupName);
-    });
-    return layer;
-  }
-  if (type === "multipolygon") {
-    const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
-    layer = L.polygon(reversedCoords);
-    layer.type = 'polygon';
-  }
-  return layer
 }
 
 function setDefaultMarkerStyles(layer, geoJSON) {
