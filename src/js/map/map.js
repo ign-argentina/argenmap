@@ -2831,7 +2831,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 					
 						if (geoJSON.type === 'FeatureCollection') {
 							geoJSON.features.forEach(feature => {
-								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
+								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName);
 							});
 							return;
 						}
