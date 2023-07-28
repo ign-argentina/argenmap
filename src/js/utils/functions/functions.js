@@ -1904,3 +1904,17 @@ function setContourStyleOptions(geoJSON, options) {
   }
   return options;
 }
+
+function addLayerToAllGroups(layer, groupName) {
+  let type = layer.type;
+  mapa.editableLayers[type].push(layer);
+  mapa.addContextMenuToLayer(layer);
+  drawnItems.addLayer(layer);
+
+  if (groupName) {
+    if (mapa.groupLayers[groupName] === undefined) {
+      mapa.groupLayers[groupName] = [];
+    }
+    mapa.groupLayers[groupName].push(layer.name);
+  }
+}

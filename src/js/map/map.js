@@ -2614,15 +2614,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						//add layer to
 						addLayerToAllGroups(layer, groupName);
 					}
-
-					function addLayerToAllGroups(layer, groupName) {
-						let type = layer.type;
-						mapa.editableLayers[type].push(layer);
-						mapa.addContextMenuToLayer(layer);
-						drawnItems.addLayer(layer);
-						if (groupName) mapa.groupLayers[groupName].push(layer.name);
-					}
-
+					
 					gestorMenu.plugins['Draw'].setStatus('visible');
 					break;
 				default:
