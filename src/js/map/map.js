@@ -2837,7 +2837,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						}
 					
 						//create layer
-						let layer = createLayerFromGeoJSON(geoJSON, groupName);
+						let layer = createLayerByType(geoJSON, groupName);
 						let type = layer.type;
 						
 						//add information & methods to layer

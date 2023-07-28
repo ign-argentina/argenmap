@@ -1677,7 +1677,7 @@ function nameForLayer(type) {
 }
 
 
-function createLayerFromGeoJSON(geoJSON, groupName) {
+function createLayerByType(geoJSON, groupName) {
 	let layer = null,
 	  type = geoJSON.geometry.type.toLowerCase(),
 	  options = {};
