@@ -1562,9 +1562,14 @@ function getVectorData(e) {
 }
 
 function createPopupForVector(layer, clickLatlng) {
-  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase();
-  let popupName = layer.data.geoJSON.properties.objeto;
-  popupName ? title = popupName : title = id;
+  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase(),
+    popupName;
+  if (layer.data.geoJSON) {
+    popupName = layer.data.geoJSON.properties.objeto;
+    popupName ? title = popupName : title = id;
+  } else {
+    return;
+  }
 
   var infoAux =
     '<div class="featureInfo" id="featureInfoPopup' + id + '">';
