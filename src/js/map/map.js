@@ -660,6 +660,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(layer);
 						}
+						mapa.addContextMenuToLayer(layer);
+
 						//add layer to
 						addLayerToAllGroups(layer);
 
@@ -2595,6 +2597,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
 						}
+						mapa.addContextMenuToLayer(layer);
 						
 						//add layer to
 						addLayerToAllGroups(layer, groupName);

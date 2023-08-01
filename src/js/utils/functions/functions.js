@@ -1913,7 +1913,6 @@ function setContourStyleOptions(geoJSON, options) {
 function addLayerToAllGroups(layer, groupName) {
   let type = layer.type;
   mapa.editableLayers[type].push(layer);
-  mapa.addContextMenuToLayer(layer);
   drawnItems.addLayer(layer);
 
   if (groupName) {
