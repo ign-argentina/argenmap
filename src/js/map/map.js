@@ -641,52 +641,39 @@ $("body").on("pluginLoad", function (event, plugin) {
 					});
 
 					mapa.on('draw:created', (e) => {
+						//create layer
 						const layer = e.layer;
 						const type = e.layerType;
 
-						let name = type + '_';
-						if (mapa.editableLayers[type].length === 0) {
-							name += '1';
-						} else {
-							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-							name += parseInt(lastLayerName.split('_')[1]) + 1;
-						}
-
-						layer.name = name;
+						//add information & methods to layer
+						layer.name = nameForLayer(type);
 						layer.type = type;
-						layer.data = {};
 						layer.options.fillColor = !layer.options.fillColor ? layer.options.color : layer.options.fillColor;
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
+
 						layer.on({
 							click: getVectorData
 						});
-
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
 						}
-
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(layer);
 						}
-						
-						mapa.editableLayers[type].push(layer);
-						
+						//add layer to
+						addLayerToAllGroups(layer);
+
+						//aditional settings
+						let geoJSON = layer.getGeoJSON();
+						layer.data = {geoJSON};
+
 						if (isSelectionDrawingActive) {
 							layer.id = "selection_" + Math.floor(Math.random()*(999-100+1)+100).toString();
 							isSelectionDrawingActive = false;
 						} else {
-							addLayerToDrawingsGroup(name, layer, "Dibujos", "dibujos", "dibujos");
+							addLayerToDrawingsGroup(layer.name, layer, "Dibujos", "dibujos", "dibujos");
 						}
 						
-						// if (perfilTopografico.isActive) {
-						// 	// check if profile was clicked
-						// 	mapa.capaPerfilTopografico.clearLayers();
-						// 	mapa.capaPerfilTopografico.addLayer(layer);
-						// 	perfilTopografico.process(layer.getGeoJSON());
-						// } else {
-						drawnItems.addLayer(layer);
-						// }
-
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 
 						if (layer.type === 'marker') {
@@ -695,8 +682,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
-
-						mapa.addContextMenuToLayer(layer);
 
 						if (geoProcessingManager) {
 							geoProcessingManager.updateLayerSelect(layer.name, true);
