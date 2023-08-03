@@ -1922,3 +1922,24 @@ function addLayerToAllGroups(layer, groupName) {
     mapa.groupLayers[groupName].push(layer.name);
   }
 }
+
+function removeLayerFromAllGroups(id, groupName) {
+  for (let property in mapa.editableLayers) {
+    mapa.editableLayers[property].forEach(layer => {
+      if (layer.id === id) {
+        mapa.editableLayers[property].pop(layer);
+      }
+    })
+  }
+  for (let property in drawnItems._layers) {
+    if ( drawnItems._layers[property].id === id) {
+      drawnItems._layers[property].remove();
+    }
+  }
+  if (groupName) {
+    mapa.groupLayers[groupName].pop(layer.name);
+    if (mapa.groupLayers[groupName].length === 0) {
+      delete mapa.groupLayers[groupName];
+    }
+  }
+}
