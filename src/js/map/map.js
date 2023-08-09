@@ -646,24 +646,12 @@ $("body").on("pluginLoad", function (event, plugin) {
 						const type = e.layerType;
 
 						//add information & methods to layer
-						layer.name = nameForLayer(type);
-						layer.type = type;
 						layer.options.fillColor = !layer.options.fillColor ? layer.options.color : layer.options.fillColor;
-						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
-
-						layer.on({
-							click: getVectorData
-						});
-						layer.getGeoJSON = () => {
-							return mapa.getLayerGeoJSON(layer.name);
-						}
-						layer.downloadGeoJSON = () => {
-							mapa.downloadLayerGeoJSON(layer);
-						}
-						mapa.addContextMenuToLayer(layer);
+						layer.type = type;
+						addInfoAndMethodsToLayer(layer);
 
 						//add layer to
-						addLayerToAllGroups(layer);
+						_addLayerToAllGroups(layer);
 
 						//aditional settings
 						let geoJSON = layer.getGeoJSON();
@@ -895,7 +883,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 									geometry: { type: "Point", coordinates: [lng, lat] },
 								};
 
-								mapa.createLayerFromGeoJSON(geojsonMarker, "addedMarker_" + name);
+								let result = mapa.createLayerFromGeoJSON(geojsonMarker, "addedMarker_" + name);
+								addLayerToAllGroups(result, "addedMarker_" + name);
+
 								mapa.closePopup(contextPopup);
 							},
 						});
@@ -2570,24 +2560,36 @@ $("body").on("pluginLoad", function (event, plugin) {
 						if (mapa.groupLayers[groupName] === undefined) {
 							mapa.groupLayers[groupName] = [];
 						}
-						//is FeatureCollection?
-						if (geoJSON.type === 'FeatureCollection') {
-							geoJSON.features.forEach(feature => {
-								mapa.createLayerFromGeoJSON(feature, groupName);
-							});
-							return;
-						}
-					
-						//create layer
-						let layer = createLayerByType(geoJSON, groupName);
-						let type = layer.type;
-						
-						//add information & methods to layer
-						layer.id = groupName;
-						layer.name = nameForLayer(type);
-						layer.data = { geoJSON };
-						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
 
+						if (geoJSON.type === 'FeatureCollection') {
+							let collection = [];
+							geoJSON.features.forEach(geoJSON => {
+								//create layer
+								let layer = createLayerByType(geoJSON, groupName);
+								//add information & methods to layer
+								addInfoAndMethodsToLayer(layer);
+								collection.push(layer);
+							});
+							return collection;
+						} 
+
+						if (geoJSON.type === 'Feature') {
+							//create layer
+							let layer = createLayerByType(geoJSON, groupName);
+							//add information & methods to layer
+							addInfoAndMethodsToLayer(layer);
+							return layer;
+						}
+
+					}
+
+					function addInfoAndMethodsToLayer(layer) {
+						let type = layer.type;
+						layer.name = nameForLayer(type);
+						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
+						
+						mapa.editableLayers[type].push(layer);
+						
 						layer.on({
 							click: getVectorData
 						});
@@ -2598,9 +2600,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
 						}
 						mapa.addContextMenuToLayer(layer);
-						
-						//add layer to
-						addLayerToAllGroups(layer, groupName);
 					}
 					
 					gestorMenu.plugins['Draw'].setStatus('visible');

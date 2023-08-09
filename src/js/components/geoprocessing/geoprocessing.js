@@ -177,7 +177,8 @@ class Geoprocessing {
         counterContour++;
 
         mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 });
-        mapa.createLayerFromGeoJSON(result, layername);
+        let resultGeoJson = mapa.createLayerFromGeoJSON(result, layername);
+        addLayerToAllGroups(resultGeoJson, layername);
 
         let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
         selectedRectangle._uneditable = true; //aux to disallow editing the layer
@@ -301,7 +302,9 @@ class Geoprocessing {
         let layername = this.namePrefix + counterBuffer;
         counterBuffer++;
 
-        mapa.createLayerFromGeoJSON(result, layername);
+        let resultGeoJson = mapa.createLayerFromGeoJSON(result, layername);
+        addLayerToAllGroups(resultGeoJson, layername);
+
         mapa.editableLayers.polygon.forEach(lyr => {
           if (lyr.id === layername) {
             lyr._uneditable = true; //aux to disallow editing the layer

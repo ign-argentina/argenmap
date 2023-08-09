@@ -1710,6 +1710,9 @@ function createLayerByType(geoJSON, groupName) {
   if (type === "multipolygon") {
     layer = createLayerMultilinestring(geoJSON, layer);
   }
+
+  layer.id = groupName;
+  layer.data = { geoJSON };
   return layer;
 }
 
@@ -1911,9 +1914,24 @@ function setContourStyleOptions(geoJSON, options) {
 }
 
 function addLayerToAllGroups(layer, groupName) {
+  if (layer.length <= 1) {
+    _addLayerToAllGroups(layer[0], groupName)
+  } else {
+    layer.forEach(feature => {
+      _addLayerToAllGroups(feature, groupName)
+    });
+  }
+}
+
+function _addLayerToAllGroups(layer, groupName) {
   let type = layer.type;
-  mapa.editableLayers[type].push(layer);
   drawnItems.addLayer(layer);
+
+  mapa.editableLayers[type].forEach(lyr => {
+    if (lyr.id !== layer.id) {
+      mapa.editableLayers[type].push(layer);
+    }
+  });
 
   if (groupName) {
     if (mapa.groupLayers[groupName] === undefined) {
@@ -1923,17 +1941,18 @@ function addLayerToAllGroups(layer, groupName) {
   }
 }
 
-function removeLayerFromAllGroups(id, groupName) {
+function removeLayerFromAllGroups(layer, groupName) {
   for (let property in mapa.editableLayers) {
     mapa.editableLayers[property].forEach(layer => {
-      if (layer.id === id) {
+      if (layer.id === layer.id) {
         mapa.editableLayers[property].pop(layer);
       }
     })
   }
   for (let property in drawnItems._layers) {
-    if ( drawnItems._layers[property].id === id) {
+    if ( drawnItems._layers[property].id === layer.id) {
       drawnItems._layers[property].remove();
+      delete drawnItems._layers[property];
     }
   }
   if (groupName) {
