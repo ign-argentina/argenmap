@@ -3,6 +3,7 @@ let btn_modal_loading = false;
 let process = {};
 let contourRectangles = [];
 let isValidRectangle = false;
+let isSelectionDrawingActive = false;
 let counterContour = 0, counterHeight = 0, counterBuffer = 0,
   counterElevProfile = 0; //soon to be moved to their respective class
 
@@ -176,7 +177,8 @@ class Geoprocessing {
         counterContour++;
 
         mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 });
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        let resultGeoJson = mapa.createLayerFromGeoJSON(result, layername);
+        addLayerToAllGroups(resultGeoJson, layername);
 
         let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
         selectedRectangle._uneditable = true; //aux to disallow editing the layer
@@ -199,7 +201,7 @@ class Geoprocessing {
         removeGeometryFromDrawingsGroup(selectedRectangle);
 
         // ** Avoiding Leaflet Draw object test **
-        // first comment addGeoJsonLayerToDrawedLayers() call
+        // first comment createLayerFromGeoJSON() call
 
         // makes a Leaflet featureGroup object and add it to the map
         //mapa.featureGroups = L.featureGroup().addTo(mapa);
@@ -300,7 +302,9 @@ class Geoprocessing {
         let layername = this.namePrefix + counterBuffer;
         counterBuffer++;
 
-        mapa.addGeoJsonLayerToDrawedLayers(result, layername, true, true);
+        let resultGeoJson = mapa.createLayerFromGeoJSON(result, layername);
+        addLayerToAllGroups(resultGeoJson, layername);
+
         mapa.editableLayers.polygon.forEach(lyr => {
           if (lyr.id === layername) {
             lyr._uneditable = true; //aux to disallow editing the layer
@@ -604,7 +608,7 @@ class Geoprocessing {
 
   checkLayersForBuffer() {
     let isBuffer = false;
-    gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+    getAllActiveLayers().forEach((layer) => {
       if (layer) {
         isBuffer = true;
       }
@@ -742,11 +746,15 @@ class Geoprocessing {
                   }
                 });
               } else if (this.geoprocessId === "buffer") {
-                gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
+                let layerTitle;
+                getAllActiveLayers().forEach((layer) => {
                   if (layer && gestorMenu.layerIsWmts(layer.name) == false) {
+                    gestorMenu.getLayerData(layer.name).title ?
+                    layerTitle = gestorMenu.getLayerData(layer.name).title :
+                    layerTitle = layer.name;
                     options.push({
                       value: layer.name,
-                      text: gestorMenu.getLayerData(layer.name).title,
+                      text: layerTitle,
                     });
                   }
                 });
@@ -910,6 +918,7 @@ class Geoprocessing {
         $("#drawRectangleBtn").addClass("disabledbutton");
         drawingRectangle.enable();
         this.checkRectangleArea("add-layer");
+        isSelectionDrawingActive = true;
       },
       "drawRectangleBtn"
     );
@@ -938,29 +947,16 @@ class Geoprocessing {
 
 
   executeBuffer() {
-    let drawnRectangle;
+    let drawnRectangle,
+      layerSelected,
+      allLayers = getAllActiveLayers(),
+      selctedLayerName = document.getElementById("select-capa").value;
     mapa.editableLayers.rectangle.forEach((lyr) => {
-      drawnRectangle = lyr;
+      if (lyr.id && lyr.id.includes("selection_")) {
+        drawnRectangle = lyr;
+      }
     });
-    let layerSelected;
-    // gestorMenu.getActiveLayersWithoutBasemap().forEach((layer) => {
-    //   let selctedLayerName = document.getElementById("select-capa").value;
-    //   layer.name === selctedLayerName
-    //     ? (layerSelected = layer)
-    //     : 0;
-    // });
-
-    // addedLayers.forEach(lyr => {
-    //   if (lyr.type === "WMS") {
-    //     let selctedLayerName = document.getElementById("select-capa").value;
-    //     lyr.name === selctedLayerName
-    //     ? (layerSelected = lyr.layer)
-    //     : 0;
-    //   }
-    // });
-
-    let allLayers = getAllActiveLayers();
-    let selctedLayerName = document.getElementById("select-capa").value;
+    
     allLayers.forEach(lyr => {
       if (lyr.name === selctedLayerName) {
         layerSelected = lyr.layer;
@@ -973,22 +969,47 @@ class Geoprocessing {
       document.getElementById("input-equidistancia").value / 1000;
 
     loadingBtn("on", "ejec_gp");
-    let buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
-      .then((data) => {
-        if (!data) {
-          throw new Error("Error fetching to server");
-        }
-        buffer = turf.buffer(data, distanceBuffer);
-        this.displayResult(buffer);
-      })
-      .catch((error) => {
+
+    let buffer;
+    if (!layerSelected.host ) {
+      try {
+        let arrayForBuffer = [],
+          selecCoords = drawnRectangle.getGeoJSON(),
+          within;
+        
+        turf.featureEach(layerSelected, function (feature) {
+          within = turf.booleanIntersects(feature, selecCoords);
+          if (within) {
+            arrayForBuffer.push(feature)
+          }
+        });
+        let bufferFeature = turf.featureCollection(arrayForBuffer);
+        buffer = turf.buffer(bufferFeature, distanceBuffer)
+
+      } catch (error) {        
         console.error(error);
         new UserMessage(error.message, true, "error");
         loadingBtn("off", "ejec_gp");
-      });
+      }
+      this.displayResult(buffer);
 
-    let lastRectangle = mapa.getEditableLayers().rectangle.length - 1;
-    mapa.deleteLayer(mapa.getEditableLayers().rectangle[lastRectangle].name);
+    } else {
+      buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
+        .then((data) => {
+          if (!data) {
+            throw new Error("Error fetching to server");
+          }
+          buffer = turf.buffer(data, distanceBuffer);
+          this.displayResult(buffer);
+        })
+        .catch((error) => {
+          console.error(error);
+          new UserMessage(error.message, true, "error");
+          loadingBtn("off", "ejec_gp");
+        });
+    }
+
+    mapa.deleteLayer(drawnRectangle.name);
   }
 
   executeGeoprocess(formFields) {
@@ -1002,19 +1023,21 @@ class Geoprocessing {
         formFields[i].hasAttribute("references") &&
         formFields[i].getAttribute("references") === "drawedLayers"
       ) {
-        let layer;
+        let drawnRectangle;
         mapa.editableLayers.rectangle.forEach((lyr) => {
-          layer = lyr;
+          if (lyr.id && lyr.id.includes("selection_")) {
+            drawnRectangle = lyr;
+          }
         });
 
-        layer != null ? (this.editableLayer_name = layer.name) : null;
+        drawnRectangle != null ? (this.editableLayer_name = drawnRectangle.name) : null;
 
         switch (this.geoprocessId) {
           case "contour": {
-            const sw = layer.getBounds().getSouthWest();
+            const sw = drawnRectangle.getBounds().getSouthWest();
             values.push(sw.lng);
             values.push(sw.lat);
-            const ne = layer.getBounds().getNorthEast();
+            const ne = drawnRectangle.getBounds().getNorthEast();
             values.push(ne.lng);
             values.push(ne.lat);
             break;
@@ -1118,7 +1141,8 @@ class Geoprocessing {
             // });
           }
           if (this.geoprocessId == "buffer") {
-            let layerForBuffer = gestorMenu.getActiveLayersWithoutBasemap()[0];
+            let layerForBuffer = getAllActiveLayers()[0]
+
             if (
               layerForBuffer &&
               gestorMenu.layerIsWmts(layerForBuffer.name) == false

@@ -56,6 +56,11 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js" integrity="sha384-hbdPIKvN8VYiuuYBaMb70rDCVFrg4vzTn4XSlM+8ctmf8g5Ci4iU4FQY8PDbyCvj" crossorigin="anonymous"></script>
 
+    <!--TooltipTourMaker-->
+    <link href="src/js/components/help/helpTour.css" rel="stylesheet">
+    <link href="src/js/components/help/tooltipTourMaker.css" rel="stylesheet">
+    <script src="src/js/components/help/tooltipTourMaker.js"></script>
+
     <!-- Argenmap basic libraries  -->
     <script src="src/js/utils/analytics/analytics.js"></script>
     <script src="src/js/utils/constants/constants.js"></script>
@@ -72,7 +77,11 @@
     <script src="src/js/components/styles/styles.js"></script>
     <script src="src/js/components/login/login.js"></script>
     <script src="src/js/components/sidebar/sidebar.js"></script>
-    
+    <script src="src/js/components/UI/UserInterface.js"></script>
+    <script src="src/js/components/about/about.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js"></script>
+
     <!--tabulator-->
     <link rel="stylesheet" href="src/js/plugins/tabulator/tabulator.min.css">
     <script type="text/javascript" src="src/js/plugins/tabulator/tabulator.min.js"></script>
@@ -110,20 +119,16 @@
     <link href="src/js/components/user-message/user-message.css" rel="stylesheet">
     <link href="src/js/components/pdfPrinter/pdfPrinter.css" rel="stylesheet">
     <link href="src/js/components/consultData/consultData.css" rel="stylesheet">
+    <link href="src/js/components/about/about.css" rel="stylesheet">
 
-    <!--TooltipTourMaker-->
-    <link href="src/js/components/help/helpTour.css" rel="stylesheet">
-    <link href="src/js/components/help/tooltipTourMaker.css" rel="stylesheet">
-    <script src="src/js/components/help/tooltipTourMaker.js"></script>
-
-</head>
-<body>
+  </head>
+  <body>
     <div class="loader-line hidden"></div>
     <nav class="navbar _navbar-inverse navbar-fixed-top">
         <div class="navbar-new">
-            <button type="button" class="hidden-lg hidden-md navbar-toggle collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse"
+            <button type="button" class="hidden-lg hidden-md navbar-toggle x collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse"
             data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
-            <span class="sr-only">Toggle navigation</span>
+            <!-- <span class="sr-only">Toggle navigation</span> -->
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>

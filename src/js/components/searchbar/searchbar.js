@@ -51,6 +51,8 @@ class Searchbar_UI {
   }
 
   create_sarchbar() {
+    let helpTour = document.getElementById("logo-help");
+
     this.createStyle();
     let divsearch = document.createElement("div");
     divsearch.id = "searchbar";
@@ -99,7 +101,8 @@ class Searchbar_UI {
       search_input.style.width = "130px";
       mapa.removeGroup("markerSearchResult", true);
       if (innerWidth  <= 768) {
-        document.getElementById("logo-navbar").style.display= ""
+        document.getElementById("logo-navbar").style.display= "";
+        helpTour ? helpTour.style.display= "" : 0;
       }
     });
 
@@ -132,7 +135,8 @@ class Searchbar_UI {
         results.innerHTML = "";
         selected_item = false;
         if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= ""
+          document.getElementById("logo-navbar").style.display= "";
+          helpTour ? helpTour.style.display= "" : 0;
         }
       } else if (q.length <= 2) {
         results.innerHTML = "";
@@ -140,14 +144,16 @@ class Searchbar_UI {
         icon_searchbar.style.display = "flex";
         selected_item = false;
         if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none"
+          document.getElementById("logo-navbar").style.display= "none";
+          helpTour ? helpTour.style.display= "none" : 0;
         }
       } else {
         search_input.style.width = "300px";
         icon_searchbar.style.display = "flex";
         search_term = q;
         if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none"
+          document.getElementById("logo-navbar").style.display= "none";
+          helpTour ? helpTour.style.display= "none" : 0;
         }
         //e.which <= 90 && e.which >= 48 Alfanumericos
         //e.which == 13 Enter
@@ -189,7 +195,8 @@ class Searchbar_UI {
         search_input.style.width = "300px";
         icon_searchbar.style.display = "flex";
         if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none"
+          document.getElementById("logo-navbar").style.display= "none";
+          helpTour ? helpTour.style.display= "none" : 0;
         }
         selected_item = false;
       } else {
@@ -198,7 +205,8 @@ class Searchbar_UI {
         search_term = q;
         results.innerHTML = "";
         if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none"
+          document.getElementById("logo-navbar").style.display= "none";
+          helpTour ? helpTour.style.display= "none" : 0;
         }
         selected_item = false;
         //si contienen caracteres invalidos #$%#$% o es igual a url
@@ -296,11 +304,9 @@ class Searchbar_UI {
       properties: {},
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(
-      geojsonMarker,
-      "markerSearchResult",
-      false
-    );
+
+    let result = mapa.createLayerFromGeoJSON(geojsonMarker, "markerSearchResult");
+    addLayerToAllGroups(result, "markerSearchResult");
 
     let container = document.getElementById("results_search_bar");
     container.style = "margin: 5px";
@@ -416,11 +422,9 @@ const searchById = async () => {
       properties: {},
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(
-      geojsonMarker,
-      "markerSearchResult",
-      false
-    );
+
+    let result = mapa.createLayerFromGeoJSON(geojsonMarker, "markerSearchResult");
+    addLayerToAllGroups(result, "markerSearchResult");
 
     let newcard = new Searchbar_UI();
     newcard.create_card(response_items.features[0]);

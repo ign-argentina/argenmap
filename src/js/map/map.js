@@ -641,47 +641,29 @@ $("body").on("pluginLoad", function (event, plugin) {
 					});
 
 					mapa.on('draw:created', (e) => {
+						//create layer
 						const layer = e.layer;
 						const type = e.layerType;
 
-						let name = type + '_';
-						if (mapa.editableLayers[type].length === 0) {
-							name += '1';
-						} else {
-							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-							name += parseInt(lastLayerName.split('_')[1]) + 1;
-						}
-
-						layer.name = name;
-						layer.type = type;
-						layer.data = {};
+						//add information & methods to layer
 						layer.options.fillColor = !layer.options.fillColor ? layer.options.color : layer.options.fillColor;
+						layer.type = type;
+						addInfoAndMethodsToLayer(layer);
 
-						layer.getGeoJSON = () => {
-							return mapa.getLayerGeoJSON(layer.name);
+						//add layer to
+						_addLayerToAllGroups(layer);
+
+						//aditional settings
+						let geoJSON = layer.getGeoJSON();
+						layer.data = {geoJSON};
+
+						if (isSelectionDrawingActive) {
+							layer.id = "selection_" + Math.floor(Math.random()*(999-100+1)+100).toString();
+							isSelectionDrawingActive = false;
+						} else {
+							addLayerToDrawingsGroup(layer.name, layer, "Dibujos", "dibujos", "dibujos");
 						}
-
-						layer.downloadGeoJSON = () => {
-							mapa.downloadLayerGeoJSON(layer);
-						}
-
-						// layer.on({
-						// 	click: whenClicked
-						// });
-
-						mapa.editableLayers[type].push(layer);
-
-						addLayerToDrawingsGroup(name, layer, "Dibujos", "dibujos", "dibujos");
-
-						// if (perfilTopografico.isActive) {
-						// 	// check if profile was clicked
-						// 	mapa.capaPerfilTopografico.clearLayers();
-						// 	mapa.capaPerfilTopografico.addLayer(layer);
-						// 	perfilTopografico.process(layer.getGeoJSON());
-						// } else {
-						drawnItems.addLayer(layer);
-						// }
-
+						
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 
 						if (layer.type === 'marker') {
@@ -690,8 +672,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
-
-						mapa.addContextMenuToLayer(layer);
 
 						if (geoProcessingManager) {
 							geoProcessingManager.updateLayerSelect(layer.name, true);
@@ -903,7 +883,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 									geometry: { type: "Point", coordinates: [lng, lat] },
 								};
 
-								mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "addedMarker_" + name, false);
+								let result = mapa.createLayerFromGeoJSON(geojsonMarker, "addedMarker_" + name);
+								addLayerToAllGroups(result, "addedMarker_" + name);
+
 								mapa.closePopup(contextPopup);
 							},
 						});
@@ -1845,7 +1827,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput3.disabled = !enableLabelInput.checked;
 							colorInput3.addEventListener("input", (e) => {
 								const borderColor = colorInput3.value;
-								layer.options.icon.options.html.style.borderColor = borderColor;
+								layer.options.icon.options.html.style.setProperty('border-color', borderColor, 'important')
 								layer.options.borderColor = borderColor;
 							});
 							const colorLabel3 = document.createElement('label');
@@ -1866,7 +1848,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput4.disabled = !enableLabelInput.checked;
 							colorInput4.addEventListener("input", (e) => {
 								const fillColor = colorInput4.value;
-								layer.options.icon.options.html.style.backgroundColor = fillColor;
+								layer.options.icon.options.html.style.setProperty('background-color', fillColor, 'important')
 								layer.options.fillColor = fillColor;
 							});
 							const colorLabel4 = document.createElement('label');
@@ -1902,7 +1884,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							colorInput5.disabled = !enableLabelInput.checked;
 							colorInput5.addEventListener("input", (e) => {
 								const textColor = colorInput5.value;
-								layer.options.icon.options.html.style.color = textColor;
+								layer.options.icon.options.html.style.setProperty('color', textColor, 'important')
 								layer.options.color = textColor;
 							});
 							const colorLabel5 = document.createElement('label');
@@ -1952,9 +1934,13 @@ $("body").on("pluginLoad", function (event, plugin) {
 					};
 
 					mapa.addLayerToPopUp = (container, activeLayer) => {
+						let layerName;
+						activeLayer.name ? 
+						layerName = activeLayer.name : layerName = activeLayer;
+
 						const inputDiv = document.createElement('div');
 						inputDiv.className = 'active-layer';
-						inputDiv.id = 'container_' + activeLayer;
+						inputDiv.id = 'container_' + layerName;
 						inputDiv.style.display = 'flex';
 						inputDiv.style.flexDirection = 'row';
 						inputDiv.style.justifyContent = 'flex-start';
@@ -1964,28 +1950,34 @@ $("body").on("pluginLoad", function (event, plugin) {
 						inputDiv.style.borderRadius = '3px';
 						inputDiv.style.transition = '0.2s';
 						inputDiv.onclick = () => {
-							onClickActiveLayer(activeLayer);
+							onClickActiveLayer(layerName);
 						};
 
 						const input = document.createElement('input');
 						input.type = 'checkbox';
-						input.id = activeLayer;
-						input.name = activeLayer;
-						input.value = activeLayer;
+						input.id = layerName;
+						input.name = layerName;
+						input.value = layerName;
 						input.style.margin = '0px 3px 0px 0px';
 						input.onclick = () => {
-							onClickActiveLayer(activeLayer);
+							onClickActiveLayer(layerName);
 						};
-
+						
 						const label = document.createElement('label');
-						label.innerHTML = gestorMenu.getLayerData(activeLayer).title;
+						if (gestorMenu.getLayerData(layerName).title) {
+							label.innerHTML = gestorMenu.getLayerData(layerName).title;
+						} else if (activeLayer.layer.title) {
+							label.innerHTML = activeLayer.layer.title;
+						} else {
+							label.innerHTML = activeLayer.name; 
+						}	
 						label.className = 'active-layer-label';
-						label.setAttribute("for", activeLayer);
+						label.setAttribute("for", layerName);
 						label.style.marginBottom = '0px';
 						label.style.overflow = 'hidden';
 						label.style.textOverflow = 'ellipsis';
 						label.onclick = () => {
-							onClickActiveLayer(activeLayer);
+							onClickActiveLayer(layerName);
 						};
 
 						inputDiv.appendChild(input);
@@ -2074,19 +2066,26 @@ $("body").on("pluginLoad", function (event, plugin) {
 						inputDiv.appendChild(label);
 						selectedLayersDiv.appendChild(inputDiv);
 
-						gestorMenu.getActiveLayersWithoutBasemap().forEach(activeLayer => {
-							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer.name);
+						let consultLayers = [];
+						getAllActiveLayers().forEach(lyr => {
+							if (lyr.type != "dibujos") {
+								consultLayers.push(lyr);
+							}
+						});
+
+						consultLayers.forEach(activeLayer => {
+							mapa.addLayerToPopUp(selectedLayersDiv, activeLayer);
 						});
 
 						const popUpBtn = document.createElement('div');
 						popUpBtn.className = 'popup-btn';
 						popUpBtn.setAttribute('id', 'btn-show-info');
 						popUpBtn.onclick = () => {
-							if (gestorMenu.getActiveLayersWithoutBasemap().length > 0)
+							if (consultLayers.length > 0)
 								mapa.showInfoLayer(layer.name, false);
 						};
 						popUpBtn.innerHTML = '<p class="popup-btn-text">Consultar capas seleccionadas en área</p>';
-						popUpBtn.classList.add(gestorMenu.getActiveLayersWithoutBasemap().length === 0 ? 'btn-disabled' : 'btn-active');
+						popUpBtn.classList.add(consultLayers.length === 0 ? 'btn-disabled' : 'btn-active');
 
 						popUpDiv.appendChild(selectedLayersDiv);
 						popUpDiv.appendChild(popUpBtn);
@@ -2144,7 +2143,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 					}
 
 					mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
-						const filteredActiveLayers = gestorMenu.getActiveLayersWithoutBasemap().filter(activeLayer => {
+						const filteredActiveLayers = getAllActiveLayers().filter(activeLayer => {
 							return selectedLayers.find(selectedLayer => selectedLayer === activeLayer.name) ? true : false;
 						});
 
@@ -2154,23 +2153,45 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.data = {};
 						if (filteredActiveLayers.length > 0) {
 							filteredActiveLayers.forEach(activeLayer => {
-								getLayerDataByWFS(coords, layer.type, activeLayer)
-									.then(data => {
+								if (!activeLayer.layer.host) {
+									let arrayData = [],
+										selecCoords = layer.getGeoJSON(),
+										within;
 
-										if (!data) {
-											throw new Error('Error fetching to server');
-										};
-
-										layer.data[activeLayer.name] = data;
-										layer.coords = coords;
-
-										//Load data in table
-										const table = new Datatable(data, coords);
-										createTabulator(table, activeLayer.name);
-									})
-									.catch(err => {
-										console.error(err);
+									turf.featureEach(activeLayer.layer, function (feature) {
+										within = turf.booleanIntersects(feature, selecCoords);
+										if (within) {
+										  arrayData.push(feature)
+										}
 									});
+
+									let arrayFeature = turf.featureCollection(arrayData);
+
+									let data = arrayFeature;
+									layer.data[activeLayer.name] = data;
+									layer.coords = coords;
+
+									//Load data in table
+									const table = new Datatable(data, coords);
+									createTabulator(table, activeLayer.name);
+									
+								} else {
+									getLayerDataByWFS(coords, layer.type, activeLayer)
+										.then(data => {
+											if (!data) {
+												throw new Error('Error fetching to server');
+											};	
+											layer.data[activeLayer.name] = data;
+											layer.coords = coords;
+	
+											//Load data in table
+											const table = new Datatable(data, coords);
+											createTabulator(table, activeLayer.name);
+										})
+										.catch(err => {
+											console.error(err);
+										});
+								}
 							});
 						}
 					}
@@ -2248,7 +2269,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 							} else {
 								delFileItembyID(id);
 							}
-							if (lyr.layer.features.length === 0) {
+							if (lyr.layer.features && lyr.layer.features.length === 0) {
 								addedLayers.splice(addedLayers.indexOf(lyr), 1);
 							}
 							updateNumberofLayers(lyr.section)
@@ -2535,252 +2556,52 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.setIcon(icon);
 					};
 
-					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, groupIsCreated, file) => {
+					mapa.createLayerFromGeoJSON = (geoJSON, groupName) => {
 						if (mapa.groupLayers[groupName] === undefined) {
 							mapa.groupLayers[groupName] = [];
 						}
 
 						if (geoJSON.type === 'FeatureCollection') {
-							geoJSON.features.forEach(feature => {
-								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
+							let collection = [];
+							geoJSON.features.forEach(geoJSON => {
+								//create layer
+								let layer = createLayerByType(geoJSON, groupName);
+								//add information & methods to layer
+								addInfoAndMethodsToLayer(layer);
+								collection.push(layer);
 							});
-							return;
+							return collection;
+						} 
+
+						if (geoJSON.type === 'Feature') {
+							//create layer
+							let layer = createLayerByType(geoJSON, groupName);
+							//add information & methods to layer
+							addInfoAndMethodsToLayer(layer);
+							return layer;
 						}
 
-						let type = geoJSON.geometry.type.toLowerCase();
-						let layer = null;
+					}
 
-						let options = {};
-						if (geoJSON.properties.hasOwnProperty('styles')) {
-							options = { ...geoJSON.properties.styles };
-						}
-
-						switch (type) {
-							case 'point': {
-								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
-
-								//Check if it is circle, circlemarker or marker
-								if (geoJSON.properties.hasOwnProperty('type')) {
-									switch (geoJSON.properties.type.toLowerCase()) {
-										case 'circle': {
-											layer = L.circle(invertedCoords, options);
-											type = 'circle';
-										}
-											break;
-										case 'circlemarker': {
-											layer = L.circleMarker(invertedCoords, options);
-											type = 'circlemarker';
-										};
-											break;
-										case 'marker': {
-											layer = L.marker(invertedCoords);
-											type = 'marker';
-										};
-											break;
-										case 'label': {
-											const editableLabel = new EditableLabel();
-											editableLabel.uploadLabel(invertedCoords, geoJSON.properties.text, geoJSON.properties.styles.weight, geoJSON.properties.styles.borderColor, geoJSON.properties.styles.fillColor, geoJSON.properties.styles.color, groupName);
-											return
-										};
-											break;
-										default: {
-											layer = L.marker(invertedCoords);
-											type = 'marker';
-										}
-									}
-								} else {
-									layer = L.marker(invertedCoords);
-									type = 'marker';
-								}
-							}
-								break;
-							case 'linestring': {
-								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
-								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
-									let n = geoJSON.properties.value
-									let value = geoJSON.properties.value + ' m'
-
-									if (!countour_styles) countour_styles = getStyleContour()
-
-
-									if (n % countour_styles.d_line_m === 0) {
-										let colord = ""
-										if (countour_styles.d_line_color === "multi") {
-											colord = getMulticolorContour(n)
-										}
-										else { colord = countour_styles.d_line_color }
-
-										options = {
-											color: colord,
-											weight: countour_styles.d_weigth,
-											smoothFactor: countour_styles.smoothFactor,
-											'font-weight': 'bold'
-										}
-									} else {
-										let colorc = ""
-										if (countour_styles.line_color === "multi") {
-											colorc = getMulticolorContour(n)
-										} else { colorc = countour_styles.line_color }
-
-
-										options = {
-											color: colorc,
-											weight: countour_styles.line_weight,
-											smoothFactor: countour_styles.smoothFactor,
-											'font-weight': 'regular'
-										}
-									}
-									//if (n % 100 === 0 ||n % 50 === 0) 
-
-									layer = L.polyline(invertedCoords, options);
-									type = 'polyline';
-									layer.layer = groupName;
-									layer.value = geoJSON.properties.value
-									if (n % 100 === 0 || n % 50 === 0) {
-										// textPath
-										layer.setText(value, {
-											repeat: false,
-											offset: -3,
-											center: true,
-											attributes: {
-												textLength: 55,
-												fill: 'Maroon',
-												'font-weight': options['font-weight'],
-												'font-family': 'sans-serif',
-												stroke: 'white',
-												'stroke-opacity': '1',
-												'stroke-width': '0.5'
-												/* 'font-size': '24px' */
-											}
-										});
-									}
-									layer.on('mouseover', function (e) {
-										let elevation = geoJSON.properties.value.toString() + " m";
-										let tooltipStyle = {
-											direction: 'right',
-											permanent: false,
-											sticky: true,
-											offset: [10, 0],
-											opacity: 0.75,
-											className: 'map-tooltip'
-										};
-										layer.bindTooltip(`<div><b>${elevation}</b></div>`,
-											tooltipStyle);
-									});
-								} else {
-									layer = L.polyline(invertedCoords, options);
-									type = 'polyline';
-								}
-
-							}
-								break;
-							case 'polygon': {
-								const invertedCoords = geoJSON.geometry.coordinates[0].map(coords => [coords[1], coords[0]]);
-								if (geoJSON.properties.hasOwnProperty('type') && geoJSON.properties.type.toLowerCase() === 'rectangle') {
-									layer = L.rectangle(invertedCoords, options);
-									type = 'rectangle';
-								} else {
-									layer = L.polygon(invertedCoords, options);
-									type = 'polygon';
-								}
-							}
-								break;
-							case 'multipoint': {
-								geoJSON.geometry.coordinates.forEach(coords => {
-									const point = {
-										type: "Feature",
-										geometry: {
-											type: "Point",
-											coordinates: coords
-										},
-										properties: geoJSON.properties
-									};
-
-									mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, true);
-
-								});
-								return;
-							}
-							case 'multilinestring': {
-								geoJSON.geometry.coordinates.forEach(coords => {
-									const lineString = {
-										type: "Feature",
-										geometry: {
-											type: "LineString",
-											coordinates: coords
-										},
-										properties: geoJSON.properties
-									};
-									mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, true);
-								});
-								return;
-							}
-							case 'multipolygon': {
-								const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
-								layer = L.polygon(reversedCoords);
-								type = 'polygon';
-							}
-								break;
-						}
-
-						let name = type + '_';
-
-						if (mapa.editableLayers[type].length === 0) {
-							name += '1';
-						} else {
-							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-							name += parseInt(lastLayerName.split('_')[1]) + 1;
-						}
-
-						layer.id = groupName;
-						layer.name = name;
-						layer.type = type;
-						layer.data = { geoJSON };
-						layer.data.geoJSON.properties.name = name;
+					function addInfoAndMethodsToLayer(layer) {
+						let type = layer.type;
+						layer.name = nameForLayer(type);
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
-
+						
+						mapa.editableLayers[type].push(layer);
+						
 						layer.on({
 							click: getVectorData
 						});
-
-						mapa.groupLayers[groupName].push(name);
-
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
 						}
-
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
 						}
-
-						mapa.editableLayers[type].push(layer);
-
-						if (layer.type === 'marker') {
-							//Default marker styles
-							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
-							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
-							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
-
-							if (geoJSON.properties.hasOwnProperty('styles') && geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
-								const borderWidth = geoJSON.properties.styles.borderWidth;
-								const borderColor = geoJSON.properties.styles.borderColor;
-								const fillColor = geoJSON.properties.styles.fillColor;
-
-								layer.options.borderWidth = borderWidth;
-								layer.options.borderColor = borderColor;
-								layer.options.fillColor = fillColor;
-								layer.options.customMarker = true;
-
-								mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
-							}
-						}
-
-						//Right-click
 						mapa.addContextMenuToLayer(layer);
-
-						drawnItems.addLayer(layer);
 					}
-
+					
 					gestorMenu.plugins['Draw'].setStatus('visible');
 					break;
 				default:
@@ -2905,15 +2726,18 @@ function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
 	// If the group doesn't exist, create it and add the layer to it.
 	if (!mapa.groupLayers[group]) {
 		// Create a new GeoJSON feature with the layer and its name.
-		const geoJSON = {
+		const geoJSONCollection = {
 			type: "FeatureCollection",
 			features: [mapa.getLayerGeoJSON(layer.name)]
 		};
-		geoJSON.features[0].properties.name = name;
+		let geoJSON = geoJSONCollection.features[0]
+		layer.data = { geoJSON }
+		geoJSONCollection.features[0].properties.name = name;
+		geoJSONCollection.features[0].properties.type = layer.type;
 		// Add the layer to the addedLayers array and the UI menu.
 		addedLayers.push({
 			id: groupId,
-			layer: geoJSON,
+			layer: geoJSONCollection,
 			name: groupId,
 			type: groupId,
 			isActive: true,
@@ -2924,8 +2748,18 @@ function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
 		// If the group already exists, find the corresponding layer and add the new layer to it.
 		addedLayers.forEach(lyr => {
 			if (lyr.id === groupId) {
+
+				const geoJSONCollection = {
+					type: "FeatureCollection",
+					features: [mapa.getLayerGeoJSON(layer.name)]
+				};
+				let geoJSON = geoJSONCollection.features[0];
+				layer.data = { geoJSON };
+				geoJSONCollection.features[0].properties.name = name;
+				geoJSONCollection.features[0].properties.type = layer.type;
+
 				lyr.layer.features.push(mapa.getLayerGeoJSON(layer.name));
-				lyr.layer.features[lyr.layer.features.length - 1].properties.name = name;
+				lyr.layer.features[lyr.layer.features.length - 1] = geoJSONCollection.features[0];
 			}
 		});
 	}
