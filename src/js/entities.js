@@ -747,14 +747,14 @@ class LayersInfoWMS extends LayersInfo {
             var ilegendURL;
             if (thisObj.icons) {
               ilegendURL = thisObj.icons[iName];
-            } else {
+            }/*  else {
               if (divi.getElementsByTagName("onlineresource")) {
                 aux = divi
                   .getElementsByTagName("onlineresource")[0]
                   .getAttribute("xlink:href");
               }
               ilegendURL = aux;
-            }
+            } */
 
             if (iBoundingBox.length > 0) {
               if (iBoundingBox[0].attributes.srs) {
