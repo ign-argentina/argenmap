@@ -1914,12 +1914,16 @@ function setContourStyleOptions(geoJSON, options) {
 }
 
 function addLayerToAllGroups(layer, groupName) {
-  if (layer.length <= 1) {
-    _addLayerToAllGroups(layer[0], groupName)
+  if (layer.length) {
+    if (layer.length <= 1) {
+      _addLayerToAllGroups(layer[0], groupName);
+    } else {
+      layer.forEach(feature => {
+        _addLayerToAllGroups(feature, groupName);
+      });
+    }
   } else {
-    layer.forEach(feature => {
-      _addLayerToAllGroups(feature, groupName)
-    });
+    _addLayerToAllGroups(layer, groupName);
   }
 }
 
