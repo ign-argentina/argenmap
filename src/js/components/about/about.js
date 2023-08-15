@@ -92,7 +92,11 @@ class AboutUs {
      * Adds the contributors content to the contributors container.
      */
     addContributorsContent() {
+        this.contributors.sort((a, b) => a.login.localeCompare(b.login));
         this.contributors.forEach((contributor, i) => {
+            if (contributor.login.toLowerCase() === "dependabot[bot]") {
+                return;
+            }
             const card = document.createElement('div');
             card.className = "contributor-card";
             card.title = "Visitar GitHub";
