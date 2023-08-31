@@ -102,6 +102,7 @@ class Searchbar_UI {
       mapa.removeGroup("markerSearchResult", true);
       if (innerWidth  <= 768) {
         document.getElementById("logo-navbar").style.display= "";
+        helpTour ? helpTour.style.display= "" : 0;
       }
     });
 
@@ -135,6 +136,7 @@ class Searchbar_UI {
         selected_item = false;
         if (innerWidth  <= 768) {
           document.getElementById("logo-navbar").style.display= "";
+          helpTour ? helpTour.style.display= "" : 0;
         }
       } else if (q.length <= 2) {
         results.innerHTML = "";
@@ -302,11 +304,9 @@ class Searchbar_UI {
       properties: {},
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(
-      geojsonMarker,
-      "markerSearchResult",
-      false
-    );
+
+    let result = mapa.createLayerFromGeoJSON(geojsonMarker, "markerSearchResult");
+    addLayerToAllGroups(result, "markerSearchResult");
 
     let container = document.getElementById("results_search_bar");
     container.style = "margin: 5px";
@@ -422,11 +422,9 @@ const searchById = async () => {
       properties: {},
       geometry: { type: "Point", coordinates: [lng, lat] },
     };
-    mapa.addGeoJsonLayerToDrawedLayers(
-      geojsonMarker,
-      "markerSearchResult",
-      false
-    );
+
+    let result = mapa.createLayerFromGeoJSON(geojsonMarker, "markerSearchResult");
+    addLayerToAllGroups(result, "markerSearchResult");
 
     let newcard = new Searchbar_UI();
     newcard.create_card(response_items.features[0]);

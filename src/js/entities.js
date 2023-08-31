@@ -747,14 +747,14 @@ class LayersInfoWMS extends LayersInfo {
             var ilegendURL;
             if (thisObj.icons) {
               ilegendURL = thisObj.icons[iName];
-            } else {
+            }/*  else {
               if (divi.getElementsByTagName("onlineresource")) {
                 aux = divi
                   .getElementsByTagName("onlineresource")[0]
                   .getAttribute("xlink:href");
               }
               ilegendURL = aux;
-            }
+            } */
 
             if (iBoundingBox.length > 0) {
               if (iBoundingBox[0].attributes.srs) {
@@ -2745,7 +2745,7 @@ class GestorMenu {
         "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>" +
         "</div>" +
         "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-        "<div onClick='gestorMenu.cleanAllLayers()'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash' title='Desactivar Capas' ></span></button></div>" +
+        "<div onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash'></span></button></div>" +
         "</div>" +
         "</form>"
       );

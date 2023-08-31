@@ -31,7 +31,8 @@ const STRINGS = {
   basemap_min_zoom: "Min zoom ",
   delete_geometry: "Delete geometry",
   url_required: "URL parameter is required",
-  no_bbox: "Invalid or empty bounding box"
+  no_bbox: "Invalid or empty bounding box",
+  about: "Acerca de Argenmap" 
 }
 
 //Default Services Values
