@@ -66,11 +66,11 @@ class AboutUs {
             {
                 name: 'Funciones',
                 id: 'load-functions',
-            },
+            } /*,
             {
                 name: 'Colaboradores',
                 id: 'load-colaboradores',
-            }
+            }*/
         ];
         this.dataGetter = new DataGetter();
         this.check();
@@ -85,12 +85,12 @@ class AboutUs {
 
         this.addReadmeContent();
         this.addFunctionsContent();
-        this.addContributorsContent();
+        //this.addContributorsContent();
     }
 
     /**
      * Adds the contributors content to the contributors container.
-     */
+    
     addContributorsContent() {
         this.contributors.forEach((contributor, i) => {
             const card = document.createElement('div');
@@ -116,6 +116,7 @@ class AboutUs {
             contributorContainer.appendChild(card);
         });
     }
+     */
 
     /**
      * Adds the functions content to the functions container.
@@ -283,7 +284,9 @@ class AboutUs {
 const modalAboutUs = new AboutUs();
 const dataGetter = new DataGetter();
 
+/*
 (async function initializeAboutUs() {
     const contributorsData = await dataGetter.fetchData('https://api.github.com/repos/ign-argentina/argenmap/contributors');
     modalAboutUs.contributors = contributorsData;
 })();
+*/

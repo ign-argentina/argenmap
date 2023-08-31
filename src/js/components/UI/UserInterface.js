@@ -72,11 +72,11 @@ class AboutUsModal extends UserInterface {
 
         const readmeContainer = tabContent.createReadmeContainer();
         const functionContainer = tabContent.createFunctionsContainer();
-        const contributorContainer = tabContent.createContributorsContainer();
+        //const contributorContainer = tabContent.createContributorsContainer();
 
         aboutMainSection.appendChild(readmeContainer);
         aboutMainSection.appendChild(functionContainer);
-        aboutMainSection.appendChild(contributorContainer);
+        //aboutMainSection.appendChild(contributorContainer);
     }
 }
 
@@ -156,12 +156,12 @@ class AboutUsTab extends UserInterface {
     /**
      * Creates the contributors container element.
      * @returns {HTMLElement} - The created contributors container element.
-     */
+     
     createContributorsContainer() {
         const contributorContainer = document.createElement('div');
         contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
         contributorContainer.id = "contributors-container";
 
         return contributorContainer;
-    }
+    }*/
 }
