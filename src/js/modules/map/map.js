@@ -1,7 +1,7 @@
 class Layer {
     constructor(id, name, title, attribution, icon, weight, keywords) {
         this.id = id,
-            this.name = name ?? "lalo landa",
+            this.name = name ?? "A sample layer",
             this.title = title,
             this.attribution = attribution,
             this.icon = icon,
