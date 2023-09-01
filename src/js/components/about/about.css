@@ -92,6 +92,7 @@
 .even-function {
     background-color: #d0e7f1;
 }
+/*
 .contributor-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -127,7 +128,7 @@
     margin-top: 10px;
     margin-left: 2px;
     color: white;
-}
+} */
 #link-to-repo {
     cursor: pointer;
     color: #FFFFFF;
@@ -209,9 +210,11 @@
         width: 75%;
         left: 12%;
     }
+    /*
     .contributor-img {
         width: 35px;
     }
+    */
     .tab {
         margin-left: 7px;
     }
