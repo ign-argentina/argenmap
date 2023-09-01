@@ -2063,27 +2063,26 @@ class GestorMenu {
   }
 
   setLayersDataForWfs() {
-    for (const item in this.items) {
-      if (item !== "mapasbase") {
-        Object.values(this.items[item].itemsComposite).forEach((iC) => {
-          iC.capas.forEach((capa) => {
+    for (const itemKey in this.items) {
+      if (itemKey !== "mapasbase") {
+        const item = this.items[itemKey];
+        Object.values(item.itemsComposite).forEach((compositeItem) => {
+          compositeItem.capas.forEach((capa) => {
             this.layersDataForWfs[capa.nombre] = {
               name: capa.nombre,
-              section: this.items[item].seccion,
+              section: item.seccion,
               host: capa.host,
             };
           });
         });
       }
     }
-    console.log(this.layersDataForWfs);
   }
 
   getActiveLayersWithoutBasemap() {
+    // Filter active layers to exclude base layers
     const activeLayers = this.activeLayers.filter((layer) => {
-      return this.availableBaseLayers.find((baseLayer) => baseLayer === layer)
-        ? false
-        : true;
+      return !this.availableBaseLayers.includes(layer);
     });
     return Object.keys(this.layersDataForWfs).length === 0
       ? []
@@ -2248,8 +2247,8 @@ class GestorMenu {
 
   cleanAllLayers() {
     //Desactiva TODOS los layers activos.
-    let layers = this.getActiveLayersWithoutBasemap().map((item) => {
-      return item.name;
+    let layers = this.activeLayers.filter((layer) => {
+      return !this.availableBaseLayers.includes(layer);
     });
     this.toggleLayers(layers);
     hideAddedLayers();
