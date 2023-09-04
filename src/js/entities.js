@@ -679,214 +679,125 @@ class LayersInfoWMS extends LayersInfo {
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
     _gestorMenu.addItemGroup(groupAux);
-  }
-
+    }
+    
+    /**
+     * Parses geoserver capabilities and creates a menu.
+     * @param {Object} _gestorMenu - The menu manager.
+     */
   _parseRequest(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
     const impresorItem = new ImpresorItemHTML();
 
-    var thisObj = this;
+    const thisObj = this;
 
-    var ilistType = null;
-    if (this.tab.listType) {
-      ilistType = this.tab.listType;
-    }
+    // Determine the listType, defaulting to null if not provided
+    let ilistType = this.tab.listType || null;
 
-    if (!$("#temp-menu").hasClass("temp")) {
-      $("body").append(
-        '<div id="temp-menu" class="temp" style="display:none"></div>'
-      );
-    }
+    // Construct the URL for fetching capabilities
+    const serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
+    const host = thisObj.getHostOWS() + serviceParams;
 
-    // Load geoserver Capabilities, if success Create menu and append to DOM
-    let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
-    let host = thisObj.getHostOWS() + serviceParams;
-    $("#temp-menu").load(
-      host,
-      function () {
-        var capability = $("#temp-menu").find("capability");
-        var keywordHtml = $("#temp-menu").find("Keyword");
-        var keyword = "";
-        if (keywordHtml.length > 0) {
-          keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
-        }
-        var abstractHtml = $("#temp-menu").find("Abstract");
-        var abstract = "";
-        if (abstractHtml.length > 0) {
-          abstract = abstractHtml[0].innerText; // reads wms 1st abstract
-        }
-        var capas_layer = $("layer", capability);
-        var capas_info = $("layer", capas_layer);
+    fetch(host)
+      .then(response => response.text())
+      .then(responseText => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(responseText, "text/xml");
 
-        var items = new Array();
+        // Extract metadata from capabilities XML
+        const capability = xmlDoc.querySelector("Capability");
+        const keyword = xmlDoc.querySelector("Keyword").textContent;
+        const abstract = xmlDoc.querySelector("Abstract").textContent;
 
-        // create an object with all layer info for each layer
-        capas_info.each(function (index, b) {
-          var i = $(this);
-          var iName = $("name", i).html();
-          if (thisObj.isAllowebLayer(iName)) {
-            var iTitle = $("title", i).html();
-            iTitle = thisObj.formatLayerTitle(iName, iTitle);
-            var iAbstract = $("abstract", i).html();
-            iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
-            var keywordsHTMLList = $("keywordlist", i).find("keyword");
-            var keywords = [];
-            $.each(keywordsHTMLList, function (i, el) {
-              keywords.push(el.innerText);
-            });
-            var iBoundingBox = $("boundingbox", i);
-            var iSrs = null;
-            var iMaxY = null;
-            var iMinY = null;
-            var iMinX = null;
-            var iMaxX = null;
-            var ilegendURLaux = $("Style", i).html();
-            let divi = document.createElement("div");
-            let aux = null;
-            divi.innerHTML = ilegendURLaux;
-            var ilegendURL;
-            if (thisObj.icons) {
-              ilegendURL = thisObj.icons[iName];
-            }/*  else {
-              if (divi.getElementsByTagName("onlineresource")) {
-                aux = divi
-                  .getElementsByTagName("onlineresource")[0]
-                  .getAttribute("xlink:href");
-              }
-              ilegendURL = aux;
-            } */
+        // Extract layer information from capabilities XML
+        const capaLyrList = capability.querySelector("Layer");
+        const capaInfoList = capaLyrList.querySelectorAll("Layer");
 
-            if (iBoundingBox.length > 0) {
-              if (iBoundingBox[0].attributes.srs) {
-                var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
-              } else {
-                var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
-              }
-              var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
-              var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
-              var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
-              var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
+        // Process each layer and create menu items
+        const items = Array.from(capaInfoList)
+          .filter(layer => {
+            const iName = layer.querySelector("Name").textContent;
+            return thisObj.isAllowebLayer(iName);
+          })
+          .map((layer, index) => {
+            try {
+              const iName = layer.querySelector("Name").textContent;
+              const iTitle = layer.querySelector("Title").textContent;
+              const iAbstract = layer.querySelector("Abstract").textContent;
+
+              // Extract keywords
+              const keywordsHTMLList = layer.querySelectorAll("KeywordList keyword");
+              const keywords = Array.from(keywordsHTMLList).map(keyword => keyword.textContent);
+
+              // Extract bounding box information
+              const iBoundingBox = layer.querySelector("BoundingBox");
+              const iSrs = iBoundingBox ? (iBoundingBox.getAttribute("srs") || iBoundingBox.getAttribute("crs")) : null;
+              const iMaxY = iBoundingBox ? iBoundingBox.getAttribute("maxy") : null;
+              const iMinY = iBoundingBox ? iBoundingBox.getAttribute("miny") : null;
+              const iMinX = iBoundingBox ? iBoundingBox.getAttribute("minx") : null;
+              const iMaxX = iBoundingBox ? iBoundingBox.getAttribute("maxx") : null;
+
+              // Extract legend URL
+              const ilegendURL = thisObj.icons ? thisObj.icons[iName] : null;
+
+              // Create appropriate capa object based on type
+              const capa = thisObj.type === "wmslayer_mapserver"
+                ? new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY)
+                : new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
+
+              // Create menu item
+              const item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(), ilistType);
+              item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
+              item.setImpresor(impresorItem);
+              gestorMenu.setAvailableLayer(iName);
+              return item;
+            } catch (err) {
+              console.error(`Error processing layer '${layer.querySelector("Name").textContent}':`, err);
+              return null; // Return null for failed items
             }
+          })
+          .filter(item => item !== null);
 
-            if (thisObj.type == "wmslayer_mapserver") {
-              var capa = new CapaMapserver(
-                iName,
-                iTitle,
-                iSrs,
-                thisObj.host,
-                thisObj.service,
-                thisObj.version,
-                thisObj.feature_info_format,
-                iMinX,
-                iMaxX,
-                iMinY,
-                iMaxY
-              );
-            } else {
-              var capa = new Capa(
-                iName,
-                iTitle,
-                iSrs,
-                thisObj.host,
-                thisObj.service,
-                thisObj.version,
-                thisObj.feature_info_format,
-                keywords,
-                iMinX,
-                iMaxX,
-                iMinY,
-                iMaxY,
-                null,
-                ilegendURL
-              );
-              gestorMenu.layersDataForWfs[capa.nombre] = {
-                name: capa.nombre,
-                section: capa.titulo,
-                host: capa.host,
-              };
-            }
-            var item = new Item(
-              capa.nombre,
-              thisObj.section + index,
-              keywords,
-              iAbstract,
-              capa.titulo,
-              capa,
-              thisObj.getCallback(),
-              ilistType
-            );
-            item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
-            item.setImpresor(impresorItem);
-            items.push(item);
-            gestorMenu.setAvailableLayer(iName);
-          }
-        });
-
-        var groupAux;
+        let groupAux;
         try {
-          var groupAux = new ItemGroup(
-            thisObj.tab,
-            thisObj.name,
-            thisObj.section,
-            thisObj.weight,
-            keyword,
-            abstract,
-            thisObj.short_abstract
-          );
+          // Create item group
+          groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
           groupAux.setImpresor(impresorGroup);
           groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-          for (var i = 0; i < items.length; i++) {
-            groupAux.setItem(items[i]);
-          }
+          items.forEach(item => groupAux.setItem(item));
         } catch (err) {
+          console.error('Error creating item group', err);
           if (err.name == "ReferenceError") {
-            var groupAux = new ItemGroup(
-              thisObj.tab,
-              thisObj.name,
-              thisObj.section,
-              thisObj.weight,
-              "",
-              "",
-              thisObj.short_abstract
-            );
+            groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
             groupAux.setImpresor(impresorGroup);
             groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-            for (var i = 0; i < items.length; i++) {
-              groupAux.setItem(items[i]);
-            }
+            items.forEach(item => groupAux.setItem(item));
           }
         }
 
+        // Add item group to menu manager
         _gestorMenu.addItemGroup(groupAux);
 
-        if (_gestorMenu.getLazyInitialization() == true) {
-          _gestorMenu.removeLazyInitLayerInfoCounter(
-            ItemGroupPrefix + thisObj.section
-          );
-          if (
-            _gestorMenu.finishLazyInitLayerInfo(
-              ItemGroupPrefix + thisObj.section
-            )
-          ) {
-            //Si ya cargó todas las capas solicitadas
+        // Handle menu printing based on initialization mode
+        if (_gestorMenu.getLazyInitialization() === true) {
+          _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
+          if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) {
+            // If all requested layers have been loaded
             _gestorMenu.printOnlySection(thisObj.section);
-
-            //
             gestorMenu.allLayersAreLoaded = true;
           }
         } else {
           _gestorMenu.addLayerInfoCounter();
           if (_gestorMenu.finishLayerInfo()) {
-            //Si ya cargó todas las capas solicitadas
+            // If all requested layers have been loaded
             _gestorMenu.printMenu();
-
             gestorMenu.allLayersAreLoaded = true;
           }
         }
-        document.getElementById("temp-menu").innerHTML = null;        document.getElementById("temp-menu").innerHTML = "";
-        return;
-      }
-    );
+      })
+      .catch(error => {
+        console.error("Error loading capabilities:", error);
+      });
   }
 
   _parseRequest_without_print(_gestorMenu) {
@@ -2152,13 +2063,14 @@ class GestorMenu {
   }
 
   setLayersDataForWfs() {
-    for (const item in this.items) {
-      if (item !== "mapasbase") {
-        Object.values(this.items[item].itemsComposite).forEach((iC) => {
-          iC.capas.forEach((capa) => {
+    for (const itemKey in this.items) {
+      if (itemKey !== "mapasbase") {
+        const item = this.items[itemKey];
+        Object.values(item.itemsComposite).forEach((compositeItem) => {
+          compositeItem.capas.forEach((capa) => {
             this.layersDataForWfs[capa.nombre] = {
               name: capa.nombre,
-              section: this.items[item].seccion,
+              section: item.seccion,
               host: capa.host,
             };
           });
@@ -2168,10 +2080,9 @@ class GestorMenu {
   }
 
   getActiveLayersWithoutBasemap() {
+    // Filter active layers to exclude base layers
     const activeLayers = this.activeLayers.filter((layer) => {
-      return this.availableBaseLayers.find((baseLayer) => baseLayer === layer)
-        ? false
-        : true;
+      return !this.availableBaseLayers.includes(layer);
     });
     return Object.keys(this.layersDataForWfs).length === 0
       ? []
@@ -2336,8 +2247,8 @@ class GestorMenu {
 
   cleanAllLayers() {
     //Desactiva TODOS los layers activos.
-    let layers = this.getActiveLayersWithoutBasemap().map((item) => {
-      return item.name;
+    let layers = this.activeLayers.filter((layer) => {
+      return !this.availableBaseLayers.includes(layer);
     });
     this.toggleLayers(layers);
     hideAddedLayers();
