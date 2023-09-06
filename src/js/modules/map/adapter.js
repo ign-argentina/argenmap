@@ -1,4 +1,4 @@
-const BASEMAPS = L.TileLayer.Provider.providers = {
+const BASEMAPS = {
     OpenStreetMap: {
         url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         options: {
