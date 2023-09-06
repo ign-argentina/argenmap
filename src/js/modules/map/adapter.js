@@ -1,4 +1,4 @@
-const BASEMAPS = L.TileLayer.Provider.providers = {
+const BASEMAPS = {
     OpenStreetMap: {
         url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         options: {
@@ -14,34 +14,11 @@ const BASEMAPS = L.TileLayer.Provider.providers = {
                     maxZoom: 18
                 }
             },
-            CH: {
-                url: 'https://tile.osm.ch/switzerland/{z}/{x}/{y}.png',
-                options: {
-                    maxZoom: 18,
-                    bounds: [[45, 5], [48, 11]]
-                }
-            },
             France: {
                 url: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
                 options: {
                     maxZoom: 20,
                     attribution: '&copy; OpenStreetMap France | {attribution.OpenStreetMap}'
-                }
-            },
-            HOT: {
-                url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-                options: {
-                    attribution:
-                        '{attribution.OpenStreetMap}, ' +
-                        'Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> ' +
-                        'hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
-                }
-            },
-            BZH: {
-                url: 'https://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png',
-                options: {
-                    attribution: '{attribution.OpenStreetMap}, Tiles courtesy of <a href="http://www.openstreetmap.bzh/" target="_blank">Breton OpenStreetMap Team</a>',
-                    bounds: [[46.2, -5.5], [50, 0.7]]
                 }
             }
         }
@@ -53,29 +30,6 @@ const BASEMAPS = L.TileLayer.Provider.providers = {
             attribution: 'Tiles &copy; Esri'
         },
         variants: {
-            WorldStreetMap: {
-                options: {
-                    attribution:
-                        '{attribution.Esri} &mdash; ' +
-                        'Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
-                }
-            },
-            DeLorme: {
-                options: {
-                    variant: 'Specialty/DeLorme_World_Base_Map',
-                    minZoom: 1,
-                    maxZoom: 11,
-                    attribution: '{attribution.Esri} &mdash; Copyright: &copy;2012 DeLorme'
-                }
-            },
-            WorldTopoMap: {
-                options: {
-                    variant: 'World_Topo_Map',
-                    attribution:
-                        '{attribution.Esri} &mdash; ' +
-                        'Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-                }
-            },
             WorldImagery: {
                 options: {
                     variant: 'World_Imagery',
@@ -92,73 +46,8 @@ const BASEMAPS = L.TileLayer.Provider.providers = {
                         '{attribution.Esri} &mdash; ' +
                         'Source: USGS, Esri, TANA, DeLorme, and NPS'
                 }
-            },
-            WorldShadedRelief: {
-                options: {
-                    variant: 'World_Shaded_Relief',
-                    maxZoom: 13,
-                    attribution: '{attribution.Esri} &mdash; Source: Esri'
-                }
-            },
-            WorldPhysical: {
-                options: {
-                    variant: 'World_Physical_Map',
-                    maxZoom: 8,
-                    attribution: '{attribution.Esri} &mdash; Source: US National Park Service'
-                }
-            },
-            OceanBasemap: {
-                options: {
-                    variant: 'Ocean/World_Ocean_Base',
-                    maxZoom: 13,
-                    attribution: '{attribution.Esri} &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'
-                }
             }
         }
-    },
-    AzureMaps: {
-        url: 
-            'https://atlas.microsoft.com/map/tile?api-version={apiVersion}'+
-            '&tilesetId={variant}&x={x}&y={y}&zoom={z}&language={language}'+
-            '&subscription-key={subscriptionKey}',
-        options: {
-            attribution: 'See https://docs.microsoft.com/en-us/rest/api/maps/render-v2/get-map-tile for details.',
-            apiVersion: '2.0',
-            variant: 'microsoft.imagery',
-            subscriptionKey: '<insert your subscription key here>',
-            language: 'en-US',
-        },
-        variants: {
-            MicrosoftImagery: 'microsoft.imagery',
-            MicrosoftBaseDarkGrey: 'microsoft.base.darkgrey',
-            MicrosoftBaseRoad: 'microsoft.base.road',
-            MicrosoftBaseHybridRoad: 'microsoft.base.hybrid.road',
-            MicrosoftTerraMain: 'microsoft.terra.main',
-            MicrosoftWeatherInfraredMain: {
-                url: 
-                'https://atlas.microsoft.com/map/tile?api-version={apiVersion}'+
-                '&tilesetId={variant}&x={x}&y={y}&zoom={z}'+
-                '&timeStamp={timeStamp}&language={language}' +
-                '&subscription-key={subscriptionKey}',
-                options: {
-                    timeStamp: '2021-05-08T09:03:00Z',
-                    attribution: 'See https://docs.microsoft.com/en-us/rest/api/maps/render-v2/get-map-tile#uri-parameters for details.',
-                    variant: 'microsoft.weather.infrared.main',
-                },
-            },
-            MicrosoftWeatherRadarMain: {
-                url: 
-                'https://atlas.microsoft.com/map/tile?api-version={apiVersion}'+
-                '&tilesetId={variant}&x={x}&y={y}&zoom={z}'+
-                '&timeStamp={timeStamp}&language={language}' +
-                '&subscription-key={subscriptionKey}',
-                options: {
-                    timeStamp: '2021-05-08T09:03:00Z',
-                    attribution: 'See https://docs.microsoft.com/en-us/rest/api/maps/render-v2/get-map-tile#uri-parameters for details.',
-                    variant: 'microsoft.weather.radar.main',
-                },
-            }
-        },
     }
 };
 
