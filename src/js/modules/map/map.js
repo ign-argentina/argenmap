@@ -74,6 +74,22 @@ class WMSLayer extends Raster {
 }
 
 
+//OGCService-----------------
+class OGCService   {
+    constructor(id) {
+        this.id = id;
+    }
+
+    getCapabilities(url) {
+    }
+}
+class Source extends OGCService {
+    constructor() {
+        super();
+    }
+
+}
+
 
 //BASE LAYER-----------------
 export class BaseLayer extends Layer {
