@@ -1394,7 +1394,7 @@ function getDeveveloperLogo() {
 }
 
 function loadDeveloperLogo() {
-    // This creates Argenmap developer's logo at the bottom right corner, we encourage you to left this as it comes in the code to give the proper attribution and spread the word about the project. Thanks! :D
+    // This creates Argenmap developer's logo at the bottom right corner, we encourage you to leaving this as it comes in the code to give the proper attribution and spread the word about the project. Thanks! :D
 
     // But, as sometimes is needed to replace the image, it can be done with a custom one adding the key 'overrideDevLogo' in the logo object, within preferences.json as its shown in the following example:
     /* 
