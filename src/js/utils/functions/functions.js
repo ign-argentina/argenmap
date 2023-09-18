@@ -1384,10 +1384,34 @@ function toggleVisibility(elementId) {
   }
 }
 
+function getDeveveloperLogo() {
+  let logo = {};
+  // Checks if the 'overrideDevLogo' key exists within logo, if not applies the default image.
+  (app.logo.overrideDevLogo) ? 
+    logo = app.logo.overrideDevLogo 
+    : logo = { src : APP_IMG, style: null }
+  return logo;
+}
+
 function loadDeveloperLogo() {
+    // This creates Argenmap developer's logo at the bottom right corner, we encourage you to leaving this as it comes in the code to give the proper attribution and spread the word about the project. Thanks! :D
+
+    // But, as sometimes is needed to replace the image, it can be done with a custom one adding the key 'overrideDevLogo' in the logo object, within preferences.json as its shown in the following example:
+    /* 
+    Note that in the 'src' attribute could be added an image encoded in base64.
+      "logo": {
+        "overrideDevLogo": {
+          "src": "data:image/png;base64,qwertyu",
+          "style": "width: 64px; background-size: cover"
+        }
+      }
+    */
 
     L.Control.DeveloperLogo = L.Control.extend({
         onAdd: function (map) {
+          let devLogo = getDeveveloperLogo();
+          let devLogoUrl = devLogo.src;
+          let devLogoStyle = devLogo.style ;
             let link = L.DomUtil.create("a");
             link.target = "_blank";
             link.id = "developerLogo"
@@ -1397,7 +1421,8 @@ function loadDeveloperLogo() {
             img.src = "src/styles/images/noimage.webp";
             img.alt = "Argenmap logo";
             img.classList = "brand"
-            img.style.backgroundImage = `url('${APP_IMG}')`;
+            img.style = devLogoStyle;
+            img.style.backgroundImage = `url('${devLogoUrl}')`;
             link.appendChild(img);
 
             link.addEventListener('click', function () {
