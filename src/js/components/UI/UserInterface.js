@@ -1,23 +1,168 @@
-class UserInterface {
+/**
+ * @todo Evaluate using customElements.
+ */
+
+class UIComponent extends HTMLElement {
+    constructor(options) {
+        super();
+        const { target, help } = options;
+        this.shadow = this.attachShadow({ mode: "open" });
+        this._target = target;
+        this._help = help;
+    }
+    /* render() {
+        this.shadow.innerHTML = `
+        `;
+    } */
+    /* get help() {
+        return { content: "This is a help object" };
+    } */
+
+}
+
+class Menu extends UIComponent {
+    // returns an empty list with methods for sorting, filter, etc
     constructor() {
-
+        super();
+        this._items = items;
+        this._groups = groups;
+        this._selectedItems = selectedItems;
     }
 
-    createElement() {
+    addItem(itemOptions) {}
 
+    sortBy(value) {}
+    
+    onEach(action) {}
+
+    disableAll() {}
+
+    activateAll() {}
+
+    reset() {}
+
+    group(items) {}
+
+}
+
+class BaseLayerMenu extends Menu {
+    constructor() {
+        super();
+    }
+    
+    addItem(itemOptions) {}
+}
+
+class LayerMenu extends Menu {
+    constructor() {
+        super();
     }
 
-    remove() {
+    addItem(itemOptions) {}
 
+    addToSelection(item) {}
+
+    removeFromSelection(item) {}
+
+    removeSelected() { /* this.selectedItems */}
+
+    countItems() {}
+
+    reset() {}
+
+    addGroup() {}
+
+}
+
+class Group extends Menu {
+    // returns a item group that is in escence a sub menu 
+    // with a label and adding functionality
+    constructor() {
+        super();
+        this._items = items;
+        this._label = label;
     }
 
+    set label(text) {}
+
+    get label() { return this._label }
+
+    rename(text) { label = text }
+
+}
+
+class Item extends UIComponent {
+    // returns a menu item with a label, icon and options button
+    constructor() {
+        super();
+        this._label = label;
+        this._icon = icon;
+        this._callback = callback;
+    }
+
+    // add callback using addEventListener after rendering the instance
+}
+
+class Image extends UIComponent {
+    // returns an image
+    constructor() {
+        super();
+    }
+}
+class Label extends UIComponent {
+    // returns a label
+    constructor() {
+        super();
+    }
+}
+class Dialog extends UIComponent {
+    // returns an empty dialog with close and custom buttons
+    constructor() {
+        super();
+    }
+}
+class Tab extends UIComponent {
+    // returns a single empty tab with custom text
+    constructor() {
+        super();
+    }
+}
+class Button extends UIComponent {
+    // returns a button with custom text and action triggered by click event
+    constructor() {
+        super();
+    }
+}
+class Input extends UIComponent {
+    // blueprint for input elements
+    constructor() {
+        super();
+    }
+}
+class InputText extends Input {
+    // returns a text input element with custom placeholder and value restrictions if needed
+    constructor() {
+        super();
+    }
+}
+class InputColor extends Input {
+    // returns a color picker element
+    constructor() {
+        super();
+    }
+}
+class Checkbox extends Input {
+    // returns a check input element with custom value and label
+    constructor() {
+        super();
+    }
 }
 
 /**
  * Represents the About Us modal in the user interface.
- * @extends UserInterface
+ * @extends UIComponent
  */
-class AboutUsModal extends UserInterface {
+class AboutUsModal extends UIComponent {
     constructor() {
         super();
     }
@@ -82,9 +227,9 @@ class AboutUsModal extends UserInterface {
 
 /**
  * Represents the About Us tab in the user interface.
- * @extends UserInterface
+ * @extends UIComponent
  */
-class AboutUsTab extends UserInterface {
+class AboutUsTab extends UIComponent {
     constructor() {
         super();
     }
