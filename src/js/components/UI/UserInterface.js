@@ -20,6 +20,10 @@ class UIComponent{
     addTo(id){
         document.getElementById(id).appendChild(this.element);
     }
+    addClass(className){
+        this.element.classList.add(className);
+    }
+
 }
 
 class Menuu extends UIComponent {
@@ -47,18 +51,34 @@ class Menuu extends UIComponent {
 
 }
 
+class TabElement extends UIComponent{
+    //creates a tab to display a certain part of a modal
+    constructor(name, className, event){
+        super()
+        const tab = document.createElement("div")
+        tab.innerHTML = name
+        tab.className = className
+        
+        //There is probably a better way to handle this part, for now it will be the same as the existing one
+        if(event && typeof event === 'function'){
+            tab.addEventListener('click', event);
+        }
 
+        this.element = tab;
+    }
+
+}
 
 class Imagen extends UIComponent {
     // returns an image
-    constructor(id, src, altTxt, classList, title) {
+    constructor(id, src, altTxt, className, title) {
         super();
         const img = document.createElement("img");
         img.id  = id;
         img.src = src;
         img.alt = altTxt;
         img.title = title;
-        img.classList.add(classList);
+        img.classList.add(className);
         
         this.element = img;
     }
@@ -169,6 +189,11 @@ class AboutUsModal extends UIComponent {
             img.getRotatedB();
         })
 
+        const tabElement = new TabElement("TabDePrueba", "tab", function(){
+            modalAboutUs.showTab(1);
+        });
+
+        tabElement.addTo("readme-container")
         button.addTo("readme-container");
         img.addTo("readme-container")
 
