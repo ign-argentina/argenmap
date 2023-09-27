@@ -21,12 +21,14 @@ class UIComponent {
     if (className) element.className = className;
     return element;
   }
+
   addTo(id) {
     document.getElementById(id).appendChild(this.element);
   }
-    addClass(className){
+
+ addClass(className){
         this.element.classList.add(className);
-    }
+}
 
 }
 
@@ -74,22 +76,7 @@ class TabElement extends UIComponent{
 }
 
 class Imagen extends UIComponent {
-  // returns an image
-  constructor(id, src, altTxt, classList, title) {
-    super();
-    const img = document.createElement("img");
-    img.id = id;
-    img.src = src;
-    img.alt = altTxt;
-    img.title = title;
-    img.classList.add(classList);
 
-    this.element = img;
-  }
-  getRotatedB() {
-    this.element.style.transition = "200ms"
-    this.element.style.transform = "rotate(180deg)"
-  }
     // returns an image
     constructor(id, src, altTxt, className, title) {
         super();
@@ -169,6 +156,7 @@ class Checkbox extends Input {
  * Represents the About Us modal in the user interface.
  * @extends UIComponent
  */
+
 class AboutUsModal extends UIComponent {
   constructor() {
     super();
