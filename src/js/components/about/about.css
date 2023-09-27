@@ -2,6 +2,13 @@
     --border-width: 2px;
     --border-width-tab: 2px 2px 0px 2px;
 }
+
+.especificamenteparaesto{
+    width: 100px;
+    height: 100px;
+}
+
+
 #whole-about {
     overflow: hidden;
     border-radius: 12px;

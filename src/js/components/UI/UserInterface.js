@@ -2,13 +2,13 @@
  * @todo Evaluate using customElements.
  */
 
-class UIComponent extends HTMLElement {
-    constructor(options) {
-        super();
-        const { target, help } = options;
+
+class UIComponent{
+    constructor() {
+        /* const { target, help } = options;
         this.shadow = this.attachShadow({ mode: "open" });
         this._target = target;
-        this._help = help;
+        this._help = help; */
     }
     /* render() {
         this.shadow.innerHTML = `
@@ -17,10 +17,12 @@ class UIComponent extends HTMLElement {
     /* get help() {
         return { content: "This is a help object" };
     } */
-
+    addTo(id){
+        document.getElementById(id).appendChild(this.element);
+    }
 }
 
-class Menu extends UIComponent {
+class Menuu extends UIComponent {
     // returns an empty list with methods for sorting, filter, etc
     constructor() {
         super();
@@ -45,69 +47,26 @@ class Menu extends UIComponent {
 
 }
 
-class BaseLayerMenu extends Menu {
-    constructor() {
-        super();
-    }
-    
-    addItem(itemOptions) {}
-}
 
-class LayerMenu extends Menu {
-    constructor() {
-        super();
-    }
 
-    addItem(itemOptions) {}
-
-    addToSelection(item) {}
-
-    removeFromSelection(item) {}
-
-    removeSelected() { /* this.selectedItems */}
-
-    countItems() {}
-
-    reset() {}
-
-    addGroup() {}
-
-}
-
-class Group extends Menu {
-    // returns a item group that is in escence a sub menu 
-    // with a label and adding functionality
-    constructor() {
-        super();
-        this._items = items;
-        this._label = label;
-    }
-
-    set label(text) {}
-
-    get label() { return this._label }
-
-    rename(text) { label = text }
-
-}
-
-class Item extends UIComponent {
-    // returns a menu item with a label, icon and options button
-    constructor() {
-        super();
-        this._label = label;
-        this._icon = icon;
-        this._callback = callback;
-    }
-
-    // add callback using addEventListener after rendering the instance
-}
-
-class Image extends UIComponent {
+class Imagen extends UIComponent {
     // returns an image
-    constructor() {
+    constructor(id, src, altTxt, classList, title) {
         super();
+        const img = document.createElement("img");
+        img.id  = id;
+        img.src = src;
+        img.alt = altTxt;
+        img.title = title;
+        img.classList.add(classList);
+        
+        this.element = img;
     }
+    getRotatedB(){
+        this.element.style.transition = "200ms"
+        this.element.style.transform = "rotate(180deg)"
+    }
+
 }
 class Label extends UIComponent {
     // returns a label
@@ -121,41 +80,22 @@ class Dialog extends UIComponent {
         super();
     }
 }
-class Tab extends UIComponent {
-    // returns a single empty tab with custom text
-    constructor() {
-        super();
-    }
-}
+
 class Button extends UIComponent {
     // returns a button with custom text and action triggered by click event
-    constructor() {
+    constructor(id, classList, clickHandler) {
         super();
+        const button = document.createElement("button");
+        button.innerHTML = "hello im a button";
+        button.style.color = "#a380d7";
+
+        if (clickHandler && typeof clickHandler === 'function') {
+            button.onclick = clickHandler;
+        }
+
+        this.element =  button;
     }
-}
-class Input extends UIComponent {
-    // blueprint for input elements
-    constructor() {
-        super();
-    }
-}
-class InputText extends Input {
-    // returns a text input element with custom placeholder and value restrictions if needed
-    constructor() {
-        super();
-    }
-}
-class InputColor extends Input {
-    // returns a color picker element
-    constructor() {
-        super();
-    }
-}
-class Checkbox extends Input {
-    // returns a check input element with custom value and label
-    constructor() {
-        super();
-    }
+    
 }
 
 /**
@@ -222,6 +162,16 @@ class AboutUsModal extends UIComponent {
         aboutMainSection.appendChild(readmeContainer);
         aboutMainSection.appendChild(functionContainer);
         //aboutMainSection.appendChild(contributorContainer);
+
+        const img = new Imagen("hello", "https://media.tenor.com/GvhT-DxYb1IAAAAC/batman-superhero.gif", "texto alternativo", "especificamenteparaesto", "batman besto hero ever")
+        
+        const button = new Button("button-number-one", "Hello kitty", function() {
+            img.getRotatedB();
+        })
+
+        button.addTo("readme-container");
+        img.addTo("readme-container")
+
     }
 }
 
