@@ -3,7 +3,7 @@
  */
 let batman_URL = "https://media.tenor.com/GvhT-DxYb1IAAAAC/batman-superhero.gif";
 
-class UIComponent{
+class UIComponent {
     constructor() {
         this.element = null;
     }
@@ -89,11 +89,15 @@ class Imagen extends UIComponent {
         img.title = title;
         img.classList.add(className);
 
+        this.rotation = 90;
+
         this.element = img;
     }
     getRotatedB() {
+
         this.element.style.transition = "200ms"
-        this.element.style.transform = "rotate(180deg)"
+        this.element.style.transform = `rotate(${this.rotation}deg)`
+        this.rotation+=90;
     }
 
 }
@@ -104,37 +108,42 @@ class Label extends UIComponent {
     }
 }
 //Probably it will be a better idea to hace an abstract class to handle base map items, because we have the one inside the library and the one in the first "menu" 
-class BaseMapItem_1 extends UIComponent{
+class BaseMapItem_1 extends UIComponent {
     //This BaseMapItem builds itself with a large constructor taking all the paremeters needed
-    constructor(name, imgSrc, buttonClass, itemOptions){
+    constructor(name, imgSrc, buttonClass, itemOptions) {
         super();
 
         // Create container
-        const container = this.createElement('div', null, 'justAnIdea');
+        const container = this.createElement('div', "id-contenedor-de-prueb", 'justAnIdea');
 
         // Create image
-        const image = this.createElement('img', null, "imagenClaseSinImaginacion");
-        image.src = imgSrc;
+
+        // const imgObj = new Imagen("idbonitoydescriptivo", imgSrc, "preview capa", "imagenClaseSinImaginacion", "capa")
 
         // Create text
         const innerText = this.createElement('span');
         innerText.innerHTML = name;
-        innerText.style.width =  "40px"
+        innerText.style.width = "40px"
 
         // Create button
-        const button = this.createElement('button', null, buttonClass);
+
+        const funcionparametro = function () {
+            this.toggleOptionsVisibility(optionsList);
+        }
+
+        const btnObj = new Button("iddos", buttonClass, "!!!", funcionparametro)
 
         // Create options list
+
+      
+
+
         const optionsList = this.createElement('ul'); //mmm ul has sense¿¿
         optionsList.style.listStyleType = 'none';
 
-        this.isVisible = false;
+        this.isVisible = true;
+
         
-        // Toggle options visibility
-        button.innerHTML = "!!!"
-        button.addEventListener('click', () => {
-            this.toggleOptionsVisibility(optionsList);
-        });
 
 
         itemOptions.forEach((option) => {  //the idea is than for every option it creates a new clikeable "thing"
@@ -151,9 +160,12 @@ class BaseMapItem_1 extends UIComponent{
             optionsList.appendChild(li);
         });
 
-        container.appendChild(image)
+        // console.log(imgObj)
+        // imgObj.addTo("id-contenedor-de-prueb")
+
         container.appendChild(innerText)
-        container.appendChild(button)
+        
+        // btnObj.addTo("id-contenedor-de-prueb")
         container.appendChild(optionsList)
 
         this.element = container;
@@ -171,9 +183,9 @@ class BaseMapItem_1 extends UIComponent{
 
 }
 
-class BaseMapItem_2 extends UIComponent{
+class BaseMapItem_2 extends UIComponent {
     //This BaseMapItem builds itself with the items already handle by other classes
-    constructor(){
+    constructor() {
 
     }
 
@@ -318,15 +330,15 @@ class AboutUsModal extends UIComponent {
                 },
             },
         ];
-        
+
         const mapItem = new BaseMapItem_1('IntentoMap!', batman_URL, 'map-item-button', options);
-        
-        
-        
+
+
+
         tabElement.addTo("readme-container")
         button.addTo("readme-container");
         img.addTo("readme-container")
-        
+
         mapItem.addTo("readme-container");
     }
 }
