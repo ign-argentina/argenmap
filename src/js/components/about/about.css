@@ -4,9 +4,27 @@
 }
 
 .especificamenteparaesto{
-    width: 100px;
     height: 100px;
+    width: 100px;
 }
+
+.justAnIdea{
+    border: solid red;
+    width: 200px;
+    height: 50px;
+    display: flex;
+}
+
+.map-item-button{
+    color: #3174BF;
+    background-color: #1a4570;
+}
+
+.imagenClaseSinImaginacion{
+    height: 50px; 
+    width: auto;
+}
+
 
 
 #whole-about {
