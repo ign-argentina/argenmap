@@ -16,7 +16,7 @@ class UIComponent {
     }
 
     addTo(id) {
-        if (this.element) {
+        if (this.element && document.getElementById(id)) {
             document.getElementById(id).appendChild(this.element);
         } else {
             console.error('No se ha creado un elemento para agregar.');
@@ -108,17 +108,19 @@ class Label extends UIComponent {
     }
 }
 //Probably it will be a better idea to hace an abstract class to handle base map items, because we have the one inside the library and the one in the first "menu" 
-class BaseMapItem_1 extends UIComponent {
+class BaseMapItem extends UIComponent {
     //This BaseMapItem builds itself with a large constructor taking all the paremeters needed
     constructor(name, imgSrc, buttonClass, itemOptions) {
         super();
 
         // Create container
-        const container = this.createElement('div', "id-contenedor-de-prueb", 'justAnIdea');
 
-        // Create image
+        this.id = "id-contenedor-de-prueb" //it should get here by parameter
+        const container = this.createElement('div', this.id, 'justAnIdea');
 
-        // const imgObj = new Imagen("idbonitoydescriptivo", imgSrc, "preview capa", "imagenClaseSinImaginacion", "capa")
+        
+
+        //const imgObj = new Imagen("idbonitoydescriptivo", imgSrc, "preview capa", "imagenClaseSinImaginacion", "capa")
 
         // Create text
         const innerText = this.createElement('span');
@@ -136,7 +138,6 @@ class BaseMapItem_1 extends UIComponent {
         // Create options list
 
       
-
 
         const optionsList = this.createElement('ul'); //mmm ul has sense¿¿
         optionsList.style.listStyleType = 'none';
@@ -171,6 +172,10 @@ class BaseMapItem_1 extends UIComponent {
         this.element = container;
     }
 
+    build(){
+        //add the elements creating objets for them
+    }
+
     toggleOptionsVisibility(optionsList) {
         if (this.isVisible) {
             optionsList.style.display = 'none';
@@ -180,18 +185,6 @@ class BaseMapItem_1 extends UIComponent {
             this.isVisible = true;
         }
     }
-
-}
-
-class BaseMapItem_2 extends UIComponent {
-    //This BaseMapItem builds itself with the items already handle by other classes
-    constructor() {
-
-    }
-
-
-
-
 }
 
 
@@ -217,27 +210,57 @@ class Button extends UIComponent {
     }
 }
 class Input extends UIComponent {
-    // blueprint for input elements
-    constructor() {
-        super();
+    constructor(id, className, type) {
+      super();
+      this.createInput(id, className, type);
+    }
+  
+    createInput(id, className, type) {
+      const input = this.createElement("input", id, className);
+      input.type = type;
+      this.element = input;
+    }
+  
+    getValue() {
+      return this.element.value;
+    }
+  
+    setValue(value) {
+      this.element.value = value;
+    }
+  }
+  
+  class InputText extends Input {
+    constructor(id, className, placeHolder) {
+      super(id, className, 'text');
+      this.element.placeholder = placeHolder;
+    }
+  }
+  class InputColor extends Input {
+    constructor(id, className) {
+        super(id, className, 'color'); // Llama al constructor de la clase base con el tipo 'color'
     }
 }
-class InputText extends Input {
-    // returns a text input element with custom placeholder and value restrictions if needed
-    constructor() {
-        super();
-    }
-}
-class InputColor extends Input {
-    // returns a color picker element
-    constructor() {
-        super();
-    }
-}
+
 class Checkbox extends Input {
-    // returns a check input element with custom value and label
-    constructor() {
-        super();
+    // Constructor de Checkbox, crea un elemento de tipo checkbox con etiqueta personalizada
+    constructor(id, className, label) {
+        super(id, className, 'checkbox'); // Llama al constructor de la clase base con el tipo 'checkbox'
+        this.createLabel(label);
+    }
+
+    createLabel(label) {
+        const labelElement = this.createElement('label');
+        labelElement.innerText = label;
+        this.element.appendChild(labelElement);
+    }
+
+    isChecked() {
+        return this.element.checked;
+    }
+
+    setChecked(checked) {
+        this.element.checked = checked;
     }
 }
 /**
@@ -331,15 +354,29 @@ class AboutUsModal extends UIComponent {
             },
         ];
 
-        const mapItem = new BaseMapItem_1('IntentoMap!', batman_URL, 'map-item-button', options);
+        const mapItem = new BaseMapItem('IntentoMap!', batman_URL, 'map-item-button', options);
 
+        const input = new Input("aynidid", "no-clase", "color")
 
+        // Crear un elemento de tipo color picker
+const colorInput = new InputColor('colorInput', 'color-input-class');
 
+// Crear un elemento de tipo checkbox con etiqueta personalizada
+const checkbox = new Checkbox('checkboxInput', 'checkbox-input-class', 'Acepto los términos y condiciones');
+
+// Agregar los elementos al documento
+colorInput.addTo("readme-container"); // Reemplaza 'container' con el ID del elemento contenedor deseado
+checkbox.addTo("readme-container"); 
+
+        
+        
+        
         tabElement.addTo("readme-container")
         button.addTo("readme-container");
         img.addTo("readme-container")
-
         mapItem.addTo("readme-container");
+        
+        input.addTo("readme-container")
     }
 }
 
