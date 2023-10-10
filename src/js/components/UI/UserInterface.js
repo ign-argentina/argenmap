@@ -36,9 +36,9 @@ class Menu extends UIComponent {
   // returns an empty list with methods for sorting, filter, etc
   constructor() {
     super();
-    this._items = items;
-    this._groups = groups;
-    this._selectedItems = selectedItems;
+    this._items = [];
+    this._groups = [];
+    this._selectedItems = [];
   }
 
   addItem(itemOptions) { }
@@ -55,6 +55,69 @@ class Menu extends UIComponent {
 
   group(items) { }
 
+}
+
+let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: "" }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }];
+
+class BaseMapMenu extends Menu {
+  constructor(containerId) {
+    super();
+    this.container = this.createMenuContainer();
+
+    baseMapData.forEach((option) => {
+      this.addItem(option)
+    });
+    //console.log(this.container);
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('container-fluid').append(this.container);
+    })
+  }
+
+  addItem(itemOptions) {
+    const baseMapItem = new BaseMapItem(itemOptions);
+    console.log(typeof (baseMapItem));
+    this.container.append(baseMapItem);
+    this._items.push(baseMapItem);
+  }
+
+  createMenuContainer() {
+    return this.createElement('div', 'base-map-menu', 'base-map-menu');
+  }
+}
+
+class BaseMapItem extends UIComponent {
+  constructor(options) {
+    super();
+
+    const auxElemt = this.createElement('div', options.id, 'base-map-item');
+
+    //const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
+    auxElemt.appendChild(new Imagen(options.id, options.imgSrc, options.name, options.className, options.name));
+    console.log(auxElemt);
+    const text = this.createElement('span', null, 'base-map-item-text');
+    text.textContent = options.name;
+    auxElemt.appendChild(text);
+
+    /* const button = new OptionMenuButton(options.buttonClass);
+    button.onClick(options.onClick);
+    this.element.appendChild(button.element); */
+    console.log(typeof (auxElemt));
+    return auxElemt
+  }
+}
+
+class OptionMenuButton extends UIComponent {
+  constructor(iconClass) {
+    super();
+    this.element = this.createElement('button', null, 'option-menu-button');
+    const icon = this.createElement('span', null, 'icon ' + iconClass);
+    this.element.appendChild(icon);
+  }
+
+  onClick(callback) {
+    this.element.addEventListener('click', callback);
+  }
 }
 
 class TabElement extends UIComponent {
@@ -79,16 +142,16 @@ class Imagen extends UIComponent {
   // returns an image
   constructor(id, src, altTxt, className, title) {
     super();
-    const img = document.createElement("img");
-    img.id = id;
+    const img = this.createElement('img', id, className);
     img.src = src;
     img.alt = altTxt;
     img.title = title;
-    img.classList.add(className);
 
-    this.rotation = 90;
+    //this.rotation = 90;
     this.element = img;
+    return img
   }
+
   getRotatedB() {
     this.element.style.transition = "200ms"
     this.element.style.transform = `rotate(${this.rotation}deg)`
@@ -103,7 +166,7 @@ class Label extends UIComponent {
 }
 
 //Probably it will be a better idea to hace an abstract class to handle base map items, because we have the one inside the library and the one in the first "menu" 
-class BaseMapItem extends UIComponent {
+/* class BaseMapItem extends UIComponent {
   //This BaseMapItem builds itself with a large constructor taking all the paremeters needed
   constructor(name, imgSrc, buttonClass, itemOptions) {
     super();
@@ -173,7 +236,7 @@ class BaseMapItem extends UIComponent {
     }
   }
 }
-
+ */
 class Dialog extends UIComponent {
   // returns an empty dialog with close and custom buttons
   constructor() {
@@ -341,9 +404,9 @@ class AboutUsModal extends UIComponent {
       },
     ];
 
-    const mapItem = new BaseMapItem('IntentoMap!', batman_URL, 'map-item-button', options);
+    //const mapItem = new BaseMapItem('IntentoMap!', batman_URL, 'map-item-button', options);
 
-    const input = new Input("aynidid", "no-clase", "color")
+    /* const input = new Input("aynidid", "no-clase", "color")
 
     // Crear un elemento de tipo color picker
     const colorInput = new InputColor('colorInput', 'color-input-class');
@@ -361,7 +424,7 @@ class AboutUsModal extends UIComponent {
     textInput.addTo("readme-container")
     mapItem.addTo("readme-container");
 
-    input.addTo("readme-container")
+    input.addTo("readme-container") */
   }
 }
 
@@ -450,3 +513,5 @@ class AboutUsTab extends UIComponent {
       return contributorContainer;
   }*/
 }
+let baseMapMenu = new BaseMapMenu('mapa');
+console.log(baseMapMenu);

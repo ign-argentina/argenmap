@@ -1,0 +1,5 @@
+.base-map-menu  {
+  background-color: red;
+  opacity: 50%;
+  z-index: 1000;
+}
