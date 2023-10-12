@@ -23,6 +23,10 @@ class UIComponent {
     }
   }
 
+  addToElement(elemt){
+    elemt.appendChild(this.element);
+  }
+
   addClass(className) {
     if (this.element) {
       this.element.classList.add(className);
@@ -33,7 +37,7 @@ class UIComponent {
 
   changeInnerHtml(string){
     if (this.element) {
-      this.element.innerHTML = string;
+      this.element.innerText = string;
     }
   }
 
@@ -43,6 +47,13 @@ class UIComponent {
       console.log("im doing somethin")
     }
   }
+
+  removeStyle() { //temporal idea
+
+    this.element.style.padding = '0';
+    this.element.style.margin = '0';
+  }
+
 }
 
 class Menu extends UIComponent {
@@ -83,7 +94,7 @@ class BaseMapMenu extends Menu {
     //console.log(this.container);
 
     document.addEventListener('DOMContentLoaded', function () {
-      document.getElementById('container-fluid').append(this.container);
+      //document.getElementById('container-fluid').append(this.container);
     })
   }
 
@@ -172,10 +183,31 @@ class Imagen extends UIComponent {
   }
 }
 class Label extends UIComponent {
-  // returns a label
-  constructor() {
+  constructor(id, className, innerHTML) {
     super();
+    const label = this.createElement('span', id, className);
+    label.innerHTML = innerHTML;
+
+    this.element = label;
   }
+
+  editContent(newText){
+    this.element.innerHTML =  newText;
+  }
+}
+
+class Container extends UIComponent{
+    constructor(id, className){
+      super();
+      const container =  this.createElement('div', id, className);
+
+      this.element = container;
+    }
+
+    toggleOpennes(){ 
+    }
+
+
 }
 
 //Probably it will be a better idea to hace an abstract class to handle base map items, because we have the one inside the library and the one in the first "menu" 
@@ -272,12 +304,6 @@ class Button extends UIComponent {
     this.element = button;
   }
 
-  removeStyle() { //temporal idea
-
-    this.element.style.padding = '0';
-    this.element.style.margin = '0';
-  }
-
 
 }
 class Input extends UIComponent {
@@ -320,6 +346,7 @@ class InputColor extends Input {
 
 }
 
+
 class ColorPicker extends UIComponent { 
 
   constructor(id, className) {
@@ -333,13 +360,13 @@ class ColorPicker extends UIComponent {
   
   createModal() {
     
-    const colorButtons =  ['red', 'blue', 'green', 'yellow', 'orange', 'violet'];
+    const colorButtons =  ['#ff0000'/*red*/  , '#0000ff' /*blue*/, '#008000' /*green*/, '#ffff00' /*yellow*/, '#ffa500' /*orange*/, '#8000ff' /*violet*/];
     
     //1. creates a series of boutton objets that represent the color to select
     colorButtons.forEach(color => {
-      const colorButton  = new Button(null, 'outLine', "hell", function(){  
-        colorButton.changeStyle("width", '100px')
+      const colorButton  = new Button(null, 'outLine', "hell", () => {
         console.log(color);
+        this.changeColorValue(color);
       });
       
       colorButton.changeStyle("backgroundColor", color);
@@ -357,7 +384,8 @@ class ColorPicker extends UIComponent {
    
     
     //2. it creates a input color objet an adds it to the this.idContainer set into the parameter 
-    this.color = new InputColor("helpidunnowhqatimdoing", null)
+    this.color = new InputColor("helpidunnowhqatimdoing", "outLine")
+    this.color.removeStyle()
     this.color.changeInnerHtml("Más colores");
     this.color.addTo(this.idContainer);
     
@@ -365,8 +393,9 @@ class ColorPicker extends UIComponent {
   }
 
   //3. the color will be taken from the inputColor objet, so we will need to change the color of it.
-  changeColorValue() {
-
+  changeColorValue(color) {
+    console.log("changing color")
+    this.color.setValue(color);
   }
 
 }

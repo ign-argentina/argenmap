@@ -1,0 +1,11 @@
+.menuContainer{
+    position: absolute;
+    top: 10%;
+    left: 33%;
+
+    z-index: 2000;
+    background-color: white;
+    border-radius: 10px;
+    height: 80vh;
+    width: 80vh;
+}

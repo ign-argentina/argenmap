@@ -25,12 +25,12 @@
     width: auto;
 }
 .outLinedos{
+    height: 30px;
     border: 1px solid blue;
 }
 .outLine{
-    
-    height: 10px;
-    width: 10px;
+    height: 63%;
+    width: 20px;
     border: 1px solid red;
 }
 

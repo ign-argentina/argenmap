@@ -500,11 +500,6 @@ class AboutUsTab extends UIComponent {
 }
 
 
-
-
-
-
-
 const modalAboutUs = new AboutUs();
 const dataGetter = new DataGetter();
 
