@@ -30,6 +30,19 @@ class UIComponent {
       console.error('No se ha creado un elemento al que agregar la clase.');
     }
   }
+
+  changeInnerHtml(string){
+    if (this.element) {
+      this.element.innerHTML = string;
+    }
+  }
+
+  changeStyle(styleProperty, styleValue) {
+    if (this.element) {
+      this.element.style[styleProperty] = styleValue;
+      console.log("im doing somethin")
+    }
+  }
 }
 
 class Menu extends UIComponent {
@@ -258,6 +271,14 @@ class Button extends UIComponent {
 
     this.element = button;
   }
+
+  removeStyle() { //temporal idea
+
+    this.element.style.padding = '0';
+    this.element.style.margin = '0';
+  }
+
+
 }
 class Input extends UIComponent {
   constructor(id, className, type) {
@@ -290,24 +311,61 @@ class InputColor extends Input {
   constructor(id, className) {
     super(id, className, 'color'); // Llama al constructor de la clase base con el tipo 'color'
   }
-  whatColor(){
+  whatColor() {
     return this.element.value;
   }
-  changeValue(color){
+  changeValue(color) {
     this.element.value = color;
   }
+
 }
 
-class InputColorUsable extends InputColor{ //this has no sense at all. 
-  constructor(id, className){
+class ColorPicker extends UIComponent { 
+
+  constructor(id, className) {
     super(id, className)
 
-    this.element = this.createModal()
+    const container = this.createElement('div', id, className)
+
+    this.idContainer = id
+    this.element = container;
+  }
+  
+  createModal() {
+    
+    const colorButtons =  ['red', 'blue', 'green', 'yellow', 'orange', 'violet'];
+    
+    //1. creates a series of boutton objets that represent the color to select
+    colorButtons.forEach(color => {
+      const colorButton  = new Button(null, 'outLine', "hell", function(){  
+        colorButton.changeStyle("width", '100px')
+        console.log(color);
+      });
+      
+      colorButton.changeStyle("backgroundColor", color);
+      colorButton.removeStyle()
+      colorButton.addTo(this.idContainer);
+    });
+
+
+
+    const funcionparametro =  function () {
+      console.log("el color debería ser lindo");
+    }
+    
+    
+   
+    
+    //2. it creates a input color objet an adds it to the this.idContainer set into the parameter 
+    this.color = new InputColor("helpidunnowhqatimdoing", null)
+    this.color.changeInnerHtml("Más colores");
+    this.color.addTo(this.idContainer);
+    
+
   }
 
-  createModal(){
-    const container =  this.createElement('div', null, null)
-    
+  //3. the color will be taken from the inputColor objet, so we will need to change the color of it.
+  changeColorValue() {
 
   }
 
