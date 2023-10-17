@@ -19,7 +19,7 @@ class UIComponent {
     if (this.element && document.getElementById(id)) {
       document.getElementById(id).appendChild(this.element);
     } else {
-      if (this.element){
+      if (this.element) {
         console.error('there is not an element with such id ' + id)
       } else {
         console.error('this object has not html element in it')
@@ -53,11 +53,11 @@ class UIComponent {
     }
   }
 
-  appendChild(element){
+  appendChild(element) {
 
   }
 
-  changeInnerHtml(string){
+  changeInnerHtml(string) {
     if (this.element) {
       this.element.innerText = string;
     }
@@ -111,7 +111,7 @@ class Menu extends UIComponent {
 
 }
 
-let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: "" }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }];
+let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: "" }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" },{ name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
 
 class BaseMapMenu extends Menu {
   constructor(containerId) {
@@ -121,16 +121,12 @@ class BaseMapMenu extends Menu {
     baseMapData.forEach((option) => {
       this.addItem(option)
     });
-    //console.log(this.container);
 
-    document.addEventListener('DOMContentLoaded', function () {
-      //document.getElementById('container-fluid').append(this.container);
-    })
+    document.querySelector(containerId).appendChild(this.container);
   }
 
   addItem(itemOptions) {
     const baseMapItem = new BaseMapItem(itemOptions);
-    console.log(typeof (baseMapItem));
     this.container.append(baseMapItem);
     this._items.push(baseMapItem);
   }
@@ -156,7 +152,7 @@ class BaseMapItem extends UIComponent {
     /* const button = new OptionMenuButton(options.buttonClass);
     button.onClick(options.onClick);
     this.element.appendChild(button.element); */
-    //console.log(typeof (auxElemt));
+    console.log(auxElemt);
     return auxElemt
   }
 }
@@ -220,21 +216,21 @@ class Label extends UIComponent {
     this.element = label;
   }
 
-  editContent(newText){
-    this.element.innerHTML =  newText;
+  editContent(newText) {
+    this.element.innerHTML = newText;
   }
 }
 
-class Container extends UIComponent{
-    constructor(id, className){
-      super();
-      const container =  this.createElement('div', id, className);
+class Container extends UIComponent {
+  constructor(id, className) {
+    super();
+    const container = this.createElement('div', id, className);
 
-      this.element = container;
-    }
+    this.element = container;
+  }
 
-    toggleOpennes(){ 
-    }
+  toggleOpennes() {
+  }
 
 
 }
@@ -376,7 +372,7 @@ class InputColor extends Input {
 }
 
 
-class ColorPicker extends UIComponent { 
+class ColorPicker extends UIComponent {
 
   constructor(id, className) {
     super(id, className)
@@ -386,18 +382,18 @@ class ColorPicker extends UIComponent {
     this.idContainer = id
     this.element = container;
   }
-  
+
   createModal() {
-    
-    const colorButtons =  ['#ff0000'/*red*/  , '#0000ff' /*blue*/, '#008000' /*green*/, '#ffff00' /*yellow*/, '#ffa500' /*orange*/, '#8000ff' /*violet*/];
-    
+
+    const colorButtons = ['#ff0000'/*red*/, '#0000ff' /*blue*/, '#008000' /*green*/, '#ffff00' /*yellow*/, '#ffa500' /*orange*/, '#8000ff' /*violet*/];
+
     //1. creates a series of boutton objets that represent the color to select
     colorButtons.forEach(color => {
-      const colorButton  = new Button(null, 'outLine', "hell", () => {
+      const colorButton = new Button(null, 'outLine', "hell", () => {
         console.log(color);
         this.changeColorValue(color);
       });
-      
+
       colorButton.changeStyle("backgroundColor", color);
       colorButton.removeStyle()
       colorButton.addTo(this.idContainer);
@@ -405,19 +401,19 @@ class ColorPicker extends UIComponent {
 
 
 
-    const funcionparametro =  function () {
+    const funcionparametro = function () {
       console.log("el color debería ser lindo");
     }
-    
-    
-   
-    
+
+
+
+
     //2. it creates a input color objet an adds it to the this.idContainer set into the parameter 
     this.color = new InputColor("helpidunnowhqatimdoing", "outLine")
     this.color.removeStyle()
     this.color.changeInnerHtml("Más colores");
     this.color.addTo(this.idContainer);
-    
+
 
   }
 
@@ -456,11 +452,11 @@ class Checkbox extends Input {
  */
 
 
-let baseMapMenu = new BaseMapMenu('mapa');
 //console.log(baseMapMenu);
 
 
 document.addEventListener("DOMContentLoaded", function () {
+  const baseMapMenu = new BaseMapMenu('mapa');
   const parentContainer = new Container('parentContainer', 'container-class');
   const childContainer = new Container('childContainer', 'container-class');
 

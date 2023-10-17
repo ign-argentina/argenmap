@@ -1,5 +1,17 @@
-.base-map-menu  {
-  background-color: red;
-  opacity: 50%;
-  z-index: 1000;
+.base-map-menu {
+  background-color: white;
+  position: absolute;
+  top: 6%;
+  left: 28%;
+  width: 300px;
+  height: auto;
+  border-radius: 6px;
+}
+
+.base-map-item{
+  border: 1px solid grey;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+
 }
