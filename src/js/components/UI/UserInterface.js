@@ -27,17 +27,13 @@ class UIComponent {
     }
   }
 
-  addToElement(element){
+  addToElement(element) {
     element.appendChild(this.element)
   }
 
   addToObjet(objet) {
-
-    
     const parentElement = objet.getElement();
 
-    console.log(parentElement)
-  
     if (parentElement) {
       parentElement.appendChild(this.element);
     } else {
@@ -70,12 +66,12 @@ class UIComponent {
     }
   }
 
-  getElement(){
+  getElement() {
     return this.element
   }
 
-  remove(){
-    this.element.remove(); 
+  remove() {
+    this.element.remove();
   }
 
   removeStyle() { //temporal idea
@@ -83,7 +79,6 @@ class UIComponent {
     this.element.style.padding = '0';
     this.element.style.margin = '0';
   }
-
 }
 
 class Menu extends UIComponent {
@@ -111,7 +106,7 @@ class Menu extends UIComponent {
 
 }
 
-let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: "" }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" },{ name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
+let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: "" }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }, { name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
 
 class BaseMapMenu extends Menu {
   constructor(containerId) {
@@ -231,7 +226,6 @@ class Container extends UIComponent {
 
   toggleOpennes() {
   }
-
 
 }
 
@@ -371,7 +365,6 @@ class InputColor extends Input {
 
 }
 
-
 class ColorPicker extends UIComponent {
 
   constructor(id, className) {
@@ -399,14 +392,9 @@ class ColorPicker extends UIComponent {
       colorButton.addTo(this.idContainer);
     });
 
-
-
     const funcionparametro = function () {
       console.log("el color debería ser lindo");
     }
-
-
-
 
     //2. it creates a input color objet an adds it to the this.idContainer set into the parameter 
     this.color = new InputColor("helpidunnowhqatimdoing", "outLine")
@@ -451,17 +439,13 @@ class Checkbox extends Input {
  * @extends UIComponent
  */
 
-
-//console.log(baseMapMenu);
-
-
 document.addEventListener("DOMContentLoaded", function () {
-  const baseMapMenu = new BaseMapMenu('mapa');
   const parentContainer = new Container('parentContainer', 'container-class');
   const childContainer = new Container('childContainer', 'container-class');
 
   parentContainer.addToElement(document.body);
   childContainer.addToObjet(parentContainer);
 
+  const baseMapMenu = new BaseMapMenu('body');
 });
 
