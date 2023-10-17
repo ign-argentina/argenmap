@@ -19,7 +19,11 @@ class UIComponent {
     if (this.element && document.getElementById(id)) {
       document.getElementById(id).appendChild(this.element);
     } else {
-      console.error('No se ha creado un elemento para agregar.');
+      if (this.element){
+        console.error('there is not an element with such id ' + id)
+      } else {
+        console.error('this object has not html element in it')
+      }
     }
   }
 
@@ -35,6 +39,10 @@ class UIComponent {
     }
   }
 
+  appendChild(element){
+
+  }
+
   changeInnerHtml(string){
     if (this.element) {
       this.element.innerText = string;
@@ -46,6 +54,10 @@ class UIComponent {
       this.element.style[styleProperty] = styleValue;
       console.log("im doing somethin")
     }
+  }
+
+  remove(){
+    this.element.remove(); 
   }
 
   removeStyle() { //temporal idea
@@ -295,7 +307,7 @@ class Button extends UIComponent {
     super();
     const button = this.createElement("button", id, classList);
     button.innerHTML = innerText;
-    button.style.color = "#a380d7";
+    button.style.color = "#a380d7"; //revise
 
     if (clickHandler && typeof clickHandler === 'function') {
       button.onclick = clickHandler;
