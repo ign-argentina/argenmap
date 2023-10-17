@@ -8,45 +8,50 @@
     border-radius: 10px;
     height: 80vh;
     width: 80vh;
+
+    display: flex;
+    flex-direction: column; 
 }
 
 .exit-button{
+    
     position: absolute;
     top : 0px;
     right: 0px;
+    
     background-color: transparent;
     border: none;
     margin: 3px;
-}   
+}       
 
+.outLine{
+    height: auto;
+    width: 100%;
+    border: 1px solid red;
+}
+    
 .especificamenteparaesto{
     height: 100px;
     width: 100px;
-}
+}    
 
 .justAnIdea{
     border: solid red;
     width: 200px;
     height: 50px;
     display: flex;
-}
+}    
 
 .map-item-button{
     color: #3174BF;
     background-color: #1a4570;
-}
+}    
 
 .imagenClaseSinImaginacion{
     height: 50px; 
     width: auto;
-}
+}    
 .outLinedos{
     height: 30px;
     border: 1px solid blue;
-}
-.outLine{
-    height: 63%;
-    width: 20px;
-    border: 1px solid red;
-}
-
+}    

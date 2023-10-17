@@ -27,8 +27,22 @@ class UIComponent {
     }
   }
 
-  addToElement(elemt){
-    elemt.appendChild(this.element);
+  addToElement(element){
+    element.appendChild(this.element)
+  }
+
+  addToObjet(objet) {
+
+    
+    const parentElement = objet.getElement();
+
+    console.log(parentElement)
+  
+    if (parentElement) {
+      parentElement.appendChild(this.element);
+    } else {
+      console.error('Parent element not found.');
+    }
   }
 
   addClass(className) {
@@ -54,6 +68,10 @@ class UIComponent {
       this.element.style[styleProperty] = styleValue;
       console.log("im doing somethin")
     }
+  }
+
+  getElement(){
+    return this.element
   }
 
   remove(){
@@ -128,8 +146,8 @@ class BaseMapItem extends UIComponent {
 
     const auxElemt = this.createElement('div', options.id, 'base-map-item');
 
-    //const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
-    auxElemt.appendChild(new Imagen(options.id, options.imgSrc, options.name, options.className, options.name));
+    const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
+    image.addToElement(auxElemt)
     //console.log(auxElemt);
     const text = this.createElement('span', null, 'base-map-item-text');
     text.textContent = options.name;
@@ -185,7 +203,6 @@ class Imagen extends UIComponent {
 
     //this.rotation = 90;
     this.element = img;
-    return img
   }
 
   getRotatedB() {
@@ -441,3 +458,14 @@ class Checkbox extends Input {
 
 let baseMapMenu = new BaseMapMenu('mapa');
 //console.log(baseMapMenu);
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const parentContainer = new Container('parentContainer', 'container-class');
+  const childContainer = new Container('childContainer', 'container-class');
+
+  parentContainer.addToElement(document.body);
+  childContainer.addToObjet(parentContainer);
+
+});
+
