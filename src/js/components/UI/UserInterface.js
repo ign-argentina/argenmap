@@ -368,14 +368,14 @@ class ColorPicker extends UIComponent {
 
     //1. creates a series of boutton objets that represent the color to select
     colorButtons.forEach(color => {
-      const colorButton = new Button(null, 'outLine', "hell", () => {
+      const colorButton = new Button(null, 'outLine', null,  "hell", () => {
         console.log(color);
         this.changeColorValue(color);
       });
 
       colorButton.changeStyle("backgroundColor", color);
       colorButton.removeStyle()
-      colorButton.addTo(this.idContainer);
+      colorButton.addTo(this.element);
     });
 
     const funcionparametro = function () {

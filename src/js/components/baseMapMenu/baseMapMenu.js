@@ -150,7 +150,7 @@ class MenuBaseMap {
     prevContainer.changeStyle('flex-direction', 'column')
     prevContainer.changeStyle('justify-content', 'center')
 
-    const imagendeprueba = new Imagen(null, 'https://media.tenor.com/v-SkaSp7VYgAAAAC/kid-goku-peace.gif', 'gokuperonista', null, null)
+    const imagendeprueba = new Imagen(null, 'https://media.tenor.com/v-SkaSp7VYgAAAAC/kid-goku-peace.gif', 'goku', null, null)
     imagendeprueba.changeStyle('width', '100%')
     imagendeprueba.changeStyle('objet-fit', 'cover')
 
@@ -199,11 +199,11 @@ class MenuBaseMap {
     prevContainer.changeStyle('flex-direction', 'column')
     prevContainer.changeStyle('justify-content', 'center')
 
-    const imagendeprueba = new Imagen(null, batman_URL, 'gokuperonista', null, null)
-    imagendeprueba.changeStyle('width', '100%')
-    imagendeprueba.changeStyle('objet-fit', 'cover')
+    const colorPicker = new ColorPicker('base-map-menu-color-picker', null)
+    
 
-    imagendeprueba.addTo(prevContainer)
+    colorPicker.addTo(prevContainer)
+    colorPicker.createModal()
     infoContainer.addTo(container)
     prevContainer.addTo(container)
     container.addTo(mainSectionId)
