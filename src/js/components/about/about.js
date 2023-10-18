@@ -386,7 +386,7 @@ class AboutUsModal extends UIComponent {
         mapItem.addTo("readme-container");
         
         input.addTo("readme-container") */
-        const button = new Button("button-number-one", "hello-kitty", "Click me", function () {
+        const button = new Button("button-number-one", "hello-kitty", null, "Click me", function () {
             console.log(colorInput.whatColor());
         })
         button.addTo("readme-container");
@@ -395,7 +395,7 @@ class AboutUsModal extends UIComponent {
         colorInput.addTo("readme-container");
 
 
-        const buttoncolor = new Button("button-nuber-two", "hello-devil", "Change color to white", function () {
+        const buttoncolor = new Button("button-nuber-two", null, "hello-devil", "Change color to white", function () {
             colorInput.changeValue('#ffffff');
         })
         buttoncolor.removeStyle();

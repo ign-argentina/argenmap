@@ -118,7 +118,8 @@ class BaseMapMenu extends Menu {
     });
 
     const addBaseMapBtn = new Button('add-base-map-btn', 'add-base-map-btn', 'fa-solid fa-plus', null, this.openAddBaseMap);
-    this.container.append(addBaseMapBtn);
+    addBaseMapBtn.addToElement(this.container)
+    // this.container.append(addBaseMapBtn);
 
     document.querySelector(containerId).appendChild(this.container);
   }
@@ -153,7 +154,7 @@ class BaseMapItem extends UIComponent {
     auxElemt.appendChild(text);
 
     const button = new OptionMenuButton(options.option, options.id);
-    auxElemt.appendChild(button);
+    button.addToElement(auxElemt)
 
     return auxElemt
   }
@@ -280,7 +281,7 @@ class Button extends UIComponent {
     }
 
     this.element = button;
-    return button
+    
   }
 
 

@@ -4,13 +4,14 @@
     left: 33%;
 
     z-index: 2000;
-    background-color: rgb(47, 47, 47);
+    background-color: rgb(250, 250, 250);
     border-radius: 10px;
     height: 80vh;
     width: 80vh;
 
     display: flex;
     flex-direction: column; 
+    align-items: center;
 }
 
 .exit-button{
@@ -30,10 +31,23 @@
     border: 1px solid red;
 }
 
+.outLinetres{
+    display: flex;
+}
+.base-map-menu-main-section{
+    width: 90%;
+    height: 70%;
+
+    background-color: rgb(188, 188, 188);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 4%;
+}
+
 .section-container{
     width: 10px;
     height: 10px;
-    background-color: red;
+    /* background-color: red; */
 }
     
 .especificamenteparaesto{
