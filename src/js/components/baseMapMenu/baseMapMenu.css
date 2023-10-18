@@ -29,6 +29,12 @@
     width: 100%;
     border: 1px solid red;
 }
+
+.section-container{
+    width: 10px;
+    height: 10px;
+    background-color: red;
+}
     
 .especificamenteparaesto{
     height: 100px;
