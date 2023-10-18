@@ -1,7 +1,8 @@
 /**
  * @todo Evaluate using customElements.
- */
+*/
 let batman_URL = "https://media.tenor.com/GvhT-DxYb1IAAAAC/batman-superhero.gif";
+let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: [{ leyends: 'src/styles/images/legends/argenmap.webp', shadow: true }] }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }, { name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
 
 class UIComponent {
   constructor() {
@@ -106,7 +107,6 @@ class Menu extends UIComponent {
 
 }
 
-let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: [{ leyends: 'src/styles/images/legends/argenmap.webp', shadow: true }] }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }, { name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
 
 class BaseMapMenu extends Menu {
   constructor(containerId) {

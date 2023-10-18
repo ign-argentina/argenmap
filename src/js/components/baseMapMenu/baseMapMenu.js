@@ -9,8 +9,6 @@ class MenuBaseMap {
     this.mainSectionID = 'main-basemapmenu'
     this.footSectionID = 'foot-basemapmenu'
 
-
-
   }
 
   toggleOpen() {
@@ -22,7 +20,6 @@ class MenuBaseMap {
     } else {
 
     }
-
   }
 
   createMenu() {
@@ -39,7 +36,6 @@ class MenuBaseMap {
     mainContainer.addToElement(document.body);
 
 
-
     //3. create the elemts that not depend form the tab selected
 
     //3.1. create the exit button
@@ -51,7 +47,6 @@ class MenuBaseMap {
     //3.2 create title form the menu
     const labelTitle = new Label(null, null, "Argregar capa base");
     labelTitle.changeStyle('color', 'white')
-
 
     //3.3. create foot
     const consultButton = new Button(null, null, null, '?', () => {
@@ -72,14 +67,9 @@ class MenuBaseMap {
       this.showTab(2);
     })
 
-
-
-
-
     //5. Add sections to main container
     // header.addTo('whole-basemapmenu');
     header.addToObjet(mainContainer)
-
 
     tabSection.addTo(this.wholeSectionID);
     mainSection.addTo(this.wholeSectionID);
@@ -102,8 +92,7 @@ class MenuBaseMap {
     //readyButton.addTo(this.footSectionID);
     document.getElementById(this.footSectionID).appendChild(readyButton);
 
-    console.log(document.querySelectorAll('.section-container'))
-
+    //console.log(document.querySelectorAll('.section-container'))
   }
 
   showTab(indexToShow) {
@@ -116,34 +105,30 @@ class MenuBaseMap {
     const tabsToDisplay = document.querySelectorAll('.tab');
     tabsToDisplay.forEach(el => el.classList.remove('tab-active'));
     tabsToDisplay[indexToShow].classList.add('tab-active');
-
   }
 
   createLibrary(mainContainerId) {
-    console.log("a beautifull library in this id: " + mainContainerId);
+    //console.log("a beautifull library in this id: " + mainContainerId);
     const container = new Container(null, "section-container")
     // const imagendeprueba = new Imagen(null, batman_URL, 'batman1', null, null)
     // imagendeprueba.addToObjet(container)
 
 
-
-
-
-
-
     container.addTo(mainContainerId)
   }
+
   createFromUrl(mainContainerId) {
 
-    console.log("a beautifull from url section in this id: " + mainContainerId)
+    //console.log("a beautifull from url section in this id: " + mainContainerId)
     const container = new Container(null, "section-container")
     const imagendeprueba = new Imagen(null, 'https://media.tenor.com/RrXsGhXSBDUAAAAC/ok-thumbs-up.gif', 'batman1', null, null)
     imagendeprueba.addToObjet(container)
     container.addTo(mainContainerId)
 
   }
+
   createColor(mainContainerId) {
-    console.log("a beautifull color section in this id: " + mainContainerId)
+    //console.log("a beautifull color section in this id: " + mainContainerId)
     const container = new Container(null, "section-container")
     const imagendeprueba = new Imagen(null, 'https://media.tenor.com/-Oo9YBTLsvkAAAAd/michael-myers-halloween.gif', 'batman1', null, null)
     imagendeprueba.addToObjet(container)
@@ -151,9 +136,7 @@ class MenuBaseMap {
   }
 }
 
-
-
-document.addEventListener("DOMContentLoaded", function () {
+/* document.addEventListener("DOMContentLoaded", function () {
   const menuBaseMap = new MenuBaseMap();
   menuBaseMap.createMenu();
-});
+}); */
