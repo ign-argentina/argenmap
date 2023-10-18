@@ -30,6 +30,7 @@ class MenuBaseMap {
     //2. create diferent sections
     const header = new Container(this.headerSectionID, 'outLine');
     const tabSection = new Container(this.tabSectionID, 'outLine');
+    tabSection.changeStyle('display', 'flex')
     const mainSection = new Container(this.mainSectionID, 'base-map-menu-main-section');
 
     const footSection = new Container(this.footSectionID, 'outLine');
@@ -70,7 +71,7 @@ class MenuBaseMap {
 
     //5. Add sections to main container
     // header.addTo('whole-basemapmenu');
-    header.addToObjet(mainContainer)
+    header.addTo(mainContainer)
 
     tabSection.addTo(this.wholeSectionID);
     mainSection.addTo(this.wholeSectionID);
@@ -133,12 +134,12 @@ class MenuBaseMap {
     const inputMaxZoom = new Input(null, null, 'text')
     const inputMinZoom = new Input(null, null, 'text')
 
-    label.addToObjet(infoContainer);
-    inputCapName.addToObjet(infoContainer);
-    inputURL.addToObjet(infoContainer);
-    inputAtribution.addToObjet(infoContainer);
-    inputMaxZoom.addToObjet(infoContainer);
-    inputMinZoom.addToObjet(infoContainer);
+    label.addTo(infoContainer);
+    inputCapName.addTo(infoContainer);
+    inputURL.addTo(infoContainer);
+    inputAtribution.addTo(infoContainer);
+    inputMaxZoom.addTo(infoContainer);
+    inputMinZoom.addTo(infoContainer);
 
 
 
@@ -153,17 +154,58 @@ class MenuBaseMap {
     imagendeprueba.changeStyle('width', '100%')
     imagendeprueba.changeStyle('objet-fit', 'cover')
 
-    imagendeprueba.addToObjet(prevContainer)
-    infoContainer.addToObjet(container)
-    prevContainer.addToObjet(container)
+    imagendeprueba.addTo(prevContainer)
+    infoContainer.addTo(container)
+    prevContainer.addTo(container)
     container.addTo(mainSectionId)
   }
 
   createColor(mainSectionId) {
-    //console.log("a beautifull color section in this id: " + mainSectionId)
     const container = new Container(null, "section-container")
-    const imagendeprueba = new Imagen(null, 'https://media.tenor.com/-Oo9YBTLsvkAAAAd/michael-myers-halloween.gif', 'batman1', null, null)
-    imagendeprueba.addToObjet(container)
+    container.addClass('outLinetres');
+    container.changeStyle('width', '100%')
+    container.changeStyle('height', '100%')
+    // container.changeStyle('display', 'flex')
+    
+    const infoContainer =  new Container(null, "outLine")
+    infoContainer.changeStyle('width', '55%')
+    infoContainer.changeStyle('height', '100%')
+    infoContainer.changeStyle('display', 'flex')
+    infoContainer.changeStyle('flex-direction', 'column')
+
+
+
+    const label = new Label(null, null, 'Añaduir una capa base desde otra fuente')
+    const inputCapName = new Input(null, null, 'text')
+
+    const inputURL = new Input(null, null, 'text')
+    const inputAtribution = new Input(null, null, 'text')
+    const inputMaxZoom = new Input(null, null, 'text')
+    const inputMinZoom = new Input(null, null, 'text')
+
+    label.addTo(infoContainer);
+    inputCapName.addTo(infoContainer);
+    inputURL.addTo(infoContainer);
+    inputAtribution.addTo(infoContainer);
+    inputMaxZoom.addTo(infoContainer);
+    inputMinZoom.addTo(infoContainer);
+
+
+
+    const prevContainer = new Container(null, "outLine")
+    prevContainer.changeStyle('width', '45%')
+    prevContainer.changeStyle('height', '100%')
+    prevContainer.changeStyle('display', 'flex')
+    prevContainer.changeStyle('flex-direction', 'column')
+    prevContainer.changeStyle('justify-content', 'center')
+
+    const imagendeprueba = new Imagen(null, batman_URL, 'gokuperonista', null, null)
+    imagendeprueba.changeStyle('width', '100%')
+    imagendeprueba.changeStyle('objet-fit', 'cover')
+
+    imagendeprueba.addTo(prevContainer)
+    infoContainer.addTo(container)
+    prevContainer.addTo(container)
     container.addTo(mainSectionId)
   }
 }

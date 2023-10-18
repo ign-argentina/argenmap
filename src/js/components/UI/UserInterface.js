@@ -16,17 +16,42 @@ class UIComponent {
     return element;
   }
 
-  addTo(id) {
-    if (this.element && document.getElementById(id)) {
-      document.getElementById(id).appendChild(this.element);
-    } else {
-      if (this.element) {
-        console.error('there is not an element with such id ' + id)
+  addTo(target) {
+    if (!this.element) {
+      console.error('No se ha creado un elemento para agregar.');
+      return;
+    }
+
+    if (typeof target === 'string') {
+      // Si el argumento es un string, asumimos que es un ID
+      const targetElement = document.getElementById(target);
+      if (targetElement) {
+        targetElement.appendChild(this.element);
       } else {
-        console.error('this object has not html element in it')
+        console.error('No se encontró un elemento con el ID: ' + target);
       }
+    } else if (target instanceof HTMLElement) {
+      // Si el argumento es un elemento HTML, lo utilizamos como contenedor
+      target.appendChild(this.element);
+    } else if (typeof target === 'object' && target.hasOwnProperty('element') && target.element instanceof HTMLElement) {
+      // Si el argumento es un objeto con una propiedad 'element', lo utilizamos como contenedor
+      target.element.appendChild(this.element);
+    } else {
+      console.error('No se pudo agregar el elemento al destino especificado.');
     }
   }
+
+  // addTo(id) {
+  //   if (this.element && document.getElementById(id)) {
+  //     document.getElementById(id).appendChild(this.element);
+  //   } else {
+  //     if (this.element) {
+  //       console.error('there is not an element with such id ' + id)
+  //     } else {
+  //       console.error('this object has not html element in it')
+  //     }
+  //   }
+  // }
 
   addToElement(element) {
     element.appendChild(this.element)
