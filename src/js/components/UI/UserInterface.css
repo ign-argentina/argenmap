@@ -1,17 +1,62 @@
 .base-map-menu {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.7);
   position: absolute;
-  top: 6%;
-  left: 28%;
+  top: 10%;
+  left: 30%;
   width: 300px;
-  height: auto;
   border-radius: 6px;
 }
-
-.base-map-item{
-  border: 1px solid grey;
+.base-map-item {
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 4px;
   padding: 5px;
   margin: 5px;
-
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.base-map-item img {
+  border-radius: 4px;
+}
+.base-map-item-text {
+  margin-left: 5px;
+}
+.add-base-map-btn {
+  background-color: var(--bg-color);
+  border: none;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+  width: -moz-available;
+  width: -webkit-fill-available;
+  height: auto;
+}
+.opt-base-map-btn {
+  border: none;
+  border-radius: 4px;
+}
+#add-base-map-btn-icon {
+  color: white;
+  font-size: 25px;
+}
+#opt-base-map-btn-icon {
+  color: #333;
+  font-size: 22px;
+}
+.opt-base-map-btn {
+  display: flex;
+  height: 40px;
+  width: 30px;
+  background-color: lightgrey;
+  align-items: center;
+  justify-content: center;
+}
+.base-map-opts-menu, .bm-opt-item {
+  background-color: white;
+  width: 100px;
+  height: auto;
+}
+.bm-opt-item {
+  padding: 2px;
+  margin: 1px;
 }

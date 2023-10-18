@@ -106,7 +106,7 @@ class Menu extends UIComponent {
 
 }
 
-let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: "" }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }, { name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
+let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: [{ leyends: 'src/styles/images/legends/argenmap.webp', shadow: true }] }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }, { name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
 
 class BaseMapMenu extends Menu {
   constructor(containerId) {
@@ -116,6 +116,9 @@ class BaseMapMenu extends Menu {
     baseMapData.forEach((option) => {
       this.addItem(option)
     });
+
+    const addBaseMapBtn = new Button('add-base-map-btn', 'add-base-map-btn', 'fa-solid fa-plus', null, this.openAddBaseMap);
+    this.container.append(addBaseMapBtn);
 
     document.querySelector(containerId).appendChild(this.container);
   }
@@ -129,6 +132,11 @@ class BaseMapMenu extends Menu {
   createMenuContainer() {
     return this.createElement('div', 'base-map-menu', 'base-map-menu');
   }
+
+  openAddBaseMap() {
+    const menuBaseMap = new MenuBaseMap();
+    menuBaseMap.createMenu();
+  }
 }
 
 class BaseMapItem extends UIComponent {
@@ -139,27 +147,46 @@ class BaseMapItem extends UIComponent {
 
     const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
     image.addToElement(auxElemt)
-    //console.log(auxElemt);
+
     const text = this.createElement('span', null, 'base-map-item-text');
     text.textContent = options.name;
     auxElemt.appendChild(text);
 
-    /* const button = new OptionMenuButton(options.buttonClass);
-    button.onClick(options.onClick);
-    this.element.appendChild(button.element); */
-    console.log(auxElemt);
+    const button = new OptionMenuButton(options.option, options.id);
+    auxElemt.appendChild(button);
+
     return auxElemt
   }
 }
 
 class OptionMenuButton extends UIComponent {
-  constructor(iconClass) {
+  constructor(options, id) {
     super();
-    this.element = this.createElement('button', null, 'option-menu-button');
-    const icon = this.createElement('span', null, 'icon ' + iconClass);
-    this.element.appendChild(icon);
+    const baseMapOptsBtn = new Button('opt-base-map-btn', 'opt-base-map-btn', 'fa-solid fa-ellipsis-vertical', null, () => this.openBaseMapOpts(options, id));
+    return baseMapOptsBtn
   }
-
+  openBaseMapOpts(options, id) {
+    const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
+    if (options) {
+      options.forEach(element => {
+        const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
+        if (element.leyends) {
+          const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
+          optsItem.appendChild(icon);
+          optsItem.innerText = 'Ver leyendas';
+          optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
+        }
+        if (element.shadow) {
+          const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
+          optsItem.appendChild(icon);
+          optsItem.innerText = 'Agregar sombras';
+          optsItem.addEventListener('click', () => console.log('Agregar sombras'));
+        }
+        optsContainer.appendChild(optsItem);
+      });
+    }
+    document.getElementById(id).append(optsContainer);
+  }
   onClick(callback) {
     this.element.addEventListener('click', callback);
   }
@@ -229,78 +256,6 @@ class Container extends UIComponent {
 
 }
 
-//Probably it will be a better idea to hace an abstract class to handle base map items, because we have the one inside the library and the one in the first "menu" 
-/* class BaseMapItem extends UIComponent {
-  //This BaseMapItem builds itself with a large constructor taking all the paremeters needed
-  constructor(name, imgSrc, buttonClass, itemOptions) {
-    super();
-
-    // Create container
-    this.id = "id-contenedor-de-prueb" //it should get here by parameter
-    const container = this.createElement('div', this.id, 'justAnIdea');
-
-    //const imgObj = new Imagen("idbonitoydescriptivo", imgSrc, "preview capa", "imagenClaseSinImaginacion", "capa")
-
-    // Create text
-    const innerText = this.createElement('span');
-    innerText.innerHTML = name;
-    innerText.style.width = "40px"
-
-    // Create button
-
-    const funcionparametro = function () {
-      this.toggleOptionsVisibility(optionsList);
-    }
-
-    const btnObj = new Button("iddos", buttonClass, "!!!", funcionparametro)
-
-    // Create options list
-
-    const optionsList = this.createElement('ul'); //mmm ul has sense¿¿
-    optionsList.style.listStyleType = 'none';
-
-    this.isVisible = true;
-
-    itemOptions.forEach((option) => {  //the idea is than for every option it creates a new clikeable "thing"
-      const li = this.createElement('li');
-      const div = this.createElement('div');
-
-      div.innerHTML = option.label;
-
-      if (option.action && typeof option.action === 'function') {
-        div.addEventListener('click', option.action);
-      }
-
-      li.appendChild(div);
-      optionsList.appendChild(li);
-    });
-
-    // console.log(imgObj)
-    // imgObj.addTo("id-contenedor-de-prueb")
-
-    container.appendChild(innerText)
-
-    // btnObj.addTo("id-contenedor-de-prueb")
-    container.appendChild(optionsList)
-
-    this.element = container;
-  }
-
-  build() {
-    //add the elements creating objets for them
-  }
-
-  toggleOptionsVisibility(optionsList) {
-    if (this.isVisible) {
-      optionsList.style.display = 'none';
-      this.isVisible = false;
-    } else {
-      optionsList.style.display = 'block';
-      this.isVisible = true;
-    }
-  }
-}
- */
 class Dialog extends UIComponent {
   // returns an empty dialog with close and custom buttons
   constructor() {
@@ -310,17 +265,22 @@ class Dialog extends UIComponent {
 
 class Button extends UIComponent {
   // returns a button with custom text and action triggered by click event
-  constructor(id, classList, innerText, clickHandler) {
+  constructor(id, classList, iconClass, innerText = '', clickHandler) {
     super();
     const button = this.createElement("button", id, classList);
     button.innerHTML = innerText;
-    button.style.color = "#a380d7"; //revise
+
+    if (iconClass) {
+      const icon = this.createElement('span', classList + '-icon', iconClass);
+      button.appendChild(icon);
+    }
 
     if (clickHandler && typeof clickHandler === 'function') {
       button.onclick = clickHandler;
     }
 
     this.element = button;
+    return button
   }
 
 
@@ -440,12 +400,10 @@ class Checkbox extends Input {
  */
 
 document.addEventListener("DOMContentLoaded", function () {
-  const parentContainer = new Container('parentContainer', 'container-class');
+  /* const parentContainer = new Container('parentContainer', 'container-class');
   const childContainer = new Container('childContainer', 'container-class');
-
   parentContainer.addToElement(document.body);
-  childContainer.addToObjet(parentContainer);
-
+  childContainer.addToObjet(parentContainer); */
   const baseMapMenu = new BaseMapMenu('body');
 });
 
