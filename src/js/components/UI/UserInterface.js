@@ -161,7 +161,7 @@ class BaseMapMenu extends Menu {
 
   openAddBaseMap() {
     const menuBaseMap = new MenuBaseMap();
-    menuBaseMap.createMenu();
+    menuBaseMap.toggleOpen();
   }
 }
 
@@ -385,8 +385,9 @@ class ColorPicker extends UIComponent {
     //2. it creates a input color objet an adds it to the this.idContainer set into the parameter 
     this.color = new InputColor("helpidunnowhqatimdoing", "outLine")
     this.color.removeStyle()
+    this.color.changeStyle('height', '20px')
     this.color.changeInnerHtml("Más colores");
-    this.color.addTo(this.idContainer);
+    this.color.addTo(this.element);
 
 
   }

@@ -1,12 +1,24 @@
-.menuContainer{
+.dark-overlay{
     position: absolute;
-    top: 10%;
-    left: 33%;
+    top: 0;
+    left: 0;
 
     z-index: 2000;
-    background-color: rgb(250, 250, 250);
+    background-color: rgba(0, 0, 0, 0.37);
+    height: 100%;
+    width: 100%;
+}
+
+
+.menuContainer{
+    position: absolute;
+    top: 17%;
+    left: 27.5%;
+
+    z-index: 2001;
+    background-color: rgba(213, 213, 213, 0.795);
     border-radius: 10px;
-    height: 80vh;
+    height: 64vh;
     width: 80vh;
 
     display: flex;

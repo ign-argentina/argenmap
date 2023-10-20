@@ -11,39 +11,64 @@ class MenuBaseMap {
 
   }
 
-  toggleOpen() {
+  toggleOpen(openTabNumber = 0) {
     if (this.isVisible == false) {
       this.createMenu();
-      this.showTab(1);
+      this.showTab(openTabNumber);
 
       this.isVisible = true;
     } else {
+        this.darkOverlay.remove();
+        this.isVisible = false;
 
     }
   }
 
   createMenu() {
+    //0. fondo oscuro
+    this.darkOverlay = document.createElement('div')
+    this.darkOverlay.classList.add('dark-overlay')
+    this.darkOverlay.onclick = () => {
+        this.toggleOpen()
+    }
+
+    this.lighDarkBackground = new Container('oscuroofofofoof', '')
+
+
     //1. create the main containter
     const mainContainer = new Container(this.wholeSectionID, 'menuContainer');
     mainContainer.changeStyle('overflow', 'hidden') //just a demostration
+    mainContainer.getElement().onclick = function(event) {
+        event.stopPropagation();
+      };
 
     //2. create diferent sections
     const header = new Container(this.headerSectionID, 'outLine');
+    header.changeStyle('font-size', '20px')
+    header.changeStyle('height', '105px')
+    header.changeStyle('display', 'flex')
+    header.changeStyle('align-items', 'center')
+
+
+
+
     const tabSection = new Container(this.tabSectionID, 'outLine');
     tabSection.changeStyle('display', 'flex')
     const mainSection = new Container(this.mainSectionID, 'base-map-menu-main-section');
 
     const footSection = new Container(this.footSectionID, 'outLine');
+    footSection.changeStyle('position', 'relative')
 
-    mainContainer.addToElement(document.body);
+
+    document.body.appendChild(this.darkOverlay)
+    mainContainer.addTo(this.darkOverlay)
 
 
     //3. create the elemts that not depend form the tab selected
 
     //3.1. create the exit button
     const exitButton = new Button(null, "exit-button", 'fa fa-times', null, () => {
-      mainContainer.remove();
-      this.isVisible = false;
+      this.toggleOpen()
     })
 
     //3.2 create title form the menu
@@ -54,10 +79,15 @@ class MenuBaseMap {
     const consultButton = new Button(null, null, null, '?', () => {
       console.log("what you wanna know?")
     })
+    consultButton.changeStyle('position', 'absolute')
+    consultButton.changeStyle('left', '0px')
+
     const readyButton = new Button(null, null, null, 'Listo', () => {
-      mainContainer.remove();
-      this.isVisible = false;
+      this.toggleOpen()
     })
+    
+    readyButton.changeStyle('right', '0px')
+
     //4. create the diferent tabs
     const libraryTab = new TabElement('Libreía', null, 'tab', () => {
       this.showTab(0);
@@ -198,9 +228,13 @@ class MenuBaseMap {
     prevContainer.changeStyle('display', 'flex')
     prevContainer.changeStyle('flex-direction', 'column')
     prevContainer.changeStyle('justify-content', 'center')
+    prevContainer.changeStyle('align-items', 'center')
+    
 
     const colorPicker = new ColorPicker('base-map-menu-color-picker', null)
-    
+    colorPicker.changeStyle('width', '100px')
+    colorPicker.changeStyle('overflow', 'hidden')
+    colorPicker.changeStyle('border-radius', '13px')
 
     colorPicker.addTo(prevContainer)
     colorPicker.createModal()
@@ -212,5 +246,5 @@ class MenuBaseMap {
 
  document.addEventListener("DOMContentLoaded", function () {
   const menuBaseMap = new MenuBaseMap();
-  menuBaseMap.toggleOpen();
+  menuBaseMap.toggleOpen(2);
 }); 
