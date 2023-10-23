@@ -54,23 +54,40 @@
 
 .foot-menubasecap {
     width: 100%;
-    border: 1px solid  red;
 
-    height: 40px;
+    height: 56  px;
 
 
     display: grid;
     grid-template-columns: 50% 50%;
 }
 
-.consult-button {
-    margin-left: 10px;
-    justify-self: start;
-    
+.button-basemapmenu{
+    border: none;
+    background-color: #2366b4;
+    margin: 6px;
 }
 
-.ready-button {
-    margin-right: 10px;
+.button-basemapmenu:hover{
+    transition: 200ms;
+    background-color: #3174BF;
+}
+
+.consult-button {
+    height: 44px;
+    width: 44px;
+    border-radius: 50%;
+    color: #cacaca;
+    margin-left: 8%;
+    justify-self: start;  
+}
+
+.ready-button { 
+    font-size: 16px;
+    border-radius: 6px; 
+    width: 80px;
+    color: white;
+    margin-right: 8%;
     justify-self: end;
 }
 
@@ -117,13 +134,13 @@
 }
 
 .info-container {
-    width: 55%;
+    width: 60%;
     height: 100%;
     display: grid;
     grid-template-columns: 40% 40%;
+    grid-template-rows: 15% 10% 10% 10% 10%;
     row-gap: 10%;
     column-gap: 4%;
-    grid-template-rows: repeat(5, 10%);
 
 }
 
@@ -138,15 +155,22 @@
 }
 
 .lable-basemapmenu{
-    margin-left: 10px;
+    
+    font-size: 16px;
+    font-weight: 550;
+    margin: 10px;
     grid-column: 1/3;
 }
 
 .inputtext-basemapmenu{
+    border: none;
+    border-radius: 6px;
     margin-left: 10px;    
 }
 
 .inputtext-l-basemapmenu{
+    border: none;
+    border-radius: 6px;
     margin-left: 10px;   
     grid-column: 1/3;
 }

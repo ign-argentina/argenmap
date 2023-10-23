@@ -336,6 +336,8 @@ class InputText extends Input {
   constructor(id, className, placeHolder) {
     super(id, className, 'text');
     this.element.placeholder = placeHolder;
+    this.element.style.textAlign = 'left';
+    this.element.style.paddingLeft = '15px'
   }
 }
 class InputColor extends Input {

@@ -69,14 +69,16 @@ class MenuBaseMap {
     
 
     //3.3. create foot
-    const consultButton = new Button(null, 'consult-button', null, '?', () => {
+    const consultButton = new Button(null, 'consult-button', 'fa-solid fa-question fa-xl', null, () => {
       console.log("what you wanna know?")
     })
+    consultButton.addClass('button-basemapmenu')
     
 
     const readyButton = new Button(null, 'ready-button', null, 'Listo', () => {
       this.toggleOpen()
     })
+    readyButton.addClass('button-basemapmenu')
     
     //4. create the diferent tabs
     const libraryTab = new TabElement('Biblioteca', null, 'tab', () => {
@@ -140,11 +142,11 @@ class MenuBaseMap {
 
     const label = new Label(null, 'lable-basemapmenu', 'Añaduir una capa base desde otra fuente')
 
-    const inputCapName = new Input(null, 'inputtext-l-basemapmenu', 'text')
-    const inputURL = new Input(null, 'inputtext-l-basemapmenu', 'text')
-    const inputAtribution = new Input(null, 'inputtext-l-basemapmenu', 'text')
-    const inputMaxZoom = new Input(null, 'inputtext-basemapmenu', 'text')
-    const inputMinZoom = new Input(null, 'inputtext-basemapmenu', 'text')
+    const inputCapName = new InputText(null, 'inputtext-l-basemapmenu', 'Nombre de la capa')
+    const inputURL = new InputText(null, 'inputtext-l-basemapmenu', 'URL')
+    const inputAtribution = new InputText(null, 'inputtext-l-basemapmenu', 'Atribución (opcional)')
+    const inputMaxZoom = new InputText(null, 'inputtext-basemapmenu', 'Zoom mín.')
+    const inputMinZoom = new InputText(null, 'inputtext-basemapmenu', 'Zoom máx.')
 
     label.addTo(infoContainer);
     inputCapName.addTo(infoContainer);
@@ -177,9 +179,9 @@ class MenuBaseMap {
 
     const label = new Label(null, 'lable-basemapmenu', 'Selecciona un color como fondo')
     
-    const inputCapName = new Input(null, 'inputtext-l-basemapmenu', 'text')
+    const inputCapName = new InputText(null, 'inputtext-l-basemapmenu', 'Nombre de la capa')
 
-    const inputOverlappingURL = new Input(null, 'inputtext-l-basemapmenu', 'text')
+    const inputOverlappingURL = new InputText(null, 'inputtext-l-basemapmenu', 'Url de capa superpuesta')
 
     label.addTo(infoContainer);
 
