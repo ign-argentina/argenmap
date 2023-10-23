@@ -360,6 +360,7 @@ class ColorPicker extends UIComponent {
 
     this.idContainer = id
     this.element = container;
+    this.createModal()
   }
 
   createModal() {

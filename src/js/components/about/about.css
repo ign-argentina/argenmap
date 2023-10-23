@@ -1,6 +1,6 @@
 :root {
     --border-width: 2px;
-    --border-width-tab: 2px 2px 0px 2px;
+    --border-width-tab: 2px;
 }
 
 
@@ -52,11 +52,12 @@
     margin-left: 4%;
     padding: 10px;
     padding-top: 0.25%;
-    padding-bottom: 0%;
-    color: #3174BF;
-    border: solid #3174BF;
-    border-radius: 10px 10px 0px 0px;
-    border-width: var(--border-width-tab);
+    padding-bottom: 0.25%;
+    background-color: #cacaca;
+    color: #000000;
+    border: solid #cacaca;
+    border-radius: 6px;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.25));
 }
 .tab:hover {
     transition: 200ms;

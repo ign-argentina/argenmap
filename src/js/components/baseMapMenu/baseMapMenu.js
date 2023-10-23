@@ -32,32 +32,25 @@ class MenuBaseMap {
         this.toggleOpen()
     }
 
-    this.lighDarkBackground = new Container('oscuroofofofoof', '')
 
 
     //1. create the main containter
     const mainContainer = new Container(this.wholeSectionID, 'menuContainer');
-    mainContainer.changeStyle('overflow', 'hidden') //just a demostration
     mainContainer.getElement().onclick = function(event) {
         event.stopPropagation();
       };
 
     //2. create diferent sections
-    const header = new Container(this.headerSectionID, 'outLine');
-    header.changeStyle('font-size', '20px')
-    header.changeStyle('height', '105px')
-    header.changeStyle('display', 'flex')
-    header.changeStyle('align-items', 'center')
+    const header = new Container(this.headerSectionID, 'header-menubasecap');
 
 
 
 
-    const tabSection = new Container(this.tabSectionID, 'outLine');
-    tabSection.changeStyle('display', 'flex')
-    const mainSection = new Container(this.mainSectionID, 'base-map-menu-main-section');
+    const tabSection = new Container(this.tabSectionID, 'tabs-section-menubasecap');
 
-    const footSection = new Container(this.footSectionID, 'outLine');
-    footSection.changeStyle('position', 'relative')
+    const mainSection = new Container(this.mainSectionID, 'main-section-menubasecap');
+
+    const footSection = new Container(this.footSectionID, 'foot-menubasecap');
 
 
     document.body.appendChild(this.darkOverlay)
@@ -72,30 +65,27 @@ class MenuBaseMap {
     })
 
     //3.2 create title form the menu
-    const labelTitle = new Label(null, null, "Agregar capa base");
-    labelTitle.changeStyle('color', 'black')
+    const labelTitle = new Label(null, 'title-menubasemap', "Agregar capa base");
+    
 
     //3.3. create foot
-    const consultButton = new Button(null, null, null, '?', () => {
+    const consultButton = new Button(null, 'consult-button', null, '?', () => {
       console.log("what you wanna know?")
     })
-    consultButton.changeStyle('position', 'absolute')
-    consultButton.changeStyle('left', '0px')
+    
 
-    const readyButton = new Button(null, null, null, 'Listo', () => {
+    const readyButton = new Button(null, 'ready-button', null, 'Listo', () => {
       this.toggleOpen()
     })
     
-    readyButton.changeStyle('right', '0px')
-
     //4. create the diferent tabs
-    const libraryTab = new TabElement('Libreía', null, 'tab', () => {
+    const libraryTab = new TabElement('Biblioteca', null, 'tab', () => {
       this.showTab(0);
     })
-    const fromUrlTab = new TabElement('desde Url', null, 'tab', () => {
+    const fromUrlTab = new TabElement('Desde Url', null, 'tab', () => {
       this.showTab(1);
     })
-    const colorTab = new TabElement('color', null, 'tab', () => {
+    const colorTab = new TabElement('Color', null, 'tab', () => {
       this.showTab(2);
     })
 
@@ -143,26 +133,18 @@ class MenuBaseMap {
 
   createFromUrl(mainSectionId) {
     const container = new Container(null, "section-container")
-    container.addClass('outLinetres');
-    container.changeStyle('width', '100%')
-    container.changeStyle('height', '100%')
-    // container.changeStyle('display', 'flex')
     
-    const infoContainer =  new Container(null, "outLine")
-    infoContainer.changeStyle('width', '55%')
-    infoContainer.changeStyle('height', '100%')
-    infoContainer.changeStyle('display', 'flex')
-    infoContainer.changeStyle('flex-direction', 'column')
+    const infoContainer =  new Container(null, "info-container")
 
 
 
-    const label = new Label(null, null, 'Añaduir una capa base desde otra fuente')
-    const inputCapName = new Input(null, null, 'text')
+    const label = new Label(null, 'lable-basemapmenu', 'Añaduir una capa base desde otra fuente')
 
-    const inputURL = new Input(null, null, 'text')
-    const inputAtribution = new Input(null, null, 'text')
-    const inputMaxZoom = new Input(null, null, 'text')
-    const inputMinZoom = new Input(null, null, 'text')
+    const inputCapName = new Input(null, 'inputtext-l-basemapmenu', 'text')
+    const inputURL = new Input(null, 'inputtext-l-basemapmenu', 'text')
+    const inputAtribution = new Input(null, 'inputtext-l-basemapmenu', 'text')
+    const inputMaxZoom = new Input(null, 'inputtext-basemapmenu', 'text')
+    const inputMinZoom = new Input(null, 'inputtext-basemapmenu', 'text')
 
     label.addTo(infoContainer);
     inputCapName.addTo(infoContainer);
@@ -173,12 +155,7 @@ class MenuBaseMap {
 
 
 
-    const prevContainer = new Container(null, "outLine")
-    prevContainer.changeStyle('width', '45%')
-    prevContainer.changeStyle('height', '100%')
-    prevContainer.changeStyle('display', 'flex')
-    prevContainer.changeStyle('flex-direction', 'column')
-    prevContainer.changeStyle('justify-content', 'center')
+    const prevContainer = new Container(null, "prev-container")
 
     const imagendeprueba = new Imagen(null, 'https://media.tenor.com/v-SkaSp7VYgAAAAC/kid-goku-peace.gif', 'goku', null, null)
     imagendeprueba.changeStyle('width', '100%')
@@ -192,52 +169,32 @@ class MenuBaseMap {
 
   createColor(mainSectionId) {
     const container = new Container(null, "section-container")
-    container.addClass('outLinetres');
-    container.changeStyle('width', '100%')
-    container.changeStyle('height', '100%')
-    // container.changeStyle('display', 'flex')
     
-    const infoContainer =  new Container(null, "outLine")
-    infoContainer.changeStyle('width', '55%')
-    infoContainer.changeStyle('height', '100%')
-    infoContainer.changeStyle('display', 'flex')
-    infoContainer.changeStyle('flex-direction', 'column')
+    
+    const infoContainer =  new Container(null, "info-container")
 
 
 
-    const label = new Label(null, null, 'Añaduir una capa base desde otra fuente')
-    const inputCapName = new Input(null, null, 'text')
+    const label = new Label(null, 'lable-basemapmenu', 'Selecciona un color como fondo')
+    
+    const inputCapName = new Input(null, 'inputtext-l-basemapmenu', 'text')
 
-    const inputURL = new Input(null, null, 'text')
-    const inputAtribution = new Input(null, null, 'text')
-    const inputMaxZoom = new Input(null, null, 'text')
-    const inputMinZoom = new Input(null, null, 'text')
+    const inputOverlappingURL = new Input(null, 'inputtext-l-basemapmenu', 'text')
 
     label.addTo(infoContainer);
+
     inputCapName.addTo(infoContainer);
-    inputURL.addTo(infoContainer);
-    inputAtribution.addTo(infoContainer);
-    inputMaxZoom.addTo(infoContainer);
-    inputMinZoom.addTo(infoContainer);
-
-
-
-    const prevContainer = new Container(null, "outLine")
-    prevContainer.changeStyle('width', '45%')
-    prevContainer.changeStyle('height', '100%')
-    prevContainer.changeStyle('display', 'flex')
-    prevContainer.changeStyle('flex-direction', 'column')
-    prevContainer.changeStyle('justify-content', 'center')
-    prevContainer.changeStyle('align-items', 'center')
+    inputOverlappingURL.addTo(infoContainer);
     
 
-    const colorPicker = new ColorPicker('base-map-menu-color-picker', null)
-    colorPicker.changeStyle('width', '100px')
-    colorPicker.changeStyle('overflow', 'hidden')
-    colorPicker.changeStyle('border-radius', '13px')
+
+
+    const prevContainer = new Container(null, "prev-container")
+
+    const colorPicker = new ColorPicker(null, 'colorpicker-basemapmenu')
 
     colorPicker.addTo(prevContainer)
-    colorPicker.createModal()
+
     infoContainer.addTo(container)
     prevContainer.addTo(container)
     container.addTo(mainSectionId)
