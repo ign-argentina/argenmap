@@ -146,7 +146,7 @@ class BaseMapMenu extends Menu {
     addBaseMapBtn.addToElement(this.container)
     // this.container.append(addBaseMapBtn);
 
-    document.querySelector(containerId).appendChild(this.container);
+    document.getElementById(containerId).appendChild(this.container);
   }
 
   addItem(itemOptions) {
@@ -359,7 +359,7 @@ class ColorPicker extends UIComponent {
     super(id, className)
 
     const container = this.createElement('div', id, className)
-
+    container.classList.add('generic-colorpicker')
     this.idContainer = id
     this.element = container;
     this.createModal()
@@ -371,13 +371,14 @@ class ColorPicker extends UIComponent {
 
     //1. creates a series of boutton objets that represent the color to select
     colorButtons.forEach(color => {
-      const colorButton = new Button(null, 'outLine', null,  "hell", () => {
+      const colorButton = new Button(null, 'darker-button', null,  null, () => {
         console.log(color);
         this.changeColorValue(color);
       });
 
       colorButton.changeStyle("backgroundColor", color);
-      colorButton.removeStyle()
+      colorButton.changeStyle("border", 'none');
+      
       colorButton.addTo(this.element);
     });
 
@@ -386,10 +387,11 @@ class ColorPicker extends UIComponent {
     }
 
     //2. it creates a input color objet an adds it to the this.idContainer set into the parameter 
-    this.color = new InputColor("helpidunnowhqatimdoing", "outLine")
+    this.color = new InputColor(null, 'darker-button')
     this.color.removeStyle()
-    this.color.changeStyle('height', '20px')
-    this.color.changeInnerHtml("Más colores");
+    this.color.changeStyle('border', 'none')
+    this.color.changeStyle('width', '100%')
+    this.color.changeValue('#4c4c4c');
     this.color.addTo(this.element);
 
 
@@ -434,6 +436,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const childContainer = new Container('childContainer', 'container-class');
   parentContainer.addToElement(document.body);
   childContainer.addToObjet(parentContainer); */
-  const baseMapMenu = new BaseMapMenu('body');
+  const baseMapMenu = new BaseMapMenu('mapa');
 });
 

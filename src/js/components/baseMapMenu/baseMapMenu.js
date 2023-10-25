@@ -136,7 +136,7 @@ class MenuBaseMap {
   createFromUrl(mainSectionId) {
     const container = new Container(null, "section-container")
     
-    const infoContainer =  new Container(null, "info-container")
+    const infoContainer =  new Container(null, "info-container-url")
 
 
 
@@ -159,9 +159,7 @@ class MenuBaseMap {
 
     const prevContainer = new Container(null, "prev-container")
 
-    const imagendeprueba = new Imagen(null, 'https://media.tenor.com/v-SkaSp7VYgAAAAC/kid-goku-peace.gif', 'goku', null, null)
-    imagendeprueba.changeStyle('width', '100%')
-    imagendeprueba.changeStyle('objet-fit', 'cover')
+    const imagendeprueba = new Imagen(null, 'src/styles/images/prev_visualisación.png', 'goku', 'prev-image-basemapmenu', null) 
 
     imagendeprueba.addTo(prevContainer)
     infoContainer.addTo(container)
@@ -173,7 +171,7 @@ class MenuBaseMap {
     const container = new Container(null, "section-container")
     
     
-    const infoContainer =  new Container(null, "info-container")
+    const infoContainer =  new Container(null, "info-container-color")
 
 
 
@@ -181,7 +179,7 @@ class MenuBaseMap {
     
     const inputCapName = new InputText(null, 'inputtext-l-basemapmenu', 'Nombre de la capa')
 
-    const inputOverlappingURL = new InputText(null, 'inputtext-l-basemapmenu', 'Url de capa superpuesta')
+    const inputOverlappingURL = new InputText(null, 'inputtext-l-basemapmenu', 'URL de capa superpuesta')
 
     label.addTo(infoContainer);
 
@@ -203,7 +201,7 @@ class MenuBaseMap {
   }
 }
 
- document.addEventListener("DOMContentLoaded", function () {
-  const menuBaseMap = new MenuBaseMap();
-  menuBaseMap.toggleOpen(2);
-}); 
+//  document.addEventListener("DOMContentLoaded", function () {
+//   const menuBaseMap = new MenuBaseMap();
+//   menuBaseMap.toggleOpen(1);
+// }); 

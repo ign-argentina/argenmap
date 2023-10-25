@@ -1,3 +1,16 @@
+.generic-colorpicker{
+    display: grid;
+    grid-template-rows: repeat(7, 14.28%);
+
+    height: 175px;
+    width: 150px;
+
+    overflow: hidden;
+    border-radius: 13px;
+
+}
+
+
 .dark-overlay {
     position: absolute;
     top: 0;
@@ -22,6 +35,7 @@
     border-radius: 10px;
     height: 64vh;
     width: 80vh;
+    max-width: 95%;
     overflow: hidden;
 
     display: flex;
@@ -118,10 +132,7 @@
 }
 
 .colorpicker-basemapmenu {
-    width: 100px;
-    overflow: hidden;
     border-radius: 13px;
-
 }
 
 .section-container {
@@ -133,15 +144,32 @@
     display: flex;
 }
 
-.info-container {
-    width: 60%;
+.info-container-url {
+    width: 55%;
     height: 100%;
     display: grid;
     grid-template-columns: 40% 40%;
     grid-template-rows: 15% 10% 10% 10% 10%;
     row-gap: 10%;
-    column-gap: 4%;
+    column-gap: 19%;
 
+}
+
+.info-container-color{
+    width: 55%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 40% 40%;
+    grid-template-rows: 15% 10% 10% 10% 10%;
+    row-gap: 10%;
+    column-gap: 19%;
+
+}
+
+.prev-image-basemapmenu{
+    width: 85%;
+    border-radius: 12px;
+    object-fit: cover;
 }
 
 .prev-container {
@@ -200,4 +228,78 @@
 .outLinedos {
     height: 30px;
     border: 1px solid blue;
+}
+
+.darker-button:hover{
+    filter: brightness(0.7);
+}
+
+
+@media (max-width: 916px) {
+    .menuContainer {
+        width: 50%;
+    }
+    
+    .tab {
+        margin-left: 11px;
+    }
+}
+@media (max-width: 766px) {
+    .menuContainer {
+        width: 50%;
+    }
+}
+@media (max-width: 670px) {
+    
+    .inputtext-basemapmenu{
+        margin-left: 2px;
+    }
+    .inputtext-l-basemapmenu{
+        margin-left: 2px;
+    }
+    .section-container {
+        flex-direction: column;
+    } 
+    .info-container-url{
+        width: 100%;
+        height: auto;
+        grid-template-rows: auto 33px 33px 33px 33px ;
+        row-gap: 5px;
+    }
+    .info-container-color{
+        width: 100%;
+        height: auto;
+        grid-template-rows: auto 33px 33px;
+        row-gap: 5px;
+    }
+    .prev-container{
+        height: 100%;
+        width: 100%;
+    }
+
+    .prev-image-basemapmenu{
+        width: auto;
+        height: 130px;
+    }
+    .tab {
+        font-size: 12px;
+        margin-left: 9px;
+        padding: 2px;
+    }
+}
+@media (max-width: 464px) {
+    .menuContainer {
+        width: 75%;
+    }
+    /*
+    .contributor-img {
+        width: 35px;
+    }
+    */
+    .tab {
+        margin-left: 7px;
+    }
+    .about-logo {
+        width: 80%;
+    }
 }
