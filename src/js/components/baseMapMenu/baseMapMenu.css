@@ -245,21 +245,31 @@
     }
 }
 @media (max-width: 766px) {
+    
     .menuContainer {
         width: 50%;
     }
+    .colorpicker-basemapmenu{
+        width: 80%;
+    }
 }
 @media (max-width: 670px) {
-    
+    .section-container {
+        flex-direction: column;
+    } 
+
+    .colorpicker-basemapmenu {
+        margin-top: 5px;
+        width: 90%;
+        height: 85%;
+
+    }
     .inputtext-basemapmenu{
         margin-left: 2px;
     }
     .inputtext-l-basemapmenu{
         margin-left: 2px;
     }
-    .section-container {
-        flex-direction: column;
-    } 
     .info-container-url{
         width: 100%;
         height: auto;
@@ -280,6 +290,7 @@
     .prev-image-basemapmenu{
         width: auto;
         height: 130px;
+        display: none;
     }
     .tab {
         font-size: 12px;
