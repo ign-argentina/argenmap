@@ -103,29 +103,22 @@ class Menu extends UIComponent {
 
 
 class BaseMapMenu extends Menu {
-  constructor(containerId) {
+  constructor(id, className) {
     super();
-    this.container = this.createMenuContainer();
+    this.element = this.createElement('div', id, className);
 
     baseMapData.forEach((option) => {
       this.addItem(option)
     });
 
-    const addBaseMapBtn = new Button('add-base-map-btn', 'add-base-map-btn', 'fa-solid fa-plus', null, this.openAddBaseMap);
-    addBaseMapBtn.addTo(this.container)
-    // this.container.append(addBaseMapBtn);
-
-    document.getElementById(containerId).appendChild(this.container);
+    const moreBaseMaps = new Button('add-base-map-btn', 'add-base-map-btn', 'fa-solid fa-plus', null, this.openAddBaseMap);
+    moreBaseMaps.addTo(this.element)
   }
 
   addItem(itemOptions) {
     const baseMapItem = new BaseMapItem(itemOptions);
     baseMapItem.changeStyle('box-shadow', '0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19)')
-    baseMapItem.addTo(this.container)
-  }
-
-  createMenuContainer() {
-    return this.createElement('div', 'base-map-menu', 'base-map-menu');
+    baseMapItem.addTo(this.element)
   }
 
   openAddBaseMap() {
@@ -138,54 +131,79 @@ class BaseMapItem extends UIComponent {
   constructor(options) {
     super();
 
-    const auxElemt = this.createElement('div', options.id, 'base-map-item');
+    this.element = this.createElement('div', options.id, 'base-map-item');
 
     const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
-    image.addTo(auxElemt)
+    image.addTo(this.element)
 
-    const text = this.createElement('span', null, 'base-map-item-text');
-    text.textContent = options.name;
-    auxElemt.appendChild(text);
+    const label = new Label(null, 'base-map-item-text', options.name)
+    label.addTo(this.element)
 
-    const button = new OptionMenuButton(options.option, options.id);
-    button.addTo(auxElemt)
+    
 
-    this.element = auxElemt;
-  }
-}
-
-class OptionMenuButton extends UIComponent {
-  constructor(options, id) {
-    super();
-    const baseMapOptsBtn = new Button('opt-base-map-btn', 'opt-base-map-btn', 'fa-solid fa-ellipsis-vertical', null, () => this.openBaseMapOpts(options, id));
-    return baseMapOptsBtn
-  }
-  openBaseMapOpts(options, id) {
-    const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
-    if (options) {
-      options.forEach(element => {
-        const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
-        if (element.leyends) {
-          const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
-          optsItem.appendChild(icon);
-          optsItem.innerText = 'Ver leyendas';
-          optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
-        }
-        if (element.shadow) {
-          const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
-          optsItem.appendChild(icon);
-          optsItem.innerText = 'Agregar sombras';
-          optsItem.addEventListener('click', () => console.log('Agregar sombras'));
-        }
-        optsContainer.appendChild(optsItem);
-      });
+    const openBaseMapOpts = (options, id) => {
+      const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
+      if (options) {
+        options.forEach(element => {
+          const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
+          if (element.leyends) {
+            const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
+            optsItem.appendChild(icon);
+            optsItem.innerText = 'Ver leyendas';
+            optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
+          }
+          if (element.shadow) {
+            const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
+            optsItem.appendChild(icon);
+            optsItem.innerText = 'Agregar sombras';
+            optsItem.addEventListener('click', () => console.log('Agregar sombras'));
+          }
+          optsContainer.appendChild(optsItem);
+        });
+      }
+      console.log(document.getElementById(id))
+      // document.getElementById(id).append(optsContainer);
     }
-    document.getElementById(id).append(optsContainer);
-  }
-  onClick(callback) {
-    this.element.addEventListener('click', callback);
+
+    const button = new Button('opt-base-map-btn', 'opt-base-map-btn', 'fa-solid fa-ellipsis-vertical', null, openBaseMapOpts(options.option, options.id));
+
+    button.addTo(this.element)
   }
 }
+
+// class OptionMenuButton extends UIComponent {
+//   constructor(options, id) {
+//     super();
+//     const baseMapOptsBtn = 
+//     return baseMapOptsBtn
+//   }
+//   openBaseMapOpts(options, id) {
+//     const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
+//     if (options) {
+//       options.forEach(element => {
+//         const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
+//         if (element.leyends) {
+//           const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
+//           optsItem.appendChild(icon);
+//           optsItem.innerText = 'Ver leyendas';
+//           optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
+//         }
+//         if (element.shadow) {
+//           const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
+//           optsItem.appendChild(icon);
+//           optsItem.innerText = 'Agregar sombras';
+//           optsItem.addEventListener('click', () => console.log('Agregar sombras'));
+//         }
+//         optsContainer.appendChild(optsItem);
+//       });
+//     }
+//     document.getElementById(id).append(optsContainer);
+//   }
+
+//   onClick(callback) {
+//     this.element.addEventListener('click', callback);
+//   }
+// }
 
 class TabElement extends UIComponent {
   //creates a tab to display a certain part of a modal
@@ -401,10 +419,9 @@ class Checkbox extends Input {
  */
 
 document.addEventListener("DOMContentLoaded", function () {
-  /* const parentContainer = new Container('parentContainer', 'container-class');
-  const childContainer = new Container('childContainer', 'container-class');
-  parentContainer.addToElement(document.body);
-  childContainer.addToObjet(parentContainer); */
-  const baseMapMenu = new BaseMapMenu('mapa');
+  
+  const baseMapMenu = new BaseMapMenu('base-map-menu', 'base-map-menu');
+  baseMapMenu.addTo('mapa')
+
 });
 
