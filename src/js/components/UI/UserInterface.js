@@ -41,42 +41,12 @@ class UIComponent {
     }
   }
 
-  // addTo(id) {
-  //   if (this.element && document.getElementById(id)) {
-  //     document.getElementById(id).appendChild(this.element);
-  //   } else {
-  //     if (this.element) {
-  //       console.error('there is not an element with such id ' + id)
-  //     } else {
-  //       console.error('this object has not html element in it')
-  //     }
-  //   }
-  // }
-
-  addToElement(element) {
-    element.appendChild(this.element)
-  }
-
-  addToObjet(objet) {
-    const parentElement = objet.getElement();
-
-    if (parentElement) {
-      parentElement.appendChild(this.element);
-    } else {
-      console.error('Parent element not found.');
-    }
-  }
-
   addClass(className) {
     if (this.element) {
       this.element.classList.add(className);
     } else {
       console.error('No se ha creado un elemento al que agregar la clase.');
     }
-  }
-
-  appendChild(element) {
-
   }
 
   changeInnerHtml(string) {
@@ -101,7 +71,6 @@ class UIComponent {
   }
 
   removeStyle() { //temporal idea
-
     this.element.style.padding = '0';
     this.element.style.margin = '0';
   }
@@ -143,7 +112,7 @@ class BaseMapMenu extends Menu {
     });
 
     const addBaseMapBtn = new Button('add-base-map-btn', 'add-base-map-btn', 'fa-solid fa-plus', null, this.openAddBaseMap);
-    addBaseMapBtn.addToElement(this.container)
+    addBaseMapBtn.addTo(this.container)
     // this.container.append(addBaseMapBtn);
 
     document.getElementById(containerId).appendChild(this.container);
