@@ -105,7 +105,9 @@ class Menu extends UIComponent {
 class BaseMapMenu extends Menu {
   constructor(id, className) {
     super();
-    this.element = this.createElement('div', id, className);
+    this.element = this.createElement('ul', id, className);
+    this.element.style.padding = '0px';
+    
 
     baseMapData.forEach((option) => {
       this.addItem(option)
@@ -131,7 +133,7 @@ class BaseMapItem extends UIComponent {
   constructor(options) {
     super();
 
-    this.element = this.createElement('div', options.id, 'base-map-item');
+    this.element = this.createElement('li', options.id, 'base-map-item');
 
     const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
     image.addTo(this.element)
