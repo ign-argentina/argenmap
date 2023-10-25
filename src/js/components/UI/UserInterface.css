@@ -6,6 +6,8 @@
   left: 50px;
   width: 300px;
   border-radius: 6px;
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  /* box-shadow: 0px 26px 30px -10px rgba(0, 0, 0, 0.69) ,0px 16px 10px -10px rgba(0, 0, 0, 0.73)  */
 }
 .base-map-item {
   background-color: rgba(255, 255, 255, 0.9);

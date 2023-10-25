@@ -151,8 +151,8 @@ class BaseMapMenu extends Menu {
 
   addItem(itemOptions) {
     const baseMapItem = new BaseMapItem(itemOptions);
-    this.container.append(baseMapItem);
-    this._items.push(baseMapItem);
+    baseMapItem.changeStyle('box-shadow', '0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19)')
+    baseMapItem.addTo(this.container)
   }
 
   createMenuContainer() {
@@ -172,16 +172,16 @@ class BaseMapItem extends UIComponent {
     const auxElemt = this.createElement('div', options.id, 'base-map-item');
 
     const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
-    image.addToElement(auxElemt)
+    image.addTo(auxElemt)
 
     const text = this.createElement('span', null, 'base-map-item-text');
     text.textContent = options.name;
     auxElemt.appendChild(text);
 
     const button = new OptionMenuButton(options.option, options.id);
-    button.addToElement(auxElemt)
+    button.addTo(auxElemt)
 
-    return auxElemt
+    this.element = auxElemt;
   }
 }
 
