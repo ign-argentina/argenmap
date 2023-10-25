@@ -161,11 +161,16 @@ class BaseMapItem extends UIComponent {
           optsContainer.appendChild(optsItem);
         });
       }
-      console.log(document.getElementById(id))
-      // document.getElementById(id).append(optsContainer);
+      
+      document.getElementById(id).append(optsContainer);
     }
 
-    const button = new Button('opt-base-map-btn', 'opt-base-map-btn', 'fa-solid fa-ellipsis-vertical', null, openBaseMapOpts(options.option, options.id));
+    const button = new Button(
+      'opt-base-map-btn',
+      'opt-base-map-btn',
+      'fa-solid fa-ellipsis-vertical',
+      null,
+      () => openBaseMapOpts(options.option, options.id));
 
     button.addTo(this.element)
   }
