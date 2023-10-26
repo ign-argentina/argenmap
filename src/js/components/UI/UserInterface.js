@@ -2,7 +2,26 @@
  * @todo Evaluate using customElements.
 */
 let batman_URL = "https://media.tenor.com/GvhT-DxYb1IAAAAC/batman-superhero.gif";
-let baseMapData = [{ name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp", option: [{ leyends: 'src/styles/images/legends/argenmap.webp', shadow: true }] }, { name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp", option: "" }, { name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp", option: "" }, { name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp", option: "" }];
+let baseMapData = [
+  {
+    name: "Argenmap", id: 'argenmap', imgSrc: "src/styles/images/argenmap.webp",
+    option: [{ leyends: 'src/styles/images/legends/argenmap.webp', shadow: true }]
+  },
+
+  {
+    name: "Argenmap Gris", id: 'argenmap-gris', imgSrc: "src/styles/images/argenmap-gris.webp",
+    option: ""
+  },
+
+  {
+    name: "Argenmap oscuro", id: 'argenmap-oscuro', imgSrc: "src/styles/images/argenmap-oscuro.webp",
+    option: ""
+  },
+
+  {
+    name: "Argenmap Topo", id: 'argenmap-topo', imgSrc: "src/styles/images/argenmap-topo.webp",
+    option: ""
+  }];
 
 class UIComponent {
   constructor() {
@@ -77,12 +96,13 @@ class UIComponent {
 }
 
 class Menu extends UIComponent {
-  // returns an empty list with methods for sorting, filter, etc
-  constructor() {
+  //an empty list with methods for sorting, filter, etc
+  constructor(id = null, className = null) {
     super();
     this._items = [];
     this._groups = [];
     this._selectedItems = [];
+    this.element = this.createElement('ul', id, className)
   }
 
   addItem(itemOptions) { }
@@ -107,7 +127,7 @@ class BaseMapMenu extends Menu {
     super();
     this.element = this.createElement('ul', id, className);
     this.element.style.padding = '0px';
-    
+
 
     baseMapData.forEach((option) => {
       this.addItem(option)
@@ -118,8 +138,8 @@ class BaseMapMenu extends Menu {
   }
 
   addItem(itemOptions) {
-    const baseMapItem = new BaseMapItem(itemOptions);
-    baseMapItem.changeStyle('box-shadow', '0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19)')
+    const baseMapItem = new BaseCapTemplate(itemOptions);
+    
     baseMapItem.addTo(this.element)
   }
 
@@ -129,52 +149,84 @@ class BaseMapMenu extends Menu {
   }
 }
 
-class BaseMapItem extends UIComponent {
+class BaseCapTemplate extends UIComponent {
   constructor(options) {
     super();
+    this.isShowingOptions = false
 
-    this.element = this.createElement('li', options.id, 'base-map-item');
+    this.element = this.createElement('li', options.id, null);
+
+    const container = new Container(null, 'base-cap-template');
 
     const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
-    image.addTo(this.element)
+    image.addTo(container)
 
     const label = new Label(null, 'base-map-item-text', options.name)
-    label.addTo(this.element)
+    label.addTo(container)
 
-    
+    const optionsContainer = new Menu()
+    optionsContainer.changeStyle('grid-column', '1/4')
+
 
     const openBaseMapOpts = (options, id) => {
-      const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
-      if (options) {
-        options.forEach(element => {
-          const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
-          if (element.leyends) {
-            const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
-            optsItem.appendChild(icon);
-            optsItem.innerText = 'Ver leyendas';
-            optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
-          }
-          if (element.shadow) {
-            const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
-            optsItem.appendChild(icon);
-            optsItem.innerText = 'Agregar sombras';
-            optsItem.addEventListener('click', () => console.log('Agregar sombras'));
-          }
-          optsContainer.appendChild(optsItem);
-        });
+      if (this.isShowingOptions == false) {
+
+        const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
+
+        if (options) {
+
+          options.forEach(element => {
+            const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
+
+            if (element.leyends) {  //If the element has legends it creates a...
+              const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
+              optsItem.appendChild(icon);
+              optsItem.innerText = 'Ver leyendas';
+              optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
+
+            }
+
+
+            if (element.shadow) { //If the element has shadows it creates a...
+              const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
+              optsItem.appendChild(icon);
+              optsItem.innerText = 'Agregar sombras';
+              optsItem.addEventListener('click', () => console.log('Agregar sombras'));
+            }
+            optsContainer.appendChild(optsItem);
+          });
+
+
+          document.getElementById(id).append(optsContainer);
+        }
+        this.isShowingOptions = true;
+      } else {
+        const element = document.getElementById(id);
+        while (element.firstChild) {
+          element.removeChild(element.firstChild);
+        }
       }
-      
-      document.getElementById(id).append(optsContainer);
     }
 
-    const button = new Button(
-      'opt-base-map-btn',
-      'opt-base-map-btn',
-      'fa-solid fa-ellipsis-vertical',
-      null,
-      () => openBaseMapOpts(options.option, options.id));
+    if (options.option) {
+      const button = new Button(
+        'opt-base-map-btn',
+        'opt-base-map-btn',
+        'fa-solid fa-ellipsis-vertical',
+        '',
+        () => openBaseMapOpts(options.option, options.id));
+      button.changeStyle('justify-self', 'end')
+      button.addTo(container)
+    }
 
-    button.addTo(this.element)
+
+
+
+
+    optionsContainer.addTo(container)
+    container.addTo(this.element)
+
+
   }
 }
 
@@ -300,7 +352,7 @@ class Button extends UIComponent {
     }
 
     this.element = button;
-    
+
   }
 
 
@@ -365,14 +417,14 @@ class ColorPicker extends UIComponent {
 
     //1. creates a series of boutton objets that represent the color to select
     colorButtons.forEach(color => {
-      const colorButton = new Button(null, 'darker-button', null,  null, () => {
+      const colorButton = new Button(null, 'darker-button', null, null, () => {
         console.log(color);
         this.changeColorValue(color);
       });
 
       colorButton.changeStyle("backgroundColor", color);
       colorButton.changeStyle("border", 'none');
-      
+
       colorButton.addTo(this.element);
     });
 
@@ -426,7 +478,7 @@ class Checkbox extends Input {
  */
 
 document.addEventListener("DOMContentLoaded", function () {
-  
+
   const baseMapMenu = new BaseMapMenu('base-map-menu', 'base-map-menu');
   baseMapMenu.addTo('mapa')
 
