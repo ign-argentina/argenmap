@@ -161,50 +161,64 @@ class BaseCapTemplate extends UIComponent {
     const image = new Imagen(options.id, options.imgSrc, options.name, options.className, options.name);
     image.addTo(container)
 
-    const label = new Label(null, 'base-map-item-text', options.name)
+    const label = new Label(null, 'base-map-item-text',null, options.name)
     label.addTo(container)
 
     const optionsContainer = new Menu()
     optionsContainer.changeStyle('grid-column', '1/4')
+    optionsContainer.changeStyle('padding', '0px')
 
 
     const openBaseMapOpts = (options, id) => {
       if (this.isShowingOptions == false) {
-
-        const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
-
         if (options) {
 
           options.forEach(element => {
-            const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
-
             if (element.leyends) {  //If the element has legends it creates a...
-              const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
-              optsItem.appendChild(icon);
-              optsItem.innerText = 'Ver leyendas';
-              optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
+
+              const leyendButtonContainer = new Container(null, 'optionbutton-container')
+              const legendIcon = new Label(null, null, 'fa-solid fa-info', null)
+              const legendTitle = new Label(null, null, null, 'Ver leyenda')
+              const futurecheckbox = new Button(null, null, null, null, () => console.log('Mostrar leyendas'))
+
+              // optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
+
+              legendIcon.addTo(leyendButtonContainer)
+              legendTitle.addTo(leyendButtonContainer)
+              futurecheckbox.addTo(leyendButtonContainer)
+
+              leyendButtonContainer.addTo(optionsContainer)
 
             }
 
 
             if (element.shadow) { //If the element has shadows it creates a...
-              const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
-              optsItem.appendChild(icon);
-              optsItem.innerText = 'Agregar sombras';
-              optsItem.addEventListener('click', () => console.log('Agregar sombras'));
+
+
+              const shadowButtonContainer = new Container(null, 'optionbutton-container')
+              const shadowIcon = new Label(null, null, 'fa-solid fa-mountain', null)
+              const shadowTitle = new Label(null, null, null, 'Agregar sombras de motaña')
+              const futurecheckbox = new Button(null, null, null, null, () => console.log('Agregar sombras de motaña'))
+
+              // optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
+
+              shadowIcon.addTo(shadowButtonContainer)
+              shadowTitle.addTo(shadowButtonContainer)
+              futurecheckbox.addTo(shadowButtonContainer)
+
+              shadowButtonContainer.addTo(optionsContainer)
+
             }
-            optsContainer.appendChild(optsItem);
           });
 
-
-          document.getElementById(id).append(optsContainer);
         }
         this.isShowingOptions = true;
       } else {
-        const element = document.getElementById(id);
+        const element = optionsContainer.getElement()
         while (element.firstChild) {
           element.removeChild(element.firstChild);
         }
+        this.isShowingOptions = false;
       }
     }
 
@@ -302,16 +316,30 @@ class Imagen extends UIComponent {
   }
 }
 class Label extends UIComponent {
-  constructor(id, className, innerHTML) {
+  constructor(id, className, iconClass, textContent) {
     super();
+
     const label = this.createElement('span', id, className);
-    label.innerHTML = innerHTML;
+    
+    if (iconClass) {
+      const icon = this.createElement('i', null, iconClass);
+      label.appendChild(icon);
+    }
+
+    if (textContent) {
+      label.appendChild(document.createTextNode(textContent));
+    }
 
     this.element = label;
   }
 
-  editContent(newText) {
-    this.element.innerHTML = newText;
+  setText(textContent) {
+    while (this.element.firstChild) {
+      this.element.removeChild(this.element.firstChild);
+    }
+    if (textContent) {
+      this.element.appendChild(document.createTextNode(textContent));
+    }
   }
 }
 
