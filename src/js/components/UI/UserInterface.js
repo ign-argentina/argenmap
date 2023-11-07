@@ -91,7 +91,7 @@ class Group extends Menu {
 
 }
 
-class Item extends UIComponent {
+class UIItem extends UIComponent {
     // returns a menu item with a label, icon and options button
     constructor() {
         super();
@@ -121,7 +121,7 @@ class Dialog extends UIComponent {
         super();
     }
 }
-class Tab extends UIComponent {
+class UITab extends UIComponent {
     // returns a single empty tab with custom text
     constructor() {
         super();
