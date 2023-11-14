@@ -1,10 +1,10 @@
 class Layer {
     constructor(name, title, keywords, icon) {
         this._id = null,
-            this.name = name,
-            this.title = title,
-            this.keywords = keywords,
-            this.icon = icon
+        this.name = name,
+        this.title = title,
+        this.keywords = keywords,
+        this.icon = icon
     }
     get id() {
         return this._id;
@@ -24,14 +24,19 @@ class Layer {
 
 class BaseLayer extends Layer {
     constructor(theme, url) {
-        super()
+        super(),
         this.theme = theme,
         this.url = url;
     }
     addTo(map) {
         console.log("added");
     }
-    setOverlay(layer) { }
+    setOverlay(layer) {
+        console.log("overlay set");
+    }
+    showLegend() {
+        console.log("legend shown");
+    }
 }
 
 class OverlayLayer extends Layer {
