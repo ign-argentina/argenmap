@@ -77,7 +77,7 @@ class UIComponent {
   changeStyle(styleProperty, styleValue) {
     if (this.element) {
       this.element.style[styleProperty] = styleValue;
-      console.log("im doing somethin")
+      //console.log("im doing somethin")
     }
   }
 
