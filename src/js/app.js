@@ -256,7 +256,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           } else {
             // Process item if it's in profile
             matchItemProfile = app.profiles[app.profile].data.find(
-              (e) => e == item.id
+              (e) => e == item.class
             );
           }
 
