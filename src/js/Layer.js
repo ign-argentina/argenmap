@@ -66,11 +66,13 @@ class LayerGroup extends Layer {
 }
 
 class RasterLayer extends OverlayLayer {
-    constructor() {
+    constructor(bands) {
         super()
         this.bands = bands;
     }
-    exportLayer() { }
+    exportLayer() {
+        console.log("export")
+    }
 }
 class VectorLayer extends OverlayLayer {
     constructor(properties, srs, style) {
@@ -79,7 +81,9 @@ class VectorLayer extends OverlayLayer {
         this.projection = srs,
         this.style = style;
     }
-    exportLayer() { }
+    exportLayer() {
+        console.log("export")
+    }
     setStyle(style) { }
     addProperty() { }
     removeProperty() { }
