@@ -5,7 +5,6 @@
 
 .redIcon {
   color: rgba(255, 0, 0, 0.637);
-  margin-top: 4.5px;
 }
 
 .map-label {
@@ -26,4 +25,9 @@
   height: auto !important;
   background-color: transparent;
   display: flex;
+}
+
+#editableLabelBtn > i{
+  font-size: large;
+  line-height: inherit;
 }

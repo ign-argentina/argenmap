@@ -46,9 +46,8 @@ class EditableLabel {
         .addListener(controlDiv, "click", L.DomEvent.preventDefault)
         .addListener(controlDiv, "click", function () { });
 
-        const icon = document.createElement("i");
-        icon.innerHTML= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: #333;transform: ;msFilter:;"><path d="M5 8h2V6h3.252L7.68 18H5v2h8v-2h-2.252L13.32 6H17v2h2V4H5z"></path></svg>'
-        //icon.classList = "fa-solid fa-pen";
+      const icon = document.createElement("i");
+      icon.classList = "bx bx-text";
 
       controlUI.title = this.options.title;
       controlUI.id = "editableLabelBtn";
@@ -226,7 +225,7 @@ class EditableLabel {
     drawnItems.addLayer(textLayer);
 
     // Adjust the height of textarea if there is more than one line
-    textarea.dispatchEvent(new KeyboardEvent("keydown", {key: 'Tab'}));
+    textarea.dispatchEvent(new KeyboardEvent("keydown", { key: 'Tab' }));
   };
 
   activate = () => {
@@ -252,15 +251,22 @@ class EditableLabel {
   _updateButton() {
     let control = this.control.getContainer().firstElementChild;
     let controlIcon = control.querySelectorAll("i")[0];
-    controlIcon.classList.toggle("fa-edit");
-    controlIcon.classList.toggle("fa-times");
-    controlIcon.classList.toggle("redIcon");
+
+    if (controlIcon.classList.contains("bx-text")) {
+      controlIcon.classList.remove("bx", "bx-text");
+      controlIcon.classList.add("fa-solid", "fa-xmark", "redIcon");
+    } else {
+      controlIcon.classList.remove("fa-solid", "fa-xmark", "redIcon");
+      controlIcon.classList.add("bx", "bx-text");
+    }
+
     if (controlIcon.classList.contains("redIcon")) {
       control.title = "Desactivar";
     } else {
       control.title = this.title;
     }
   }
+
 }
 
 const editableLabel = new EditableLabel();
