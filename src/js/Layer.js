@@ -84,14 +84,17 @@ class VectorLayer extends OverlayLayer {
     exportLayer() {
         console.log("export")
     }
-    setStyle(style) {
-        console.log("style added")
+    setStyle(newStyle) {
+        console.log(newStyle + " added")
+        this.style = newStyle;
     }
-    addProperty() {
-        console.log("property added")
+    addProperty(newProp) {
+        console.log("property added: " + newProp)
+        this.properties = newProp
     }
     removeProperty() {
         console.log("property removed")
+        this.properties = null
     }
 }
 
@@ -146,7 +149,3 @@ class LayerStyle {
         // this = Object.assign(this.defaultStyle);
     }
 }
-
-
-let bltest = new BaseLayer("theme1","url.com");
-bltest.id = "doom";
