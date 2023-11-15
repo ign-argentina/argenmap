@@ -165,7 +165,7 @@ class AboutUs {
         const innerReadmeText = document.createElement('div');
         innerReadmeText.style.margin = "10px";
 
-        this.dataGetter.loadMD("https://raw.githubusercontent.com/ign-argentina/argenmap/master/README.md", 4, 7)
+        this.dataGetter.loadMD("/README.md", 4, 7)
             .then(selectedText => {
                 innerReadmeText.innerHTML = selectedText;
             });
