@@ -77,7 +77,6 @@ class UIComponent {
   changeStyle(styleProperty, styleValue) {
     if (this.element) {
       this.element.style[styleProperty] = styleValue;
-      //console.log("im doing somethin")
     }
   }
 
@@ -174,14 +173,11 @@ class BaseCapTemplate extends UIComponent {
         if (options) {
 
           options.forEach(element => {
-            if (element.leyends) {  //If the element has legends it creates a...
-
+            if (element.leyends) {
               const leyendButtonContainer = new Container(null, 'optionbutton-container')
               const legendIcon = new Label(null, null, 'fa-solid fa-info', null)
               const legendTitle = new Label(null, null, null, 'Ver leyenda')
               const futurecheckbox = new Button(null, null, null, null, () => console.log('Mostrar leyendas'))
-
-              // optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
 
               legendIcon.addTo(leyendButtonContainer)
               legendTitle.addTo(leyendButtonContainer)
@@ -192,15 +188,12 @@ class BaseCapTemplate extends UIComponent {
             }
 
 
-            if (element.shadow) { //If the element has shadows it creates a...
-
-
+            if (element.shadow) {
               const shadowButtonContainer = new Container(null, 'optionbutton-container')
               const shadowIcon = new Label(null, null, 'fa-solid fa-mountain', null)
               const shadowTitle = new Label(null, null, null, 'Agregar sombras de motaña')
               const futurecheckbox = new Button(null, null, null, null, () => console.log('Agregar sombras de motaña'))
 
-              // optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
 
               shadowIcon.addTo(shadowButtonContainer)
               shadowTitle.addTo(shadowButtonContainer)
@@ -244,40 +237,6 @@ class BaseCapTemplate extends UIComponent {
   }
 }
 
-// class OptionMenuButton extends UIComponent {
-//   constructor(options, id) {
-//     super();
-//     const baseMapOptsBtn = 
-//     return baseMapOptsBtn
-//   }
-//   openBaseMapOpts(options, id) {
-//     const optsContainer = this.createElement('div', 'base-map-opts-menu', 'base-map-opts-menu');
-//     if (options) {
-//       options.forEach(element => {
-//         const optsItem = this.createElement('div', 'bm-opt-item', 'bm-opt-item');
-//         if (element.leyends) {
-//           const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-info');
-//           optsItem.appendChild(icon);
-//           optsItem.innerText = 'Ver leyendas';
-//           optsItem.addEventListener('click', () => console.log('Mostrar leyendas'));
-//         }
-//         if (element.shadow) {
-//           const icon = this.createElement('span', 'opt-btn-icon', 'fa-solid fa-mountain');
-//           optsItem.appendChild(icon);
-//           optsItem.innerText = 'Agregar sombras';
-//           optsItem.addEventListener('click', () => console.log('Agregar sombras'));
-//         }
-//         optsContainer.appendChild(optsItem);
-//       });
-//     }
-//     document.getElementById(id).append(optsContainer);
-//   }
-
-//   onClick(callback) {
-//     this.element.addEventListener('click', callback);
-//   }
-// }
-
 class TabElement extends UIComponent {
   //creates a tab to display a certain part of a modal
   constructor(name, id, className, event) {
@@ -297,7 +256,6 @@ class TabElement extends UIComponent {
 }
 
 class Imagen extends UIComponent {
-  // returns an image
   constructor(id, src, altTxt, className, title) {
     super();
     const img = this.createElement('img', id, className);
@@ -416,7 +374,7 @@ class InputText extends Input {
 }
 class InputColor extends Input {
   constructor(id, className) {
-    super(id, className, 'color'); // Llama al constructor de la clase base con el tipo 'color'
+    super(id, className, 'color'); 
   }
   whatColor() {
     return this.element.value;
@@ -446,7 +404,6 @@ class ColorPicker extends UIComponent {
     //1. creates a series of boutton objets that represent the color to select
     colorButtons.forEach(color => {
       const colorButton = new Button(null, 'darker-button', null, null, () => {
-        console.log(color);
         this.changeColorValue(color);
       });
 
@@ -473,7 +430,6 @@ class ColorPicker extends UIComponent {
 
   //3. the color will be taken from the inputColor objet, so we will need to change the color of it.
   changeColorValue(color) {
-    console.log("changing color")
     this.color.setValue(color);
   }
 

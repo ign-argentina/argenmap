@@ -65,7 +65,7 @@ class MenuBaseMap {
     })
 
     //3.2 create title form the menu
-    const labelTitle = new Label(null, 'title-menubasemap', "Agregar capa base");
+    const labelTitle = new Label(null, 'title-menubasemap', null, "Agregar capa base");
     
 
     //3.3. create foot
@@ -140,7 +140,7 @@ class MenuBaseMap {
 
 
 
-    const label = new Label(null, 'lable-basemapmenu', 'Añaduir una capa base desde otra fuente')
+    const label = new Label(null, 'lable-basemapmenu', null, 'Añaduir una capa base desde otra fuente')
 
     const inputCapName = new InputText(null, 'inputtext-l-basemapmenu', 'Nombre de la capa')
     const inputURL = new InputText(null, 'inputtext-l-basemapmenu', 'URL')
@@ -175,7 +175,7 @@ class MenuBaseMap {
 
 
 
-    const label = new Label(null, 'lable-basemapmenu', 'Selecciona un color como fondo')
+    const label = new Label(null, 'lable-basemapmenu', null, 'Selecciona un color como fondo')
     
     const inputCapName = new InputText(null, 'inputtext-l-basemapmenu', 'Nombre de la capa')
 
