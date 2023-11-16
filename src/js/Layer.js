@@ -40,9 +40,10 @@ class BaseLayer extends Layer {
 }
 
 class OverlayLayer extends Layer {
-    constructor(zIndex) {
+    constructor(zIndex, opacity) {
         super()
         this.zIndex = zIndex;
+        this.opacity = opacity;
     }
     addTo(map) { }
     getBounds() { }
@@ -73,16 +74,36 @@ class RasterLayer extends OverlayLayer {
     exportLayer() { }
 }
 class VectorLayer extends OverlayLayer {
-    constructor(properties, srs, style) {
+    constructor(properties, srs, style, color, type) {
         super()
         this.properties = properties,
         this.projection = srs,
         this.style = style;
+        this.color = color;
+        this.opacity = 1;
+        this.type = type
     }
+    
     exportLayer() { }
-    setStyle(style) { }
-    addProperty() { }
-    removeProperty() { }
+
+    //downloadGeoJSON()
+    //getGeoJSON()
+
+    addProperty(propertyName, propertyValue) {
+        this.properties[propertyName] = propertyValue;
+    }
+    removeProperty(propertyName) {
+        delete this.properties[propertyName];
+    }
+    setStyle(newStyle) {
+        this.style = newStyle;
+    }
+    setOpacity(opacity) {
+        this.opacity = opacity;
+    }
+    setColor(color) {
+        this.color = color;
+    }
 }
 
 // class LayerStyle {
