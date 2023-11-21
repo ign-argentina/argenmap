@@ -83,13 +83,26 @@ class VectorLayer extends OverlayLayer {
         this.style = style;
         this.color = color;
         this.opacity = 1;
-        this.type = type
+        this.type = type;
+        this.geoJSON = null;
     }
     
     exportLayer() { }
+    //let properties = {"name": "Ejemplo 1","popupContent": "Esto es un ejemplo de capa vectorial","doom": "eternal"}
+    getGeoJSON() {
+        this.geoJSON = {
+            "type": "Feature",
+            "properties": this.properties,
+            "geometry": {
+                "type": this.type,
+                "coordinates": [0, 0]
+            }
+        };
+    }
 
-    //downloadGeoJSON()
-    //getGeoJSON()
+    addTo(map) {
+        L.geoJSON(this.geoJSON).addTo(map);
+    }
 
     addProperty(propertyName, propertyValue) {
         this.properties[propertyName] = propertyValue;
