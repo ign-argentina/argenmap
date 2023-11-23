@@ -121,7 +121,12 @@ const login = {
 
   submit: function (event) {
     event.preventDefault();
-    login._geoserver(loginForm.name.value, loginForm.pwd.value);
+    let loginFormFilled = loginForm.name.value.length && loginForm.pwd.value.length;
+    if (loginFormFilled) {
+      login._geoserver(loginForm.name.value, loginForm.pwd.value);
+    } else {
+      alert("Fill user and password fields for login.");
+    }
   },
 
   resetPwd: function (event) {
