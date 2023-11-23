@@ -11,7 +11,7 @@ const login = {
         let status = xhr.status;
         if (status >= 200 && status < 400) {
           callback ? callback(res) : res;
-          console.log(res, xhr.response);
+          // console.log(res, xhr.response);
         } else {
           console.log(`Ajax request returned error: ${xhr.response}`);
         }
@@ -47,6 +47,8 @@ const login = {
         if(isLogged) {
           app.changeProfile("logged");
           $('#loginModal').modal('hide');
+          document.getElementById("loginBtn").classList.add("hidden");
+          document.getElementById("logoutBtn").classList.remove("hidden");
         } else {
           alert("GeoServer login failed");
         }
@@ -120,8 +122,6 @@ const login = {
   submit: function (event) {
     event.preventDefault();
     login._geoserver(loginForm.name.value, loginForm.pwd.value);
-    document.getElementById("loginBtn").classList.add("hidden");
-    document.getElementById("logoutBtn").classList.remove("hidden");
   },
 
   resetPwd: function (event) {
