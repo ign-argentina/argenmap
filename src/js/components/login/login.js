@@ -41,16 +41,28 @@ const login = {
         password: pwd
       },
       contentType: contentType,
-      url: url
+      url: url,
+      success: function (data, request) {
+        let isLogged = data.includes("../j_spring_security_logout"); // check if a specific location is mentioned in the response body, if not the login process failed
+        if(isLogged) {
+          app.changeProfile("logged");
+          $('#loginModal').modal('hide');
+        } else {
+          alert("GeoServer login failed");
+        }
+      },
+      error: function (error) {
+        alert(error);
+      }
     });
     // se ejecuta cuando la peticion finaliza
-    ajax.done(function () {
+    /* ajax.done(function () {
 
       if (true) {
         app.changeProfile("logged");
         $('#loginModal').modal('hide');
       }
-    });
+    }); */
     /* let usrPwd = `username=${name}&password=${pwd}`,
       gsUrl = `https://www.idecom.gob.ar/geoserver/j_spring_security_check`,//`${window.location.origin}/geoserver/j_spring_security_check`,
       data = {
