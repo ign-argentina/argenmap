@@ -639,6 +639,7 @@ Leaflet popup featureInfo
 }
 .individualFeature {
   word-wrap: break-word;
+  padding: 1em 0em !important;
 }
 .individualFeature h4 {
   margin: 9px 0px !important;
@@ -646,6 +647,8 @@ Leaflet popup featureInfo
 .individualFeature ul {
   list-style-type: none;
   padding-left: 0px;
+  overflow: auto;
+  max-height: 60vh;
 }
 .leaflet-popup-content {
   /* max-width: fit-content; */
