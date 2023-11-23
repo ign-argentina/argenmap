@@ -88,7 +88,7 @@ class VectorLayer extends OverlayLayer {
     }
     
     exportLayer() { }
-    //let properties = {"name": "Ejemplo 1","popupContent": "Esto es un ejemplo de capa vectorial","doom": "eternal"}
+
     getGeoJSON() {
         this.geoJSON = {
             "type": "Feature",
@@ -120,6 +120,13 @@ class VectorLayer extends OverlayLayer {
         this.color = color;
     }
 }
+
+let propertiesTest1 = {"name": "Ejemplo 1","popupContent": "Esto es un ejemplo de capa vectorial mas","doom": "1993"};
+let vectorTest = new VectorLayer(propertiesTest1,"src","styl2","col","Point");
+vectorTest.getGeoJSON();
+console.log(vectorTest.geoJSON)
+//vectorTest.addTo(mapa);
+//vectorTest.addProperty("quake", "arena");
 
 class LayerStyle {
     constructor(options) {
