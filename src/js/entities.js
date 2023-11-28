@@ -679,12 +679,12 @@ class LayersInfoWMS extends LayersInfo {
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
     _gestorMenu.addItemGroup(groupAux);
-    }
-    
-    /**
-     * Parses geoserver capabilities and creates a menu.
-     * @param {Object} _gestorMenu - The menu manager.
-     */
+  }
+
+  /**
+   * Parses geoserver capabilities and creates a menu.
+   * @param {Object} _gestorMenu - The menu manager.
+   */
   _parseRequest(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
     const impresorItem = new ImpresorItemHTML();
@@ -794,6 +794,7 @@ class LayersInfoWMS extends LayersInfo {
             gestorMenu.allLayersAreLoaded = true;
           }
         }
+        gestorMenu.printMenu();
       })
       .catch(error => {
         console.error("Error loading capabilities:", error);
@@ -1201,7 +1202,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
     let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
     let host = thisObj.getHost() + serviceParams;
     $("#temp-menu").load(
-      host,      
+      host,
       function () {
         var content = $("#temp-menu").find("contents");
         var keywordHtml = $("#temp-menu").find("Keyword");
@@ -2498,6 +2499,7 @@ class GestorMenu {
     return aName < bName ? -1 : aName > bName ? 1 : 0;
   }
 
+  // imprime el menu de capas
   executeLayersInfo() {
     if (this.getLazyInitialization() == true) {
       for (var key in this.layersInfo) {
@@ -2599,6 +2601,7 @@ class GestorMenu {
     }
   }
 
+  //llama a imprimir el menu de capas
   print() {
     this.executeLayersInfo();
   }
@@ -2768,9 +2771,9 @@ class GestorMenu {
     for (var key in aSections) {
       sInitialHTML += aSections[key].join("") + "</div>";
     }
-    
+
     sInitialHTML += "</div>";
-    
+
     this.getMenuDOM().html(sInitialHTML);
 
     let sidebar = document.getElementById("sidebar");
@@ -3368,7 +3371,7 @@ class Menu_UI {
       </div>
       </div>`;
 
-        
+
     let subItemnew = document.createElement("div");
     subItemnew.innerHTML = `
       <div id="lista-${childName}" class="menu5 panel-default">
@@ -3382,16 +3385,14 @@ class Menu_UI {
       <div class="panel-body" id ="${childName}-panel-body"></div>
       </div>
       </div>`;
-    
-    
-    
+
     let searchForm = document.getElementById("searchForm"),
-        isParent = document.getElementById(`lista-${parentNamev}`);
-    if(!isParent) {
+      isParent = document.getElementById(`lista-${parentNamev}`);
+    if (!isParent) {
       searchForm.after(parentItemnew);
     }
     let location = document.getElementById(`${parentNamev}-panel-body`);
-    location.appendChild(subItemnew)    
+    location.appendChild(subItemnew)
   }
 
   addLayerOption({
@@ -3683,7 +3684,7 @@ class Menu_UI {
     img_legend.src = min_url_img;
     img_legend.setAttribute("onerror", "showImageOnError(this)");
     capa_legend_div.append(img_legend);
-    
+
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
     resize_img_icon.style = "align-self: center;font-size: 14px";
@@ -4004,7 +4005,7 @@ class Menu_UI {
       notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
 
     if (notLegendFromFile) {
-      layer.legend +=  _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
+      layer.legend += _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
     }
 
     let img_icon = document.createElement("div");
