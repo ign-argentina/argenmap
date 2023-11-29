@@ -80,7 +80,7 @@ const login = {
   },
 
   load: async function () {
-    await login._append("src/js/components/login/navbtn.html", "html", ".navbar-new");
+    await login._append("src/js/components/login/navbtn.html", "html", "#geoserver-login-btn");
     await login._append("src/js/components/login/form.html", "html", "body");
     login._listeners();
   },

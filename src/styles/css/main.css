@@ -1073,21 +1073,21 @@ SideBar
 /*******************************
 New navbar
 *******************************/
-@media (max-width: 390px) {
+@media (max-width: 410px) {
   .navbar-new-content {
     margin: 0% 4px !important;
   }
 }
 .navbar-new {
   display: flex;
-  width: 100%;
+  width: auto;
   flex-wrap: nowrap;
   justify-content: space-between;
   overflow: hidden;
 }
 .navbar-new-content {
   flex: inherit;
-  margin: 0.1rem 1.5rem;
+  margin: 0.1rem 0.7rem;
   text-align: inherit;
 }
 .navbar-button {
@@ -1108,6 +1108,15 @@ New navbar
   background-position-y: center;
   align-self: center;
   display: flex;
+}
+@media (max-width: 460px) {
+  #logo-help {
+    display: none;
+  }
+}
+#geoserver-login-btn{
+  width: auto;
+  align-self: center;
 }
 #logo-navbar>div>a,
 #logo-help>a {
