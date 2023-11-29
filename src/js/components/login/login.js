@@ -2,7 +2,6 @@ const login = {
   res: {},
 
   _ajax: function (data, callback) { // In case there isn't jQuery, fetch may be an option
-
     let xhr = new XMLHttpRequest();
 
     xhr.onreadystatechange = function () {
@@ -30,7 +29,7 @@ const login = {
 
   _geoserver: function (name, pwd) {
     // url del servlet del geoserver
-    var url = `https://www.idecom.gob.ar/geoserver/j_spring_security_check`;
+    var url = `${window.location.origin}/geoserver/j_spring_security_check`;
     // parametros para el login
     var contentType = "application/x-www-form-urlencoded";
     //se inicializa la petición ajax
@@ -44,7 +43,7 @@ const login = {
       url: url,
       success: function (data, request) {
         let isLogged = data.includes("../j_spring_security_logout"); // check if a specific location is mentioned in the response body, if not the login process failed
-        if(isLogged) {
+        if (isLogged) {
           app.changeProfile("logged");
           $('#loginModal').modal('hide');
           document.getElementById("loginBtn").classList.add("hidden");
@@ -54,48 +53,15 @@ const login = {
         }
       },
       error: function (error) {
-        alert(error);
+        alert("Error: " + error);
       }
     });
-    // se ejecuta cuando la peticion finaliza
-    /* ajax.done(function () {
-
-      if (true) {
-        app.changeProfile("logged");
-        $('#loginModal').modal('hide');
-      }
-    }); */
-    /* let usrPwd = `username=${name}&password=${pwd}`,
-      gsUrl = `https://www.idecom.gob.ar/geoserver/j_spring_security_check`,//`${window.location.origin}/geoserver/j_spring_security_check`,
-      data = {
-        params: {
-          username: name,
-          password: pwd
-        },
-        //params: usrPwd,
-        url: gsUrl,
-        method: 'POST',
-        reqHeader: {
-          key: 'Content-type',
-          val: 'application/x-www-form-urlencoded'
-        },
-      };
-    console.log(data);
-    login._ajax(data, (res) => {
-      console.info(`Response status ${res.status}`);
-      console.log(res); 
-      app.changeProfile("logged"); // Logged should be a state, not a profile
-      $('#loginModal').modal('hide');
-    });*/
   },
 
   _append: async function (file, format, parent) {
     // file must match '/path/to/file.extension'
     let parentElement = document.querySelector(parent);
     let path = window.location.pathname;
-
-    //parentElement = parent == 'body' ? document.body : document.getElementById(parent);
-
     let element = document.createElement("div");
 
     const elementContent = await fetch(window.location.origin + path.replace('index.html', '') + file)
@@ -179,7 +145,6 @@ const login = {
       $('#loginModal').modal('hide');
     });
   },
-
 
   logout: function () {
     gsUrl = `${window.location.origin}/geoserver/j_spring_security_logout`,
