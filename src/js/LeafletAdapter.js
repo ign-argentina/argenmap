@@ -45,7 +45,7 @@ class BaseLayer {
                 attribution: this.opts.attribution,
                 minZoom: this.opts.minZoom,
                 maxZoom: this.opts.maxZoom,
-                subdomains: this.opts.subdomains,
+                // subdomains: this.opts.subdomains,
                 errorTileUrl: this.opts.errorTileUrl,
                 zoomOffset: this.opts.zoomOffset,
                 tms: this.opts.tms
@@ -64,16 +64,16 @@ class BaseLayer {
 
 let basemaps = {
     argenmap: {
-        url: "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{y}.png",
+        url: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
         attribution: "IGN + OSM",
         minZoom: 0,
         maxZoom: 20,
-        subdomains: null,
+        subdomains: ['a', 'b', 'c'],
         errorTileUrl: "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/0/0/0.png",
         zoomOffset: null,
-        tms: true
+        tms: false
     }
 }
 
-let argenmap_test = new BaseLayer(basemaps.argenmap);
-argenmap_test.addTo(mapa);
+// let argenmap_test = new BaseLayer(basemaps.argenmap);
+// argenmap_test.addTo(mapa);
