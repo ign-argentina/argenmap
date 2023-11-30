@@ -58,7 +58,8 @@ const login = {
         }
       };
     login._ajax(data, (res) => {
-      let isLogged = data.includes("../j_spring_security_logout"); // check if a specific location is mentioned in the response body, if not the login process failed
+      console.log(res);
+      let isLogged = res.includes("../j_spring_security_logout"); // check if a specific location is mentioned in the response body, if not the login process failed
       if (isLogged) {
         app.changeProfile("logged");
         let loginModal = document.getElementById('loginModal');
