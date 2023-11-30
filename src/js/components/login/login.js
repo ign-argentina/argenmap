@@ -1,34 +1,79 @@
 const login = {
   res: {},
 
+  /**
+   * Perform  request using XMLHttpRequest.
+   * @param {Object} data - Request data.
+   * @param {function} callback - Callback function to handle the response.
+   */
   _ajax: function (data, callback) { // In case there isn't jQuery, fetch may be an option
     let xhr = new XMLHttpRequest();
 
+    // Define the callback for handling the  response
     xhr.onreadystatechange = function () {
       res = { response: xhr.response, status: xhr.status };
+
+      // Check if the request has been completed
       if (xhr.readyState === XMLHttpRequest.DONE) {
         let status = xhr.status;
+
+        // Check if the status is within the success range
         if (status >= 200 && status < 400) {
+          // Call the callback function with the response
           callback ? callback(res) : res;
           // console.log(res, xhr.response);
         } else {
           console.log(`Ajax request returned error: ${xhr.response}`);
         }
       }
-    }
+    };
 
+    // Open the XMLHttpRequest with the specified method, URL, and asynchronous flag
     xhr.open(data.method, data.url, true);
-    if (data.method == 'PUT') { // Adds authorization header for password resetting
-      let credentials = btoa(data.usr + ":" + data.pwd);
+
+    // Add authorization header for password resetting (if method is PUT)
+    if (data.method === 'PUT') {
+      let credentials = btoa(`${data.usr}:${data.pwd}`);
       xhr.withCredentials = true;
       xhr.setRequestHeader('Authorization', `Basic ${credentials}`);
     }
+
+    // Set custom request headers
     xhr.setRequestHeader(data.reqHeader.key, data.reqHeader.val);
+
+    // Send the request with the specified parameters
     xhr.send(data.params);
   },
 
   _geoserver: function (name, pwd) {
-    // url del servlet del geoserver
+    let usrPwd = `username=${name}&password=${pwd}`,
+      gsUrl = `${window.location.origin}/geoserver/j_spring_security_check`,
+      data = {
+        params: usrPwd,
+        url: gsUrl,
+        method: 'POST',
+        reqHeader: {
+          key: 'Content-type',
+          val: 'application/x-www-form-urlencoded'
+        }
+      };
+    login._ajax(data, (res) => {
+      let isLogged = data.includes("../j_spring_security_logout"); // check if a specific location is mentioned in the response body, if not the login process failed
+      if (isLogged) {
+        app.changeProfile("logged");
+        let loginModal = document.getElementById('loginModal');
+        if (loginModal) {
+          loginModal.classList.remove('fade');
+          loginModal.style.display = 'none';
+        }
+        document.getElementById("loginBtn").classList.add("hidden");
+        document.getElementById("logoutBtn").classList.remove("hidden");
+      } else {
+        alert("Falló el inicio de sesión en GeoServer. Revise los datos ingresados.");
+      }
+    });
+
+    /* // url del servlet del geoserver
     var url = `${window.location.origin}/geoserver/j_spring_security_check`;
     // parametros para el login
     var contentType = "application/x-www-form-urlencoded";
@@ -49,13 +94,13 @@ const login = {
           document.getElementById("loginBtn").classList.add("hidden");
           document.getElementById("logoutBtn").classList.remove("hidden");
         } else {
-          alert("GeoServer login failed");
+          alert("Falló el inicio de sesión en GeoServer. Revise los datos ingresados.");
         }
       },
       error: function (error) {
         alert("Error: " + error);
       }
-    });
+    }); */
   },
 
   _append: async function (file, format, parent) {
