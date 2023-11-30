@@ -52,11 +52,11 @@ const login = {
 */
   _geoserver: function (name, pwd) {
     // GeoServer servlet URL
-    var url = `${window.location.origin}/geoserver/j_spring_security_check`;
+    let url = `${window.location.origin}/geoserver/j_spring_security_check`;
     // Parameters for login
-    var contentType = "application/x-www-form-urlencoded";
+    let contentType = "application/x-www-form-urlencoded";
     //Initialize the Ajax request
-    var ajax = $.ajax({
+    let ajax = $.ajax({
       type: "POST",
       data: {
         username: name,
@@ -72,15 +72,15 @@ const login = {
           app.changeProfile("logged");
 
           // Hide the login modal
-          var loginModal = document.getElementById('loginModal');
+          let loginModal = document.getElementById('loginModal');
           if (loginModal) {
-            loginModal.classList.remove('fade');
+            //loginModal.classList.remove('fade');
             loginModal.style.display = 'none';
           }
 
           // Update button visibility
-          var loginBtn = document.getElementById("loginBtn");
-          var logoutBtn = document.getElementById("logoutBtn");
+          let loginBtn = document.getElementById("loginBtn");
+          let logoutBtn = document.getElementById("logoutBtn");
 
           if (loginBtn && logoutBtn) {
             loginBtn.classList.add("hidden");
