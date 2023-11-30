@@ -72,11 +72,7 @@ const login = {
           app.changeProfile("logged");
 
           // Hide the login modal
-          let loginModal = document.getElementById('loginModal');
-          if (loginModal) {
-            //loginModal.classList.remove('fade');
-            loginModal.style.display = 'none';
-          }
+          $('#loginModal').modal('hide');
 
           // Update button visibility
           let loginBtn = document.getElementById("loginBtn");
@@ -88,12 +84,10 @@ const login = {
           }
         } else {
           new UserMessage('Falló el inicio de sesión en GeoServer. Revise los datos ingresados.', true, 'error');
-          //alert("Falló el inicio de sesión en GeoServer. Revise los datos ingresados.");
         }
       },
       error: function (error) {
         new UserMessage('Error: ' + error, true, 'error');
-        //alert("Error: " + error);
       }
     });
   },
@@ -217,11 +211,7 @@ const login = {
       // Log server response and status
       console.info(`Server response: ${res.response}, Status: ${res.status}`);
       // Hide the login modal
-      let loginModal = document.getElementById('loginModal');
-      if (loginModal) {
-        loginModal.classList.remove('fade');
-        loginModal.style.display = 'none';
-      }
+      $('#loginModal').modal('hide');
     });
   }
   ,
