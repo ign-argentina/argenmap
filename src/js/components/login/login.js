@@ -23,7 +23,7 @@ const login = {
           callback ? callback(res) : res;
           // console.log(res, xhr.response);
         } else {
-          console.log(`Ajax request returned error: ${xhr.response}`);
+          console.log(`Request returned error: ${xhr.response}`);
         }
       }
     };
@@ -92,43 +92,92 @@ const login = {
     });
   },
 
+  /**
+   * Load and append content from a file to a specified parent element asynchronously.
+   * @param {string} file - Path to the file to be loaded. File must match '/path/to/file.extension'.
+   * @param {string} format - Format of the file content.
+   * @param {string} parent - Selector for the parent element.
+   */
   _append: async function (file, format, parent) {
-    // file must match '/path/to/file.extension'
+    // Ensure the parent element exists in the DOM
     let parentElement = document.querySelector(parent);
+
+    // Get the current path of the window location
     let path = window.location.pathname;
+
+    // Create a new div element
     let element = document.createElement("div");
 
-    const elementContent = await fetch(window.location.origin + path.replace('index.html', '') + file)
-      .then(res => {
-        return res.text();
-      });
+    try {
+      // Fetch the content of the specified file asynchronously
+      const elementContent = await fetch(window.location.origin + path.replace('index.html', '') + file);
 
-    element.innerHTML = elementContent;
-    parentElement.appendChild(element);
+      // Ensure the fetch request was successful (status code within 200-299 range)
+      if (elementContent.ok) {
+        // Extract text content from the response
+        const textContent = await elementContent.text();
+
+        // Set the inner HTML of the created div element to the fetched content
+        element.innerHTML = textContent;
+
+        // Append the div element to the specified parent element
+        parentElement.appendChild(element);
+      } else {
+        // Log an error if the fetch request fails
+        console.error(`Failed to fetch content from ${file}. Status: ${elementContent.status}`);
+      }
+    } catch (error) {
+      // Log any other errors that may occur during the fetch process
+      console.error(`An error occurred during the fetch process: ${error.message}`);
+    }
   },
 
+  /**
+   * Attach event listeners to UI elements for handling user interactions.
+   */
   _listeners: function () {
-    document.getElementById("logoutBtn").addEventListener('click', this.logout); // convert UI to object
+    // Add a click event listener to the logout button, invoking the 'logout' method
+    document.getElementById("logoutBtn").addEventListener('click', this.logout);
+
+    // Add a click event listener to the submit button in the login form, invoking the 'submit' method
     loginForm.submit.addEventListener('click', this.submit);
+
+    // Add a click event listener to the reset password button in the login form, invoking the 'resetPwd' method
     loginForm.resetPwd.addEventListener('click', this.resetPwd);
   },
 
+  /**
+   * Load login components asynchronously and initialize event listeners.
+   */
   load: async function () {
+    // Load navigation button component asynchronously and append it to the specified element
     await login._append("src/js/components/login/navbtn.html", "html", "#geoserver-login-btn");
+
+    // Load login form component asynchronously and append it to the body
     await login._append("src/js/components/login/form.html", "html", "body");
+
+    // Initialize event listeners for user interactions
     login._listeners();
   },
 
+  /**
+   * Handle the form submission event.
+   * @param {Event} event - The form submission event.
+   */
   submit: function (event) {
     event.preventDefault();
+
+    // Check if both username and password fields are filled
     let loginFormFilled = loginForm.name.value.length && loginForm.pwd.value.length;
+
     if (loginFormFilled) {
+      // Call the GeoServer login method if the form is filled
       login._geoserver(loginForm.name.value, loginForm.pwd.value);
     } else {
-      new UserMessage('Fill user and password fields for login.', true, 'warning');
-      //alert("Fill user and password fields for login.");
+      new UserMessage('Completar los campos de usuario y contraseña.', true, 'warning');
     }
-  },
+  }
+  ,
 
   /**
    * Handle password reset.
