@@ -78,6 +78,7 @@ const login = {
         return response.text();
       })
       .then((data) => {
+        console.log(data);
         // Check if a specific location is mentioned in the response body
         var isLogged = data.includes("../j_spring_security_logout");
 
