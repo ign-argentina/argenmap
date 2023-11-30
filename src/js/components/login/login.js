@@ -53,35 +53,20 @@ const login = {
   _geoserver: function (name, pwd) {
     // GeoServer servlet URL
     var url = `${window.location.origin}/geoserver/j_spring_security_check`;
-
     // Parameters for login
     var contentType = "application/x-www-form-urlencoded";
-
-    // Set up the request data
-    var data = `username=${name}&password=${pwd}`;
-
-    // Fetch API options
-    var options = {
-      method: "POST",
-      headers: {
-        "Content-type": contentType,
+    //Initialize the Ajax request
+    var ajax = $.ajax({
+      type: "POST",
+      data: {
+        username: name,
+        password: pwd
       },
-      body: data,
-    };
-
-    // Perform the fetch request
-    fetch(url, options)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.text();
-      })
-      .then((data) => {
-        console.log(data);
-        // Check if a specific location is mentioned in the response body
-        var isLogged = data.includes("../j_spring_security_logout");
-
+      contentType: contentType,
+      url: url,
+      success: function (data, request) {
+        // Check if a specific location is mentioned in the response body, if not the login process failed
+        let isLogged = data.includes("../j_spring_security_logout");
         if (isLogged) {
           // Change user profile to "logged"
           app.changeProfile("logged");
@@ -102,14 +87,15 @@ const login = {
             logoutBtn.classList.remove("hidden");
           }
         } else {
-          // Display an alert if login failed
-          alert("GeoServer login failed. Please check the entered data.");
+          new UserMessage('Falló el inicio de sesión en GeoServer. Revise los datos ingresados.', true, 'error');
+          //alert("Falló el inicio de sesión en GeoServer. Revise los datos ingresados.");
         }
-      })
-      .catch((error) => {
-        // Display an alert for fetch errors
-        alert("Fetch error: " + error.message);
-      });
+      },
+      error: function (error) {
+        new UserMessage('Error: ' + error, true, 'error');
+        //alert("Error: " + error);
+      }
+    });
   },
 
   _append: async function (file, format, parent) {
@@ -145,7 +131,8 @@ const login = {
     if (loginFormFilled) {
       login._geoserver(loginForm.name.value, loginForm.pwd.value);
     } else {
-      alert("Fill user and password fields for login.");
+      new UserMessage('Fill user and password fields for login.', true, 'warning');
+      //alert("Fill user and password fields for login.");
     }
   },
 
