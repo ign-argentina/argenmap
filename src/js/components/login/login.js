@@ -95,56 +95,95 @@ const login = {
     }
   },
 
+  /**
+   * Handle password reset.
+   * @param {Event} event - The event object.
+   */
   resetPwd: function (event) {
     event.preventDefault();
+
+    // Create a new password input field
     let nPwd = document.createElement("input");
     nPwd.id = "newPwd";
     nPwd.classList.add("form-control");
     nPwd.type = "password";
     nPwd.placeholder = "Nueva contraseña";
-    nPwd.required = "true";
+    nPwd.required = true;
 
+    // Change the text of the resetPwd button to "Confirm change"
+    let confirmBtn = document.getElementById("resetPwd");
+    confirmBtn.innerHTML = "Confirmar cambio";
+
+    // Insert the new password input before the submit button in the form
     if (!loginForm.newPwd) {
       loginForm.insertBefore(nPwd, loginForm.submit);
     }
 
-    if (login.server == undefined) {
+    // Set the server to the current origin if not defined
+    if (login.server === undefined) {
       login.server = window.location.origin;
     }
 
+    // Prepare reset options
     let resetOptions = {
       name: loginForm.name.value,
       pwd: loginForm.pwd.value,
       host: login.server,
       newPwd: loginForm.newPwd.value
-    }, r = resetOptions;
-    if (r.name !== "" && r.pwd !== "" && r.newPwd !== "") {
+    };
+
+    // Check if necessary values are not empty
+    if (resetOptions.name !== "" && resetOptions.pwd !== "" && resetOptions.newPwd !== "") {
+      // Call the GeoServer password reset function
       login._gsResetPwd(resetOptions);
     }
   },
 
-  _gsResetPwd: function (o) {
-    let params = `{ "newPassword": "${o.newPwd}" }`,
-      gsHost = o.host,
-      gsUrl = gsHost + '/geoserver/rest/security/self/password',
-      _usr = o.name,
-      _pwd = o.pwd,
-      data = {
-        params: params,
-        url: gsUrl,
-        method: 'PUT',
-        usr: _usr,
-        pwd: _pwd,
-        reqHeader: {
-          key: 'Content-type',
-          val: 'application/json'
-        }
-      };
+  /**
+   * Reset the password using GeoServer REST API.
+   * @param {Object} options - Password reset options.
+   * @param {string} options.name - User name.
+   * @param {string} options.pwd - Current password.
+   * @param {string} options.host - GeoServer host.
+   * @param {string} options.newPwd - New password.
+   */
+  _gsResetPwd: function (options) {
+    // Prepare JSON payload for the new password
+    let params = `{ "newPassword": "${options.newPwd}" }`;
+
+    // Construct GeoServer REST API URL for changing the password
+    let gsUrl = options.host + '/geoserver/rest/security/self/password';
+
+    // Extract user credentials
+    let _usr = options.name,
+      _pwd = options.pwd;
+
+    // Prepare data for the AJAX request
+    let data = {
+      params: params,
+      url: gsUrl,
+      method: 'PUT',
+      usr: _usr,
+      pwd: _pwd,
+      reqHeader: {
+        key: 'Content-type',
+        val: 'application/json'
+      }
+    };
+
+    // Make a request to change the password
     login._ajax(data, (res) => {
+      // Log server response and status
       console.info(`Server response: ${res.response}, Status: ${res.status}`);
-      $('#loginModal').modal('hide');
+      // Hide the login modal
+      let loginModal = document.getElementById('loginModal');
+      if (loginModal) {
+        loginModal.classList.remove('fade');
+        loginModal.style.display = 'none';
+      }
     });
-  },
+  }
+  ,
 
   logout: function () {
     gsUrl = `${window.location.origin}/geoserver/j_spring_security_logout`,
