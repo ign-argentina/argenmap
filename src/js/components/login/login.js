@@ -45,63 +45,70 @@ const login = {
     xhr.send(data.params);
   },
 
+  /**
+* Perform GeoServer login using Fetch API.
+* @param {string} name - User name.
+* @param {string} pwd - User password.
+*/
   _geoserver: function (name, pwd) {
-    let usrPwd = `username=${name}&password=${pwd}`,
-      gsUrl = `${window.location.origin}/geoserver/j_spring_security_check`,
-      data = {
-        params: usrPwd,
-        url: gsUrl,
-        method: 'POST',
-        reqHeader: {
-          key: 'Content-type',
-          val: 'application/x-www-form-urlencoded'
-        }
-      };
-    login._ajax(data, (res) => {
-      console.log(res);
-      let isLogged = res.includes("../j_spring_security_logout"); // check if a specific location is mentioned in the response body, if not the login process failed
-      if (isLogged) {
-        app.changeProfile("logged");
-        let loginModal = document.getElementById('loginModal');
-        if (loginModal) {
-          loginModal.classList.remove('fade');
-          loginModal.style.display = 'none';
-        }
-        document.getElementById("loginBtn").classList.add("hidden");
-        document.getElementById("logoutBtn").classList.remove("hidden");
-      } else {
-        alert("Falló el inicio de sesión en GeoServer. Revise los datos ingresados.");
-      }
-    });
-
-    /* // url del servlet del geoserver
+    // GeoServer servlet URL
     var url = `${window.location.origin}/geoserver/j_spring_security_check`;
-    // parametros para el login
+
+    // Parameters for login
     var contentType = "application/x-www-form-urlencoded";
-    //se inicializa la petición ajax
-    var ajax = $.ajax({
-      type: "POST",
-      data: {
-        username: name,
-        password: pwd
+
+    // Set up the request data
+    var data = `username=${name}&password=${pwd}`;
+
+    // Fetch API options
+    var options = {
+      method: "POST",
+      headers: {
+        "Content-type": contentType,
       },
-      contentType: contentType,
-      url: url,
-      success: function (data, request) {
-        let isLogged = data.includes("../j_spring_security_logout"); // check if a specific location is mentioned in the response body, if not the login process failed
-        if (isLogged) {
-          app.changeProfile("logged");
-          $('#loginModal').modal('hide');
-          document.getElementById("loginBtn").classList.add("hidden");
-          document.getElementById("logoutBtn").classList.remove("hidden");
-        } else {
-          alert("Falló el inicio de sesión en GeoServer. Revise los datos ingresados.");
+      body: data,
+    };
+
+    // Perform the fetch request
+    fetch(url, options)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
-      },
-      error: function (error) {
-        alert("Error: " + error);
-      }
-    }); */
+        return response.text();
+      })
+      .then((data) => {
+        // Check if a specific location is mentioned in the response body
+        var isLogged = data.includes("../j_spring_security_logout");
+
+        if (isLogged) {
+          // Change user profile to "logged"
+          app.changeProfile("logged");
+
+          // Hide the login modal
+          var loginModal = document.getElementById('loginModal');
+          if (loginModal) {
+            loginModal.classList.remove('fade');
+            loginModal.style.display = 'none';
+          }
+
+          // Update button visibility
+          var loginBtn = document.getElementById("loginBtn");
+          var logoutBtn = document.getElementById("logoutBtn");
+
+          if (loginBtn && logoutBtn) {
+            loginBtn.classList.add("hidden");
+            logoutBtn.classList.remove("hidden");
+          }
+        } else {
+          // Display an alert if login failed
+          alert("GeoServer login failed. Please check the entered data.");
+        }
+      })
+      .catch((error) => {
+        // Display an alert for fetch errors
+        alert("Fetch error: " + error.message);
+      });
   },
 
   _append: async function (file, format, parent) {
