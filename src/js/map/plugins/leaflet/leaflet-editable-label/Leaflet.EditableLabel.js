@@ -95,7 +95,7 @@ class EditableLabel {
     textarea.autocomplete = "off";
     textarea.placeholder = "Escribe algo aquí...";
     textarea.className = "map-label";
-    textarea.style.resize = "none";
+    textarea.style.resize = "";
     textarea.maxlength = "255";
 
     // Resize the textarea as the user types.
