@@ -352,6 +352,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         if (profile != undefined && app.profiles[profile] != undefined) {
           try {
             app.profile = profile;
+            gestorMenu.cleanAllLayers();
             app.removeLayers();
             app.addLayers();
             gestorMenu.printMenu();
