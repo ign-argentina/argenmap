@@ -46,10 +46,10 @@ const login = {
   },
 
   /**
-* Perform GeoServer login using Fetch API.
-* @param {string} name - User name.
-* @param {string} pwd - User password.
-*/
+  * Perform GeoServer login using Fetch API.
+  * @param {string} name - User name.
+  * @param {string} pwd - User password.
+  */
   _geoserver: function (name, pwd) {
     // GeoServer servlet URL
     let url = `${window.location.origin}/geoserver/j_spring_security_check`;
@@ -92,7 +92,7 @@ const login = {
     });
   },
 
-  /**
+  /** 
    * Load and append content from a file to a specified parent element asynchronously.
    * @param {string} file - Path to the file to be loaded. File must match '/path/to/file.extension'.
    * @param {string} format - Format of the file content.
@@ -265,22 +265,33 @@ const login = {
   }
   ,
 
+  /**
+   * Perform user logout by sending a request to the GeoServer logout endpoint.
+   */
   logout: function () {
-    gsUrl = `${window.location.origin}/geoserver/j_spring_security_logout`,
-      data = {
-        params: "",
-        url: gsUrl,
-        method: 'POST',
-        reqHeader: {
-          key: 'Content-type',
-          val: 'application/x-www-form-urlencoded'
-        }
-      };
+    // GeoServer logout endpoint URL
+    let gsUrl = `${window.location.origin}/geoserver/j_spring_security_logout`;
+
+    // Request data for the logout operation
+    let data = {
+      params: "",
+      url: gsUrl,
+      method: 'POST',
+      reqHeader: {
+        key: 'Content-type',
+        val: 'application/x-www-form-urlencoded'
+      }
+    };
+
+    // Perform the Ajax request to logout and handle the response
     login._ajax(data, (res) => {
       console.info(`Response status ${res.status}`);
+
+      // Change user profile to "default" after successful logout
       app.changeProfile("default");
     });
 
+    // Update UI: hide logout button and show login button
     document.getElementById("logoutBtn").classList.add("hidden");
     document.getElementById("loginBtn").classList.remove("hidden");
   }
