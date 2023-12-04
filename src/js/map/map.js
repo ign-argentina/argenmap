@@ -179,15 +179,17 @@ $("body").on("pluginLoad", function (event, plugin) {
 	if (visiblesActivar) {
 		ordered.forEach(async function (e) {
 			switch (e) {
-				case 'screenShoter':
-					if (L.Browser.webkit) {
+        case 'screenShoter':
+          let isIdecom = window.location.origin.includes("idecom");
+					if (L.Browser.webkit && !isIdecom) {
 						let d = new Date()
 						let n = d.getTime();
 						L.simpleMapScreenshoter({
 							hideElementsWithSelectors: [
 								".leaflet-top.leaflet-left",
 								".leaflet-top.leaflet-right",
-								".leaflet-bottom.leaflet-right",
+                ".leaflet-bottom.leaflet-right",
+                "leaflet-control-container",
 								"#zoom-level",
 								"#sidebar-toolbar-icon-left",
 								"#sidebar-toolbar-icon-right",
