@@ -165,7 +165,7 @@ class AboutUs {
     const innerReadmeText = document.createElement('div');
     innerReadmeText.style.margin = "10px";
 
-    this.dataGetter.loadMD(`${window.location.origin}/README.md`, 4, 7)
+    this.dataGetter.loadMD(`${window.location.origin+window.location.pathname}/README.md`, 4, 7)
       .then(selectedText => {
         innerReadmeText.innerHTML = selectedText;
       });
