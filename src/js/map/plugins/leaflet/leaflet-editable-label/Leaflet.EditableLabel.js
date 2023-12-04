@@ -47,7 +47,7 @@ class EditableLabel {
         .addListener(controlDiv, "click", function () { });
 
       const icon = document.createElement("img");
-      icon.src= "/src/styles/images/icon-text-regular.png"
+      icon.src= "src/styles/images/icon-text-regular.png"
       icon.classList = "icon-text";
 
       controlUI.title = this.options.title;
