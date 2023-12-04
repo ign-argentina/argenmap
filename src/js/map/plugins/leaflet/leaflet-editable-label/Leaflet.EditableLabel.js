@@ -46,8 +46,9 @@ class EditableLabel {
         .addListener(controlDiv, "click", L.DomEvent.preventDefault)
         .addListener(controlDiv, "click", function () { });
 
-      const icon = document.createElement("i");
-      icon.classList = "bx bx-text";
+      const icon = document.createElement("img");
+      icon.src= "/src/styles/images/icon-text-regular.png"
+      icon.classList = "icon-text";
 
       controlUI.title = this.options.title;
       controlUI.id = "editableLabelBtn";
@@ -252,12 +253,12 @@ class EditableLabel {
     let control = this.control.getContainer().firstElementChild;
     let controlIcon = control.querySelectorAll("i")[0];
 
-    if (controlIcon.classList.contains("bx-text")) {
-      controlIcon.classList.remove("bx", "bx-text");
+    if (controlIcon.classList.contains("icon-text")) {
+      controlIcon.classList.remove("icon-text");
       controlIcon.classList.add("fa-solid", "fa-xmark", "redIcon");
     } else {
       controlIcon.classList.remove("fa-solid", "fa-xmark", "redIcon");
-      controlIcon.classList.add("bx", "bx-text");
+      controlIcon.classList.add("icon-text");
     }
 
     if (controlIcon.classList.contains("redIcon")) {
