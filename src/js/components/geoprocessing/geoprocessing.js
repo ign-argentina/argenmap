@@ -1243,7 +1243,7 @@ class Geoprocessing {
     if (select && this.geoprocessId === "buffer") {
       if (addToList && gestorMenu.layerIsWmts(layerName) == false) {
         for (let i = 0; i < select.length; i++) {
-          if (select[i].value !== layerName) {
+          if (select[i].value !== layerName && option.innerHTML !== "undefined") {
             select.appendChild(option);
             this.checkLayersForBuffer();
           }

@@ -1,25 +1,10 @@
-class UserInterface {
-    constructor() {
-
-    }
-
-    createElement() {
-
-    }
-
-    remove() {
-
-    }
-
-}
-
 /**
  * Represents the About Us modal in the user interface.
- * @extends UserInterface
+ * @extends UIComponent
  */
-class AboutUsModal extends UserInterface {
+class AboutUsModal{
     constructor() {
-        super();
+        
     }
 
     /**
@@ -82,11 +67,10 @@ class AboutUsModal extends UserInterface {
 
 /**
  * Represents the About Us tab in the user interface.
- * @extends UserInterface
+ * @extends UIComponent
  */
-class AboutUsTab extends UserInterface {
+class AboutUsTab{
     constructor() {
-        super();
     }
 
     /**

@@ -367,7 +367,7 @@ function parseFeatureInfoJSON(info, idTxt, title) {
     var infoAux =
       '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
     infoAux += '<div class="featureGroup">';
-    infoAux += '<div style="padding:1em" class="individualFeature">';
+    infoAux += '<div style="/*padding:1em*/" class="individualFeature">';
     infoAux +=
       '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
       title +
@@ -1599,7 +1599,7 @@ function createPopupForVector(layer, clickLatlng) {
   var infoAux =
     '<div class="featureInfo" id="featureInfoPopup' + id + '">';
   infoAux += '<div class="featureGroup">';
-  infoAux += '<div style="padding:1em" class="individualFeature">';
+  infoAux += '<div style="/*padding:1em*/" class="individualFeature">';
   infoAux +=
     '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
     title +

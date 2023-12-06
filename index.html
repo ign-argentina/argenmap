@@ -1,179 +1,184 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Argenmap</title>
-    <link rel="shortcut icon" href="src/styles/images/favicon.ico" type="image/x-icon">
-    
-    <!-- metatags-->
-  
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link rel="stylesheet" href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" integrity="sha384-Zkac0XF9hjW3YEzKQ9rx9Y48t+ssTg317uEcuak+ttIZQq2FOr3vMqS9xREP/eHG" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="src/js/plugins/jquery/ui/jquery-ui.min.css">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Argenmap</title>
+  <link rel="shortcut icon" href="src/styles/images/favicon.ico" type="image/x-icon">
 
-    <!-- Plugins -->
-    <!-- jQuery -->
-    <script src='src/js/plugins/jquery/jquery-3.3.1.min.js'></script>
-    <script src="src/js/plugins/jquery/ui/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css" integrity="sha384-eS4bw6aEvhCSXWGP85ANR/N8isWKzT7P36NvcuTJGkrj6wsbxLVpXslrNXYHyseD" crossorigin="anonymous">
-    <!-- Better scale css -->
-    <link rel="stylesheet" href="https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css" integrity="sha384-2KDD1OkPWCaNMKkFrolRvmL1nQcNLQsqSlOueaVJK4uqJrmUBnsRRT952dh/UEFU" crossorigin="anonymous">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Awesome Markers -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css" integrity="sha384-AEGVifziKVWa9A1esNIKiYnrgmTqMcwVgTpjGTOm4i0uieet1Kc9jbOn/RCAc/zv" crossorigin="anonymous">
-    <!-- Leaflet Zoomhome plugin -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-zoomhome/dist/leaflet.zoomhome.css"/>
-    <!-- Leaflet Minimap plugin -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-minimap/Control.MiniMap.css">
-    <!-- Leaflet Locate plugin -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-locate/L.Control.Locate.css">
-    <!-- Leaflet Mouse Position plugin -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-mouseposition/src/L.Control.MousePosition.css">
-    <!-- Leaflet Measure plugin -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-measure/leadflet-measure.css">
-    <!-- Leaflet Draw From CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" integrity="sha384-NZLkVuBRMEeB4VeZz27WwTRvlhec30biQ8Xx7zG7JJnkvEKRg5qi6BNbEXo9ydwv" crossorigin="anonymous">
-    <!-- Leaflet SimpleGraticule -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-simplegraticule/L.SimpleGraticule.css"/>
-    <!-- Leaflet Text -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.css"/>
-    <!-- fancybox files -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha384-Q8BgkilbsFGYNNiDqJm69hvDS7NCJWOodvfK/cwTyQD4VQA0qKzuPpvqNER1UC0F" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha384-Zm+UU4tdcfAm29vg+MTbfu//q5B/lInMbMCr4T8c9rQFyOv6PlfQYpB5wItcXWe7" crossorigin="anonymous"></script>
-    
-    <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js" integrity="sha384-qK65lGPmiUrHwmrjhMHqerlRFWsCIECXjv62QVOxtNNwAONYHDgOqfR8cCPpA3Zr" crossorigin="anonymous"></script>
+  <!-- metatags-->
 
-    <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->
-    <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-    <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js" integrity="sha384-7x7Y3XLZqumQ7tu0kiIcKNoyUdzghJ1hUpSb9Yodl/zAFGRec/sCLO4Pcye6IXZd" crossorigin="anonymous"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js" integrity="sha384-hbdPIKvN8VYiuuYBaMb70rDCVFrg4vzTn4XSlM+8ctmf8g5Ci4iU4FQY8PDbyCvj" crossorigin="anonymous"></script>
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <link rel="stylesheet" href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" integrity="sha384-Zkac0XF9hjW3YEzKQ9rx9Y48t+ssTg317uEcuak+ttIZQq2FOr3vMqS9xREP/eHG" crossorigin="anonymous">
 
-    <!--TooltipTourMaker-->
-    <link href="src/js/components/help/helpTour.css" rel="stylesheet">
-    <link href="src/js/components/help/tooltipTourMaker.css" rel="stylesheet">
-    <script src="src/js/components/help/tooltipTourMaker.js"></script>
+  <link rel="stylesheet" href="src/js/plugins/jquery/ui/jquery-ui.min.css">
 
-    <!-- Argenmap basic libraries  -->
-    <script src="src/js/utils/analytics/analytics.js"></script>
-    <script src="src/js/utils/constants/constants.js"></script>
-    <script src="src/js/entities.js"></script>
-    <script src='src/js/utils/functions/functions.js'></script>
-    <script src="src/js/components/url-interaction/URLInteraction.js"></script>
-    <script src="src/js/components/zoomLevel/ZoomLevel.js"></script>
-    <script src="src/js/components/openfiles/openfiles.js"></script>
-    <script src="src/js/components/loadServices/loadServices.js"></script>
-    <!--<script src="src/js/components/loadLayersModal/loadLayersModal.js"></script>-->
-    <script src="src/js/components/context-menu/context-menu.js"></script>
-    <script src="src/js/components/user-message/user-message.js"></script>
-    <script src="src/js/app.js"></script>
-    <script src="src/js/components/styles/styles.js"></script>
-    <script src="src/js/components/login/login.js"></script>
-    <script src="src/js/components/sidebar/sidebar.js"></script>
-    <script src="src/js/components/UI/UserInterface.js"></script>
-    <script src="src/js/components/about/about.js"></script>
+  <!-- Plugins -->
+  <!-- jQuery -->
+  <script src='src/js/plugins/jquery/jquery-3.7.0.min.js'></script>
+  <script src="src/js/plugins/jquery/ui/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css" integrity="sha384-eS4bw6aEvhCSXWGP85ANR/N8isWKzT7P36NvcuTJGkrj6wsbxLVpXslrNXYHyseD" crossorigin="anonymous">
+  <!-- Better scale css -->
+  <link rel="stylesheet" href="https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css" integrity="sha384-2KDD1OkPWCaNMKkFrolRvmL1nQcNLQsqSlOueaVJK4uqJrmUBnsRRT952dh/UEFU" crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Awesome Markers -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css" integrity="sha384-AEGVifziKVWa9A1esNIKiYnrgmTqMcwVgTpjGTOm4i0uieet1Kc9jbOn/RCAc/zv" crossorigin="anonymous">
+  <!-- Leaflet Zoomhome plugin -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-zoomhome/dist/leaflet.zoomhome.css" />
+  <!-- Leaflet Minimap plugin -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-minimap/Control.MiniMap.css">
+  <!-- Leaflet Locate plugin -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-locate/L.Control.Locate.css">
+  <!-- Leaflet Mouse Position plugin -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-mouseposition/src/L.Control.MousePosition.css">
+  <!-- Leaflet Measure plugin -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-measure/leadflet-measure.css">
+  <!-- Leaflet Draw From CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" integrity="sha384-NZLkVuBRMEeB4VeZz27WwTRvlhec30biQ8Xx7zG7JJnkvEKRg5qi6BNbEXo9ydwv" crossorigin="anonymous">
+  <!-- Leaflet SimpleGraticule -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-simplegraticule/L.SimpleGraticule.css" />
+  <!-- Leaflet Text -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.css" />
+  <!-- fancybox files -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha384-Q8BgkilbsFGYNNiDqJm69hvDS7NCJWOodvfK/cwTyQD4VQA0qKzuPpvqNER1UC0F" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha384-Zm+UU4tdcfAm29vg+MTbfu//q5B/lInMbMCr4T8c9rQFyOv6PlfQYpB5wItcXWe7" crossorigin="anonymous"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js"></script>
+  <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js" integrity="sha384-qK65lGPmiUrHwmrjhMHqerlRFWsCIECXjv62QVOxtNNwAONYHDgOqfR8cCPpA3Zr" crossorigin="anonymous"></script>
 
-    <!--tabulator-->
-    <link rel="stylesheet" href="src/js/plugins/tabulator/tabulator.min.css">
-    <script type="text/javascript" src="src/js/plugins/tabulator/tabulator.min.js"></script>
-    <script src="src/js/components/table/Datatable.js"></script>
-    <script src="src/js/components/table/UI.js"></script>
-    <script src="src/js/components/table/table.js"></script>
-    <script src="src/js/components/table/TouchPunch.js"></script>
-    <link rel="stylesheet" href="src/js/components/table/table.css">
+  <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->
+  <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+  <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js" integrity="sha384-7x7Y3XLZqumQ7tu0kiIcKNoyUdzghJ1hUpSb9Yodl/zAFGRec/sCLO4Pcye6IXZd" crossorigin="anonymous"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="https://getbootstrap.com/docs/3.3/assets/js/ie10-viewport-bug-workaround.js" integrity="sha384-hbdPIKvN8VYiuuYBaMb70rDCVFrg4vzTn4XSlM+8ctmf8g5Ci4iU4FQY8PDbyCvj" crossorigin="anonymous"></script>
 
-    <!-- Leaflet Image -->
-    <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js" integrity="sha384-Cl2KSaehTGkoEiw07k3L/nCCwvF6tB3BcWgb83eHZUp2oPDI3qSKJUypvhoB66Gq" crossorigin="anonymous"></script>
-    
-    <!-- Proj4.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js" integrity="sha384-Zg0HdUmZ2bCzgG1aXkCKAM1eMsRebKIhcsT+PUUYheMfD9zI1W2y1crkhDmuG5MA" crossorigin="anonymous"></script>
-    
-    <!-- FileLayer and dependencies -->
-    <script src="src/js/plugins/FileLayer/omnivore/omnivore.min.js"></script>
-    <script src="src/js/plugins/FileLayer/shapefile/shp.min.js"></script>
-    <script src="src/js/plugins/FileLayer/FileLayer.js"></script>
+  <!--TooltipTourMaker-->
+  <link href="src/js/components/help/helpTour.css" rel="stylesheet">
+  <link href="src/js/components/help/tooltipTourMaker.css" rel="stylesheet">
+  <script src="src/js/components/help/tooltipTourMaker.js"></script>
 
-    <!-- ServiceLayer and dependencies -->
-    <script src="src/js/plugins/ServiceLayers/wms-capabilities.min.js"></script>
-    <script src="src/js/plugins/ServiceLayers/ServiceLayers.js"></script>
+  <!-- Argenmap basic libraries  -->
+  <script src="src/js/utils/analytics/analytics.js"></script>
+  <script src="src/js/utils/constants/constants.js"></script>
+  <script src="src/js/entities.js"></script>
+  <script src='src/js/utils/functions/functions.js'></script>
+  <script src="src/js/components/url-interaction/URLInteraction.js"></script>
+  <script src="src/js/components/zoomLevel/ZoomLevel.js"></script>
+  <script src="src/js/components/openfiles/openfiles.js"></script>
+  <script src="src/js/components/loadServices/loadServices.js"></script>
+  <!--<script src="src/js/components/loadLayersModal/loadLayersModal.js"></script>-->
+  <script src="src/js/components/context-menu/context-menu.js"></script>
+  <script src="src/js/components/user-message/user-message.js"></script>
+  <script src="src/js/app.js"></script>
+  <script src="src/js/components/styles/styles.js"></script>
+  <script src="src/js/components/login/login.js"></script>
+  <script src="src/js/components/sidebar/sidebar.js"></script>
+  <script src="src/js/components/UI/UserInterface.js"></script>
+  <script src="src/js/components/about/about.js"></script>
 
-    <!-- Main Styles -->
-    <link rel="stylesheet" href="src/styles/css/main.css">
-    <link href="src/styles/css/dashboard.css" rel="stylesheet">
-    <link href="src/js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
-    <link href="src/js/components/fullscreen/fullscreen.css" rel="stylesheet">
-    <link href="src/js/components/openfiles/openfiles.css" rel="stylesheet">
-    <link href="src/js/components/loadServices/loadServices.css" rel="stylesheet">
-    <link href="src/js/components/loadLayersModal/loadLayersModal.css" rel="stylesheet">
-    <link href="src/js/components/sidebar/sidebar.css" rel="stylesheet">
-    <link href="src/js/components/context-menu/context-menu.css" rel="stylesheet">
-    <link href="src/js/components/user-message/user-message.css" rel="stylesheet">
-    <link href="src/js/components/pdfPrinter/pdfPrinter.css" rel="stylesheet">
-    <link href="src/js/components/consultData/consultData.css" rel="stylesheet">
-    <link href="src/js/components/about/about.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js"></script>
 
-  </head>
-  <body>
-    <div class="loader-line hidden"></div>
-    <nav class="navbar _navbar-inverse navbar-fixed-top">
-        <div class="navbar-new">
-            <button type="button" class="hidden-lg hidden-md navbar-toggle x collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse"
-            data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
-            <!-- <span class="sr-only">Toggle navigation</span> -->
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
+  <!--tabulator-->
+  <link rel="stylesheet" href="src/js/plugins/tabulator/tabulator.min.css">
+  <script type="text/javascript" src="src/js/plugins/tabulator/tabulator.min.js"></script>
+  <script src="src/js/components/table/Datatable.js"></script>
+  <script src="src/js/components/table/UI.js"></script>
+  <script src="src/js/components/table/table.js"></script>
+  <script src="src/js/components/table/TouchPunch.js"></script>
+  <link rel="stylesheet" href="src/js/components/table/table.css">
 
-          <div id="logo-navbar" class="navbar-new-content">
-            <a>
-              <span class="xxsmall-hide">
-                <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
-                  <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="">
-                </a>
-              </span>
+  <!-- Leaflet Image -->
+  <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js" integrity="sha384-Cl2KSaehTGkoEiw07k3L/nCCwvF6tB3BcWgb83eHZUp2oPDI3qSKJUypvhoB66Gq" crossorigin="anonymous"></script>
+
+  <!-- Proj4.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js" integrity="sha384-Zg0HdUmZ2bCzgG1aXkCKAM1eMsRebKIhcsT+PUUYheMfD9zI1W2y1crkhDmuG5MA" crossorigin="anonymous"></script>
+
+  <!-- FileLayer and dependencies -->
+  <script src="src/js/plugins/FileLayer/omnivore/omnivore.min.js"></script>
+  <script src="src/js/plugins/FileLayer/shapefile/shp.min.js"></script>
+  <script src="src/js/plugins/FileLayer/FileLayer.js"></script>
+
+  <!-- ServiceLayer and dependencies -->
+  <script src="src/js/plugins/ServiceLayers/wms-capabilities.min.js"></script>
+  <script src="src/js/plugins/ServiceLayers/ServiceLayers.js"></script>
+
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="src/styles/css/main.css">
+  <link href="src/styles/css/dashboard.css" rel="stylesheet">
+  <link href="src/js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
+  <link href="src/js/components/fullscreen/fullscreen.css" rel="stylesheet">
+  <link href="src/js/components/openfiles/openfiles.css" rel="stylesheet">
+  <link href="src/js/components/loadServices/loadServices.css" rel="stylesheet">
+  <link href="src/js/components/loadLayersModal/loadLayersModal.css" rel="stylesheet">
+  <link href="src/js/components/sidebar/sidebar.css" rel="stylesheet">
+  <link href="src/js/components/context-menu/context-menu.css" rel="stylesheet">
+  <link href="src/js/components/user-message/user-message.css" rel="stylesheet">
+  <link href="src/js/components/pdfPrinter/pdfPrinter.css" rel="stylesheet">
+  <link href="src/js/components/consultData/consultData.css" rel="stylesheet">
+  <link href="src/js/components/about/about.css" rel="stylesheet">
+
+</head>
+
+<body>
+  <div class="loader-line hidden"></div>
+  <nav class="navbar _navbar-inverse navbar-fixed-top">
+    <div class="navbar-new">
+
+      <button type="button" class="hidden-lg hidden-md navbar-toggle x collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse" data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
+        <!-- <span class="sr-only">Toggle navigation</span> -->
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <div id="logo-navbar" class="navbar-new-content">
+        <a>
+          <span class="xxsmall-hide">
+            <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
+              <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="">
             </a>
-            <a id="logoText"></a>
+          </span>
+        </a>
+        <a id="logoText"></a>
+      </div>
 
-          </div>
+      <div id="search-navbar" class="navbar-new-content"></div>
 
-          <div id="search-navbar" class="navbar-new-content"></div>
+      <div id="logo-help" class="navbar-new-content">
+        <span class="xxsmall-hide">
+          <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
+            <img id="top-right-logo" src="src/styles/images/noimage.webp" alt="" title="">
+          </a>
+        </span>
+      </div>
 
-        <div id="logo-help" class="navbar-new-content">
-            <span class="xxsmall-hide">
-                <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
-                    <img id="top-right-logo" src="src/styles/images/noimage.webp" alt="" title="">
-                </a>
-            </span>
-        </div>
-       </div>
-    </nav>
-    <div class="container-fluid">
-      <div class="row">
-        <nav id="sidebar-container" class="col-xs-12 col-12 col-sm-3 col-md-3 collapse sidebar _panel-group"
-          aria-expanded="false">
-          <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
-          <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
-        </nav>
-        <div class="map-container">
-          <div id="mapa" class="col-xs-12 col-12 col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 main"></div>
-        </div>
+      <div id="geoserver-login-btn" class="navbar-new-content">
+      </div>
+
+    </div>
+  </nav>
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebar-container" class="col-xs-12 col-12 col-sm-3 col-md-3 collapse sidebar _panel-group" aria-expanded="false">
+        <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
+        <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
+      </nav>
+      <div class="map-container">
+        <div id="mapa" class="col-xs-12 col-12 col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 main"></div>
       </div>
     </div>
-    <div id="basemap-selector"></div>
-    <div id="template"></div>
+  </div>
+  <div id="basemap-selector"></div>
+  <div id="template"></div>
 
-    <!-- LOGIN SCRIPT -->
-    <div id="login-wrapper" class="justify-content-center"></div>
+  <!-- LOGIN SCRIPT -->
+  <div id="login-wrapper" class="justify-content-center"></div>
 
-  </body>
+</body>
+
 </html>

@@ -64,7 +64,7 @@ class Searchbar_UI {
     input.placeholder = sb_strings.placeholder || "Search places...";
     input.id = "search_bar";
     input.spellcheck = false;
-    input.autocomplete = "off";
+    input.autocomplete = "address-level1"; // Avoids autocomplete. Based on HTML attribute: autocomplete in MDN Web Docs page
     input.type = "search";
 
     let icon = document.createElement("div");
