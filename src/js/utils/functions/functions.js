@@ -207,24 +207,24 @@ function hideAddedLayers() {
 }
 
 function showTotalNumberofLayers() {
-  let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
+    let activeLayers = gestorMenu.getActiveLayersWithoutBasemap().length;
 
-  addedLayers.forEach(lyr => {
-    if (lyr.isActive && lyr.isActive == true) {
-      activeLayers++;
+    addedLayers.forEach(lyr => {
+        if (lyr.isActive && lyr.isActive == true) {
+            activeLayers++;
+        }
+    });
+
+    if (activeLayers > 0) {
+        $("#cleanTrash").html(
+            "<div class='glyphicon glyphicon-refresh'></div>" +
+            "<span class='total-active-layers-counter'>" +
+            activeLayers +
+            "</span>"
+        );
+    } else {
+        $("#cleanTrash").html("<span class='glyphicon glyphicon-refresh'></span>");
     }
-  });
-
-  if (activeLayers > 0) {
-    $("#cleanTrash").html(
-      "<div class='glyphicon glyphicon-th-list'></div>" +
-      "<span class='total-active-layers-counter'>" +
-      activeLayers +
-      "</span>"
-    );
-  } else {
-    $("#cleanTrash").html("<span class='glyphicon glyphicon-th-list'></span>");
-  }
 }
 
 function recoverSections() {
@@ -460,7 +460,6 @@ function createWmsLayer(objLayer) {
       return;
     },
   });
-  console.log(layerSelected.featureInfoFormat)
   var wmsSource = new MySource(lyrHost, {
     transparent: true,
     version: '1.3.0',
@@ -1385,33 +1384,60 @@ function toggleVisibility(elementId) {
   }
 }
 
-function loadDeveloperLogo() {
-  L.Control.DeveloperLogo = L.Control.extend({
-    onAdd: function (map) {
-      let link = L.DomUtil.create("a");
-      link.target = "_blank";
-      link.id = "developerLogo"
-      link.title = STRINGS.about;
-      link.style.cursor = "pointer";
-      let img = L.DomUtil.create("img");
-      img.src = "src/styles/images/noimage.webp";
-      img.alt = "Argenmap logo";
-      img.classList = "brand"
-      img.style.backgroundImage = `url('${APP_IMG}')`;
-      link.appendChild(img);
-
-      link.addEventListener('click', function () {
-        modalAboutUs.toggleOpen();
-      });
-     
-      return link;
-    },
-  });
-  L.control.developerLogo = function (opts) {
-    return new L.Control.DeveloperLogo(opts);
-  };
-  L.control.developerLogo({ position: "bottomright" }).addTo(mapa);
+function getDeveveloperLogo() {
+  let logo = {};
+  // Checks if the 'overrideDevLogo' key exists within logo, if not applies the default image.
+  (app.logo.overrideDevLogo) ? 
+    logo = app.logo.overrideDevLogo 
+    : logo = { src : APP_IMG, style: null }
+  return logo;
 }
+
+function loadDeveloperLogo() {
+    // This creates Argenmap developer's logo at the bottom right corner, we encourage you to leaving this as it comes in the code to give the proper attribution and spread the word about the project. Thanks! :D
+
+    // But, as sometimes is needed to replace the image, it can be done with a custom one adding the key 'overrideDevLogo' in the logo object, within preferences.json as its shown in the following example:
+    /* 
+    Note that in the 'src' attribute could be added an image encoded in base64.
+      "logo": {
+        "overrideDevLogo": {
+          "src": "data:image/png;base64,qwertyu",
+          "style": "width: 64px; background-size: cover"
+        }
+      }
+    */
+
+    L.Control.DeveloperLogo = L.Control.extend({
+        onAdd: function (map) {
+          let devLogo = getDeveveloperLogo();
+          let devLogoUrl = devLogo.src;
+          let devLogoStyle = devLogo.style ;
+            let link = L.DomUtil.create("a");
+            link.target = "_blank";
+            link.id = "developerLogo"
+            link.title = STRINGS.about;
+            link.style.cursor = "pointer";
+            let img = L.DomUtil.create("img");
+            img.src = "src/styles/images/noimage.webp";
+            img.alt = "Argenmap logo";
+            img.classList = "brand"
+            img.style = devLogoStyle;
+            img.style.backgroundImage = `url('${devLogoUrl}')`;
+            link.appendChild(img);
+
+            link.addEventListener('click', function () {
+                modalAboutUs.toggleOpen();
+            });
+
+            return link;
+        },
+    });
+
+    L.control.developerLogo = function (opts) {
+        return new L.Control.DeveloperLogo(opts);
+    };
+    L.control.developerLogo({ position: "bottomright" }).addTo(mapa);
+} 
 
 function downloadBlob(blob, name = "file.txt") {
   // Convert your blob into a Blob URL
@@ -1561,9 +1587,14 @@ function getVectorData(e) {
 }
 
 function createPopupForVector(layer, clickLatlng) {
-  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase();
-  let popupName = layer.data.geoJSON.properties.objeto;
-  popupName ? title = popupName : title = id;
+  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase(),
+    popupName;
+  if (layer.data.geoJSON) {
+    popupName = layer.data.geoJSON.properties.objeto;
+    popupName ? title = popupName : title = id;
+  } else {
+    return;
+  }
 
   var infoAux =
     '<div class="featureInfo" id="featureInfoPopup' + id + '">';
@@ -1661,4 +1692,302 @@ function setFontFamily(fontFamily) {
   let r = document.querySelector(':root');
   /* let rs = getComputedStyle(r); */
   r.style.setProperty('--main-font-family', fontFamily)
+}
+
+function nameForLayer(type) {
+	let name = type + '_';
+
+	if (mapa.editableLayers[type].length === 0) {
+		name += '1';
+	} else {
+		const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
+		name += parseInt(lastLayerName.split('_')[1]) + 1;
+	}
+    return name;
+}
+
+
+function createLayerByType(geoJSON, groupName) {
+	let layer = null,
+	  type = geoJSON.geometry.type.toLowerCase(),
+	  options = {};
+
+	if (geoJSON.properties.hasOwnProperty('styles')) {
+	  options = { ...geoJSON.properties.styles };
+	}
+    
+  //check type
+  if (type === "point") {
+    layer = createLayerForPoint(geoJSON, groupName, layer, options);
+  }
+  if (type === "polygon") {
+    layer = createLayerPolygon(geoJSON, layer, options);
+  }
+  if (type === "linestring") {
+    layer = createLayerLinestring(geoJSON, groupName, layer, options);
+  }
+  if (type === "multipoint") {
+    layer = createLayerMultipoint(geoJSON, groupName, layer);
+  }
+  if (type === "multilinestring") {
+    layer = createLayerMultilinestring(geoJSON, groupName, layer);
+  }
+  if (type === "multipolygon") {
+    layer = createLayerMultilinestring(geoJSON, layer);
+  }
+
+  layer.id = groupName;
+  layer.data = { geoJSON };
+  return layer;
+}
+
+function createLayerMultilinestring(geoJSON, layer) {
+    const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
+    layer = L.polygon(reversedCoords);
+    layer.type = 'polygon';
+    return layer;
+}
+
+function createLayerMultilinestring(geoJSON, groupName, layer) {
+    geoJSON.geometry.coordinates.forEach(coords => {
+        const lineString = {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: coords
+          },
+          properties: geoJSON.properties
+        };
+  
+        layer = createLayerByType(lineString, groupName);
+    });
+    return layer;
+}
+
+function createLayerMultipoint(geoJSON, groupName, layer) {
+    geoJSON.geometry.coordinates.forEach(coords => {
+        const point = {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: coords
+          },
+          properties: geoJSON.properties
+        };
+  
+        layer = createLayerByType(point, groupName);
+    });
+    return layer;
+}
+
+function createLayerPolygon(geoJSON, layer, options) {
+    const invertedCoords = geoJSON.geometry.coordinates[0].map(coords => [coords[1], coords[0]]);
+
+    if (geoJSON.properties.hasOwnProperty('type') && geoJSON.properties.type.toLowerCase() === 'rectangle') {
+      layer = L.rectangle(invertedCoords, options);
+      layer.type = 'rectangle';
+    } else {
+      layer = L.polygon(invertedCoords, options);
+      layer.type = 'polygon';
+    }
+    return layer;
+}
+
+function createLayerLinestring(geoJSON, groupName, layer, options) {
+    const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
+
+    if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
+      let n = geoJSON.properties.value
+      let value = geoJSON.properties.value + ' m'
+      
+      let newOptions = setContourStyleOptions(geoJSON, options);
+      
+      layer = L.polyline(invertedCoords, newOptions);
+      layer.type = 'polyline';
+      layer.layer = groupName;
+      layer.value = geoJSON.properties.value
+      if (n % 100 === 0 || n % 50 === 0) {
+        // textPath
+        layer.setText(value, {
+          repeat: false,
+          offset: -3,
+          center: true,
+          attributes: {
+            textLength: 55,
+            fill: 'Maroon',
+            'font-weight': newOptions['font-weight'],
+            'font-family': 'sans-serif',
+            stroke: 'white',
+            'stroke-opacity': '1',
+            'stroke-width': '0.5'
+            /* 'font-size': '24px' */
+          }
+        });
+      }
+      layer.on('mouseover', function (e) {
+        let elevation = geoJSON.properties.value.toString() + " m";
+        let tooltipStyle = {
+          direction: 'right',
+          permanent: false,
+          sticky: true,
+          offset: [10, 0],
+          opacity: 0.75,
+          className: 'map-tooltip'
+        };
+        layer.bindTooltip(`<div><b>${elevation}</b></div>`,
+          tooltipStyle);
+      });
+    } else {
+      layer = L.polyline(invertedCoords, options);
+      layer.type = 'polyline';
+    }
+
+    return layer;
+}
+
+function createLayerForPoint(geoJSON, groupName, layer, options) {
+  const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
+
+  //Check if it is circle, circlemarker or marker
+  let geoJsonHasType = geoJSON.properties.hasOwnProperty('type');
+  if (geoJsonHasType) {
+    let geoJsonType = geoJSON.properties.type.toLowerCase();
+    if (geoJsonType === "circle") {
+      layer = L.circle(invertedCoords, options);
+      layer.type = 'circle';
+      return layer;
+    }
+    if (geoJsonType === "circlemarker") {
+      layer = L.circleMarker(invertedCoords, options);
+      layer.type = 'circlemarker';
+      return layer;
+    }
+    if (geoJsonType === "marker") {
+      layer = L.marker(invertedCoords);
+      layer.type = 'marker';
+      setDefaultMarkerStyles(layer, geoJSON);
+      return layer;
+    }
+    if (geoJsonType === "label") {
+      const editableLabel = new EditableLabel();
+      editableLabel.uploadLabel(invertedCoords, geoJSON.properties.text, geoJSON.properties.styles.weight, geoJSON.properties.styles.borderColor, geoJSON.properties.styles.fillColor, geoJSON.properties.styles.color, groupName);
+      return
+    } else {
+      layer = L.marker(invertedCoords);
+      layer.type = 'marker';
+      return layer;
+    }
+  } else {
+    layer = L.marker(invertedCoords);
+    layer.type = 'marker';
+    return layer;
+  }
+}
+
+function setDefaultMarkerStyles(layer, geoJSON) {
+    //Default marker styles
+    layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
+    layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
+    layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
+
+    if (geoJSON.properties.hasOwnProperty('styles') && geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
+        const borderWidth = geoJSON.properties.styles.borderWidth;
+        const borderColor = geoJSON.properties.styles.borderColor;
+        const fillColor = geoJSON.properties.styles.fillColor;
+
+        layer.options.borderWidth = borderWidth;
+        layer.options.borderColor = borderColor;
+        layer.options.fillColor = fillColor;
+        layer.options.customMarker = true;
+
+        mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
+    }
+}
+
+function setContourStyleOptions(geoJSON, options) {
+  let geoJsonValue = geoJSON.properties.value;
+
+  if (!countour_styles) countour_styles = getStyleContour();
+
+  if (geoJsonValue % countour_styles.d_line_m === 0) {
+    let colord = ""
+    if (countour_styles.d_line_color === "multi") {
+      colord = getMulticolorContour(geoJsonValue)
+    }
+    else { colord = countour_styles.d_line_color }
+
+    options = {
+      color: colord,
+      weight: countour_styles.d_weigth,
+      smoothFactor: countour_styles.smoothFactor,
+      'font-weight': 'bold'
+    }
+  } else {
+    let colorc = ""
+    if (countour_styles.line_color === "multi") {
+      colorc = getMulticolorContour(geoJsonValue)
+    } else { colorc = countour_styles.line_color }
+
+    options = {
+      color: colorc,
+      weight: countour_styles.line_weight,
+      smoothFactor: countour_styles.smoothFactor,
+      'font-weight': 'regular'
+    }
+  }
+  return options;
+}
+
+function addLayerToAllGroups(layer, groupName) {
+  if (layer.length) {
+    if (layer.length <= 1) {
+      _addLayerToAllGroups(layer[0], groupName);
+    } else {
+      layer.forEach(feature => {
+        _addLayerToAllGroups(feature, groupName);
+      });
+    }
+  } else {
+    _addLayerToAllGroups(layer, groupName);
+  }
+}
+
+function _addLayerToAllGroups(layer, groupName) {
+  let type = layer.type;
+  drawnItems.addLayer(layer);
+
+  mapa.editableLayers[type].forEach(lyr => {
+    if (lyr.id !== layer.id) {
+      mapa.editableLayers[type].push(layer);
+    }
+  });
+
+  if (groupName) {
+    if (mapa.groupLayers[groupName] === undefined) {
+      mapa.groupLayers[groupName] = [];
+    }
+    mapa.groupLayers[groupName].push(layer.name);
+  }
+}
+
+function removeLayerFromAllGroups(layer, groupName) {
+  for (let property in mapa.editableLayers) {
+    mapa.editableLayers[property].forEach(layer => {
+      if (layer.id === layer.id) {
+        mapa.editableLayers[property].pop(layer);
+      }
+    })
+  }
+  for (let property in drawnItems._layers) {
+    if ( drawnItems._layers[property].id === layer.id) {
+      drawnItems._layers[property].remove();
+      delete drawnItems._layers[property];
+    }
+  }
+  if (groupName) {
+    mapa.groupLayers[groupName].pop(layer.name);
+    if (mapa.groupLayers[groupName].length === 0) {
+      delete mapa.groupLayers[groupName];
+    }
+  }
 }

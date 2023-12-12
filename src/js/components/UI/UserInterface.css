@@ -1,0 +1,94 @@
+.base-cap-template {
+  display: grid;
+  grid-template-columns: 33% auto 11%;
+  grid-template-rows: auto auto;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+
+
+
+  align-items: center;
+}
+
+.optionbutton-container {
+  display: flex;
+  margin-top: 5px;
+  border: 2px solid #c4c4c4;
+  border-radius: 6px;
+
+  justify-content: space-between;
+}
+
+
+.base-map-menu {
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 3000;
+  position: absolute;
+  top: 1%;
+  left: 50px;
+  width: 300px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  /* box-shadow: 0px 26px 30px -10px rgba(0, 0, 0, 0.69) ,0px 16px 10px -10px rgba(0, 0, 0, 0.73)  */
+}
+
+/* .base-map-item {
+  
+} */
+.base-cap-template img {
+  border-radius: 4px;
+}
+
+.base-map-item-text {
+  margin-left: 5px;
+}
+
+.add-base-map-btn {
+  background-color: var(--bg-color);
+  border: none;
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+  width: -moz-available;
+  width: -webkit-fill-available;
+  height: auto;
+}
+
+.opt-base-map-btn {
+  border: none;
+  border-radius: 4px;
+}
+
+#add-base-map-btn-icon {
+  color: white;
+  font-size: 25px;
+}
+
+#opt-base-map-btn-icon {
+  color: #333;
+  font-size: 22px;
+}
+
+.opt-base-map-btn {
+  display: flex;
+  height: 40px;
+  width: 30px;
+  background-color: lightgrey;
+  align-items: center;
+  justify-content: center;
+}
+
+.base-map-opts-menu,
+.bm-opt-item {
+  background-color: white;
+  width: 100px;
+  height: auto;
+}
+
+.bm-opt-item {
+  padding: 2px;
+  margin: 1px;
+}

@@ -641,47 +641,29 @@ $("body").on("pluginLoad", function (event, plugin) {
 					});
 
 					mapa.on('draw:created', (e) => {
+						//create layer
 						const layer = e.layer;
 						const type = e.layerType;
 
-						let name = type + '_';
-						if (mapa.editableLayers[type].length === 0) {
-							name += '1';
-						} else {
-							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-							name += parseInt(lastLayerName.split('_')[1]) + 1;
-						}
-
-						layer.name = name;
-						layer.type = type;
-						layer.data = {};
+						//add information & methods to layer
 						layer.options.fillColor = !layer.options.fillColor ? layer.options.color : layer.options.fillColor;
-						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
-						layer.on({
-							click: getVectorData
-						});
+						layer.type = type;
+						addInfoAndMethodsToLayer(layer);
 
-						layer.getGeoJSON = () => {
-							return mapa.getLayerGeoJSON(layer.name);
+						//add layer to
+						_addLayerToAllGroups(layer);
+
+						//aditional settings
+						let geoJSON = layer.getGeoJSON();
+						layer.data = {geoJSON};
+
+						if (isSelectionDrawingActive) {
+							layer.id = "selection_" + Math.floor(Math.random()*(999-100+1)+100).toString();
+							isSelectionDrawingActive = false;
+						} else {
+							addLayerToDrawingsGroup(layer.name, layer, "Dibujos", "dibujos", "dibujos");
 						}
-
-						layer.downloadGeoJSON = () => {
-							mapa.downloadLayerGeoJSON(layer);
-						}
-
-						mapa.editableLayers[type].push(layer);
-
-						addLayerToDrawingsGroup(name, layer, "Dibujos", "dibujos", "dibujos");
-
-						// if (perfilTopografico.isActive) {
-						// 	// check if profile was clicked
-						// 	mapa.capaPerfilTopografico.clearLayers();
-						// 	mapa.capaPerfilTopografico.addLayer(layer);
-						// 	perfilTopografico.process(layer.getGeoJSON());
-						// } else {
-						drawnItems.addLayer(layer);
-						// }
-
+						
 						mapa.methodsEvents['add-layer'].forEach(method => method(mapa.editableLayers));
 
 						if (layer.type === 'marker') {
@@ -690,8 +672,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
 							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
 						}
-
-						mapa.addContextMenuToLayer(layer);
 
 						if (geoProcessingManager) {
 							geoProcessingManager.updateLayerSelect(layer.name, true);
@@ -903,7 +883,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 									geometry: { type: "Point", coordinates: [lng, lat] },
 								};
 
-								mapa.addGeoJsonLayerToDrawedLayers(geojsonMarker, "addedMarker_" + name, false);
+								let result = mapa.createLayerFromGeoJSON(geojsonMarker, "addedMarker_" + name);
+								addLayerToAllGroups(result, "addedMarker_" + name);
+
 								mapa.closePopup(contextPopup);
 							},
 						});
@@ -2574,252 +2556,52 @@ $("body").on("pluginLoad", function (event, plugin) {
 						layer.setIcon(icon);
 					};
 
-					mapa.addGeoJsonLayerToDrawedLayers = (geoJSON, groupName, groupIsCreated, file) => {
+					mapa.createLayerFromGeoJSON = (geoJSON, groupName) => {
 						if (mapa.groupLayers[groupName] === undefined) {
 							mapa.groupLayers[groupName] = [];
 						}
 
 						if (geoJSON.type === 'FeatureCollection') {
-							geoJSON.features.forEach(feature => {
-								mapa.addGeoJsonLayerToDrawedLayers(feature, groupName, true, true);
+							let collection = [];
+							geoJSON.features.forEach(geoJSON => {
+								//create layer
+								let layer = createLayerByType(geoJSON, groupName);
+								//add information & methods to layer
+								addInfoAndMethodsToLayer(layer);
+								collection.push(layer);
 							});
-							return;
+							return collection;
+						} 
+
+						if (geoJSON.type === 'Feature') {
+							//create layer
+							let layer = createLayerByType(geoJSON, groupName);
+							//add information & methods to layer
+							addInfoAndMethodsToLayer(layer);
+							return layer;
 						}
 
-						let type = geoJSON.geometry.type.toLowerCase();
-						let layer = null;
+					}
 
-						let options = {};
-						if (geoJSON.properties.hasOwnProperty('styles')) {
-							options = { ...geoJSON.properties.styles };
-						}
-
-						switch (type) {
-							case 'point': {
-								const invertedCoords = [geoJSON.geometry.coordinates[1], geoJSON.geometry.coordinates[0]];
-
-								//Check if it is circle, circlemarker or marker
-								if (geoJSON.properties.hasOwnProperty('type')) {
-									switch (geoJSON.properties.type.toLowerCase()) {
-										case 'circle': {
-											layer = L.circle(invertedCoords, options);
-											type = 'circle';
-										}
-											break;
-										case 'circlemarker': {
-											layer = L.circleMarker(invertedCoords, options);
-											type = 'circlemarker';
-										};
-											break;
-										case 'marker': {
-											layer = L.marker(invertedCoords);
-											type = 'marker';
-										};
-											break;
-										case 'label': {
-											const editableLabel = new EditableLabel();
-											editableLabel.uploadLabel(invertedCoords, geoJSON.properties.text, geoJSON.properties.styles.weight, geoJSON.properties.styles.borderColor, geoJSON.properties.styles.fillColor, geoJSON.properties.styles.color, groupName);
-											return
-										};
-											break;
-										default: {
-											layer = L.marker(invertedCoords);
-											type = 'marker';
-										}
-									}
-								} else {
-									layer = L.marker(invertedCoords);
-									type = 'marker';
-								}
-							}
-								break;
-							case 'linestring': {
-								const invertedCoords = geoJSON.geometry.coordinates.map(coords => [coords[1], coords[0]]);
-								if (geoJSON.hasOwnProperty('properties') && geoJSON.properties.hasOwnProperty('value')) {
-									let n = geoJSON.properties.value
-									let value = geoJSON.properties.value + ' m'
-
-									if (!countour_styles) countour_styles = getStyleContour()
-
-
-									if (n % countour_styles.d_line_m === 0) {
-										let colord = ""
-										if (countour_styles.d_line_color === "multi") {
-											colord = getMulticolorContour(n)
-										}
-										else { colord = countour_styles.d_line_color }
-
-										options = {
-											color: colord,
-											weight: countour_styles.d_weigth,
-											smoothFactor: countour_styles.smoothFactor,
-											'font-weight': 'bold'
-										}
-									} else {
-										let colorc = ""
-										if (countour_styles.line_color === "multi") {
-											colorc = getMulticolorContour(n)
-										} else { colorc = countour_styles.line_color }
-
-
-										options = {
-											color: colorc,
-											weight: countour_styles.line_weight,
-											smoothFactor: countour_styles.smoothFactor,
-											'font-weight': 'regular'
-										}
-									}
-									//if (n % 100 === 0 ||n % 50 === 0) 
-
-									layer = L.polyline(invertedCoords, options);
-									type = 'polyline';
-									layer.layer = groupName;
-									layer.value = geoJSON.properties.value
-									if (n % 100 === 0 || n % 50 === 0) {
-										// textPath
-										layer.setText(value, {
-											repeat: false,
-											offset: -3,
-											center: true,
-											attributes: {
-												textLength: 55,
-												fill: 'Maroon',
-												'font-weight': options['font-weight'],
-												'font-family': 'sans-serif',
-												stroke: 'white',
-												'stroke-opacity': '1',
-												'stroke-width': '0.5'
-												/* 'font-size': '24px' */
-											}
-										});
-									}
-									layer.on('mouseover', function (e) {
-										let elevation = geoJSON.properties.value.toString() + " m";
-										let tooltipStyle = {
-											direction: 'right',
-											permanent: false,
-											sticky: true,
-											offset: [10, 0],
-											opacity: 0.75,
-											className: 'map-tooltip'
-										};
-										layer.bindTooltip(`<div><b>${elevation}</b></div>`,
-											tooltipStyle);
-									});
-								} else {
-									layer = L.polyline(invertedCoords, options);
-									type = 'polyline';
-								}
-
-							}
-								break;
-							case 'polygon': {
-								const invertedCoords = geoJSON.geometry.coordinates[0].map(coords => [coords[1], coords[0]]);
-								if (geoJSON.properties.hasOwnProperty('type') && geoJSON.properties.type.toLowerCase() === 'rectangle') {
-									layer = L.rectangle(invertedCoords, options);
-									type = 'rectangle';
-								} else {
-									layer = L.polygon(invertedCoords, options);
-									type = 'polygon';
-								}
-							}
-								break;
-							case 'multipoint': {
-								geoJSON.geometry.coordinates.forEach(coords => {
-									const point = {
-										type: "Feature",
-										geometry: {
-											type: "Point",
-											coordinates: coords
-										},
-										properties: geoJSON.properties
-									};
-
-									mapa.addGeoJsonLayerToDrawedLayers(point, groupName, true, true);
-
-								});
-								return;
-							}
-							case 'multilinestring': {
-								geoJSON.geometry.coordinates.forEach(coords => {
-									const lineString = {
-										type: "Feature",
-										geometry: {
-											type: "LineString",
-											coordinates: coords
-										},
-										properties: geoJSON.properties
-									};
-									mapa.addGeoJsonLayerToDrawedLayers(lineString, groupName, true, true);
-								});
-								return;
-							}
-							case 'multipolygon': {
-								const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
-								layer = L.polygon(reversedCoords);
-								type = 'polygon';
-							}
-								break;
-						}
-
-						let name = type + '_';
-
-						if (mapa.editableLayers[type].length === 0) {
-							name += '1';
-						} else {
-							const lastLayerName = mapa.editableLayers[type][mapa.editableLayers[type].length - 1].name;
-							name += parseInt(lastLayerName.split('_')[1]) + 1;
-						}
-
-						layer.id = groupName;
-						layer.name = name;
-						layer.type = type;
-						layer.data = { geoJSON };
-						layer.data.geoJSON.properties.name = name;
+					function addInfoAndMethodsToLayer(layer) {
+						let type = layer.type;
+						layer.name = nameForLayer(type);
 						consultDataBtnClose ? layer.activeData = false : layer.activeData = true;
-
+						
+						mapa.editableLayers[type].push(layer);
+						
 						layer.on({
 							click: getVectorData
 						});
-
-						mapa.groupLayers[groupName].push(name);
-
 						layer.getGeoJSON = () => {
 							return mapa.getLayerGeoJSON(layer.name);
 						}
-
 						layer.downloadGeoJSON = () => {
 							mapa.downloadLayerGeoJSON(mapa.editableLayers[type].find(lyr => lyr.name === layer.name));
 						}
-
-						mapa.editableLayers[type].push(layer);
-
-						if (layer.type === 'marker') {
-							//Default marker styles
-							layer.options.borderWidth = DEFAULT_MARKER_STYLES.borderWidth;
-							layer.options.borderColor = DEFAULT_MARKER_STYLES.borderColor;
-							layer.options.fillColor = DEFAULT_MARKER_STYLES.fillColor;
-
-							if (geoJSON.properties.hasOwnProperty('styles') && geoJSON.properties.styles.hasOwnProperty('borderWidth')) {
-								const borderWidth = geoJSON.properties.styles.borderWidth;
-								const borderColor = geoJSON.properties.styles.borderColor;
-								const fillColor = geoJSON.properties.styles.fillColor;
-
-								layer.options.borderWidth = borderWidth;
-								layer.options.borderColor = borderColor;
-								layer.options.fillColor = fillColor;
-								layer.options.customMarker = true;
-
-								mapa.setIconToMarker(layer, borderColor, fillColor, borderWidth);
-							}
-						}
-
-						//Right-click
 						mapa.addContextMenuToLayer(layer);
-
-						drawnItems.addLayer(layer);
 					}
-
+					
 					gestorMenu.plugins['Draw'].setStatus('visible');
 					break;
 				default:
