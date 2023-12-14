@@ -42,6 +42,7 @@
   --popup-fnt-size: 12px;
   --group-title-fnt-size: 15px;
   --body-fnt-size: 14px;
+  --btn-ftn-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
   --menu-section-hover-color: #969393; 
@@ -1404,3 +1405,60 @@ Print
 .individualFeature > ul > li > span {
   float: right;
 } */
+
+
+/* UI Components class*/
+.ui-btn {
+  padding: 6px 12px;
+  font-size: var(--btn-ftn-size);
+  font-weight: 900;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border-radius: 6px;
+  background-color: #fff;
+}
+.ui-btn:hover{
+  color: #fff;
+}
+.ui-btn-primary {
+  border: 3px solid #75AADB;
+  color: #75AADB;
+}
+.ui-btn-primary:hover {
+  background-color: #75AADB;
+}
+.ui-btn-disabled {
+  color: #9c9c9c;
+  border: 3px solid #9c9c9c;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.ui-btn-disabled:hover {
+  background-color: #9c9c9c;
+}
+.ui-btn-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+.ui-btn-secondary:hover {
+  background-color: #6c757d;
+}
+.ui-btn-confirm {
+  border-color: #2fb84f;
+  color: #2fb84f;
+}
+.ui-btn-confirm:hover {
+  background-color: #2fb84f;
+}
+.ui-btn-warning {
+  border-color: #c72020;
+  color: #c72020;
+}
+.ui-btn-warning:hover {
+  background-color: #c72020;
+}

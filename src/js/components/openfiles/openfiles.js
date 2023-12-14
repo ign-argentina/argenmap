@@ -191,7 +191,7 @@ class UImf {
 
     let btnCapa = document.createElement("button")
     btnCapa.id = "btn-upload-agregar-capa"
-    btnCapa.className = "btn btn-info disabled"
+    btnCapa.className = "ui-btn ui-btn-disabled"
     btnCapa.style = "width:100%; margin:20px 0px 10px 0px"
     btnCapa.innerHTML = "Agregar Capa"
     btnCapa.onclick = function () {
@@ -445,7 +445,7 @@ class UImf {
   enabledbtnCapa() {
     control_btn_add_layer = true
     let btn = document.getElementById("btn-upload-agregar-capa")
-    btn.className = "btn btn-info"
+    btn.className = "ui-btn ui-btn-primary"
 
     $('#uploaded-area').bind('DOMSubtreeModified', function () {
 
@@ -460,7 +460,7 @@ class UImf {
       if ($('#uploaded-area')[0].childElementCount == 0) {
         control_btn_add_layer = false;
         let btn = document.getElementById("btn-upload-agregar-capa")
-        btn.className = "btn btn-info disabled"
+        btn.className = "ui-btn ui-btn-primary"
       }
     });
   }
