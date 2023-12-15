@@ -30,7 +30,6 @@
   font-family: "Aurebesh Bold";
   src: url("../../../dist/fonts/Aurebesh-Bold.otf");
 }
-
 :root {
   --main-bg-color: #fff;
   --bg-color: #0db2e0;
@@ -42,12 +41,22 @@
   --popup-fnt-size: 12px;
   --group-title-fnt-size: 15px;
   --body-fnt-size: 14px;
-  --btn-ftn-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
-  --menu-section-hover-color: #969393; 
-  --layer-btn-hover-color: #d1cccc; 
+  --menu-section-hover-color: #969393;
+  --layer-btn-hover-color: #d1cccc;
   --main-font-family: "Encode Sans", sans-serif;
+  /*ui Button*/
+  --btn-ftn-size: 1.5rem;
+  --btn-border-radius: 6px;
+  --btn-background-color: #FFF;
+  --btn-hover-bg-color: #FFF;
+  --btn-hover-color: #FFF;
+  --btn-primary-color: #157DB9;
+  --btn-secondary-color: #105C97;
+  --btn-disabled-color: #838788;
+  --btn-confirm-color: #3A8555;
+  --btn-danger-color: #CE4946;
 }
 /*******************************
 General
@@ -55,6 +64,7 @@ General
 html {
   height: 100%;
 }
+
 .loader-line {
   display: flex;
   justify-content: center;
@@ -91,9 +101,9 @@ html {
       width: 100%;
   } */
 }
-
 body {
-  font-family: var(--main-font-family); /* "Encode Sans", sans-serif; */
+  font-family: var(--main-font-family);
+  /* "Encode Sans", sans-serif; */
   overflow: hidden;
   height: 100% !important;
   font-size: var(--body-fnt-size, 14px);
@@ -136,8 +146,8 @@ a, a:hover, a:focus {
   height: 50px;
 }
 .brand {
-  height: 48px; 
-  background-size: cover; 
+  height: 48px;
+  background-size: cover;
   opacity: .7
 }
 .brand:hover {
@@ -173,6 +183,71 @@ a, a:hover, a:focus {
   align-items: center;
   justify-content: center;
 }
+
+/*******************************
+UI Components class
+*******************************/
+
+.ui-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border-radius: var(--btn-border-radius);
+  background-color: var(--btn-background-color);
+  padding: 6px 12px;
+  font-size: var(--btn-ftn-size);
+  font-weight: 900;
+  cursor: pointer;
+  margin: 10px;
+}
+.ui-btn:hover {
+  color: var(--btn-hover-color);
+}
+.ui-btn-primary {
+  border: 3px solid var(--btn-primary-color);
+  color: var(--btn-primary-color);
+}
+.ui-btn-primary:hover {
+  background-color: var(--btn-primary-color);
+}
+.ui-btn-disabled {
+  color: var(--btn-disabled-color);
+  border: 3px solid var(--btn-disabled-color);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.ui-btn-disabled:hover {
+  background-color: var(--btn-disabled-color);
+}
+.ui-btn-secondary {
+  border: 3px solid var(--btn-secondary-color);
+  color: var(--btn-secondary-color);
+}
+.ui-btn-secondary:hover {
+  background-color: var(--btn-secondary-color);
+}
+.ui-btn-confirm {
+  border: 3px solid var(--btn-confirm-color);
+  color: var(--btn-confirm-color);
+}
+.ui-btn-confirm:hover {
+  background-color: var(--btn-confirm-color);
+}
+.ui-btn-danger {
+  border: 3px solid var(--btn-danger-color);
+  color: var(--btn-danger-color);
+}
+.ui-btn-danger:hover {
+  background-color: var(--btn-danger-color);
+}
+
 /*******************************
 Menu principal
 *******************************/
@@ -271,39 +346,39 @@ li.active>div>a {
 }
 /* ANIMATED X */
 .navbar-toggle.x .icon-bar:nth-of-type(1) {
-	-webkit-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
-	transform: rotate(45deg);
-	-webkit-transform-origin: 10% 10%;
-	-ms-transform-origin: 10% 10%;
-	transform-origin: 10% 10%;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transform-origin: 10% 10%;
+  -ms-transform-origin: 10% 10%;
+  transform-origin: 10% 10%;
 }
 .navbar-toggle.x .icon-bar:nth-of-type(2) {
-	opacity: 0;
-	filter: alpha(opacity=0);
+  opacity: 0;
+  filter: alpha(opacity=0);
 }
 .navbar-toggle.x .icon-bar:nth-of-type(3) {
-	-webkit-transform: rotate(-45deg);
-	-ms-transform: rotate(-45deg);
-	transform: rotate(-45deg);
-	-webkit-transform-origin: 10% 90%;
-	-ms-transform-origin: 10% 90%;
-	transform-origin: 10% 90%;
+  -webkit-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transform-origin: 10% 90%;
+  -ms-transform-origin: 10% 90%;
+  transform-origin: 10% 90%;
 }
 /* ANIMATED X COLLAPSED */
 .navbar-toggle.x.collapsed .icon-bar:nth-of-type(1) {
-	-webkit-transform: rotate(0);
-	-ms-transform: rotate(0);
-	transform: rotate(0);
+  -webkit-transform: rotate(0);
+  -ms-transform: rotate(0);
+  transform: rotate(0);
 }
 .navbar-toggle.x.collapsed .icon-bar:nth-of-type(2) {
-	opacity: 1;
-	filter: alpha(opacity=100);
+  opacity: 1;
+  filter: alpha(opacity=100);
 }
 .navbar-toggle.x.collapsed .icon-bar:nth-of-type(3) {
-	-webkit-transform: rotate(0);
-	-ms-transform: rotate(0);
-	transform: rotate(0);
+  -webkit-transform: rotate(0);
+  -ms-transform: rotate(0);
+  transform: rotate(0);
 }
 /* END ANIMATED X */
 .list-group-item.active {
@@ -518,67 +593,14 @@ li.active>div>a {
 .hidden {
   visibility: hidden !important;
 }
-/*******************************
-Searcher
-*******************************/
-::-ms-clear {
-  display: none;
-}
-.form-control-clear {
-  z-index: 10;
-  pointer-events: auto;
-  cursor: pointer;
-}
-.btn-search {
-  background-color: var(--main-bg-color, white);
-}
-.btn-search:hover {
-  background-color: var(--hoverSelect-bg-color, rgb(97, 202, 134));
-  color: rgb(255, 255, 255);
-}
+
 /*******************************
 JQuery Autocomplete
 *******************************/
 .ui-widget.ui-widget-content {
   z-index: 3000;
 }
-/*******************************
-Login
-*******************************/
-.form-signin {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: 0 auto;
-}
-.form-signin .checkbox {
-  font-weight: 400;
-}
-.form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
-}
-.form-signin .form-control:focus {
-  z-index: 999;
-}
-.form-signin input[type="text"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-.top-right-btn {
-  position: absolute;
-  top: 8px !important;
-  right: 10px;
-}
+
 /*******************************
 Leaflet
 *******************************/
@@ -617,6 +639,7 @@ Leaflet
 /* .leaflet-pane .leaflet-overlay-pane:not(:first-child) {
   filter: drop-shadow(5px -2px 1.5px rgba(5,15,5,0.3));
 } */
+
 /*******************************
 Leaflet popup featureInfo
 *******************************/
@@ -668,6 +691,7 @@ Leaflet popup featureInfo
   float: left;
   padding-left: 10px;
 }
+
 /*******************************
 Popup geometría
 *******************************/
@@ -695,7 +719,7 @@ Popup geometría
   margin: 0 !important;
   font-weight: 700;
 }
-.btn-active {
+/* .btn-active {
   border-color: rgb(0, 141, 201);
   color: rgb(0, 141, 201);
 }
@@ -710,12 +734,12 @@ Popup geometría
 .btn-disabled {
   border-color: rgb(107, 109, 110);
   color: rgb(107, 109, 110);
-}
+} */
 .edit-style-popup {
   left: 20px !important;
   top: 20px;
 }
-#editContainer{
+#editContainer {
   top: 100px;
   left: 30%;
   position: absolute;
@@ -926,6 +950,7 @@ input:checked.switch+label:after {
     visibility: hidden;
   }
 }
+
 /*******************************
 Control mapa base
 *******************************/
@@ -971,6 +996,7 @@ Control mapa base
   width: 230px;
   display: block;
 }
+
 /*******************************
 Control graticula
 *******************************/
@@ -983,6 +1009,7 @@ Control graticula
 .leaflet-control-customgraticule:hover {
   cursor: pointer;
 }
+
 /*******************************
 SideBar
 *******************************/
@@ -1074,6 +1101,7 @@ SideBar
 .leaflet-oldie .leaflet-popup-content-wrapper {
   transform: scale(1);
 }
+
 /*******************************
 New navbar
 *******************************/
@@ -1118,7 +1146,7 @@ New navbar
     display: none;
   }
 }
-#geoserver-login-btn{
+#geoserver-login-btn {
   width: auto;
   align-self: center;
 }
@@ -1139,19 +1167,23 @@ New navbar
   white-space: nowrap;
   text-decoration: none;
 }
-#search-navbar {
-  align-self: center;
-}
-.btn-reset-layers {
-  background-color: var(--main-bg-color, #fff);
-}
-.btn-reset-layers:hover {
-  background-color: var(--hoverSelect-bg-color, rgb(97, 202, 134));
-  color: rgb(255, 255, 255);
-}
+
 /*******************************
-SearchForm & Buttons
+Searcher
 *******************************/
+::-ms-clear {
+  display: none;
+}
+.form-control-clear {
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+  line-height: 0;
+}
+ .btn-search,  .btn-reset-layers {
+  width: auto;
+  margin: 2px;
+}
 .searchFormBtn {
   display: flex;
   flex-direction: column-reverse;
@@ -1160,6 +1192,10 @@ SearchForm & Buttons
 .formBtns {
   width: 100%;
 }
+#search-navbar {
+  align-self: center;
+}
+
 /*******************************
 Perfil Topografico
 *******************************/
@@ -1184,6 +1220,7 @@ Perfil Topografico
   width: 100%;
   min-height: 400px;
 }
+
 /*******************************
 Measurement Info
 *******************************/
@@ -1215,6 +1252,7 @@ Measurement Info
 #measurementInfo tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
+
 /*******************************
 ESRI
 *******************************/
@@ -1245,6 +1283,7 @@ ESRI
 #esriTable tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
+
 /*******************************
 Icons and Btns
 *******************************/
@@ -1265,23 +1304,21 @@ Icons and Btns
   border: none !important;
   border-radius: 4px !important;
 }
-
 .leaflet-bar a ,.leaflet-touch .leaflet-bar a{
   width: 26px;
   height: 26px;
   line-height: 26px;
 }
-
 .leaflet-bar a:last-child {
   border-bottom-left-radius: 4px !important;
   border-bottom-right-radius: 4px !important;
   border-bottom: none !important;
 }
-
 .leaflet-bar a:first-child {
   border-top-left-radius: 4px !important;
   border-top-right-radius: 4px !important;
 } */
+
 /*******************************
 ScreenShot
 *******************************/
@@ -1291,76 +1328,45 @@ ScreenShot
 #screenShoter :hover {
   cursor: pointer;
 }
-/*******************************
-Print
-*******************************/
-@media print {
-  .navbar,
-  .sidebar,
-  .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)),
-  #sidebar,
-  #zoom-level,
-  #geoPIcon,
-  #btn-logout,
-  #loadLayersModal,
-  div[id^="sidebar-toolbar-icon-"] {
-    display: none !important;
-  }
-  #mapa {
-    display: block;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    z-index: 10000;
-  }
-}
 
+/*******************************
+Special effects
+*******************************/
 /* Spinning globe effect when hover on 'zoom to home' button */
 /* @keyframes spinning-globe {
   0% {
     content: "\f57d";
   }
-
   30% {
     content: "\f57c";
   }
-
   60% {
     content: "\f57e";
   }
-
   100% {
     content: "\e47b";
   }
 }
-
 .fa-earth-americas:hover::before {
   font-family: "Font Awesome 6";
   content    : "\f57d";
   animation  : spinning-globe 0.5s linear infinite alternate;
   opacity    : 0.95;
 } */
-
 /* mayth4th */
 /* 
 @keyframes maythe4th {
   0% {
     opacity: 0;
   }
-
   100% {
     opacity: 0.5;
   }
 }
-
 .fa-earth-americas:hover::before {
   animation: unset;
   content  : "\e037";
 }
-
 .fa-earth-americas:hover::after {
   font-family: "Aurebesh Bold";
   content    : "May the 4th be with you";
@@ -1373,25 +1379,23 @@ Print
   animation  : maythe4th 1s linear;
 }
  */
-
- /* Lightsaber effect for SVG paths (Leaflet geometries) */
+/* Lightsaber effect for SVG paths (Leaflet geometries) 
 @keyframes glow {
   to {
-    stroke-width  : 3.3px;
+    stroke-width: 3.3px;
     -webkit-filter: drop-shadow(0px 0px 7px #2FF924) drop-shadow(0px 0px 15px #198013);
-    filter        : drop-shadow(0px 0px 7px #2FF924) drop-shadow(0px 0px 15px #198013);
+    filter: drop-shadow(0px 0px 7px #2FF924) drop-shadow(0px 0px 15px #198013);
   }
 }
-
 .lightsaber {
-  stroke        : white;
-  stroke-width  : 3px;
+  stroke: white;
+  stroke-width: 3px;
   stroke-opacity: 1;
-  fill          : none;
+  fill: none;
   -webkit-filter: drop-shadow(0px 0px 4px #2FF924) drop-shadow(0px 0px 15px #198013);
-  filter        : drop-shadow(0px 0px 4px #2FF924) drop-shadow(0px 0px 15px #198013);
-  animation     : glow 0.1s ease-in-out infinite alternate;
-}
+  filter: drop-shadow(0px 0px 4px #2FF924) drop-shadow(0px 0px 15px #198013);
+  animation: glow 0.1s ease-in-out infinite alternate;
+}*/
 /* .individualFeature > ul > li {
     padding: 0 10px;
 }
@@ -1405,60 +1409,3 @@ Print
 .individualFeature > ul > li > span {
   float: right;
 } */
-
-
-/* UI Components class*/
-.ui-btn {
-  padding: 6px 12px;
-  font-size: var(--btn-ftn-size);
-  font-weight: 900;
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  border-radius: 6px;
-  background-color: #fff;
-}
-.ui-btn:hover{
-  color: #fff;
-}
-.ui-btn-primary {
-  border: 3px solid #75AADB;
-  color: #75AADB;
-}
-.ui-btn-primary:hover {
-  background-color: #75AADB;
-}
-.ui-btn-disabled {
-  color: #9c9c9c;
-  border: 3px solid #9c9c9c;
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-.ui-btn-disabled:hover {
-  background-color: #9c9c9c;
-}
-.ui-btn-secondary {
-  border-color: #6c757d;
-  color: #6c757d;
-}
-.ui-btn-secondary:hover {
-  background-color: #6c757d;
-}
-.ui-btn-confirm {
-  border-color: #2fb84f;
-  color: #2fb84f;
-}
-.ui-btn-confirm:hover {
-  background-color: #2fb84f;
-}
-.ui-btn-warning {
-  border-color: #c72020;
-  color: #c72020;
-}
-.ui-btn-warning:hover {
-  background-color: #c72020;
-}

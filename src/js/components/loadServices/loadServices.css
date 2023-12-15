@@ -64,14 +64,14 @@
   margin-top: 4px;
 }
 #buttonConectar {
-  cursor: pointer;
-  background-color: #37bbed;
-  color: #fff;
+  width: auto;
+  height: 34px;
+  margin: 0;
+  border-left: 3px solid var(--btn-primary-color);
 }
-#buttonConectar:hover {
-  color: #fff;
-  background-color: #31b0d5;
-  border-color: #269abc;
+#basic-addon1 {
+  width: auto;
+  height: 34px;
 }
 #select-layers-container {
   width: 100%;
@@ -97,12 +97,13 @@
 .loadservice-layer-img img {
   height: 20px;
 }
-#modalLoadServices {
+.modalLoadServices {
   margin: 5px;
+  width: 95%;
 }
-#modalloadservices :hover {
+/* #modalloadservices :hover {
   background-color: #f4f4f4;
-}
+} */
 #iconloadservices-container {
   height: 100%;
   width: 100%;

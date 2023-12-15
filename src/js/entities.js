@@ -2656,10 +2656,10 @@ class GestorMenu {
         "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" +
         this.getQuerySearch() +
         "' placeholder='Buscar capa'>" +
-        "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>" +
+        "<button onClick='reloadMenu()' class='ui-btn ui-btn-secondary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>" +
         "</div>" +
-        "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-        "<div onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash'></span></button></div>" +
+        "<div><button class='ui-btn ui-btn-secondary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
+        "<div onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><button class='ui-btn ui-btn-secondary btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash'></span></button></div>" +
         "</div>" +
         "</form>"
       );
@@ -3819,7 +3819,7 @@ class Menu_UI {
       "display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;";
 
     let btn_si = document.createElement("button");
-    btn_si.className = "btn btn-info";
+    btn_si.className = "ui-btn ui-btn-danger";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
       let section;
@@ -3845,8 +3845,7 @@ class Menu_UI {
     };
 
     let btn_no = document.createElement("button");
-    btn_no.className = "btn btn-default";
-    btn_no.style = "border: 1px solid silver";
+    btn_no.className = "ui-btn ui-btn-primary";
     btn_no.innerHTML = "Cancelar";
     btn_no.onclick = function () {
       $("#modal_layer_del").remove();

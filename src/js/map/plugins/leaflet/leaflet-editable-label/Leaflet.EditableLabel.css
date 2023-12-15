@@ -1,9 +1,7 @@
-.leaflet-editable-label-interior:hover {
-  background-color: #f5f4f4;
-  cursor: pointer;
-}
 .redIcon {
   color: rgba(255, 0, 0, 0.637);
+  font-size: large;
+  line-height: inherit;
 }
 .map-label {
   min-width: 150px !important;
@@ -28,6 +26,8 @@
   line-height: inherit;
 }
 .icon-text {
-  filter: contrast(70%);
-  height: 19px;
+  display: block;
+  background-image: url("/src/styles/images/icon-text-regular.png");
+  height: 26px;
+  background-position: right;
 }

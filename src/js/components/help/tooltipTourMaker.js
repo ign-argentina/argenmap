@@ -159,8 +159,8 @@ class Modal {
             
             <p>${question}</p>
             <div class="initModalBtn">
-                <button id="initModalBtnConfirm" class="btn btn-primary">${confirmText}</button>
-                <button id="initModalBtnCancel" class="btn btn-primary">${cancelText}</button>
+                <button id="initModalBtnConfirm" class="ui-btn ui-btn-confirm">${confirmText}</button>
+                <button id="initModalBtnCancel" class="ui-btn ui-btn-primary">${cancelText}</button>
             </div>
             `;
         tooltipBackdrop.appendChild(initModal);
