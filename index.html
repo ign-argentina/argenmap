@@ -90,7 +90,6 @@
   <script src="src/js/components/table/UI.js"></script>
   <script src="src/js/components/table/table.js"></script>
   <script src="src/js/components/table/TouchPunch.js"></script>
-  <link rel="stylesheet" href="src/js/components/table/table.css">
 
   <!-- Leaflet Image -->
   <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js" integrity="sha384-Cl2KSaehTGkoEiw07k3L/nCCwvF6tB3BcWgb83eHZUp2oPDI3qSKJUypvhoB66Gq" crossorigin="anonymous"></script>
@@ -122,6 +121,7 @@
   <link href="src/js/components/consultData/consultData.css" rel="stylesheet">
   <link href="src/js/components/about/about.css" rel="stylesheet">
   <link href="src/js/components/login/login.css" rel="stylesheet">
+  <link rel="stylesheet" href="src/js/components/table/table.css">
 
 </head>
 
@@ -129,38 +129,36 @@
   <div class="loader-line hidden"></div>
   <nav class="navbar _navbar-inverse navbar-fixed-top">
     <div class="navbar-new">
+      <div class="center-flex-space-btw">
+        <button type="button" class="hidden-lg hidden-md navbar-toggle x collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse" data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
+          <!-- <span class="sr-only">Toggle navigation</span> -->
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
 
-      <button type="button" class="hidden-lg hidden-md navbar-toggle x collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse" data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
-        <!-- <span class="sr-only">Toggle navigation</span> -->
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+        <div id="logo-navbar" class="navbar-new-content">
+          <a>
+            <span class="xxsmall-hide">
+              <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
+                <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="">
+              </a>
+            </span>
+          </a>
+          <a id="logoText"></a>
+        </div>
 
-      <div id="logo-navbar" class="navbar-new-content">
-        <a>
+        <div id="search-navbar" class="navbar-new-content"></div>
+
+        <div id="logo-help" class="navbar-new-content">
           <span class="xxsmall-hide">
-            <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
-              <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="">
+            <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
             </a>
           </span>
-        </a>
-        <a id="logoText"></a>
+        </div>
       </div>
-
-      <div id="search-navbar" class="navbar-new-content"></div>
-
-      <div id="logo-help" class="navbar-new-content">
-        <span class="xxsmall-hide">
-          <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
-            <img id="top-right-logo" src="src/styles/images/noimage.webp" alt="" title="">
-          </a>
-        </span>
-      </div>
-
-      <div id="geoserver-login-btn" class="navbar-new-content">
-      </div>
-
+      <span id="geoserver-login-btn" class="navbar-new-content">
+      </span>
     </div>
   </nav>
   <div class="container-fluid">

@@ -183,11 +183,16 @@ a, a:hover, a:focus {
   align-items: center;
   justify-content: center;
 }
+.center-flex-space-btw{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 
 /*******************************
 UI Components class
 *******************************/
-
 .ui-btn {
   width: 100%;
   display: flex;
@@ -203,7 +208,7 @@ UI Components class
   background-color: var(--btn-background-color);
   padding: 6px 12px;
   font-size: var(--btn-ftn-size);
-  font-weight: 900;
+  font-weight: 700;
   cursor: pointer;
   margin: 10px;
 }
@@ -405,8 +410,7 @@ li.active>div>a {
   display: inline-block;
   font-size: var(--layer-cont-fnt-size, 11px);
   font-weight: bolder;
-  height: 18px;
-  width: 18px;
+  width: 16px;
   border-radius: 100%;
   background-color: var(--active-bg-color, #33b560);
   color: white;

@@ -19,7 +19,6 @@
   display: flex;
   justify-content: space-around;
   width: 100%;
-
 }
 .initModal p {
   text-align: center;
@@ -76,6 +75,9 @@
   justify-content: space-between;
   align-items: center;
 }
+.tooltip-helper-footer>button {
+  width: auto;
+}
 .tooltip-helper-active {
   position: absolute;
   transition-duration: 150ms;
@@ -86,37 +88,6 @@
 .tooltip-helper-active-element {
   overflow: hidden;
   position: relative;
-}
-.tooltip-helper-next-sequence,
-.tooltip-helper-prev-sequence {
-  background-color: #dbdbdb;
-  border: none;
-  border-radius: 4px;
-  outline: none;
-  padding: 3px 10px;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 25px;
-  margin: 0 10px;
-}
-.tooltip-helper-end-sequence {
-  background-color: #dbdbdb;
-  border: none;
-  border-radius: 4px;
-  outline: none;
-  padding: 3px 10px;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 25px;
-}
-.tooltip-disabled-btn {
-  background-color: rgb(168, 168, 168) !important;
-  user-select: none !important;
-  color: rgba(255, 255, 255, 0.671);
 }
 .tooltip-helper-arrow {
   position: absolute;
