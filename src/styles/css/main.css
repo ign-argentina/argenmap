@@ -211,12 +211,13 @@ UI Components class
   font-weight: 700;
   cursor: pointer;
   margin: 10px;
+  border: 2px solid;
 }
 .ui-btn:hover {
   color: var(--btn-hover-color);
 }
 .ui-btn-primary {
-  border: 3px solid var(--btn-primary-color);
+  border-color: var(--btn-primary-color);
   color: var(--btn-primary-color);
 }
 .ui-btn-primary:hover {
@@ -224,7 +225,7 @@ UI Components class
 }
 .ui-btn-disabled {
   color: var(--btn-disabled-color);
-  border: 3px solid var(--btn-disabled-color);
+  border-color: var(--btn-disabled-color);
   cursor: not-allowed;
   opacity: 0.65;
 }
@@ -232,21 +233,21 @@ UI Components class
   background-color: var(--btn-disabled-color);
 }
 .ui-btn-secondary {
-  border: 3px solid var(--btn-secondary-color);
+  border-color: var(--btn-secondary-color);
   color: var(--btn-secondary-color);
 }
 .ui-btn-secondary:hover {
   background-color: var(--btn-secondary-color);
 }
 .ui-btn-confirm {
-  border: 3px solid var(--btn-confirm-color);
+  border-color: var(--btn-confirm-color);
   color: var(--btn-confirm-color);
 }
 .ui-btn-confirm:hover {
   background-color: var(--btn-confirm-color);
 }
 .ui-btn-danger {
-  border: 3px solid var(--btn-danger-color);
+  border-color: var(--btn-danger-color);
   color: var(--btn-danger-color);
 }
 .ui-btn-danger:hover {
@@ -1127,7 +1128,7 @@ New navbar
   text-align: inherit;
 }
 .navbar-button {
-  margin-right: -20px;
+  margin-right: -5px;
 }
 /* @media (max-width: 470px) {
     .navbar-toggle {
@@ -1139,13 +1140,7 @@ New navbar
   background-size: cover;
   background-repeat: no-repeat;
 }
-#logo-help {
-  background-repeat: no-repeat;
-  background-position-y: center;
-  align-self: center;
-  display: flex;
-}
-@media (max-width: 460px) {
+@media (max-width: 410px) {
   #logo-help {
     display: none;
   }
@@ -1155,11 +1150,6 @@ New navbar
   align-self: center;
 }
 #logo-navbar>div>a,
-#logo-help>a {
-  display: block;
-  height: 100%;
-  width: 100%;
-}
 #logoText {
   align-self: center;
   text-align: right;

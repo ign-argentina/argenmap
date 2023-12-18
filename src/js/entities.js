@@ -2656,10 +2656,10 @@ class GestorMenu {
         "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" +
         this.getQuerySearch() +
         "' placeholder='Buscar capa'>" +
-        "<button onClick='reloadMenu()' class='ui-btn ui-btn-secondary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>" +
+        "<button onClick='reloadMenu()' class='ui-btn ui-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>" +
         "</div>" +
-        "<div><button class='ui-btn ui-btn-secondary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-        "<div onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><button class='ui-btn ui-btn-secondary btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash'></span></button></div>" +
+        "<div><button class='ui-btn ui-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
+        "<div onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><button class='ui-btn ui-btn-primary btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash'></span></button></div>" +
         "</div>" +
         "</form>"
       );
