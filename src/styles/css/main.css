@@ -57,6 +57,11 @@
   --btn-disabled-color: #838788;
   --btn-confirm-color: #3A8555;
   --btn-danger-color: #CE4946;
+  /* ui input text */
+  --input-text-ftn-size: 14px;
+  --input-text-bg-color: #FFF;
+  --input-text-border-radius: 6px;
+  --input-text-border-color: #939697;
 }
 /*******************************
 General
@@ -253,7 +258,16 @@ UI Components class
 .ui-btn-danger:hover {
   background-color: var(--btn-danger-color);
 }
-
+.ui-input-text{
+  height: 36px;
+  overflow: auto;
+  box-sizing: border-box;
+  padding-left: 10px;
+  font-size: var(--input-text-ftn-size);
+  background-color: var(--input-text-bg-color);
+  border: 2px solid var(--btn-disabled-color);
+  border-radius: var(--input-text-border-radius);
+}
 /*******************************
 Menu principal
 *******************************/
