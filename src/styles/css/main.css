@@ -268,6 +268,7 @@ UI Components class
   border: 2px solid var(--btn-disabled-color);
   border-radius: var(--input-text-border-radius);
 }
+
 /*******************************
 Menu principal
 *******************************/
@@ -1191,6 +1192,12 @@ Searcher
  .btn-search,  .btn-reset-layers {
   width: auto;
   margin: 2px;
+  height: 36px;
+}
+.btn-reset-layers {
+  margin: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 .searchFormBtn {
   display: flex;
@@ -1202,6 +1209,9 @@ Searcher
 }
 #search-navbar {
   align-self: center;
+}
+#q.ui-input-text {
+  padding: 0 0 0 10px;
 }
 
 /*******************************
