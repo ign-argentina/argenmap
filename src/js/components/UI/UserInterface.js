@@ -149,3 +149,53 @@ class AboutUsTab {
       return contributorContainer;
   }*/
 }
+
+// <div id="passwordToggleContainer"></div>
+
+class InputToggle {
+  constructor(parent, type, _onclick, content) {
+    this.container = document.getElementById(parent);
+    this.render(type, _onclick, content);
+  }
+
+  render(type, _onclick, content) {
+    const html = `
+      <div class="input-group">
+        <input id="txtPassword" type="${type}" class="form-control" onchange="this.togglePasswordButton">
+        <span class="input-group-btn">
+          <button id="show_password" class="btn btn-success" type="button" style="display: none;" onclick="${_onclick}"> 
+            <span>${content}</span>
+          </button>
+        </span>
+      </div>
+    `;
+    this.container.innerHTML = html;
+  }
+
+
+  togglePasswordVisibility() {
+    const passwordInput = document.getElementById("txtPassword");
+    const eyeIcon = document.getElementById("eye-icon");
+
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      eyeIcon.classList.remove("fa-eye-slash");
+      eyeIcon.classList.add("fa-eye");
+    } else {
+      passwordInput.type = "password";
+      eyeIcon.classList.remove("fa-eye");
+      eyeIcon.classList.add("fa-eye-slash");
+    }
+  }
+
+  togglePasswordButton() {
+    const passwordInput = document.getElementById("txtPassword");
+    const showPasswordButton = document.getElementById("show_password");
+    console.log("algo");
+    if (passwordInput.value.length > 0) {
+      showPasswordButton.style.display = "inline-block";
+    } else {
+      showPasswordButton.style.display = "none";
+    }
+  }
+}

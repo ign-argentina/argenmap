@@ -10,6 +10,6 @@
 #nav-help-btn svg {
   fill: var(--btn-secondary-color);
 }
-#nav-help-btn svg:hover {
+#nav-help-btn:hover svg {
   fill: var(--btn-hover-color);
 }
