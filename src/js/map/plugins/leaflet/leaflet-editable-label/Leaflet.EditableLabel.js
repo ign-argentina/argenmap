@@ -38,7 +38,7 @@ class EditableLabel {
       );
       let controlUI = L.DomUtil.create(
         "a",
-        "leaflet-editable-label leaflet-editable-label-interior"
+        "leaflet-editable-label leaflet-editable-label-interior center-flex"
       );
       controlDiv.appendChild(controlUI);
 
@@ -46,8 +46,8 @@ class EditableLabel {
         .addListener(controlDiv, "click", L.DomEvent.preventDefault)
         .addListener(controlDiv, "click", function () { });
 
-      const icon = document.createElement("img");
-      icon.src= "src/styles/images/icon-text-regular.png"
+      const icon = document.createElement("span");
+      //icon.src= "src/styles/images/icon-text-regular.png"
       icon.classList = "icon-text";
 
       controlUI.title = this.options.title;
@@ -251,8 +251,8 @@ class EditableLabel {
 
   _updateButton() {
     let control = this.control.getContainer().firstElementChild;
-    let controlIcon = control.querySelectorAll("i")[0];
-
+    let controlIcon = control.querySelectorAll("span")[0];
+console.log(control);
     if (controlIcon.classList.contains("icon-text")) {
       controlIcon.classList.remove("icon-text");
       controlIcon.classList.add("fa-solid", "fa-xmark", "redIcon");

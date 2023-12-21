@@ -46,6 +46,11 @@
   border-radius: 4px;
   width: 100%;
 }
+.actionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .disableAction {
   display: none;
 }
@@ -68,10 +73,7 @@
 #loadLayersButtonContent>img {
   opacity: 0.9;
 }
-#loadLayersButton:hover {
-  background-color: #f5f4f4;
-  cursor: pointer;
-}
+
 /* #loadLayersButtonContent {
   height: 100%;
   width: 100%;
@@ -80,7 +82,6 @@
   border-radius: 3px;
   border-color: #cccccc;
 } */
-
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 670px) {
   #loadLayersModal {
@@ -100,7 +101,6 @@
      margin-right: 0; 
   }*/
 }
-
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
   #loadLayersModal {
@@ -108,7 +108,6 @@
     left: 30%;
   }
 }
-
 /* Large devices (tablets, 768px and up)  */
 @media (min-width: 992px) {
   #loadLayersModal {

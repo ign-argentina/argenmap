@@ -423,7 +423,7 @@ class Geoprocessing {
   }
 
   setSliderHeight(sliderLayer) {
-    $("#ejec_gp").removeClass("disabledbutton");
+    $("#ejec_gp").removeClass("ui-btn-disabled");
 
     //Contains all unique values
     let arraySlider = []; //Array that contains all unique values
@@ -502,14 +502,14 @@ class Geoprocessing {
 
     if (event === "add-layer") {
       L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-        $("#ejec_gp").addClass("disabledbutton");
+        $("#ejec_gp").addClass("ui-btn-disabled");
         rectPos = mapa.editableLayers.rectangle;
         formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
         _area = formattedArea + " km²";
 
         if (formattedArea > maxSize) {
           isValidRectangle = false;
-          $("#ejec_gp").addClass("disabledbutton");
+          $("#ejec_gp").addClass("ui-btn-disabled");
           $("#invalidRect").removeClass("hidden");
         } else if (formattedArea < maxSize) {
           isValidRectangle = true;
@@ -519,14 +519,14 @@ class Geoprocessing {
             $("#input-equidistancia").val() >= 10 &&
             $("#input-equidistancia").val() <= 10000
           ) {
-            $("#ejec_gp").removeClass("disabledbutton");
+            $("#ejec_gp").removeClass("ui-btn-disabled");
           }
         }
         contourRectangles = [];
         return _area;
       };
     } else if (event === "edit-layer") {
-      $("#ejec_gp").addClass("disabledbutton");
+      $("#ejec_gp").addClass("ui-btn-disabled");
       rectPos = mapa.editableLayers.rectangle;
 
       contourRectangles.push(rectPos[rectPos.length - 1]);
@@ -540,7 +540,7 @@ class Geoprocessing {
 
       if (formattedArea > maxSize) {
         isValidRectangle = false;
-        $("#ejec_gp").addClass("disabledbutton");
+        $("#ejec_gp").addClass("ui-btn-disabled");
         $("#invalidRect").removeClass("hidden");
       } else if (formattedArea < maxSize) {
         isValidRectangle = true;
@@ -550,7 +550,7 @@ class Geoprocessing {
           $("#input-equidistancia").val() >= 10 &&
           $("#input-equidistancia").val() <= 10000
         ) {
-          $("#ejec_gp").removeClass("disabledbutton");
+          $("#ejec_gp").removeClass("ui-btn-disabled");
         }
       }
       contourRectangles = [];
@@ -570,8 +570,8 @@ class Geoprocessing {
       case "delete-layer":
         contourRectangles = [];
         $("#invalidRect").addClass("hidden");
-        $("#ejec_gp").addClass("disabledbutton");
-        $("#drawRectangleBtn").removeClass("disabledbutton");
+        $("#ejec_gp").addClass("ui-btn-disabled");
+        $("#drawRectangleBtn").removeClass("ui-btn-disabled");
         $("#msgRectangle").removeClass("hidden");
         break;
 
@@ -587,7 +587,7 @@ class Geoprocessing {
           if (layer.name.includes("polyline")) {
             setTimeout(function () {
               $("#select-capa").val(layer.name).change();
-              $("#ejec_gp").removeClass("disabledbutton");
+              $("#ejec_gp").removeClass("ui-btn-disabled");
             }, 500);
           }
         });
@@ -595,8 +595,8 @@ class Geoprocessing {
 
       case "delete-layer":
         document.getElementById("select-capa").selectedIndex = 0;
-        $("#ejec_gp").addClass("disabledbutton");
-        $("#drawBtn").removeClass("disabledbutton");
+        $("#ejec_gp").addClass("ui-btn-disabled");
+        $("#drawBtn").removeClass("ui-btn-disabled");
         $("#msgRectangle").removeClass("hidden");
         break;
 
@@ -667,7 +667,7 @@ class Geoprocessing {
 
       $('label[for="select-capa"]').show();
       $('label[for="input-equidistancia"]').hide();
-      $("#drawRectangleBtn").addClass("disabledbutton");
+      $("#drawRectangleBtn").addClass("ui-btn-disabled");
       document.getElementById("input-equidistancia").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
 
@@ -793,7 +793,7 @@ class Geoprocessing {
                       this.resetHeightLayerColor();
                       document.getElementById("rangeSlider").classList.add("hidden");
                       document.getElementById("sliderValue").classList.add("hidden");
-                      $("#ejec_gp").addClass("disabledbutton");
+                      $("#ejec_gp").addClass("ui-btn-disabled");
                       return;
                     }
                     addedLayers.forEach((lyr) => {
@@ -807,19 +807,19 @@ class Geoprocessing {
 
                       sliderLayer = selectedLayer;
                       this.updateSliderHeight(sliderLayer);
-                      $("#ejec_gp").removeClass("disabledbutton");
+                      $("#ejec_gp").removeClass("ui-btn-disabled");
                     }
                   } else if (this.geoprocessId === "buffer") {
                     if (!element.value) {
-                      $("#drawRectangleBtn").addClass("disabledbutton");
-                      $("#ejec_gp").addClass("disabledbutton");
+                      $("#drawRectangleBtn").addClass("ui-btn-disabled");
+                      $("#ejec_gp").addClass("ui-btn-disabled");
                     } else {
                       this.checkLayersForBuffer()
-                      $("#drawRectangleBtn").removeClass("disabledbutton");
+                      $("#drawRectangleBtn").removeClass("ui-btn-disabled");
                     }
                   } else if (this.geoprocessId === "elevationProfile") {
                     if (!element.value) {
-                      $("#ejec_gp").addClass("disabledbutton");
+                      $("#ejec_gp").addClass("ui-btn-disabled");
                       return;
                     }
                     let selectedLayer = "";
@@ -831,7 +831,7 @@ class Geoprocessing {
                           : null;
                       });
                       mapa.centerLayer(selectedLayer.getGeoJSON());
-                      $("#ejec_gp").removeClass("disabledbutton");
+                      $("#ejec_gp").removeClass("ui-btn-disabled");
                     }
                   }
                 },
@@ -892,12 +892,12 @@ class Geoprocessing {
         $("#input-equidistancia").val() <= 10000 &&
         isValidRectangle == true
       ) {
-        $("#ejec_gp").removeClass("disabledbutton");
+        $("#ejec_gp").removeClass("ui-btn-disabled");
       } else if (
         $("#input-equidistancia").val() < 10 ||
         $("#input-equidistancia").val() > 10000
       ) {
-        $("#ejec_gp").addClass("disabledbutton");
+        $("#ejec_gp").addClass("ui-btn-disabled");
       }
     }
     $(document).ready(function () {
@@ -915,7 +915,7 @@ class Geoprocessing {
       rectangleBtn,
       () => {
         let drawingRectangle = new L.Draw.Rectangle(mapa);
-        $("#drawRectangleBtn").addClass("disabledbutton");
+        $("#drawRectangleBtn").addClass("ui-btn-disabled");
         drawingRectangle.enable();
         this.checkRectangleArea("add-layer");
         isSelectionDrawingActive = true;
@@ -941,7 +941,7 @@ class Geoprocessing {
       "ejec_gp"
     );
 
-    $("#ejec_gp").addClass("disabledbutton"); //Execute Button disabled from the start
+    $("#ejec_gp").addClass("ui-btn-disabled"); //Execute Button disabled from the start
     this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
   }
 
@@ -1149,7 +1149,7 @@ class Geoprocessing {
             ) {
               setTimeout(function () {
                 $("#select-capa").val(layerForBuffer.name).change();
-                $("#drawRectangleBtn").removeClass("disabledbutton");
+                $("#drawRectangleBtn").removeClass("ui-btn-disabled");
               }, 500);
             }
           }
@@ -1233,8 +1233,8 @@ class Geoprocessing {
             select[i].remove();
           }
           if (!document.getElementById("select-capa")[1]) {
-            $("#drawRectangleBtn").addClass("disabledbutton");
-            $("#ejec_gp").addClass("disabledbutton");
+            $("#drawRectangleBtn").addClass("ui-btn-disabled");
+            $("#ejec_gp").addClass("ui-btn-disabled");
           }
         }
       }
@@ -1254,8 +1254,8 @@ class Geoprocessing {
             select[i].remove();
           }
           if (!document.getElementById("select-capa")[1]) {
-            $("#drawRectangleBtn").addClass("disabledbutton");
-            $("#ejec_gp").addClass("disabledbutton");
+            $("#drawRectangleBtn").addClass("ui-btn-disabled");
+            $("#ejec_gp").addClass("ui-btn-disabled");
           }
         }
       }

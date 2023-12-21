@@ -101,6 +101,8 @@
 
 .icon-table {
 	margin: 5px;
+  width: auto;
+  height: 40px;
 }
 
 #inputTableDiv{

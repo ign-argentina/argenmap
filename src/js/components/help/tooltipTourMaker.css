@@ -1,161 +1,137 @@
 .initModal {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-direction: column;
-    width: 400px;
-    height: auto;
-    background-color: #f6f6f6ee;
-    color: black;
-    box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
-    border-radius: 6px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  width: 400px;
+  height: auto;
+  background-color: #f6f6f6ee;
+  color: black;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
+  border-radius: 6px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
 }
-.initModalBtn button {
-    width: auto;
-    margin: 5px 20px;
+.initModalBtn {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
 }
 .initModal p {
-    text-align: center;
+  text-align: center;
 }
 .stop-scroll {
-    overflow: hidden;
-    -webkit-overflow-scrolling: hidden;
+  overflow: hidden;
+  -webkit-overflow-scrolling: hidden;
 }
 .tooltip-helper-backdrop {
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9999;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
 }
 .tooltip-helper-active-description {
-    background-color: #f6f6f6ee;
-    position: absolute;
-    font-size: 15px;
-    border-radius: 6px;
-    height: auto;
-    min-width: 400px;
-    max-width: 400px;
-    z-index: 9998;
-    transition-property: transform;
-    will-change: transform;
-    transform: translateX(0px) translateY(0px);
-    transition-duration: 150ms;
-    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  background-color: #f6f6f6ee;
+  position: absolute;
+  font-size: 15px;
+  border-radius: 6px;
+  height: auto;
+  min-width: 400px;
+  max-width: 400px;
+  z-index: 9998;
+  transition-property: transform;
+  will-change: transform;
+  transform: translateX(0px) translateY(0px);
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .tooltip-helper-active-description p {
-    color: #000;
-    overflow-y: auto;
-    height: 75%;
-    padding: 10px;
-    margin: 0 !important;
+  color: #000;
+  overflow-y: auto;
+  height: 75%;
+  padding: 10px;
+  margin: 0 !important;
 }
 #tooltip-helper-active-description-text>div {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 .tooltip-helper-footer {
-    height: 25%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
+  height: 25%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
 }
 .tooltip-helper-footer>div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tooltip-helper-footer>button {
+  width: auto;
 }
 .tooltip-helper-active {
-    position: absolute;
-    transition-duration: 150ms;
-    transition-property: transform;
-    will-change: transform;
-    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  position: absolute;
+  transition-duration: 150ms;
+  transition-property: transform;
+  will-change: transform;
+  transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .tooltip-helper-active-element {
-    overflow: hidden;
-    position: relative;
-}
-.tooltip-helper-next-sequence,
-.tooltip-helper-prev-sequence {
-    background-color: #dbdbdb;
-    border: none;
-    border-radius: 4px;
-    outline: none;
-    padding: 3px 10px;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 25px;
-    margin: 0 10px;
-}
-.tooltip-helper-end-sequence {
-    background-color: #dbdbdb;
-    border: none;
-    border-radius: 4px;
-    outline: none;
-    padding: 3px 10px;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 25px;
-}
-.tooltip-disabled-btn {
-    background-color: rgb(168, 168, 168) !important;
-    user-select: none !important;
-    color: rgba(255, 255, 255, 0.671);
+  overflow: hidden;
+  position: relative;
 }
 .tooltip-helper-arrow {
-    position: absolute;
-    width: 0;
-    height: 0;
-    z-index: 9997;
-    transition-property: transform;
-    will-change: transform;
-    transform: translate3d(0px, 0px, 0px);
-    transition-duration: 150ms;
-    transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 9997;
+  transition-property: transform;
+  will-change: transform;
+  transform: translate3d(0px, 0px, 0px);
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .tooltip-helper-arrow-up {
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-bottom: 20px solid #f6f6f6ee;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 20px solid #f6f6f6ee;
 }
 .tooltip-helper-arrow-down {
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-top: 20px solid #f6f6f6ee;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-top: 20px solid #f6f6f6ee;
 }
 .tooltip-helper-arrow-left {
-    border-top: 20px solid transparent;
-    border-bottom: 20px solid transparent;
-    border-right: 20px solid #f6f6f6ee;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-right: 20px solid #f6f6f6ee;
 }
 .tooltip-helper-arrow-right {
-    border-top: 20px solid transparent;
-    border-bottom: 20px solid transparent;
-    border-left: 20px solid #f6f6f6ee;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid transparent;
+  border-left: 20px solid #f6f6f6ee;
 }
 @media (max-width: 440px) {
-    .initModal {
-        width: 95%;
-    }
-    .initModal h3 {
-        text-align: center;
-    }
-    .tooltip-helper-active-description {
-        min-width: 200px;
-        max-width: 300px;
-    }
+  .initModal {
+    width: 95%;
+  }
+  .initModal h3 {
+    text-align: center;
+  }
+  .tooltip-helper-active-description {
+    min-width: 200px;
+    max-width: 300px;
+  }
+  .tooltip-helper-footer {
+    padding: 0px;
+  }
 }
