@@ -1139,7 +1139,7 @@ New navbar
 }
 .navbar-new-content {
   flex: inherit;
-  margin: 0.1rem 0.7rem;
+  margin: 0.1rem 3px;
   text-align: inherit;
 }
 .navbar-button {
@@ -1154,6 +1154,7 @@ New navbar
   display: flex;
   background-size: cover;
   background-repeat: no-repeat;
+  margin-left: 10px;
 }
 @media (max-width: 410px) {
   #logo-help {
