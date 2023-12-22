@@ -49,13 +49,13 @@ class ModalService {
 		let form = document.createElement("form")
 		form.className = "wms-form"
 		form.addEventListener('submit', handleURLInput, false);
-		form.innerHTML = `
+    form.innerHTML = `
     <div class="input-group center-flex">
-    <span class="input-group-addon center-flex" id="basic-addon1"><i class="fas fa-link"></i></span>
-    <input value="" type="text" name="input-url" class="form-control" placeholder="http://.../geoserver/ows?service=wms&version=1.3.0....." aria-describedby="basic-addon1">
-    <button class="input-group-addon ui-btn ui-btn-primary" id="buttonConectar" onclick="handleURLInput(event)">Conectar</button>
+      <span class="input-group-addon center-flex" id="basic-addon1"><i class="fas fa-link"></i></span>
+      <input value="" type='text' id='wms-input' class='form-control ui-input-text' name="input-url" placeholder="http://.../geoserver/ows?service=wms&version=1.3.0..." aria-describedby="basic-addon1">
+      <button class="input-group-addon ui-btn ui-btn-primary" id="buttonConectar" onclick="handleURLInput(event)">Conectar</button>
     </div>
-    `
+  `;
 
 		let selectLayersContainer = document.createElement("div")
 		selectLayersContainer.id = 'select-layers-container';

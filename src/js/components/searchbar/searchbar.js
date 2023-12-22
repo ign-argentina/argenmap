@@ -6,10 +6,10 @@ const config_lang = app.geocoder.lang;
 const config_limit = app.geocoder.limit;
 const config_key = app.geocoder.key;
 const sb_strings = app.searchbar.strings;
-const geosearchbar_top = "60px";
+/* const geosearchbar_top = "60px";
 const geosearchbar_left = "300px";
 const geosearchbar_color_focus = "#008dc9";
-const geosearchbar_background_color = "rgba(255, 255, 255, 0.7)";
+const geosearchbar_background_color = "rgba(255, 255, 255, 0.7)"; */
 
 let results = null;
 let url_consulta = null;
@@ -21,39 +21,39 @@ let id_selected_item = null;
 
 class Searchbar_UI {
   constructor() {
-    this.style_top = app.searchbar.top ? app.searchbar.top : geosearchbar_top;
-    this.style_left = app.searchbar.left
-      ? app.searchbar.left
-      : geosearchbar_left;
-    this.style_color_focus = app.searchbar.color_focus
-      ? app.searchbar.color_focus
-      : geosearchbar_color_focus;
-    this.style_background_color = app.searchbar.background_color
-      ? app.searchbar.background_color
-      : geosearchbar_background_color;
+    /*     this.style_top = app.searchbar.top ? app.searchbar.top : geosearchbar_top;
+        this.style_left = app.searchbar.left
+          ? app.searchbar.left
+          : geosearchbar_left;
+        this.style_color_focus = app.searchbar.color_focus
+          ? app.searchbar.color_focus
+          : geosearchbar_color_focus;
+        this.style_background_color = app.searchbar.background_color
+          ? app.searchbar.background_color
+          : geosearchbar_background_color; */
   }
 
-  createStyle() {
-    const style = document.createElement("style");
-    style.id = "geocoder-style";
-    style.innerHTML = `
-    @media (min-width: 769px) {
-    #searchbar {
-      background-color: ${this.style_background_color};
-    }}
-    #search_bar:focus {
-        box-shadow: 0 0 3px ${this.style_color_focus} !important;
-        -moz-box-shadow: 0 0 3px ${this.style_color_focus}!important;
-        -webkit-box-shadow: 0 0 3px ${this.style_color_focus}!important;
-    }
-      `;
-    document.head.appendChild(style);
-  }
+  /*   createStyle() {
+      const style = document.createElement("style");
+      style.id = "geocoder-style";
+      style.innerHTML = `
+      @media (min-width: 769px) {
+      #searchbar {
+        background-color: ${this.style_background_color};
+      }}
+      #search_bar:focus {
+          box-shadow: 0 0 3px ${this.style_color_focus} !important;
+          -moz-box-shadow: 0 0 3px ${this.style_color_focus}!important;
+          -webkit-box-shadow: 0 0 3px ${this.style_color_focus}!important;
+      }
+        `;
+      document.head.appendChild(style);
+    } */
 
   create_sarchbar() {
     let helpTour = document.getElementById("logo-help");
 
-    this.createStyle();
+    //this.createStyle();
     let divsearch = document.createElement("div");
     divsearch.id = "searchbar";
 
@@ -61,29 +61,27 @@ class Searchbar_UI {
     maininput.style.display = "flex";
 
     let input = document.createElement("input");
-    input.placeholder = sb_strings.placeholder || "Search places...";
     input.id = "search_bar";
+    input.classList = "ui-input-text";
+    input.type = "search";
+    input.placeholder = sb_strings.placeholder || "Search places...";
     input.spellcheck = false;
     input.autocomplete = "address-level1"; // Avoids autocomplete. Based on HTML attribute: autocomplete in MDN Web Docs page
-    input.type = "search";
 
-    let icon = document.createElement("div");
+    let icon = document.createElement("button");
     icon.id = "div-icon-close-searchbar";
-    icon.style = "margin: 5px;text-align:center;width:32px;height:27pxdisplay:flex;align-items:flex-end;justify-content:center;";
-    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px;"></i>`;
-    icon.style.width = "10%";
+    icon.classList = "ui-btn ui-btn-primary"
+    icon.innerHTML = `<i class="fa fa-times" aria-hidden="true"></i>`;
     maininput.append(input);
     maininput.append(icon);
 
     let res = document.createElement("div");
     res.id = "results_search_bar";
-    res.style.maxWidth = "330px";
-    res.style.position = "absolute";
+    res.classList = "search-bar-list"
 
     divsearch.append(maininput);
     divsearch.append(res);
 
-    //document.body.appendChild(divsearch)
     document.getElementById("search-navbar").appendChild(divsearch);
 
     let textinput = document.getElementById("search_bar");
@@ -98,11 +96,11 @@ class Searchbar_UI {
       textinput.value = "";
       results.innerHTML = "";
       results.style.margin = "0px";
-      search_input.style.width = "130px";
+      search_input.classList = "ui-input-text search-bar-empty";
       mapa.removeGroup("markerSearchResult", true);
-      if (innerWidth  <= 768) {
-        document.getElementById("logo-navbar").style.display= "";
-        helpTour ? helpTour.style.display= "" : 0;
+      if (innerWidth <= 768) {
+        document.getElementById("logo-navbar").style.display = "";
+        helpTour ? helpTour.style.display = "" : 0;
       }
     });
 
@@ -130,30 +128,30 @@ class Searchbar_UI {
 
       if (q.length === 0) {
         search_term = null;
-        search_input.style.width = "130px";
+        search_input.classList = "ui-input-text search-bar-empty";
         icon_searchbar.style.display = "none";
         results.innerHTML = "";
         selected_item = false;
-        if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "";
-          helpTour ? helpTour.style.display= "" : 0;
+        if (innerWidth <= 768) {
+          document.getElementById("logo-navbar").style.display = "";
+          helpTour ? helpTour.style.display = "" : 0;
         }
       } else if (q.length <= 2) {
         results.innerHTML = "";
-        search_input.style.width = "300px";
+        search_input.classList = "ui-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
         selected_item = false;
-        if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none";
-          helpTour ? helpTour.style.display= "none" : 0;
+        if (innerWidth <= 768) {
+          document.getElementById("logo-navbar").style.display = "none";
+          helpTour ? helpTour.style.display = "none" : 0;
         }
       } else {
-        search_input.style.width = "300px";
+        search_input.classList = "ui-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
         search_term = q;
-        if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none";
-          helpTour ? helpTour.style.display= "none" : 0;
+        if (innerWidth <= 768) {
+          document.getElementById("logo-navbar").style.display = "none";
+          helpTour ? helpTour.style.display = "none" : 0;
         }
         //e.which <= 90 && e.which >= 48 Alfanumericos
         //e.which == 13 Enter
@@ -183,30 +181,30 @@ class Searchbar_UI {
       let q = e.target.value;
       q = q.trim();
       q = q.toLowerCase();
-      
+
       if (q.length === 0) {
         search_term = null;
-        search_input.style.width = "130px";
+        search_input.classList = "ui-input-text search-bar-empty";
         icon_searchbar.style.display = "none";
         results.innerHTML = "";
         selected_item = false;
       } else if (q.length <= 2) {
         results.innerHTML = "";
-        search_input.style.width = "300px";
+        search_input.classList = "ui-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
-        if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none";
-          helpTour ? helpTour.style.display= "none" : 0;
+        if (innerWidth <= 768) {
+          document.getElementById("logo-navbar").style.display = "none";
+          helpTour ? helpTour.style.display = "none" : 0;
         }
         selected_item = false;
       } else {
-        search_input.style.width = "300px";
+        search_input.classList = "ui-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
         search_term = q;
         results.innerHTML = "";
-        if (innerWidth  <= 768) {
-          document.getElementById("logo-navbar").style.display= "none";
-          helpTour ? helpTour.style.display= "none" : 0;
+        if (innerWidth <= 768) {
+          document.getElementById("logo-navbar").style.display = "none";
+          helpTour ? helpTour.style.display = "none" : 0;
         }
         selected_item = false;
         //si contienen caracteres invalidos #$%#$% o es igual a url
@@ -238,10 +236,7 @@ class Searchbar_UI {
   create_character_invalid() {
     let container = document.getElementById("results_search_bar");
     let ul = document.createElement("ul");
-    ul.className = "list-group-gc";
-    ul.style.margin = "5px";
-    ul.style.position = "absolute";
-    ul.style.width = "300px";
+    ul.className = "list-group-gc search-bar-list";
     let li = document.createElement("li");
     li.innerHTML = "Carácter no válido";
     li.className = "list-group-item-gc";
@@ -250,21 +245,16 @@ class Searchbar_UI {
     ul.append(li);
     container.innerHTML = "";
     container.append(ul);
-    container.style.position = "absolute";
-    container.style.width = "300px";
+    container.classList = "search-bar-list";
   }
 
   create_items(items) {
     let container = document.getElementById("results_search_bar");
     const ul = document.createElement("ul");
-    ul.className = "list-group-gc";
-    ul.style.margin = "5px";
-    ul.style.position = "absolute";
-    ul.style.width = "300px";
+    ul.className = "list-group-gc search-bar-list";
     ul.id = "ul-results";
     container.innerHTML = "";
-    container.style.position = "absolute";
-    container.style.width = "300px";
+    container.classList = "search-bar-list";
 
     items.forEach((el) => {
       container.innerHTML = "";
@@ -309,9 +299,7 @@ class Searchbar_UI {
     addLayerToAllGroups(result, "markerSearchResult");
 
     let container = document.getElementById("results_search_bar");
-    container.style = "margin: 5px";
-    container.style.position = "absolute";
-    container.style.width = "300px";
+    container.classList = "search-bar-list";
     container.innerHTML = "";
     let card = document.createElement("div");
     card.className = "card";
@@ -336,9 +324,7 @@ class Searchbar_UI {
 
   create_card(data) {
     let container = document.getElementById("results_search_bar");
-    container.style = "margin: 5px";
-    container.style.position = "absolute";
-    container.style.width = "300px";
+    container.classList = "search-bar-list";
     container.innerHTML = "";
     let card = document.createElement("div");
     card.className = "card";
@@ -365,7 +351,7 @@ class Searchbar_UI {
         '<div style="width:20px;height:20px;animation:spin 1s linear infinite;"><i class="fa fa-spinner" aria-hidden="true"></i></div>';
     } else {
       iconclose.innerHTML =
-        '<i class="fa fa-times" aria-hidden="true" style="color:grey;width:24px;height:24px"></i>';
+        '<i class="fa fa-times" aria-hidden="true"></i>';
     }
   }
 }

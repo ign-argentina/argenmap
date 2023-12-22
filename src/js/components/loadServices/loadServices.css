@@ -65,13 +65,21 @@
 }
 #buttonConectar {
   width: auto;
-  height: 34px;
+  height: 36px;
   margin: 0;
   border-left: 3px solid var(--btn-primary-color);
 }
 #basic-addon1 {
   width: auto;
-  height: 34px;
+  height: 36px;
+  border-radius: var(--input-text-border-radius);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border: 2px solid var(--input-text-border-color);
+  border-right: 0;
+}
+#wms-input{
+  border-right: 0;
 }
 #select-layers-container {
   width: 100%;

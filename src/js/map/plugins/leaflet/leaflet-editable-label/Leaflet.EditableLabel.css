@@ -28,7 +28,8 @@
 .icon-text {
   display: block;
   background-image: url("/src/styles/images/icon-text-regular.png");
-  height: 26px;
+  height: inherit;
   background-position: right;
   background-repeat: no-repeat;
+  filter: opacity(70%);
 }

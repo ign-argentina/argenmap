@@ -57,6 +57,11 @@
   --btn-disabled-color: #838788;
   --btn-confirm-color: #3A8555;
   --btn-danger-color: #CE4946;
+  /* ui input text */
+  --input-text-ftn-size: 14px;
+  --input-text-bg-color: #FFF;
+  --input-text-border-radius: 6px;
+  --input-text-border-color: #939697;
 }
 /*******************************
 General
@@ -252,6 +257,16 @@ UI Components class
 }
 .ui-btn-danger:hover {
   background-color: var(--btn-danger-color);
+}
+.ui-input-text{
+  height: 36px;
+  overflow: auto;
+  box-sizing: border-box;
+  padding-left: 10px;
+  font-size: var(--input-text-ftn-size);
+  background-color: var(--input-text-bg-color);
+  border: 2px solid var(--btn-disabled-color);
+  border-radius: var(--input-text-border-radius);
 }
 
 /*******************************
@@ -1124,7 +1139,7 @@ New navbar
 }
 .navbar-new-content {
   flex: inherit;
-  margin: 0.1rem 0.7rem;
+  margin: 0.1rem 3px;
   text-align: inherit;
 }
 .navbar-button {
@@ -1139,6 +1154,7 @@ New navbar
   display: flex;
   background-size: cover;
   background-repeat: no-repeat;
+  margin-left: 10px;
 }
 @media (max-width: 410px) {
   #logo-help {
@@ -1177,6 +1193,12 @@ Searcher
  .btn-search,  .btn-reset-layers {
   width: auto;
   margin: 2px;
+  height: 36px;
+}
+.btn-reset-layers {
+  margin: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 .searchFormBtn {
   display: flex;
@@ -1188,6 +1210,9 @@ Searcher
 }
 #search-navbar {
   align-self: center;
+}
+#q.ui-input-text {
+  padding: 0 0 0 10px;
 }
 
 /*******************************
