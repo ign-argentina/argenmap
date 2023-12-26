@@ -2607,64 +2607,21 @@ class GestorMenu {
   }
 
   _printSearcher() {
-    if (this.getShowSearcher() == true) {
-      /*             
-            let placeholder = app.config ? app.config.searchLayers ?? 'Search layer' : 'Search layer';
-            const searchForm = document.createElement('form');
-                searchForm.id = 'searchForm';
-                searchForm.classList.add = 'searchFormBtn';
-                searchForm.setAttribute('onSubmit', 'mainMenuSearch(event)');
-            const searchFlexContainer = document.createElement('div');
-                searchFlexContainer.style = 'display: flex;';
-            const searchInput = document.createElement('input');
-                searchInput.id = 'q';
-                searchInput.name ='q';
-                searchInput.type ='text';
-                searchInput.placeholder = placeholder;
-                searchInput.classList.add('form-control');
-                searchInput.value = this.getQuerySearch(); 
-            const searchReset = document.createElement('button');
-                searchReset.classList = 'btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden';
-                searchForm.setAttribute('onClick', 'reloadMenu()');
-            const searchBtn = document.createElement('button');
-                searchBtn.classList = 'btn btn-search';
-                searchBtn.type = 'submit';
-            const searchBtnIcon = document.createElement('span');
-                searchBtn.classList = 'glyphicon glyphicon-search';
-                searchBtn.setAttribute('aria-hidden', 'true');
-            const resetLayersBtn = document.createElement('button');
-                searchBtn.id = 'cleanTrash';
-                searchBtn.type = 'button'
-                searchBtn.classList = 'btn btn-reset-layers'
-                searchBtn.setAttribute('onClick','gestorMenu.cleanAllLayers()');
-            const resetLayersBtnIcon = document.createElement('span');
-                resetLayersBtnIcon.title = 'Desactivar Capas';
-                resetLayersBtnIcon.classList = 'glyphicon glyphicon-trash';
+    if (this.getShowSearcher()) {
+      const formContent = `
+        <form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>
+          <div class='center-flex'>
+            <div class='has-feedback has-clear formBtns center-flex'>
+              <input type='text' class='form-control ui-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
+              <button onClick='reloadMenu()' class='ui-btn ui-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
+            </div>
+            <button class='ui-btn ui-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
+            <button class='ui-btn ui-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><span class='glyphicon glyphicon-trash'></span></button>
+          </div>
+        </form>`;
 
-            searchBtn.appendChild(searchBtnIcon);
-            resetLayersBtn.appendChild(resetLayersBtnIcon);
-
-            searchFlexContainer.append(searchInput, searchReset, searchBtn, resetLayersBtn);
-            searchForm.appendChild(searchFlexContainer);
-            
-            return searchForm; 
-            */
-
-      return (
-        "<form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>" +
-        "<div style='display: flex;'>" +
-        "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" +
-        this.getQuerySearch() +
-        "' placeholder='Buscar capa'>" +
-        "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>" +
-        "</div>" +
-        "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-        "<div onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash'></span></button></div>" +
-        "</div>" +
-        "</form>"
-      );
+      return formContent;
     }
-    return "";
   }
 
   getAvailableTags() {
@@ -3819,7 +3776,7 @@ class Menu_UI {
       "display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;";
 
     let btn_si = document.createElement("button");
-    btn_si.className = "btn btn-info";
+    btn_si.className = "ui-btn ui-btn-danger";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
       let section;
@@ -3845,8 +3802,7 @@ class Menu_UI {
     };
 
     let btn_no = document.createElement("button");
-    btn_no.className = "btn btn-default";
-    btn_no.style = "border: 1px solid silver";
+    btn_no.className = "ui-btn ui-btn-primary";
     btn_no.innerHTML = "Cancelar";
     btn_no.onclick = function () {
       $("#modal_layer_del").remove();

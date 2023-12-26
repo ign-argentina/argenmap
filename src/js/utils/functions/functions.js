@@ -1536,15 +1536,15 @@ function loadingBtn(status, idBtn, btnName) {
   if (status === "on") {
     btn_ejecutar.innerHTML =
       '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    $("#ejec_gp").addClass("disabledbutton");
-    $('#' + idBtn).addClass("disabledbutton");
+    $("#ejec_gp").addClass("ui-btn-disabled");
+    $('#' + idBtn).addClass("ui-btn-disabled");
   } else if (status === "off") {
     if (btnName) {
       btn_ejecutar.innerHTML = btnName;
     } else {
       btn_ejecutar.innerHTML = "Ejecutar";
     }
-    $('#' + idBtn).removeClass("disabledbutton");
+    $('#' + idBtn).removeClass("ui-btn-disabled");
   }
 }
 

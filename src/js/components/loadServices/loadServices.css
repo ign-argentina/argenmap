@@ -64,14 +64,22 @@
   margin-top: 4px;
 }
 #buttonConectar {
-  cursor: pointer;
-  background-color: #37bbed;
-  color: #fff;
+  width: 86px;
+  height: 36px;
+  margin: 0;
+  border: 2px solid var(--btn-primary-color);
 }
-#buttonConectar:hover {
-  color: #fff;
-  background-color: #31b0d5;
-  border-color: #269abc;
+#basic-addon1 {
+  width: auto;
+  height: 36px;
+  border-radius: var(--input-text-border-radius);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border: 2px solid var(--input-text-border-color);
+  border-right: 0;
+}
+#wms-input{
+  border-right: 0;
 }
 #select-layers-container {
   width: 100%;
@@ -97,12 +105,13 @@
 .loadservice-layer-img img {
   height: 20px;
 }
-#modalLoadServices {
+.modalLoadServices {
   margin: 5px;
+  width: 95%;
 }
-#modalloadservices :hover {
+/* #modalloadservices :hover {
   background-color: #f4f4f4;
-}
+} */
 #iconloadservices-container {
   height: 100%;
   width: 100%;

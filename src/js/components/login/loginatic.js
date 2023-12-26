@@ -125,23 +125,23 @@ loginatic = function () {
 
   this._addLoginWrapper = () => {
     const wrapperHtml = `
-            <div class="container-fluid col-12 col-xs-12 col-sm-6 col-md-3 mt-5 text-center" style="display: flex;align-items: center;">
+            <div class="container-fluid col-12 col-xs-12 col-sm-6 col-md-5 mt-5 text-center center-flex">
                 <div class="login">
-                    <img src="src/styles/images/lupa.png" width="10%">
-                    <h4>Acceso al Visor de mapas</h4>
+                    <img src="src/styles/images/lupa.png" width="20%">
+                    <h3>Acceso al Visor de mapas</h3>
                     <div class="input-group">
                         <span class="input-group-addon" id="basic-addon1">
                         <i class="fas fa-lock"></i>
                         </span>
-                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';" required>
+                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control ui-input-text" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';" required>
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox" id="inp-recuerdame" name="recuerdame">Recuérdame</label>
                     </div>
-                    <a href="javascript:void(0);" class="btn btn-primary outline" onclick="loginatic.process();">Ingresar</a>
+                    <button href="javascript:void(0);" class="ui-btn ui-btn-confirm" onclick="loginatic.process();">Ingresar</button>
     
                     <hr>
-                    <a href="javascript:void(0);" onclick="document.getElementById('advice-wrapper').style.display = 'flex';" class="btn btn-primary filled">No poseo clave de acceso</a>
+                    <button href="javascript:void(0);" onclick="document.getElementById('advice-wrapper').style.display = 'flex';" class="ui-btn ui-btn-primary filled">No poseo clave de acceso</button>
                 </div>
             </div>
 
@@ -151,9 +151,8 @@ loginatic = function () {
                         <a href="javascript:void(0) " class="closer " onclick="document.getElementById( 'advice-wrapper').style.display='none' ; ">
                             <i class="fa fa-times "></i>
                         </a>
-                        <p style="margin-top:30px; " 2>Su municipio ya posee clave asignada, la misma ha sido enviada al mail de contacto informado<br> a la Subsecretaría de Relaciones Municipales del Ministerio del Interior<br> Por favor verifique con las autoridades de su Gobierno Local</p>
-                        <p>En caso de no poder solucionarlo, envíe un mail a: <a href="mailto:datosmunicipales@mininterior.gob.ar " target="_blank ">datosmunicipales@mininterior.gob.ar</a><br> indicando nombre del Gobierno Local, provincia, su nombre y apellido,
-                            cargo y teléfono de contacto oficial</p>
+                        <p style="margin-top:30px; " 2>Su municipio ya posee clave asignada, la misma ha sido enviada al mail de contacto informado a la Subsecretaría de Relaciones Municipales del Ministerio del Interior.<br> Por favor verifique con las autoridades de su Gobierno Local.</p>
+                        <p>En caso de no poder solucionarlo, envíe un mail a: <a href="mailto:datosmunicipales@mininterior.gob.ar " target="_blank ">datosmunicipales@mininterior.gob.ar</a><br> indicando nombre del Gobierno Local, provincia, su nombre y apellido, cargo y teléfono de contacto oficial</p>
                     </div>
                 </div>
             </div>
