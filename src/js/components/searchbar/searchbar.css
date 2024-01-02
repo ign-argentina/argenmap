@@ -31,11 +31,7 @@
   -webkit-transition: width .4s ease-in-out;
   transition: width .4s ease-in-out;
 }
-.search-bar-empty {
-  width: 130px;
-}
 .search-bar-no-empty {
-  width: 200px;
   border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;

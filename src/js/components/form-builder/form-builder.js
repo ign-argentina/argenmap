@@ -42,7 +42,7 @@ class FormBuilder {
 
     addButton(name, onclick, id) {
         const button = document.createElement('div');
-        button.className = 'ui-btn ui-btn-primary non-selectable-text';
+        button.className = 'ag-btn ag-btn-primary non-selectable-text';
         button.innerHTML = name;
         button.id = id;
         button.onclick = () => {

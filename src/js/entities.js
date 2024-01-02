@@ -2612,11 +2612,11 @@ class GestorMenu {
         <form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>
           <div class='center-flex'>
             <div class='has-feedback has-clear formBtns center-flex'>
-              <input type='text' class='form-control ui-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
-              <button onClick='reloadMenu()' class='ui-btn ui-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
+              <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
+              <button onClick='reloadMenu()' class='ag-btn ag-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
-            <button class='ui-btn ui-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
-            <button class='ui-btn ui-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><span class='glyphicon glyphicon-trash'></span></button>
+            <button class='ag-btn ag-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
+            <button class='ag-btn ag-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><span class='glyphicon glyphicon-trash'></span></button>
           </div>
         </form>`;
 
@@ -3776,7 +3776,7 @@ class Menu_UI {
       "display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;";
 
     let btn_si = document.createElement("button");
-    btn_si.className = "ui-btn ui-btn-danger";
+    btn_si.className = "ag-btn ag-btn-danger";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
       let section;
@@ -3802,7 +3802,7 @@ class Menu_UI {
     };
 
     let btn_no = document.createElement("button");
-    btn_no.className = "ui-btn ui-btn-primary";
+    btn_no.className = "ag-btn ag-btn-primary";
     btn_no.innerHTML = "Cancelar";
     btn_no.onclick = function () {
       $("#modal_layer_del").remove();

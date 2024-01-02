@@ -13,7 +13,7 @@ class IElevationProfile {
 
     drawPolyline() {
         const drawPolyline = new L.Draw.Polyline(mapa, { shapeOptions: { color: polylineColor, opacity: 0.8 } });
-        $("#drawBtn").addClass("ui-btn-disabled");
+        $("#drawBtn").addClass("ag-btn-disabled");
         $("#msgRectangle").addClass("hidden");
         drawPolyline.enable();
     }

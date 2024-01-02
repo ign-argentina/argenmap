@@ -190,7 +190,7 @@ const login = {
     let nPwd = document.createElement("input");
     nPwd.id = "newPwd";
     nPwd.classList.add("form-control");
-    nPwd.classList.add("ui-input-text");
+    nPwd.classList.add("ag-input-text");
     nPwd.type = "password";
     nPwd.placeholder = "Nueva contraseña";
     nPwd.required = true;

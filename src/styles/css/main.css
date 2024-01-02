@@ -1,3 +1,59 @@
+/*
+=====================================================================
+CONVENCIONES DE GENERALES DE CSS
+=====================================================================
+Reglas Generales:
+
+1. Consistencia: Mantener la consistencia en la aplicación de las convenciones de nomenclatura en todos los estilos CSS.
+   
+2. Claridad: Elegir nombres que sean descriptivos y que proporcionen una comprensión clara de la función o estilo del elemento.
+
+3. Comentarios: Es recomendable agregar un comentario a las clases que explique brevemente su función.
+
+4. Modificadores Opcionales: Utilizar modificadores solo cuando sea necesario. No todos los elementos requieren un modificador.
+
+5. Separadores: Utilizar guiones medios para separar las palabras en un nombre de clase (p. ej., .ag-btn-primary).
+
+Estas convenciones de nomenclatura están diseñadas para mejorar la legibilidad del código y facilitar el mantenimiento del sistema de estilos.
+
+CONVENCIONES DE NOMENCLATURA CSS
+
+* Estructura de Nomenclatura de clases:
+
+.ag-{elemento}-{tipo}-{modificador}
+
+- ag: Identifica que las clases son propias de Argenmap.
+- elemento: Especifica el tipo de elemento HTML al que se aplica la clase.
+- tipo: Opcional. Indica el tipo del elemento HTML(por ejemplo para "input" : "text", "checkbox", etc.).
+- modificador: Opcional. Representa cualquier modificador adicional para la clase.
+
+Ejemplos:
+
+1. Botones:
+   - Clase para un botón primario: .ag-btn-primary
+   - Clase para un botón secundario: .ag-btn-secondary
+
+2. Campos de Entrada:
+   - Clase para un campo de entrada de confirmación: .ag-input-text-confirm
+   - Clase para un campo de entrada de advertencia: .ag-input-text-danger
+
+
+* Estructura de Nomenclatura para variables css en :root:
+
+--{elemento}-{propiedad}-{modificador}
+
+- elemento: Especifica el tipo de elemento al que pertenecen las propiedades.
+- propiedad: Indica la propiedad CSS que se está definiendo (p. ej., "ftn-size", "border-radius", "background-color").
+- modificador: Opcional. Representa cualquier modificador adicional para la propiedad.
+
+Ejemplos:
+
+1. Botones:
+   - Tamaño de fuente para botones: --btn-ftn-size
+   - Color de fondo para botones primarios: --btn-primary-bg-color
+
+*/
+
 @font-face {
   font-family: "Encode Sans";
   src: url("../../../dist/fonts/EncodeSans-Regular.ttf");
@@ -46,7 +102,7 @@
   --menu-section-hover-color: #969393;
   --layer-btn-hover-color: #d1cccc;
   --main-font-family: "Encode Sans", sans-serif;
-  /*ui Button*/
+  /*Argenmap ui Button*/
   --btn-ftn-size: 1.5rem;
   --btn-border-radius: 6px;
   --btn-background-color: #FFF;
@@ -57,7 +113,7 @@
   --btn-disabled-color: #838788;
   --btn-confirm-color: #3A8555;
   --btn-danger-color: #CE4946;
-  /* ui input text */
+  /*Argenmap ui input text */
   --input-text-ftn-size: 14px;
   --input-text-bg-color: #FFF;
   --input-text-border-radius: 6px;
@@ -183,6 +239,7 @@ a, a:hover, a:focus {
   z-index: 1;
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02); */
 }
+
 .center-flex {
   display: flex;
   align-items: center;
@@ -196,9 +253,9 @@ a, a:hover, a:focus {
 }
 
 /*******************************
-UI Components class
+Argenmap UI Components class
 *******************************/
-.ui-btn {
+.ag-btn {
   width: 100%;
   display: flex;
   align-items: center;
@@ -218,47 +275,47 @@ UI Components class
   margin: 10px;
   border: 2px solid;
 }
-.ui-btn:hover {
+.ag-btn:hover {
   color: var(--btn-hover-color);
 }
-.ui-btn-primary {
+.ag-btn-primary {
   border-color: var(--btn-primary-color);
   color: var(--btn-primary-color);
 }
-.ui-btn-primary:hover {
+.ag-btn-primary:hover {
   background-color: var(--btn-primary-color);
 }
-.ui-btn-disabled {
+.ag-btn-disabled {
   color: var(--btn-disabled-color);
   border-color: var(--btn-disabled-color);
   cursor: not-allowed;
   opacity: 0.65;
 }
-.ui-btn-disabled:hover {
+.ag-btn-disabled:hover {
   background-color: var(--btn-disabled-color);
 }
-.ui-btn-secondary {
+.ag-btn-secondary {
   border-color: var(--btn-secondary-color);
   color: var(--btn-secondary-color);
 }
-.ui-btn-secondary:hover {
+.ag-btn-secondary:hover {
   background-color: var(--btn-secondary-color);
 }
-.ui-btn-confirm {
+.ag-btn-confirm {
   border-color: var(--btn-confirm-color);
   color: var(--btn-confirm-color);
 }
-.ui-btn-confirm:hover {
+.ag-btn-confirm:hover {
   background-color: var(--btn-confirm-color);
 }
-.ui-btn-danger {
+.ag-btn-danger {
   border-color: var(--btn-danger-color);
   color: var(--btn-danger-color);
 }
-.ui-btn-danger:hover {
+.ag-btn-danger:hover {
   background-color: var(--btn-danger-color);
 }
-.ui-input-text{
+.ag-input-text{
   height: 36px;
   overflow: auto;
   box-sizing: border-box;
@@ -1216,7 +1273,7 @@ Searcher
 #search-navbar {
   align-self: center;
 }
-#q.ui-input-text {
+#q.ag-input-text {
   padding: 0 0 0 10px;
 }
 

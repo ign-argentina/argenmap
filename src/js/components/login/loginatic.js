@@ -133,15 +133,15 @@ loginatic = function () {
                         <span class="input-group-addon" id="basic-addon1">
                         <i class="fas fa-lock"></i>
                         </span>
-                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control ui-input-text" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';" required>
+                        <input type="password" onkeyup="if (event.keyCode == 13) loginatic.process();" id="input-pwd" class="form-control ag-input-text" placeholder="Clave de Acceso" aria-describedby="basic-addon1" onfocus="if(this.value.trim()=='') this.placeholder='';" onblur="if(this.value.trim()=='') this.placeholder='Clave de Acceso';" required>
                     </div>
                     <div class="checkbox">
                         <label><input type="checkbox" id="inp-recuerdame" name="recuerdame">Recuérdame</label>
                     </div>
-                    <button href="javascript:void(0);" class="ui-btn ui-btn-confirm" onclick="loginatic.process();">Ingresar</button>
+                    <button href="javascript:void(0);" class="ag-btn ag-btn-confirm" onclick="loginatic.process();">Ingresar</button>
     
                     <hr>
-                    <button href="javascript:void(0);" onclick="document.getElementById('advice-wrapper').style.display = 'flex';" class="ui-btn ui-btn-primary filled">No poseo clave de acceso</button>
+                    <button href="javascript:void(0);" onclick="document.getElementById('advice-wrapper').style.display = 'flex';" class="ag-btn ag-btn-primary filled">No poseo clave de acceso</button>
                 </div>
             </div>
 
