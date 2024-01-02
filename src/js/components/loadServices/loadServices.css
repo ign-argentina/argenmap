@@ -64,10 +64,10 @@
   margin-top: 4px;
 }
 #buttonConectar {
-  width: auto;
+  width: 86px;
   height: 36px;
   margin: 0;
-  border-left: 3px solid var(--btn-primary-color);
+  border: 2px solid var(--btn-primary-color);
 }
 #basic-addon1 {
   width: auto;

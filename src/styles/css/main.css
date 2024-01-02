@@ -268,7 +268,12 @@ UI Components class
   border: 2px solid var(--btn-disabled-color);
   border-radius: var(--input-text-border-radius);
 }
-
+.form-control:focus {
+  border-color: var(--btn-disabled-color);
+  outline: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
 /*******************************
 Menu principal
 *******************************/

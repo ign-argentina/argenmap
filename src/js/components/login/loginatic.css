@@ -78,13 +78,7 @@
   border-bottom-left-radius: 6px;
 }
 .login .input-group input {
-  background-color: #a3daee;
-  color: #ffffff;
-  border: 1px solid white;
   font-weight: 700;
-  border-left: none;
-  border-top-right-radius: 6px;
-  border-bottom-right-radius: 6px;
 }
 .login button {
   width: 200px;
