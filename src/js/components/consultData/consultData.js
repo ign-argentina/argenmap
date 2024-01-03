@@ -81,11 +81,11 @@ function getPopupForWMS(isActive) {
     gestorMenu.getActiveLayersWithoutBasemap().forEach(lyr => {
         if (!itemNames.includes(lyr.name)) itemNames.push(lyr.name);
     })
-    itemNames.forEach(nombreCapa => {
+    itemNames.forEach(activeLayerName => {
        Object.values(gestorMenu.items).forEach(item => {   
         Object.values(item.itemsComposite).forEach(itemComposite => {
 
-            if (nombreCapa == itemComposite.nombre) {
+            if (activeLayerName == itemComposite.nombre) {
                 if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
             }
         });
