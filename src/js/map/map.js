@@ -179,15 +179,17 @@ $("body").on("pluginLoad", function (event, plugin) {
 	if (visiblesActivar) {
 		ordered.forEach(async function (e) {
 			switch (e) {
-				case 'screenShoter':
-					if (L.Browser.webkit) {
+        case 'screenShoter':
+          let isIdecom = window.location.origin.includes("idecom");
+					if (L.Browser.webkit && !isIdecom) {
 						let d = new Date()
 						let n = d.getTime();
 						L.simpleMapScreenshoter({
 							hideElementsWithSelectors: [
 								".leaflet-top.leaflet-left",
 								".leaflet-top.leaflet-right",
-								".leaflet-bottom.leaflet-right",
+                ".leaflet-bottom.leaflet-right",
+                "leaflet-control-container",
 								"#zoom-level",
 								"#sidebar-toolbar-icon-left",
 								"#sidebar-toolbar-icon-right",
@@ -2642,7 +2644,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 				layers: currentBaseMap ? [currentBaseMap] : undefined,
 				zoomControl: false,
 				minZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.min : DEFAULT_MIN_ZOOM_LEVEL,
-				maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max : DEFAULT_MAX_ZOOM_LEVEL,
+        maxZoom: app.hasOwnProperty('mapConfig') ? app.mapConfig.zoom.max : DEFAULT_MAX_ZOOM_LEVEL,
+        closePopupOnClick: false
 				/* renderer: L.svg() */
 			});
 
@@ -3040,7 +3043,8 @@ function loadWmsTpl(objLayer) {
 	}
 
 	//Parse FeatureInfo to display into popup (if info is text/html)
-	function parseFeatureInfoHTML(info, idTxt) {
+  function parseFeatureInfoHTML(info, idTxt) {
+    console.log(info);
 		infoAux = info.search("<ul>"); // search if info has a list
 		if (infoAux > 0) { // check if info has any content, if so shows popup
 			$(info).find('li').each(function (index) {
@@ -3069,7 +3073,7 @@ function loadWmsTpl(objLayer) {
 
 			var infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
 			infoAux += '<div class="featureGroup">';
-			infoAux += '<div style="padding:1em;" class="individualFeature">';
+			infoAux += '<div style="/*padding:1em;*/" class="individualFeature">';
 			//infoAux += '<div style="padding:1em;overflow-y:scroll;max-height:200px" class="individualFeature">';
 			infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
 			infoAux += '<ul id="featureInfoPopupUL' + idTxt + '">';

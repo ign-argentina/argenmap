@@ -367,7 +367,7 @@ function parseFeatureInfoJSON(info, idTxt, title) {
     var infoAux =
       '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
     infoAux += '<div class="featureGroup">';
-    infoAux += '<div style="padding:1em" class="individualFeature">';
+    infoAux += '<div style="/*padding:1em*/" class="individualFeature">';
     infoAux +=
       '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
       title +
@@ -1536,15 +1536,15 @@ function loadingBtn(status, idBtn, btnName) {
   if (status === "on") {
     btn_ejecutar.innerHTML =
       '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    $("#ejec_gp").addClass("disabledbutton");
-    $('#' + idBtn).addClass("disabledbutton");
+    $("#ejec_gp").addClass("ui-btn-disabled");
+    $('#' + idBtn).addClass("ui-btn-disabled");
   } else if (status === "off") {
     if (btnName) {
       btn_ejecutar.innerHTML = btnName;
     } else {
       btn_ejecutar.innerHTML = "Ejecutar";
     }
-    $('#' + idBtn).removeClass("disabledbutton");
+    $('#' + idBtn).removeClass("ui-btn-disabled");
   }
 }
 
@@ -1599,7 +1599,7 @@ function createPopupForVector(layer, clickLatlng) {
   var infoAux =
     '<div class="featureInfo" id="featureInfoPopup' + id + '">';
   infoAux += '<div class="featureGroup">';
-  infoAux += '<div style="padding:1em" class="individualFeature">';
+  infoAux += '<div style="/*padding:1em*/" class="individualFeature">';
   infoAux +=
     '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
     title +

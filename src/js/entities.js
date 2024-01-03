@@ -679,12 +679,12 @@ class LayersInfoWMS extends LayersInfo {
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
     _gestorMenu.addItemGroup(groupAux);
-    }
-    
-    /**
-     * Parses geoserver capabilities and creates a menu.
-     * @param {Object} _gestorMenu - The menu manager.
-     */
+  }
+
+  /**
+   * Parses geoserver capabilities and creates a menu.
+   * @param {Object} _gestorMenu - The menu manager.
+   */
   _parseRequest(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
     const impresorItem = new ImpresorItemHTML();
@@ -794,6 +794,7 @@ class LayersInfoWMS extends LayersInfo {
             gestorMenu.allLayersAreLoaded = true;
           }
         }
+        gestorMenu.printMenu();
       })
       .catch(error => {
         console.error("Error loading capabilities:", error);
@@ -1201,7 +1202,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
     let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
     let host = thisObj.getHost() + serviceParams;
     $("#temp-menu").load(
-      host,      
+      host,
       function () {
         var content = $("#temp-menu").find("contents");
         var keywordHtml = $("#temp-menu").find("Keyword");
@@ -2498,6 +2499,7 @@ class GestorMenu {
     return aName < bName ? -1 : aName > bName ? 1 : 0;
   }
 
+  // imprime el menu de capas
   executeLayersInfo() {
     if (this.getLazyInitialization() == true) {
       for (var key in this.layersInfo) {
@@ -2599,69 +2601,27 @@ class GestorMenu {
     }
   }
 
+  //llama a imprimir el menu de capas
   print() {
     this.executeLayersInfo();
   }
 
   _printSearcher() {
-    if (this.getShowSearcher() == true) {
-      /*             
-            let placeholder = app.config ? app.config.searchLayers ?? 'Search layer' : 'Search layer';
-            const searchForm = document.createElement('form');
-                searchForm.id = 'searchForm';
-                searchForm.classList.add = 'searchFormBtn';
-                searchForm.setAttribute('onSubmit', 'mainMenuSearch(event)');
-            const searchFlexContainer = document.createElement('div');
-                searchFlexContainer.style = 'display: flex;';
-            const searchInput = document.createElement('input');
-                searchInput.id = 'q';
-                searchInput.name ='q';
-                searchInput.type ='text';
-                searchInput.placeholder = placeholder;
-                searchInput.classList.add('form-control');
-                searchInput.value = this.getQuerySearch(); 
-            const searchReset = document.createElement('button');
-                searchReset.classList = 'btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden';
-                searchForm.setAttribute('onClick', 'reloadMenu()');
-            const searchBtn = document.createElement('button');
-                searchBtn.classList = 'btn btn-search';
-                searchBtn.type = 'submit';
-            const searchBtnIcon = document.createElement('span');
-                searchBtn.classList = 'glyphicon glyphicon-search';
-                searchBtn.setAttribute('aria-hidden', 'true');
-            const resetLayersBtn = document.createElement('button');
-                searchBtn.id = 'cleanTrash';
-                searchBtn.type = 'button'
-                searchBtn.classList = 'btn btn-reset-layers'
-                searchBtn.setAttribute('onClick','gestorMenu.cleanAllLayers()');
-            const resetLayersBtnIcon = document.createElement('span');
-                resetLayersBtnIcon.title = 'Desactivar Capas';
-                resetLayersBtnIcon.classList = 'glyphicon glyphicon-trash';
+    if (this.getShowSearcher()) {
+      const formContent = `
+        <form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>
+          <div class='center-flex'>
+            <div class='has-feedback has-clear formBtns center-flex'>
+              <input type='text' class='form-control ui-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
+              <button onClick='reloadMenu()' class='ui-btn ui-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
+            </div>
+            <button class='ui-btn ui-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
+            <button class='ui-btn ui-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><span class='glyphicon glyphicon-trash'></span></button>
+          </div>
+        </form>`;
 
-            searchBtn.appendChild(searchBtnIcon);
-            resetLayersBtn.appendChild(resetLayersBtnIcon);
-
-            searchFlexContainer.append(searchInput, searchReset, searchBtn, resetLayersBtn);
-            searchForm.appendChild(searchFlexContainer);
-            
-            return searchForm; 
-            */
-
-      return (
-        "<form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>" +
-        "<div style='display: flex;'>" +
-        "<div class='has-feedback has-clear formBtns'><input type='text' class='form-control' id='q' name='q' value='" +
-        this.getQuerySearch() +
-        "' placeholder='Buscar capa'>" +
-        "<button onClick='reloadMenu()' class='btn btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>" +
-        "</div>" +
-        "<div><button class='btn btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button></div>" +
-        "<div onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><button class='btn btn-reset-layers' id='cleanTrash' type='button'><span class='glyphicon glyphicon-trash'></span></button></div>" +
-        "</div>" +
-        "</form>"
-      );
+      return formContent;
     }
-    return "";
   }
 
   getAvailableTags() {
@@ -2768,9 +2728,9 @@ class GestorMenu {
     for (var key in aSections) {
       sInitialHTML += aSections[key].join("") + "</div>";
     }
-    
+
     sInitialHTML += "</div>";
-    
+
     this.getMenuDOM().html(sInitialHTML);
 
     let sidebar = document.getElementById("sidebar");
@@ -3368,7 +3328,7 @@ class Menu_UI {
       </div>
       </div>`;
 
-        
+
     let subItemnew = document.createElement("div");
     subItemnew.innerHTML = `
       <div id="lista-${childName}" class="menu5 panel-default">
@@ -3382,16 +3342,14 @@ class Menu_UI {
       <div class="panel-body" id ="${childName}-panel-body"></div>
       </div>
       </div>`;
-    
-    
-    
+
     let searchForm = document.getElementById("searchForm"),
-        isParent = document.getElementById(`lista-${parentNamev}`);
-    if(!isParent) {
+      isParent = document.getElementById(`lista-${parentNamev}`);
+    if (!isParent) {
       searchForm.after(parentItemnew);
     }
     let location = document.getElementById(`${parentNamev}-panel-body`);
-    location.appendChild(subItemnew)    
+    location.appendChild(subItemnew)
   }
 
   addLayerOption({
@@ -3683,7 +3641,7 @@ class Menu_UI {
     img_legend.src = min_url_img;
     img_legend.setAttribute("onerror", "showImageOnError(this)");
     capa_legend_div.append(img_legend);
-    
+
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
     resize_img_icon.style = "align-self: center;font-size: 14px";
@@ -3818,7 +3776,7 @@ class Menu_UI {
       "display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;";
 
     let btn_si = document.createElement("button");
-    btn_si.className = "btn btn-info";
+    btn_si.className = "ui-btn ui-btn-danger";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
       let section;
@@ -3844,8 +3802,7 @@ class Menu_UI {
     };
 
     let btn_no = document.createElement("button");
-    btn_no.className = "btn btn-default";
-    btn_no.style = "border: 1px solid silver";
+    btn_no.className = "ui-btn ui-btn-primary";
     btn_no.innerHTML = "Cancelar";
     btn_no.onclick = function () {
       $("#modal_layer_del").remove();
@@ -4004,7 +3961,7 @@ class Menu_UI {
       notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
 
     if (notLegendFromFile) {
-      layer.legend +=  _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
+      layer.legend += _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
     }
 
     let img_icon = document.createElement("div");

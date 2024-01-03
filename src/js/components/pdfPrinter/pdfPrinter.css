@@ -1,13 +1,30 @@
-#pdfPrinter :hover {
-  background-color: #f5f4f4;
-  cursor: pointer;
-}
-
-#pdfPrinter :active {
-  background-color: grey;
-}
-
 #iconPDF {
   font-size: 16px;
   line-height: inherit;
+}
+/*******************************
+Print
+*******************************/
+@media print {
+  .navbar,
+  .sidebar,
+  .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)),
+  #sidebar,
+  #zoom-level,
+  #geoPIcon,
+  #btn-logout,
+  #loadLayersModal,
+  div[id^="sidebar-toolbar-icon-"] {
+    display: none !important;
+  }
+  #mapa {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 10000;
+  }
 }

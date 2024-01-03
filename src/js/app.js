@@ -235,6 +235,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           delete gestorMenu.items[key];
         }
       });
+      gestorMenu.availableLayers = [];
     },
 
     addLayers: function () {
@@ -256,7 +257,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           } else {
             // Process item if it's in profile
             matchItemProfile = app.profiles[app.profile].data.find(
-              (e) => e == item.id
+              (e) => e == item.class
             );
           }
 
@@ -351,6 +352,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         if (profile != undefined && app.profiles[profile] != undefined) {
           try {
             app.profile = profile;
+            gestorMenu.cleanAllLayers();
             app.removeLayers();
             app.addLayers();
             gestorMenu.printMenu();
@@ -520,7 +522,7 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //Load dynamic mapa.js
     app.template_id = template;
-    $.getScript(`src/js/map/map.js`, (res) => {});
+    $.getScript(`src/js/map/map.js`, (res) => { });
 
     template = "templates/" + template + "/main.html";
 
@@ -570,15 +572,15 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         //setProperStyleToCtrlBtns();
 
-/*      
-        let bm = document.getElementById("collapseBaseMapLayers");
-        bm.addEventListener("dblclick", function () {
-          event.stopPropagation();
-        });
-        bm.addEventListener("click", function () {
-          event.stopPropagation();
-        }); 
-*/
+        /*      
+                let bm = document.getElementById("collapseBaseMapLayers");
+                bm.addEventListener("dblclick", function () {
+                  event.stopPropagation();
+                });
+                bm.addEventListener("click", function () {
+                  event.stopPropagation();
+                }); 
+        */
 
       }
     }, 100);
@@ -609,7 +611,7 @@ async function loadTemplate(data, isDefaultTemplate) {
         mainPopup.check();
         mainPopup._addPopupWrapper();
       });
-  }
+    }
 
     //load elevationProfile
     if (loadElevationProfile) {

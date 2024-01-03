@@ -9,7 +9,7 @@ class UI {
 
   createModal(boolean) {
     let divContainer = this.createElement("div", "ContainerTable", "ContainerTable")
-    divContainer.appendChild(this.createElement("div", "icons-table"))
+    divContainer.appendChild(this.createElement("div", "icons-table","center-flex-space-btw"))
     let ul = this.createElement("ul", "indextabulator", "nav nav-pills")
     let tabcontainer = this.createElement("div", "tabscontainer")
     let tabstable = this.createElement("div", "tabs-table")
@@ -98,7 +98,7 @@ class UI {
     if (boolean) { this.addEditTableDataBtn(); }
 
     let iconsTable = document.getElementById("icons-table");
-
+    let btnsTable = this.createElement("div", "", "center-flex")
     //if charts is avaible in menu.json
     if (loadCharts) {
       let btntd = this.createElement("a", "btngraphics", "icon-table")
@@ -107,15 +107,15 @@ class UI {
         let data = datatable[activedata]
         created3(data)
       };
-      iconsTable.append(btntd)
+      btnsTable.append(btntd)
     }
-
-    iconsTable.append(btnsaveGJSON, btnsaveCSV, btnmax, btnmin, btnclose);
+    btnsTable.append(btnsaveGJSON, btnsaveCSV, btnmax, btnmin, btnclose);
+    iconsTable.append(btnsTable);
   }
 
   addEditTableDataBtn() {
     const editBar = this.createElement("div", "editBar", "");
-    const editBtn = this.createElement("button", "editBtn", "icon-table btn btn-primary");
+    const editBtn = this.createElement("button", "editBtn", "icon-table ui-btn ui-btn-primary");
     editBtn.type = "button";
     editBtn.style = "margin: 5px 5px 5px 0; float: left;";
     editBtn.id = "editTableData";
@@ -127,7 +127,7 @@ class UI {
   }
 
   addUndoRedoBtn() {
-    const undoBtn = this.createElement("button", "undoBtn", "icon-table btn btn-primary");
+    const undoBtn = this.createElement("button", "undoBtn", "icon-table ui-btn ui-btn-primary");
     undoBtn.style.float = "left";
     undoBtn.type = "button";
     undoBtn.id = "undoBtn";
@@ -138,7 +138,7 @@ class UI {
     });
     editBar.appendChild(undoBtn);
 
-    const redoBtn = this.createElement("button", "redoBtn", "icon-table btn btn-primary");
+    const redoBtn = this.createElement("button", "redoBtn", "icon-table ui-btn ui-btn-primary");
     redoBtn.style.float = "left";
     redoBtn.type = "button";
     redoBtn.id = "redoBtn";
@@ -151,7 +151,7 @@ class UI {
   }
 
   addColumnBtn() {
-    const addColumnBtn = this.createElement("button", "addColumnBtn", "icon-table btn btn-primary");
+    const addColumnBtn = this.createElement("button", "addColumnBtn", "icon-table ui-btn ui-btn-primary");
     addColumnBtn.style.float = 'left';
     addColumnBtn.id = "addColumnBtn";
     addColumnBtn.innerHTML = '+ Columna';
@@ -169,7 +169,7 @@ class UI {
   }
 
   removeColumnBtn() {
-    const removeColumnBtn = this.createElement("button", "removeColumnBtn", "icon-table btn btn-primary");
+    const removeColumnBtn = this.createElement("button", "removeColumnBtn", "icon-table ui-btn ui-btn-primary");
     removeColumnBtn.style.float = 'left';
     removeColumnBtn.id = "removeColumnBtn";
     removeColumnBtn.innerHTML = '- Columna';
@@ -236,7 +236,7 @@ class UI {
     addInputBtn.style = "font-weight: bold";
     inputDiv.appendChild(addInputBtn);
 
-    const saveBtn = this.createElement("button", "saveBtn", "icon-table btn btn-primary");
+    const saveBtn = this.createElement("button", "saveBtn", "icon-table ui-btn ui-btn-danger");
     saveBtn.style.float = "left";
     saveBtn.type = "button";
     saveBtn.title = "Aceptar";
@@ -249,7 +249,7 @@ class UI {
     });
     inputDiv.appendChild(saveBtn);
 
-    const cancelBtn = this.createElement("button", "cancelBtn", "icon-table btn btn-primary");
+    const cancelBtn = this.createElement("button", "cancelBtn", "icon-table ui-btn ui-btn-primary");
     cancelBtn.style.float = "left";
     cancelBtn.type = "button";
     cancelBtn.title = "Cancelar";
@@ -271,7 +271,7 @@ class UI {
     addInputBtn.placeholder = "Nombre de columna";
     inputDiv.appendChild(addInputBtn);
 
-    const saveBtn = this.createElement("button", "saveBtn", "icon-table btn btn-primary");
+    const saveBtn = this.createElement("button", "saveBtn", "icon-table ui-btn ui-btn-confirm");
     saveBtn.style.float = "left";
     saveBtn.type = "button";
     saveBtn.title = "Aceptar";
@@ -283,7 +283,7 @@ class UI {
     });
     inputDiv.appendChild(saveBtn);
 
-    const cancelBtn = this.createElement("button", "cancelBtn", "icon-table btn btn-primary");
+    const cancelBtn = this.createElement("button", "cancelBtn", "icon-table ui-btn ui-btn-primary");
     cancelBtn.style.float = "left";
     cancelBtn.type = "button";
     cancelBtn.title = "Cancelar";

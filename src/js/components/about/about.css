@@ -133,18 +133,15 @@
     margin-left: 2px;
     color: white;
 } */
-#link-to-repo {
-    cursor: pointer;
-    color: #FFFFFF;
-    border-radius: 8px;
-    width: 170px;
-    background-color: #3174BF;
-    padding-top: 3px;
-    margin-bottom: 3px;
+ #link-to-repo {
+  width: 170px;
+
 }
-#link-to-repo:hover {
-    background-color: #1a4570;
-    transition: 200ms;
+.github-mark{
+  fill: var(--btn-primary-color);
+}
+#link-to-repo:hover .github-mark svg {
+  fill: var(--btn-hover-color);
 }
 .content-about-deactivate {
     display: none;

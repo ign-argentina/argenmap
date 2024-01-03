@@ -1,7 +1,6 @@
 .list-group-gc {
   padding-left: 0
 }
-
 .list-group-item-gc {
   position: relative;
   display: block;
@@ -14,59 +13,38 @@
   width: 100%;
   overflow: hidden
 }
-
 .itemgc-focus {
   background-color: #ececec
 }
-
-.closebtn {
-  -webkit-appearance: none;
-  appearance: none;
-  padding: 0;
-  cursor: pointer;
-  background: 0 0;
-  border: 0;
-  float: right;
-  font-size: 21px;
-  font-weight: 700;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  opacity: .2
+.search-bar-list {
+  position: absolute;
+  width: 250px;
 }
-
 .list-group-item-heading-gc {
   margin-top: 0;
   margin-bottom: 5px
 }
-
 #search_bar {
   outline: 0 !important;
-  height: 37px;
-  width: 130px;
   overflow: auto;
   box-sizing: border-box;
-  padding-left: 10px;
-  font-size: 14px;
-  background-color: #fff;
   -webkit-transition: width .4s ease-in-out;
   transition: width .4s ease-in-out;
-  border: 0 !important;
-  border-radius: 8px
 }
-
-#search_bar:focus {
-  outline: 0 !important;
-  border: 0 !important;
-  border-radius: 8px !important
+.search-bar-empty {
+  width: 130px;
 }
-
+.search-bar-no-empty {
+  width: 200px;
+  border-right: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
 #searchbar {
   z-index: 1500;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02);
+  border-radius: var(--input-text-border-radius);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02); */
 }
-
 @media (max-width:768px) and (orientation:portrait) {
   #searchbar {
     left: 50px;
@@ -74,12 +52,10 @@
     max-height: 300px;
     /* width: 120px; */
   }
-
   #logoText {
     display: none;
   }
 }
-
 @media (max-width:768px) and (orientation:landscape) {
   #searchbar {
     left: 50px;
@@ -87,19 +63,16 @@
     max-width: 300px;
     max-height: 340px
   }
-
   .list-group-gc {
     max-width: 300px;
     max-height: 270px
   }
 }
-
 @media (min-width:769px) {
   #searchbar {
     max-width: 300px
   }
 }
-
 /* @media (max-width: 470px) {
     #searchbar {
         width: 110px;
@@ -108,3 +81,13 @@
         padding-left: 0;
       } 
 } */
+#div-icon-close-searchbar {
+  margin: 0;
+  width: auto;
+  padding: 5px 15px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+#div-icon-close-searchbar:hover>.fa-times {
+  color: var(--btn-hover-color);
+}

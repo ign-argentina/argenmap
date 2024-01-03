@@ -101,6 +101,8 @@
 
 .icon-table {
 	margin: 5px;
+  width: auto;
+  height: 40px;
 }
 
 #inputTableDiv{
@@ -161,7 +163,7 @@ button#saveBtn, button#cancelBtn{
 	#ContainerTable {
 		width     : 100%;
 		max-height: 50%;
-		right     : 0;
+		left     : 0;
 		overflow  : auto
 	}
 

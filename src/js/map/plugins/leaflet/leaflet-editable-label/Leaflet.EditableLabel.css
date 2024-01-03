@@ -1,13 +1,8 @@
-.leaflet-editable-label-interior:hover {
-  background-color: #f5f4f4;
-  cursor: pointer;
-}
-
 .redIcon {
   color: rgba(255, 0, 0, 0.637);
-  margin-top: 4.5px;
+  font-size: large;
+  line-height: inherit;
 }
-
 .map-label {
   min-width: 150px !important;
   background: transparent;
@@ -20,10 +15,21 @@
   overflow: hidden;
   height: 32px;
 }
-
 .div-icon {
   width: auto !important;
   height: auto !important;
   background-color: transparent;
   display: flex;
+}
+#editableLabelBtn>i {
+  font-size: large;
+  line-height: inherit;
+}
+.icon-text {
+  display: block;
+  background-image: url("/src/styles/images/icon-text-regular.png");
+  height: inherit;
+  background-position: right;
+  background-repeat: no-repeat;
+  filter: opacity(70%);
 }

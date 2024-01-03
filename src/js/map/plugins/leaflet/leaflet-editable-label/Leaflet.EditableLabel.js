@@ -38,7 +38,7 @@ class EditableLabel {
       );
       let controlUI = L.DomUtil.create(
         "a",
-        "leaflet-editable-label leaflet-editable-label-interior"
+        "leaflet-editable-label leaflet-editable-label-interior center-flex"
       );
       controlDiv.appendChild(controlUI);
 
@@ -46,8 +46,9 @@ class EditableLabel {
         .addListener(controlDiv, "click", L.DomEvent.preventDefault)
         .addListener(controlDiv, "click", function () { });
 
-      const icon = document.createElement("i");
-      icon.classList = "fa-solid fa-pen";
+      const icon = document.createElement("span");
+      //icon.src= "src/styles/images/icon-text-regular.png"
+      icon.classList = "icon-text";
 
       controlUI.title = this.options.title;
       controlUI.id = "editableLabelBtn";
@@ -95,7 +96,7 @@ class EditableLabel {
     textarea.autocomplete = "off";
     textarea.placeholder = "Escribe algo aquí...";
     textarea.className = "map-label";
-    textarea.style.resize = "none";
+    textarea.style.resize = "";
     textarea.maxlength = "255";
 
     // Resize the textarea as the user types.
@@ -225,7 +226,7 @@ class EditableLabel {
     drawnItems.addLayer(textLayer);
 
     // Adjust the height of textarea if there is more than one line
-    textarea.dispatchEvent(new KeyboardEvent("keydown", {key: 'Tab'}));
+    textarea.dispatchEvent(new KeyboardEvent("keydown", { key: 'Tab' }));
   };
 
   activate = () => {
@@ -250,16 +251,23 @@ class EditableLabel {
 
   _updateButton() {
     let control = this.control.getContainer().firstElementChild;
-    let controlIcon = control.querySelectorAll("i")[0];
-    controlIcon.classList.toggle("fa-edit");
-    controlIcon.classList.toggle("fa-times");
-    controlIcon.classList.toggle("redIcon");
+    let controlIcon = control.querySelectorAll("span")[0];
+console.log(control);
+    if (controlIcon.classList.contains("icon-text")) {
+      controlIcon.classList.remove("icon-text");
+      controlIcon.classList.add("fa-solid", "fa-xmark", "redIcon");
+    } else {
+      controlIcon.classList.remove("fa-solid", "fa-xmark", "redIcon");
+      controlIcon.classList.add("icon-text");
+    }
+
     if (controlIcon.classList.contains("redIcon")) {
       control.title = "Desactivar";
     } else {
       control.title = this.title;
     }
   }
+
 }
 
 const editableLabel = new EditableLabel();
