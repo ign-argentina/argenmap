@@ -85,13 +85,13 @@ function getPopupForWMS(isActive) {
        Object.values(gestorMenu.items).forEach(item => {   
         Object.values(item.itemsComposite).forEach(itemComposite => {
 
-            if (/*itemNames.includes(itemComposite.nombre)*/ nombreCapa == itemComposite.nombre) {
+            if (nombreCapa == itemComposite.nombre) {
                 if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
             }
         });
     }); 
     })
-    
+
     //Menu WMS & WMTS
     itemCapa.forEach(item => {
         if (gestorMenu.layerIsWmts(item.nombre)) {  //is WMTS
