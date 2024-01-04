@@ -108,7 +108,7 @@ Ejemplos:
   --btn-background-color: #FFF;
   --btn-hover-bg-color: #FFF;
   --btn-hover-color: #FFF;
-  --btn-primary-color: #157DB9;
+  --btn-primary-color: #0C74A0;
   --btn-secondary-color: #105C97;
   --btn-disabled-color: #838788;
   --btn-confirm-color: #3A8555;
@@ -122,9 +122,93 @@ Ejemplos:
 /*******************************
 General
 *******************************/
-html {
-  height: 100%;
+html{
+  box-sizing: border-box;
+
 }
+*, *::after, *::before {
+ box-sizing: inherit;
+}
+body { 
+  min-height: 100vh;
+  
+  font-family: var(--main-font-family);
+  /* "Encode Sans", sans-serif; */
+  overflow: hidden;
+  font-size: var(--body-fnt-size, 14px);
+}
+@media (max-width: 600px) {
+  body {
+    overflow-y: scroll;
+  }
+}
+/* Sidebar */
+#sidebar-wrapper{
+  z-index:1;
+  position: absolute;
+  width:0;
+/*   height:100%; */
+  overflow-y:hidden;
+  opacity:0.9;
+	transition:all .5s;
+/* 	display:flex;
+	align-items:center; */
+}
+
+/* Main Content */
+#page-content-wrapper{
+  width: 100%;	
+  position: absolute;
+	transition:all .5s;
+}
+
+#menu-toggle {
+  transition: all .3s;
+  font-size: 2em;
+  display: inline-block;
+  padding: 2px 12px;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+/* Change the width of the sidebar to display it*/
+#wrapper.menuDisplayed #sidebar-wrapper{
+  width:250px;
+}
+
+#wrapper.menuDisplayed #page-content-wrapper{
+  padding-left:250px;
+}
+
+/* Sidebar styling */
+.sidebar-nav{
+  padding:0;
+  list-style:none; 
+	transition:all .5s;
+	width:100%;
+	text-align:center;
+}
+
+.sidebar-nav li{
+  line-height:40px;  
+	width:100%;
+	transition:all .3s;
+	padding:10px;
+}
+
+.sidebar-nav li a {
+  display:block;
+  text-decoration:none;
+  color:#ddd;
+}
+
+.sidebar-nav li:hover{
+  background:#846bab;
+}
+
 
 .loader-line {
   display: flex;
@@ -162,18 +246,7 @@ html {
       width: 100%;
   } */
 }
-body {
-  font-family: var(--main-font-family);
-  /* "Encode Sans", sans-serif; */
-  overflow: hidden;
-  height: 100% !important;
-  font-size: var(--body-fnt-size, 14px);
-}
-@media (max-width: 600px) {
-  body {
-    overflow-y: scroll;
-  }
-}
+
 a, a:hover, a:focus {
   text-decoration: none;
 }
@@ -190,16 +263,16 @@ a, a:hover, a:focus {
   display: flex;
   flex-direction: row;
 }
-.map-container {
+/* .map-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
-}
+} */
 #mapa {
   position: relative;
-  height: 100%;
+  height: calc(100vh - 50px);
   background-color: var(--main-bg-color, white) !important;
 }
 #top-left-logo {
@@ -215,9 +288,9 @@ a, a:hover, a:focus {
   opacity: 1
 }
 @media (max-width: 800px) {
-  .map-container {
+/*   .map-container {
     position: fixed;
-  }
+  } */
   .leaflet-bottom,
   #zoom-level {
     margin-bottom: 51px;
@@ -281,6 +354,7 @@ Argenmap UI Components class
 .ag-btn-primary {
   border-color: var(--btn-primary-color);
   color: var(--btn-primary-color);
+
 }
 .ag-btn-primary:hover {
   background-color: var(--btn-primary-color);

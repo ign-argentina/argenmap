@@ -135,7 +135,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-
+        <a href="#" class="" id="menu-toggle"><span class="glyphicon glyphicon-menu-hamburger"></span></a>
         <div id="logo-navbar" class="navbar-new-content">
           <a>
             <span class="xxsmall-hide">
@@ -160,19 +160,79 @@
       </span>
     </div>
   </nav>
-  <div class="container-fluid">
-    <div class="row">
+
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+      <nav id="sidebar-container" class=" collapse sidebar _panel-group" aria-expanded="false">
+        <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
+        <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
+      </nav>
+    </div>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- <div class="col-lg-12"> -->
+          <div id="mapa" class="main"></div>
+          <!-- </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <header>col-xs-12 col-12 col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3
+    <div class="loader-line hidden"></div>col-xs-12 col-12 col-sm-3 col-md-3
+    <nav class="navbar _navbar-inverse navbar-fixed-top">
+      <div class="navbar-new">
+        <div class="center-flex-space-btw">
+          <button type="button" class="hidden-lg hidden-md navbar-toggle x collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse" data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
+            <!-- <span class="sr-only">Toggle navigation</span> -->
+  <!-- <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+
+          <div id="logo-navbar" class="navbar-new-content">
+            <a>
+              <span class="xxsmall-hide">
+                <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
+                  <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="">
+                </a>
+              </span>
+            </a>
+            <a id="logoText"></a>
+          </div>
+
+          <div id="search-navbar" class="navbar-new-content"></div>
+
+          <div id="logo-help" class="navbar-new-content">
+            <span class="xxsmall-hide">
+              <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
+              </a>
+            </span>
+          </div>
+        </div>
+        <span id="geoserver-login-btn" class="navbar-new-content">
+        </span>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <div class="container-fluid">
+      <!-- <div class="row"> 
       <nav id="sidebar-container" class="col-xs-12 col-12 col-sm-3 col-md-3 collapse sidebar _panel-group" aria-expanded="false">
         <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
         <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
       </nav>
-      <div class="map-container">
-        <div id="mapa" class="col-xs-12 col-12 col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 main"></div>
-      </div>
+      <!-- <div class="map-container"> 
+      <div id="mapa" class="col-xs-12 col-12 col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 main"></div>
+      <!-- </div> -->
+  <!-- </div> 
     </div>
-  </div>
+  </main>
   <div id="basemap-selector"></div>
-  <div id="template"></div>
+  <div id="template"></div> -->
 
   <!-- LOGIN SCRIPT -->
   <div id="login-wrapper" class="justify-content-center"></div>
