@@ -11,6 +11,7 @@
   <!-- metatags-->
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
   <!-- <link rel="stylesheet" href="https://getbootstrap.com/docs/3.3/assets/css/ie10-viewport-bug-workaround.css" integrity="sha384-Zkac0XF9hjW3YEzKQ9rx9Y48t+ssTg317uEcuak+ttIZQq2FOr3vMqS9xREP/eHG" crossorigin="anonymous"> -->
 
@@ -49,8 +50,6 @@
 
   <!-- <script src="https://getbootstrap.com/docs/3.3/assets/js/ie-emulation-modes-warning.js" integrity="sha384-qK65lGPmiUrHwmrjhMHqerlRFWsCIECXjv62QVOxtNNwAONYHDgOqfR8cCPpA3Zr" crossorigin="anonymous"></script> -->
 
-  <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->
-  <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <!-- Just to make our placeholder images work. Don't actually copy the next line! 
   <script src="https://getbootstrap.com/docs/3.3/assets/js/vendor/holder.min.js" integrity="sha384-7x7Y3XLZqumQ7tu0kiIcKNoyUdzghJ1hUpSb9Yodl/zAFGRec/sCLO4Pcye6IXZd" crossorigin="anonymous"></script>-->
   <!-- IE10 viewport hack for Surface/desktop Windows 8 bug 
@@ -125,62 +124,89 @@
 </head>
 
 <body>
-  <div class="loader-line hidden"></div>
-  <nav class="navbar _navbar-inverse navbar-fixed-top">
+
+  <nav class="navbar navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="row center-flex">
+
+        <div class="col-xs-4 col-sm-7 col-md-8 start-flex">
+          <div id="logo-navbar" class="navbar-content"><a id="top-left-logo-link" href="#" title="left logo" target="_blank">
+              <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="">
+            </a>
+            <a id="logoText"></a>
+          </div>
+        </div>
+
+        <div class="col-xs-8 col-sm-4 col-md-3 end-flex">
+          <div id="search-navbar" class="navbar-content"></a></div>
+        </div>
+
+        <div class="hidden-xs col-sm-1 col-md-1 end-flex">
+          <div id="logo-help" class="navbar-content"></div>
+        </div>
+
+        <span id="geoserver-login-btn" class="navbar-content"></span>
+
+      </div>
+  </nav>
+
+  <!--  -->
+  <div class="col-xs-8 col-sm-4 col-md-3 col-lg-3 menu-container top-around-flex">
+    <div>
+      <button class="ag-btn ag-btn-secondary menu-section-btn">
+        <spanc class="glyphicon glyphicon-menu-hamburger"></span>
+      </button>
+      <button class="ag-btn ag-btn-secondary menu-section-btn">
+        <spanc class="glyphicon glyphicon-menu-hamburger"></span>
+      </button>
+    </div>
+    <div>
+      <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
+      <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
+    </div>
+
+  </div>
+
+  <div id="mapa" class="main"></div>
+  <!--  -->
+  <!--<nav class="navbar _navbar-inverse navbar-fixed-top">
     <div class="navbar-new">
       <div class="center-flex-space-btw">
         <button type="button" class="hidden-lg hidden-md navbar-toggle x collapsed pull-left navbar-test-content navbar-button" data-toggle="collapse" data-target="#sidebar-container" aria-expanded="false" aria-controls="sidebar">
-          <!-- <span class="sr-only">Toggle navigation</span> -->
+          <!-- <span class="sr-only">Toggle navigation</span> 
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
         <a href="#" class="" id="menu-toggle"><span class="glyphicon glyphicon-menu-hamburger"></span></a>
-        <div id="logo-navbar" class="navbar-new-content">
-          <a>
-            <span class="xxsmall-hide">
-              <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
-                <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="">
-              </a>
-            </span>
-          </a>
-          <a id="logoText"></a>
-        </div>
+        
 
-        <div id="search-navbar" class="navbar-new-content"></div>
-
-        <div id="logo-help" class="navbar-new-content">
-          <span class="xxsmall-hide">
-            <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
-            </a>
-          </span>
-        </div>
+       
       </div>
-      <span id="geoserver-login-btn" class="navbar-new-content">
+      
       </span>
     </div>
   </nav>
 
   <div id="wrapper">
-    <!-- Sidebar -->
+    <!-- Sidebar 
     <div id="sidebar-wrapper">
       <nav id="sidebar-container" class=" collapse sidebar _panel-group" aria-expanded="false">
-        <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
-        <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
+        
       </nav>
     </div>
 
-    <!-- Page Content -->
+    <!-- Page Content 
     <div id="page-content-wrapper">
       <div class="container-fluid">
         <div class="row">
-          <!-- <div class="col-lg-12"> -->
+          <!-- <div class="col-lg-12"> 
           <div id="mapa" class="main"></div>
-          <!-- </div> -->
+          <!-- </div> 
         </div>
       </div>
     </div>
-  </div>
+  </div>-->
   <!-- <header>col-xs-12 col-12 col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3
     <div class="loader-line hidden"></div>col-xs-12 col-12 col-sm-3 col-md-3
     <nav class="navbar _navbar-inverse navbar-fixed-top">
@@ -236,6 +262,8 @@
 
   <!-- LOGIN SCRIPT -->
   <div id="login-wrapper" class="justify-content-center"></div>
+  <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->
+  <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 
 </html>

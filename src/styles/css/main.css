@@ -53,7 +53,6 @@ Ejemplos:
    - Color de fondo para botones primarios: --btn-primary-bg-color
 
 */
-
 @font-face {
   font-family: "Encode Sans";
   src: url("../../../dist/fonts/EncodeSans-Regular.ttf");
@@ -118,23 +117,23 @@ Ejemplos:
   --input-text-bg-color: #FFF;
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
+  /*Menu capas*/
+  --lyr-menu-bg-color: rgba(255, 255, 255, 0.9);
 }
 /*******************************
 General
 *******************************/
-html{
+html {
   box-sizing: border-box;
-
 }
 *, *::after, *::before {
- box-sizing: inherit;
+  box-sizing: inherit;
 }
-body { 
+body {
   min-height: 100vh;
-  
   font-family: var(--main-font-family);
   /* "Encode Sans", sans-serif; */
-  overflow: hidden;
+  /*   overflow: hidden; */
   font-size: var(--body-fnt-size, 14px);
 }
 @media (max-width: 600px) {
@@ -143,25 +142,23 @@ body {
   }
 }
 /* Sidebar */
-#sidebar-wrapper{
-  z-index:1;
+#sidebar-wrapper {
+  z-index: 1;
   position: absolute;
-  width:0;
-/*   height:100%; */
-  overflow-y:hidden;
-  opacity:0.9;
-	transition:all .5s;
-/* 	display:flex;
+  width: 0;
+  /*   height:100%; */
+  overflow-y: hidden;
+  opacity: 0.9;
+  transition: all .5s;
+  /* 	display:flex;
 	align-items:center; */
 }
-
 /* Main Content */
-#page-content-wrapper{
-  width: 100%;	
+#page-content-wrapper {
+  width: 100%;
   position: absolute;
-	transition:all .5s;
+  transition: all .5s;
 }
-
 #menu-toggle {
   transition: all .3s;
   font-size: 2em;
@@ -175,41 +172,34 @@ body {
   user-select: none;
 }
 /* Change the width of the sidebar to display it*/
-#wrapper.menuDisplayed #sidebar-wrapper{
-  width:250px;
+#wrapper.menuDisplayed #sidebar-wrapper {
+  width: 250px;
 }
-
-#wrapper.menuDisplayed #page-content-wrapper{
-  padding-left:250px;
+#wrapper.menuDisplayed #page-content-wrapper {
+  padding-left: 250px;
 }
-
 /* Sidebar styling */
-.sidebar-nav{
-  padding:0;
-  list-style:none; 
-	transition:all .5s;
-	width:100%;
-	text-align:center;
+.sidebar-nav {
+  padding: 0;
+  list-style: none;
+  transition: all .5s;
+  width: 100%;
+  text-align: center;
 }
-
-.sidebar-nav li{
-  line-height:40px;  
-	width:100%;
-	transition:all .3s;
-	padding:10px;
+.sidebar-nav li {
+  line-height: 40px;
+  width: 100%;
+  transition: all .3s;
+  padding: 10px;
 }
-
 .sidebar-nav li a {
-  display:block;
-  text-decoration:none;
-  color:#ddd;
+  display: block;
+  text-decoration: none;
+  color: #ddd;
 }
-
-.sidebar-nav li:hover{
-  background:#846bab;
+.sidebar-nav li:hover {
+  background: #846bab;
 }
-
-
 .loader-line {
   display: flex;
   justify-content: center;
@@ -246,7 +236,6 @@ body {
       width: 100%;
   } */
 }
-
 a, a:hover, a:focus {
   text-decoration: none;
 }
@@ -276,7 +265,7 @@ a, a:hover, a:focus {
   background-color: var(--main-bg-color, white) !important;
 }
 #top-left-logo {
-  width: auto;
+  /* width: auto; */
   height: 50px;
 }
 .brand {
@@ -288,7 +277,7 @@ a, a:hover, a:focus {
   opacity: 1
 }
 @media (max-width: 800px) {
-/*   .map-container {
+  /*   .map-container {
     position: fixed;
   } */
   .leaflet-bottom,
@@ -312,19 +301,32 @@ a, a:hover, a:focus {
   z-index: 1;
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, .2), 0 -1px 0 rgba(0, 0, 0, .02); */
 }
-
 .center-flex {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.center-flex-space-btw{
+.center-flex-space-btw {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 }
-
+.end-flex {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.start-flex {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.top-around-flex {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+}
 /*******************************
 Argenmap UI Components class
 *******************************/
@@ -354,7 +356,6 @@ Argenmap UI Components class
 .ag-btn-primary {
   border-color: var(--btn-primary-color);
   color: var(--btn-primary-color);
-
 }
 .ag-btn-primary:hover {
   background-color: var(--btn-primary-color);
@@ -389,7 +390,7 @@ Argenmap UI Components class
 .ag-btn-danger:hover {
   background-color: var(--btn-danger-color);
 }
-.ag-input-text{
+.ag-input-text {
   height: 36px;
   overflow: auto;
   box-sizing: border-box;
@@ -408,6 +409,19 @@ Argenmap UI Components class
 /*******************************
 Menu principal
 *******************************/
+.menu-container {
+  height: auto;
+  background-color: var(--lyr-menu-bg-color);
+  margin: 1rem;
+  position: absolute;
+  z-index: 1;
+  border-radius: 6px;
+  padding: 0;
+}
+.menu-section-btn {
+  width: 3.5rem;
+  height: 3.5rem;
+}
 .tooltip {
   z-index: 2000;
   /* A value higher than 1010 that solves the problem */
@@ -434,6 +448,18 @@ Menu principal
 }
 #sidebar-container {
   z-index: 500;
+}
+#sidebar {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  /*width: 500px;
+  height: 650px;
+  display: block;
+  z-index: 10; */
 }
 #sidebar .nav {
   border: 1px;
@@ -749,14 +775,12 @@ li.active>div>a {
 .hidden {
   visibility: hidden !important;
 }
-
 /*******************************
 JQuery Autocomplete
 *******************************/
 .ui-widget.ui-widget-content {
   z-index: 3000;
 }
-
 /*******************************
 Leaflet
 *******************************/
@@ -795,7 +819,6 @@ Leaflet
 /* .leaflet-pane .leaflet-overlay-pane:not(:first-child) {
   filter: drop-shadow(5px -2px 1.5px rgba(5,15,5,0.3));
 } */
-
 /*******************************
 Leaflet popup featureInfo
 *******************************/
@@ -847,7 +870,6 @@ Leaflet popup featureInfo
   float: left;
   padding-left: 10px;
 }
-
 /*******************************
 Popup geometría
 *******************************/
@@ -1106,7 +1128,6 @@ input:checked.switch+label:after {
     visibility: hidden;
   }
 }
-
 /*******************************
 Control mapa base
 *******************************/
@@ -1152,7 +1173,6 @@ Control mapa base
   width: 230px;
   display: block;
 }
-
 /*******************************
 Control graticula
 *******************************/
@@ -1165,7 +1185,6 @@ Control graticula
 .leaflet-control-customgraticule:hover {
   cursor: pointer;
 }
-
 /*******************************
 SideBar
 *******************************/
@@ -1257,30 +1276,27 @@ SideBar
 .leaflet-oldie .leaflet-popup-content-wrapper {
   transform: scale(1);
 }
-
 /*******************************
-New navbar
+Navbar
 *******************************/
-@media (max-width: 410px) {
+/* @media (max-width: 410px) {
   .navbar-new-content {
     margin: 0% 4px !important;
   }
-}
-.navbar-new {
+} */
+/* .navbar-new {
   display: flex;
   width: auto;
   flex-wrap: nowrap;
   justify-content: space-between;
   overflow: hidden;
+} */
+.navbar-content {
+  margin: 0.1rem 2.5rem;
 }
-.navbar-new-content {
-  flex: inherit;
-  margin: 0.1rem 3px;
-  text-align: inherit;
-}
-.navbar-button {
+/* .navbar-button {
   margin-right: -5px;
-}
+} */
 /* @media (max-width: 470px) {
     .navbar-toggle {
         padding: 1px 5px;
@@ -1292,12 +1308,11 @@ New navbar
   background-repeat: no-repeat;
   margin-left: 10px;
 }
-@media (max-width: 410px) {
-  #logo-help {
-    display: none;
-  }
+#logo-help {
+  margin-right: 0;
 }
 #geoserver-login-btn {
+  display: contents;
   width: auto;
   align-self: center;
 }
@@ -1313,7 +1328,6 @@ New navbar
   white-space: nowrap;
   text-decoration: none;
 }
-
 /*******************************
 Searcher
 *******************************/
@@ -1326,7 +1340,7 @@ Searcher
   cursor: pointer;
   line-height: 0;
 }
- .btn-search,  .btn-reset-layers {
+.btn-search, .btn-reset-layers {
   width: auto;
   margin: 2px;
   height: 36px;
@@ -1350,7 +1364,6 @@ Searcher
 #q.ag-input-text {
   padding: 0 0 0 10px;
 }
-
 /*******************************
 Perfil Topografico
 *******************************/
@@ -1375,7 +1388,6 @@ Perfil Topografico
   width: 100%;
   min-height: 400px;
 }
-
 /*******************************
 Measurement Info
 *******************************/
@@ -1407,7 +1419,6 @@ Measurement Info
 #measurementInfo tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
-
 /*******************************
 ESRI
 *******************************/
@@ -1438,7 +1449,6 @@ ESRI
 #esriTable tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
-
 /*******************************
 Icons and Btns
 *******************************/
@@ -1473,7 +1483,6 @@ Icons and Btns
   border-top-left-radius: 4px !important;
   border-top-right-radius: 4px !important;
 } */
-
 /*******************************
 ScreenShot
 *******************************/
@@ -1483,7 +1492,6 @@ ScreenShot
 #screenShoter :hover {
   cursor: pointer;
 }
-
 /*******************************
 Special effects
 *******************************/
