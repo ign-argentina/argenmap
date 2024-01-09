@@ -151,22 +151,52 @@
   </nav>
 
   <!--  -->
-  <div class="col-xs-8 col-sm-4 col-md-3 col-lg-3 menu-container top-around-flex">
+  <div class="menu-container top-around-flex">
     <div>
-      <button class="ag-btn ag-btn-secondary menu-section-btn">
-        <spanc class="glyphicon glyphicon-menu-hamburger"></span>
+      <button class="ag-btn ag-btn-secondary menu-section-btn" data-target="sidebar">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
       </button>
-      <button class="ag-btn ag-btn-secondary menu-section-btn">
-        <spanc class="glyphicon glyphicon-menu-hamburger"></span>
+      <button class="ag-btn ag-btn-secondary menu-section-btn" data-target="basemap-selector">
+        <span class="glyphicon glyphicon-plus"></span>
       </button>
+      <!-- Puedes agregar más botones aquí -->
     </div>
-    <div>
+    <div id="asd">
       <div class="loading"><img alt="loading..." src="src/styles/images/loading.svg"></div>
-      <div id="sidebar" class="nav nav-sidebar panel panel-default"></div>
+      <div id="sidebar" class="nav nav-sidebar panel panel-default" style="display: none;">Contenido del Sidebar</div>
+      <div id="basemap-selector" style="display: none;"></div>
+      <!-- Puedes agregar más secciones aquí -->
     </div>
-
   </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var buttons = document.querySelectorAll(".menu-section-btn");
+      console.log(buttons);
 
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          var targetId = button.getAttribute("data-target");
+          var targetSection = document.getElementById(targetId);
+
+          if (targetSection.style.display === "block") {
+            targetSection.style.display = "none";
+          } else {
+            // Oculta todas las secciones antes de mostrar la deseada
+            buttons.forEach(function (otherButton) {
+              var otherTargetId = otherButton.getAttribute("data-target");
+              var otherTargetSection = document.getElementById(otherTargetId);
+
+              if (otherTargetSection !== targetSection) {
+                otherTargetSection.style.display = "none";
+              }
+            });
+
+            targetSection.style.display = "block";
+          }
+        });
+      });
+    });
+  </script>
   <div id="mapa" class="main"></div>
   <!--  -->
   <!--<nav class="navbar _navbar-inverse navbar-fixed-top">
@@ -179,9 +209,6 @@
           <span class="icon-bar"></span>
         </button>
         <a href="#" class="" id="menu-toggle"><span class="glyphicon glyphicon-menu-hamburger"></span></a>
-        
-
-       
       </div>
       
       </span>
@@ -257,9 +284,9 @@
   <!-- </div> 
     </div>
   </main>
+  
   <div id="basemap-selector"></div>
   <div id="template"></div> -->
-
   <!-- LOGIN SCRIPT -->
   <div id="login-wrapper" class="justify-content-center"></div>
   <!-- Bootstrap core JavaScript placed at the end of the document so the pages load faster -->

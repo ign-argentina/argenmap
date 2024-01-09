@@ -409,7 +409,9 @@ Argenmap UI Components class
 /*******************************
 Menu principal
 *******************************/
+#asd {}
 .menu-container {
+  width: auto;
   height: auto;
   background-color: var(--lyr-menu-bg-color);
   margin: 1rem;
@@ -449,6 +451,14 @@ Menu principal
 #sidebar-container {
   z-index: 500;
 }
+#basemap-selector {
+  overflow: hidden;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+}
 #sidebar {
   overflow: auto;
   position: relative;
@@ -456,10 +466,6 @@ Menu principal
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-  /*width: 500px;
-  height: 650px;
-  display: block;
-  z-index: 10; */
 }
 #sidebar .nav {
   border: 1px;
@@ -1170,7 +1176,7 @@ Control mapa base
   margin-bottom: 0px;
 }
 .list-inline li {
-  width: 230px;
+  width: 250px;
   display: block;
 }
 /*******************************

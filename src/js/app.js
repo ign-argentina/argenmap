@@ -171,7 +171,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               null
             );
           groupAux.setImpresor(impresorBaseMap);
-          groupAux.setObjDom(".basemap-selector");
+          groupAux.setObjDom("#basemap-selector");
 
           for (let key2 in item.capas) {
             gestorMenu.setAvailableBaseLayer(item.capas[key2].nombre);

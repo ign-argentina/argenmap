@@ -421,9 +421,10 @@ class ImpresorGroupWMSSelector extends Impresor {
 
 class ImpresorCapasBaseHTML extends Impresor {
   imprimir(itemComposite) {
+    console.log($("div#basemap-selector>ul"));
     var listaId = itemComposite.getId();
     // Only one basemap-selector
-    if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
+    if ($("div#basemap-selector>ul").length === 0) {
       const baseMapsMenu = document.createElement("a");
       baseMapsMenu.classList = "leaflet-control-layers-toggle";
       baseMapsMenu.title = itemComposite.nombre;
@@ -452,7 +453,7 @@ class ImpresorCapasBaseHTML extends Impresor {
         event.stopPropagation();
       });
 
-      return baseMapsMenu;
+      return baseMapsList;
 
       /* return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
                 '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
