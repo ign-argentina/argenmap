@@ -2667,19 +2667,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 
 			gestorMenu.plugins['leaflet'].setStatus('visible');
 
-			// Base Map Control
-			/* L.Control.Watermark = L.Control.extend({
-
-				onAdd: function (map) {
-					var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar basemap-selector');
-					return container;
-				}
-			});
-			L.control.watermark = function (opts) {
-				return new L.Control.Watermark(opts);
-			}
-			L.control.watermark({ position: 'topleft' }).addTo(mapa); */
-
 			mapa.on('click', function (e) {
 				setTimeout(function () {
 					popupInfo = new Array();

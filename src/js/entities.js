@@ -141,6 +141,7 @@ class ImpresorItemHTML extends Impresor {
     btn.id = childId;
     btn.classList = "capa list-group-item" + activated;
     btn.style.padding = "10px 1px 10px 1px";
+    btn.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`)
 
     const btn_title = document.createElement("div");
     btn_title.className = "capa-title";
@@ -148,7 +149,7 @@ class ImpresorItemHTML extends Impresor {
 
     const btn_name = document.createElement("div");
     btn_name.className = "name-layer";
-    btn_name.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`);
+    /* btn_name.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`); */
     btn_name.style.alignSelf = "center";
 
     const btn_link = document.createElement("a");
@@ -371,42 +372,25 @@ class ImpresorGrupoHTML extends Impresor {
 
     var active = itemComposite.getActive() == true ? " in " : "";
 
-    return (
-      '<div id="' +
-      listaId +
-      '" class="' +
-      itemClass +
-      ' panel-default">' +
-      '<div class="panel-heading">' +
-      '<h4 class="panel-title">' +
-      '<a id="' +
-      listaId +
-      '-a" data-toggle="collapse" data-parent="#accordion1" href="#' +
-      itemComposite.seccion +
-      '" class="item-group-title">' +
-      itemComposite.nombre +
-      "</a>" +
-      "<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" +
-      itemComposite.descripcion +
-      "' href='#" +
-      itemComposite.seccion +
-      "'>" +
-      itemComposite.shortDesc +
-      "</a></div>" +
-      "</h4>" +
-      "</div>" +
-      "<div id='" +
-      itemComposite.seccion +
-      "' class='panel-collapse collapse" +
-      active +
-      "'>" +
-      '<div class="panel-body">' +
-      itemComposite.itemsStr +
-      "</div>" +
-      "</div>" +
-      "</div>"
-    );
+    return `
+    <div id="${listaId}" class="${itemClass} panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}">
+        <h4 class="panel-title">
+          <span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
+          <div class='item-group-short-desc'>
+            <span data-toggle='tooltip' title='${itemComposite.descripcion}'>${itemComposite.shortDesc}</span>
+          </div>
+        </h4>
+      </div>
+      <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}'>
+        <div class="panel-body">
+          ${itemComposite.itemsStr}
+        </div>
+      </div>
+    </div>
+  `;
   }
+
 }
 
 class ImpresorGroupWMSSelector extends Impresor {
@@ -421,7 +405,6 @@ class ImpresorGroupWMSSelector extends Impresor {
 
 class ImpresorCapasBaseHTML extends Impresor {
   imprimir(itemComposite) {
-    console.log($("div#basemap-selector>ul"));
     var listaId = itemComposite.getId();
     // Only one basemap-selector
     if ($("div#basemap-selector>ul").length === 0) {
@@ -454,11 +437,6 @@ class ImpresorCapasBaseHTML extends Impresor {
       });
 
       return baseMapsList;
-
-      /* return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-                '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
-                '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-                '</div>'; */
     }
   }
 }

@@ -11,13 +11,6 @@ class StylesUI {
     body{
       background-color: ${app.theme.headerBackground};
     }
-    .nav-tabs {
-      background-color: ${app.theme.headerBackground};
-    }
-    .panel-default > .panel-heading {
-      background-color: ${app.theme.menuBackground} !important;
-      ${app.theme.textMenuStyle}
-    }
     .featureInfo h4{
       border-bottom:3px solid ${app.theme.menuBackground};
       margin:2em;
@@ -32,6 +25,9 @@ class StylesUI {
       background-color: ${app.theme.activeLayer} !important;
     }
     .active {
+      background-color: ${app.theme.activeLayer};
+    }
+    .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover{
       background-color: ${app.theme.activeLayer} !important;
     }
     .featureInfo h4 {
@@ -45,13 +41,6 @@ class StylesUI {
     }
     .active-layers-counter {
       background: ${app.theme.activeLayer} !important;
-    }
-    .panel-default > .panel-heading {
-      color:${app.theme.textMenu};
-    }
-    .item-group-short-desc a {
-      color:${app.theme.textLegendMenu};
-      ${app.theme.textLegendMenuStyle}
     }
     .navbar-toggle .icon-bar {
       border: 1px solid ${app.theme.iconBar};

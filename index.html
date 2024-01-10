@@ -170,11 +170,11 @@
   </div>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      var menuContainer = document.querySelector(".menu-container");
       var buttons = document.querySelectorAll(".menu-section-btn");
-      console.log(buttons);
 
       buttons.forEach(function (button) {
-        button.addEventListener("click", function () {
+        button.addEventListener("click", function (event) {
           var targetId = button.getAttribute("data-target");
           var targetSection = document.getElementById(targetId);
 
@@ -193,7 +193,19 @@
 
             targetSection.style.display = "block";
           }
+          event.stopPropagation();
         });
+      });
+
+      // Agrega un evento de clic al documento para ocultar los contenedores al hacer clic fuera de ellos
+      document.addEventListener("click", function (event) {
+        if (!menuContainer.contains(event.target)) {
+          buttons.forEach(function (button) {
+            var targetId = button.getAttribute("data-target");
+            var targetSection = document.getElementById(targetId);
+            targetSection.style.display = "none";
+          });
+        }
       });
     });
   </script>

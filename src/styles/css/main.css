@@ -119,6 +119,8 @@ Ejemplos:
   --input-text-border-color: #939697;
   /*Menu capas*/
   --lyr-menu-bg-color: rgba(255, 255, 255, 0.9);
+  --lyr-menu-panel-head-bg-color: #FFF;
+  --lyr-menu-panel-head-text-color: #105C97;
 }
 /*******************************
 General
@@ -441,9 +443,11 @@ Menu principal
   width: 70px;
 }
 .panel-default>.panel-heading {
-  color: white;
-  background-color: var(--bg-color);
+  color: var(--lyr-menu-panel-head-text-color);
+  background-color: var(--lyr-menu-panel-head-bg-color);
   font-size: var(--group-title-fnt-size, 15px);
+  border: 2px solid var(--btn-secondary-color);
+  cursor: pointer;
 }
 .panel-default>.panel-heading>.panel-title>a {
   font-size: var(--group-title-fnt-size, 15px);
@@ -452,12 +456,13 @@ Menu principal
   z-index: 500;
 }
 #basemap-selector {
-  overflow: hidden;
+  /* overflow: hidden; */
   position: relative;
   margin: 0.5rem;
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
+  /*   */
 }
 #sidebar {
   overflow: auto;
@@ -466,6 +471,7 @@ Menu principal
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
+  width: 350px;
 }
 #sidebar .nav {
   border: 1px;
@@ -489,17 +495,32 @@ Menu principal
 .nav-tabs>.active {
   background-color: transparent !important;
 }
+/* Estilos para pestañas de navegación */
 .nav-tabs>li>a {
-  color: white;
-  border: var(--layer-border-color);
+  color: var(--btn-secondary-color);
+  border: 2px solid var(--btn-secondary-color);
+  border-bottom: 0;
+  font-weight: 600;
+  margin-left: 1px;
   padding: 5px 15px;
 }
 .nav-tabs>li>a:hover {
-  color: #444444;
+  background-color: var(--btn-secondary-color);
+  color: var(--btn-hover-color);
+  font-weight: normal;
+  border: 2px solid var(--btn-secondary-color);
+  border-bottom: 0;
 }
 .nav-tabs>li.active>a {
-  background-color: var(--active-bg-color, #33b560) !important;
-  color: white !important;
+  background-color: var(--active-bg-color, #33b560);
+  color: white;
+  cursor: pointer;
+  border: 1px solid var(--active-bg-color);
+}
+.nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+  cursor: pointer;
+  color: white;
+  border: 1px solid var(--active-bg-color);
 }
 .tab-content {
   border: var(--layer-border-color);
@@ -509,10 +530,17 @@ Menu principal
   font-family: var(--main-font-family);
 }
 .panel-heading:hover {
-  background-color: var(--menu-section-hover-color) !important;
+  background-color: var(--lyr-menu-panel-head-text-color);
+  color: var(--lyr-menu-panel-head-bg-color);
+}
+.panel-heading:hover .item-group-short-desc span {
+  color: var(--lyr-menu-panel-head-bg-color);
 }
 .active {
-  background-color: var(--active-bg-color, #33b560) !important;
+  background-color: var(--active-bg-color, #33b560);
+}
+.tab-pane.active {
+  background-color: var(--lyr-menu-panel-head-text-color);
 }
 li.active>div>a {
   color: white !important;
@@ -520,6 +548,7 @@ li.active>div>a {
 .list-group-item {
   position: initial;
   font-family: "Encode Sans Medium", sans-serif;
+  cursor: pointer;
 }
 .menu-button {
   background-color: #6e6d6d;
@@ -574,7 +603,7 @@ li.active>div>a {
   border-color: #ccc;
 }
 .list-group-item:hover, .file-layer:hover {
-  background-color: var(--layer-btn-hover-color);
+  background-color: var(--menu-section-hover-color);
 }
 .list-group-item:hover span, .file-layer:hover a {
   color: var(--text-color);
@@ -589,6 +618,7 @@ li.active>div>a {
   vertical-align: middle;
   border-radius: 100%;
   background-color: var(--active-bg-color, #33b560) !important;
+  color: #FFF
 }
 .total-active-layers-counter {
   display: inline-block;
@@ -604,12 +634,13 @@ li.active>div>a {
   font-size: 11px;
   line-height: 11px;
 }
-.item-group-short-desc a {
+.item-group-short-desc span {
   font-size: 11px;
-  color: white;
+  font-weight: 500;
+  color: var(--lyr-menu-panel-head-text-color);
+  user-select: none;
 }
 .item-group-title {
-  cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
   font-family: var(--main-font-family);
@@ -640,7 +671,6 @@ li.active>div>a {
   overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
-  cursor: pointer;
 }
 .active>div>div>a {
   color: white;
@@ -1101,10 +1131,10 @@ input:checked.switch+label:after {
   text-align: center;
   border-radius: 6px;
   padding: 5px 0;
-  white-space: pre;
+  white-space:pre;
   position: absolute;
-  top: -16px;
-  left: 150%;
+  top: -20px;
+  left: 220%;
   z-index: 50000;
 }
 .tooltiptext, #argenmap-tooltip span, #argenmap-tooltip span button:hover {
@@ -1124,6 +1154,9 @@ input:checked.switch+label:after {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+}
+.base-layer-item-info>div {
+padding-left: 10px;
 }
 .map-tooltip {
   background-color: #000000;
@@ -1176,8 +1209,10 @@ Control mapa base
   margin-bottom: 0px;
 }
 .list-inline li {
-  width: 250px;
+  width: 350px;
   display: block;
+  padding-right: 15px;
+  padding-left: 15px;
 }
 /*******************************
 Control graticula
