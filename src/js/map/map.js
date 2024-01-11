@@ -2836,7 +2836,7 @@ function printFinished() {
 	$("[data-toggle2='tooltip']").tooltip({
 		placement: "right",
 		trigger: "hover",
-		container: "body"
+		container: ".menu-container"
 	});
 }
 

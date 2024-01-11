@@ -135,7 +135,7 @@ body {
   min-height: 100vh;
   font-family: var(--main-font-family);
   /* "Encode Sans", sans-serif; */
-    overflow: hidden;
+  /* overflow: hidden; */
   font-size: var(--body-fnt-size, 14px);
 }
 @media (max-width: 600px) {
@@ -425,10 +425,6 @@ Menu principal
 .menu-section-btn {
   width: 3.5rem;
   height: 3.5rem;
-}
-.tooltip {
-  z-index: 2000;
-  /* A value higher than 1010 that solves the problem */
 }
 .panel-body {
   padding: 5px;
@@ -1124,7 +1120,11 @@ input:checked.switch+label:after {
   cursor: default;
 }
 .tooltip {
-  position: relative;
+  position: absolute;
+  z-index: 2000;
+  max-width: 30vw;
+  min-width: 200px;
+  max-height: 10vh;
 }
 .tooltiptext {
   visibility: hidden;
@@ -1139,7 +1139,7 @@ input:checked.switch+label:after {
   text-align: center;
   border-radius: 6px;
   padding: 5px 0;
-  white-space:pre;
+  white-space: pre;
   position: absolute;
   top: -20px;
   left: 220%;
@@ -1164,7 +1164,7 @@ input:checked.switch+label:after {
   align-items: center;
 }
 .base-layer-item-info>div {
-padding-left: 10px;
+  padding-left: 10px;
 }
 .map-tooltip {
   background-color: #000000;
