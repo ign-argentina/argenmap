@@ -282,10 +282,10 @@ a, a:hover, a:focus {
   /*   .map-container {
     position: fixed;
   } */
-  .leaflet-bottom,
+  /*   .leaflet-bottom,
   #zoom-level {
-    margin-bottom: 51px;
-  }
+    margin-bottom: 51px; borrar
+  } */
   #zoom-level {
     bottom: -20px !important;
   }
@@ -553,6 +553,7 @@ li.active>div>a {
   position: initial;
   font-family: "Encode Sans Medium", sans-serif;
   cursor: pointer;
+  padding: 8px 15px;
 }
 .menu-button {
   background-color: #6e6d6d;
@@ -609,9 +610,9 @@ li.active>div>a {
 .list-group-item:hover, .file-layer:hover {
   background-color: var(--menu-section-hover-color);
 }
-.list-group-item:hover span, .file-layer:hover a {
+/* .list-group-item:hover span, .file-layer:hover a {
   color: var(--text-color);
-}
+} */
 .active-layers-counter {
   height: 20px;
   width: 20px;
@@ -1062,13 +1063,18 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   border-color: rgb(107, 109, 110);
 }
 .zoom-info-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   cursor: pointer;
+  margin: 0;
+  padding: 0px;
+}
+.zoom-info-icon:hover svg {
+  fill: var(--btn-hover-color);
 }
 .switch {
   height: 0;
@@ -1144,9 +1150,11 @@ input:checked.switch+label:after {
   top: -20px;
   left: 220%;
   z-index: 50000;
+  font-size: 14px;
+  font-weight: normal;
 }
 .tooltiptext, #argenmap-tooltip span, #argenmap-tooltip span button:hover {
-  color: var(--bg-color) !important;
+  color: #105C97;
 }
 .switch:hover+label .tooltiptext {
   visibility: visible;
@@ -1215,6 +1223,8 @@ Control mapa base
 }
 .list-inline {
   margin-bottom: 0px;
+  border: 2px solid var(--btn-secondary-color);
+  border-radius: 6px;
 }
 .list-inline li {
   width: 350px;

@@ -71,7 +71,7 @@ class UImf {
     let tab_div = document.createElement("div")
     tab_div.className = "tabs_upload"
     tab_div.innerHTML = `
-    <span style="font-size:12px;color:#37bbed;margin:0px 10px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX, SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
+    <span style="color: #105C97;margin:0px 10px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX, SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
 
 
     let mainContainerFile = document.createElement("div")

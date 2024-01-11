@@ -1,18 +1,18 @@
-.modalHeader {
+/* .modalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   margin-bottom: 12px;
-}
+} */
 .modalHeader h4 {
-  margin: 0;
-  color: #37bbed;
+  color: var(--btn-secondary-color);
+  font-weight: 600;
 }
-.modalCloseButton {
+/* .modalCloseButton {
   background: none;
   border: none;
-}
+} */
 .modalMainSection {
   width: 100%;
   display: flex;
@@ -23,28 +23,28 @@
   flex-direction: row;
 }
 .modalNavButton {
-  background: none;
+  margin-right: 0;
+/*   background: none;
   border: 1px solid #37bbed;
   border-radius: 4px;
   color: #37bbed;
   padding: 6px;
   margin-bottom: 6px;
-  margin-right: 6px;
+  margin-right: 6px; */
 }
-.modalNavButton img {
+/* .modalNavButton img {
   filter: none;
-}
+} */
 .modalNavButtonActive img {
   filter: contrast(0%) brightness(200%);
 }
 .modalNavButtonActive {
-  background: #37bbed;
+  background: var(--btn-secondary-color);
   color: white;
 }
 .modalContent {
-  border: 1px solid #37bbed;
-  border-radius: 4px;
-  width: 100%;
+  border: 2px solid #105C97;
+  border-radius: 6px;
 }
 .actionContent {
   display: flex;
@@ -80,15 +80,15 @@
     width: 60%;
     left: 30%;
   } */
-  .modalMainSection {
+/*   .modalMainSection {
     width: 100%;
     display: flex;
     flex-direction: row;
-  }
-  .modalNav {
+  } */
+ /*  .modalNav {
     display: flex;
     flex-direction: column;
-  }
+  } */
   /*.modalNavButton {
      margin-right: 0; 
   }*/
