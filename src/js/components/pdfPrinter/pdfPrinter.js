@@ -12,6 +12,6 @@ class PdfPrinter {
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "pdfPrinter";
     elem.innerHTML = this.component;
-    document.querySelector(".leaflet-top.leaflet-left").append(elem);
+    document.querySelector(".leaflet-top.leaflet-right").append(elem);
   }
 }

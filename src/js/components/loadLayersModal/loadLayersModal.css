@@ -56,24 +56,16 @@
 }
 #loadLayersModal {
   overflow: hidden;
-  float: none;
+/*   float: none;
   border-radius: 6px;
   z-index: 1200;
   padding: 8px 12px;
-  background-color: white !important;
-  position: absolute;
-  top: 100px;
-  margin-bottom: 10px;
-  -moz-box-shadow: inset 0 0 10px #000000;
-  -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-  width: 80%;
-  left: 10%;
+  background-color: white !important; */
+  width: auto;
 }
 #loadLayersButtonContent>img {
   opacity: 0.9;
 }
-
 /* #loadLayersButtonContent {
   height: 100%;
   width: 100%;
@@ -84,10 +76,10 @@
 } */
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 670px) {
-  #loadLayersModal {
+  /*   #loadLayersModal {
     width: 60%;
     left: 30%;
-  }
+  } */
   .modalMainSection {
     width: 100%;
     display: flex;
@@ -103,15 +95,15 @@
 }
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-  #loadLayersModal {
+  /*   #loadLayersModal {
     width: 50%;
     left: 30%;
-  }
+  } */
 }
 /* Large devices (tablets, 768px and up)  */
 @media (min-width: 992px) {
-  #loadLayersModal {
+  /*   #loadLayersModal {
     width: 40%;
     left: 30%;
-  }
+  } */
 }

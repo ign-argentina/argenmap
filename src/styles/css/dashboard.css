@@ -2,10 +2,10 @@
  * Base structure
  */
 
-/* Move down content because we have a fixed navbar that is 50px tall */
+/* Move down content because we have a fixed navbar that is 50px tall 
 body {
   padding-top: 50px;
-}
+}*/
 
 /*
  * Global add-ons
@@ -21,7 +21,10 @@ body {
  * Hide default border to remove 1px line.
  */
 .navbar-fixed-top {
+  position: sticky;
+  margin: 0;
   border: 0;
+  height: 50px;
 }
 
 /*

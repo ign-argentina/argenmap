@@ -135,7 +135,7 @@ body {
   min-height: 100vh;
   font-family: var(--main-font-family);
   /* "Encode Sans", sans-serif; */
-  /*   overflow: hidden; */
+    overflow: hidden;
   font-size: var(--body-fnt-size, 14px);
 }
 @media (max-width: 600px) {
@@ -462,7 +462,15 @@ Menu principal
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-  /*   */
+}
+#load-layer {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  width: 350px;
 }
 #sidebar {
   overflow: auto;

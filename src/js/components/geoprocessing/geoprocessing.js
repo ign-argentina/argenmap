@@ -62,7 +62,7 @@ class Geoprocessing {
         this.closeModal();
       }
     };
-    document.querySelector(".leaflet-top.leaflet-left").appendChild(elem);
+    document.querySelector(".leaflet-top.leaflet-right").appendChild(elem);
   }
 
   closeModal() {

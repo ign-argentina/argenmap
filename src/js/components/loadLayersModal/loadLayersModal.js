@@ -67,7 +67,7 @@ class modalUI {
 		let modalTitle = document.createElement('h4');
 		modalTitle.innerText = 'Agregar capas';
 
-		let closeButton = document.createElement('button');
+		/* let closeButton = document.createElement('button');
 		closeButton.classList.add('modalCloseButton');
 
 		closeButton.innerHTML = '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
@@ -75,10 +75,10 @@ class modalUI {
 			document.body.removeChild(loadLayersModal);
 			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
 			LOAD_LAYERS_MODAL_OPEN = false;
-		};
+		}; */
 
 		header.appendChild(modalTitle);
-		header.appendChild(closeButton);
+		//header.appendChild(closeButton);
 
 		divContainer.appendChild(header);
 
@@ -119,22 +119,22 @@ class modalUI {
 		mainSection.appendChild(content);
 
 		divContainer.appendChild(mainSection);
-		document.body.appendChild(divContainer);
+		document.getElementById("load-layer").append(divContainer);
 
-		$("#loadLayersModal").draggable({
+		/* $("#loadLayersModal").draggable({
 			containment: "#mapa"
-		})
+		}) */
 	}
 
 	open() {
 		if(!LOAD_LAYERS_MODAL_OPEN){
-			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
+			//document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
 			modal.createModal();
 			modal.showActions(0);
 			LOAD_LAYERS_MODAL_OPEN = true;
 		} else {
-			document.body.removeChild(loadLayersModal);
-			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+			document.getElementById("load-layer").removeChild(loadLayersModal);
+			//document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
 			LOAD_LAYERS_MODAL_OPEN = false;
 		}
 	}
@@ -159,3 +159,5 @@ class modalUI {
 }
 
 let modal = new modalUI();
+modal.createModal();
+modal.showActions(0);

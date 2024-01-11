@@ -195,7 +195,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 								"#sidebar-toolbar-icon-right",
 								"#btn-logout"
 							],
-							screenName: "mapaIGN" + n,
+              screenName: "mapaIGN" + n,
+              position: 'topright'
 						}).addTo(mapa);
 
 						document.getElementsByClassName(
@@ -226,26 +227,27 @@ $("body").on("pluginLoad", function (event, plugin) {
 						zoomOutTitle: 'Alejarse',
 						zoomHomeIcon: 'solid fa-earth-americas',
 						homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
-						homeZoom: app.mapConfig.zoom.initial
+            homeZoom: app.mapConfig.zoom.initial,
+            position: 'topright'
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
-					break;
-				case 'FullScreen':
-					const fs = new Fullscreen();
-					fs.createComponent();
-					break;
-                case 'helpTour':
-                    const help = new HelpTour;
-					const helpData = await help.fetchHelpTourData();
-					help.createComponent(helpData);
-					break;
-				case 'loadLayer':
-					const loadLayersModal = new LoadLayersModal();
-					loadLayersModal.createComponent();
-					break;
-				case 'betterScale':
-					// Leaflet BetterScale plugin
+          break;
+        case 'FullScreen':
+          const fs = new Fullscreen();
+          fs.createComponent();
+          break;
+        case 'helpTour':
+          const help = new HelpTour;
+          const helpData = await help.fetchHelpTourData();
+          help.createComponent(helpData);
+          break;
+        case 'loadLayer':
+          const loadLayersModal = new LoadLayersModal();
+          //modal.createModal();          //loadLayersModal.createComponent();
+          break;
+        case 'betterScale':
+        // Leaflet BetterScale plugin
 					/*
 					L.control.betterscale({
 						metric: true,
@@ -284,7 +286,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				case 'locate':
 					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 					var locateControl = L.control.locate({
-						position: "topleft",
+						position: "topright",
 						drawCircle: true,
 						follow: true,
 						setView: true,
@@ -360,12 +362,12 @@ $("body").on("pluginLoad", function (event, plugin) {
 					L.control.customgraticule = function (opts) {
 						return new L.Control.CustomGraticule(opts);
 					}
-					L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
+					L.control.customgraticule({ position: 'topright' }).addTo(mapa);
 					gestorMenu.plugins['graticula'].setStatus('visible');
 					break;
 				case 'Measure':
 					// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed: true });
+					var measureControl = new L.Control.Measure({ position: 'topright', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed: true });
 					measureControl.addTo(mapa);
 					/* if (!L.Browser.android) {
 						// replaces event listener for Measure icon in favor of click
