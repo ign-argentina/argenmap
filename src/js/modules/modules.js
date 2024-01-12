@@ -1,4 +1,4 @@
-import * as newmap from './map/map.js';
+import * as basemap from './map/basemap.js';
 // import * as process from './process.js';
 
-export { newmap }
+export { basemap }
