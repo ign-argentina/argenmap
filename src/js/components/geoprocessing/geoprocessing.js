@@ -38,7 +38,7 @@ class Geoprocessing {
       }
     }
   }
-  createIcon() {
+  /* createIcon() {
     const modalIcon = `
     <a id="geoPIcon">
         <i  class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></i>
@@ -63,7 +63,7 @@ class Geoprocessing {
       }
     };
     document.querySelector(".leaflet-top.leaflet-right").appendChild(elem);
-  }
+  } */
 
   closeModal() {
     document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
@@ -92,7 +92,7 @@ class Geoprocessing {
 
     let s_sec = document.createElement("section");
     s_sec.style = "width: 7%; display: flex; justify-content: start;";
-    let btnclose = document.createElement("a");
+    /* let btnclose = document.createElement("a");
     btnclose.id = "btnclose-icon-modalfile";
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
@@ -101,7 +101,7 @@ class Geoprocessing {
       //Close geoprocess window and clear
       this.closeModal();
     };
-    s_sec.append(btnclose);
+    s_sec.append(btnclose); */
 
     mainIcons.append(f_sec);
     mainIcons.append(s_sec);
@@ -115,7 +115,8 @@ class Geoprocessing {
 
     divContainer.append(mainIcons);
     divContainer.append(main_container);
-    document.body.appendChild(divContainer);
+    
+    document.getElementById("geoprocesos").appendChild(divContainer);
 
     const geoprocessingTabContent = document.getElementById("main-Geoprocesos");
     geoprocessingTabContent.innerHTML = "";
@@ -124,9 +125,9 @@ class Geoprocessing {
     document.getElementById("select-process").options[0].text =
       "Seleccione una Opción";
 
-    $("#mr").draggable({
+    /* $("#mr").draggable({
       containment: "body",
-    });
+    }); */
 
     if (document.getElementById("mr")) {
       document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
