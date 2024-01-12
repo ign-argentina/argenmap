@@ -3269,9 +3269,9 @@ class Menu_UI {
     let itemnew = document.createElement("div");
     itemnew.innerHTML = `
         <div id="lista-${groupnamev}" class="menu5 panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="false">
             <h4 class="panel-title">
-                <a id="${groupnamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${groupnamev}-content" class="item-group-title">${name}</a>
+            <a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
             </h4>
         </div>
         <div id='${groupnamev}-content' class="panel-collapse collapse">

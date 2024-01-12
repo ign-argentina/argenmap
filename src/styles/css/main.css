@@ -411,7 +411,6 @@ Argenmap UI Components class
 /*******************************
 Menu principal
 *******************************/
-#asd {}
 .menu-container {
   width: auto;
   height: auto;
@@ -425,9 +424,11 @@ Menu principal
 .menu-section-btn {
   width: 3.5rem;
   height: 3.5rem;
+  padding: 0;
 }
 .panel-body {
   padding: 5px;
+  background-color: #105C97;
 }
 .loading {
   width: 100%;

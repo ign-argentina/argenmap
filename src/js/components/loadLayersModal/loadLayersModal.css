@@ -32,10 +32,7 @@
   margin-bottom: 6px;
   margin-right: 6px; */
 }
-/* .modalNavButton img {
-  filter: none;
-} */
-.modalNavButtonActive img {
+.modalNavButton:hover img, .modalNavButtonActive img {
   filter: contrast(0%) brightness(200%);
 }
 .modalNavButtonActive {
