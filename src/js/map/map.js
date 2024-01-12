@@ -748,11 +748,16 @@ $("body").on("pluginLoad", function (event, plugin) {
 					mapa.on('zoomend', (e) => {
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
-						mapa.closePopup(contextPopup);
 						$(".context-quehay").slideUp();
 					});
 
 					mapa.on('dragend', (e) => {
+						let contextPopup = null;
+						const contextMenu = new ContextMenu();
+						$(".context-quehay").slideUp();
+					});
+
+					mapa.on('click', (e) => {
 						let contextPopup = null;
 						const contextMenu = new ContextMenu();
 						mapa.closePopup(contextPopup);
