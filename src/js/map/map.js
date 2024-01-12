@@ -484,8 +484,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             primaryAreaUnit: "sqmeters",
             secondaryAreaUnit: "hectares",
             collapsed: true,
-            decPoint: ",",
-            thousandsSep: "."
+            decPoint: DECIMAL_SEPARATOR,
+            thousandsSep: THOUSANDS_SEPARATOR
           });
           measureControl.addTo(mapa);
           /* if (!L.Browser.android) {
