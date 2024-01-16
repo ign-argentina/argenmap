@@ -81,18 +81,22 @@ function getPopupForWMS(isActive) {
     gestorMenu.getActiveLayersWithoutBasemap().forEach(lyr => {
         if (!itemNames.includes(lyr.name)) itemNames.push(lyr.name);
     })
-    Object.values(gestorMenu.items).forEach(item => {
+    itemNames.forEach(activeLayerName => {
+       Object.values(gestorMenu.items).forEach(item => {   
         Object.values(item.itemsComposite).forEach(itemComposite => {
-            if (itemNames.includes(itemComposite.nombre)) {
+
+            if (activeLayerName == itemComposite.nombre) {
                 if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
             }
         });
-    });
+    }); 
+    })
 
     //Menu WMS & WMTS
     itemCapa.forEach(item => {
         if (gestorMenu.layerIsWmts(item.nombre)) {  //is WMTS
             chooseLyrType(item, isActive,"lyrJoin");
+
         } else {    //is WMS
             if (item.capas[1]) {    //is double WMS
                 chooseLyrType(item, isActive,"lyrJoin");

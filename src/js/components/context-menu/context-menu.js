@@ -3,6 +3,7 @@ class ContextMenu {
     menu = null;
 
     constructor() {
+
         this.menu = document.createElement('div');
         this.menu.className = 'context-menu';
     }
