@@ -100,6 +100,16 @@ const MESSAGE_PROPERTIES = {
   },
 };
 
+const USER_LOCALE =
+  navigator.languages && navigator.languages.length
+    ? navigator.languages[0]
+    : navigator.language;
+
+const NUM_FORMAT = new Intl.NumberFormat().formatToParts(1000.10);
+
+const THOUSANDS_SEPARATOR = NUM_FORMAT[1].value;
+const DECIMAL_SEPARATOR = NUM_FORMAT[3].value;
+
 const PROJECTIONS = {
   22183:
     "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",

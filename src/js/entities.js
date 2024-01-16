@@ -254,7 +254,13 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         OVERLAY_CHECKBOX.title = itemComposite.capa.nombre;
         OVERLAY_CHECKBOX.classList.add("switch");
         OVERLAY_CHECKBOX.classList.add("hillshade");
-        OVERLAY_CHECKBOX.setAttribute("onclick", "switchHillShade(this.title)");
+        OVERLAY_CHECKBOX.disabled = true;
+
+        if(OVERLAY_CHECKBOX.title == gestorMenu.getActiveBasemap()){
+          OVERLAY_CHECKBOX.disabled = false;
+        }
+
+        OVERLAY_CHECKBOX.setAttribute("onclick", "hillShade()");
 
         const OVERLAY_TOOLTIP = document.createElement("span");
         OVERLAY_TOOLTIP.classList.add("tooltiptext");
@@ -354,11 +360,33 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_ITEM.classList.add("list-group-item");
     BASEMAP_ITEM.id = childId;
     BASEMAP_ITEM.setAttribute(
-      "onclick",
-      `gestorMenu.muestraCapa("${childId}"),document.getElementById('collapseBaseMapLayers').classList.toggle('in')`
-    ); // 2nd sentence hides basemaps menu after click
-    BASEMAP_ITEM.appendChild(FIRST_DIV);
-
+      "onclick", 
+      `function handleClick(){
+      
+        document.getElementById('collapseBaseMapLayers').classList.toggle('in')
+        gestorMenu.muestraCapa("${childId}")
+        
+        let checkboxes = document.querySelectorAll('.hillshade')
+        checkboxes.forEach(function(checkbox) {
+          
+          if(checkbox.title == gestorMenu.getActiveBasemap()){
+            
+            checkbox.disabled = false;
+            
+          }else{
+            if(checkbox.checked == true){  
+              hillShade()
+              checkbox.checked = false;
+            }
+            checkbox.disabled = true;
+          }
+        });
+      }
+      handleClick();
+      `
+      ); // 2nd sentence hides basemaps menu after click
+      BASEMAP_ITEM.appendChild(FIRST_DIV);
+      
     return BASEMAP_ITEM.outerHTML; // TODO: change reference fn for expect an object instead string
   }
 }
@@ -3076,14 +3104,14 @@ class GestorMenu {
 
     if (isBaseLayer && this.lastBaseMapSelected !== baseLayerName) {
       if (this.baseMapDependencies[this.lastBaseMapSelected])
-        this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
-          if (this.activeLayers.find((lyr) => lyr === layer))
-            this.muestraCapa(this.getLayerIdByName(layer));
-        });
-    }
+      this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
+    if (this.activeLayers.find((lyr) => lyr === layer))
+    this.muestraCapa(this.getLayerIdByName(layer));
+});
+}
 
-    //Show or hide selected item
-    for (var key in this.items) {
+//Show or hide selected item
+for (var key in this.items) {
       var itemComposite = this.items[key];
       if (isBaseLayer && itemComposite.isBaseLayer()) {
         this.availableBaseLayers.forEach((baseLayer) => {

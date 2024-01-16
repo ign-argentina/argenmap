@@ -1345,11 +1345,6 @@ function parseXml(str, lyr, sys) {
   }
 }
 
-function switchHillShade(basemap) {
-  if (basemap === gestorMenu.getActiveBasemap()) {
-    hillShade();
-  }
-}
 
 function hillShade() {
   if (app.hillshade) {
