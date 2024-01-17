@@ -341,7 +341,19 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     INFO_ICON.appendChild(BASEMAP_TOOLTIP);
     INFO_ICON.setAttribute(
       "onclick",
-      `toggleVisibility(this.lastElementChild.id),event.stopPropagation();`
+      `function handleClick(){
+        let tooltips = document.querySelectorAll('.tooltiptext')
+        
+        tooltips.forEach(function(tooltip){
+          if(tooltip.classList.contains("visible")){
+            toggleVisibility(tooltip.id)
+            console.log("hello");
+          }
+        });
+        toggleVisibility("${BASEMAP_TOOLTIP.id}");
+        event.stopPropagation();
+      }
+      handleClick()`
     );
 
     const SECOND_DIV = document.createElement("div");
