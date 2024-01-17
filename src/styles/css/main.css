@@ -426,6 +426,9 @@ Menu principal
   height: 3.5rem;
   padding: 0;
 }
+.menu-section-btn .fa-layer-group, .menu-section-btn .fa-question, .menu-section-btn .fa-gear{
+  font-size: large;
+}
 .panel-body {
   padding: 5px;
   background-color: #105C97;
@@ -1432,6 +1435,9 @@ Searcher
 }
 #q.ag-input-text {
   padding: 0 0 0 10px;
+}
+.bx{
+  font-size: x-large;
 }
 /*******************************
 Perfil Topografico

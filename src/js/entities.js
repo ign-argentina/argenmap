@@ -2589,12 +2589,26 @@ class GestorMenu {
               <button onClick='reloadMenu()' class='ag-btn ag-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
             <button class='ag-btn ag-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
-            <button class='ag-btn ag-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><span class='glyphicon glyphicon-trash'></span></button>
+            <button class='ag-btn ag-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></span></button>
           </div>
         </form>`;
 
       return formContent;
     }
+  }
+
+  _menuFixed() {
+    const menuPinedButton = document.getElementById('menuPined');
+    const menuPinedDiv = document.getElementById('sidebar');
+    // Toggle the 'active' class on the menuPined button
+    if (menuPinedButton.classList.contains('active')) {
+      menuPinedButton.classList.remove('active');
+      menuPinedDiv.style.display = "block";
+    } else {
+      menuPinedButton.classList.add('active');
+    }
+  
+    // Your additional logic for handling the button click can go here
   }
 
   getAvailableTags() {

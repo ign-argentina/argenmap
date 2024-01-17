@@ -751,8 +751,8 @@ class Geoprocessing {
                 getAllActiveLayers().forEach((layer) => {
                   if (layer && gestorMenu.layerIsWmts(layer.name) == false) {
                     gestorMenu.getLayerData(layer.name).title ?
-                    layerTitle = gestorMenu.getLayerData(layer.name).title :
-                    layerTitle = layer.name;
+                      layerTitle = gestorMenu.getLayerData(layer.name).title :
+                      layerTitle = layer.name;
                     options.push({
                       value: layer.name,
                       text: layerTitle,
@@ -957,7 +957,7 @@ class Geoprocessing {
         drawnRectangle = lyr;
       }
     });
-    
+
     allLayers.forEach(lyr => {
       if (lyr.name === selctedLayerName) {
         layerSelected = lyr.layer;
@@ -972,12 +972,12 @@ class Geoprocessing {
     loadingBtn("on", "ejec_gp");
 
     let buffer;
-    if (!layerSelected.host ) {
+    if (!layerSelected.host) {
       try {
         let arrayForBuffer = [],
           selecCoords = drawnRectangle.getGeoJSON(),
           within;
-        
+
         turf.featureEach(layerSelected, function (feature) {
           within = turf.booleanIntersects(feature, selecCoords);
           if (within) {
@@ -987,7 +987,7 @@ class Geoprocessing {
         let bufferFeature = turf.featureCollection(arrayForBuffer);
         buffer = turf.buffer(bufferFeature, distanceBuffer)
 
-      } catch (error) {        
+      } catch (error) {
         console.error(error);
         new UserMessage(error.message, true, "error");
         loadingBtn("off", "ejec_gp");

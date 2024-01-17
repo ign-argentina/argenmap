@@ -1033,9 +1033,7 @@ function clickWMSLayer(layer, layer_item, fileName) {
 }
 
 function geoprocessModalIsOpen() {
-  if (document.getElementById("select-process")) {
-    return true
-  } else return false
+  return !!document.getElementById("select-process");
 }
 
 function closeGeoprocessModal() {
@@ -1996,5 +1994,45 @@ $(document).ready(function(){
   $("#menu-toggle").click(function(e){
     e.preventDefault();
     $("#wrapper").toggleClass("menuDisplayed");
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  var menuContainer = document.querySelector(".menu-container");
+  var buttons = document.querySelectorAll(".menu-section-btn");
+
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function (event) {
+      var targetId = button.getAttribute("data-target");
+      var targetSection = document.getElementById(targetId);
+
+      if (targetSection.style.display === "block") {
+        targetSection.style.display = "none";
+      } else {
+        // Oculta todas las secciones antes de mostrar la deseada
+        buttons.forEach(function (otherButton) {
+          var otherTargetId = otherButton.getAttribute("data-target");
+          var otherTargetSection = document.getElementById(otherTargetId);
+
+          if (otherTargetSection !== targetSection) {
+            otherTargetSection.style.display = "none";
+          }
+        });
+
+        targetSection.style.display = "block";
+      }
+      event.stopPropagation();
+    });
+  });
+
+  // Agrega un evento de clic al documento para ocultar los contenedores al hacer clic fuera de ellos
+  document.addEventListener("click", function (event) {
+    if (!menuContainer.contains(event.target) && event.target.id === "mapa") {
+      buttons.forEach(function (button) {
+        var targetId = button.getAttribute("data-target");
+        var targetSection = document.getElementById(targetId);
+        targetSection.style.display = "none";
+      });
+    }
   });
 });
