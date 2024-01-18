@@ -1,6 +1,6 @@
 #mr {
   width: auto;
-  /* max-height: 450px;
+   max-height: 450px;
   position: absolute;
   top: 100px;
   left: 40%;
@@ -12,7 +12,7 @@
   -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-  z-index: 1200; */
+  z-index: 1200;
 }
 
 #geoprocesos-icon :hover {

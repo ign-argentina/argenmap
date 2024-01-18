@@ -381,34 +381,39 @@ $("body").on("pluginLoad", function (event, plugin) {
         case "geoprocessing":
           if (loadGeoprocessing) {
             let HTMLhead = document.querySelector("head");
-            HTMLhead.insertAdjacentHTML("beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">');
-            HTMLhead.insertAdjacentHTML("beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">');
-            HTMLhead.insertAdjacentHTML("beforeend",
-              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">');
+            HTMLhead.insertAdjacentHTML(
+              "beforeend",
+              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">'
+            );
+            HTMLhead.insertAdjacentHTML(
+              "beforeend",
+              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
+            );
+            HTMLhead.insertAdjacentHTML(
+              "beforeend",
+              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">'
+            );
             $.getScript(
               "src/js/plugins/geoprocess-executor/geoprocess-executor.js"
             ).done(function () {
-              $.getScript("src/js/components/form-builder/form-builder.js").done(
-                function () {
-                  geoProcessingManager = new Geoprocessing();
-                  //geoProcessingManager.createIcon();
-                  geoProcessingManager.setAvailableGeoprocessingConfig(
-                    app.geoprocessing
-                  );
-                  geoProcessingManager.getProcesses().forEach((process) => {
-                    if (process.geoprocess === "waterRise") {
-                      // script loading test without jQuery
-                      app._loadScript(
-                        "./src/js/components/geoprocessing/IHeight.js"
-                      );
-                    }
-                    geoProcessingManager.getNewProcessPrefix();
-                  });
-                  geoProcessingManager.createModal();
-                }
-              );
+              $.getScript(
+                "src/js/components/form-builder/form-builder.js"
+              ).done(function () {
+                geoProcessingManager = new Geoprocessing();
+                geoProcessingManager.createIcon();
+                geoProcessingManager.setAvailableGeoprocessingConfig(
+                  app.geoprocessing
+                );
+                geoProcessingManager.getProcesses().forEach((process) => {
+                  if (process.geoprocess === "waterRise") {
+                    // script loading test without jQuery
+                    app._loadScript(
+                      "./src/js/components/geoprocessing/IHeight.js"
+                    );
+                  }
+                  geoProcessingManager.getNewProcessPrefix();
+                });
+              });
             });
           }
           break;

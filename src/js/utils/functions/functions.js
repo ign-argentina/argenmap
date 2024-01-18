@@ -2036,3 +2036,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+function toggleVisibilityGeoprocessModal() {
+  const modal = document.getElementById("mr");
+  const container = document.getElementById("geoprocesos");
+  if (modal) {
+    if (container.style.display === "block") {
+      geoProcessingManager.closeModal();
+    } else {
+      geoProcessingManager.createModal();
+    }
+  } else {
+    // El modal no ha sido creado, así que lo creamos solo si el contenedor está visible
+    if (container.style.display === "block") {
+      geoProcessingManager.createModal();
+    }
+  }
+}

@@ -38,44 +38,36 @@ class Geoprocessing {
       }
     }
   }
-  /* createIcon() {
-    const modalIcon = `
-    <a id="geoPIcon">
-        <i  class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></i>
-    </a>
-    `;
-    const elem = document.createElement("div");
-    elem.className = "leaflet-bar leaflet-control";
-    elem.id = "geoprocesos-icon";
-    elem.title = app.geoprocessing.buttonTitle;
-    elem.innerHTML = modalIcon;
+  createIcon() {
+    const btnElement = document.createElement('button');
+    btnElement.classList = "ag-btn ag-btn-secondary menu-section-btn";
+    btnElement.id = 'geoprocesos-btn';
+    btnElement.title = 'Geoprocesos';
 
-    elem.onclick = () => {
+    btnElement.innerHTML =
+      `<i class="fa-solid fa-gear"></i>`;
+    btnElement.setAttribute('aria-hidden', 'true');
+
+    btnElement.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
-        document.getElementById("geoPIcon").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
         g_modal_close = false;
       }
       else {
         //Close geoprocess window and clear
-        document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         this.closeModal();
       }
     };
-    document.querySelector(".leaflet-top.leaflet-right").appendChild(elem);
-  } */
+    document.querySelector('#botonera').append(btnElement);
+  }
 
   closeModal() {
-    document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
-      "";
-    document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
-      "";
+    document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style = "";
+    document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style = "";
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
     document.getElementById("mr").remove();
     g_modal_close = true;
-    document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-
     this.resetHeightLayerColor();
   }
 
@@ -92,7 +84,7 @@ class Geoprocessing {
 
     let s_sec = document.createElement("section");
     s_sec.style = "width: 7%; display: flex; justify-content: start;";
-    /* let btnclose = document.createElement("a");
+    let btnclose = document.createElement("a");
     btnclose.id = "btnclose-icon-modalfile";
     btnclose.className = "icon-modalfile";
     btnclose.innerHTML =
@@ -101,7 +93,7 @@ class Geoprocessing {
       //Close geoprocess window and clear
       this.closeModal();
     };
-    s_sec.append(btnclose); */
+    s_sec.append(btnclose);
 
     mainIcons.append(f_sec);
     mainIcons.append(s_sec);
@@ -115,8 +107,7 @@ class Geoprocessing {
 
     divContainer.append(mainIcons);
     divContainer.append(main_container);
-    
-    document.getElementById("geoprocesos").appendChild(divContainer);
+    document.body.appendChild(divContainer);
 
     const geoprocessingTabContent = document.getElementById("main-Geoprocesos");
     geoprocessingTabContent.innerHTML = "";
@@ -125,9 +116,9 @@ class Geoprocessing {
     document.getElementById("select-process").options[0].text =
       "Seleccione una Opción";
 
-    /* $("#mr").draggable({
+    $("#mr").draggable({
       containment: "body",
-    }); */
+    });
 
     if (document.getElementById("mr")) {
       document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
@@ -136,7 +127,6 @@ class Geoprocessing {
         "filter: contrast(22%) brightness(157%);pointer-events:none;";
     }
   }
-
   setAvailableGeoprocessingConfig(geoprocessingConfig) {
     this.geoprocessingConfig = geoprocessingConfig;
   }

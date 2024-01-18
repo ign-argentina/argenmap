@@ -36,7 +36,7 @@ class HelpTour {
     btnElement.title = 'Ayuda';
 
     btnElement.innerHTML =
-      `<i class="fa-solid fa-question"></i> `;
+      `<i class="fa-solid fa-question"></i>`;
     btnElement.setAttribute('aria-hidden', 'true');
 
     btnElement.addEventListener('click', (event) => {
