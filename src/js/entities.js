@@ -341,18 +341,15 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     INFO_ICON.appendChild(BASEMAP_TOOLTIP);
     INFO_ICON.setAttribute(
       "onclick",
-      `function handleClick(){
-        let tooltips = document.querySelectorAll('.tooltiptext')
-        
-        tooltips.forEach(function(tooltip){
-          if(tooltip.classList.contains("visible") && (tooltip.id!="${BASEMAP_TOOLTIP.id}")){
-            toggleVisibility(tooltip.id)
-          }
-        });
-          toggleVisibility("${BASEMAP_TOOLTIP.id}");
-          event.stopPropagation();
-      }
-      handleClick()`
+      `let tooltips = document.querySelectorAll('.tooltiptext');
+      tooltips.forEach(function(tooltip){
+        if (tooltip.classList.contains("visible") && tooltip.id !== "${BASEMAP_TOOLTIP.id}") {
+          toggleVisibility(tooltip.id);
+        }
+      });
+      toggleVisibility("${BASEMAP_TOOLTIP.id}");
+      event.stopPropagation();
+      `
     );
 
     const SECOND_DIV = document.createElement("div");
