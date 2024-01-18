@@ -370,10 +370,11 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const BASEMAP_ITEM = document.createElement("li");
     BASEMAP_ITEM.classList.add("list-group-item");
     BASEMAP_ITEM.id = childId;
+    BASEMAP_ITEM.title = itemComposite.capa.nombre;
     BASEMAP_ITEM.setAttribute(
       "onclick", 
       `function handleClick(){
-      
+
         document.getElementById('collapseBaseMapLayers').classList.toggle('in')
         gestorMenu.muestraCapa("${childId}")
         
@@ -393,7 +394,11 @@ class ImpresorItemCapaBaseHTML extends Impresor {
           }
         });
       }
-      handleClick();
+      if(gestorMenu.getActiveBasemap() != "${BASEMAP_ITEM.title}"){
+        handleClick();  
+        }else{
+          document.getElementById('collapseBaseMapLayers').classList.toggle('in')
+        }
       `
       ); // 2nd sentence hides basemaps menu after click
       BASEMAP_ITEM.appendChild(FIRST_DIV);
