@@ -347,7 +347,6 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         tooltips.forEach(function(tooltip){
           if(tooltip.classList.contains("visible")){
             toggleVisibility(tooltip.id)
-            console.log("hello");
           }
         });
         toggleVisibility("${BASEMAP_TOOLTIP.id}");
