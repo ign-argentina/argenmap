@@ -414,7 +414,7 @@ li.active>div>a {
   background-color: var(--layer-btn-hover-color);
 }
 .list-group-item:hover span, .file-layer:hover a {
-  color: var(--text-color);
+  /* color: var(--text-color); */
 }
 .active-layers-counter {
   height: 20px;
