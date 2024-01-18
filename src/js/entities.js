@@ -345,12 +345,12 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         let tooltips = document.querySelectorAll('.tooltiptext')
         
         tooltips.forEach(function(tooltip){
-          if(tooltip.classList.contains("visible")){
+          if(tooltip.classList.contains("visible") && (tooltip.id!="${BASEMAP_TOOLTIP.id}")){
             toggleVisibility(tooltip.id)
           }
         });
-        toggleVisibility("${BASEMAP_TOOLTIP.id}");
-        event.stopPropagation();
+          toggleVisibility("${BASEMAP_TOOLTIP.id}");
+          event.stopPropagation();
       }
       handleClick()`
     );
