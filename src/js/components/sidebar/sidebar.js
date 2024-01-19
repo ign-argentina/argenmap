@@ -4,10 +4,8 @@ let locate = null;
 let zoomhome = null;
 let customgraticule = null;
 let measure = null;
-let loadLayersButton = null;
 let drawb = null;
 let divbar = null;
-let icongeop = null;
 let fullscreen = null;
 let pdfPrinter = null;
 let screenShoter = null;
@@ -72,12 +70,10 @@ class SidebarTools {
       zoomhome = document.getElementsByClassName("leaflet-control-zoomhome");
       customgraticule = document.getElementsByClassName("leaflet-control-customgraticule");
       measure = document.getElementsByClassName("leaflet-control-measure");
-      loadLayersButton = document.getElementById("loadLayersButton");
       drawb = document.getElementsByClassName("leaflet-top leaflet-right");
       screenShoter = document.getElementById("screenShoter");
       divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
       fullscreen = document.getElementById("fullscreen");
-      icongeop = document.getElementById("geoprocesos-icon");
       pdfPrinter = document.getElementById("pdfPrinter");
 
       if (areHiddenLeft) {
@@ -86,9 +82,7 @@ class SidebarTools {
         customgraticule[0].hidden = false;
         locate[0].hidden = false;
         measure[0].hidden = false;
-        loadLayersButton.style.display = "";
         divbar[2].hidden = false;
-        icongeop.style.display = "";
         fullscreen.style.display = "";
         screenShoter ? screenShoter.style.display = "" : null;
         pdfPrinter.style.display = "";
@@ -98,9 +92,7 @@ class SidebarTools {
         customgraticule[0].hidden = true;
         locate[0].hidden = true;
         measure[0].hidden = true;
-        loadLayersButton.style.display = "none";
         divbar[2].hidden = true;
-        icongeop.style.display = "none";
         fullscreen.style.display = "none";
         screenShoter ? screenShoter.style.display = "none" : null;
         pdfPrinter.style.display = "none";

@@ -13,7 +13,7 @@ class Fullscreen {
     elem.id = "fullscreen";
     elem.innerHTML = this.component;
     elem.onclick = toggleFullScreen;
-    document.querySelector(".leaflet-top.leaflet-right").append(elem);
+    document.querySelector(".leaflet-top.leaflet-left").append(elem);
   }
 }
 

@@ -191,12 +191,11 @@ $("body").on("pluginLoad", function (event, plugin) {
                 ".leaflet-bottom.leaflet-right",
                 "leaflet-control-container",
 								"#zoom-level",
-								"#sidebar-toolbar-icon-left",
-								"#sidebar-toolbar-icon-right",
-								"#btn-logout"
+                "#btn-logout",
+                "#developerLogo"
 							],
               screenName: "mapaIGN" + n,
-              position: 'topright'
+              position: 'topleft'
 						}).addTo(mapa);
 
 						document.getElementsByClassName(
@@ -228,7 +227,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 						zoomHomeIcon: 'solid fa-earth-americas',
 						homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
             homeZoom: app.mapConfig.zoom.initial,
-            position: 'topright'
+            position: 'bottomright'
 					});
 					zoomHome.addTo(mapa);
 					gestorMenu.plugins['ZoomHome'].setStatus('visible');
@@ -254,11 +253,13 @@ $("body").on("pluginLoad", function (event, plugin) {
 						imperial: false
 					}).addTo(mapa);
 					*/
-					L.control.scale({
+					L.control.betterscale({
 						metric: true,
-						imperial: false
+            imperial: false,
+            position: 'bottomleft'
 					}).addTo(mapa);
-					gestorMenu.plugins['betterScale'].setStatus('visible');
+          gestorMenu.plugins['betterScale'].setStatus('visible');
+          loadDeveloperLogo()
 					break;
 				case 'minimap':
 					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
@@ -286,7 +287,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				case 'locate':
 					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 					var locateControl = L.control.locate({
-						position: "topright",
+						position: "topleft",
 						drawCircle: true,
 						follow: true,
 						setView: true,
@@ -362,12 +363,12 @@ $("body").on("pluginLoad", function (event, plugin) {
 					L.control.customgraticule = function (opts) {
 						return new L.Control.CustomGraticule(opts);
 					}
-					L.control.customgraticule({ position: 'topright' }).addTo(mapa);
+					L.control.customgraticule({ position: 'topleft' }).addTo(mapa);
 					gestorMenu.plugins['graticula'].setStatus('visible');
 					break;
 				case 'Measure':
 					// Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-					var measureControl = new L.Control.Measure({ position: 'topright', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed: true });
+					var measureControl = new L.Control.Measure({ position: 'topleft', primaryLengthUnit: 'meters', secondaryLengthUnit: 'kilometers', primaryAreaUnit: 'sqmeters', secondaryAreaUnit: 'hectares', collapsed: true });
 					measureControl.addTo(mapa);
 					/* if (!L.Browser.android) {
 						// replaces event listener for Measure icon in favor of click
@@ -2701,7 +2702,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				}
 			}).addTo(mapa);
 			gestorMenu.plugins['MousePosition'].setStatus('visible');
-			loadDeveloperLogo();
+			// loadDeveloperLogo(); // move to bottomleft before scale
 			break;
 		case 'BingLayer':
 			if (gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready') {

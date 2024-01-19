@@ -1434,7 +1434,7 @@ function loadDeveloperLogo() {
     L.control.developerLogo = function (opts) {
         return new L.Control.DeveloperLogo(opts);
     };
-    L.control.developerLogo({ position: "bottomright" }).addTo(mapa);
+    L.control.developerLogo({ position: "bottomleft" }).addTo(mapa);
 } 
 
 function downloadBlob(blob, name = "file.txt") {

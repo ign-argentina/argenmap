@@ -266,6 +266,13 @@ a, a:hover, a:focus {
   height: calc(100vh - 50px);
   background-color: var(--main-bg-color, white) !important;
 }
+.leaflet-top.leaflet-left .leaflet-control{
+  clear: none;
+}
+div.leaflet-top.leaflet-left{
+  right: 54px;
+  left: auto;
+}
 #top-left-logo {
   /* width: auto; */
   height: 50px;
@@ -417,7 +424,7 @@ Menu principal
   background-color: var(--lyr-menu-bg-color);
   margin: 1rem;
   position: absolute;
-  z-index: 1;
+  z-index: 9999;
   border-radius: 6px;
   padding: 0;
 }
@@ -482,13 +489,16 @@ Menu principal
   width: 350px;
 }
 #sidebar {
-  overflow: auto;
   position: relative;
   margin: 0.5rem;
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
   width: 350px;
+}
+#sidebar #tabContent{
+  overflow: auto;
+  height: 65dvh;
 }
 #sidebar .nav {
   border: 1px;

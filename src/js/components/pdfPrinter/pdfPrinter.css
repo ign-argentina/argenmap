@@ -8,19 +8,27 @@ Print
 @media print {
   .navbar,
   .sidebar,
-  .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)),
+  .menu-container,
+  /* .leaflet-control:not(.leaflet-control-attribution > a:nth-child(n + 2)), */
+  .leaflet-control:not([class*="leaflet-control-better-scale"]),
   #sidebar,
   #zoom-level,
-  #geoPIcon,
   #btn-logout,
   #loadLayersModal,
-  div[id^="sidebar-toolbar-icon-"] {
+  #developerLogo {
     display: none !important;
+  }
+  div.leaflet-bottom.leaflet-left {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    z-index: 10001;
   }
   #mapa {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: 100dvw;
+    height: 100dvh;
     position: absolute;
     top: 0;
     left: 0;
