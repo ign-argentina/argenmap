@@ -424,7 +424,7 @@ Menu principal
   background-color: var(--lyr-menu-bg-color);
   margin: 1rem;
   position: absolute;
-  z-index: 9999;
+  z-index: 1000;
   border-radius: 6px;
   padding: 0;
 }
@@ -489,16 +489,13 @@ Menu principal
   width: 350px;
 }
 #sidebar {
+  overflow: auto;
   position: relative;
   margin: 0.5rem;
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
   width: 350px;
-}
-#sidebar #tabContent{
-  overflow: auto;
-  height: 65dvh;
 }
 #sidebar .nav {
   border: 1px;
@@ -1394,7 +1391,7 @@ Navbar
   margin-right: 0;
 }
 #geoserver-login-btn {
-  display: contents;
+/*   display: contents; */
   width: auto;
   align-self: center;
 }
