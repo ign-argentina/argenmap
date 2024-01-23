@@ -427,6 +427,7 @@ Menu principal
   z-index: 1000;
   border-radius: 6px;
   padding: 0;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.65);     
 }
 .menu-section-btn {
   width: 3.5rem;
@@ -1252,6 +1253,10 @@ Control mapa base
   padding-right: 15px;
   padding-left: 15px;
 }
+.base-layer-item-info img{
+  width: 50px;
+  height: 40px;
+}
 /*******************************
 Control graticula
 *******************************/
@@ -1433,6 +1438,7 @@ Searcher
   display: flex;
   flex-direction: column-reverse;
   justify-content: space-evenly;
+  background-color: #FFF;
 }
 .formBtns {
   width: 100%;

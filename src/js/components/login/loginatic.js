@@ -161,15 +161,15 @@ loginatic = function () {
   };
 
   this._addLogoutButton = () => {
-    const logoutButton = document.createElement("div");
-    logoutButton.className = "leaflet-bar leaflet-control btn-logout";
+    const logoutButton = document.createElement("button");
+    logoutButton.className = "ag-btn ag-btn-primary btn-logout";
     logoutButton.id = "btn-logout";
     logoutButton.title = "Cerrar sesión";
     logoutButton.onclick = function () {
       loginatic.logout();
     };
-    logoutButton.innerHTML = `<a ><span class="fa fa-sign-out-alt" aria-hidden="true"></span></a>`;
+    logoutButton.innerHTML = `<i class="fa fa-sign-out-alt" aria-hidden="true"></i>`;
 
-    document.getElementById("mapa").append(logoutButton);
+    document.querySelector(".navbar .row").append(logoutButton);
   };
 };

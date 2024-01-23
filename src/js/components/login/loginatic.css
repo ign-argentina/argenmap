@@ -1,10 +1,8 @@
 .btn-logout {
-  position: absolute;
-  font-size: 1.25em;
-  bottom: 30px;
-  left: 50px;
+  width: 50px;
+  height: 34px;
 }
-.btn-logout :hover {
+/* .btn-logout :hover {
   background-color: #f5f4f4;
 }
 .btn-logout :active {
@@ -35,7 +33,7 @@
     bottom: 60px;
     left: 0;
   }
-}
+} */
 #login-wrapper {
   width: 100%;
   height: 100%;
