@@ -1,9 +1,9 @@
 name: Update Version
 
 on:
-  push:
-    branches: 
-      - hotfix
+  release:
+    types:
+      - created
       
 jobs:
   update_version:
@@ -21,8 +21,8 @@ jobs:
 
       - name: SetUp Identity
         run: |
-          git config --global user.email "FedericoDaRosa137682@gmail.com"
-          git config --global user.name "InMunken"
+          git config --global user.email ""
+          git config --global user.name ""
 
       - name: Update version in code
         run: |
