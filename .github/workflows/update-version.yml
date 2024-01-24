@@ -1,0 +1,38 @@
+name: Update Version
+
+on:
+  push:
+    branches: 
+      - hotfix
+      
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Allow untrusted commands (less secure)
+        run: echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest release version
+        run: echo "::set-env name=NEW_VERSION::$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name)"
+
+      - name: SetUp Identity
+        run: |
+          git config --global user.email "FedericoDaRosa137682@gmail.com"
+          git config --global user.name "InMunken"
+
+      - name: Update version in code
+        run: |
+          echo "${{ env.NEW_VERSION }}" > src/docs/version
+          
+      - name: Add and Commit
+        run: |   
+          git add *
+          git commit -m "Update version in code to ${{ env.NEW_VERSION }}"
+
+      - name: Push to hotfix(future master)
+        run: |
+          git push origin hotfix
