@@ -1,13 +1,16 @@
 name: Update Version
 
 on:
-  release:
-    types:
-      - created
+  push:
+    branches: 
+      - hotfix
       
 jobs:
   update_version:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Allow untrusted commands (less secure)
@@ -19,20 +22,10 @@ jobs:
       - name: Get latest release version
         run: echo "::set-env name=NEW_VERSION::$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name)"
 
-      - name: SetUp Identity
-        run: |
-          git config --global user.email ""
-          git config --global user.name ""
-
       - name: Update version in code
         run: |
           echo "${{ env.NEW_VERSION }}" > src/docs/version
-          
-      - name: Add and Commit
-        run: |   
-          git add *
-          git commit -m "Update version in code to ${{ env.NEW_VERSION }}"
-
-      - name: Push to hotfix(future master)
-        run: |
-          git push origin hotfix
+      
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+            commit_message: Update version in code to ${{ env.NEW_VERSION }}
