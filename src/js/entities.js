@@ -2698,9 +2698,9 @@ class GestorMenu {
         var sClassAux = "active";
       }
       sInitialHTML +=
-        "<li role='presentation' class='" +
+        "<li role='presentation'  class='" +
         sClassAux +
-        "'><a href='#" +
+        "'><a style='background-color: white;' href='#" +
         this._tabs[key].getExtendedId() +
         "' aria-controls='" +
         this._tabs[key].getExtendedId() +

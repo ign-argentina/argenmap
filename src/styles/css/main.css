@@ -86,6 +86,8 @@ Ejemplos:
   src: url("../../../dist/fonts/Aurebesh-Bold.otf");
 }
 :root {
+  --primary-color: #0C74A0;
+  --secondary-color: #105C97;
   --main-bg-color: #fff;
   --bg-color: #0db2e0;
   --active-bg-color: #33b560;
@@ -118,9 +120,10 @@ Ejemplos:
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
   /*Menu capas*/
-  --lyr-menu-bg-color: rgba(255, 255, 255, 0.9);
+  --lyr-menu-bg-color: #55555554;
   --lyr-menu-panel-head-bg-color: #FFF;
   --lyr-menu-panel-head-text-color: #105C97;
+  --menu-title-text-color: #fff
 }
 /*******************************
 General
@@ -266,10 +269,10 @@ a, a:hover, a:focus {
   height: calc(100vh - 50px);
   background-color: var(--main-bg-color, white) !important;
 }
-.leaflet-top.leaflet-left .leaflet-control{
+.leaflet-top.leaflet-left .leaflet-control {
   clear: none;
 }
-div.leaflet-top.leaflet-left{
+div.leaflet-top.leaflet-left {
   right: 54px;
   left: auto;
 }
@@ -427,14 +430,17 @@ Menu principal
   z-index: 1000;
   border-radius: 6px;
   padding: 0;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.65);     
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(7px) saturate(18%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
 .menu-section-btn {
   width: 3.5rem;
   height: 3.5rem;
   padding: 0;
+  margin: 5px;
 }
-.menu-section-btn .fa-layer-group, .menu-section-btn .fa-question, .menu-section-btn .fa-gear{
+.menu-section-btn .fa-layer-group, .menu-section-btn .fa-question, .menu-section-btn .fa-gear {
   font-size: large;
 }
 .panel-body {
@@ -497,6 +503,7 @@ Menu principal
   border: 0;
   border-radius: 6px;
   width: 350px;
+  background-color: transparent;
 }
 #sidebar .nav {
   border: 1px;
@@ -548,7 +555,8 @@ Menu principal
   border: 1px solid var(--active-bg-color);
 }
 .tab-content {
-  border: var(--layer-border-color);
+  border: none;
+  border-radius: 4px;
 }
 .panel-heading {
   border-bottom: 1px solid white;
@@ -565,7 +573,8 @@ Menu principal
   background-color: var(--active-bg-color, #33b560);
 }
 .tab-pane.active {
-  background-color: var(--lyr-menu-panel-head-text-color);
+  background-color: var(--menu-title-text-color);
+  border-radius: 4px;
 }
 li.active>div>a {
   color: white !important;
@@ -575,6 +584,10 @@ li.active>div>a {
   font-family: "Encode Sans Medium", sans-serif;
   cursor: pointer;
   padding: 8px 15px;
+  background-color: #FFFFFFCC;
+}
+.list-group-item.capa{
+  background-color: #FFFFFF;
 }
 .menu-button {
   background-color: #6e6d6d;
@@ -860,9 +873,9 @@ Leaflet
 .leaflet-control-measure-interaction.js-interaction {
   background-color: var(--map-btn-bg-color);
 }
-.leaflet-control-measure {
+/* .leaflet-control-measure {
   background-color: transparent;
-}
+} */
 .leaflet-popup-content h3 {
   font-size: 17px !important;
 }
@@ -1217,7 +1230,7 @@ Control mapa base
 }
 #collapseBaseMapLayers .list-group-item {
   padding: 5px;
-  background: rgba(255, 255, 255, 0.9);
+  background: #FFFFFFCC;
   font-size: var(--body-fnt-size, 14px);
   width: 245px;
 }
@@ -1244,7 +1257,7 @@ Control mapa base
 }
 .list-inline {
   margin-bottom: 0px;
-  border: 2px solid var(--btn-secondary-color);
+  border: 2px solid var(--secondary-color);
   border-radius: 6px;
 }
 .list-inline li {
@@ -1253,9 +1266,10 @@ Control mapa base
   padding-right: 15px;
   padding-left: 15px;
 }
-.base-layer-item-info img{
+.base-layer-item-info img {
   width: 50px;
   height: 40px;
+  border: 2px solid var(--primary-color);
 }
 /*******************************
 Control graticula
@@ -1396,7 +1410,7 @@ Navbar
   margin-right: 0;
 }
 #geoserver-login-btn {
-/*   display: contents; */
+  /*   display: contents; */
   width: auto;
   align-self: center;
 }
@@ -1438,7 +1452,6 @@ Searcher
   display: flex;
   flex-direction: column-reverse;
   justify-content: space-evenly;
-  background-color: #FFF;
 }
 .formBtns {
   width: 100%;
@@ -1449,7 +1462,7 @@ Searcher
 #q.ag-input-text {
   padding: 0 0 0 10px;
 }
-.bx{
+.bx {
   font-size: x-large;
 }
 /*******************************

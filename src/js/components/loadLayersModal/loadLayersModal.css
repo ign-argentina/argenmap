@@ -6,7 +6,7 @@
   margin-bottom: 12px;
 } */
 .modalHeader h4 {
-  color: var(--btn-secondary-color);
+  color: var(--menu-title-text-color);
   font-weight: 600;
 }
 /* .modalCloseButton {
@@ -36,12 +36,13 @@
   filter: contrast(0%) brightness(200%);
 }
 .modalNavButtonActive {
-  background: var(--btn-secondary-color);
+  background: var(--secondary-color);
   color: white;
 }
 .modalContent {
-  border: 2px solid #105C97;
+  border: 2px solid var(--secondary-color);
   border-radius: 6px;
+  background-color: #ffffffbb;
 }
 .actionContent {
   display: flex;
