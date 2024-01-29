@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Argenmap</title>
   <link rel="shortcut icon" href="src/styles/images/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="manifest.json" />
+
 
   <!-- metatags-->
 
@@ -177,6 +179,12 @@
 
   <!-- LOGIN SCRIPT -->
   <div id="login-wrapper" class="justify-content-center"></div>
+
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    }
+  </script>
 
 </body>
 

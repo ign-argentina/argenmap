@@ -1,0 +1,50 @@
+{
+    "short_name": "Argenmap",
+    "name": "Argenmap",
+    "icons": [
+      {
+        "src": "/src/styles/images/logo.svg",
+        "type": "image/svg+xml",
+        "sizes": "512x512"
+      },
+      {
+        "src": "/src/styles/images/logo-192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/src/styles/images/logo.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "id": "/?source=pwa",
+    "start_url": "/?source=pwa",
+    "background_color": "#3074ba",
+    "display_override": ["standalone", "fullscreen", "window-control-overlay"],
+    "display": "minimal-ui",
+    "scope": "/",
+    "theme_color": "#3074ba",
+    "description": "Argenmap",
+    "screenshots": [
+      {
+        "src": "src/styles/images/screenshots/screenshot-1-narrow.png",
+        "type": "image/png",
+        "sizes": "342x704",
+        "form_factor": "narrow"
+      },
+      {
+        "src": "src/styles/images/screenshots/screenshot-1-wide.png",
+        "type": "image/jpg",
+        "sizes": "1366x768",
+        "form_factor": "wide"
+      }
+    ],
+    "protocol_handlers": [
+      {
+        "protocol": "geo",
+        "url": "/?q=%s"
+      }
+    ]
+  }
+  
