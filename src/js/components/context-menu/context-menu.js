@@ -40,14 +40,9 @@ class ContextMenu {
         option.disabled = optionData.isDisabled;
 
         selectElm.onchange = () => {
-            // console.log('cambio');
             optionData.selected(selectElm.value)
         }
         
-        // option.onclick = (e) => {
-        //     // Return the selected value
-        //     optionData.onclick(selectElm.value);
-        // };
         this.menu.appendChild(option);
     }
 }

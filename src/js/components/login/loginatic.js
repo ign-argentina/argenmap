@@ -14,7 +14,6 @@ loginatic = function () {
   };
 
   this.check = () => {
-    //setCookie("autologin", 0);
     if (getCookie("autologin") == 1) {
       let lat = getCookie("lat");
       let lon = getCookie("lon");
@@ -35,11 +34,9 @@ loginatic = function () {
 
     if (!pwd.length) {
       alert(this.noPassword);
-      // new UserMessage(this.noPassword, true, 'error');
     }
 
     if (pwd.length) {
-      //let result = await fetch("src/config/user.json")
       let notLoggedTxt = this.notLoggedTxt;
       let result = await fetch(app.login.api + pwd).then(function (response) {
         if (response.status >= 500) {
@@ -60,7 +57,6 @@ loginatic = function () {
       });
       let logged = false;
 
-      /* if (result.clave == pwd) { */
       if (result.clave) {
         let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
 
@@ -69,10 +65,6 @@ loginatic = function () {
         let lat = result.lat_4326;
         let lon = result.lon_4326;
         let zoom = result.zoom ?? 13;
-
-        /* document.title += ' - ' + json[i].nombregobiernolocal;
-                let logoTitle = document.getElementById('logoText');
-                logoTitle.innerText += ' - ' + json[i].nombregobiernolocal; */
 
         mapa.setView([lat, lon], zoom);
         document.getElementById("login-wrapper").style.display = "none";
@@ -113,12 +105,6 @@ loginatic = function () {
     setCookie("autologin", 0);
     
     menu_ui.removeButton("external-link-li");
-    /* 
-        let lat = -40;
-        let lon = -59;
-        let zoom = 4; 
-        mapa.setView([lat, lon], zoom);
-        */
     mapa.resetView();
     location.reload();
   };

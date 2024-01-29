@@ -89,7 +89,7 @@
       try {
         event.target.select();
       } catch (error) {
-          //console.log(error);
+          console.error(error);
       }
       return;
     }

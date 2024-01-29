@@ -190,8 +190,6 @@ class UI {
           selectedColumn = columns[i].innerText;
           let columnInputName = document.getElementById("colTxt");
           if (columnInputName) columnInputName.innerText = selectedColumn;
-          //table.getColumn(selectedColumn).getElement().style.background = "#7dbef2";
-          //console.log(columns[i])
         }
       }
 

@@ -12,20 +12,13 @@ class ConsultData {
         `;
     }
 
-//     <i id="dropdownCD" class="dropdown-contentCD hidden">
-//     <a href="#" id="cdOption1" class="fa fa-message" title="Consulta Singular"></a>
-// </i>
-
     createComponent() {
         const elem = document.createElement("div");
         elem.className = "leaflet-bar leaflet-control";
         elem.id = "consultData";
         elem.innerHTML = this.component;
         elem.onclick = (e) => { activateDataConsult(), e.stopPropagation()};
-        //elem.onmouseover = showConsultList;
-        //elem.onmouseout = hideConsultList;
         document.querySelector(".leaflet-top.leaflet-right").append(elem);
-        //document.getElementById("cdOption1").onclick = activateDataConsult;
     }
 }
 
@@ -51,7 +44,6 @@ function activateDataConsult() {
         map.classList.toggle("queryLayer");
         control.style.backgroundColor = "#33b560";
         control.querySelector("img").style.filter = "invert()";
-        //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = false;
         getPopupForWMS(true);
     } else {
@@ -69,7 +61,6 @@ function activateDataConsult() {
         map.classList.toggle("leaflet-grabbing");
         control.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         control.querySelector("img").style.removeProperty("filter");
-        //document.getElementById("dropdownCD").classList.add("hidden");
         consultDataBtnClose = true;
         getPopupForWMS(false);
     }
