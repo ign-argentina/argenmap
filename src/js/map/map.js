@@ -5,7 +5,6 @@ var atrib_ign = "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/Introduc
 	layerData;
 var argenmap = "";
 var mapa = "";
-
 let currentBaseMap = null;
 
 let countour_styles = false;
@@ -259,7 +258,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             position: 'bottomleft'
 					}).addTo(mapa);
           gestorMenu.plugins['betterScale'].setStatus('visible');
-          loadDeveloperLogo()
+          loadDeveloperLogo();
 					break;
 				case 'minimap':
 					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
@@ -287,7 +286,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				case 'locate':
 					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 					var locateControl = L.control.locate({
-						position: "topleft",
+						position: "bottomright",
 						drawCircle: true,
 						follow: true,
 						setView: true,
