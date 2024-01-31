@@ -144,7 +144,12 @@
   <link href="src/js/components/login/login.css" rel="stylesheet">
   <link rel="stylesheet" href="src/js/components/table/table.css">
   <!-- PWA -->
-  <script>navigator.serviceWorker.register("adv-sw.js")</script>
+  <!-- <script>navigator.serviceWorker.register("adv-sw.js")</script> -->
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    }
+  </script>
   <link rel="manifest" href="manifest.json" />
 </head>
 
@@ -203,13 +208,6 @@
 
   <!-- LOGIN SCRIPT -->
   <div id="login-wrapper" class="justify-content-center"></div>
-
-  <!-- <script>
-    if('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' });
-    }
-  </script> -->
-
 </body>
 
 </html>
