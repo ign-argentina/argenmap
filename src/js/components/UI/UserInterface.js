@@ -57,11 +57,9 @@ class AboutUsModal {
 
     const readmeContainer = tabContent.createReadmeContainer();
     const functionContainer = tabContent.createFunctionsContainer();
-    //const contributorContainer = tabContent.createContributorsContainer();
 
     aboutMainSection.appendChild(readmeContainer);
     aboutMainSection.appendChild(functionContainer);
-    //aboutMainSection.appendChild(contributorContainer);
   }
 }
 
@@ -136,21 +134,7 @@ class AboutUsTab {
     functionsContainer.id = "functions-container";
     return functionsContainer;
   }
-
-  /**
-   * Creates the contributors container element.
-   * @returns {HTMLElement} - The created contributors container element.
-   
-  createContributorsContainer() {
-      const contributorContainer = document.createElement('div');
-      contributorContainer.classList.add('content-about-tab', 'contributor-container', 'content-about-deactivate');
-      contributorContainer.id = "contributors-container";
-
-      return contributorContainer;
-  }*/
 }
-
-// <div id="passwordToggleContainer"></div>
 
 class InputToggle {
   constructor(parent, type, _onclick, content) {

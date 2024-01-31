@@ -149,7 +149,6 @@ class Graphics{
         .enter()
         .append('g')
       
-      //  
       barGroups
         .append('rect')
         .attr('class', 'bar')

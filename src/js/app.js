@@ -414,7 +414,6 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       let stylesui = new StylesUI();
       stylesui.createdarktheme();
       let oldstyle = document.getElementById("main-style-ui");
-      //oldstyle.innerHTML=""
     },
   };
 
@@ -563,25 +562,6 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         const sidebarTool = new SidebarTools();
         sidebarTool.createComponent();
-
-        // const modalgeojson = new IconModalGeojson;
-        // modalgeojson.createComponent();
-
-        // const modalserviceLayers = new IconModalLoadServices;
-        // modalserviceLayers.createComponent();
-
-        //setProperStyleToCtrlBtns();
-
-        /*      
-                let bm = document.getElementById("collapseBaseMapLayers");
-                bm.addEventListener("dblclick", function () {
-                  event.stopPropagation();
-                });
-                bm.addEventListener("click", function () {
-                  event.stopPropagation();
-                }); 
-        */
-
       }
     }, 100);
   });

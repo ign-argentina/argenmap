@@ -200,19 +200,6 @@ class Geoprocessing {
 
         removeGeometryFromDrawingsGroup(selectedRectangle);
 
-        // ** Avoiding Leaflet Draw object test **
-        // first comment createLayerFromGeoJSON() call
-
-        // makes a Leaflet featureGroup object and add it to the map
-        //mapa.featureGroups = L.featureGroup().addTo(mapa);
-
-        // adds an arbitrary layer to the featureGroup
-        //mapa.featureGroups.addLayer(L.geoJSON(addedLayers[0].layer));
-
-        // set style for all layers in the featureGroup
-        //mapa.featureGroups.setStyle({color: '#876508'});
-        // **
-
         menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
         updateNumberofLayers(sectionName)
         break;
@@ -621,7 +608,6 @@ class Geoprocessing {
     if (isBuffer) {
       $("#msgNoLayer").addClass("hidden");
       $("#msgRectangle").removeClass("hidden");
-      //$("#drawRectangleBtn").removeClass("disabledbutton");
       $('label[for="input-equidistancia"]').show();
       document
         .getElementById("input-equidistancia")
@@ -1131,15 +1117,6 @@ class Geoprocessing {
               }
             });
           }
-          if (this.geoprocessId == "elevationProfile") {
-            // mapa.editableLayers.polyline.forEach((layer) => {
-            //   if (layer.name.includes("polyline")) {
-            //     setTimeout(function () {
-            //       $("#select-capa").val(layer.name).change();
-            //     }, 500);
-            //   }
-            // });
-          }
           if (this.geoprocessId == "buffer") {
             let layerForBuffer = getAllActiveLayers()[0]
 
@@ -1173,7 +1150,6 @@ class Geoprocessing {
             item.layer
           );
           this.buildOptionForm(this.geoprocessing.getFields());
-          //this.namePrefix = item.namePrefix;
         }
       }
     });
@@ -1181,9 +1157,7 @@ class Geoprocessing {
     const options = [];
     options.push({ value: "", text: "" });
     this.geoprocessingConfig.availableProcesses.forEach((geoprocess) => {
-      //if(geoprocess.geoprocess !== 'elevationProfile') {
       options.push({ value: geoprocess.geoprocess, text: geoprocess.name });
-      //}
     });
 
     geoprocessingForm.setOptionsToSelect(selectProcessId, options);

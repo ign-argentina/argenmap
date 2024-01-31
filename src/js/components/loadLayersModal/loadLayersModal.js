@@ -33,13 +33,7 @@ class modalUI {
 				id: 'wms-action',
 				icon: 'src/js/components/loadServices/icon-load-services.svg',
 				component: new IconModalLoadServices
-			},
-			// {
-			// 	name: 'WMTS',
-			// 	id: 'wmts-action',
-			// 	icon: 'src/js/components/wmts/wmts-solid.svg',
-			// 	component: new WmtsLoadLayers
-			// },
+			}
 		];
 		
 		this.selectedAction = 0;
@@ -147,10 +141,6 @@ class modalUI {
 		let buttons = document.querySelectorAll('.modalNavButton');
 		buttons.forEach(el => el.classList.remove('modalNavButtonActive'))
 		buttons[actionIndx].classList.add('modalNavButtonActive');
-
-		// console.log(this.actions);
-		// Remove previous
-		// if (previous) this.actions[previous].component.removeComponent();
 
 		let component = this.actions[actionIndx].component.createComponent();
 		document.getElementById(this.actions[actionIndx].id).innerHTML = '';

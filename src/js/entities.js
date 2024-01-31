@@ -59,13 +59,9 @@ class Capa {
     if (this.host == null) {
       return "";
     }
+
     let owsHost = this.host;
-    /* isMapserver = this.host.includes('cgi-bin');
-        
-        if (!isMapserver) {   
-            if (this.servicio === "wms") { owsHost += "/wms?"};
-            //if (this.servicio === "mapserver") { owsHost };
-        } */
+    
     if (
       this.servicio === "wms" &&
       owsHost.includes("/geoserver") &&
@@ -471,8 +467,6 @@ class ImpresorCapasBaseHTML extends Impresor {
       baseMapsMenu.setAttribute("role", "button");
       baseMapsMenu.setAttribute("data-toggle", "collapse");
       baseMapsMenu.setAttribute("aria-expanded", "false");
-      //baseMapsMenu.setAttribute('aria-controls', 'collapseExample');
-      //baseMapsMenu.href = '#collapseBaseMapLayers';
 
       const baseMapsContainer = document.createElement("ul");
       baseMapsContainer.id = "collapseBaseMapLayers";
@@ -494,11 +488,6 @@ class ImpresorCapasBaseHTML extends Impresor {
       });
 
       return baseMapsMenu;
-
-      /* return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-                '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
-                '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-                '</div>'; */
     }
   }
 }
@@ -649,7 +638,6 @@ class LayersInfoWMS extends LayersInfo {
                 this.attribution,
                 legend
               );
-              //var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
             }
             //Generate keyword array
             var keywordsAux = [];
@@ -909,9 +897,7 @@ class LayersInfoWMS extends LayersInfo {
             let divi = document.createElement("div");
             let aux = null;
             divi.innerHTML = ilegendURLaux;
-            /* if (divi.getElementsByTagName("onlineresource")) { // makes an error in some services
-                      aux = divi.getElementsByTagName("onlineresource")[0].getAttribute("xlink:href");
-                    } */
+            
             var ilegendURL = aux;
 
             if (iBoundingBox.length > 0) {
@@ -1029,7 +1015,6 @@ class LayersInfoWMS extends LayersInfo {
             //Si ya cargó todas las capas solicitadas
             _gestorMenu.printOnlySection(thisObj.section);
 
-            //
             gestorMenu.allLayersAreLoaded = true;
           }
         } else {
@@ -1051,10 +1036,6 @@ class LayersInfoWMS extends LayersInfo {
 
   getHostOWS() {
     //Define GetCapabilities host endpoint
-    /* var host = this.host + '/ows';
-        if (this.type == 'wmslayer_mapserver') {
-            host = this.host;
-        } */
     let host = this.host;
     if (
       this.service === "wms" &&
@@ -1401,8 +1382,6 @@ class LayersInfoWMTS extends LayersInfoWMS {
   }
 
   getHost() {
-    /* //Define GetCapabilities host endpoint
-        var host = this.host + '/gwc/service/wmts'; */
     let host = this.host;
     if (host.includes("/geoserver") && !host.endsWith("/wmts")) {
       host += "/gwc/service/wmts";
@@ -2390,11 +2369,6 @@ class GestorMenu {
     this._folders = folders;
   }
 
-  /* 
-    getBasemapSelected() {
-        return this.basemapSelected;
-    } 
-    */
   getActiveBasemap() {
     let activeBasemap;
     Object.keys(baseLayers).forEach((bl) => {
@@ -3208,10 +3182,8 @@ for (var key in this.items) {
         this.addLazyInitLayerInfoCounter(itemSeccion);
         //nueva opcion crea un objeto para cada btn
         this.layersInfo[key].get_without_print(this);
-        //this.layersInfo[key].get(this)
       }
     }
-    // bindLayerOptionsIdera();
   }
 
   getLayerData(layerName, sectionName) {
@@ -3323,6 +3295,7 @@ class Tab {
 }
 
 var serviceItems = [];
+
 /******************************************
 Menu_UI
 ******************************************/
@@ -3368,7 +3341,6 @@ class Menu_UI {
           <div class="panel-body" id ="${parentNamev}-panel-body"></div>
       </div>
       </div>`;
-
 
     let subItemnew = document.createElement("div");
     subItemnew.innerHTML = `
@@ -3468,7 +3440,6 @@ class Menu_UI {
     fdiv.setAttribute("aria-expanded", "false");
     fdiv.innerHTML =
       '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16"> <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/> </svg>';
-    // fdiv.innerHTML = '<span class="caret"></span>'
 
     let mainul = document.createElement("ul");
     mainul.className = "dropdown-menu";
@@ -3480,14 +3451,12 @@ class Menu_UI {
     delete_opt.onclick = function () {
       let menu = new Menu_UI();
       menu.modalEliminar(id, groupnamev, layerType);
-      //deleteLayerGeometry(layer)
     };
 
     let download_opt = document.createElement("li");
     download_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa fa-download" aria-hidden="true" style="width:20px;"></i>Descargar</a>`;
     download_opt.onclick = function () {
       const index_file = getIndexFileLayerbyID(id);
-      // let d_file_name = addedLayers[index_file].name // unused
       const layer = addedLayers[index_file];
       if (!layer.download) {
         mapa.downloadMultiLayerGeoJSON(id, layer.name, true);
@@ -3523,45 +3492,10 @@ class Menu_UI {
       });
     };
 
-    /* let query_opt = document.createElement("li")
-            query_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="far fa-question-circle" aria-hidden="true" style="width:20px;"></i>Ver datos</a>`
-            query_opt.onclick = function(){
-                console.log('add a popup here!')
-                addedLayers.forEach( lyr => {
-                    if( lyr.id === id ) {
-                        //addedLayers[0].id
-                        lyr.bindPopup(lyr.layer.features[0].properties);
-                        mapa.editableLayers.polygon[0].bindPopup
-                    }
-                });
-            } */
-
-    /* let style_opt = document.createElement("li")
-            style_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-paint-brush" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
-            style_opt.onclick = function(){
-                console.log('edit style!');
-            } */
-
-    /* let chart_opt = document.createElement("li")
-            chart_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-chart-pie" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
-            chart_opt.onclick = function(){
-                console.log('add a popup here!');
-            } */
-
-    /* let copy_opt = document.createElement("li")
-            copy_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="fas fa-copy" aria-hidden="true" style="width:20px;"></i>Editar estilo</a>`
-            copy_opt.onclick = function(){
-                console.log('add a popup here!');
-            } */
-
     mainul.append(zoom_layer_opt);
     mainul.append(edit_name_opt);
     mainul.append(edit_data_opt);
     mainul.append(download_opt);
-    //mainul.append(query_opt)
-    //mainul.append(copy_opt)
-    //mainul.append(style_opt)
-    //mainul.append(chart_opt)
     mainul.append(delete_opt);
 
     options.append(fdiv);
@@ -3648,7 +3582,6 @@ class Menu_UI {
   }
 
   add_btn_Layer_combobox(id_dom, title, url_img, descripcion, options) {
-    // reemplazar =title
     let min_url_img =
       url_img + _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
     let max_url_img =
@@ -3715,14 +3648,6 @@ class Menu_UI {
         img_legend.src = "";
       }
     });
-
-    capa_legend_div.onclick = () => {
-      /*
-            if(li.className === "capa list-group-item active"){
-                li.className = "capa list-group-item"
-            }else{li.className = "capa list-group-item active"}
-            gestorMenu.muestraCapa(id_dom)*/
-    };
 
     let capa_title_div = document.createElement("div");
     capa_title_div.className = "name-layer";
@@ -3959,11 +3884,9 @@ class Menu_UI {
   }
 
   addLayerToGroup(groupname, layerType, textName, id, fileName, layer) {
-    // layer.name = encodeURI(layer.name);
     let newLayer = layer;
     newLayer.active = false;
     newLayer.L_layer = null;
-    // let firstLayerAdded = false; // To simulate the click event
     if (serviceItems[id] != undefined) {
       serviceItems[id].layers[textName] = newLayer;
       serviceItems[id].layersInMenu++;
@@ -3974,7 +3897,6 @@ class Menu_UI {
       };
       serviceItems[id].layers[textName] = newLayer;
       serviceItems[id].layersInMenu++;
-      // firstLayerAdded = true; // Yes! First layer added
     }
 
     let groupnamev = clearSpecialChars(groupname);
@@ -4020,27 +3942,6 @@ class Menu_UI {
     layer_name.title = fileName;
     layer_name.onclick = function () {
       clickWMSLayer(layer, layer_item, fileName)
-      // layer_item.classList.toggle("active");
-      // if (!layer.active) {
-      //   layer.L_layer = L.tileLayer
-      //     .wms(layer.host, {
-      //       layers: layer.name,
-      //       format: "image/png",
-      //       transparent: true,
-      //     })
-      //     .addTo(mapa);
-      //   layer.active = true;
-
-      //   gestorMenu.layersDataForWfs[layer.name] = {
-      //     name: layer.name,
-      //     section: layer.title,
-      //     host: layer.host,
-      //   };
-      // } else {     
-      //   mapa.removeLayer(layer.L_layer);
-      //   layer.active = false;
-      // }
-
     };
 
     let zoom_button = document.createElement("div");
@@ -4079,7 +3980,7 @@ class Menu_UI {
     if (!btn) {
       let btnHtml = `<li id="${id}" onclick="window.open('${link}', '_blank');" class="list-group-item menu-button" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li>`
 
-      let menuItems = document.getElementById("sidebar"); //document.getElementsByClassName('menu5 panel-default');
+      let menuItems = document.getElementById("sidebar");
       if (location === "top") {
         menuItems.insertAdjacentHTML("beforebegin", btnHtml)
       }

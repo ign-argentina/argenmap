@@ -120,11 +120,7 @@ class StylesUI {
     toprightlogo.onclick = function () {
       clickReferencias(image)
     };
-  } 
-  /* else {
-      let toprightlogo = document.getElementById("logo-help");
-      toprightlogo.style.display = "none";
-  } */
+  }
  }
 
  createdarktheme(){

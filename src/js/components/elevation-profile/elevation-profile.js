@@ -299,7 +299,6 @@ class IElevationProfile {
                 //text: 'Distancia Total: ' + data.distancia_total + "Km.",
                 text: '',
                 style: {
-                    //color:'#FFFFFF'
                     color: '#000000'
                 }
             },
@@ -432,8 +431,6 @@ class IElevationProfile {
             let coord = [point.lat, point.lng, point.y];
             geoJSON.features[0].geometry.coordinates.push(coord);
         });
-
-        //console.log(geoJSON);
     }
 
     editElevProfileName(id) {

@@ -6,21 +6,7 @@ let open = false;
 let control_btn_add_layer = false;
 
 class IconModalGeojson {
-  // constructor() {
-  //   // this.component = `
-  //   // <div data-html2canvas-ignore="true" class="center-flex" id="modalgeojson" title="Abrir Archivos">
-  //   //     <div class="center-flex" id="iconopenfile-container" onClick=uimodalfs.clickOpenFileIcon()>
-  //   //         <span id="spanopenfolder" class="fa fa-folder-open" aria-hidden="true" ></span>
-  //   //     </button>
-  //   // </div>
-  //   // `;
-  // }
-
   createComponent() {
-    // const elem = document.createElement("div");
-    // elem.innerHTML = this.component;
-    // document.getElementById("mapa").appendChild(elem);
-
     return uimodalfs.clickOpenFileIcon();
   }
 }
@@ -79,8 +65,6 @@ class UImf {
     mainContainerFile.style = "idth: 80%;display: flex;flex-direction: column;align-items: center;"
 
     // Add from
-
-    // let mainContainerFile = document.getElementById("file_gestor")
 
     let logo_upload = document.createElement("div")
     logo_upload.className = "wrapper"
@@ -198,15 +182,7 @@ class UImf {
         new UserMessage(`Capas agregadas exitosamente.`, true, "information");
         btnCapa.className = "ui-btn ui-btn-disabled"
       }
-
-      // if (control_btn_add_layer) { old version
-      //   addLayersfromFiles()
-      // }
     }
-
-    // mainIcons
-    // tab_div
-    // mainContainerFile
 
     mainContainerFile.append(tab_div)
     mainContainerFile.append(logo_upload)
@@ -214,100 +190,7 @@ class UImf {
     mainContainerFile.append(btnCapa)
 
     return mainContainerFile;
-    // document.body.appendChild(divContainer);
-    // $( "#modalOpenFile" ).draggable({
-    //   containment: "#mapa"})
   }
-
-  // addForm() {
-  //   let contenedor_principal = document.getElementById("file_gestor")
-  //   let logo_upload = document.createElement("div")
-  //   logo_upload.className = "wrapper"
-  //   let divaux = document.createElement("div")
-  //   divaux.id = "logo_upload_container"
-  //   divaux.className = "upload"
-  //   let main_inputfile = document.createElement("input")
-  //   main_inputfile.accept = ".txt,.json,.geojson,.wkt,.kml,.zip,.gpx"
-  //   main_inputfile.id = "input_uploadfile"
-  //   main_inputfile.name = "file"
-  //   main_inputfile.type = "file"
-  //   main_inputfile.className = "file-input"
-  //   main_inputfile.style = "opacity: 0.0;top: 0; left: 0; bottom: 0;right: 0;"
-  //   main_inputfile.addEventListener("change", function (e) {
-  //     // Fix Chrome bug: change event fires on cancel when previous file was uploaded
-  //     if (!e.target.files[0]) return;
-  //     let ui_upload = new UImf();
-  //     //FileReader.onload --->ui_upload.logoAnimation()
-  //     ui_upload.logoAnimation()
-  //     // Initialize File Layer
-  //     let fileLayer = new FileLayer();
-  //     // Give uploaded file to fileLayer
-  //     fileLayer.handleFile(e.target.files[0]).then(() => {
-  //       //active btn add layer
-  //       ui_upload.enabledbtnCapa()
-  //       // Stop load animation
-  //       ui_upload.reload_logo();
-  //       // Show the uploaded file
-  //       // Check if the file was loaded in the current dialog
-  //       let existsInCurrent = currentLayers.filter((e) => {
-  //         return e.file_name == fileLayer.getFileName()
-  //       })
-  //       // Check if the file was load previously
-  //       let existsInAdded = addedLayers.filter((e) => {
-  //         return e.file_name == fileLayer.getFileName()
-  //       })
-  //       // Set the name, short or add number of ocurrencies
-  //       let name;
-  //       if (existsInCurrent.length || existsInAdded.length) {
-  //         let exists = existsInCurrent.length + existsInAdded.length;
-  //         name = stringShortener(fileLayer.getFileName(), 13, false) + `..(${exists})`;
-  //       } else {
-  //         name = stringShortener(fileLayer.getFileName(), 16, true);
-  //       }
-  //       // Add to current layers to add to the layers menu later
-  //       currentLayers.push({
-  //         id: fileLayer.getId(),
-  //         layer: fileLayer.getGeoJSON(),
-  //         name: name,
-  //         file_name: fileLayer.getFileName(),
-  //         kb: fileLayer.getFileSize('kb')
-  //       });
-  //       // Show in the dialog
-  //       ui_upload.addFileItem(fileLayer.getId());
-  //     }).catch((error) => {
-  //       console.warn('Hay error: ', error);
-  //       new UserMessage(error, true, 'error');
-  //       ui_upload.reload_logo();
-  //     })
-  //   });
-  //   let faicon = document.createElement("i")
-  //   faicon.id = "logo_up"
-  //   faicon.className = "fas fa-arrow-circle-up"
-  //   let ptitle = document.createElement("p")
-  //   ptitle.innerHTML = "Abrir Archivo"
-  //   divaux.append(main_inputfile)
-  //   divaux.append(faicon)
-  //   divaux.append(ptitle)
-  //   divaux.onclick = function () {
-  //     let aux = document.getElementById("input_uploadfile")
-  //     aux.click();
-  //   }
-  //   logo_upload.append(divaux)
-  //   let section_load = document.createElement("section")
-  //   section_load.className = "uploaded-area"
-  //   section_load.id = "uploaded-area"
-  //   let btnCapa = document.createElement("button")
-  //   btnCapa.id = "btn-upload-agregar-capa"
-  //   btnCapa.className = "btn btn-info disabled"
-  //   btnCapa.style = "width:100%; margin:20px 0px 10px 0px"
-  //   btnCapa.innerHTML = "Agregar Capa"
-  //   btnCapa.onclick = function () {
-  //     if (control_btn_add_layer) addLayersfromFiles()
-  //   }
-  //   contenedor_principal.append(logo_upload)
-  //   contenedor_principal.append(section_load)
-  //   contenedor_principal.append(btnCapa)
-  // }
 
   logoAnimation() {
     let logo = document.getElementById("logo_up")
@@ -395,20 +278,8 @@ class UImf {
 
 
   clickOpenFileIcon() {
-    // let component = uimodalfs.createModal();
-    // uimodalfs.addForm();
-    // console.log(component);
     return uimodalfs.createModal();
-    // if (!open) {
-    //   open = true;
-    //   // document.getElementById("iconopenfile-container").disabled = true;
-    //   // document.getElementById("modalgeojson").style.color = "grey";
-    //   let component = uimodalfs.createModal();
-    //   // uimodalfs.addForm();
-    //   console.log(component);
-    //   return component;
-    // }
-  }
+    }
 
   enabledbtnCapa() {
     control_btn_add_layer = true
@@ -487,13 +358,6 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
       }
     })
   }
-  // else if (e.process == geoProcessingManager.GEOPROCESS.waterRise) {
-  //   mapa.editableLayers.cota.forEach(lyr => {
-  //     if (lyr.id === nameId) {
-  //       lyr._uneditable = true; //aux to disallow editing the layer
-  //     }
-  //   })
-  // }
 
   menu_ui.addFileLayer(sectionName, typeName, nameId, nameId, nameId, true);
   updateNumberofLayers(sectionName);

@@ -21,7 +21,6 @@ const login = {
         if (status >= 200 && status < 400) {
           // Call the callback function with the response
           callback ? callback(res) : res;
-          // console.log(res, xhr.response);
         } else {
           console.log(`Request returned error: ${xhr.response}`);
         }

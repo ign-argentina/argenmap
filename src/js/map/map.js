@@ -344,12 +344,6 @@ $("body").on("pluginLoad", function (event, plugin) {
           break;
         case "betterScale":
           // Leaflet BetterScale plugin
-          /*
-					L.control.betterscale({
-						metric: true,
-						imperial: false
-					}).addTo(mapa);
-					*/
           L.control
             .scale({
               metric: true,
@@ -370,8 +364,6 @@ $("body").on("pluginLoad", function (event, plugin) {
             toggleDisplay: false,
             minimized: false,
             position: "bottomleft",
-            //collapsedWidth: 32,
-            //collapsedHeight: 32,
             width: 100,
             height: 100,
             strings: {
@@ -437,7 +429,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 
               container.onclick = function () {
                 if (customGraticule == null) {
-                  //drawGrid(mapa.getZoom());
                   var options = {
                     interval: 10,
                     showshowOriginLabel: true,
@@ -488,13 +479,6 @@ $("body").on("pluginLoad", function (event, plugin) {
             thousandsSep: THOUSANDS_SEPARATOR
           });
           measureControl.addTo(mapa);
-          /* if (!L.Browser.android) {
-						// replaces event listener for Measure icon in favor of click
-						L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
-						L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
-						L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
-						L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
-					} */
           gestorMenu.plugins["Measure"].setStatus("visible");
           break;
         case "geoprocessing":
@@ -872,35 +856,9 @@ $("body").on("pluginLoad", function (event, plugin) {
             );
           });
 
-          mapa.on("draw:deleted", function (e) {
+          /* mapa.on("draw:deleted", function (e) {
             var layers = e.layers;
-            /* Object.values(layers._layers).forEach(deletedLayer => {
-							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
-							if (lyrIdx >= 0) {
-								let layerSection;
-								addedLayers.forEach(lyr => {
-									if (lyr.id === deletedLayer.id) {
-										let index = addedLayers.indexOf(lyr);
-										if (index > -1) {
-											layerSection = lyr.section;
-											addedLayers.splice(index, 1);
-											updateNumberofLayers(layerSection);
-											showTotalNumberofLayers();
-										}
-									}
-								});
-								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
-								deleteLayerFromMenu(deletedLayer);
-							}
-						}); */
-
-            /*if(geoProcessingManager){
-							let layerName = Object.values(layers._layers)[0].name;
-							geoProcessingManager.updateLayerSelect(layerName, false);
-						}*/
-
-            //mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
-          });
+          }); */
 
           deleteLayerFromMenu = (deletedLayer) => {
             // Delete layers entries from menu if exists
@@ -916,10 +874,6 @@ $("body").on("pluginLoad", function (event, plugin) {
           mapa.on("draw:drawstop", (e) => {
             setTimeout(() => {
               currentlyDrawing = false;
-              // if(perfilTopografico.isActive){
-              // 	// reset profile status
-              // 	perfilTopografico.isActive = false;
-              // }
             }, 300);
           });
 
@@ -1008,7 +962,7 @@ $("body").on("pluginLoad", function (event, plugin) {
               });
             }
 
-            /* if (Object.values(drawnItems._layers).length != 0) {
+            if (Object.values(drawnItems._layers).length != 0) {
 							contextMenu.createOption({
 								isDisabled: false,
 								text: 'Descargar todas las capas',
@@ -1017,19 +971,13 @@ $("body").on("pluginLoad", function (event, plugin) {
 									mapa.downloadAllActiveLayer();
 								}
 							});
-						} */
+						}
 
-            /* contextMenu.createOption({
-							isDisabled: false,
-							text: "Share",
-							onclick: (option) => {
-								mapa.closePopup(contextPopup);
-								let _url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}`;
-								window.open(_url);
-								}
-							}); */
+            /* 
+            
+            // following context menu option saves location as marker 
 
-            /* contextMenu.createOption({
+            contextMenu.createOption({
 							isDisabled: false,
 							text: "Save",
 							onclick: () => {
@@ -1049,7 +997,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 								};
 								new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
 							},
-							}); */
+							}); 
+            */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1271,17 +1220,6 @@ $("body").on("pluginLoad", function (event, plugin) {
               });
             }
 
-            /* contextMenu.createOption({
-							isDisabled: true,
-							text: 'Ocultar geometría',
-							onclick: (option) => {
-								if (!option.disabled) {
-									mapa.closePopup(contextPopup);
-									mapa.hideLayer(layer.name);
-								}
-							}
-						}); */
-
             contextMenu.createOption({
               isDisabled: false,
               text: "Descargar geometría",
@@ -1290,17 +1228,6 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer.downloadGeoJSON();
               },
             });
-
-            /* if (Object.values(drawnItems._layers).length != 0) {
-							contextMenu.createOption({
-								isDisabled: false,
-								text: 'Descargar todas la capas',
-								onclick: (option) => {
-									mapa.closePopup(contextPopup);
-									mapa.downloadAllActiveLayer();
-								}
-							});
-						} */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1340,10 +1267,6 @@ $("body").on("pluginLoad", function (event, plugin) {
             L.DomEvent.on(contextMenu, "click", function (e) {
               L.DomEvent.stopPropagation(e);
             });
-
-            /* L.DomEvent.on(editStylePopup, 'click', function (e) {
-							L.DomEvent.stopPropagation(e);
-						}); */
           };
 
           mapa.measurementsWrapper = (layer) => {
@@ -2786,7 +2709,6 @@ $("body").on("pluginLoad", function (event, plugin) {
               const styleOptions = { ...layer.options };
               const labelText = { ...geoJSON.properties.Text };
               geoJSON.properties.styles = styleOptions;
-              //geoJSON.properties.Text = labelText;
               geoJSON.properties.type = layer.type;
               layer.value ? (geoJSON.properties.value = layer.value) : 0;
               jsonToDownload.features.push(geoJSON);
@@ -3056,8 +2978,7 @@ $("body").on("pluginLoad", function (event, plugin) {
         maxZoom: app.hasOwnProperty("mapConfig")
           ? app.mapConfig.zoom.max
           : DEFAULT_MAX_ZOOM_LEVEL,
-        closePopupOnClick: false,
-        /* renderer: L.svg() */
+        closePopupOnClick: false
       });
 
       //Available events
@@ -3227,7 +3148,7 @@ function getGeometryCoords(layer) {
   return coords;
 }
 
-// -- Plugins
+// Plugins
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     var datos = new Array();
@@ -3492,7 +3413,6 @@ function loadWmsTpl(objLayer) {
       infoAux = info.search("<table"); // search if info has a table
       if (infoAux > 0) {
         // check if info has any content, if so shows popup
-        //info = info.replace('<table', '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"');
         return (
           '<div class="featureInfo" id="featureInfoPopup' +
           idTxt +
@@ -3515,8 +3435,7 @@ function loadWmsTpl(objLayer) {
       var infoAux =
         '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
       infoAux += '<div class="featureGroup">';
-      infoAux += '<div style="/*padding:1em;*/" class="individualFeature">';
-      //infoAux += '<div style="padding:1em;overflow-y:scroll;max-height:200px" class="individualFeature">';
+      infoAux += '<div class="individualFeature">';
       infoAux +=
         '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
         title +
@@ -3539,8 +3458,7 @@ function loadWmsTpl(objLayer) {
 
       infoAux += "</ul>";
       infoAux += "</div></div></div>";
-      //infoAux += '</div></div>Descargar como: <a href="javascript:;" onclick="getFeatureInfoAsCSV(\'featureInfoPopupUL' + idTxt + '\')">csv</a> | <a href="javascript:;" onclick="getFeatureInfoAsXLS(\'featureInfoPopupUL' + idTxt + '\')">xls</a></div>';
-
+      
       return infoAux;
     }
 

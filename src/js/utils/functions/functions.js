@@ -80,9 +80,7 @@ function deg_to_dms(deg) {
   var minfloat = (deg - d) * 60;
   var m = Math.floor(minfloat);
   var secfloat = (minfloat - m) * 60;
-  var s = secfloat.toFixed(2); //Math.round(secfloat);
-  // After rounding, the seconds might become 60. These two
-  // if-tests are not necessary if no rounding is done.
+  var s = secfloat.toFixed(2);
   if (s == 60) {
     m++;
     s = 0;
@@ -532,7 +530,6 @@ async function getWfsLayerFields(url, params) {
         if (response.ok) {      
           res = data;
           res.featureTypes[0].properties.forEach((field) => {
-            // (geometry.isValidType(field.localType)) ? geom = field.name : console.error('Incorrect geometry field name. Check out the WFS capabilities document.');
             let lc = field.localType;
             if (
               lc === "Geometry" ||
@@ -607,7 +604,6 @@ function getCRSByWFSCapabilities(capabilitiesUrl, layerName) {
 
 function getLayerDataByWFS(filterCoords, type, layerData) {
   return new Promise((resolve) => {
-    //console.log(layerData.host)
     let layerHost;
     layerData.host ? layerHost = layerData.host : layerHost = layerData.layer.host;
     const host = layerHost.replace(/\/wms\?*$/, ""); // removes /wms? endpoint from URI
@@ -665,10 +661,6 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
           });
         }
         if (!isWgs84) {
-          // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
-          // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
-          // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
-
           // If the CRS is not 84, reproject the coords
           filterCoords.forEach((coordsPair, i) => {
             let result = proj4(
@@ -677,7 +669,6 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
               coordsPair
             );
             coords[i] = result;
-            //reprojectedCoords[i] = result;
           });
 
           getWfsLayerFields(url, params).then((geom) => {
@@ -818,14 +809,12 @@ function adaptToImage(imgDiv) {
 
     resize_img_icon.onclick = (event) => {
       if (container_expand_legend_grafic.getAttribute("load") === "true") {
-        //container_expand_legend_grafic.className = "hidden";
         container_expand_legend_grafic.classList.toggle("hidden");
         container_expand_legend_grafic.setAttribute("load", false);
         resize_img_icon.innerHTML =
           '<i class="fas fa-angle-down" aria-hidden="true"></i>';
       } else {
         container_expand_legend_grafic.classList.remove("hidden");
-        //container_expand_legend_grafic.classList.toggle("hidden");
         container_expand_legend_grafic.setAttribute("load", true);
         container_expand_legend_grafic.style = "background-color: white !important;";
         resize_img_icon.innerHTML =
@@ -889,7 +878,6 @@ function setProperStyleToCtrlBtns() {
   const interval = setInterval(() => {
     if (zoomhomeCtrlBtn.length > 0) {
       window.clearInterval(interval);
-      //const width = zoomhomeCtrlBtn[0].offsetWidth;
       const btns = [];
       btns.push(zoomhomeCtrlBtn[0]);
 
@@ -1005,14 +993,6 @@ function clickWMSLayer(layer, layer_item, fileName) {
     }
     overlayMaps[layer.name].addTo(mapa);
 
-    //Original
-    // layer.L_layer = L.tileLayer
-    //   .wms(layer.host, {
-    //     layers: layer.name,
-    //     format: "image/png",
-    //     transparent: true,
-    //   })
-    //   .addTo(mapa);
     gestorMenu.layersDataForWfs[layer.name] = {
       name: layer.name,
       section: layer.title,
@@ -1088,13 +1068,11 @@ function bindZoomLayer() {
       await getWmsLyrParams(layer); // gets layer atribtutes from WMS
     }
 
-    //console.log("layer: ", layer)
     let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
       noBbox = bbox.some((el) => {
         return el === null || el === undefined;
       });
 
-    //console.log("bbox: ", bbox)
     if (noBbox) {
       for (i = 0; i < this.childNodes.length; i++) {
         if (this.childNodes[i].className == "fas fa-search-plus") {
@@ -1241,23 +1219,6 @@ function getMulticolorContour(n) {
   return color;
 }
 
-//add funcion with setTimeout
-//fix bug--->  line 553 entities.js
-//no funciona para todos los templates
-/* window.onload = function () {
-    setTimeout(function () {
-        bindZoomLayer()
-        bindLayerOptions()
-    }, 200);
-};
-
-
-function bindLayerOptionsIdera() {
-    setTimeout(function () {
-        bindZoomLayer()
-        bindLayerOptions()
-    }, 100);
-} */
 
 function zoomLayer(id_dom) {
   let nlayer = app.layerNameByDomId[id_dom];
@@ -1282,13 +1243,11 @@ function zoomLayer(id_dom) {
 }
 
 async function getWmsLyrParams(lyr) {
-  //let url = `${lyr.host}/${lyr.nombre}/ows?service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
   if (lyr.host.charAt(lyr.host.length - 1) !== "?") {
     lyr.host += "?"
   }
   let url = `${lyr.host}service=${lyr.servicio}&version=${lyr.version}&request=GetCapabilities`,
     sys = lyr.version === "1.3.0" ? "CRS" : "SRS";
-  //console.log(url)
   await fetch(url)
     .then((res) => res.text())
     .then((str) => {
@@ -1344,7 +1303,6 @@ function parseXml(str, lyr, sys) {
     }
   }
 }
-
 
 function hillShade() {
   if (app.hillshade) {
@@ -1685,7 +1643,6 @@ function setPathClass(cssClass) {
 // Set font-family attribute for all texts in app (font-face should be defined first in CSS) 
 function setFontFamily(fontFamily) {
   let r = document.querySelector(':root');
-  /* let rs = getComputedStyle(r); */
   r.style.setProperty('--main-font-family', fontFamily)
 }
 
@@ -1815,7 +1772,6 @@ function createLayerLinestring(geoJSON, groupName, layer, options) {
             stroke: 'white',
             'stroke-opacity': '1',
             'stroke-width': '0.5'
-            /* 'font-size': '24px' */
           }
         });
       }
