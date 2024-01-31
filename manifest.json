@@ -567,7 +567,7 @@
   "start_url": "/?source=pwa",
   "background_color": "#3074ba",
   "display_override": "['standalone','fullscreen','window-controls-overlay']",
-  "display": "minimal-ui",
+  "display": "standalone",
   "scope": "/",
   "theme_color": "#3074ba",
   "description": "Argenmap",
