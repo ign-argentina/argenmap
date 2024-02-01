@@ -565,11 +565,11 @@
   ],
   "id": "/?source=pwa",
   "start_url": "/?source=pwa",
-  "background_color": "#3074ba",
+  "background_color": "#3074BA",
   "display_override": "['standalone','fullscreen','window-controls-overlay']",
   "display": "fullscreen",
   "scope": "/",
-  "theme_color": "#3074ba",
+  "theme_color": "#3074BA",
   "description": "Argenmap",
   "screenshots": [
     {
