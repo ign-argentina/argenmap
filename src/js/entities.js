@@ -748,7 +748,7 @@ class LayersInfoWMS extends LayersInfo {
         // Extract metadata from capabilities XML
         const capability = xmlDoc.querySelector("Capability");
         const keyword = xmlDoc.querySelector("Keyword").textContent;
-        const abstract = xmlDoc.querySelector("Abstract").textContent;
+        const abstract = xmlDoc.querySelectorAll("Abstract").textContent;
 
         // Extract layer information from capabilities XML
         const capaLyrList = capability.querySelector("Layer");
@@ -764,7 +764,7 @@ class LayersInfoWMS extends LayersInfo {
             try {
               const iName = layer.querySelector("Name").textContent;
               const iTitle = layer.querySelector("Title").textContent;
-              const iAbstract = layer.querySelector("Abstract").textContent;
+              const iAbstract = layer.querySelectorAll("Abstract").textContent ?? "";
 
               // Extract keywords
               const keywordsHTMLList = layer.querySelectorAll("KeywordList keyword");
