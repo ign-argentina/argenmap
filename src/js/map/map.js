@@ -245,21 +245,22 @@ $("body").on("pluginLoad", function (event, plugin) {
           //modal.createModal();          //loadLayersModal.createComponent();
           break;
         case 'betterScale':
-        // Leaflet BetterScale plugin
-					/*
-					L.control.betterscale({
-						metric: true,
-						imperial: false
-					}).addTo(mapa);
-					*/
-					L.control.betterscale({
-						metric: true,
-            imperial: false,
-            position: 'bottomleft'
-					}).addTo(mapa);
-          gestorMenu.plugins['betterScale'].setStatus('visible');
+          // Leaflet BetterScale plugin
+          /*
+          L.control.betterscale({
+            metric: true,
+            imperial: false
+          }).addTo(mapa);
+          */
+          L.control
+            .scale({
+              metric: true,
+              imperial: false,
+            })
+            .addTo(mapa);
+          gestorMenu.plugins["betterScale"].setStatus("visible");
           loadDeveloperLogo();
-					break;
+          break;
 				case 'minimap':
 					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
 					var miniArgenmap = new L.TileLayer(argenmap._url, {

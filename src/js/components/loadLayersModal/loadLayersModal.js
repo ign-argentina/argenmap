@@ -25,13 +25,13 @@ class modalUI {
       {
         name: 'Archivos',
         id: 'files-action',
-        icon: 'src/js/components/openfiles/folder-open-solid.svg',
+        icon: 'fa-solid fa-folder',
         component: new IconModalGeojson
       },
       {
         name: 'WMS',
         id: 'wms-action',
-        icon: 'src/js/components/loadServices/icon-load-services.svg',
+        icon: 'fa-solid fa-link',
         component: new IconModalLoadServices
       },
       // {
@@ -95,7 +95,7 @@ class modalUI {
     this.actions.forEach((action, i) => {
       let btn = document.createElement('button');
       if (action.icon && action.icon.length) {
-        btn.innerHTML = `<img src="${action.icon}" width="18" height="18">`
+        btn.innerHTML = `<i class="${action.icon}"></i>`
       } else {
         btn.innerText = action.name;
       }

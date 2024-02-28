@@ -44,7 +44,7 @@ class ModalService {
 		let tab_div = document.createElement("div")
 		tab_div.className = "tabs_upload"
 		tab_div.innerHTML = `
-    <span style="color:#105C97;margin:0px 10px;text-align:center;width:100%">Agregar capas a través de WMS</span>`
+    <span style="margin:0px 10px;text-align:center;width:100%">Agregar capas a través de WMS</span>`
 
 		let form = document.createElement("form")
 		form.className = "wms-form"

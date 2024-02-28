@@ -308,7 +308,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const LEGEND_BTN_TEXT = STRINGS.basemap_legend_button_text;
 
     const BASEMAP_LEGEND = document.createElement("button");
-    BASEMAP_LEGEND.classList = "ag-btn ag-btn-primary";
+    BASEMAP_LEGEND.classList = "ag-btn ag-btn-secondary";
     BASEMAP_LEGEND.style = "margin: 0; width: auto;";
     BASEMAP_LEGEND.innerHTML = LEGEND_BTN_TEXT;
     BASEMAP_LEGEND.setAttribute(
@@ -325,7 +325,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_LEGEND_IMG ? BASEMAP_TOOLTIP.append(BASEMAP_LEGEND) : "";
 
     const INFO_ICON = document.createElement("div");
-    INFO_ICON.classList.add('zoom-info-icon', 'ag-btn', 'ag-btn-primary');
+    INFO_ICON.classList.add('zoom-info-icon', 'ag-btn', 'ag-btn-secondary');
     INFO_ICON.innerHTML = iconSvg;
     INFO_ICON.appendChild(BASEMAP_TOOLTIP);
     INFO_ICON.setAttribute(
@@ -2588,11 +2588,11 @@ class GestorMenu {
               <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
               <button onClick='reloadMenu()' class='ag-btn ag-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
-            <button class='ag-btn ag-btn-primary btn-search' type='submit'>
+            <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
             <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
             </button>
-            <button class='ag-btn ag-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
-            <label class="ag-btn ag-btn-primary btn-search">
+            <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
+            <label class="ag-btn ag-btn-secondary btn-search">
               <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
               <input type="checkbox" style="display: none;" name="jevattend" id="jevattend_id" value="1"  onclick=""/>
               </label>
@@ -2706,7 +2706,7 @@ class GestorMenu {
       sInitialHTML +=
         "<li role='presentation'  class='" +
         sClassAux +
-        "'><a style='background-color: white;' href='#" +
+        "'><a href='#" +
         this._tabs[key].getExtendedId() +
         "' aria-controls='" +
         this._tabs[key].getExtendedId() +

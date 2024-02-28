@@ -363,7 +363,7 @@ Argenmap UI Components class
   padding: 6px 12px;
   font-size: var(--btn-ftn-size);
   color: var(--btn-hover-color);
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
   margin: 10px;
   border: 2px solid;
@@ -542,6 +542,7 @@ Menu principal
 .nav-tabs>li>a {
   color: var(--btn-secondary-color);
   border: 2px solid var(--btn-secondary-color);
+  background-color: var(--map-btn-bg-color);
   border-bottom: 0;
   font-weight: 600;
   margin-left: 1px;
@@ -554,16 +555,18 @@ Menu principal
   border: 2px solid var(--btn-secondary-color);
   border-bottom: 0;
 }
-.nav-tabs>li.active>a {
-  background-color: var(--active-bg-color, #33b560);
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus  {
+  background-color: var(--active-bg-color);
   color: white;
   cursor: pointer;
-  border: 1px solid var(--active-bg-color);
+  border: 2px solid var(--active-bg-color);
+  border-bottom: 0;
 }
-.nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+.nav-tabs>li.active>a:hover{
   cursor: pointer;
   color: white;
-  border: 1px solid var(--active-bg-color);
+  border: 2px solid var(--active-bg-color);
+  border-bottom: 0;
 }
 .tab-content {
   border: none;
@@ -1121,7 +1124,7 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   padding: 0px;
 }
 .zoom-info-icon:hover svg {
-  fill: var(--btn-hover-color);
+  fill: var(--secondary-color);
 }
 .switch {
   height: 0;
@@ -1143,9 +1146,9 @@ input:checked.switch+label:after {
 }
 .switch+label {
   cursor: pointer;
-  width: 35px;
-  height: 20px;
-  background: grey;
+  width: 40px;
+  height: 25px;
+  background: var(--secondary-color);
   display: block;
   border-radius: 100px;
   position: relative;
@@ -1155,8 +1158,8 @@ input:checked.switch+label:after {
   position: absolute;
   top: 1px;
   left: 1px;
-  width: 18px;
-  height: 18px;
+  width: 23px;
+  height: 23px;
   background: #fff;
   border-radius: 90px;
   transition: 0.3s;
@@ -1201,7 +1204,7 @@ input:checked.switch+label:after {
   font-weight: normal;
 }
 .tooltiptext, #argenmap-tooltip span, #argenmap-tooltip span button:hover {
-  color: #105C97;
+  color: var(--primary-color);
 }
 .switch:hover+label .tooltiptext {
   visibility: visible;
@@ -1282,7 +1285,7 @@ Control mapa base
 .base-layer-item-info img {
   width: 50px;
   height: 40px;
-  border: 2px solid var(--primary-color);
+  border: 2px solid var(--secondary-color);
 }
 /*******************************
 Control graticula

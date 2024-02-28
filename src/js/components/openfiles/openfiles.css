@@ -275,7 +275,7 @@ section .details span {
 }
 .upload {
   width: 100%;
-  color: var(--primary-color);
+  color: var(--secondary-color);
   cursor: pointer;
 }
 .upload:hover {
@@ -292,7 +292,7 @@ section .details span {
   background-color: #F5F5F5;
 }
 #uploaded-area::-webkit-scrollbar-thumb {
-  background-color: #105C97;
+  background-color: var(--primary-color);
   background-image: -webkit-gradient(linear, 0 0, 0 100%,
       color-stop(.5, rgba(255, 255, 255, .2)),
       color-stop(.5, transparent), to(transparent));

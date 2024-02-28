@@ -22,7 +22,7 @@ class StylesUI {
       border-bottom: 1px dashed ${app.theme.menuBackground};
     }
     .nav-tabs > li.active > a {
-      background-color: ${app.theme.activeLayer} !important;
+      background-color: ${app.theme.activeLayer};
     }
     .active {
       background-color: ${app.theme.activeLayer};
