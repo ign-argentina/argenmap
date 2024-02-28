@@ -31,7 +31,7 @@ class HelpTour {
    */
   createComponent(data) {
     const btnElement = document.createElement('button');
-    btnElement.classList = "ag-btn ag-btn-secondary menu-section-btn";
+    btnElement.classList = "ag-btn ag-btn-primary menu-section-btn";
     btnElement.id = 'nav-help-btn';
     btnElement.title = 'Ayuda';
 
