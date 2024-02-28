@@ -85,14 +85,16 @@ Ejemplos:
   font-family: "Aurebesh Bold";
   src: url("../../../dist/fonts/Aurebesh-Bold.otf");
 }
+/* #0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE*/
 :root {
-  --primary-color: #0C74A0;
-  --secondary-color: #105C97;
+  --primary-color: #3A6EA7;
+  --secondary-color: #0094D4;
   --main-bg-color: #fff;
   --bg-color: #0db2e0;
   --active-bg-color: #33b560;
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
+  --danger-color: #c62828;
   --map-btn-color: #303030;
   --map-btn-bg-color: #fff;
   --popup-fnt-size: 12px;
@@ -100,8 +102,8 @@ Ejemplos:
   --body-fnt-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
-  --menu-section-hover-color: #969393;
-  --layer-btn-hover-color: #d1cccc;
+  --menu-section-hover-color:#E7E7E7; /*#969393 #AAAAAA*/
+  --layer-btn-hover-color: #E7E7E7;  /*#d1cccc  */
   --main-font-family: "Encode Sans", sans-serif;
   /*Argenmap ui Button*/
   --btn-ftn-size: 1.5rem;
@@ -109,20 +111,21 @@ Ejemplos:
   --btn-background-color: #FFF;
   --btn-hover-bg-color: #FFF;
   --btn-hover-color: #FFF;
-  --btn-primary-color: #0C74A0;
-  --btn-secondary-color: #105C97;
-  --btn-disabled-color: #838788;
-  --btn-confirm-color: #3A8555;
-  --btn-danger-color: #CE4946;
+  --btn-primary-color: var(--primary-color);
+  --btn-secondary-color: var(--secondary-color);
+  --btn-disabled-color: #838788; /* #AAAAAA */
+  --btn-confirm-color: #2e7d33; /* #33B560  #3A8555*/
+  --btn-danger-color: #c62828; /*#CE4946 #EF4D3D */
+  ;
   /*Argenmap ui input text */
   --input-text-ftn-size: 14px;
   --input-text-bg-color: #FFF;
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
   /*Menu capas*/
-  --lyr-menu-bg-color: #55555554;
-  --lyr-menu-panel-head-bg-color: #FFF;
-  --lyr-menu-panel-head-text-color: #105C97;
+  --lyr-menu-bg-color: #66666654;
+  --lyr-menu-panel-head-bg-color: var(--primary-color);
+  --lyr-menu-panel-head-text-color: #FFF;
   --menu-title-text-color: #fff
 }
 /*******************************
@@ -266,7 +269,7 @@ a, a:hover, a:focus {
 } */
 #mapa {
   position: relative;
-  height: calc(100vh - 50px);
+  height: 100vh;
   background-color: var(--main-bg-color, white) !important;
 }
 .leaflet-top.leaflet-left .leaflet-control {
@@ -275,6 +278,9 @@ a, a:hover, a:focus {
 div.leaflet-top.leaflet-left {
   right: 54px;
   left: auto;
+}
+.leaflet-top{
+  top: 60px;
 }
 #top-left-logo {
   /* width: auto; */
@@ -354,54 +360,58 @@ Argenmap UI Components class
   -ms-user-select: none;
   user-select: none;
   border-radius: var(--btn-border-radius);
-  background-color: var(--btn-background-color);
   padding: 6px 12px;
   font-size: var(--btn-ftn-size);
+  color: var(--btn-hover-color);
   font-weight: 700;
   cursor: pointer;
   margin: 10px;
   border: 2px solid;
 }
 .ag-btn:hover {
-  color: var(--btn-hover-color);
+  background-color: var(--btn-hover-color);
 }
+
 .ag-btn-primary {
+  background-color: var(--btn-primary-color);
   border-color: var(--btn-primary-color);
-  color: var(--btn-primary-color);
 }
 .ag-btn-primary:hover {
-  background-color: var(--btn-primary-color);
+  color: var(--btn-primary-color);
 }
+
+.ag-btn-secondary {
+  background-color: var(--btn-secondary-color);
+  border-color: var(--btn-secondary-color);
+}
+.ag-btn-secondary:hover {
+  color: var(--btn-secondary-color);
+}
+
 .ag-btn-disabled {
-  color: var(--btn-disabled-color);
+  background-color: var(--btn-disabled-color);
   border-color: var(--btn-disabled-color);
   cursor: not-allowed;
   opacity: 0.65;
 }
 .ag-btn-disabled:hover {
-  background-color: var(--btn-disabled-color);
-}
-.ag-btn-secondary {
-  border-color: var(--btn-secondary-color);
-  color: var(--btn-secondary-color);
-}
-.ag-btn-secondary:hover {
-  background-color: var(--btn-secondary-color);
+  color: var(--btn-disabled-color);
 }
 .ag-btn-confirm {
   border-color: var(--btn-confirm-color);
-  color: var(--btn-confirm-color);
+  background-color: var(--btn-confirm-color);
 }
 .ag-btn-confirm:hover {
-  background-color: var(--btn-confirm-color);
+  color: var(--btn-confirm-color);
 }
 .ag-btn-danger {
   border-color: var(--btn-danger-color);
-  color: var(--btn-danger-color);
-}
-.ag-btn-danger:hover {
   background-color: var(--btn-danger-color);
 }
+.ag-btn-danger:hover {
+  color: var(--btn-danger-color);
+}
+
 .ag-input-text {
   height: 36px;
   overflow: auto;
@@ -427,6 +437,7 @@ Menu principal
   background-color: var(--lyr-menu-bg-color);
   margin: 1rem;
   position: absolute;
+  top: 60px;
   z-index: 1000;
   border-radius: 6px;
   padding: 0;
@@ -445,7 +456,7 @@ Menu principal
 }
 .panel-body {
   padding: 5px;
-  background-color: #105C97;
+  background-color: var(--primary-color);
 }
 .loading {
   width: 100%;
@@ -460,7 +471,7 @@ Menu principal
   color: var(--lyr-menu-panel-head-text-color);
   background-color: var(--lyr-menu-panel-head-bg-color);
   font-size: var(--group-title-fnt-size, 15px);
-  border: 2px solid var(--btn-secondary-color);
+  border-top: 1px solid #f5f5f5 !important;
   cursor: pointer;
 }
 .panel-default>.panel-heading>.panel-title>a {
@@ -559,8 +570,10 @@ Menu principal
   border-radius: 4px;
 }
 .panel-heading {
-  border-bottom: 1px solid white;
   font-family: var(--main-font-family);
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid #f5f5f5 !important;
 }
 .panel-heading:hover {
   background-color: var(--lyr-menu-panel-head-text-color);
@@ -572,10 +585,10 @@ Menu principal
 .active {
   background-color: var(--active-bg-color, #33b560);
 }
-.tab-pane.active {
+/* .tab-pane.active {
   background-color: var(--menu-title-text-color);
   border-radius: 4px;
-}
+} */
 li.active>div>a {
   color: white !important;
 }
@@ -586,7 +599,7 @@ li.active>div>a {
   padding: 8px 15px;
   background-color: #FFFFFFCC;
 }
-.list-group-item.capa{
+.list-group-item.capa {
   background-color: #FFFFFF;
 }
 .menu-button {

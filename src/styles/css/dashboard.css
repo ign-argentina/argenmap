@@ -21,12 +21,18 @@ body {
  * Hide default border to remove 1px line.
  */
 .navbar-fixed-top {
-  position: sticky;
+  /* position: sticky; */
   margin: 0;
   border: 0;
   height: 50px;
+  margin: 10px 10px 0;
+  border-radius: 6px;
 }
-
+.navbar-sticky{
+  position: sticky;
+  height: 60px;
+  background-color: transparent;
+}
 /*
  * Sidebar
  */

@@ -40,7 +40,7 @@ class Geoprocessing {
   }
   createIcon() {
     const btnElement = document.createElement('button');
-    btnElement.classList = "ag-btn ag-btn-secondary menu-section-btn";
+    btnElement.classList = "ag-btn ag-btn-primary menu-section-btn";
     btnElement.id = 'geoprocesos-btn';
     btnElement.title = 'Geoprocesos';
 
@@ -626,13 +626,11 @@ class Geoprocessing {
     rectSizeMsg.innerHTML =
       "Se superó el limite. <br> Edite o elimine el rectángulo.";
     rectSizeMsg.id = "invalidRect";
-    rectSizeMsg.style = "color: #ff1100; font-weight: bolder;";
     document.getElementsByClassName("form")[1].appendChild(rectSizeMsg);
     $("#invalidRect").addClass("hidden");
 
     let layerMessage = document.createElement("div");
     layerMessage.id = "msgRectangle";
-    layerMessage.style = "color: #37bbed; font-weight: bolder; font-size: 13px";
 
     //Contour Messages
     if (this.geoprocessId === "contour") {
@@ -670,7 +668,6 @@ class Geoprocessing {
       let message = document.createElement("div");
       message.innerHTML = "No hay Curvas de Nivel";
       message.id = "msgNoContour";
-      message.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(message);
       $("#msgRectangle").addClass("hidden");
 

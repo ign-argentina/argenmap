@@ -2588,8 +2588,14 @@ class GestorMenu {
               <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
               <button onClick='reloadMenu()' class='ag-btn ag-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
-            <button class='ag-btn ag-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
-            <button class='ag-btn ag-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></span></button>
+            <button class='ag-btn ag-btn-primary btn-search' type='submit'>
+            <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
+            </button>
+            <button class='ag-btn ag-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
+            <label class="ag-btn ag-btn-primary btn-search">
+              <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
+              <input type="checkbox" style="display: none;" name="jevattend" id="jevattend_id" value="1"  onclick=""/>
+              </label>
           </div>
         </form>`;
 
