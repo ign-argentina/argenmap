@@ -49,8 +49,14 @@ To modify the visual appearance of the application, the following directories an
 - `src/config/styles/images`: logos and other images
 - `src/config/styles/images/legends`: the app searches by default in this location for images with the same name as the layers and adds them to layers buttons as a legend or preview
 
+
+- You can find [examples][] to guide you in these customizations
+
 ## Possible problems
 
 If the syntax of JSON files is incorrect, the application could stop running or be partially loaded.
 
 If the sections or WMS / WMTS data sources do not have the attributes indicated in this article, they could be left without loading in the panel, or with an incorrect order or data.
+
+
+[examples]: customization.md
