@@ -85,13 +85,13 @@ Ejemplos:
   font-family: "Aurebesh Bold";
   src: url("../../../dist/fonts/Aurebesh-Bold.otf");
 }
-/* #0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE*/
+/* #0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE #0091CE #F38A00 #0db2e0*/
 :root {
-  --primary-color: #3A6EA7;
-  --secondary-color: #0094D4;
+  --primary-color: #3A6EA7;/*  #242C4F*/
+  --secondary-color: #0094D4;/* #45659D */
   --main-bg-color: #fff;
   --bg-color: #0db2e0;
-  --active-bg-color: #33b560;
+  --active-bg-color: #33b560; /* #E7BA61 */
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
   --danger-color: #c62828;
