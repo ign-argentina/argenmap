@@ -29,7 +29,7 @@ En el artículo de **[Configuración](configuration.md)** se detalla esta parte 
 
 Mover o copiar el código del visor al directorio raíz de un servidor web o con alguna herramienta de depuración como LiveServer en Visual Studio Code, etc y abrir en un navegador web la URL donde se encuentra publicado.
 
-> [!IMPORTANT]Importante
+> [!IMPORTANT]
 > Para ver cambios en la configuración es necesario recargar el visor en el navegador.
 
 ### Siguiente: [Configurar el visor](configuration.md)

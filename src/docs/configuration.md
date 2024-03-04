@@ -2,10 +2,10 @@
 
 Esta sección explica cómo se pueden configurar las capas, los mapas base, el aspecto visual, extensiones y vista del mapa y otras opciones.
 
-> [!TIP]Truco
+> [!TIP]
 > Para facilitar la creación de una nueva configuración, copiar los archivos de configuración por defecto que están en el directorio `src/config/default` al directorio `src/config` y editar los nuevos archivos JSON.
 
-> [!CAUTION]Problemas posibles
+> [!CAUTION]
 > 1. Si la sintaxis de los archivos JSON es incorrecta, la aplicación podría detener su ejecución o quedar cargada parcialmente. Validar la sintaxis de los archivos JSON con validadores web o los que incluyen editores de código fuente.
 > 
 > 2. Si las secciones u orígenes de datos WMS / WMTS no tienen los atributos como se indican en este artículo podrían quedar sin cargar en el panel, o con un orden o datos incorrectos. Validar que los servicios a incluir se encuentren funcionando y su URL sea correctamente incluida
@@ -17,12 +17,12 @@ Esta sección explica cómo se pueden configurar las capas, los mapas base, el a
 
 El archivo `data.json` se compone de bloques llamados **items**, el primero agrupa los mapas base y los siguientes las secciones desplegables que agrupan capas.
 
-> [!NOTE]Nota
+> [!NOTE]
 > Llamamos bloque a lo que está entre dos llaves `{ }` 
 
 ### Estructura del archivo data.json 
 
-(comentarios en verde después de "//")
+*comentarios después de cada "//"*
 <!-- </details>
 
 <summary>### Estructura del archivo data.json</summary> -->
@@ -65,7 +65,7 @@ El archivo `data.json` se compone de bloques llamados **items**, el primero agru
 
 Tomando como referencia la estructura anterior, dentro del atributo "capas" del primer bloque, agregar uno nuevo por cada mapa base. 
 
-> [!TIP]Truco
+> [!TIP]
 > Si el mapa base es un servicio TMS, el mapa podría quedar con las teselas desordenadas. Para resolverlo se puede agregar un "-" al parámetro y o cambiar el orden de los demás parámetros. 
 > 
 > Consultar la documentación del servicio a agregar.
@@ -97,7 +97,7 @@ Tomando como referencia la estructura anterior, dentro del atributo "capas" del 
 
 Dentro de "items", después del primer bloque que define los mapas base se pueden definir servicios de capas, cada uno dentro de un bloque.
 
-> [!NOTE]Nota
+> [!NOTE]
 > Cada bloque sirve para que la aplicación solicite el documento de capacidades al servicio WMS / WMTS, ese archivo contiene un listado de las capas que publica. Con esa información la aplicación genera de forma automática en el panel de capas o menú lateral una sección colapsable que contiene las capas de ese servicio como se ve en la siguiente imagen.
 
 ![secciones desplegables en el panel de capas](img/secciones.jpeg)
@@ -343,7 +343,7 @@ En el archivo `preferences.json` se pueden definir opciones de inicio de la apli
 
 Para modificar más el aspecto visual de la aplicación puede agregarse en `src/config/styles` los siguientes directorios y archivos:
 
-> [!TIP]Truco
+> [!TIP]
 > se pueden copiar desde `src/config/default/styles`
 
 - `src/config/styles/css/main.css` : reglas de estilos CSS (el original está en `src/styles/css`)
