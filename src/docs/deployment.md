@@ -1,32 +1,35 @@
-## Requerimientos
+# Guía rápida de instalación
+
+### Requerimientos
 
 - Servidor web (Nginx, Apache, lighttpd, etc.)
 
-## Guía rápida de instalación
+## 1. Descargar código
 
-### Primer paso: descargar código
-
-Clonar el repositorio o descargarlo en formato ZIP y descomprimirlo:
-
-Para clonar, usar la URL https://github.com/ign-argentina/argenmap.git
-y el comando:
+Clonar con el comando:
 
     git clone https://github.com/ign-argentina/argenmap.git
 
-Para descargar el repositorio comprimido en formato ZIP: 
+O descargar el código en formato ZIP y descomprimirlo con la sig. URL: 
 
 https://github.com/ign-argentina/argenmap/archive/master.zip
 
-### Segundo paso: definir la configuración 
+## 2. Definir la configuración 
 
-Los mapas base, capas se definen `data.json` y la configuración en `preferences.json`.
+Copiar los archivos de configuración por defecto que están en el directorio `src/config/default` al directorio `src/config` y editar los nuevos archivos según se desee.
 
-> En "data" se definen los mapas base y capas, al modificarlo y recargar la página se verán los cambios hechos.
+> [!TIP]
+> Los mapas base, capas y modo en que se agrupan y ordenan se definen en el archivo `data.json` 
+>
+> La apariencia, vista inicial del mapa y otras opciones en `preferences.json`.
 
 En el artículo de **[Configuración](configuration.md)** se detalla esta parte del proceso.
 
-### Tercer paso: publicar visor 
+## 3. Publicar el visor 
 
-Publicar el contenido de este repositorio con un servidor web o con alguna herramienta de depuración como LiveServer en Visual Studio Code, etc.
+Mover o copiar el código del visor al directorio raíz de un servidor web o con alguna herramienta de depuración como LiveServer en Visual Studio Code, etc y abrir en un navegador web la URL donde se encuentra publicado.
 
-## Siguiente: [Configuración](configuration.md)
+> [!IMPORTANT]Importante
+> Para ver cambios en la configuración es necesario recargar el visor en el navegador.
+
+### Siguiente: [Configurar el visor](configuration.md)
