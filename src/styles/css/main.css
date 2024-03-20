@@ -1468,6 +1468,10 @@ Searcher
   display: flex;
   flex-direction: column-reverse;
   justify-content: space-evenly;
+  border-radius: 6px;
+  background-color: #ffffffBB;
+  height: 36px;
+  margin-bottom: 5px;
 }
 .formBtns {
   width: 100%;

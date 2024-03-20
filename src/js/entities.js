@@ -2728,6 +2728,7 @@ class GestorMenu {
 
     let sidebar = document.getElementById("sidebar");
     const searcher = document.createElement("div")
+    searcher.style = "position: fixed; display: contents;";
     searcher.innerHTML = this._printSearcher();
     sidebar.insertBefore(searcher, sidebar.firstChild);
   }
