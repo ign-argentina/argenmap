@@ -2594,7 +2594,7 @@ class GestorMenu {
             <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
             <label class="ag-btn ag-btn-secondary btn-search">
               <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
-              <input type="checkbox" style="display: none;" name="jevattend" id="jevattend_id" value="1"  onclick=""/>
+              <input type="checkbox" style="" name="jevattend" id="jevattend_id"/>
               </label>
           </div>
         </form>`;
@@ -2614,7 +2614,6 @@ class GestorMenu {
       menuPinedButton.classList.add('active');
     }
   
-    // Your additional logic for handling the button click can go here
   }
 
   getAvailableTags() {
