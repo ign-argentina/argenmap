@@ -69,7 +69,6 @@ General
 html {
   height: 100%;
 }
-
 .loader-line {
   display: flex;
   justify-content: center;
@@ -188,13 +187,12 @@ a, a:hover, a:focus {
   align-items: center;
   justify-content: center;
 }
-.center-flex-space-btw{
+.center-flex-space-btw {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 }
-
 /*******************************
 UI Components class
 *******************************/
@@ -258,7 +256,7 @@ UI Components class
 .ui-btn-danger:hover {
   background-color: var(--btn-danger-color);
 }
-.ui-input-text{
+.ui-input-text {
   height: 36px;
   overflow: auto;
   box-sizing: border-box;
@@ -618,14 +616,12 @@ li.active>div>a {
 .hidden {
   visibility: hidden !important;
 }
-
 /*******************************
 JQuery Autocomplete
 *******************************/
 .ui-widget.ui-widget-content {
   z-index: 3000;
 }
-
 /*******************************
 Leaflet
 *******************************/
@@ -664,7 +660,6 @@ Leaflet
 /* .leaflet-pane .leaflet-overlay-pane:not(:first-child) {
   filter: drop-shadow(5px -2px 1.5px rgba(5,15,5,0.3));
 } */
-
 /*******************************
 Leaflet popup featureInfo
 *******************************/
@@ -716,7 +711,6 @@ Leaflet popup featureInfo
   float: left;
   padding-left: 10px;
 }
-
 /*******************************
 Popup geometría
 *******************************/
@@ -975,7 +969,6 @@ input:checked.switch+label:after {
     visibility: hidden;
   }
 }
-
 /*******************************
 Control mapa base
 *******************************/
@@ -1021,7 +1014,6 @@ Control mapa base
   width: 230px;
   display: block;
 }
-
 /*******************************
 Control graticula
 *******************************/
@@ -1034,7 +1026,6 @@ Control graticula
 .leaflet-control-customgraticule:hover {
   cursor: pointer;
 }
-
 /*******************************
 SideBar
 *******************************/
@@ -1126,7 +1117,6 @@ SideBar
 .leaflet-oldie .leaflet-popup-content-wrapper {
   transform: scale(1);
 }
-
 /*******************************
 New navbar
 *******************************/
@@ -1146,6 +1136,10 @@ New navbar
   flex: inherit;
   margin: 0.1rem 3px;
   text-align: inherit;
+}
+#logo-help.navbar-new-content {
+  display: flex;
+  align-items: center;
 }
 .navbar-button {
   margin-right: -5px;
@@ -1182,7 +1176,6 @@ New navbar
   white-space: nowrap;
   text-decoration: none;
 }
-
 /*******************************
 Searcher
 *******************************/
@@ -1195,7 +1188,7 @@ Searcher
   cursor: pointer;
   line-height: 0;
 }
- .btn-search,  .btn-reset-layers {
+.btn-search, .btn-reset-layers {
   width: auto;
   margin: 2px;
   height: 36px;
@@ -1219,7 +1212,6 @@ Searcher
 #q.ui-input-text {
   padding: 0 0 0 10px;
 }
-
 /*******************************
 Perfil Topografico
 *******************************/
@@ -1244,7 +1236,6 @@ Perfil Topografico
   width: 100%;
   min-height: 400px;
 }
-
 /*******************************
 Measurement Info
 *******************************/
@@ -1276,7 +1267,6 @@ Measurement Info
 #measurementInfo tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
-
 /*******************************
 ESRI
 *******************************/
@@ -1307,7 +1297,6 @@ ESRI
 #esriTable tr:nth-child(even) {
   background-color: var(--main-bg-color, #fff);
 }
-
 /*******************************
 Icons and Btns
 *******************************/
@@ -1342,7 +1331,6 @@ Icons and Btns
   border-top-left-radius: 4px !important;
   border-top-right-radius: 4px !important;
 } */
-
 /*******************************
 ScreenShot
 *******************************/
@@ -1352,7 +1340,6 @@ ScreenShot
 #screenShoter :hover {
   cursor: pointer;
 }
-
 /*******************************
 Special effects
 *******************************/
