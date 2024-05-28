@@ -68,43 +68,63 @@ class SidebarTools {
 
   hideLeftBtns() {
     document.querySelector("a#sidebar-toolbar-icon-left").addEventListener("click", function () {
-      locate = document.getElementsByClassName("leaflet-control-locate");
-      zoomhome = document.getElementsByClassName("leaflet-control-zoomhome");
-      customgraticule = document.getElementsByClassName("leaflet-control-customgraticule");
-      measure = document.getElementsByClassName("leaflet-control-measure");
-      loadLayersButton = document.getElementById("loadLayersButton");
-      drawb = document.getElementsByClassName("leaflet-top leaflet-right");
-      screenShoter = document.getElementById("screenShoter");
-      divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
-      fullscreen = document.getElementById("fullscreen");
-      icongeop = document.getElementById("geoprocesos-icon");
-      pdfPrinter = document.getElementById("pdfPrinter");
-
+  
+      let btnL = document.querySelector("#hideBtnLeft");
+      let drawb = document.getElementsByClassName("leaflet-top leaflet-left");
+  
+      let pos_left_max600, pos_left;
+  
+      L.Browser.webkit ? (pos_left_max600 = "36px", pos_left = "6px") : (pos_left_max600 = "36px", pos_left = "6px");
+  
       if (areHiddenLeft) {
         areHiddenLeft = false;
-        zoomhome[0].hidden = false;
-        customgraticule[0].hidden = false;
-        locate[0].hidden = false;
-        measure[0].hidden = false;
-        loadLayersButton.style.display = "";
-        divbar[2].hidden = false;
-        icongeop.style.display = "";
-        fullscreen.style.display = "";
-        screenShoter ? screenShoter.style.display = "" : null;
-        pdfPrinter.style.display = "";
+        drawb[0].hidden = false;
+  
+        window.matchMedia("(max-width: 600px)").matches ? btnL.style.left = pos_left_max600 : btnL.style.left = pos_left;
       } else {
         areHiddenLeft = true;
-        zoomhome[0].hidden = true;
-        customgraticule[0].hidden = true;
-        locate[0].hidden = true;
-        measure[0].hidden = true;
-        loadLayersButton.style.display = "none";
-        divbar[2].hidden = true;
-        icongeop.style.display = "none";
-        fullscreen.style.display = "none";
-        screenShoter ? screenShoter.style.display = "none" : null;
-        pdfPrinter.style.display = "none";
+        drawb[0].hidden = true;
+  
+        window.matchMedia("(min-width: 600px)").matches ? btnL.style.left = "-30px" : btnL.style.left = "5px";
       }
+  
+      // locate = document.getElementsByClassName("leaflet-control-locate");
+      // zoomhome = document.getElementsByClassName("leaflet-control-zoomhome");
+      // customgraticule = document.getElementsByClassName("leaflet-control-customgraticule");
+      // measure = document.getElementsByClassName("leaflet-control-measure");
+      // loadLayersButton = document.getElementById("loadLayersButton");
+      // drawb = document.getElementsByClassName("leaflet-top leaflet-right");
+      // screenShoter = document.getElementById("screenShoter");
+      // divbar = document.getElementsByClassName("leaflet-bar leaflet-control");
+      // fullscreen = document.getElementById("fullscreen");
+      // icongeop = document.getElementById("geoprocesos-icon");
+      // pdfPrinter = document.getElementById("pdfPrinter");
+  
+      // if (areHiddenLeft) {
+      //   areHiddenLeft = false;
+      //   zoomhome[0].hidden = false;
+      //   customgraticule[0].hidden = false;
+      //   locate[0].hidden = false;
+      //   measure[0].hidden = false;
+      //   loadLayersButton.style.display = "";
+      //   divbar[2].hidden = false;
+      //   icongeop.style.display = "";
+      //   fullscreen.style.display = "";
+      //   screenShoter ? screenShoter.style.display = "" : null;
+      //   pdfPrinter.style.display = "";
+      // } else {
+      //   areHiddenLeft = true;
+      //   zoomhome[0].hidden = true;
+      //   customgraticule[0].hidden = true;
+      //   locate[0].hidden = true;
+      //   measure[0].hidden = true;
+      //   loadLayersButton.style.display = "none";
+      //   divbar[2].hidden = true;
+      //   icongeop.style.display = "none";
+      //   fullscreen.style.display = "none";
+      //   screenShoter ? screenShoter.style.display = "none" : null;
+      //   pdfPrinter.style.display = "none";
+      // }
     });
   }
 }

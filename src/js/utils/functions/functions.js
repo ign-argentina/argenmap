@@ -10,6 +10,21 @@ var loadElevationProfile = false;
 var loadLayerOptions = false;
 var currentlyDrawing = false;
 var loadGeoprocessing = false;
+var loadAddLayer = false;
+var loadQueryLayer = false;
+// Falta:
+// Ayuda
+// Screenshot
+// Imprimir
+// Cuadricula
+
+function setAddLayer(cond) {
+  loadAddLayer = cond;
+}
+
+function setQueryLayer(cond) {
+  loadQueryLayer = cond;
+}
 
 function setTableAsPopUp(cond) {
   loadTableAsPopUp = cond;

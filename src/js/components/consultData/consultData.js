@@ -24,7 +24,9 @@ class ConsultData {
         elem.onclick = (e) => { activateDataConsult(), e.stopPropagation()};
         //elem.onmouseover = showConsultList;
         //elem.onmouseout = hideConsultList;
-        document.querySelector(".leaflet-top.leaflet-right").append(elem);
+        if (loadQueryLayer) {
+            document.querySelector(".leaflet-top.leaflet-right").append(elem);
+        }        
         //document.getElementById("cdOption1").onclick = activateDataConsult;
     }
 }
