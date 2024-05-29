@@ -66,6 +66,16 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         });
       }
 
+      //Temporal
+      if (app.hasOwnProperty("addLayer")) {
+        setAddLayer(app.addLayer.isActive);
+      }
+      if (app.hasOwnProperty("queryLayer")) {
+        setQueryLayer(app.queryLayer.isActive);
+      }
+      //Temporal
+
+
       if (app.hasOwnProperty("tools")) {
         setAddLayer(app.tools.addLayer.isActive);
       }
