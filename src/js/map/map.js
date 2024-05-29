@@ -51,7 +51,7 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = "";
-var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
 var ordenZoomHome = 1;
 var ordenFullScreen = 5;
 var ordenMeasure = 3;
@@ -67,6 +67,7 @@ var ordenLoadLayer = 12;
 var ordenGeoprocessing = 13;
 var ordenConsultData = 14;
 var ordenHelp = 15;
+var ordenConfig = 16;
 var visiblesActivar = true;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function (event, plugin) {
@@ -124,6 +125,9 @@ $("body").on("pluginLoad", function (event, plugin) {
       break;
     case "helpTour":
       ordered.splice(ordenHelp, 1, plugin.pluginName);
+      break;
+    case "configTool":
+      ordered.splice(ordenConfig, 1, plugin.pluginName);
       break;
     default:
       // Add unordered plugins
@@ -271,6 +275,15 @@ $("body").on("pluginLoad", function (event, plugin) {
       visiblesActivar = false;
     }
   }
+  if (visiblesActivar && gestorMenu.pluginExists("configTool")) {
+    if (
+      gestorMenu.plugins["configTool"].getStatus() == "ready" ||
+      gestorMenu.plugins["configTool"].getStatus() == "fail"
+    ) {
+    } else {
+      visiblesActivar = false;
+    }
+  }
   if (visiblesActivar) {
     ordered.forEach(async function (e) {
       switch (e) {
@@ -337,6 +350,10 @@ $("body").on("pluginLoad", function (event, plugin) {
           const help = new HelpTour();
           const helpData = await help.fetchHelpTourData();
           help.createComponent(helpData);
+          break;
+        case "configTool":
+          const configTool = new ConfigTool();
+          configTool.createComponent();
           break;
         case "loadLayer":
           const loadLayersModal = new LoadLayersModal();

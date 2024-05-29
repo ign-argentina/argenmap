@@ -12,6 +12,8 @@ var currentlyDrawing = false;
 var loadGeoprocessing = false;
 var loadAddLayer = false;
 var loadQueryLayer = false;
+var loadConfigTool = false;
+
 // Falta:
 // Ayuda
 // Screenshot
@@ -60,6 +62,10 @@ function setLayerOptions(cond) {
 
 function setGeoprocessing(cond) {
   loadGeoprocessing = cond;
+}
+
+function setConfigTool(cond) {
+  loadConfigTool = cond;
 }
 
 const reverseCoords = (coords) => {

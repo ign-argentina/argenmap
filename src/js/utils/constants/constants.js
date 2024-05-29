@@ -85,7 +85,8 @@ const PLUGINS = {
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
   loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
   consultData: "src/js/components/consultData/consultData.js",
-  helpTour: "src/js/components/help/helpTour.js"
+  helpTour: "src/js/components/help/helpTour.js",
+  configTool: "src/js/components/config-tools/configTool.js"
 };
 
 const MESSAGE_PROPERTIES = {
