@@ -86,7 +86,7 @@ const PLUGINS = {
   loadLayer: "src/js/components/loadLayersModal/loadLayersModal.js",
   consultData: "src/js/components/consultData/consultData.js",
   helpTour: "src/js/components/help/helpTour.js",
-  configTool: "src/js/components/config-tools/configTool.js"
+  configTool: "src/js/components/config-tool/configTool.js"
 };
 
 const MESSAGE_PROPERTIES = {
