@@ -64,7 +64,7 @@ function setGeoprocessing(cond) {
   loadGeoprocessing = cond;
 }
 
-function setConfigTool(cond) {
+function setConfigToolMain(cond) {
   loadConfigTool = cond;
 }
 

@@ -66,16 +66,16 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         });
       }
 
-      if (app.hasOwnProperty("addLayer")) {
-        setAddLayer(app.addLayer.isActive);
+      if (app.hasOwnProperty("tools")) {
+        setAddLayer(app.tools.addLayer.isActive);
       }
 
-      if (app.hasOwnProperty("queryLayer")) {
-        setQueryLayer(app.queryLayer.isActive);
+      if (app.hasOwnProperty("tools")) {
+        setQueryLayer(app.tools.queryLayer.isActive);
       }
 
-      if (app.hasOwnProperty("configTool")) {
-        setConfigTool(app.configTool.isActive);
+      if (app.hasOwnProperty("configToolMain")) {
+        setConfigToolMain(app.configToolMain.isActive);
       }
 
       await this._startModules();

@@ -5,7 +5,7 @@ class configWindow {
 		const configWrapper = document.createElement("div");
 		configWrapper.id = "configWrapper";
 		configWrapper.style = "top: 100px; left: 1000px; position: absolute;";
-		configWrapper.innerHTML = "Configuración de Herramientas";
+		configWrapper.innerHTML = app.configToolMain.name;
 
 		let btncloseConfig = document.createElement("a");
 		btncloseConfig.id = "btnClose-config";
@@ -25,20 +25,23 @@ class configWindow {
 		const form = document.createElement("form");
 		form.id = "configForm";
 
-		// Añadir algunos checkboxes
-		for (let i = 1; i <= 10; i++) {
-			const label = document.createElement("label");
-			label.htmlFor = `checkbox${i}`;
-			label.innerText = `Opción ${i}`;
+		const tools = app.tools;
+		for (const key in tools) {
+			if (tools.hasOwnProperty(key) && tools[key].hasOwnProperty("name")) {
+				const label = document.createElement("label");
+				label.htmlFor = key;
+				label.innerText = tools[key].name;
 
-			const checkbox = document.createElement("input");
-			checkbox.type = "checkbox";
-			checkbox.id = `checkbox${i}`;
-			checkbox.name = `checkbox${i}`;
+				const checkbox = document.createElement("input");
+				checkbox.type = "checkbox";
+				checkbox.id = key;
+				checkbox.name = tools[key].name;
+				checkbox.checked = tools[key].isActive;
 
-			form.appendChild(checkbox);
-			form.appendChild(label);
-			form.appendChild(document.createElement("br"));
+				form.appendChild(checkbox);
+				form.appendChild(label);
+				form.appendChild(document.createElement("br"));
+			}
 		}
 
 		// Añadir botón de submit
@@ -47,11 +50,10 @@ class configWindow {
 		submitButton.innerText = "Aceptar";
 		submitButton.onclick = (e) => {
 			e.preventDefault();
-			// Manejar la acción de enviar
-			const formData = new FormData(form);
-			for (let [key, value] of formData.entries()) {
-				console.log(key, value);
-			}
+			const checkboxes = form.querySelectorAll("input[type='checkbox']");
+			checkboxes.forEach((checkbox) => {
+			  app.tools[checkbox.id].isActive = checkbox.checked;
+			});
 		};
 
 		form.appendChild(submitButton);
