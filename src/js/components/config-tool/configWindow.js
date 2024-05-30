@@ -27,7 +27,7 @@ class configWindow {
 
 		const tools = app.tools;
 		for (const key in tools) {
-			if (tools.hasOwnProperty(key) && tools[key].hasOwnProperty("name")) {
+			if (tools.hasOwnProperty(key) && tools[key].hasOwnProperty("isActive") && tools[key].isActive == true) {
 				const label = document.createElement("label");
 				label.htmlFor = key;
 				label.innerText = tools[key].name;

@@ -77,11 +77,12 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
 
 
       if (app.hasOwnProperty("tools")) {
-        setAddLayer(app.tools.addLayer.isActive);
-      }
-
-      if (app.hasOwnProperty("tools")) {
-        setQueryLayer(app.tools.queryLayer.isActive);
+        if (app.tools.hasOwnProperty("addLayer")) {
+          setAddLayer(app.tools.addLayer.isActive);
+        }
+        if (app.tools.hasOwnProperty("queryLayer")) {
+          setQueryLayer(app.tools.queryLayer.isActive);
+        }
       }
 
       if (app.hasOwnProperty("configToolMain")) {
