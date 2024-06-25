@@ -279,9 +279,9 @@ div.leaflet-top.leaflet-left {
   right: 54px;
   left: auto;
 }
-.leaflet-top{
+/* .leaflet-top{
   top: 60px;
-}
+} */
 #top-left-logo {
   /* width: auto; */
   height: 50px;
@@ -413,6 +413,7 @@ Argenmap UI Components class
 }
 
 .ag-input-text {
+  margin-left: 2px;
   height: 36px;
   overflow: auto;
   box-sizing: border-box;
@@ -433,6 +434,7 @@ Menu principal
 *******************************/
 .menu-container {
   width: auto;
+  max-width: -webkit-fill-available;
   height: auto;
   background-color: var(--lyr-menu-bg-color);
   margin: 1rem;
@@ -513,8 +515,9 @@ Menu principal
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-  width: 350px;
+/*   width: 350px; */
   background-color: transparent;
+  max-width: 320px;
 }
 #sidebar .nav {
   border: 1px;
@@ -539,6 +542,10 @@ Menu principal
   background-color: transparent !important;
 }
 /* Estilos para pestañas de navegación */
+.nav-tabs>li{
+  margin-bottom: 0;
+left: -1px;
+}
 .nav-tabs>li>a {
   color: var(--btn-secondary-color);
   border: 2px solid var(--btn-secondary-color);
@@ -583,7 +590,7 @@ Menu principal
   color: var(--lyr-menu-panel-head-bg-color);
 }
 .panel-heading:hover .item-group-short-desc span {
-  color: var(--lyr-menu-panel-head-bg-color);
+  color: var(--menu-title-text-color);
 }
 .active {
   background-color: var(--active-bg-color, #33b560);
@@ -875,9 +882,14 @@ JQuery Autocomplete
 /*******************************
 Leaflet
 *******************************/
+@media (max-width: 850px) {
+  .leaflet-top {
+    top: 60px;
+  }
+}
 @media (max-width: 600px) {
   .leaflet-top {
-    top: 5px;
+    top: 70px;
   }
 }
 .leaflet-container {
@@ -1312,14 +1324,14 @@ SideBar
 }
 @media (max-width: 600px) {
   .leaflet-control {
-    margin-left: 0px !important;
+    margin-left: 5px !important;
     margin-top: 0px !important;
   }
   div .leaflet-draw-toolbar {
-    margin-top: 0px !important;
+    margin-top: 5px !important;
   }
   .leaflet-right .leaflet-control {
-    margin-right: 0px !important;
+    margin-right: 10px !important;
     margin-top: 0px !important;
   }
   .leaflet-bottom .leaflet-control-scale {
@@ -1405,9 +1417,9 @@ Navbar
   justify-content: space-between;
   overflow: hidden;
 } */
-.navbar-content {
+/* .navbar-content {
   margin: 0.1rem 2.5rem;
-}
+} */
 /* .navbar-button {
   margin-right: -5px;
 } */
@@ -1435,7 +1447,7 @@ Navbar
   align-self: center;
   text-align: right;
   color: var(--text-color, #fff);
-  font-size: 18px;
+  font-size: 16px;
   font-family: "Encode Sans Bold", sans-serif;
   -webkit-user-select: none;
   user-select: none;
@@ -1470,7 +1482,7 @@ Searcher
   justify-content: space-evenly;
   border-radius: 6px;
   background-color: #ffffffBB;
-  height: 36px;
+  /* height: 36px; */
   margin-bottom: 5px;
 }
 .formBtns {

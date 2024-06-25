@@ -45,7 +45,7 @@
   #searchbar {
     left: 50px;
     top: 5px;
-    max-height: 300px;
+    max-height: 135px;
     /* width: 120px; */
   }
   #logoText {
@@ -66,7 +66,7 @@
 }
 @media (min-width:769px) {
   #searchbar {
-    max-width: 300px
+    max-width: 135px
   }
 }
 /* @media (max-width: 470px) {
@@ -85,5 +85,5 @@
   border-bottom-left-radius: 0;
 }
 #div-icon-close-searchbar:hover>.fa-times {
-  color: var(--btn-hover-color);
+  color: var(--btn-primary-color);
 }
