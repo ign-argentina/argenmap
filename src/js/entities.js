@@ -2592,10 +2592,9 @@ class GestorMenu {
             <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
             </button>
             <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
-            <label class="ag-btn ag-btn-secondary btn-search">
-              <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span>
-              <input type="checkbox" style="" name="jevattend" id="jevattend_id"/>
-              </label>
+            <button class='ag-btn ag-btn-secondary btn-search' id='menuPined' type='button' onClick='gestorMenu._menuFixed()' title='Pegar Menu'>
+            <span class='glyphicon glyphicon-pushpin'></span>
+            </button>
           </div>
         </form>`;
 
@@ -2604,16 +2603,11 @@ class GestorMenu {
   }
 
   _menuFixed() {
-    const menuPinedButton = document.getElementById('menuPined');
-    const menuPinedDiv = document.getElementById('sidebar');
-    // Toggle the 'active' class on the menuPined button
-    if (menuPinedButton.classList.contains('active')) {
-      menuPinedButton.classList.remove('active');
-      menuPinedDiv.style.display = "block";
-    } else {
-      menuPinedButton.classList.add('active');
-    }
-  
+    const sidebar = document.getElementById("sidebar");
+    const menuPined = document.getElementById("menuPined");
+    menuPined.classList.toggle("ag-btn-danger");
+    sidebar.classList.toggle("menuFixed");
+
   }
 
   getAvailableTags() {

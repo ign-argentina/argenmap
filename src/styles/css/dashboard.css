@@ -27,7 +27,7 @@ body {
   width: auto;
   max-width: 550px;
 }
-@media (max-width: 850px) {
+@media (max-width: 860px) {
   .navbar-fixed-top {
     max-width: 100%;
   }

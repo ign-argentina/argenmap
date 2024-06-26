@@ -2000,7 +2000,7 @@ $(document).ready(function(){
 document.addEventListener("DOMContentLoaded", function () {
   var menuContainer = document.querySelector(".menu-container");
   var buttons = document.querySelectorAll(".menu-section-btn");
-  let checkboxPin = document.getElementById("jevattend_id");
+  //let checkboxPin = document.getElementById("jevattend_id");
 
   buttons.forEach(function (button) {
     button.addEventListener("click", function (event) {
@@ -2028,8 +2028,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Agrega un evento de clic al documento para ocultar los contenedores al hacer clic fuera de ellos
   document.addEventListener("click", function (event) {
-    console.log(checkboxPin);
-    if (!menuContainer.contains(event.target) && event.target.id === "mapa" && checkboxPin.checked === false) {
+    //console.log(checkboxPin);
+    if (!menuContainer.contains(event.target) && event.target.id === "mapa") {
       buttons.forEach(function (button) {
         var targetId = button.getAttribute("data-target");
         var targetSection = document.getElementById(targetId);

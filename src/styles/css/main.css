@@ -489,6 +489,7 @@ Menu principal
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
+  max-width: 320px;
 }
 #load-layer {
   overflow: auto;
@@ -497,7 +498,7 @@ Menu principal
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-  width: 350px;
+  max-width: 320px;
 }
 #geoprocesos {
   overflow: auto;
@@ -507,6 +508,9 @@ Menu principal
   border: 0;
   border-radius: 6px;
   width: 350px;
+}
+.menuFixed{
+  display: block !important;
 }
 #sidebar {
   overflow: auto;
@@ -882,7 +886,7 @@ JQuery Autocomplete
 /*******************************
 Leaflet
 *******************************/
-@media (max-width: 850px) {
+@media (max-width: 860px) {
   .leaflet-top {
     top: 60px;
   }
@@ -1289,7 +1293,7 @@ Control mapa base
   border-radius: 6px;
 }
 .list-inline li {
-  width: 350px;
+  width: 320px;
   display: block;
   padding-right: 15px;
   padding-left: 15px;
