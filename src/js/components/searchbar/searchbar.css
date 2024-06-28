@@ -44,7 +44,6 @@
   #searchbar {
     left: 50px;
     top: 5px;
-    max-height: 135px;
   }
   #logoText {
     display: none;
@@ -64,7 +63,7 @@
 }
 @media (min-width:769px) {
   #searchbar {
-    max-width: 135px
+/*     max-width: 135px */
   }
 }
 #div-icon-close-searchbar {
