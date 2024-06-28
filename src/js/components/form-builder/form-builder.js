@@ -42,7 +42,7 @@ class FormBuilder {
 
     addButton(name, onclick, id) {
         const button = document.createElement('div');
-        button.className = 'ui-btn ui-btn-primary non-selectable-text';
+        button.className = 'ag-btn ag-btn-primary non-selectable-text';
         button.innerHTML = name;
         button.id = id;
         button.onclick = () => {
@@ -58,7 +58,7 @@ class FormBuilder {
         this.form.appendChild(label);
 
         const element = document.createElement(type);
-        element.className = 'form-element';
+        element.className = 'form-element ag-input-text';
         element.id = id;
         this.elements[id] = element;
         this.form.appendChild(element);

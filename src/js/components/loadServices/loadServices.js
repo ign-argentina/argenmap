@@ -44,7 +44,7 @@ class ModalService {
 		let tab_div = document.createElement("div")
 		tab_div.className = "tabs_upload"
 		tab_div.innerHTML = `
-    <span style="font-size:14px;color:#37bbed;margin:0px 10px;text-align:center;width:100%">Agregar capas a través de WMS</span>`
+    <span style="margin:0px 10px;text-align:center;width:100%">Agregar capas a través de WMS</span>`
 
 		let form = document.createElement("form")
 		form.className = "wms-form"
@@ -52,8 +52,8 @@ class ModalService {
     form.innerHTML = `
     <div class="input-group center-flex">
       <span class="input-group-addon center-flex" id="basic-addon1"><i class="fas fa-link"></i></span>
-      <input value="" type='text' id='wms-input' class='form-control ui-input-text' name="input-url" placeholder="http://.../geoserver/ows?service=wms&version=1.3.0..." aria-describedby="basic-addon1">
-      <button class="input-group-addon ui-btn ui-btn-primary" id="buttonConectar" onclick="handleURLInput(event)">Conectar</button>
+      <input value="" type='text' id='wms-input' class='form-control ag-input-text' name="input-url" placeholder="http://.../geoserver/ows?service=wms&version=1.3.0..." aria-describedby="basic-addon1">
+      <button class="input-group-addon ag-btn ag-btn-primary" id="buttonConectar" onclick="handleURLInput(event)">Conectar</button>
     </div>
   `;
 

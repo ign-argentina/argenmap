@@ -159,8 +159,8 @@ class Modal {
             
             <p>${question}</p>
             <div class="initModalBtn">
-                <button id="initModalBtnConfirm" class="ui-btn ui-btn-confirm">${confirmText}</button>
-                <button id="initModalBtnCancel" class="ui-btn ui-btn-primary">${cancelText}</button>
+                <button id="initModalBtnConfirm" class="ag-btn ag-btn-confirm">${confirmText}</button>
+                <button id="initModalBtnCancel" class="ag-btn ag-btn-primary">${cancelText}</button>
             </div>
             `;
     tooltipBackdrop.appendChild(initModal);
@@ -329,10 +329,10 @@ class Tooltip {
       descriptionDiv.innerHTML = `
             <p id="tooltip-helper-active-description-text"></p>
             <div class="tooltip-helper-footer">
-              <button id="tooltip-helper-end-sequence" class="ui-btn ui-btn-primary">${this.data.tooltipsBtns.closeBtn}</button>
+              <button id="tooltip-helper-end-sequence" class="ag-btn ag-btn-primary">${this.data.tooltipsBtns.closeBtn}</button>
               <div>
-                <button id="tooltip-helper-prev-sequence" class="ui-btn ui-btn-primary">${this.data.tooltipsBtns.prevBtn}</button>
-                <button id="tooltip-helper-next-sequence" class="ui-btn ui-btn-primary ml-2">${this.data.tooltipsBtns.nextBtn}</button>
+                <button id="tooltip-helper-prev-sequence" class="ag-btn ag-btn-primary">${this.data.tooltipsBtns.prevBtn}</button>
+                <button id="tooltip-helper-next-sequence" class="ag-btn ag-btn-primary ml-2">${this.data.tooltipsBtns.nextBtn}</button>
               </div>
             </div>
           `;
@@ -345,11 +345,11 @@ class Tooltip {
     // Update the previous and next buttons based on the current state
     if (this.cont === 0) {
       prevSequence.setAttribute("disabled", true);
-      prevSequence.classList.add("ui-btn-disabled");
+      prevSequence.classList.add("ag-btn-disabled");
       nextSequence.innerText = sequence.length === 1 ? this.data.tooltipsBtns.endBtn : this.data.tooltipsBtns.nextBtn;
     } else {
       prevSequence.removeAttribute("disabled", true);
-      prevSequence.classList.remove("ui-btn-disabled");
+      prevSequence.classList.remove("ag-btn-disabled");
       nextSequence.innerText = this.cont === sequence.length - 1 ? this.data.tooltipsBtns.endBtn : this.data.tooltipsBtns.nextBtn;
     }
 

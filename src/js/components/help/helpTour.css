@@ -1,11 +1,3 @@
-#nav-help-btn {
-  width: auto;
-  display: flex;
-  justify-content: center;
-  padding: 4px;
-  margin: 0;
-  margin-left: 3px;
-}
 #nav-help-btn svg {
   fill: var(--btn-secondary-color);
 }

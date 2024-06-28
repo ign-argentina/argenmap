@@ -194,7 +194,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               null
             );
           groupAux.setImpresor(impresorBaseMap);
-          groupAux.setObjDom(".basemap-selector");
+          groupAux.setObjDom("#basemap-selector");
 
           for (let key2 in item.capas) {
             gestorMenu.setAvailableBaseLayer(item.capas[key2].nombre);
@@ -564,13 +564,13 @@ async function loadTemplate(data, isDefaultTemplate) {
           );
         }
 
-        const zoomLevel = new ZoomLevel(mapa.getZoom());
+        //const zoomLevel = new ZoomLevel(mapa.getZoom());
 
         urlInteraction.zoom = mapa.getZoom();
         mapa.on("zoom", () => {
           if (Number.isInteger(mapa.getZoom())) {
             urlInteraction.zoom = mapa.getZoom();
-            zoomLevel.zoom = mapa.getZoom();
+            //zoomLevel.zoom = mapa.getZoom();
             if (geoProcessingManager) {
               geoProcessingManager.svgZoomStyle(mapa.getZoom());
             }
@@ -584,8 +584,8 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         gestorMenu.loadInitialLayers(urlInteraction);
 
-        const sidebarTool = new SidebarTools();
-        sidebarTool.createComponent();
+        /* const sidebarTool = new SidebarTools();
+        sidebarTool.createComponent(); */
 
         // const modalgeojson = new IconModalGeojson;
         // modalgeojson.createComponent();

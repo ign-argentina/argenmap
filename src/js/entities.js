@@ -141,6 +141,7 @@ class ImpresorItemHTML extends Impresor {
     btn.id = childId;
     btn.classList = "capa list-group-item" + activated;
     btn.style.padding = "10px 1px 10px 1px";
+    btn.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`)
 
     const btn_title = document.createElement("div");
     btn_title.className = "capa-title";
@@ -148,7 +149,7 @@ class ImpresorItemHTML extends Impresor {
 
     const btn_name = document.createElement("div");
     btn_name.className = "name-layer";
-    btn_name.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`);
+    /* btn_name.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`); */
     btn_name.style.alignSelf = "center";
 
     const btn_link = document.createElement("a");
@@ -278,15 +279,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     }
 
     const iconSvg = `
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 92 92" enable-background="new 0 0 92 92" xml:space="preserve">
-                <path fill="${DEFAULT_ZOOM_INFO_ICON_COLOR}" id="XMLID_89_" d="M43.3,73.8c-0.8,0-1.6-0.3-2.2-0.8c-1-0.8-1.5-2.1-1.2-3.4l4.9-25l-2.7,1.5c-1.7,0.9-3.8,0.4-4.8-1.3
-                    c-0.9-1.7-0.4-3.8,1.3-4.8l9.3-5.3c1.2-0.7,2.7-0.6,3.8,0.2c1.1,0.8,1.6,2.2,1.4,3.5L48,64.4l4.2-1.8c1.8-0.8,3.8,0,4.6,1.8
-                    c0.8,1.8,0,3.8-1.8,4.6l-10.3,4.5C44.3,73.7,43.8,73.8,43.3,73.8z M53.2,26c0.9-0.9,1.5-2.2,1.5-3.5c0-1.3-0.5-2.6-1.5-3.5
-                    c-0.9-0.9-2.2-1.5-3.5-1.5c-1.3,0-2.6,0.5-3.5,1.5c-0.9,0.9-1.5,2.2-1.5,3.5c0,1.3,0.5,2.6,1.5,3.5c0.9,0.9,2.2,1.5,3.5,1.5
-                    C51,27.5,52.3,27,53.2,26z M92,46C92,20.6,71.4,0,46,0S0,20.6,0,46s20.6,46,46,46S92,71.4,92,46z M84,46c0,21-17,38-38,38S8,67,8,46
-                    S25,8,46,8S84,25,84,46z"
-                />
-            </svg>
+    <svg fill="${DEFAULT_ZOOM_INFO_ICON_COLOR}" xmlns="http://www.w3.org/2000/svg" height="16" width="6" viewBox="0 0 192 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V448h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H64V256H32c-17.7 0-32-14.3-32-32z"/></svg>
         `;
 
     let minZoom = DEFAULT_MIN_ZOOM_LEVEL;
@@ -321,6 +314,8 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const LEGEND_BTN_TEXT = STRINGS.basemap_legend_button_text;
 
     const BASEMAP_LEGEND = document.createElement("button");
+    BASEMAP_LEGEND.classList = "ag-btn ag-btn-secondary";
+    BASEMAP_LEGEND.style = "margin: 0; width: auto;";
     BASEMAP_LEGEND.innerHTML = LEGEND_BTN_TEXT;
     BASEMAP_LEGEND.setAttribute(
       "onclick",
@@ -336,7 +331,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_LEGEND_IMG ? BASEMAP_TOOLTIP.append(BASEMAP_LEGEND) : "";
 
     const INFO_ICON = document.createElement("div");
-    INFO_ICON.classList.add("zoom-info-icon");
+    INFO_ICON.classList.add('zoom-info-icon', 'ag-btn', 'ag-btn-secondary');
     INFO_ICON.innerHTML = iconSvg;
     INFO_ICON.appendChild(BASEMAP_TOOLTIP);
     INFO_ICON.setAttribute(
@@ -412,42 +407,25 @@ class ImpresorGrupoHTML extends Impresor {
 
     var active = itemComposite.getActive() == true ? " in " : "";
 
-    return (
-      '<div id="' +
-      listaId +
-      '" class="' +
-      itemClass +
-      ' panel-default">' +
-      '<div class="panel-heading">' +
-      '<h4 class="panel-title">' +
-      '<a id="' +
-      listaId +
-      '-a" data-toggle="collapse" data-parent="#accordion1" href="#' +
-      itemComposite.seccion +
-      '" class="item-group-title">' +
-      itemComposite.nombre +
-      "</a>" +
-      "<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" +
-      itemComposite.descripcion +
-      "' href='#" +
-      itemComposite.seccion +
-      "'>" +
-      itemComposite.shortDesc +
-      "</a></div>" +
-      "</h4>" +
-      "</div>" +
-      "<div id='" +
-      itemComposite.seccion +
-      "' class='panel-collapse collapse" +
-      active +
-      "'>" +
-      '<div class="panel-body">' +
-      itemComposite.itemsStr +
-      "</div>" +
-      "</div>" +
-      "</div>"
-    );
+    return `
+    <div id="${listaId}" class="${itemClass} panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}">
+        <h4 class="panel-title">
+          <span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
+          <div class='item-group-short-desc'>
+            <span data-toggle='tooltip' title='${itemComposite.descripcion}'>${itemComposite.shortDesc}</span>
+          </div>
+        </h4>
+      </div>
+      <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}'>
+        <div class="panel-body">
+          ${itemComposite.itemsStr}
+        </div>
+      </div>
+    </div>
+  `;
   }
+
 }
 
 class ImpresorGroupWMSSelector extends Impresor {
@@ -464,7 +442,7 @@ class ImpresorCapasBaseHTML extends Impresor {
   imprimir(itemComposite) {
     var listaId = itemComposite.getId();
     // Only one basemap-selector
-    if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
+    if ($("div#basemap-selector>ul").length === 0) {
       const baseMapsMenu = document.createElement("a");
       baseMapsMenu.classList = "leaflet-control-layers-toggle";
       baseMapsMenu.title = itemComposite.nombre;
@@ -493,12 +471,7 @@ class ImpresorCapasBaseHTML extends Impresor {
         event.stopPropagation();
       });
 
-      return baseMapsMenu;
-
-      /* return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-                '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
-                '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-                '</div>'; */
+      return baseMapsList;
     }
   }
 }
@@ -2653,16 +2626,29 @@ class GestorMenu {
         <form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>
           <div class='center-flex'>
             <div class='has-feedback has-clear formBtns center-flex'>
-              <input type='text' class='form-control ui-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
-              <button onClick='reloadMenu()' class='ui-btn ui-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
+              <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
+              <button onClick='reloadMenu()' class='ag-btn ag-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
-            <button class='ui-btn ui-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
-            <button class='ui-btn ui-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><span class='glyphicon glyphicon-trash'></span></button>
+            <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
+            <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
+            </button>
+            <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
+            <button class='ag-btn ag-btn-secondary btn-search' id='menuPined' type='button' onClick='gestorMenu._menuFixed()' title='Pegar Menu'>
+            <span class='glyphicon glyphicon-pushpin'></span>
+            </button>
           </div>
         </form>`;
 
       return formContent;
     }
+  }
+
+  _menuFixed() {
+    const sidebar = document.getElementById("sidebar");
+    const menuPined = document.getElementById("menuPined");
+    menuPined.classList.toggle("ag-btn-danger");
+    sidebar.classList.toggle("menuFixed");
+
   }
 
   getAvailableTags() {
@@ -2752,7 +2738,7 @@ class GestorMenu {
         var sClassAux = "active";
       }
       sInitialHTML +=
-        "<li role='presentation' class='" +
+        "<li role='presentation'  class='" +
         sClassAux +
         "'><a href='#" +
         this._tabs[key].getExtendedId() +
@@ -2776,6 +2762,7 @@ class GestorMenu {
 
     let sidebar = document.getElementById("sidebar");
     const searcher = document.createElement("div")
+    searcher.style = "position: fixed; display: contents;";
     searcher.innerHTML = this._printSearcher();
     sidebar.insertBefore(searcher, sidebar.firstChild);
   }
@@ -3337,9 +3324,9 @@ class Menu_UI {
     let itemnew = document.createElement("div");
     itemnew.innerHTML = `
         <div id="lista-${groupnamev}" class="menu5 panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="false">
             <h4 class="panel-title">
-                <a id="${groupnamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${groupnamev}-content" class="item-group-title">${name}</a>
+            <a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
             </h4>
         </div>
         <div id='${groupnamev}-content' class="panel-collapse collapse">
@@ -3817,7 +3804,7 @@ class Menu_UI {
       "display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;";
 
     let btn_si = document.createElement("button");
-    btn_si.className = "ui-btn ui-btn-danger";
+    btn_si.className = "ag-btn ag-btn-danger";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
       let section;
@@ -3843,7 +3830,7 @@ class Menu_UI {
     };
 
     let btn_no = document.createElement("button");
-    btn_no.className = "ui-btn ui-btn-primary";
+    btn_no.className = "ag-btn ag-btn-primary";
     btn_no.innerHTML = "Cancelar";
     btn_no.onclick = function () {
       $("#modal_layer_del").remove();

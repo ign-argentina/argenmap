@@ -1,6 +1,6 @@
 .hide-section-button {
   display: inline-block;
-  background: #37bbed;
+  background: var(--primary-color);
   color: #fff;
   border-radius: 50%;
   width: 16px;
@@ -42,20 +42,20 @@
   align-items: center;
 }
 .page-header .title-service h5 {
-  color: #37bbed;
+  color: var(--primary-color);
   margin-bottom: 4px;
   margin-right: 4px;
   font-size: 16px;
 }
 .page-header .title-service button {
   background: none;
-  color: #37bbed;
+  color: var(--primary-color);
   border: none;
 }
 .page-header .title-service .title-input-service {
   border: none;
   outline: none;
-  border-bottom: 2px solid #37bbed;
+  border-bottom: 2px solid var(--primary-color);
   display: none;
   width: 80%;
 }
@@ -78,7 +78,7 @@
   border: 2px solid var(--input-text-border-color);
   border-right: 0;
 }
-#wms-input{
+#wms-input {
   border-right: 0;
 }
 #select-layers-container {

@@ -62,7 +62,7 @@ class Searchbar_UI {
 
     let input = document.createElement("input");
     input.id = "search_bar";
-    input.classList = "ui-input-text";
+    input.classList = "ag-input-text";
     input.type = "search";
     input.placeholder = sb_strings.placeholder || "Search places...";
     input.spellcheck = false;
@@ -70,7 +70,7 @@ class Searchbar_UI {
 
     let icon = document.createElement("button");
     icon.id = "div-icon-close-searchbar";
-    icon.classList = "ui-btn ui-btn-primary"
+    icon.classList = "ag-btn ag-btn-primary"
     icon.innerHTML = `<i class="fa fa-times" aria-hidden="true"></i>`;
     maininput.append(input);
     maininput.append(icon);
@@ -96,7 +96,7 @@ class Searchbar_UI {
       textinput.value = "";
       results.innerHTML = "";
       results.style.margin = "0px";
-      search_input.classList = "ui-input-text search-bar-empty";
+      search_input.classList = "ag-input-text";
       mapa.removeGroup("markerSearchResult", true);
       if (innerWidth <= 768) {
         document.getElementById("logo-navbar").style.display = "";
@@ -128,7 +128,7 @@ class Searchbar_UI {
 
       if (q.length === 0) {
         search_term = null;
-        search_input.classList = "ui-input-text search-bar-empty";
+        search_input.classList = "ag-input-text ";
         icon_searchbar.style.display = "none";
         results.innerHTML = "";
         selected_item = false;
@@ -138,7 +138,7 @@ class Searchbar_UI {
         }
       } else if (q.length <= 2) {
         results.innerHTML = "";
-        search_input.classList = "ui-input-text search-bar-no-empty";
+        search_input.classList = "ag-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
         selected_item = false;
         if (innerWidth <= 768) {
@@ -146,7 +146,7 @@ class Searchbar_UI {
           helpTour ? helpTour.style.display = "none" : 0;
         }
       } else {
-        search_input.classList = "ui-input-text search-bar-no-empty";
+        search_input.classList = "ag-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
         search_term = q;
         if (innerWidth <= 768) {
@@ -184,13 +184,13 @@ class Searchbar_UI {
 
       if (q.length === 0) {
         search_term = null;
-        search_input.classList = "ui-input-text search-bar-empty";
+        search_input.classList = "ag-input-text ";
         icon_searchbar.style.display = "none";
         results.innerHTML = "";
         selected_item = false;
       } else if (q.length <= 2) {
         results.innerHTML = "";
-        search_input.classList = "ui-input-text search-bar-no-empty";
+        search_input.classList = "ag-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
         if (innerWidth <= 768) {
           document.getElementById("logo-navbar").style.display = "none";
@@ -198,7 +198,7 @@ class Searchbar_UI {
         }
         selected_item = false;
       } else {
-        search_input.classList = "ui-input-text search-bar-no-empty";
+        search_input.classList = "ag-input-text search-bar-no-empty";
         icon_searchbar.style.display = "flex";
         search_term = q;
         results.innerHTML = "";

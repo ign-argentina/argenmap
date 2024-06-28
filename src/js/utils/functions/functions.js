@@ -1048,9 +1048,7 @@ function clickWMSLayer(layer, layer_item, fileName) {
 }
 
 function geoprocessModalIsOpen() {
-  if (document.getElementById("select-process")) {
-    return true
-  } else return false
+  return !!document.getElementById("select-process");
 }
 
 function closeGeoprocessModal() {
@@ -1446,7 +1444,7 @@ function loadDeveloperLogo() {
     L.control.developerLogo = function (opts) {
         return new L.Control.DeveloperLogo(opts);
     };
-    L.control.developerLogo({ position: "bottomright" }).addTo(mapa);
+    L.control.developerLogo({ position: "bottomleft" }).addTo(mapa);
 } 
 
 function downloadBlob(blob, name = "file.txt") {
@@ -1546,15 +1544,15 @@ function loadingBtn(status, idBtn, btnName) {
   if (status === "on") {
     btn_ejecutar.innerHTML =
       '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    $("#ejec_gp").addClass("ui-btn-disabled");
-    $('#' + idBtn).addClass("ui-btn-disabled");
+    $("#ejec_gp").addClass("ag-btn-disabled");
+    $('#' + idBtn).addClass("ag-btn-disabled");
   } else if (status === "off") {
     if (btnName) {
       btn_ejecutar.innerHTML = btnName;
     } else {
       btn_ejecutar.innerHTML = "Ejecutar";
     }
-    $('#' + idBtn).removeClass("ui-btn-disabled");
+    $('#' + idBtn).removeClass("ag-btn-disabled");
   }
 }
 
@@ -1998,6 +1996,72 @@ function removeLayerFromAllGroups(layer, groupName) {
     mapa.groupLayers[groupName].pop(layer.name);
     if (mapa.groupLayers[groupName].length === 0) {
       delete mapa.groupLayers[groupName];
+    }
+  }
+}
+
+$(document).ready(function(){
+  $("#menu-toggle").click(function(e){
+    e.preventDefault();
+    $("#wrapper").toggleClass("menuDisplayed");
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  var menuContainer = document.querySelector(".menu-container");
+  var buttons = document.querySelectorAll(".menu-section-btn");
+  //let checkboxPin = document.getElementById("jevattend_id");
+
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function (event) {
+      var targetId = button.getAttribute("data-target");
+      var targetSection = document.getElementById(targetId);
+
+      if (targetSection.style.display === "block") {
+        targetSection.style.display = "none";
+      } else {
+        // Oculta todas las secciones antes de mostrar la deseada
+        buttons.forEach(function (otherButton) {
+          var otherTargetId = otherButton.getAttribute("data-target");
+          var otherTargetSection = document.getElementById(otherTargetId);
+
+          if (otherTargetSection !== targetSection) {
+            otherTargetSection.style.display = "none";
+          }
+        });
+
+        targetSection.style.display = "block";
+      }
+      event.stopPropagation();
+    });
+  });
+
+  // Agrega un evento de clic al documento para ocultar los contenedores al hacer clic fuera de ellos
+  document.addEventListener("click", function (event) {
+    //console.log(checkboxPin);
+    if (!menuContainer.contains(event.target) && event.target.id === "mapa") {
+      buttons.forEach(function (button) {
+        var targetId = button.getAttribute("data-target");
+        var targetSection = document.getElementById(targetId);
+        targetSection.style.display = "none";
+      });
+    }
+  });
+});
+
+function toggleVisibilityGeoprocessModal() {
+  const modal = document.getElementById("mr");
+  const container = document.getElementById("geoprocesos");
+  if (modal) {
+    if (container.style.display === "block") {
+      geoProcessingManager.closeModal();
+    } else {
+      geoProcessingManager.createModal();
+    }
+  } else {
+    // El modal no ha sido creado, así que lo creamos solo si el contenedor está visible
+    if (container.style.display === "block") {
+      geoProcessingManager.createModal();
     }
   }
 }

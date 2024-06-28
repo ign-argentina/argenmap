@@ -6,7 +6,6 @@ var atrib_ign =
   layerData;
 var argenmap = "";
 var mapa = "";
-
 let currentBaseMap = null;
 
 let countour_styles = false;
@@ -298,13 +297,13 @@ $("body").on("pluginLoad", function (event, plugin) {
                 ".leaflet-top.leaflet-right",
                 ".leaflet-bottom.leaflet-right",
                 "leaflet-control-container",
-                "#zoom-level",
-                "#sidebar-toolbar-icon-left",
-                "#sidebar-toolbar-icon-right",
+								"#zoom-level",
                 "#btn-logout",
-              ],
+                "#developerLogo"
+							],
               screenName: "mapaIGN" + n,
-            }).addTo(mapa);
+              position: 'topleft'
+						}).addTo(mapa);
 
             document.getElementsByClassName(
               "leaflet-control-simpleMapScreenshoter"
@@ -323,50 +322,44 @@ $("body").on("pluginLoad", function (event, plugin) {
             );
             screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
-            gestorMenu.plugins["screenShoter"].setStatus("visible");
-          }
-          break;
-        case "ZoomHome":
-          // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
-          var zoomHome = L.Control.zoomHome({
-            zoomHomeTitle: "Inicio",
-            zoomInTitle: "Acercarse",
-            zoomOutTitle: "Alejarse",
-            zoomHomeIcon: "solid fa-earth-americas",
-            homeCoordinates: [
-              app.mapConfig.center.latitude,
-              app.mapConfig.center.longitude,
-            ],
+						gestorMenu.plugins["screenShoter"].setStatus("visible");
+					}
+					break;
+				case 'ZoomHome':
+					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
+					var zoomHome = L.Control.zoomHome({
+						zoomHomeTitle: 'Inicio',
+						zoomInTitle: 'Acercarse',
+						zoomOutTitle: 'Alejarse',
+						zoomHomeIcon: 'solid fa-earth-americas',
+						homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
             homeZoom: app.mapConfig.zoom.initial,
-          });
-          zoomHome.addTo(mapa);
-          gestorMenu.plugins["ZoomHome"].setStatus("visible");
+            position: 'bottomright'
+					});
+					zoomHome.addTo(mapa);
+					gestorMenu.plugins['ZoomHome'].setStatus('visible');
           break;
-        case "FullScreen":
+        case 'FullScreen':
           const fs = new Fullscreen();
           fs.createComponent();
           break;
-        case "helpTour":
-          const help = new HelpTour();
+        case 'helpTour':
+          const help = new HelpTour;
           const helpData = await help.fetchHelpTourData();
           help.createComponent(helpData);
           break;
-        case "configTool":
-          const configTool = new ConfigTool();
-          configTool.createComponent();
-          break;
-        case "loadLayer":
+        case 'loadLayer':
           const loadLayersModal = new LoadLayersModal();
-          loadLayersModal.createComponent();
+          //modal.createModal();          //loadLayersModal.createComponent();
           break;
-        case "betterScale":
+        case 'betterScale':
           // Leaflet BetterScale plugin
           /*
-					L.control.betterscale({
-						metric: true,
-						imperial: false
-					}).addTo(mapa);
-					*/
+          L.control.betterscale({
+            metric: true,
+            imperial: false
+          }).addTo(mapa);
+          */
           L.control
             .scale({
               metric: true,
@@ -374,83 +367,74 @@ $("body").on("pluginLoad", function (event, plugin) {
             })
             .addTo(mapa);
           gestorMenu.plugins["betterScale"].setStatus("visible");
+          loadDeveloperLogo();
           break;
-        case "minimap":
-          // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-          var miniArgenmap = new L.TileLayer(argenmap._url, {
-            minZoom: 0,
-            maxZoom: 21,
-            attribution: atrib_ign,
-            tms: true,
-          });
-          var miniMap = new L.Control.MiniMap(miniArgenmap, {
-            toggleDisplay: false,
-            minimized: false,
-            position: "bottomleft",
-            //collapsedWidth: 32,
-            //collapsedHeight: 32,
-            width: 100,
-            height: 100,
-            strings: {
-              hideText: "Ocultar minimapa",
-              showText: "Mostrar minimapa",
-            },
-          }).addTo(mapa);
-          gestorMenu.plugins["minimap"].setStatus("visible");
-          break;
-        case "locate":
-          // Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
-          var locateControl = L.control
-            .locate({
-              position: "topleft",
-              drawCircle: true,
-              follow: true,
-              setView: true,
-              keepCurrentZoomLevel: true,
-              markerStyle: {
-                weight: 1,
-                opacity: 0.8,
-                fillOpacity: 0.8,
-              },
-              circleStyle: {
-                weight: 1,
-                clickable: false,
-              },
-              icon: "fa fa-crosshairs",
-              metric: true,
-              strings: {
-                title: "Mi posición",
-                popup:
-                  "Usted se encuentra a {distance} {unit} desde este punto",
-                outsideMapBoundsMsg:
-                  "Se encuentra situado fuera de los límites del mapa",
-              },
-              locateOptions: {
-                maxZoom: 21,
-                watch: true,
-                enableHighAccuracy: true,
-                maximumAge: 10000,
-                timeout: 10000,
-              },
-            })
-            .addTo(mapa);
-          gestorMenu.plugins["locate"].setStatus("visible");
-          break;
-        case "graticula":
-          // Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
-          var customGraticule = null;
-          L.Control.CustomGraticule = L.Control.extend({
-            onAdd: function (map) {
-              var container = L.DomUtil.create(
-                "div",
-                "leaflet-control leaflet-bar leaflet-control-customgraticule"
-              );
-              container.title = "Cuadrícula";
-              var icon = L.DomUtil.create(
-                "a",
-                "leaflet-control-customgraticule"
-              );
-              container.appendChild(icon);
+				case 'minimap':
+					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
+					var miniArgenmap = new L.TileLayer(argenmap._url, {
+						minZoom: 0,
+						maxZoom: 21,
+						attribution: atrib_ign,
+						tms: true
+					});
+					var miniMap = new L.Control.MiniMap(miniArgenmap, {
+						toggleDisplay: false,
+						minimized: false,
+						position: 'bottomleft',
+						//collapsedWidth: 32,
+						//collapsedHeight: 32,
+						width: 100,
+						height: 100,
+						strings: {
+							hideText: 'Ocultar minimapa',
+							showText: 'Mostrar minimapa'
+						}
+					}).addTo(mapa);
+					gestorMenu.plugins['minimap'].setStatus('visible');
+					break;
+				case 'locate':
+					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
+					var locateControl = L.control.locate({
+						position: "bottomright",
+						drawCircle: true,
+						follow: true,
+						setView: true,
+						keepCurrentZoomLevel: true,
+						markerStyle: {
+							weight: 1,
+							opacity: 0.8,
+							fillOpacity: 0.8
+						},
+						circleStyle: {
+							weight: 1,
+							clickable: false
+						},
+						icon: "fa fa-crosshairs",
+						metric: true,
+						strings: {
+							title: "Mi posición",
+							popup: "Usted se encuentra a {distance} {unit} desde este punto",
+							outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
+						},
+						locateOptions: {
+							maxZoom: 21,
+							watch: true,
+							enableHighAccuracy: true,
+							maximumAge: 10000,
+							timeout: 10000
+						}
+					}).addTo(mapa);
+					gestorMenu.plugins['locate'].setStatus('visible');
+					break;
+				case 'graticula':
+					// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
+					var customGraticule = null;
+					L.Control.CustomGraticule = L.Control.extend({
+						onAdd: function (map) {
+							var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
+							container.title = 'Cuadrícula';
+							var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
+							container.appendChild(icon);
 
               container.onclick = function () {
                 if (customGraticule == null) {
@@ -512,8 +496,8 @@ $("body").on("pluginLoad", function (event, plugin) {
 						L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
 						L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
 					} */
-          gestorMenu.plugins["Measure"].setStatus("visible");
-          break;
+					gestorMenu.plugins['Measure'].setStatus('visible');
+					break;
         case "geoprocessing":
           if (loadGeoprocessing) {
             let HTMLhead = document.querySelector("head");
@@ -553,18 +537,19 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
           }
           break;
-        case "pdfPrinter":
-          if (!L.Browser.safari) {
-            const pdfP = new PdfPrinter();
-            pdfP.createComponent();
-          }
-          break;
-        case "consultData":
-          const consultData = new ConsultData();
-          consultData.createComponent();
-          break;
-        case "Draw":
-          var orgReadbleDistance = L.GeometryUtil.readableArea;
+				case 'pdfPrinter':
+					if (!L.Browser.safari) {
+						const pdfP = new PdfPrinter();
+						pdfP.createComponent();
+					}
+					break;
+				case 'consultData':
+					const consultData = new ConsultData();
+					consultData.createComponent();
+					break;
+				case 'Draw':
+
+					var orgReadbleDistance = L.GeometryUtil.readableArea;
 
           L.GeometryUtil.readableArea = function (area, isMetric, precision) {
             // adapts area unit from m2 to ha to km2 based on its size
@@ -3093,22 +3078,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
       setValidZoomLevel(selectedBasemap.nombre);
 
-      gestorMenu.plugins["leaflet"].setStatus("visible");
-
-      // Base Map Control
-      L.Control.Watermark = L.Control.extend({
-        onAdd: function (map) {
-          var container = L.DomUtil.create(
-            "div",
-            "leaflet-control leaflet-bar basemap-selector"
-          );
-          return container;
-        },
-      });
-      L.control.watermark = function (opts) {
-        return new L.Control.Watermark(opts);
-      };
-      L.control.watermark({ position: "topleft" }).addTo(mapa);
+			gestorMenu.plugins['leaflet'].setStatus('visible');
 
       mapa.on("click", function (e) {
         setTimeout(function () {
@@ -3118,39 +3088,33 @@ $("body").on("pluginLoad", function (event, plugin) {
 
       showMainMenuTpl();
 
-      break;
-    case "MousePosition":
-      // Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
-      L.control
-        .mousePosition({
-          position: "bottomright",
-          separator: " , ",
-          emptyString: "&nbsp;",
-          numDigits: 10,
-          lngFormatter: function (num) {
-            var direction = num < 0 ? "O" : "E";
-            return deg_to_dms(Math.abs(num)) + direction;
-          },
-          latFormatter: function (num) {
-            var direction = num < 0 ? "S" : "N";
-            return deg_to_dms(Math.abs(num)) + direction;
-          },
-        })
-        .addTo(mapa);
-      gestorMenu.plugins["MousePosition"].setStatus("visible");
-      loadDeveloperLogo();
-      break;
-    case "BingLayer":
-      if (
-        gestorMenu.pluginExists("BingLayer") &&
-        gestorMenu.plugins["leaflet"].getStatus() == "visible" &&
-        gestorMenu.plugins["BingLayer"].getStatus() == "ready"
-      ) {
-        gestorMenu.plugins["BingLayer"].setStatus("visible");
-      }
-    default:
-      break;
-  }
+			break;
+		case 'MousePosition':
+			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
+			L.control.mousePosition({
+				position: 'bottomright',
+				separator: ' , ',
+				emptyString: '&nbsp;',
+				numDigits: 10,
+				lngFormatter: function (num) {
+					var direction = (num < 0) ? 'O' : 'E';
+					return deg_to_dms(Math.abs(num)) + direction;
+				},
+				latFormatter: function (num) {
+					var direction = (num < 0) ? 'S' : 'N';
+					return deg_to_dms(Math.abs(num)) + direction;
+				}
+			}).addTo(mapa);
+			gestorMenu.plugins['MousePosition'].setStatus('visible');
+			// loadDeveloperLogo(); // move to bottomleft before scale
+			break;
+		case 'BingLayer':
+			if (gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready') {
+				gestorMenu.plugins['BingLayer'].setStatus('visible');
+			}
+		default:
+			break;
+	}
 });
 
 /**
@@ -3279,12 +3243,12 @@ function pointToLayer(feature, latlng) {
 }
 
 function printFinished() {
-  //Agregar tooltip resumen
-  $("[data-toggle2='tooltip']").tooltip({
-    placement: "right",
-    trigger: "hover",
-    container: "body",
-  });
+	//Agregar tooltip resumen
+	$("[data-toggle2='tooltip']").tooltip({
+		placement: "right",
+		trigger: "hover",
+		container: ".menu-container"
+	});
 }
 
 function showMainMenuTpl() {

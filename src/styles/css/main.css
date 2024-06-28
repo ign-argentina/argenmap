@@ -1,3 +1,58 @@
+/*
+=====================================================================
+CONVENCIONES DE GENERALES DE CSS
+=====================================================================
+Reglas Generales:
+
+1. Consistencia: Mantener la consistencia en la aplicación de las convenciones de nomenclatura en todos los estilos CSS.
+   
+2. Claridad: Elegir nombres que sean descriptivos y que proporcionen una comprensión clara de la función o estilo del elemento.
+
+3. Comentarios: Es recomendable agregar un comentario a las clases que explique brevemente su función.
+
+4. Modificadores Opcionales: Utilizar modificadores solo cuando sea necesario. No todos los elementos requieren un modificador.
+
+5. Separadores: Utilizar guiones medios para separar las palabras en un nombre de clase (p. ej., .ag-btn-primary).
+
+Estas convenciones de nomenclatura están diseñadas para mejorar la legibilidad del código y facilitar el mantenimiento del sistema de estilos.
+
+CONVENCIONES DE NOMENCLATURA CSS
+
+* Estructura de Nomenclatura de clases:
+
+.ag-{elemento}-{tipo}-{modificador}
+
+- ag: Identifica que las clases son propias de Argenmap.
+- elemento: Especifica el tipo de elemento HTML al que se aplica la clase.
+- tipo: Opcional. Indica el tipo del elemento HTML(por ejemplo para "input" : "text", "checkbox", etc.).
+- modificador: Opcional. Representa cualquier modificador adicional para la clase.
+
+Ejemplos:
+
+1. Botones:
+   - Clase para un botón primario: .ag-btn-primary
+   - Clase para un botón secundario: .ag-btn-secondary
+
+2. Campos de Entrada:
+   - Clase para un campo de entrada de confirmación: .ag-input-text-confirm
+   - Clase para un campo de entrada de advertencia: .ag-input-text-danger
+
+
+* Estructura de Nomenclatura para variables css en :root:
+
+--{elemento}-{propiedad}-{modificador}
+
+- elemento: Especifica el tipo de elemento al que pertenecen las propiedades.
+- propiedad: Indica la propiedad CSS que se está definiendo (p. ej., "ftn-size", "border-radius", "background-color").
+- modificador: Opcional. Representa cualquier modificador adicional para la propiedad.
+
+Ejemplos:
+
+1. Botones:
+   - Tamaño de fuente para botones: --btn-ftn-size
+   - Color de fondo para botones primarios: --btn-primary-bg-color
+
+*/
 @font-face {
   font-family: "Encode Sans";
   src: url("../../../dist/fonts/EncodeSans-Regular.ttf");
@@ -30,12 +85,16 @@
   font-family: "Aurebesh Bold";
   src: url("../../../dist/fonts/Aurebesh-Bold.otf");
 }
+/* #0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE #0091CE #F38A00 #0db2e0*/
 :root {
+  --primary-color: #3A6EA7;/*  #242C4F*/
+  --secondary-color: #0094D4;/* #45659D */
   --main-bg-color: #fff;
   --bg-color: #0db2e0;
-  --active-bg-color: #33b560;
+  --active-bg-color: #33b560; /* #E7BA61 */
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
+  --danger-color: #c62828;
   --map-btn-color: #303030;
   --map-btn-bg-color: #fff;
   --popup-fnt-size: 12px;
@@ -43,31 +102,111 @@
   --body-fnt-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
-  --menu-section-hover-color: #969393;
-  --layer-btn-hover-color: #d1cccc;
+  --menu-section-hover-color:#E7E7E7; /*#969393 #AAAAAA*/
+  --layer-btn-hover-color: #E7E7E7;  /*#d1cccc  */
   --main-font-family: "Encode Sans", sans-serif;
-  /*ui Button*/
+  /*Argenmap ui Button*/
   --btn-ftn-size: 1.5rem;
   --btn-border-radius: 6px;
   --btn-background-color: #FFF;
   --btn-hover-bg-color: #FFF;
   --btn-hover-color: #FFF;
-  --btn-primary-color: #157DB9;
-  --btn-secondary-color: #105C97;
-  --btn-disabled-color: #838788;
-  --btn-confirm-color: #3A8555;
-  --btn-danger-color: #CE4946;
-  /* ui input text */
+  --btn-primary-color: var(--primary-color);
+  --btn-secondary-color: var(--secondary-color);
+  --btn-disabled-color: #838788; /* #AAAAAA */
+  --btn-confirm-color: #2e7d33; /* #33B560  #3A8555*/
+  --btn-danger-color: #c62828; /*#CE4946 #EF4D3D */
+  ;
+  /*Argenmap ui input text */
   --input-text-ftn-size: 14px;
   --input-text-bg-color: #FFF;
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
+  /*Menu capas*/
+  --lyr-menu-bg-color: #66666654;
+  --lyr-menu-panel-head-bg-color: var(--primary-color);
+  --lyr-menu-panel-head-text-color: #FFF;
+  --menu-title-text-color: #fff
 }
 /*******************************
 General
 *******************************/
 html {
-  height: 100%;
+  box-sizing: border-box;
+}
+*, *::after, *::before {
+  box-sizing: inherit;
+}
+body {
+  min-height: 100vh;
+  font-family: var(--main-font-family);
+  /* "Encode Sans", sans-serif; */
+  /* overflow: hidden; */
+  font-size: var(--body-fnt-size, 14px);
+}
+@media (max-width: 600px) {
+  body {
+    overflow-y: scroll;
+  }
+}
+/* Sidebar */
+#sidebar-wrapper {
+  z-index: 1;
+  position: absolute;
+  width: 0;
+  /*   height:100%; */
+  overflow-y: hidden;
+  opacity: 0.9;
+  transition: all .5s;
+  /* 	display:flex;
+	align-items:center; */
+}
+/* Main Content */
+#page-content-wrapper {
+  width: 100%;
+  position: absolute;
+  transition: all .5s;
+}
+#menu-toggle {
+  transition: all .3s;
+  font-size: 2em;
+  display: inline-block;
+  padding: 2px 12px;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+/* Change the width of the sidebar to display it*/
+#wrapper.menuDisplayed #sidebar-wrapper {
+  width: 250px;
+}
+#wrapper.menuDisplayed #page-content-wrapper {
+  padding-left: 250px;
+}
+/* Sidebar styling */
+.sidebar-nav {
+  padding: 0;
+  list-style: none;
+  transition: all .5s;
+  width: 100%;
+  text-align: center;
+}
+.sidebar-nav li {
+  line-height: 40px;
+  width: 100%;
+  transition: all .3s;
+  padding: 10px;
+}
+.sidebar-nav li a {
+  display: block;
+  text-decoration: none;
+  color: #ddd;
+}
+.sidebar-nav li:hover {
+  background: #846bab;
 }
 .loader-line {
   display: flex;
@@ -105,18 +244,6 @@ html {
       width: 100%;
   } */
 }
-body {
-  font-family: var(--main-font-family);
-  /* "Encode Sans", sans-serif; */
-  overflow: hidden;
-  height: 100% !important;
-  font-size: var(--body-fnt-size, 14px);
-}
-@media (max-width: 600px) {
-  body {
-    overflow-y: scroll;
-  }
-}
 a, a:hover, a:focus {
   text-decoration: none;
 }
@@ -133,20 +260,30 @@ a, a:hover, a:focus {
   display: flex;
   flex-direction: row;
 }
-.map-container {
+/* .map-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 100%;
-}
+} */
 #mapa {
   position: relative;
-  height: 100%;
+  height: 100vh;
   background-color: var(--main-bg-color, white) !important;
 }
+.leaflet-top.leaflet-left .leaflet-control {
+  clear: none;
+}
+div.leaflet-top.leaflet-left {
+  right: 54px;
+  left: auto;
+}
+/* .leaflet-top{
+  top: 60px;
+} */
 #top-left-logo {
-  width: auto;
+  /* width: auto; */
   height: 50px;
 }
 .brand {
@@ -158,13 +295,13 @@ a, a:hover, a:focus {
   opacity: 1
 }
 @media (max-width: 800px) {
-  .map-container {
+  /*   .map-container {
     position: fixed;
-  }
-  .leaflet-bottom,
+  } */
+  /*   .leaflet-bottom,
   #zoom-level {
-    margin-bottom: 51px;
-  }
+    margin-bottom: 51px; borrar
+  } */
   #zoom-level {
     bottom: -20px !important;
   }
@@ -193,10 +330,25 @@ a, a:hover, a:focus {
   justify-content: space-between;
   width: 100%;
 }
+.end-flex {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.start-flex {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.top-around-flex {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+}
 /*******************************
-UI Components class
+Argenmap UI Components class
 *******************************/
-.ui-btn {
+.ag-btn {
   width: 100%;
   display: flex;
   align-items: center;
@@ -208,55 +360,60 @@ UI Components class
   -ms-user-select: none;
   user-select: none;
   border-radius: var(--btn-border-radius);
-  background-color: var(--btn-background-color);
   padding: 6px 12px;
   font-size: var(--btn-ftn-size);
-  font-weight: 700;
+  color: var(--btn-hover-color);
+  font-weight: 500;
   cursor: pointer;
   margin: 10px;
   border: 2px solid;
 }
-.ui-btn:hover {
-  color: var(--btn-hover-color);
+.ag-btn:hover {
+  background-color: var(--btn-hover-color);
 }
-.ui-btn-primary {
+
+.ag-btn-primary {
+  background-color: var(--btn-primary-color);
   border-color: var(--btn-primary-color);
+}
+.ag-btn-primary:hover {
   color: var(--btn-primary-color);
 }
-.ui-btn-primary:hover {
-  background-color: var(--btn-primary-color);
+
+.ag-btn-secondary {
+  background-color: var(--btn-secondary-color);
+  border-color: var(--btn-secondary-color);
 }
-.ui-btn-disabled {
-  color: var(--btn-disabled-color);
+.ag-btn-secondary:hover {
+  color: var(--btn-secondary-color);
+}
+
+.ag-btn-disabled {
+  background-color: var(--btn-disabled-color);
   border-color: var(--btn-disabled-color);
   cursor: not-allowed;
   opacity: 0.65;
 }
-.ui-btn-disabled:hover {
-  background-color: var(--btn-disabled-color);
+.ag-btn-disabled:hover {
+  color: var(--btn-disabled-color);
 }
-.ui-btn-secondary {
-  border-color: var(--btn-secondary-color);
-  color: var(--btn-secondary-color);
-}
-.ui-btn-secondary:hover {
-  background-color: var(--btn-secondary-color);
-}
-.ui-btn-confirm {
+.ag-btn-confirm {
   border-color: var(--btn-confirm-color);
-  color: var(--btn-confirm-color);
-}
-.ui-btn-confirm:hover {
   background-color: var(--btn-confirm-color);
 }
-.ui-btn-danger {
-  border-color: var(--btn-danger-color);
-  color: var(--btn-danger-color);
+.ag-btn-confirm:hover {
+  color: var(--btn-confirm-color);
 }
-.ui-btn-danger:hover {
+.ag-btn-danger {
+  border-color: var(--btn-danger-color);
   background-color: var(--btn-danger-color);
 }
-.ui-input-text {
+.ag-btn-danger:hover {
+  color: var(--btn-danger-color);
+}
+
+.ag-input-text {
+  margin-left: 2px;
   height: 36px;
   overflow: auto;
   box-sizing: border-box;
@@ -275,12 +432,33 @@ UI Components class
 /*******************************
 Menu principal
 *******************************/
-.tooltip {
-  z-index: 2000;
-  /* A value higher than 1010 that solves the problem */
+.menu-container {
+  width: auto;
+  max-width: -webkit-fill-available;
+  height: auto;
+  background-color: var(--lyr-menu-bg-color);
+  margin: 1rem;
+  position: absolute;
+  top: 60px;
+  z-index: 1000;
+  border-radius: 6px;
+  padding: 0;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(7px) saturate(18%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+.menu-section-btn {
+  width: 3.5rem;
+  height: 3.5rem;
+  padding: 0;
+  margin: 5px;
+}
+.menu-section-btn .fa-layer-group, .menu-section-btn .fa-question, .menu-section-btn .fa-gear {
+  font-size: large;
 }
 .panel-body {
   padding: 5px;
+  background-color: var(--primary-color);
 }
 .loading {
   width: 100%;
@@ -292,15 +470,58 @@ Menu principal
   width: 70px;
 }
 .panel-default>.panel-heading {
-  color: white;
-  background-color: var(--bg-color);
+  color: var(--lyr-menu-panel-head-text-color);
+  background-color: var(--lyr-menu-panel-head-bg-color);
   font-size: var(--group-title-fnt-size, 15px);
+  border-top: 1px solid #f5f5f5 !important;
+  cursor: pointer;
 }
 .panel-default>.panel-heading>.panel-title>a {
   font-size: var(--group-title-fnt-size, 15px);
 }
 #sidebar-container {
   z-index: 500;
+}
+#basemap-selector {
+  /* overflow: hidden; */
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  max-width: 320px;
+}
+#load-layer {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  max-width: 320px;
+}
+#geoprocesos {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  width: 350px;
+}
+.menuFixed{
+  display: block !important;
+}
+#sidebar {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+/*   width: 350px; */
+  background-color: transparent;
+  max-width: 320px;
 }
 #sidebar .nav {
   border: 1px;
@@ -324,37 +545,76 @@ Menu principal
 .nav-tabs>.active {
   background-color: transparent !important;
 }
+/* Estilos para pestañas de navegación */
+.nav-tabs>li{
+  margin-bottom: 0;
+left: -1px;
+}
 .nav-tabs>li>a {
-  color: white;
-  border: var(--layer-border-color);
+  color: var(--btn-secondary-color);
+  border: 2px solid var(--btn-secondary-color);
+  background-color: var(--map-btn-bg-color);
+  border-bottom: 0;
+  font-weight: 600;
+  margin-left: 1px;
   padding: 5px 15px;
 }
 .nav-tabs>li>a:hover {
-  color: #444444;
+  background-color: var(--btn-secondary-color);
+  color: var(--btn-hover-color);
+  font-weight: normal;
+  border: 2px solid var(--btn-secondary-color);
+  border-bottom: 0;
 }
-.nav-tabs>li.active>a {
-  background-color: var(--active-bg-color, #33b560) !important;
-  color: white !important;
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus  {
+  background-color: var(--active-bg-color);
+  color: white;
+  cursor: pointer;
+  border: 2px solid var(--active-bg-color);
+  border-bottom: 0;
+}
+.nav-tabs>li.active>a:hover{
+  cursor: pointer;
+  color: white;
+  border: 2px solid var(--active-bg-color);
+  border-bottom: 0;
 }
 .tab-content {
-  border: var(--layer-border-color);
+  border: none;
+  border-radius: 4px;
 }
 .panel-heading {
-  border-bottom: 1px solid white;
   font-family: var(--main-font-family);
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid #f5f5f5 !important;
 }
 .panel-heading:hover {
-  background-color: var(--menu-section-hover-color) !important;
+  background-color: var(--lyr-menu-panel-head-text-color);
+  color: var(--lyr-menu-panel-head-bg-color);
+}
+.panel-heading:hover .item-group-short-desc span {
+  color: var(--menu-title-text-color);
 }
 .active {
-  background-color: var(--active-bg-color, #33b560) !important;
+  background-color: var(--active-bg-color, #33b560);
 }
+/* .tab-pane.active {
+  background-color: var(--menu-title-text-color);
+  border-radius: 4px;
+} */
 li.active>div>a {
   color: white !important;
 }
 .list-group-item {
   position: initial;
   font-family: "Encode Sans Medium", sans-serif;
+  cursor: pointer;
+  padding: 8px 15px;
+  background-color: #FFFFFFCC;
+}
+.list-group-item.capa {
+  background-color: #FFFFFF;
 }
 .menu-button {
   background-color: #6e6d6d;
@@ -409,11 +669,11 @@ li.active>div>a {
   border-color: #ccc;
 }
 .list-group-item:hover, .file-layer:hover {
-  background-color: var(--layer-btn-hover-color);
+  background-color: var(--menu-section-hover-color);
 }
-.list-group-item:hover span, .file-layer:hover a {
-  /* color: var(--text-color); */
-}
+/* .list-group-item:hover span, .file-layer:hover a {
+  color: var(--text-color);
+} */
 .active-layers-counter {
   height: 20px;
   width: 20px;
@@ -424,6 +684,7 @@ li.active>div>a {
   vertical-align: middle;
   border-radius: 100%;
   background-color: var(--active-bg-color, #33b560) !important;
+  color: #FFF
 }
 .total-active-layers-counter {
   display: inline-block;
@@ -439,12 +700,13 @@ li.active>div>a {
   font-size: 11px;
   line-height: 11px;
 }
-.item-group-short-desc a {
+.item-group-short-desc span {
   font-size: 11px;
-  color: white;
+  font-weight: 500;
+  color: var(--lyr-menu-panel-head-text-color);
+  user-select: none;
 }
 .item-group-title {
-  cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
   font-family: var(--main-font-family);
@@ -475,7 +737,6 @@ li.active>div>a {
   overflow: hidden;
   -webkit-user-select: none;
   user-select: none;
-  cursor: pointer;
 }
 .active>div>div>a {
   color: white;
@@ -625,9 +886,14 @@ JQuery Autocomplete
 /*******************************
 Leaflet
 *******************************/
+@media (max-width: 860px) {
+  .leaflet-top {
+    top: 60px;
+  }
+}
 @media (max-width: 600px) {
   .leaflet-top {
-    top: 5px;
+    top: 70px;
   }
 }
 .leaflet-container {
@@ -639,9 +905,9 @@ Leaflet
 .leaflet-control-measure-interaction.js-interaction {
   background-color: var(--map-btn-bg-color);
 }
-.leaflet-control-measure {
+/* .leaflet-control-measure {
   background-color: transparent;
-}
+} */
 .leaflet-popup-content h3 {
   font-size: 17px !important;
 }
@@ -863,13 +1129,18 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   border-color: rgb(107, 109, 110);
 }
 .zoom-info-icon {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   cursor: pointer;
+  margin: 0;
+  padding: 0px;
+}
+.zoom-info-icon:hover svg {
+  fill: var(--secondary-color);
 }
 .switch {
   height: 0;
@@ -891,9 +1162,9 @@ input:checked.switch+label:after {
 }
 .switch+label {
   cursor: pointer;
-  width: 35px;
-  height: 20px;
-  background: grey;
+  width: 40px;
+  height: 25px;
+  background: var(--secondary-color);
   display: block;
   border-radius: 100px;
   position: relative;
@@ -903,8 +1174,8 @@ input:checked.switch+label:after {
   position: absolute;
   top: 1px;
   left: 1px;
-  width: 18px;
-  height: 18px;
+  width: 23px;
+  height: 23px;
   background: #fff;
   border-radius: 90px;
   transition: 0.3s;
@@ -921,7 +1192,11 @@ input:checked.switch+label:after {
   cursor: default;
 }
 .tooltip {
-  position: relative;
+  position: absolute;
+  z-index: 2000;
+  max-width: 30vw;
+  min-width: 200px;
+  max-height: 10vh;
 }
 .tooltiptext {
   visibility: hidden;
@@ -938,12 +1213,14 @@ input:checked.switch+label:after {
   padding: 5px 0;
   white-space: pre;
   position: absolute;
-  top: -16px;
-  left: 150%;
+  top: -20px;
+  left: 220%;
   z-index: 50000;
+  font-size: 14px;
+  font-weight: normal;
 }
 .tooltiptext, #argenmap-tooltip span, #argenmap-tooltip span button:hover {
-  color: var(--bg-color) !important;
+  color: var(--primary-color);
 }
 .switch:hover+label .tooltiptext {
   visibility: visible;
@@ -959,6 +1236,9 @@ input:checked.switch+label:after {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+}
+.base-layer-item-info>div {
+  padding-left: 10px;
 }
 .map-tooltip {
   background-color: #000000;
@@ -982,7 +1262,7 @@ Control mapa base
 }
 #collapseBaseMapLayers .list-group-item {
   padding: 5px;
-  background: rgba(255, 255, 255, 0.9);
+  background: #FFFFFFCC;
   font-size: var(--body-fnt-size, 14px);
   width: 245px;
 }
@@ -1009,10 +1289,19 @@ Control mapa base
 }
 .list-inline {
   margin-bottom: 0px;
+  border: 2px solid var(--secondary-color);
+  border-radius: 6px;
 }
 .list-inline li {
-  width: 230px;
+  width: 320px;
   display: block;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.base-layer-item-info img {
+  width: 50px;
+  height: 40px;
+  border: 2px solid var(--secondary-color);
 }
 /*******************************
 Control graticula
@@ -1039,14 +1328,14 @@ SideBar
 }
 @media (max-width: 600px) {
   .leaflet-control {
-    margin-left: 0px !important;
+    margin-left: 5px !important;
     margin-top: 0px !important;
   }
   div .leaflet-draw-toolbar {
-    margin-top: 0px !important;
+    margin-top: 5px !important;
   }
   .leaflet-right .leaflet-control {
-    margin-right: 0px !important;
+    margin-right: 10px !important;
     margin-top: 0px !important;
   }
   .leaflet-bottom .leaflet-control-scale {
@@ -1118,32 +1407,26 @@ SideBar
   transform: scale(1);
 }
 /*******************************
-New navbar
+Navbar
 *******************************/
-@media (max-width: 410px) {
+/* @media (max-width: 410px) {
   .navbar-new-content {
     margin: 0% 4px !important;
   }
-}
-.navbar-new {
+} */
+/* .navbar-new {
   display: flex;
   width: auto;
   flex-wrap: nowrap;
   justify-content: space-between;
   overflow: hidden;
-}
-.navbar-new-content {
-  flex: inherit;
-  margin: 0.1rem 3px;
-  text-align: inherit;
-}
-#logo-help.navbar-new-content {
-  display: flex;
-  align-items: center;
-}
-.navbar-button {
+} */
+/* .navbar-content {
+  margin: 0.1rem 2.5rem;
+} */
+/* .navbar-button {
   margin-right: -5px;
-}
+} */
 /* @media (max-width: 470px) {
     .navbar-toggle {
         padding: 1px 5px;
@@ -1155,12 +1438,11 @@ New navbar
   background-repeat: no-repeat;
   margin-left: 10px;
 }
-@media (max-width: 410px) {
-  #logo-help {
-    display: none;
-  }
+#logo-help {
+  margin-right: 10px;
 }
 #geoserver-login-btn {
+  /*   display: contents; */
   width: auto;
   align-self: center;
 }
@@ -1169,7 +1451,7 @@ New navbar
   align-self: center;
   text-align: right;
   color: var(--text-color, #fff);
-  font-size: 18px;
+  font-size: 16px;
   font-family: "Encode Sans Bold", sans-serif;
   -webkit-user-select: none;
   user-select: none;
@@ -1202,6 +1484,10 @@ Searcher
   display: flex;
   flex-direction: column-reverse;
   justify-content: space-evenly;
+  border-radius: 6px;
+  background-color: #ffffffBB;
+  /* height: 36px; */
+  margin-bottom: 5px;
 }
 .formBtns {
   width: 100%;
@@ -1209,8 +1495,11 @@ Searcher
 #search-navbar {
   align-self: center;
 }
-#q.ui-input-text {
+#q.ag-input-text {
   padding: 0 0 0 10px;
+}
+.bx {
+  font-size: x-large;
 }
 /*******************************
 Perfil Topografico

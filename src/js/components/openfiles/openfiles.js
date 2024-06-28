@@ -71,7 +71,7 @@ class UImf {
     let tab_div = document.createElement("div")
     tab_div.className = "tabs_upload"
     tab_div.innerHTML = `
-    <span style="font-size:12px;color:#37bbed;margin:0px 10px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX, SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
+    <span style="margin:0px 10px;text-align:center">Formatos Disponibles: KML,GeoJson, GPX, SHP en formato (.zip), WKT en formato (.txt o .wkt), TopoJSON en formato (.json)</span>`
 
 
     let mainContainerFile = document.createElement("div")
@@ -188,7 +188,7 @@ class UImf {
 
     let btnCapa = document.createElement("button")
     btnCapa.id = "btn-upload-agregar-capa"
-    btnCapa.className = "ui-btn ui-btn-disabled"
+    btnCapa.className = "ag-btn ag-btn-disabled"
     btnCapa.style = "width:90%; margin:20px 0px 10px 0px"
     btnCapa.innerHTML = "Agregar Capa"
     btnCapa.onclick = function () {
@@ -196,7 +196,7 @@ class UImf {
       if (control_btn_add_layer) {
         addLayersfromFiles();
         new UserMessage(`Capas agregadas exitosamente.`, true, "information");
-        btnCapa.className = "ui-btn ui-btn-disabled"
+        btnCapa.className = "ag-btn ag-btn-disabled"
       }
 
       // if (control_btn_add_layer) { old version
@@ -413,7 +413,7 @@ class UImf {
   enabledbtnCapa() {
     control_btn_add_layer = true
     let btn = document.getElementById("btn-upload-agregar-capa")
-    btn.className = "ui-btn ui-btn-primary"
+    btn.className = "ag-btn ag-btn-primary"
 
     $('#uploaded-area').bind('DOMSubtreeModified', function () {
 
@@ -428,7 +428,7 @@ class UImf {
       if ($('#uploaded-area')[0].childElementCount == 0) {
         control_btn_add_layer = false;
         let btn = document.getElementById("btn-upload-agregar-capa")
-        btn.className = "ui-btn ui-btn-primary"
+        btn.className = "ag-btn ag-btn-primary"
       }
     });
   }

@@ -115,7 +115,7 @@ class AboutUsTab {
     gitHubMark.alt = "GitHub Logo";
 
     const repoDiv = document.createElement("button");
-    repoDiv.className = "ui-btn ui-btn-primary"
+    repoDiv.className = "ag-btn ag-btn-primary"
     repoDiv.appendChild(repoIndication);
     repoDiv.appendChild(gitHubMark);
     repoDiv.style.textAlign = "center";

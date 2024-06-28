@@ -1,18 +1,18 @@
-.modalHeader {
+/* .modalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   margin-bottom: 12px;
-}
+} */
 .modalHeader h4 {
-  margin: 0;
-  color: #37bbed;
+  color: var(--menu-title-text-color);
+  font-weight: 600;
 }
-.modalCloseButton {
+/* .modalCloseButton {
   background: none;
   border: none;
-}
+} */
 .modalMainSection {
   width: 100%;
   display: flex;
@@ -23,28 +23,26 @@
   flex-direction: row;
 }
 .modalNavButton {
-  background: none;
+  margin-right: 0;
+/*   background: none;
   border: 1px solid #37bbed;
   border-radius: 4px;
   color: #37bbed;
   padding: 6px;
   margin-bottom: 6px;
-  margin-right: 6px;
+  margin-right: 6px; */
 }
-.modalNavButton img {
-  filter: none;
-}
-.modalNavButtonActive img {
+.modalNavButton:hover img, .modalNavButtonActive img {
   filter: contrast(0%) brightness(200%);
 }
 .modalNavButtonActive {
-  background: #37bbed;
+  background: var(--secondary-color);
   color: white;
 }
 .modalContent {
-  border: 1px solid #37bbed;
-  border-radius: 4px;
-  width: 100%;
+  border: 2px solid var(--secondary-color);
+  border-radius: 6px;
+  background-color: #ffffffbb;
 }
 .actionContent {
   display: flex;
@@ -56,24 +54,16 @@
 }
 #loadLayersModal {
   overflow: hidden;
-  float: none;
+/*   float: none;
   border-radius: 6px;
   z-index: 1200;
   padding: 8px 12px;
-  background-color: white !important;
-  position: absolute;
-  top: 100px;
-  margin-bottom: 10px;
-  -moz-box-shadow: inset 0 0 10px #000000;
-  -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
-  width: 80%;
-  left: 10%;
+  background-color: white !important; */
+  width: auto;
 }
 #loadLayersButtonContent>img {
   opacity: 0.9;
 }
-
 /* #loadLayersButtonContent {
   height: 100%;
   width: 100%;
@@ -84,34 +74,34 @@
 } */
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 670px) {
-  #loadLayersModal {
+  /*   #loadLayersModal {
     width: 60%;
     left: 30%;
-  }
-  .modalMainSection {
+  } */
+/*   .modalMainSection {
     width: 100%;
     display: flex;
     flex-direction: row;
-  }
-  .modalNav {
+  } */
+ /*  .modalNav {
     display: flex;
     flex-direction: column;
-  }
+  } */
   /*.modalNavButton {
      margin-right: 0; 
   }*/
 }
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-  #loadLayersModal {
+  /*   #loadLayersModal {
     width: 50%;
     left: 30%;
-  }
+  } */
 }
 /* Large devices (tablets, 768px and up)  */
 @media (min-width: 992px) {
-  #loadLayersModal {
+  /*   #loadLayersModal {
     width: 40%;
     left: 30%;
-  }
+  } */
 }

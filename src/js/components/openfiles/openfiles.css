@@ -209,6 +209,7 @@
 .upload p {
   margin-top: 15px;
   font-size: 16px;
+  color: var(--secondary-color);
 }
 section .row {
   margin: 0px;
@@ -221,7 +222,7 @@ section .row {
   justify-content: space-between;
 }
 section .row i {
-  color: #37bbed;
+  color: var(--secondary-color);
 }
 section .details span {
   font-size: 14px;
@@ -246,12 +247,13 @@ section .details span {
 .content .progress-bar .progress {
   height: 100%;
   width: 0%;
-  background: #37bbed;
+  background: var(--secondary-color);
   border-radius: inherit;
 }
 .uploaded-area {
   width: 90%;
-
+  box-shadow: 1px 1px 10px #CCC;
+  border-radius: 6px;
   overflow-y: auto;
 }
 .uploaded-area.onprogress {
@@ -273,11 +275,11 @@ section .details span {
 }
 .upload {
   width: 100%;
-  color: #37bbed !important;
+  color: var(--secondary-color);
   cursor: pointer;
 }
 .upload:hover {
-  color: #73CFF2;
+  color: var(--secondary-color);
   cursor: pointer;
 }
 #uploaded-area::-webkit-scrollbar-track {
@@ -290,7 +292,7 @@ section .details span {
   background-color: #F5F5F5;
 }
 #uploaded-area::-webkit-scrollbar-thumb {
-  background-color: #37bbed;
+  background-color: var(--primary-color);
   background-image: -webkit-gradient(linear, 0 0, 0 100%,
       color-stop(.5, rgba(255, 255, 255, .2)),
       color-stop(.5, transparent), to(transparent));
@@ -322,6 +324,7 @@ section .details span {
   justify-content: space-between;
   margin-top: 5px;
   margin-bottom: 15px;
+  color: var(--secondary-color);
 }
 .btn-info {
   color: #fff;
