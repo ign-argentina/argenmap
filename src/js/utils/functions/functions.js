@@ -11,7 +11,7 @@ var loadElevationProfile = false;
 var loadLayerOptions = false;
 var loadGeoprocessing = false;
 var loadAddLayer = false;
-var loadQueryLayer = false;
+var loadQueryLayer = true;
 var loadConfigTool = false;
 
 function setAddLayer(cond) {
@@ -2038,7 +2038,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Agrega un evento de clic al documento para ocultar los contenedores al hacer clic fuera de ellos
   document.addEventListener("click", function (event) {
-    //console.log(checkboxPin);
     if (!menuContainer.contains(event.target) && event.target.id === "mapa") {
       buttons.forEach(function (button) {
         var targetId = button.getAttribute("data-target");

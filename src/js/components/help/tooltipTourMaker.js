@@ -193,7 +193,13 @@ class Tooltip {
     } */
 
     if (element.needClickToOpen) {
-      document.querySelector(element.needClickToOpen).click()
+      console.log(element);
+      let elementClick = document.querySelector(element.element);
+      let itemClick = document.querySelector(element.needClickToOpen);
+      console.log(elementClick);
+      if (elementClick && elementClick.style.display != "block") itemClick.click()
+      
+      //document.querySelector(element.needClickToOpen).click()
     }
 
     const item = document.querySelector(elemId); // Get the target element

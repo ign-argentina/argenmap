@@ -275,6 +275,9 @@ a, a:hover, a:focus {
 .leaflet-top.leaflet-left .leaflet-control {
   clear: none;
 }
+.leaflet-bottom.leaflet-right .leaflet-bar {
+  bottom: 40vh;
+}	
 div.leaflet-top.leaflet-left {
   right: 54px;
   left: auto;

@@ -3,7 +3,7 @@
   "welcomeText": "Descubre todas las herramientas y funcionalidades que ofrece para navegar, interactuar y producir mapas.<br>¿Te gustaría iniciar un tutorial rápido?",
   "confirmText": "Comenzar tutorial",
   "cancelText": "Cerrar",
-  "backdropColor": "#6262625d",
+  "backdropColor": "#55555585",
   "tooltipsBtns": {
     "prevBtn": "Anterior",
     "nextBtn": "Siguiente",
@@ -17,7 +17,23 @@
         "title": "Mapa",
         "text": "Este es el sector principal del visor donde se encuentran las herramientas. Además, aquí podrás visualizar las capas superpuestas y dibujos que se agreguen, permitiendo explorar y analizar la información geográfica."
       },
-      "placement": "left"
+      "placement": "right"
+    },
+    {
+      "element": "#botonera",
+      "description": {
+        "title": "Menu de opciones",
+        "text": "Aquí se encuentran las herramientas y funcionalidades del visor. Puedes explorar y utilizar las distintas opciones para interactuar con el mapa y los elementos geográficos."
+      },
+      "placement": "right"
+    },
+    {
+      "element": "#sidebar-btn",
+      "description": {
+        "title": "Acceso al menú de capas",
+        "text": "Botón para abrir y cerrar el menú de capas. Aquí podrás seleccionar y superponer capas temáticas sobre el mapa base."
+      },
+      "placement": "right"
     },
     {
       "element": "#sidebar",
@@ -30,6 +46,7 @@
     },
     {
       "element": ".menu5.panel-default",
+      "needClickToOpen": "#sidebar-btn",
       "description": {
         "title": "Panel de capas",
         "text": "Selecciona una de las unidades temáticas de tu interés y se desplegarán las capas disponibles. Al hacer clic en alguna ellas, se superpondrán en el mapa."
@@ -38,6 +55,7 @@
     },
     {
       "element": "#q",
+      "needClickToOpen": "#sidebar-btn",
       "description": {
         "title": "Buscador de capas",
         "text": "Busca y filtra las capas según el texto ingresado."
@@ -46,6 +64,7 @@
     },
     {
       "element": "#cleanTrash",
+      "needClickToOpen": "#sidebar-btn",
       "description": {
         "title": "Limpiar mapa",
         "text": "Desactiva y esconde todas las capas superpuestas sobre el mapa."
@@ -53,29 +72,63 @@
       "placement": "right"
     },
     {
-      "element": ".list-inline",
-      "needClickToOpen": "#basemap-selector-btn",
+      "element": "#menuPined",
+      "needClickToOpen": "#sidebar-btn",
       "description": {
-        "title": "Selector de mapas base",
-        "text": "Elige entre distintos mapas base incluyendo mapas topográficos e imágenes satelitales."
+        "title": "Fijar menú",
+        "text": "Mantienen fijo el menú de capas evitando que el mismo no se cierre al hacer clic en el mapa."
       },
       "placement": "right"
     },
     {
-      "element": ".leaflet-control-zoomhome",
+      "element": "#basemap-selector-btn",
       "description": {
-        "title": "Zoom",
-        "text": "Modifica el nivel de zoom del mapa. Cliquea el botón central para volver a la posición de inicio."
+        "title": "Acceso al selector de mapas base",
+        "text": "Botón para abrir y cerrar el selector de mapas base. Aquí podrás elegir entre distintos mapas base, incluyendo mapas topográficos e imágenes satelitales."
       },
-      "placement": "left"
+      "placement": "right"
     },
     {
-      "element": ".leaflet-control-locate",
+      "element": ".list-inline",
+      "needClickToOpen": "#basemap-selector-btn",
       "description": {
-        "title": "Localización",
-        "text": "Indica tu posición aproximada en el mapa."
+        "title": "Lista de mapas base",
+        "text": "Selecciona uno de los mapas base disponibles para visualizar en el mapa. Puedes elegir entre mapas topográficos, imágenes satelitales y otros mapas especializados."
       },
-      "placement": "left"
+      "placement": "right"
+    },
+    {
+      "element": "#load-layer-btn",
+      "description": {
+        "title": "Acceso al menú de carga de capas",
+        "text": "Botón para abrir y cerrar el menú de carga de capas. Aquí podrás agregar capas desde archivos locales o a través de una URL de servicio WMS."
+      },
+      "placement": "right"
+    },
+    {
+      "element": "#load-layer",
+      "needClickToOpen": "#load-layer-btn",
+      "description": {
+        "title": "Agregar capas",
+        "text": "Es posible cargar capas desde archivos en formato KML, GeoJSON, GPX, SHP (en formato .zip), WKT (en formato .txt o .wkt) y TopoJSON (en formato .json). También se pueden agregar capas a través de un WMS proporcionando su URL."
+      },
+      "placement": "right"
+    },
+    {
+      "element": "#geoprocesos-btn",
+      "description": {
+        "title": "Geoprocesos",
+        "text": "Herramientas de procesamiento para generar nueva información a partir de capas. Entre las opciones disponibles incluyen opciones para crear curvas de nivel, cotas, perfiles de elevación y áreas de influencia."
+      },
+      "placement": "right"
+    },
+    {
+      "element": "#searchbar",
+      "description": {
+        "title": "Buscador de localidades",
+        "text": "Encuentra la localidad que buscas ingresando su nombre."
+      },
+      "placement": "bottom"
     },
     {
       "element": ".leaflet-control-measure-toggle",
@@ -119,35 +172,10 @@
       "placement": "bottom"
     },
     {
-      "element": "#consultData",
+      "element": "#iconCD",
       "description": {
         "title": "Consultar Datos",
         "text": "Activa el modo de consulta para obtener los datos de las capas incluidas en el mapa, los cuales se mostrarán en un popup haciendo clic en el elemento de interés."
-      },
-      "placement": "load-layer-btn"
-    },
-    {
-      "element": "#load-layer",
-      "needClickToOpen": "#load-layer-btn",
-      "description": {
-        "title": "Agregar capas",
-        "text": "Es posible cargar capas desde archivos en formato KML, GeoJSON, GPX, SHP (en formato .zip), WKT (en formato .txt o .wkt) y TopoJSON (en formato .json). También se pueden agregar capas a través de un WMS proporcionando su URL."
-      },
-      "placement": "right"
-    },
-    {
-      "element": "#geoPIcon",
-      "description": {
-        "title": "Geoprocesos",
-        "text": "Herramientas de procesamiento para generar nueva información a partir de capas. Entre las opciones disponibles incluyen opciones para crear curvas de nivel, cotas, perfiles de elevación y áreas de influencia."
-      },
-      "placement": "right"
-    },
-    {
-      "element": "#searchbar",
-      "description": {
-        "title": "Buscador de localidades",
-        "text": "Encuentra la localidad que buscas ingresando su nombre."
       },
       "placement": "bottom"
     },
@@ -188,6 +216,22 @@
       "description": {
         "title": "Eliminar dibujos",
         "text": "Elimina los dibujos agregados individualmente o todos juntos con la opción 'Limpiar todo'. Puedes restaurar todas las geometrías eliminadas al cancelar. Ten en cuenta que esta opción no afecta a las capas de geoprocesos ni a los archivos subidos."
+      },
+      "placement": "left"
+    },
+    {
+      "element": ".leaflet-control-locate",
+      "description": {
+        "title": "Localización",
+        "text": "Indica tu posición aproximada en el mapa. Para activar esta función, es necesario que tu dispositivo tenga habilitado el servicio de geolocalización y que otorgues los permisos necesarios."
+      },
+      "placement": "left"
+    },
+    {
+      "element": ".leaflet-control-zoomhome",
+      "description": {
+        "title": "Zoom",
+        "text": "Controla el nivel de zoom del mapa. Puedes hacer clic en los botones de más y menos o utilizar la rueda del ratón para acercar o alejar la vista."
       },
       "placement": "left"
     }
