@@ -66,6 +66,29 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         });
       }
 
+      //Temporal
+      if (app.hasOwnProperty("addLayer")) {
+        setAddLayer(app.addLayer.isActive);
+      }
+      if (app.hasOwnProperty("queryLayer")) {
+        setQueryLayer(app.queryLayer.isActive);
+      }
+      //Temporal
+
+
+      if (app.hasOwnProperty("tools")) {
+        if (app.tools.hasOwnProperty("addLayer")) {
+          setAddLayer(app.tools.addLayer.isActive);
+        }
+        if (app.tools.hasOwnProperty("queryLayer")) {
+          setQueryLayer(app.tools.queryLayer.isActive);
+        }
+      }
+
+      if (app.hasOwnProperty("configToolMain")) {
+        setConfigToolMain(app.configToolMain.isActive);
+      }
+
       await this._startModules();
     },
 

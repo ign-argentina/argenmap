@@ -2,14 +2,25 @@
 var plugins = new Array("loadGeojson", "loadWms");
 var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
-var loadCharts = false;
 var loadSearchbar = false;
-var loadLogin = false;
 var mainPopup = false;
+var currentlyDrawing = false;
+var loadCharts = false;
+var loadLogin = false;
 var loadElevationProfile = false;
 var loadLayerOptions = false;
-var currentlyDrawing = false;
 var loadGeoprocessing = false;
+var loadAddLayer = false;
+var loadQueryLayer = false;
+var loadConfigTool = false;
+
+function setAddLayer(cond) {
+  loadAddLayer = cond;
+}
+
+function setQueryLayer(cond) {
+  loadQueryLayer = cond;
+}
 
 function setTableAsPopUp(cond) {
   loadTableAsPopUp = cond;
@@ -45,6 +56,10 @@ function setLayerOptions(cond) {
 
 function setGeoprocessing(cond) {
   loadGeoprocessing = cond;
+}
+
+function setConfigToolMain(cond) {
+  loadConfigTool = cond;
 }
 
 const reverseCoords = (coords) => {
@@ -1343,11 +1358,6 @@ function parseXml(str, lyr, sys) {
   }
 }
 
-function switchHillShade(basemap) {
-  if (basemap === gestorMenu.getActiveBasemap()) {
-    hillShade();
-  }
-}
 
 function hillShade() {
   if (app.hillshade) {

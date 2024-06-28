@@ -1,0 +1,31 @@
+name: Update Version
+
+on:
+  release:
+    types:
+      - created
+      
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Allow untrusted commands (less secure)
+        run: echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest release version
+        run: echo "::set-env name=NEW_VERSION::$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r .tag_name)"
+
+      - name: Update version in code
+        run: |
+          echo "${{ env.NEW_VERSION }}" > src/docs/version
+      
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+            commit_message: Update version in code to ${{ env.NEW_VERSION }}

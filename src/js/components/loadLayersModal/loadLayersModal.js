@@ -14,7 +14,9 @@ class LoadLayersModal {
     elem.id = "loadLayersButton";
     elem.title = "Agregar capas";
     elem.innerHTML = this.component;
-    document.querySelector(".leaflet-top.leaflet-left").append(elem);
+	if (loadAddLayer) {
+		document.querySelector(".leaflet-top.leaflet-left").append(elem);
+	}
   }
 }
 

@@ -255,7 +255,13 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         OVERLAY_CHECKBOX.title = itemComposite.capa.nombre;
         OVERLAY_CHECKBOX.classList.add("switch");
         OVERLAY_CHECKBOX.classList.add("hillshade");
-        OVERLAY_CHECKBOX.setAttribute("onclick", "switchHillShade(this.title)");
+        OVERLAY_CHECKBOX.disabled = true;
+
+        if(OVERLAY_CHECKBOX.title == gestorMenu.getActiveBasemap()){
+          OVERLAY_CHECKBOX.disabled = false;
+        }
+
+        OVERLAY_CHECKBOX.setAttribute("onclick", "hillShade()");
 
         const OVERLAY_TOOLTIP = document.createElement("span");
         OVERLAY_TOOLTIP.classList.add("tooltiptext");
@@ -330,7 +336,15 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     INFO_ICON.appendChild(BASEMAP_TOOLTIP);
     INFO_ICON.setAttribute(
       "onclick",
-      `toggleVisibility(this.lastElementChild.id),event.stopPropagation();`
+      `let tooltips = document.querySelectorAll('.tooltiptext');
+      tooltips.forEach(function(tooltip){
+        if (tooltip.classList.contains("visible") && tooltip.id !== "${BASEMAP_TOOLTIP.id}") {
+          toggleVisibility(tooltip.id);
+        }
+      });
+      toggleVisibility("${BASEMAP_TOOLTIP.id}");
+      event.stopPropagation();
+      `
     );
 
     const SECOND_DIV = document.createElement("div");
@@ -348,12 +362,39 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const BASEMAP_ITEM = document.createElement("li");
     BASEMAP_ITEM.classList.add("list-group-item");
     BASEMAP_ITEM.id = childId;
+    BASEMAP_ITEM.title = itemComposite.capa.nombre;
     BASEMAP_ITEM.setAttribute(
-      "onclick",
-      `gestorMenu.muestraCapa("${childId}"),document.getElementById('collapseBaseMapLayers').classList.toggle('in')`
-    ); // 2nd sentence hides basemaps menu after click
-    BASEMAP_ITEM.appendChild(FIRST_DIV);
+      "onclick", 
+      `function handleClick(){
 
+        document.getElementById('collapseBaseMapLayers').classList.toggle('in')
+        gestorMenu.muestraCapa("${childId}")
+        
+        let checkboxes = document.querySelectorAll('.hillshade')
+        checkboxes.forEach(function(checkbox) {
+          
+          if(checkbox.title == gestorMenu.getActiveBasemap()){
+            
+            checkbox.disabled = false;
+            
+          }else{
+            if(checkbox.checked == true){  
+              hillShade()
+              checkbox.checked = false;
+            }
+            checkbox.disabled = true;
+          }
+        });
+      }
+      if(gestorMenu.getActiveBasemap() != "${BASEMAP_ITEM.title}"){
+        handleClick();  
+        }else{
+          document.getElementById('collapseBaseMapLayers').classList.toggle('in')
+        }
+      `
+      ); // 2nd sentence hides basemaps menu after click
+      BASEMAP_ITEM.appendChild(FIRST_DIV);
+      
     return BASEMAP_ITEM.outerHTML; // TODO: change reference fn for expect an object instead string
   }
 }
@@ -680,7 +721,7 @@ class LayersInfoWMS extends LayersInfo {
         // Extract metadata from capabilities XML
         const capability = xmlDoc.querySelector("Capability");
         const keyword = xmlDoc.querySelector("Keyword").textContent;
-        const abstract = xmlDoc.querySelector("Abstract").textContent;
+        const abstract = xmlDoc.querySelectorAll("Abstract").textContent;
 
         // Extract layer information from capabilities XML
         const capaLyrList = capability.querySelector("Layer");
@@ -696,7 +737,7 @@ class LayersInfoWMS extends LayersInfo {
             try {
               const iName = layer.querySelector("Name").textContent;
               const iTitle = layer.querySelector("Title").textContent;
-              const iAbstract = layer.querySelector("Abstract").textContent;
+              const iAbstract = layer.querySelectorAll("Abstract").textContent ?? "";
 
               // Extract keywords
               const keywordsHTMLList = layer.querySelectorAll("KeywordList keyword");
@@ -3063,14 +3104,14 @@ class GestorMenu {
 
     if (isBaseLayer && this.lastBaseMapSelected !== baseLayerName) {
       if (this.baseMapDependencies[this.lastBaseMapSelected])
-        this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
-          if (this.activeLayers.find((lyr) => lyr === layer))
-            this.muestraCapa(this.getLayerIdByName(layer));
-        });
-    }
+      this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
+    if (this.activeLayers.find((lyr) => lyr === layer))
+    this.muestraCapa(this.getLayerIdByName(layer));
+});
+}
 
-    //Show or hide selected item
-    for (var key in this.items) {
+//Show or hide selected item
+for (var key in this.items) {
       var itemComposite = this.items[key];
       if (isBaseLayer && itemComposite.isBaseLayer()) {
         this.availableBaseLayers.forEach((baseLayer) => {
