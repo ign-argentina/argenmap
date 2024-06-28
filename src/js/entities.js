@@ -366,17 +366,12 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_ITEM.setAttribute(
       "onclick", 
       `function handleClick(){
-
         document.getElementById('collapseBaseMapLayers').classList.toggle('in')
         gestorMenu.muestraCapa("${childId}")
-        
         let checkboxes = document.querySelectorAll('.hillshade')
         checkboxes.forEach(function(checkbox) {
-          
           if(checkbox.title == gestorMenu.getActiveBasemap()){
-            
             checkbox.disabled = false;
-            
           }else{
             if(checkbox.checked == true){  
               hillShade()
@@ -452,16 +447,12 @@ class ImpresorCapasBaseHTML extends Impresor {
       //baseMapsMenu.setAttribute('aria-controls', 'collapseExample');
       //baseMapsMenu.href = '#collapseBaseMapLayers';
 
-      const baseMapsContainer = document.createElement("ul");
-      baseMapsContainer.id = "collapseBaseMapLayers";
-      baseMapsContainer.classList = "collapse pull-right";
-
       const baseMapsList = document.createElement("ul");
+      baseMapsList.id = "collapseBaseMapLayers";
       baseMapsList.classList = "list-inline";
       baseMapsList.innerHTML = itemComposite.itemsStr;
 
-      baseMapsContainer.appendChild(baseMapsList);
-      baseMapsMenu.appendChild(baseMapsContainer);
+      baseMapsMenu.appendChild(baseMapsList);
 
       baseMapsMenu.addEventListener("click", function (event) {
         event.preventDefault();

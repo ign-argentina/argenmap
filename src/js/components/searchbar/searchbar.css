@@ -40,7 +40,7 @@
   z-index: 1500;
   border-radius: var(--input-text-border-radius);
 }
-@media (max-width:768px) and (orientation:portrait) {
+/* @media (max-width:768px) and (orientation:portrait) {
   #searchbar {
     left: 50px;
     top: 5px;
@@ -63,9 +63,9 @@
 }
 @media (min-width:769px) {
   #searchbar {
-/*     max-width: 135px */
-  }
-}
+ max-width: 135px 
+  } 
+}*/
 #div-icon-close-searchbar {
   margin: 0;
   width: auto;

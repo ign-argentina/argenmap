@@ -1255,16 +1255,16 @@ Control mapa base
 #basemap-selector .leaflet-control-layers-toggle:hover {
   background-color: #f4f4f4;
 }
-#collapseBaseMapLayers {
+/* #collapseBaseMapLayers {
   position: absolute;
   padding: 0 !important;
   margin-left: 40px;
-}
+} */
 #collapseBaseMapLayers .list-group-item {
-  padding: 5px;
+/*   padding: 5px; */
   background: #FFFFFFCC;
   font-size: var(--body-fnt-size, 14px);
-  width: 245px;
+/*   width: 245px; */
 }
 #collapseBaseMapLayers .list-group-item:hover {
   background: rgb(97, 202, 134);
