@@ -1439,7 +1439,7 @@ Navbar
   margin-left: 10px;
 }
 #logo-help {
-  margin-right: 0;
+  margin-right: 10px;
 }
 #geoserver-login-btn {
   /*   display: contents; */
