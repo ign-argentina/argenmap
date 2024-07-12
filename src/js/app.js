@@ -585,8 +585,8 @@ async function loadTemplate(data, isDefaultTemplate) {
         gestorMenu.loadInitialLayers(urlInteraction);
 
         // Default values for showToolbar and showLayerMenu
-        let showToolbar;
-        let showLayerMenu;
+        let showToolbar = true;
+        let showLayerMenu = true;
 
         // Check if app.onInit exists and assign values accordingly
         if (app?.onInit) {
@@ -598,11 +598,16 @@ async function loadTemplate(data, isDefaultTemplate) {
         const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
         toolbarVisibilityToggler.createComponent(showToolbar);
 
+        //consultar si el navegador es mobile
+        const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+
         // Show layer menu if showLayerMenu is true
-        if (showLayerMenu) {
+        if (showLayerMenu && !isMobile) {
           document.getElementById("sidebar").style.display = "block";
         }
 
+        const editableLabel = new EditableLabel();
+        editableLabel.addTo(mapa);
       }
     }, 100);
   });

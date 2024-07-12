@@ -252,7 +252,7 @@ class EditableLabel {
   _updateButton() {
     let control = this.control.getContainer().firstElementChild;
     let controlIcon = control.querySelectorAll("span")[0];
-console.log(control);
+
     if (controlIcon.classList.contains("icon-text")) {
       controlIcon.classList.remove("icon-text");
       controlIcon.classList.add("fa-solid", "fa-xmark", "redIcon");
@@ -267,8 +267,4 @@ console.log(control);
       control.title = this.title;
     }
   }
-
 }
-
-const editableLabel = new EditableLabel();
-editableLabel.addTo(mapa);

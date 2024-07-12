@@ -47,6 +47,8 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
   layer.options.fillColor = fillColor;
 };
 
+const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = "";
@@ -360,9 +362,11 @@ $("body").on("pluginLoad", function (event, plugin) {
           fs.createComponent();
           break;
         case 'helpTour':
-          const help = new HelpTour;
-          const helpData = await help.fetchHelpTourData();
-          help.createComponent(helpData);
+          if (!isMobile) {
+            const help = new HelpTour;
+            const helpData = await help.fetchHelpTourData();
+            help.createComponent(helpData);
+          }
           break;
         case 'loadLayer':
           const loadLayersModal = new LoadLayersModal();
@@ -493,28 +497,22 @@ $("body").on("pluginLoad", function (event, plugin) {
         case "Measure":
           // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
           // set decimal and thousands dividers from local configuration
-
-          var measureControl = new L.Control.Measure({
-            position: "topleft",
-            primaryLengthUnit: "meters",
-            secondaryLengthUnit: "kilometers",
-            primaryAreaUnit: "sqmeters",
-            secondaryAreaUnit: "hectares",
-            collapsed: true,
-            decPoint: DECIMAL_SEPARATOR,
-            thousandsSep: THOUSANDS_SEPARATOR,
-            activeColor: '#157DB9',
-            completedColor: '#0db2e0'
-          });
-          measureControl.addTo(mapa);
-          /* if (!L.Browser.android) {
-            // replaces event listener for Measure icon in favor of click
-            L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
-            L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
-            L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
-            L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
-          } */
-          gestorMenu.plugins['Measure'].setStatus('visible');
+          if (!isMobile) {
+            var measureControl = new L.Control.Measure({
+              position: "topleft",
+              primaryLengthUnit: "meters",
+              secondaryLengthUnit: "kilometers",
+              primaryAreaUnit: "sqmeters",
+              secondaryAreaUnit: "hectares",
+              collapsed: true,
+              decPoint: DECIMAL_SEPARATOR,
+              thousandsSep: THOUSANDS_SEPARATOR,
+              activeColor: '#157DB9',
+              completedColor: '#0db2e0'
+            });
+            measureControl.addTo(mapa);
+            gestorMenu.plugins['Measure'].setStatus('visible');
+          }
           break;
         case "geoprocessing":
           if (loadGeoprocessing) {

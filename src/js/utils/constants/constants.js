@@ -79,7 +79,6 @@ const PLUGINS = {
   textpath: _PATH + "leaflet-textpath/leaflet-textpath.js",
   screenShoter: _PATH + "leaflet-simple-map-screenshoter/leaflet-simple-map-screenshoter.js",
   turf: "src/js/plugins/turf/turf.min.js",
-  editableLabel: _PATH + "leaflet-editable-label/Leaflet.EditableLabel.js",
   pdfPrinter: "src/js/components/pdfPrinter/pdfPrinter.js",
   FullScreen: "src/js/components/fullscreen/fullscreen.js",
   geoprocessing: "src/js/components/geoprocessing/geoprocessing.js",
