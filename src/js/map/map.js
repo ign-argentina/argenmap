@@ -1,5 +1,5 @@
 var atrib_ign =
-    "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+  "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
   baseMaps = {},
   overlayMaps = new Object(),
   layerName,
@@ -297,13 +297,13 @@ $("body").on("pluginLoad", function (event, plugin) {
                 ".leaflet-top.leaflet-right",
                 ".leaflet-bottom.leaflet-right",
                 "leaflet-control-container",
-								"#zoom-level",
+                "#zoom-level",
                 "#btn-logout",
                 "#developerLogo"
-							],
+              ],
               screenName: "mapaIGN" + n,
               position: 'topleft'
-						}).addTo(mapa);
+            }).addTo(mapa);
 
             document.getElementsByClassName(
               "leaflet-control-simpleMapScreenshoter"
@@ -322,22 +322,38 @@ $("body").on("pluginLoad", function (event, plugin) {
             );
             screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
-						gestorMenu.plugins["screenShoter"].setStatus("visible");
-					}
-					break;
-				case 'ZoomHome':
-					// Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
-					var zoomHome = L.Control.zoomHome({
-						zoomHomeTitle: 'Inicio',
-						zoomInTitle: 'Acercarse',
-						zoomOutTitle: 'Alejarse',
-						zoomHomeIcon: 'solid fa-earth-americas',
-						homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
+            gestorMenu.plugins["screenShoter"].setStatus("visible");
+          }
+          break;
+        case 'ZoomHome':
+          // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
+          let zoomHome = L.Control.zoomHome({
+            zoomHomeTitle: 'Inicio',
+            zoomInTitle: 'Acercarse',
+            zoomOutTitle: 'Alejarse',
+            //zoomHomeIcon: 'solid fa-earth-americas',
+            homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
             homeZoom: app.mapConfig.zoom.initial,
             position: 'bottomright'
-					});
-					zoomHome.addTo(mapa);
-					gestorMenu.plugins['ZoomHome'].setStatus('visible');
+          });
+
+          zoomHome.addTo(mapa);
+
+          // Select the zoomHome icon and add 'center-flex' class
+          let zoomHomeIcon = document.querySelector(".leaflet-control-zoomhome-home");
+          zoomHomeIcon.classList.add("center-flex");
+
+          // Change icon on hover to 'fa fa-home' using CSS classes
+          zoomHomeIcon.classList.add("zoom-home-icon");
+          zoomHomeIcon.innerHTML = `<i class="fas fa-home"></i><span class="zoom-home-text">${mapa.getZoom()}</span>`;
+
+          // Update zoom level displayed on zoom end
+          mapa.on("zoomend", () => {
+            const zoomText = zoomHomeIcon.querySelector(".zoom-home-text");
+            zoomText.textContent = mapa.getZoom();
+          });
+
+          gestorMenu.plugins['ZoomHome'].setStatus('visible');
           break;
         case 'FullScreen':
           const fs = new Fullscreen();
@@ -369,72 +385,72 @@ $("body").on("pluginLoad", function (event, plugin) {
           gestorMenu.plugins["betterScale"].setStatus("visible");
           loadDeveloperLogo();
           break;
-				case 'minimap':
-					// Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
-					var miniArgenmap = new L.TileLayer(argenmap._url, {
-						minZoom: 0,
-						maxZoom: 21,
-						attribution: atrib_ign,
-						tms: true
-					});
-					var miniMap = new L.Control.MiniMap(miniArgenmap, {
-						toggleDisplay: false,
-						minimized: false,
-						position: 'bottomleft',
-						//collapsedWidth: 32,
-						//collapsedHeight: 32,
-						width: 100,
-						height: 100,
-						strings: {
-							hideText: 'Ocultar minimapa',
-							showText: 'Mostrar minimapa'
-						}
-					}).addTo(mapa);
-					gestorMenu.plugins['minimap'].setStatus('visible');
-					break;
-				case 'locate':
-					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
-					var locateControl = L.control.locate({
-						position: "topleft",
-						drawCircle: true,
-						follow: true,
-						setView: true,
-						keepCurrentZoomLevel: true,
-						markerStyle: {
-							weight: 1,
-							opacity: 0.8,
-							fillOpacity: 0.8
-						},
-						circleStyle: {
-							weight: 1,
-							clickable: false
-						},
-						icon: "fa fa-crosshairs",
-						metric: true,
-						strings: {
-							title: "Mi posición",
-							popup: "Usted se encuentra a {distance} {unit} desde este punto",
-							outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
-						},
-						locateOptions: {
-							maxZoom: 21,
-							watch: true,
-							enableHighAccuracy: true,
-							maximumAge: 10000,
-							timeout: 10000
-						}
-					}).addTo(mapa);
-					gestorMenu.plugins['locate'].setStatus('visible');
-					break;
-				case 'graticula':
-					// Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
-					var customGraticule = null;
-					L.Control.CustomGraticule = L.Control.extend({
-						onAdd: function (map) {
-							var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
-							container.title = 'Cuadrícula';
-							var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
-							container.appendChild(icon);
+        case 'minimap':
+          // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
+          var miniArgenmap = new L.TileLayer(argenmap._url, {
+            minZoom: 0,
+            maxZoom: 21,
+            attribution: atrib_ign,
+            tms: true
+          });
+          var miniMap = new L.Control.MiniMap(miniArgenmap, {
+            toggleDisplay: false,
+            minimized: false,
+            position: 'bottomleft',
+            //collapsedWidth: 32,
+            //collapsedHeight: 32,
+            width: 100,
+            height: 100,
+            strings: {
+              hideText: 'Ocultar minimapa',
+              showText: 'Mostrar minimapa'
+            }
+          }).addTo(mapa);
+          gestorMenu.plugins['minimap'].setStatus('visible');
+          break;
+        case 'locate':
+          // Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
+          var locateControl = L.control.locate({
+            position: "topleft",
+            drawCircle: true,
+            follow: true,
+            setView: true,
+            keepCurrentZoomLevel: true,
+            markerStyle: {
+              weight: 1,
+              opacity: 0.8,
+              fillOpacity: 0.8
+            },
+            circleStyle: {
+              weight: 1,
+              clickable: false
+            },
+            icon: "fa fa-crosshairs",
+            metric: true,
+            strings: {
+              title: "Mi posición",
+              popup: "Usted se encuentra a {distance} {unit} desde este punto",
+              outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
+            },
+            locateOptions: {
+              maxZoom: 21,
+              watch: true,
+              enableHighAccuracy: true,
+              maximumAge: 10000,
+              timeout: 10000
+            }
+          }).addTo(mapa);
+          gestorMenu.plugins['locate'].setStatus('visible');
+          break;
+        case 'graticula':
+          // Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
+          var customGraticule = null;
+          L.Control.CustomGraticule = L.Control.extend({
+            onAdd: function (map) {
+              var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
+              container.title = 'Cuadrícula';
+              var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
+              container.appendChild(icon);
 
               container.onclick = function () {
                 if (customGraticule == null) {
@@ -476,7 +492,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           break;
         case "Measure":
           // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-		  // set decimal and thousands dividers from local configuration
+          // set decimal and thousands dividers from local configuration
 
           var measureControl = new L.Control.Measure({
             position: "topleft",
@@ -492,14 +508,14 @@ $("body").on("pluginLoad", function (event, plugin) {
           });
           measureControl.addTo(mapa);
           /* if (!L.Browser.android) {
-						// replaces event listener for Measure icon in favor of click
-						L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
-						L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
-						L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
-						L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
-					} */
-					gestorMenu.plugins['Measure'].setStatus('visible');
-					break;
+            // replaces event listener for Measure icon in favor of click
+            L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
+            L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
+            L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
+            L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
+          } */
+          gestorMenu.plugins['Measure'].setStatus('visible');
+          break;
         case "geoprocessing":
           if (loadGeoprocessing) {
             let HTMLhead = document.querySelector("head");
@@ -539,19 +555,19 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
           }
           break;
-				case 'pdfPrinter':
-					if (!L.Browser.safari) {
-						const pdfP = new PdfPrinter();
-						pdfP.createComponent();
-					}
-					break;
-				case 'consultData':
-					const consultData = new ConsultData();
-					consultData.createComponent();
-					break;
-				case 'Draw':
+        case 'pdfPrinter':
+          if (!L.Browser.safari) {
+            const pdfP = new PdfPrinter();
+            pdfP.createComponent();
+          }
+          break;
+        case 'consultData':
+          const consultData = new ConsultData();
+          consultData.createComponent();
+          break;
+        case 'Draw':
 
-					var orgReadbleDistance = L.GeometryUtil.readableArea;
+          var orgReadbleDistance = L.GeometryUtil.readableArea;
 
           L.GeometryUtil.readableArea = function (area, isMetric, precision) {
             // adapts area unit from m2 to ha to km2 based on its size
@@ -622,6 +638,18 @@ $("body").on("pluginLoad", function (event, plugin) {
                   !this._enabled &&
                     this._hasAvailableLayers() &&
                     (this.fire("enabled", { handler: this.type }),
+                      this._map.fire(L.Draw.Event.EDITSTART, {
+                        handler: this.type,
+                      }),
+                      L.Handler.prototype.enable.call(this),
+                      this._featureGroup
+                        .on("layeradd", this._enableLayerEdit, this)
+                        .on("layerremove", this._disableLayerEdit, this));
+                }
+              } else {
+                !this._enabled &&
+                  this._hasAvailableLayers() &&
+                  (this.fire("enabled", { handler: this.type }),
                     this._map.fire(L.Draw.Event.EDITSTART, {
                       handler: this.type,
                     }),
@@ -629,18 +657,6 @@ $("body").on("pluginLoad", function (event, plugin) {
                     this._featureGroup
                       .on("layeradd", this._enableLayerEdit, this)
                       .on("layerremove", this._disableLayerEdit, this));
-                }
-              } else {
-                !this._enabled &&
-                  this._hasAvailableLayers() &&
-                  (this.fire("enabled", { handler: this.type }),
-                  this._map.fire(L.Draw.Event.EDITSTART, {
-                    handler: this.type,
-                  }),
-                  L.Handler.prototype.enable.call(this),
-                  this._featureGroup
-                    .on("layeradd", this._enableLayerEdit, this)
-                    .on("layerremove", this._disableLayerEdit, this));
               }
             },
             _enableLayerEdit: function (t) {
@@ -651,12 +667,12 @@ $("body").on("pluginLoad", function (event, plugin) {
                 //to disallow editing in geoprocesses
                 this._backupLayer(o),
                   this.options.poly &&
-                    ((i = L.Util.extend({}, this.options.poly)),
+                  ((i = L.Util.extend({}, this.options.poly)),
                     (o.options.poly = i)),
                   this.options.selectedPathOptions &&
-                    ((e = L.Util.extend({}, this.options.selectedPathOptions)),
+                  ((e = L.Util.extend({}, this.options.selectedPathOptions)),
                     e.maintainColor &&
-                      ((e.color = o.options.color),
+                    ((e.color = o.options.color),
                       (e.fillColor = o.options.fillColor)),
                     (o.options.original = L.extend({}, o.options)),
                     (o.options.editing = e)),
@@ -681,10 +697,10 @@ $("body").on("pluginLoad", function (event, plugin) {
                   delete e.options.editing,
                   delete e.options.original,
                   this._selectedPathOptions &&
-                    (e instanceof L.Marker
-                      ? this._toggleMarkerHighlight(e)
-                      : (e.setStyle(e.options.previousOptions),
-                        delete e.options.previousOptions)),
+                  (e instanceof L.Marker
+                    ? this._toggleMarkerHighlight(e)
+                    : (e.setStyle(e.options.previousOptions),
+                      delete e.options.previousOptions)),
                   e instanceof L.Marker
                     ? (e.dragging.disable(),
                       e
@@ -729,8 +745,8 @@ $("body").on("pluginLoad", function (event, plugin) {
               var e = t.layer || t.target || t;
               let isFile = e.id
                 ? e.id.includes("json") ||
-                  e.id.includes("zip") ||
-                  e.id.includes("kml")
+                e.id.includes("zip") ||
+                e.id.includes("kml")
                 : false;
               if (
                 typeof e != "string" &&
@@ -869,8 +885,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             var layers = e.layers;
             //Each layer recently edited..
             /* layers.eachLayer(function (layer) {
-							mapa.checkLayersInDrawedGeometry(layer, layer.type);
-						}); */
+              mapa.checkLayersInDrawedGeometry(layer, layer.type);
+            }); */
             mapa.methodsEvents["edit-layer"].forEach((method) =>
               method(mapa.editableLayers)
             );
@@ -879,29 +895,29 @@ $("body").on("pluginLoad", function (event, plugin) {
           mapa.on("draw:deleted", function (e) {
             var layers = e.layers;
             /* Object.values(layers._layers).forEach(deletedLayer => {
-							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
-							if (lyrIdx >= 0) {
-								let layerSection;
-								addedLayers.forEach(lyr => {
-									if (lyr.id === deletedLayer.id) {
-										let index = addedLayers.indexOf(lyr);
-										if (index > -1) {
-											layerSection = lyr.section;
-											addedLayers.splice(index, 1);
-											updateNumberofLayers(layerSection);
-											showTotalNumberofLayers();
-										}
-									}
-								});
-								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
-								deleteLayerFromMenu(deletedLayer);
-							}
-						}); */
+              const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
+              if (lyrIdx >= 0) {
+                let layerSection;
+                addedLayers.forEach(lyr => {
+                  if (lyr.id === deletedLayer.id) {
+                    let index = addedLayers.indexOf(lyr);
+                    if (index > -1) {
+                      layerSection = lyr.section;
+                      addedLayers.splice(index, 1);
+                      updateNumberofLayers(layerSection);
+                      showTotalNumberofLayers();
+                    }
+                  }
+                });
+                mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
+                deleteLayerFromMenu(deletedLayer);
+              }
+            }); */
 
             /*if(geoProcessingManager){
-							let layerName = Object.values(layers._layers)[0].name;
-							geoProcessingManager.updateLayerSelect(layerName, false);
-						}*/
+              let layerName = Object.values(layers._layers)[0].name;
+              geoProcessingManager.updateLayerSelect(layerName, false);
+            }*/
 
             //mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
           });
@@ -1013,47 +1029,47 @@ $("body").on("pluginLoad", function (event, plugin) {
             }
 
             /* if (Object.values(drawnItems._layers).length != 0) {
-							contextMenu.createOption({
-								isDisabled: false,
-								text: 'Descargar todas las capas',
-								onclick: (option) => {
-									mapa.closePopup(contextPopup);
-									mapa.downloadAllActiveLayer();
-								}
-							});
-						} */
+              contextMenu.createOption({
+                isDisabled: false,
+                text: 'Descargar todas las capas',
+                onclick: (option) => {
+                  mapa.closePopup(contextPopup);
+                  mapa.downloadAllActiveLayer();
+                }
+              });
+            } */
 
             /* contextMenu.createOption({
-							isDisabled: false,
-							text: "Share",
-							onclick: (option) => {
-								mapa.closePopup(contextPopup);
-								let _url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}`;
-								window.open(_url);
-								}
-							}); */
+              isDisabled: false,
+              text: "Share",
+              onclick: (option) => {
+                mapa.closePopup(contextPopup);
+                let _url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}`;
+                window.open(_url);
+                }
+              }); */
 
             /* contextMenu.createOption({
-							isDisabled: false,
-							text: "Save",
-							onclick: () => {
-								mapa.closePopup(contextPopup);
-								let markedId = 0;
-								(!app.markers) ? app.markers = {} : markedId = Object.keys(app.markers).length++;
-								
-								let marker = window.prompt("Set marker name","name...");
-								let _markerName;
-								(marker == null || marker == "")
-								? _markerName = `${lat},${lng}`
-								: _markerName = marker;
+              isDisabled: false,
+              text: "Save",
+              onclick: () => {
+                mapa.closePopup(contextPopup);
+                let markedId = 0;
+                (!app.markers) ? app.markers = {} : markedId = Object.keys(app.markers).length++;
+              	
+                let marker = window.prompt("Set marker name","name...");
+                let _markerName;
+                (marker == null || marker == "")
+                ? _markerName = `${lat},${lng}`
+                : _markerName = marker;
 
-								app.markers[markedId] = { 
-									name: _markerName,
-									location: [lat,lng] 
-								};
-								new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
-							},
-							}); */
+                app.markers[markedId] = { 
+                  name: _markerName,
+                  location: [lat,lng] 
+                };
+                new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
+              },
+              }); */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1276,15 +1292,15 @@ $("body").on("pluginLoad", function (event, plugin) {
             }
 
             /* contextMenu.createOption({
-							isDisabled: true,
-							text: 'Ocultar geometría',
-							onclick: (option) => {
-								if (!option.disabled) {
-									mapa.closePopup(contextPopup);
-									mapa.hideLayer(layer.name);
-								}
-							}
-						}); */
+              isDisabled: true,
+              text: 'Ocultar geometría',
+              onclick: (option) => {
+                if (!option.disabled) {
+                  mapa.closePopup(contextPopup);
+                  mapa.hideLayer(layer.name);
+                }
+              }
+            }); */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1296,15 +1312,15 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
 
             /* if (Object.values(drawnItems._layers).length != 0) {
-							contextMenu.createOption({
-								isDisabled: false,
-								text: 'Descargar todas la capas',
-								onclick: (option) => {
-									mapa.closePopup(contextPopup);
-									mapa.downloadAllActiveLayer();
-								}
-							});
-						} */
+              contextMenu.createOption({
+                isDisabled: false,
+                text: 'Descargar todas la capas',
+                onclick: (option) => {
+                  mapa.closePopup(contextPopup);
+                  mapa.downloadAllActiveLayer();
+                }
+              });
+            } */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1346,8 +1362,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
 
             /* L.DomEvent.on(editStylePopup, 'click', function (e) {
-							L.DomEvent.stopPropagation(e);
-						}); */
+              L.DomEvent.stopPropagation(e);
+            }); */
           };
 
           mapa.measurementsWrapper = (layer) => {
@@ -2526,8 +2542,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layer.split("_")[0];
             return mapa.editableLayers.hasOwnProperty(type)
               ? mapa.editableLayers[type]
-                  .find((lyr) => lyr.name === layer)
-                  .toGeoJSON()
+                .find((lyr) => lyr.name === layer)
+                .toGeoJSON()
               : null;
           };
 
@@ -3080,7 +3096,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
       setValidZoomLevel(selectedBasemap.nombre);
 
-			gestorMenu.plugins['leaflet'].setStatus('visible');
+      gestorMenu.plugins['leaflet'].setStatus('visible');
 
       mapa.on("click", function (e) {
         setTimeout(function () {
@@ -3090,33 +3106,33 @@ $("body").on("pluginLoad", function (event, plugin) {
 
       showMainMenuTpl();
 
-			break;
-		case 'MousePosition':
-			// Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
-			L.control.mousePosition({
-				position: 'bottomright',
-				separator: ' , ',
-				emptyString: '&nbsp;',
-				numDigits: 10,
-				lngFormatter: function (num) {
-					var direction = (num < 0) ? 'O' : 'E';
-					return deg_to_dms(Math.abs(num)) + direction;
-				},
-				latFormatter: function (num) {
-					var direction = (num < 0) ? 'S' : 'N';
-					return deg_to_dms(Math.abs(num)) + direction;
-				}
-			}).addTo(mapa);
-			gestorMenu.plugins['MousePosition'].setStatus('visible');
-			// loadDeveloperLogo(); // move to bottomleft before scale
-			break;
-		case 'BingLayer':
-			if (gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready') {
-				gestorMenu.plugins['BingLayer'].setStatus('visible');
-			}
-		default:
-			break;
-	}
+      break;
+    case 'MousePosition':
+      // Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
+      L.control.mousePosition({
+        position: 'bottomright',
+        separator: ' , ',
+        emptyString: '&nbsp;',
+        numDigits: 10,
+        lngFormatter: function (num) {
+          var direction = (num < 0) ? 'O' : 'E';
+          return deg_to_dms(Math.abs(num)) + direction;
+        },
+        latFormatter: function (num) {
+          var direction = (num < 0) ? 'S' : 'N';
+          return deg_to_dms(Math.abs(num)) + direction;
+        }
+      }).addTo(mapa);
+      gestorMenu.plugins['MousePosition'].setStatus('visible');
+      // loadDeveloperLogo(); // move to bottomleft before scale
+      break;
+    case 'BingLayer':
+      if (gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready') {
+        gestorMenu.plugins['BingLayer'].setStatus('visible');
+      }
+    default:
+      break;
+  }
 });
 
 /**
@@ -3245,12 +3261,12 @@ function pointToLayer(feature, latlng) {
 }
 
 function printFinished() {
-	//Agregar tooltip resumen
-	$("[data-toggle2='tooltip']").tooltip({
-		placement: "right",
-		trigger: "hover",
-		container: ".menu-container"
-	});
+  //Agregar tooltip resumen
+  $("[data-toggle2='tooltip']").tooltip({
+    placement: "right",
+    trigger: "hover",
+    container: ".menu-container"
+  });
 }
 
 function showMainMenuTpl() {
@@ -3660,17 +3676,17 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div id="popupPageSeeker">' +
-            sAux +
-            '</div><div class="featureInfo" id="featureInfoPopup' +
-            i +
-            '">'
+          sAux +
+          '</div><div class="featureInfo" id="featureInfoPopup' +
+          i +
+          '">'
         );
       } else {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div class="featureInfo" style="display:none" id="featureInfoPopup' +
-            i +
-            '">'
+          i +
+          '">'
         );
       }
     }
