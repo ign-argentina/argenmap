@@ -276,7 +276,7 @@ a, a:hover, a:focus {
   clear: none;
 }
 .leaflet-bottom.leaflet-right .leaflet-bar {
-  bottom: 40vh;
+  bottom: 25dvh;
 }	
 div.leaflet-top.leaflet-left {
   right: 54px;
@@ -592,10 +592,10 @@ left: -1px;
   border-radius: 0;
   border-top: 1px solid #f5f5f5 !important;
 }
-.panel-heading:hover {
+/* .panel-heading:hover {
   background-color: var(--lyr-menu-panel-head-text-color);
   color: var(--lyr-menu-panel-head-bg-color);
-}
+} */
 .panel-heading:hover .item-group-short-desc span {
   color: var(--menu-title-text-color);
 }

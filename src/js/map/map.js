@@ -53,9 +53,9 @@ var unordered = "";
 var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
 var ordenZoomHome = 1;
 var ordenFullScreen = 5;
-var ordenMeasure = 3;
+var ordenMeasure = 2;
 var ordenGraticula = 4;
-var ordenLocate = 2;
+var ordenLocate = 3;
 var ordenDraw = 6;
 var ordenBetterScale = 7;
 var ordenMinimap = 8;
@@ -395,7 +395,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 				case 'locate':
 					// Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
 					var locateControl = L.control.locate({
-						position: "bottomright",
+						position: "topleft",
 						drawCircle: true,
 						follow: true,
 						setView: true,
@@ -486,7 +486,9 @@ $("body").on("pluginLoad", function (event, plugin) {
             secondaryAreaUnit: "hectares",
             collapsed: true,
             decPoint: DECIMAL_SEPARATOR,
-            thousandsSep: THOUSANDS_SEPARATOR
+            thousandsSep: THOUSANDS_SEPARATOR,
+            activeColor: '#157DB9',
+            completedColor: '#0db2e0'
           });
           measureControl.addTo(mapa);
           /* if (!L.Browser.android) {
