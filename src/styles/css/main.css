@@ -275,11 +275,11 @@ a, a:hover, a:focus {
 .leaflet-top.leaflet-left .leaflet-control {
   clear: none;
 }
-.leaflet-bottom.leaflet-right .leaflet-bar {
+/* .leaflet-bottom.leaflet-right .leaflet-bar {
   bottom: 25dvh;
-}	
+}	 */
 div.leaflet-top.leaflet-left {
-  right: 54px;
+  right: 45px;
   left: auto;
 }
 /* .leaflet-top{
@@ -889,7 +889,7 @@ JQuery Autocomplete
 /*******************************
 Leaflet
 *******************************/
-@media (max-width: 860px) {
+@media (max-width: 1115px) {
   .leaflet-top {
     top: 60px;
   }
@@ -1340,6 +1340,9 @@ SideBar
   .leaflet-right .leaflet-control {
     margin-right: 10px !important;
     margin-top: 0px !important;
+  }
+  .leaflet-right .leaflet-control#hideBtnRight, .leaflet-right .leaflet-control#hideBtnLeft {
+    margin-bottom: 5px !important;
   }
   .leaflet-bottom .leaflet-control-scale {
     margin-left: 5px !important;

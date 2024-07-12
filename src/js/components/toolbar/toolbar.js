@@ -1,4 +1,3 @@
-
 /**
  * Represents a class that handles the visibility toggling of map tools buttons.
  * @class
@@ -19,6 +18,7 @@ class ToolbarVisibilityToggler {
     elem.className = 'leaflet-bar leaflet-control';
     elem.id = btnId;
     elem.title = title;
+    elem.style = "cursor: pointer;";
 
     const elemIcon = document.createElement("a");
     elemIcon.id = id;
@@ -59,11 +59,36 @@ class ToolbarVisibilityToggler {
   }
 
   /**
+    * Hides or shows the toolbar based on the provided parameter.
+    * @param {HTMLElement} toolbar - The toolbar element.
+    * @param {boolean} show - Whether to show or hide the toolbar.
+    */
+  hideToolbar(toolbar, show) {
+    toolbar.childNodes.forEach(node => {
+      if (node.id !== "hideBtnRight" && node.id !== "hideBtnLeft") {
+        node.hidden = !show;
+      }
+    });
+  }
+
+  /**
    * Creates the component.
-   * This method creates two buttons for the map toolbar.
+   * This method creates two buttons for the map toolbar and sets the initial visibility of the toolbars.
+   * @param {boolean} showToolbar - A boolean value to show the toolbar.
    */
-  createComponent() {
+  createComponent(showToolbar) {
+    // Create the toolbar buttons
     this.createBtn("map-toolbar-icon-left", "hideBtnLeft", "Esconder herramientas", "glyphicon glyphicon-wrench");
-    this.createBtn("map-toolbar-icon-right", "hideBtnRight", "Esconder herramientas", "glyphicon glyphicon-pencil");
+    this.createBtn("map-toolbar-icon-right", "hideBtnRight", "Esconder herramientas de dibujo", "glyphicon glyphicon-pencil");
+
+    // Use an arrow function to ensure the 'this' context is preserved
+    window.onload = () => {
+      // Set the initial visibility of the toolbars based on the showToolbar parameter
+      const rightToolbar = document.querySelector(".leaflet-top.leaflet-right");
+      const leftToolbar = document.querySelector(".leaflet-top.leaflet-left");
+
+      this.hideToolbar(rightToolbar, showToolbar);
+      this.hideToolbar(leftToolbar, showToolbar);
+    };
   }
 }

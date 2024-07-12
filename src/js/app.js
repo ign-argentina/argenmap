@@ -584,8 +584,24 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         gestorMenu.loadInitialLayers(urlInteraction);
 
+        // Default values for showToolbar and showLayerMenu
+        let showToolbar;
+        let showLayerMenu;
+
+        // Check if app.onInit exists and assign values accordingly
+        if (app?.onInit) {
+          showToolbar = app.onInit.showToolbar ?? true;
+          showLayerMenu = app.onInit.showLayerMenu ?? true;
+        }
+
+        // Initialize toolbar visibility toggler and create components
         const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
-        toolbarVisibilityToggler.createComponent();
+        toolbarVisibilityToggler.createComponent(showToolbar);
+
+        // Show layer menu if showLayerMenu is true
+        if (showLayerMenu) {
+          document.getElementById("sidebar").style.display = "block";
+        }
 
       }
     }, 100);

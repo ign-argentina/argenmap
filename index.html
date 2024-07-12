@@ -76,7 +76,7 @@
   <script src="src/js/entities.js"></script>
   <script src='src/js/utils/functions/functions.js'></script>
   <script src="src/js/components/url-interaction/URLInteraction.js"></script>
-  <!-- <script src="src/js/components/zoomLevel/ZoomLevel.js"></script> -->
+  <script src="src/js/components/zoomLevel/ZoomLevel.js"></script>
   <script src="src/js/components/openfiles/openfiles.js"></script>
   <script src="src/js/components/loadServices/loadServices.js"></script>
   <!--<script src="src/js/components/loadLayersModal/loadLayersModal.js"></script>-->
@@ -117,7 +117,7 @@
   <!-- Main Styles -->
   <link rel="stylesheet" href="src/styles/css/main.css">
   <link href="src/styles/css/dashboard.css" rel="stylesheet">
-  <!-- <link href="src/js/components/zoomLevel/ZoomLevel.css" rel="stylesheet"> -->
+  <link href="src/js/components/zoomLevel/ZoomLevel.css" rel="stylesheet">
   <link href="src/js/components/fullscreen/fullscreen.css" rel="stylesheet">
   <link href="src/js/components/openfiles/openfiles.css" rel="stylesheet">
   <link href="src/js/components/loadServices/loadServices.css" rel="stylesheet">
@@ -165,18 +165,18 @@
 
   <div class="menu-container top-around-flex">
     <div id="botonera">
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="sidebar-btn" data-target="sidebar">
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="sidebar-btn" data-target="sidebar" title="Menú de capas">
         <i class="fa-solid fa-layer-group"></i>
       </button>
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="basemap-selector-btn" data-target="basemap-selector">
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="basemap-selector-btn" data-target="basemap-selector" title="Selector de mapas base">
         <i class="fa-solid fa-map"></i>
       </button>
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="load-layer-btn" data-target="load-layer">
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="load-layer-btn" data-target="load-layer" title="Agregar capas">
         <i class='bx bxs-layer-plus'></i>
       </button>
     </div>
     <div style="display: flex;">
-      <div id="sidebar" class="nav nav-sidebar panel panel-default" style="display: block;"></div>
+      <div id="sidebar" class="nav nav-sidebar panel panel-default" style="display: none;"></div>
       <div id="basemap-selector" style="display: none;"></div>
       <div id="load-layer" style="display: none;"></div>
     </div>
