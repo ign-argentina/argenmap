@@ -191,7 +191,6 @@ class InputToggle {
   togglePasswordButton() {
     const passwordInput = document.getElementById("txtPassword");
     const showPasswordButton = document.getElementById("show_password");
-    console.log("algo");
     if (passwordInput.value.length > 0) {
       showPasswordButton.style.display = "inline-block";
     } else {

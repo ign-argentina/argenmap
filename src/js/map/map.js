@@ -366,6 +366,9 @@ $("body").on("pluginLoad", function (event, plugin) {
             const help = new HelpTour;
             const helpData = await help.fetchHelpTourData();
             help.createComponent(helpData);
+          } else {
+            document.getElementById("nav-help-btn").style.display = "none";
+            ;
           }
           break;
         case 'loadLayer':
@@ -1060,7 +1063,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 (marker == null || marker == "")
                 ? _markerName = `${lat},${lng}`
                 : _markerName = marker;
-
+    
                 app.markers[markedId] = { 
                   name: _markerName,
                   location: [lat,lng] 

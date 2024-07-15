@@ -102,9 +102,9 @@
   <script src="src/js/components/UI/UserInterface.js"></script>
   <script src="src/js/components/about/about.js"></script>
 
-    <!-- Leaflet EditableLabel -->
-    <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.css" />
-    <script src="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.js"> </script>
+  <!-- Leaflet EditableLabel -->
+  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.css" />
+  <script src="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.js"> </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js"></script>
 
@@ -175,11 +175,14 @@
       <button class="ag-btn ag-btn-primary menu-section-btn" id="load-layer-btn" data-target="load-layer" title="Agregar capas">
         <i class='bx bxs-layer-plus'></i>
       </button>
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="nav-help-btn" title="Ayuda" data-target="help-tour"><i class="fa-solid fa-question"></i>
+      </button>
     </div>
-    <div style="display: flex;">
+    <div id="menu-content" style="display: flex;">
       <div id="sidebar" class="nav nav-sidebar panel panel-default" style="display: none;"></div>
       <div id="basemap-selector" style="display: none;"></div>
       <div id="load-layer" style="display: none;"></div>
+      <div id="help-tour" style="display: none;"></div>
     </div>
   </div>
 

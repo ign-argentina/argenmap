@@ -79,16 +79,20 @@ class TooltipTourMaker {
     new Modal(this.data.welcomeTitle, this.data.welcomeText, this.data.confirmText, this.data.cancelText);
 
     // Event listener for cancel button click
-    const cancelButton = document.getElementById("initModalBtnCancel");
-    cancelButton.addEventListener("click", () => {
-      document.getElementById("initModal").remove();
-      this.closeHelp();
-    });
+    /*     const cancelButton = document.getElementById("initModalBtnCancel");
+        cancelButton.addEventListener("click", () => {
+          document.getElementById("initModal").remove();
+          this.closeHelp();
+        }); */
 
     // Event listener for confirm button click
     const confirmButton = document.getElementById("initModalBtnConfirm");
     confirmButton.addEventListener("click", () => {
-      document.getElementById("initModal").remove();
+      // document.getElementById("initModal").remove();
+      const tooltipBackdrop = document.createElement('div');
+      tooltipBackdrop.id = 'tooltip-helper-backdrop';
+      tooltipBackdrop.classList.add('tooltip-helper-backdrop');
+      document.querySelector('body').appendChild(tooltipBackdrop);
       this.createSequence(options, this.cont);
     });
   };
@@ -144,13 +148,8 @@ class TooltipTourMaker {
 class Modal {
 
   constructor(title, question, confirmText, cancelText) {
-
-    const tooltipBackdrop = document.createElement('div');
-    tooltipBackdrop.id = 'tooltip-helper-backdrop';
-    tooltipBackdrop.classList.add('tooltip-helper-backdrop');
-    document.querySelector('body').appendChild(tooltipBackdrop);
-
     // Create initialization modal
+    const helpTourMenu = document.getElementById("help-tour");
     const initModal = document.createElement('div');
     initModal.id = 'initModal';
     initModal.classList.add('initModal');
@@ -160,10 +159,9 @@ class Modal {
             <p>${question}</p>
             <div class="initModalBtn">
                 <button id="initModalBtnConfirm" class="ag-btn ag-btn-confirm">${confirmText}</button>
-                <button id="initModalBtnCancel" class="ag-btn ag-btn-primary">${cancelText}</button>
             </div>
-            `;
-    tooltipBackdrop.appendChild(initModal);
+            `; //<button id="initModalBtnCancel" class="ag-btn ag-btn-primary">${cancelText}</button>
+    helpTourMenu.appendChild(initModal);
   }
 }
 
@@ -193,12 +191,10 @@ class Tooltip {
     } */
 
     if (element.needClickToOpen) {
-      console.log(element);
       let elementClick = document.querySelector(element.element);
       let itemClick = document.querySelector(element.needClickToOpen);
-      console.log(elementClick);
       if (elementClick && elementClick.style.display != "block") itemClick.click()
-      
+
       //document.querySelector(element.needClickToOpen).click()
     }
 

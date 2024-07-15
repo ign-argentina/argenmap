@@ -87,11 +87,14 @@ Ejemplos:
 }
 /* #0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE #0091CE #F38A00 #0db2e0*/
 :root {
-  --primary-color: #3A6EA7;/*  #242C4F*/
-  --secondary-color: #0094D4;/* #45659D */
+  --primary-color: #3A6EA7;
+  /*  #242C4F*/
+  --secondary-color: #0094D4;
+  /* #45659D */
   --main-bg-color: #fff;
   --bg-color: #0db2e0;
-  --active-bg-color: #33b560; /* #E7BA61 */
+  --active-bg-color: #33b560;
+  /* #E7BA61 */
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
   --danger-color: #c62828;
@@ -102,8 +105,10 @@ Ejemplos:
   --body-fnt-size: 14px;
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
-  --menu-section-hover-color:#E7E7E7; /*#969393 #AAAAAA*/
-  --layer-btn-hover-color: #E7E7E7;  /*#d1cccc  */
+  --menu-section-hover-color: #E7E7E7;
+  /*#969393 #AAAAAA*/
+  --layer-btn-hover-color: #E7E7E7;
+  /*#d1cccc  */
   --main-font-family: "Encode Sans", sans-serif;
   /*Argenmap ui Button*/
   --btn-ftn-size: 1.5rem;
@@ -113,9 +118,12 @@ Ejemplos:
   --btn-hover-color: #FFF;
   --btn-primary-color: var(--primary-color);
   --btn-secondary-color: var(--secondary-color);
-  --btn-disabled-color: #838788; /* #AAAAAA */
-  --btn-confirm-color: #2e7d33; /* #33B560  #3A8555*/
-  --btn-danger-color: #c62828; /*#CE4946 #EF4D3D */
+  --btn-disabled-color: #838788;
+  /* #AAAAAA */
+  --btn-confirm-color: #2e7d33;
+  /* #33B560  #3A8555*/
+  --btn-danger-color: #c62828;
+  /*#CE4946 #EF4D3D */
   ;
   /*Argenmap ui input text */
   --input-text-ftn-size: 14px;
@@ -269,15 +277,12 @@ a, a:hover, a:focus {
 } */
 #mapa {
   position: relative;
-  height: 100vh;
+  height: 100dvh;
   background-color: var(--main-bg-color, white) !important;
 }
 .leaflet-top.leaflet-left .leaflet-control {
   clear: none;
 }
-/* .leaflet-bottom.leaflet-right .leaflet-bar {
-  bottom: 25dvh;
-}	 */
 div.leaflet-top.leaflet-left {
   right: 45px;
   left: auto;
@@ -374,7 +379,6 @@ Argenmap UI Components class
 .ag-btn:hover {
   background-color: var(--btn-hover-color);
 }
-
 .ag-btn-primary {
   background-color: var(--btn-primary-color);
   border-color: var(--btn-primary-color);
@@ -382,7 +386,6 @@ Argenmap UI Components class
 .ag-btn-primary:hover {
   color: var(--btn-primary-color);
 }
-
 .ag-btn-secondary {
   background-color: var(--btn-secondary-color);
   border-color: var(--btn-secondary-color);
@@ -390,7 +393,6 @@ Argenmap UI Components class
 .ag-btn-secondary:hover {
   color: var(--btn-secondary-color);
 }
-
 .ag-btn-disabled {
   background-color: var(--btn-disabled-color);
   border-color: var(--btn-disabled-color);
@@ -414,7 +416,6 @@ Argenmap UI Components class
 .ag-btn-danger:hover {
   color: var(--btn-danger-color);
 }
-
 .ag-input-text {
   margin-left: 2px;
   height: 36px;
@@ -512,7 +513,7 @@ Menu principal
   border-radius: 6px;
   width: 350px;
 }
-.menuFixed{
+.menuFixed {
   display: block !important;
 }
 #sidebar {
@@ -522,7 +523,7 @@ Menu principal
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-/*   width: 350px; */
+  /*   width: 350px; */
   background-color: transparent;
   max-width: 320px;
 }
@@ -549,35 +550,33 @@ Menu principal
   background-color: transparent !important;
 }
 /* Estilos para pestañas de navegación */
-.nav-tabs>li{
+.nav-tabs>li {
   margin-bottom: 0;
-left: -1px;
+  left: -1px;
 }
 .nav-tabs>li>a {
-  color: var(--btn-secondary-color);
-  border: 2px solid var(--btn-secondary-color);
-  background-color: var(--map-btn-bg-color);
   border-bottom: 0;
   font-weight: 600;
   margin-left: 1px;
   padding: 5px 15px;
-}
-.nav-tabs>li>a:hover {
   background-color: var(--btn-secondary-color);
   color: var(--btn-hover-color);
+}
+.nav-tabs>li>a:hover {
+  color: var(--btn-secondary-color);
+  background-color: var(--map-btn-bg-color);
   font-weight: normal;
   border: 2px solid var(--btn-secondary-color);
   border-bottom: 0;
 }
-.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus  {
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus {
   background-color: var(--active-bg-color);
   color: white;
   cursor: pointer;
   border: 2px solid var(--active-bg-color);
   border-bottom: 0;
 }
-.nav-tabs>li.active>a:hover{
-  cursor: pointer;
+.nav-tabs>li.active>a:hover {
   color: white;
   border: 2px solid var(--active-bg-color);
   border-bottom: 0;
@@ -1264,10 +1263,10 @@ Control mapa base
   margin-left: 40px;
 } */
 #collapseBaseMapLayers .list-group-item {
-/*   padding: 5px; */
+  /*   padding: 5px; */
   background: #FFFFFFCC;
   font-size: var(--body-fnt-size, 14px);
-/*   width: 245px; */
+  /*   width: 245px; */
 }
 #collapseBaseMapLayers .list-group-item:hover {
   background: rgb(97, 202, 134);

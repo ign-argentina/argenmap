@@ -2010,7 +2010,6 @@ $(document).ready(function(){
 document.addEventListener("DOMContentLoaded", function () {
   var menuContainer = document.querySelector(".menu-container");
   var buttons = document.querySelectorAll(".menu-section-btn");
-  //let checkboxPin = document.getElementById("jevattend_id");
 
   buttons.forEach(function (button) {
     button.addEventListener("click", function (event) {

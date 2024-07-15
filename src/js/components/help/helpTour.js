@@ -30,23 +30,11 @@ class HelpTour {
    * @param {Object} data - The help tour data object.
    */
   createComponent(data) {
-    const btnElement = document.createElement('button');
-    btnElement.classList = "ag-btn ag-btn-primary menu-section-btn";
-    btnElement.id = 'nav-help-btn';
-    btnElement.title = 'Ayuda';
-
-    btnElement.innerHTML =
-      `<i class="fa-solid fa-question"></i>`;
-    btnElement.setAttribute('aria-hidden', 'true');
-
-    btnElement.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const tooltipTour = new TooltipTourMaker();
-      tooltipTour.initTour(data);
-    });
-
-    document.querySelector('#botonera').append(btnElement);
+    if (!data) {
+      return;
+    }
+    const tooltipTour = new TooltipTourMaker();
+    tooltipTour.initTour(data);
   }
 
   /**

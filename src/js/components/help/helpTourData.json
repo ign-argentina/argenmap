@@ -1,6 +1,6 @@
 {
-  "welcomeTitle": "Explora el visor de mapas ArgenMap",
-  "welcomeText": "Descubre todas las herramientas y funcionalidades que ofrece para navegar, interactuar y producir mapas.<br>¿Te gustaría iniciar un tutorial rápido?",
+  "welcomeTitle": "Ayuda",
+  "welcomeText": "¡Explora el visor de mapas! Este tutorial te guiará a través de las distintas herramientas y funcionalidades del visor para que puedas explorar y analizar la información geográfica de manera eficiente.",
   "confirmText": "Comenzar tutorial",
   "cancelText": "Cerrar",
   "backdropColor": "#55555585",
@@ -139,6 +139,14 @@
       "placement": "bottom"
     },
     {
+      "element": ".leaflet-control-locate",
+      "description": {
+        "title": "Localización",
+        "text": "Indica tu posición aproximada en el mapa. Para activar esta función, es necesario que tu dispositivo tenga habilitado el servicio de geolocalización y que otorgues los permisos necesarios."
+      },
+      "placement": "bottom"
+    },
+    {
       "element": ".leaflet-control-customgraticule",
       "needClickToOpen": ".leaflet-control-customgraticule",
       "description": {
@@ -220,15 +228,7 @@
       "placement": "left"
     },
     {
-      "element": ".leaflet-control-locate",
-      "description": {
-        "title": "Localización",
-        "text": "Indica tu posición aproximada en el mapa. Para activar esta función, es necesario que tu dispositivo tenga habilitado el servicio de geolocalización y que otorgues los permisos necesarios."
-      },
-      "placement": "left"
-    },
-    {
-      "element": ".leaflet-control-zoomhome",
+      "element": "div.leaflet-control-zoomhome",
       "description": {
         "title": "Zoom",
         "text": "Controla el nivel de zoom del mapa. Puedes hacer clic en los botones de más y menos o utilizar la rueda del ratón para acercar o alejar la vista."
