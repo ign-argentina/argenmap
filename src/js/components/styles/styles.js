@@ -5,6 +5,10 @@ class StylesUI {
     let minBgSize = app.logo.miniHeight !== '' ? app.logo.miniHeight + ' ' + app.logo.miniWidth : 'contain !important';
     style.id = "main-style-ui"
     style.innerHTML = `
+    :root {
+    --primary-color: ${app.theme.headerBackground};
+    --secondary-color: ${app.theme.bodyBackground};
+    }
     .navbar{
       background-color: ${app.theme.headerBackground};
     }
