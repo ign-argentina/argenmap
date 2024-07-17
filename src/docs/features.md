@@ -17,6 +17,5 @@
 - Incluir en la URL como parámetros la posición y zoom actuales del mapa y capas activas para compartir
 - Captura de pantalla
 - Imprimir pantalla
-- hola
 
 La lista de cambios está en https://github.com/ign-argentina/argenmap/releases
