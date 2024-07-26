@@ -134,10 +134,11 @@ Ejemplos:
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
   /*Menu capas*/
-  --lyr-menu-bg-color: #66666654;
+  --lyr-menu-bg-color: #cccccc54;
   --lyr-menu-panel-head-bg-color: var(--primary-color);
   --lyr-menu-panel-head-text-color: #FFF;
   --menu-title-text-color: #fff
+  --menu-text-color: #303030
 }
 /* General */
 html {
@@ -1141,7 +1142,6 @@ input:checked.switch+label:after {
 }
 .list-inline {
   margin-bottom: 0px;
-  border: 2px solid var(--secondary-color);
   border-radius: 6px;
 }
 .list-inline li {
@@ -1153,7 +1153,6 @@ input:checked.switch+label:after {
 .base-layer-item-info img {
   width: 50px;
   height: 40px;
-  border: 2px solid var(--secondary-color);
 }
 /* Control graticula */
 .leaflet-control-customgraticule {

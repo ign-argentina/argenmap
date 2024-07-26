@@ -23,12 +23,12 @@ const LEGEND_ERROR = "src/styles/images/not-found.svg";
 let _antialias = true,
   _dpi = '111',
   _font = 'verdana',
-  _hideEmpty=false,
-  _labelMargin= '5';
+  _hideEmpty = false,
+  _labelMargin = '5';
 const _LEGEND_OPTIONS = `&LEGEND_OPTIONS=fontAntiAliasing:${_antialias};dpi:${_dpi};fontName:${_font};hideEmptyRules:${_hideEmpty};labelMargin:${_labelMargin};`;
 //GetLegendGraphic params
-let _LEGEND_TRANSPARENT=true,
-  _LEGEND_SCALE=1;
+let _LEGEND_TRANSPARENT = true,
+  _LEGEND_SCALE = 1;
 const _LEGEND_PARAMS = `&transparent=${_LEGEND_TRANSPARENT}&scale=${_LEGEND_SCALE}`;
 
 const STRINGS = {
@@ -38,7 +38,7 @@ const STRINGS = {
   delete_geometry: "Delete geometry",
   url_required: "URL parameter is required",
   no_bbox: "Invalid or empty bounding box",
-  about: "Acerca de Argenmap" 
+  about: "Acerca de Argenmap"
 }
 
 //Default Services Values
@@ -114,7 +114,7 @@ const USER_LOCALE =
 const NUM_FORMAT = new Intl.NumberFormat().formatToParts(1000.10);
 
 const THOUSANDS_SEPARATOR = NUM_FORMAT[1].value;
-const DECIMAL_SEPARATOR = NUM_FORMAT[3].value;
+const DECIMAL_SEPARATOR = NUM_FORMAT[1].value;
 
 const PROJECTIONS = {
   22183:

@@ -6,8 +6,8 @@
   margin-bottom: 12px;
 } */
 .modalHeader h4 {
-  color: var(--menu-title-text-color);
-  font-weight: 600;
+  color: #333, var(--menu-title-text-color);
+  font-weight: 500;
 }
 /* .modalCloseButton {
   background: none;
@@ -24,7 +24,7 @@
 }
 .modalNavButton {
   margin-right: 0;
-/*   background: none;
+  /*   background: none;
   border: 1px solid #37bbed;
   border-radius: 4px;
   color: #37bbed;
@@ -40,7 +40,6 @@
   color: white;
 }
 .modalContent {
-  border: 2px solid var(--secondary-color);
   border-radius: 6px;
   background-color: #ffffffbb;
 }
@@ -54,7 +53,7 @@
 }
 #loadLayersModal {
   overflow: hidden;
-/*   float: none;
+  /*   float: none;
   border-radius: 6px;
   z-index: 1200;
   padding: 8px 12px;
@@ -78,12 +77,12 @@
     width: 60%;
     left: 30%;
   } */
-/*   .modalMainSection {
+  /*   .modalMainSection {
     width: 100%;
     display: flex;
     flex-direction: row;
   } */
- /*  .modalNav {
+  /*  .modalNav {
     display: flex;
     flex-direction: column;
   } */

@@ -2623,8 +2623,8 @@ class GestorMenu {
             <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
             <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
             </button>
-            <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
-            <button class='ag-btn ag-btn-secondary btn-search' id='menuPined' type='button' onClick='gestorMenu._menuFixed()' title='Pegar Menu'>
+            <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar capas'></button>
+            <button class='ag-btn ag-btn-secondary btn-search' id='menuPined' type='button' onClick='gestorMenu._menuFixed()' title='Fijar menú de capas'>
             <span class='glyphicon glyphicon-pushpin'></span>
             </button>
           </div>

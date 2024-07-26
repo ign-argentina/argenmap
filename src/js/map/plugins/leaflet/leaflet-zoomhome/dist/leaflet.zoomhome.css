@@ -18,6 +18,7 @@ a.leaflet-control-zoomhome-home {
 }
 .zoom-home-icon .fas {
   display: none;
+  font-size: 15px;
 }
 .zoom-home-icon:hover .fas {
   display: inline;

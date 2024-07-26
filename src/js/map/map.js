@@ -501,6 +501,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
           // set decimal and thousands dividers from local configuration
           if (!isMobile) {
+            console.log("entro");
             var measureControl = new L.Control.Measure({
               position: "topleft",
               primaryLengthUnit: "meters",
@@ -513,6 +514,7 @@ $("body").on("pluginLoad", function (event, plugin) {
               activeColor: '#157DB9',
               completedColor: '#0db2e0'
             });
+            console.log(measureControl);
             measureControl.addTo(mapa);
             gestorMenu.plugins['Measure'].setStatus('visible');
           }
