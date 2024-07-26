@@ -182,11 +182,11 @@ class ImpresorItemHTML extends Impresor {
     btn_options_icon.title = "Zoom a capa";
 
     const btn_options_list = document.createElement("div");
-    btn_options_list.className = "display-none";
+    btn_options_list.className = ""; //display-none
     btn_options_list.id = "layer-options-" + item.nombre;
 
     const btn_options = document.createElement("div");
-    btn_options.className = "display-none";
+    btn_options.className = ""; //display-none
     btn_options.id = "layer-options-" + item.nombre;
 
     if (loadLayerOptions) {
