@@ -137,8 +137,7 @@ Ejemplos:
   --lyr-menu-bg-color: #cccccc54;
   --lyr-menu-panel-head-bg-color: var(--primary-color);
   --lyr-menu-panel-head-text-color: #FFF;
-  --menu-title-text-color: #fff
-  --menu-text-color: #303030
+  --menu-title-text-color: #fff --menu-text-color: #303030
 }
 /* General */
 html {
@@ -441,6 +440,8 @@ div.leaflet-top.leaflet-left {
   border: 0;
   border-radius: 6px;
   max-width: 320px;
+  overflow: auto;
+  overflow-x: hidden;
 }
 #load-layer {
   overflow: auto;
