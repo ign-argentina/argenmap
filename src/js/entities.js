@@ -182,11 +182,11 @@ class ImpresorItemHTML extends Impresor {
     btn_options_icon.title = "Zoom a capa";
 
     const btn_options_list = document.createElement("div");
-    btn_options_list.className = "display-none";
+    btn_options_list.className = ""; //display-none
     btn_options_list.id = "layer-options-" + item.nombre;
 
     const btn_options = document.createElement("div");
-    btn_options.className = "display-none";
+    btn_options.className = ""; //display-none
     btn_options.id = "layer-options-" + item.nombre;
 
     if (loadLayerOptions) {
@@ -2623,8 +2623,8 @@ class GestorMenu {
             <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
             <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
             </button>
-            <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'></button>
-            <button class='ag-btn ag-btn-secondary btn-search' id='menuPined' type='button' onClick='gestorMenu._menuFixed()' title='Pegar Menu'>
+            <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar capas'></button>
+            <button class='ag-btn ag-btn-secondary btn-search' id='menuPined' type='button' onClick='gestorMenu._menuFixed()' title='Fijar menú de capas'>
             <span class='glyphicon glyphicon-pushpin'></span>
             </button>
           </div>

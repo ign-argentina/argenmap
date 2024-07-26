@@ -80,6 +80,7 @@
 }
 #wms-input {
   border-right: 0;
+  margin-left: 0;
 }
 #select-layers-container {
   width: 100%;

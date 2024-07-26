@@ -170,10 +170,8 @@
 .icon-modalfile {
   display: inline-block;
 }
-
 /* Import Google font - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
 .wrapper {
   display: flex;
   align-items: center;
@@ -324,7 +322,7 @@ section .details span {
   justify-content: space-between;
   margin-top: 5px;
   margin-bottom: 15px;
-  color: var(--secondary-color);
+  color: var(--menu-text-color);
 }
 .btn-info {
   color: #fff;
