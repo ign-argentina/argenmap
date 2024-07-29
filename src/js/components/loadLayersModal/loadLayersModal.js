@@ -66,7 +66,7 @@ class modalUI {
     let header = document.createElement('div');
     header.classList.add('modalHeader', 'center-flex-space-btw');
 
-    let modalTitle = document.createElement('h4');
+    let modalTitle = document.createElement('h3');
     modalTitle.innerText = 'Agregar capas';
 
     /* let closeButton = document.createElement('button');
