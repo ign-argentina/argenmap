@@ -172,28 +172,69 @@ class ImpresorItemHTML extends Impresor {
     btn_zoom_icon.classList = "fas fa-search-plus";
     btn_zoom_icon.title = "Zoom a capa";
 
-    const btn_options_icon_div = document.createElement("div");
-    btn_options_icon_div.className = "layer-options-icon";
-    btn_options_icon_div.setAttribute("layername", item.nombre);
-    btn_options_icon_div.title = "Opciones";
+    const btn_opacity = document.createElement("div");
+    btn_opacity.className = "opacity-layer";
+    btn_opacity.setAttribute("layername", item.nombre);
+    btn_opacity.style.alignSelf = "center";
+
+    const btn_opacity_icon = document.createElement("i");
+    btn_opacity_icon.classList = "fa-solid fa-circle-half-stroke";
+    btn_opacity_icon.title = "Modificar la opacidad de la capa";
+
+    /*     const btn_options_icon_div = document.createElement("div");
+        btn_options_icon_div.className = "layer-options-icon";
+        btn_options_icon_div.setAttribute("layername", item.nombre);
+        btn_options_icon_div.title = "Opciones"; */
 
     const btn_options_icon = document.createElement("i");
     btn_options_icon.classList = "fas fa-angle-down";
     btn_options_icon.title = "Zoom a capa";
 
-    const btn_options_list = document.createElement("div");
-    btn_options_list.className = ""; //display-none
-    btn_options_list.id = "layer-options-" + item.nombre;
+    /*     const btn_options_list = document.createElement("div");
+        btn_options_list.className = ""; //display-none
+        btn_options_list.id = "layer-options-" + item.nombre; */
 
     const btn_options = document.createElement("div");
-    btn_options.className = ""; //display-none
+    btn_options.className = "layer-menu-options"; //display-none
     btn_options.id = "layer-options-" + item.nombre;
+    // si hago clic en btn_options no debe afectar los eventos de btn
+    btn_options.setAttribute("onClick", "event.stopPropagation()");
 
-    if (loadLayerOptions) {
-      btn.style.padding = "10px 1px 1px 1px";
+    // al hacer clic en btn_opacity se mostrar un input range para modificar la opacidad de la capa
+    btn_opacity.addEventListener("click", function (event) {
+      //event.stopPropagation();
+      console.log("object");
+      let layerName = event.target.getAttribute("layername");
+      let layer = app.getLayer(layerName);
+      let opacity = layer.opacity;
+      let opacityInput = document.createElement("input");
+      opacityInput.type = "range";
+      opacityInput.min = 0;
+      opacityInput.max = 1;
+      opacityInput.step = 0.1;
+      opacityInput.value = opacity;
+      opacityInput.style.width = "100%";
+      opacityInput.style.margin = "5px 0";
+      opacityInput.addEventListener("input", function (event) {
+        let layerName = event.target.getAttribute("layername");
+        let layer = app.getLayer(layerName);
+        layer.setOpacity(event.target.value);
+      }
+      );
+      opacityInput.setAttribute("layername", layerName);
+      btn_opacity.appendChild(opacityInput);
+      console.log(opacityInput);
+    });
+
+
+    if (activated) {
+      /* btn.style.padding = "10px 1px 1px 1px";
       btn_name.removeAttribute("style");
       btn_zoom.removeAttribute("style");
-      btn_options_icon_div.appendChild(btn_options_icon);
+      btn_options_icon_div.appendChild(btn_options_icon); */
+      btn_options.style.display = "flex";
+    } else {
+      btn_options.style.display = "none";
     }
 
     btn_link.appendChild(btn_tooltip);
@@ -201,10 +242,13 @@ class ImpresorItemHTML extends Impresor {
     btn_title.appendChild(btn_name);
 
     btn_zoom.appendChild(btn_zoom_icon);
-    btn_title.appendChild(btn_zoom);
+    btn_options.appendChild(btn_zoom);
+
+    btn_opacity.appendChild(btn_opacity_icon);
+    btn_options.appendChild(btn_opacity);
 
     btn.appendChild(btn_title);
-    btn.appendChild(btn_options_icon_div);
+    // btn.appendChild(btn_options_icon_div);
     btn.appendChild(btn_options);
 
     return btn.outerHTML;
@@ -257,7 +301,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         OVERLAY_CHECKBOX.classList.add("hillshade");
         OVERLAY_CHECKBOX.disabled = true;
 
-        if(OVERLAY_CHECKBOX.title == gestorMenu.getActiveBasemap()){
+        if (OVERLAY_CHECKBOX.title == gestorMenu.getActiveBasemap()) {
           OVERLAY_CHECKBOX.disabled = false;
         }
 
@@ -364,7 +408,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_ITEM.id = childId;
     BASEMAP_ITEM.title = itemComposite.capa.nombre;
     BASEMAP_ITEM.setAttribute(
-      "onclick", 
+      "onclick",
       `function handleClick(){
         document.getElementById('collapseBaseMapLayers').classList.toggle('in')
         gestorMenu.muestraCapa("${childId}")
@@ -387,9 +431,9 @@ class ImpresorItemCapaBaseHTML extends Impresor {
           document.getElementById('collapseBaseMapLayers').classList.toggle('in')
         }
       `
-      ); // 2nd sentence hides basemaps menu after click
-      BASEMAP_ITEM.appendChild(FIRST_DIV);
-      
+    ); // 2nd sentence hides basemaps menu after click
+    BASEMAP_ITEM.appendChild(FIRST_DIV);
+
     return BASEMAP_ITEM.outerHTML; // TODO: change reference fn for expect an object instead string
   }
 }
@@ -1814,6 +1858,14 @@ class Item extends ItemComposite {
   showHide() {
     $("#" + this.getId()).toggleClass("active");
 
+    let options_layer = $("#" + this.getId());
+
+    if (options_layer[0].children[1] && options_layer.hasClass("active")) {
+      options_layer[0].children[1].style.display = "flex";
+    } else if (options_layer[0].children[1]) {
+      options_layer[0].children[1].style.display = "none";
+    }
+
     if (this.seccion.includes("mapasbase0") && !$("#" + this.getId()).hasClass("active")) {
       $("#" + this.getId()).toggleClass("active");
     }//fixes main mapabase active bug by asking if its not activated.
@@ -3095,14 +3147,14 @@ class GestorMenu {
 
     if (isBaseLayer && this.lastBaseMapSelected !== baseLayerName) {
       if (this.baseMapDependencies[this.lastBaseMapSelected])
-      this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
-    if (this.activeLayers.find((lyr) => lyr === layer))
-    this.muestraCapa(this.getLayerIdByName(layer));
-});
-}
+        this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
+          if (this.activeLayers.find((lyr) => lyr === layer))
+            this.muestraCapa(this.getLayerIdByName(layer));
+        });
+    }
 
-//Show or hide selected item
-for (var key in this.items) {
+    //Show or hide selected item
+    for (var key in this.items) {
       var itemComposite = this.items[key];
       if (isBaseLayer && itemComposite.isBaseLayer()) {
         this.availableBaseLayers.forEach((baseLayer) => {

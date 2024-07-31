@@ -408,6 +408,12 @@ div.leaflet-top.leaflet-left {
 .menu-section-btn .fa-layer-group, .menu-section-btn .fa-question, .menu-section-btn .fa-gear {
   font-size: large;
 }
+.layer-menu-options{
+  height: 30px;
+  background-color: var(--active-bg-color);
+  padding: 5px;
+  /* display: none; */
+}
 .panel-body {
   padding: 5px;
   background-color: var(--primary-color);
@@ -654,14 +660,14 @@ li.active>div>a {
 .layer-menu-ui :hover {
   color: black;
 }
-.zoom-layer, .zoom-layer-combobox {
+.zoom-layer, .zoom-layer-combobox, .opacity-layer {
   cursor: pointer;
   width: 10%;
   /* color: silver; */
   opacity: 0.7;
   margin-left: 5%;
 }
-.zoom-layer:hover, .zoom-layer-combobox:hover {
+.zoom-layer:hover, .zoom-layer-combobox:hover, .opacity-layer:hover {
   /* color: black; */
   opacity: 1;
 }
