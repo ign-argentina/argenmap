@@ -149,7 +149,6 @@ class ImpresorItemHTML extends Impresor {
 
     const btn_name = document.createElement("div");
     btn_name.className = "name-layer";
-    /* btn_name.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`); */
     btn_name.style.alignSelf = "center";
 
     const btn_link = document.createElement("a");
@@ -163,6 +162,15 @@ class ImpresorItemHTML extends Impresor {
       ? item.titulo.replace(/_/g, " ")
       : "por favor ingrese un nombre";
 
+    const btn_options_icon = document.createElement("i");
+    btn_options_icon.classList = "fas fa-angle-down";
+    btn_options_icon.title = "Zoom a capa";
+
+    const btn_options = document.createElement("div");
+    btn_options.className = "layer-menu-options";
+    btn_options.id = "layer-options-" + item.nombre;
+    btn_options.setAttribute("onClick", "event.stopPropagation()");
+
     const btn_zoom = document.createElement("div");
     btn_zoom.className = "zoom-layer";
     btn_zoom.setAttribute("layername", item.nombre);
@@ -175,63 +183,23 @@ class ImpresorItemHTML extends Impresor {
     const btn_opacity = document.createElement("div");
     btn_opacity.className = "opacity-layer";
     btn_opacity.setAttribute("layername", item.nombre);
-    btn_opacity.style.alignSelf = "center";
+    btn_opacity.style = "align-self: center; display: flex;";
 
     const btn_opacity_icon = document.createElement("i");
     btn_opacity_icon.classList = "fa-solid fa-circle-half-stroke";
     btn_opacity_icon.title = "Modificar la opacidad de la capa";
 
-    /*     const btn_options_icon_div = document.createElement("div");
-        btn_options_icon_div.className = "layer-options-icon";
-        btn_options_icon_div.setAttribute("layername", item.nombre);
-        btn_options_icon_div.title = "Opciones"; */
-
-    const btn_options_icon = document.createElement("i");
-    btn_options_icon.classList = "fas fa-angle-down";
-    btn_options_icon.title = "Zoom a capa";
-
-    /*     const btn_options_list = document.createElement("div");
-        btn_options_list.className = ""; //display-none
-        btn_options_list.id = "layer-options-" + item.nombre; */
-
-    const btn_options = document.createElement("div");
-    btn_options.className = "layer-menu-options"; //display-none
-    btn_options.id = "layer-options-" + item.nombre;
-    // si hago clic en btn_options no debe afectar los eventos de btn
-    btn_options.setAttribute("onClick", "event.stopPropagation()");
-
-    // al hacer clic en btn_opacity se mostrar un input range para modificar la opacidad de la capa
-    btn_opacity.addEventListener("click", function (event) {
-      //event.stopPropagation();
-      console.log("object");
-      let layerName = event.target.getAttribute("layername");
-      let layer = app.getLayer(layerName);
-      let opacity = layer.opacity;
-      let opacityInput = document.createElement("input");
-      opacityInput.type = "range";
-      opacityInput.min = 0;
-      opacityInput.max = 1;
-      opacityInput.step = 0.1;
-      opacityInput.value = opacity;
-      opacityInput.style.width = "100%";
-      opacityInput.style.margin = "5px 0";
-      opacityInput.addEventListener("input", function (event) {
-        let layerName = event.target.getAttribute("layername");
-        let layer = app.getLayer(layerName);
-        layer.setOpacity(event.target.value);
-      }
-      );
-      opacityInput.setAttribute("layername", layerName);
-      btn_opacity.appendChild(opacityInput);
-      console.log(opacityInput);
-    });
-
+    const input_opacity = document.createElement('input');
+    input_opacity.id = 'range-' + item.nombre;
+    input_opacity.type = 'range';
+    input_opacity.min = 0;
+    input_opacity.max = 1;
+    input_opacity.step = 0.05;
+    input_opacity.value = 1;
+    input_opacity.style = 'width: auto; margin-left: 10px;';
+    input_opacity.setAttribute("onInput", `overlayMaps['${item.nombre}'].setOpacity(this.value)`);
 
     if (activated) {
-      /* btn.style.padding = "10px 1px 1px 1px";
-      btn_name.removeAttribute("style");
-      btn_zoom.removeAttribute("style");
-      btn_options_icon_div.appendChild(btn_options_icon); */
       btn_options.style.display = "flex";
     } else {
       btn_options.style.display = "none";
@@ -245,10 +213,10 @@ class ImpresorItemHTML extends Impresor {
     btn_options.appendChild(btn_zoom);
 
     btn_opacity.appendChild(btn_opacity_icon);
+    btn_opacity.appendChild(input_opacity);
     btn_options.appendChild(btn_opacity);
 
     btn.appendChild(btn_title);
-    // btn.appendChild(btn_options_icon_div);
     btn.appendChild(btn_options);
 
     return btn.outerHTML;
