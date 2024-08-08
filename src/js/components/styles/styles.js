@@ -10,6 +10,7 @@ class StylesUI {
     :root {
     --primary-color: ${app.theme.headerBackground};
     --secondary-color: ${app.theme.bodyBackground};
+    --active-bg-color: ${app.theme.activeLayer};
     }
     .navbar{
       background-color: ${app.theme.headerBackground};
