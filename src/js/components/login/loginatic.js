@@ -2,7 +2,8 @@ loginatic = function () {
   this.currentLogin = false;
   this.notLoggedTxt =
     app.login.notLogged || "Contraseña no válida, intente nuevamente";
-  this.noPassword = app.login.noPassword || "Campo vacío, ingrese su contraseña";
+  this.noPassword =
+    app.login.noPassword || "Campo vacío, ingrese su contraseña";
   this.external_link = null;
   this.init = (conf) => {
     if (getCookie("autologin") == null) {
@@ -46,7 +47,7 @@ loginatic = function () {
           new UserMessage(
             "Looks like there was a problem. Status Code: " + response.status,
             true,
-            "error"
+            "error",
           );
           return;
         }
@@ -93,12 +94,12 @@ loginatic = function () {
       if (result.external_link) {
         result.nam = result.nam.replaceAll("_", " ");
         menu_ui.removeButton("external-link-li"); // in case if exists, remove it first
-        menu_ui.addButton({ 
-          id: "external-link-li", 
-          link: result.external_link, 
+        menu_ui.addButton({
+          id: "external-link-li",
+          link: result.external_link,
           text: "Plataforma CONAE " + result.nam,
           title: "Abrir visor Ordenamiento Territorial " + result.nam,
-          location: "top"
+          location: "top",
         });
       }
 
@@ -111,7 +112,7 @@ loginatic = function () {
   this.logout = () => {
     this.currentLogin = false;
     setCookie("autologin", 0);
-    
+
     menu_ui.removeButton("external-link-li");
     /* 
         let lat = -40;

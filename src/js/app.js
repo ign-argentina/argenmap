@@ -75,7 +75,6 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       }
       //Temporal
 
-
       if (app.hasOwnProperty("tools")) {
         if (app.tools.hasOwnProperty("addLayer")) {
           setAddLayer(app.tools.addLayer.isActive);
@@ -107,7 +106,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       } catch (error) {
         if (app.profiles == undefined) {
           console.warn(
-            "Profiles attribute isn't defined in configuration file."
+            "Profiles attribute isn't defined in configuration file.",
           );
         } else {
           console.error(error);
@@ -118,7 +117,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
     _loadScript: function (
       scriptUrl,
       type = "application/javascript",
-      inBody = true
+      inBody = true,
     ) {
       const script = document.createElement("script");
       script.src = scriptUrl;
@@ -169,7 +168,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         false,
         false,
         0,
-        null
+        null,
       );
       a.dispatchEvent(e);
     },
@@ -191,7 +190,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               "",
               "",
               item.short_abstract,
-              null
+              null,
             );
           groupAux.setImpresor(impresorBaseMap);
           groupAux.setObjDom("#basemap-selector");
@@ -211,7 +210,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               null,
               null,
               null,
-              item.capas[key2].attribution
+              item.capas[key2].attribution,
             );
             let basemap = new Item(
               capa.nombre,
@@ -220,7 +219,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               capa.attribution,
               capa.titulo,
               capa,
-              null
+              null,
             );
             basemap.setLegendImg(item.capas[key2].legendImg); // basemap thumbnail, not a legend
             item.capas[key2].legend
@@ -244,7 +243,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       });
       selectedBasemap = setBasemapToLoad(
         urlInteraction.layers,
-        gestorMenu.availableBaseLayers
+        gestorMenu.availableBaseLayers,
       );
     },
 
@@ -280,7 +279,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           } else {
             // Process item if it's in profile
             matchItemProfile = app.profiles[app.profile].data.find(
-              (e) => e == item.class
+              (e) => e == item.class,
             );
           }
 
@@ -315,7 +314,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
                   item.type,
                   item.icons,
                   customizedLayers,
-                  impresorGroupTemp
+                  impresorGroupTemp,
                 );
                 if (item.allowed_layers) {
                   wmsLayerInfo.setAllowebLayers(item.allowed_layers);
@@ -347,7 +346,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
                   item.type,
                   item.icons,
                   customizedLayers,
-                  impresorGroupTemp
+                  impresorGroupTemp,
                 );
                 if (item.allowed_layers) {
                   wmtsLayerInfo.setAllowebLayers(item.allowed_layers);
@@ -385,7 +384,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           }
         } else {
           let message = `Profile '${profile}' missing or not present in profiles property. Available profiles: ${Object.keys(
-            app.profiles
+            app.profiles,
           )}`;
           console.warn(message);
         }
@@ -472,10 +471,10 @@ async function loadDefaultJson() {
       "./src/config/default/preferences.json",
       async function (preferences) {
         gestorMenu.setLegendImgPath(
-          "src/config/default/styles/images/legends/"
+          "src/config/default/styles/images/legends/",
         );
         await loadTemplate({ ...data, ...preferences }, true);
-      }
+      },
     );
   });
 }
@@ -528,7 +527,7 @@ async function loadTemplate(data, isDefaultTemplate) {
       $.getScript("https://d3js.org/d3.v5.min.js");
       $.getScript("src/js/components/charts/charts.js");
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">',
       );
     }
 
@@ -539,13 +538,13 @@ async function loadTemplate(data, isDefaultTemplate) {
         searchBar_ui.create_sarchbar();
       });
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">',
       );
     }
 
     //Load dynamic mapa.js
     app.template_id = template;
-    $.getScript(`src/js/map/map.js`, (res) => { });
+    $.getScript(`src/js/map/map.js`, (res) => {});
 
     template = "templates/" + template + "/main.html";
 
@@ -558,9 +557,9 @@ async function loadTemplate(data, isDefaultTemplate) {
           mapa.setView(
             L.latLng(
               urlInteraction.center.latitude,
-              urlInteraction.center.longitude
+              urlInteraction.center.longitude,
             ),
-            urlInteraction.zoom
+            urlInteraction.zoom,
           );
         }
 
@@ -599,7 +598,9 @@ async function loadTemplate(data, isDefaultTemplate) {
         toolbarVisibilityToggler.createComponent(showToolbar);
 
         //consultar si el navegador es mobile
-        const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+        const isMobile = window.matchMedia(
+          "only screen and (max-width: 760px)",
+        ).matches;
 
         // Show layer menu if showLayerMenu is true
         if (showLayerMenu && !isMobile) {
@@ -616,7 +617,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     //load loginatic
     if (loadLogin) {
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">',
       );
       $.getScript("src/js/components/cookies/cookies.js").done(() => {
         $.getScript("src/js/components/login/loginatic.js").done(function () {
@@ -630,13 +631,15 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     if (mainPopup) {
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/main-popup/mainPopup.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/main-popup/mainPopup.css">',
       );
-      $.getScript("src/js/components/main-popup/mainPopup.js").done(function () {
-        mainPopup = new mainPopup();
-        mainPopup.check();
-        mainPopup._addPopupWrapper();
-      });
+      $.getScript("src/js/components/main-popup/mainPopup.js").done(
+        function () {
+          mainPopup = new mainPopup();
+          mainPopup.check();
+          mainPopup._addPopupWrapper();
+        },
+      );
     }
 
     //load elevationProfile
@@ -670,7 +673,10 @@ let conaeCheck = setInterval(() => {
 
 document.addEventListener("contextmenu", (e) => {
   let allowedInputs = ["text", "search", "number"];
-  if (!e.target.classList.contains("leaflet-container") && !allowedInputs.includes(e.target.type)) {
+  if (
+    !e.target.classList.contains("leaflet-container") &&
+    !allowedInputs.includes(e.target.type)
+  ) {
     e.preventDefault();
   }
   //ui_component.getContextMenu(e.target.classList);

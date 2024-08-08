@@ -11,7 +11,9 @@
   float: none;
   -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow:
+    0 4px 10px 0 rgba(0, 0, 0, 0.2),
+    0 4px 20px 0 rgba(0, 0, 0, 0.19);
   z-index: 1200;
 }
 #geoprocesos-icon :hover {
@@ -82,7 +84,9 @@
   margin-bottom: 10px;
   -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow:
+    0 4px 10px 0 rgba(0, 0, 0, 0.2),
+    0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 @media (max-width: 768px) {
   #mr {
@@ -167,9 +171,11 @@
 #msgRectangle {
   color: var(--secondary-color);
   font-weight: bolder;
-  font-size: 13px
+  font-size: 13px;
 }
-#msgNoLayer, #msgNoContour, #invalidRect {
+#msgNoLayer,
+#msgNoContour,
+#invalidRect {
   color: var(--danger-color);
   font-weight: bolder;
   text-align: center;

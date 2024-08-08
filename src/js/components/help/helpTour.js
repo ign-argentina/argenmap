@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
 /**
-* HelpTour class for managing the help tour functionality.
-*/
+ * HelpTour class for managing the help tour functionality.
+ */
 class HelpTour {
-  constructor() { }
+  constructor() {}
 
   /**
    * Fetches the help tour data from a JSON file.
@@ -12,7 +12,7 @@ class HelpTour {
    */
   async fetchHelpTourData() {
     try {
-      const response = await fetch('src/js/components/help/helpTourData.json');
+      const response = await fetch("src/js/components/help/helpTourData.json");
       if (!response.ok) {
         throw new Error(`An error has occurred: ${response.status}`);
       }
@@ -20,7 +20,7 @@ class HelpTour {
       this.removeElementsNotInApp(data);
       return data;
     } catch (error) {
-      console.error('Failed to fetch help tour data:', error);
+      console.error("Failed to fetch help tour data:", error);
       return null;
     }
   }
@@ -50,7 +50,9 @@ class HelpTour {
 
     for (let i = sequence.length - 1; i >= 0; i--) {
       const step = sequence[i];
-      const element = document.querySelector(step.needClickToOpen) || document.querySelector(step.element);
+      const element =
+        document.querySelector(step.needClickToOpen) ||
+        document.querySelector(step.element);
 
       if (!element) {
         // If the element is not found, remove the step from the sequence
@@ -66,6 +68,4 @@ class HelpTour {
       }
     }
   }
-
-
 }

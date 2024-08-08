@@ -18,4 +18,6 @@
 - Captura de pantalla
 - Imprimir pantalla
 
-La lista de cambios está en https://github.com/ign-argentina/argenmap/releases
+La lista de cambios está en [GitHub][]
+
+[GitHub]: https://github.com/ign-argentina/argenmap/releases

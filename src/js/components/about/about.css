@@ -12,7 +12,9 @@
   top: 15%;
   left: 33%;
   -moz-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow:
+    0 4px 10px 0 rgba(0, 0, 0, 0.2),
+    0 4px 20px 0 rgba(0, 0, 0, 0.19);
   width: 50%;
   backdrop-filter: blur(7px) saturate(18%);
 }
@@ -23,7 +25,7 @@
 .about-logo {
   display: flex;
   width: 300px;
-  margin: 15px  auto;
+  margin: 15px auto;
 }
 /*.about-exit {}*/
 .about-main-section {
@@ -42,30 +44,30 @@
   padding: 20px;
   padding-top: 0.25%;
   padding-bottom: 0%;
-  color: #3174BF;
-  border: solid #3174BF;
+  color: #3174bf;
+  border: solid #3174bf;
   border-radius: 10px 10px 0px 0px;
   border-width: var(--border-width-tab);
-  background-color: #FFFFFFBB;
+  background-color: #ffffffbb;
 }
 .tab:hover {
   transition: 200ms;
-  color: #FFFFFF;
-  border: solid #3174BF;
+  color: #ffffff;
+  border: solid #3174bf;
   border-width: var(--border-width-tab);
-  background-color: #3174BF;
+  background-color: #3174bf;
 }
 .tab-active {
-  color: #FFFFFF;
-  border: solid #3174BF;
+  color: #ffffff;
+  border: solid #3174bf;
   border-width: var(--border-width-tab);
-  background-color: #3174BF;
+  background-color: #3174bf;
 }
 .tab-onclik {
-  color: #FFFFFF;
-  border: solid #3174BF;
+  color: #ffffff;
+  border: solid #3174bf;
   border-width: var(--border-width-tab);
-  background-color: #3174BF;
+  background-color: #3174bf;
 }
 .content-about-tab {
   height: 300px;
@@ -165,7 +167,7 @@
 }
 .content-about-tab::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: #F29707;
+  background-color: #f29707;
   border-right: 1px solid #ffffff;
 }
 @media (max-width: 916px) {

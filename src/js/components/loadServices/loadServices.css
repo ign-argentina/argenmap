@@ -8,13 +8,16 @@
   font-size: 11px;
   text-align: center;
   cursor: pointer;
-  text-shadow: #fff 0px 0px 1px, #fff 0px 0px 1px, #fff 0px 0px 1px;
+  text-shadow:
+    #fff 0px 0px 1px,
+    #fff 0px 0px 1px,
+    #fff 0px 0px 1px;
   font-weight: bold;
   margin-right: 4px;
   margin-top: 2px;
 }
 .select-layers-container label {
-  transition: all .25s ease-in;
+  transition: all 0.25s ease-in;
 }
 .all-layers-checkbox {
   margin-bottom: 0px;

@@ -6,7 +6,8 @@ const login = {
    * @param {Object} data - Request data.
    * @param {function} callback - Callback function to handle the response.
    */
-  _ajax: function (data, callback) { // In case there isn't jQuery, fetch may be an option
+  _ajax: function (data, callback) {
+    // In case there isn't jQuery, fetch may be an option
     let xhr = new XMLHttpRequest();
 
     // Define the callback for handling the  response
@@ -32,10 +33,10 @@ const login = {
     xhr.open(data.method, data.url, true);
 
     // Add authorization header for password resetting (if method is PUT)
-    if (data.method === 'PUT') {
+    if (data.method === "PUT") {
       let credentials = btoa(`${data.usr}:${data.pwd}`);
       xhr.withCredentials = true;
-      xhr.setRequestHeader('Authorization', `Basic ${credentials}`);
+      xhr.setRequestHeader("Authorization", `Basic ${credentials}`);
     }
 
     // Set custom request headers
@@ -46,10 +47,10 @@ const login = {
   },
 
   /**
-  * Perform GeoServer login using Fetch API.
-  * @param {string} name - User name.
-  * @param {string} pwd - User password.
-  */
+   * Perform GeoServer login using Fetch API.
+   * @param {string} name - User name.
+   * @param {string} pwd - User password.
+   */
   _geoserver: function (name, pwd) {
     // GeoServer servlet URL
     let url = `${window.location.origin}/geoserver/j_spring_security_check`;
@@ -60,7 +61,7 @@ const login = {
       type: "POST",
       data: {
         username: name,
-        password: pwd
+        password: pwd,
       },
       contentType: contentType,
       url: url,
@@ -72,7 +73,7 @@ const login = {
           app.changeProfile("logged");
 
           // Hide the login modal
-          $('#loginModal').modal('hide');
+          $("#loginModal").modal("hide");
 
           // Update button visibility
           let loginBtn = document.getElementById("loginBtn");
@@ -83,16 +84,20 @@ const login = {
             logoutBtn.classList.remove("hidden");
           }
         } else {
-          new UserMessage('Falló el inicio de sesión en GeoServer. Revise los datos ingresados.', true, 'error');
+          new UserMessage(
+            "Falló el inicio de sesión en GeoServer. Revise los datos ingresados.",
+            true,
+            "error",
+          );
         }
       },
       error: function (error) {
-        new UserMessage('Error: ' + error, true, 'error');
-      }
+        new UserMessage("Error: " + error, true, "error");
+      },
     });
   },
 
-  /** 
+  /**
    * Load and append content from a file to a specified parent element asynchronously.
    * @param {string} file - Path to the file to be loaded. File must match '/path/to/file.extension'.
    * @param {string} format - Format of the file content.
@@ -110,7 +115,9 @@ const login = {
 
     try {
       // Fetch the content of the specified file asynchronously
-      const elementContent = await fetch(window.location.origin + path.replace('index.html', '') + file);
+      const elementContent = await fetch(
+        window.location.origin + path.replace("index.html", "") + file,
+      );
 
       // Ensure the fetch request was successful (status code within 200-299 range)
       if (elementContent.ok) {
@@ -124,11 +131,15 @@ const login = {
         parentElement.appendChild(element);
       } else {
         // Log an error if the fetch request fails
-        console.error(`Failed to fetch content from ${file}. Status: ${elementContent.status}`);
+        console.error(
+          `Failed to fetch content from ${file}. Status: ${elementContent.status}`,
+        );
       }
     } catch (error) {
       // Log any other errors that may occur during the fetch process
-      console.error(`An error occurred during the fetch process: ${error.message}`);
+      console.error(
+        `An error occurred during the fetch process: ${error.message}`,
+      );
     }
   },
 
@@ -137,13 +148,13 @@ const login = {
    */
   _listeners: function () {
     // Add a click event listener to the logout button, invoking the 'logout' method
-    document.getElementById("logoutBtn").addEventListener('click', this.logout);
+    document.getElementById("logoutBtn").addEventListener("click", this.logout);
 
     // Add a click event listener to the submit button in the login form, invoking the 'submit' method
-    loginForm.submit.addEventListener('click', this.submit);
+    loginForm.submit.addEventListener("click", this.submit);
 
     // Add a click event listener to the reset password button in the login form, invoking the 'resetPwd' method
-    loginForm.resetPwd.addEventListener('click', this.resetPwd);
+    loginForm.resetPwd.addEventListener("click", this.resetPwd);
   },
 
   /**
@@ -151,7 +162,11 @@ const login = {
    */
   load: async function () {
     // Load navigation button component asynchronously and append it to the specified element
-    await login._append("src/js/components/login/navbtn.html", "html", "#geoserver-login-btn");
+    await login._append(
+      "src/js/components/login/navbtn.html",
+      "html",
+      "#geoserver-login-btn",
+    );
 
     // Load login form component asynchronously and append it to the body
     await login._append("src/js/components/login/form.html", "html", "body");
@@ -168,17 +183,20 @@ const login = {
     event.preventDefault();
 
     // Check if both username and password fields are filled
-    let loginFormFilled = loginForm.name.value.length && loginForm.pwd.value.length;
+    let loginFormFilled =
+      loginForm.name.value.length && loginForm.pwd.value.length;
 
     if (loginFormFilled) {
       // Call the GeoServer login method if the form is filled
       login._geoserver(loginForm.name.value, loginForm.pwd.value);
     } else {
-      new UserMessage('Completar los campos de usuario y contraseña.', true, 'warning');
+      new UserMessage(
+        "Completar los campos de usuario y contraseña.",
+        true,
+        "warning",
+      );
     }
-  }
-  ,
-
+  },
   /**
    * Handle password reset.
    * @param {Event} event - The event object.
@@ -214,11 +232,15 @@ const login = {
       name: loginForm.name.value,
       pwd: loginForm.pwd.value,
       host: login.server,
-      newPwd: loginForm.newPwd.value
+      newPwd: loginForm.newPwd.value,
     };
 
     // Check if necessary values are not empty
-    if (resetOptions.name !== "" && resetOptions.pwd !== "" && resetOptions.newPwd !== "") {
+    if (
+      resetOptions.name !== "" &&
+      resetOptions.pwd !== "" &&
+      resetOptions.newPwd !== ""
+    ) {
       // Call the GeoServer password reset function
       login._gsResetPwd(resetOptions);
     }
@@ -237,7 +259,7 @@ const login = {
     let params = `{ "newPassword": "${options.newPwd}" }`;
 
     // Construct GeoServer REST API URL for changing the password
-    let gsUrl = options.host + '/geoserver/rest/security/self/password';
+    let gsUrl = options.host + "/geoserver/rest/security/self/password";
 
     // Extract user credentials
     let _usr = options.name,
@@ -247,13 +269,13 @@ const login = {
     let data = {
       params: params,
       url: gsUrl,
-      method: 'PUT',
+      method: "PUT",
       usr: _usr,
       pwd: _pwd,
       reqHeader: {
-        key: 'Content-type',
-        val: 'application/json'
-      }
+        key: "Content-type",
+        val: "application/json",
+      },
     };
 
     // Make a request to change the password
@@ -261,11 +283,9 @@ const login = {
       // Log server response and status
       console.info(`Server response: ${res.response}, Status: ${res.status}`);
       // Hide the login modal
-      $('#loginModal').modal('hide');
+      $("#loginModal").modal("hide");
     });
-  }
-  ,
-
+  },
   /**
    * Perform user logout by sending a request to the GeoServer logout endpoint.
    */
@@ -277,11 +297,11 @@ const login = {
     let data = {
       params: "",
       url: gsUrl,
-      method: 'POST',
+      method: "POST",
       reqHeader: {
-        key: 'Content-type',
-        val: 'application/x-www-form-urlencoded'
-      }
+        key: "Content-type",
+        val: "application/x-www-form-urlencoded",
+      },
     };
 
     // Perform the Ajax request to logout and handle the response
@@ -295,6 +315,5 @@ const login = {
     // Update UI: hide logout button and show login button
     document.getElementById("logoutBtn").classList.add("hidden");
     document.getElementById("loginBtn").classList.remove("hidden");
-  }
-
-}
+  },
+};

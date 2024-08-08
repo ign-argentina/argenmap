@@ -2,37 +2,41 @@
 Configuration Window
 *******************************/
 #configWrapper {
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0 rgb(0 0 0 / 2%);
-    font-weight: bold;
-    padding: 10px;
-    text-align: inherit;
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    user-select: text;
-    z-index: 99999;
-    background-color: var(--main-bg-color, white);
-    width: 400px; /* Aumenta el ancho */
-    height: 300px; /* Aumenta la altura */
-  }
-  
-  #configWindow {
-    background-color: #d7f2f7;
-    border: 1px solid #525252;
-    border-radius: 4px;
-    font-size: var(--body-fnt-size, 14px);
-    padding: 10px; /* Aumenta el padding para mayor espacio interno */
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    user-select: text;
-    overflow-y: auto; /* Añade scroll si el contenido sobrepasa el tamaño */
-    height: calc(100% - 40px); /* Ajusta la altura para que se adapte al contenedor */
-  }
-  
-  #configWindow td {
-    padding: 3px;
-  }
-  
-  #configWindow tr:nth-child(even) {
-    background-color: var(--main-bg-color, #fff);
-  }
+  border-radius: 6px;
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 20%),
+    0 -1px 0 rgb(0 0 0 / 2%);
+  font-weight: bold;
+  padding: 10px;
+  text-align: inherit;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+  z-index: 99999;
+  background-color: var(--main-bg-color, white);
+  width: 400px; /* Aumenta el ancho */
+  height: 300px; /* Aumenta la altura */
+}
+
+#configWindow {
+  background-color: #d7f2f7;
+  border: 1px solid #525252;
+  border-radius: 4px;
+  font-size: var(--body-fnt-size, 14px);
+  padding: 10px; /* Aumenta el padding para mayor espacio interno */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
+  overflow-y: auto; /* Añade scroll si el contenido sobrepasa el tamaño */
+  height: calc(
+    100% - 40px
+  ); /* Ajusta la altura para que se adapte al contenedor */
+}
+
+#configWindow td {
+  padding: 3px;
+}
+
+#configWindow tr:nth-child(even) {
+  background-color: var(--main-bg-color, #fff);
+}

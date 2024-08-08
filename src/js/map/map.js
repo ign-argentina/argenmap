@@ -1,5 +1,5 @@
 var atrib_ign =
-  "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+    "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
   baseMaps = {},
   overlayMaps = new Object(),
   layerName,
@@ -15,7 +15,7 @@ gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
     if (
       !app.hasOwnProperty("excluded_plugins") ||
       !app.excluded_plugins.find(
-        (excluded_plugin) => excluded_plugin === plugin
+        (excluded_plugin) => excluded_plugin === plugin,
       )
     ) {
       gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
@@ -25,7 +25,7 @@ gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
 
 const onClickAllActiveLayers = () => {
   const inputs = Array.from(
-    document.getElementById("activeLayers").getElementsByTagName("input")
+    document.getElementById("activeLayers").getElementsByTagName("input"),
   );
   inputs[0].checked = !inputs[0].checked;
   if (inputs.length > 1) {
@@ -47,7 +47,9 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
   layer.options.fillColor = fillColor;
 };
 
-const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+const isMobile = window.matchMedia(
+  "only screen and (max-width: 760px)",
+).matches;
 
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
@@ -301,18 +303,18 @@ $("body").on("pluginLoad", function (event, plugin) {
                 "leaflet-control-container",
                 "#zoom-level",
                 "#btn-logout",
-                "#developerLogo"
+                "#developerLogo",
               ],
               screenName: "mapaIGN" + n,
-              position: 'topleft'
+              position: "topleft",
             }).addTo(mapa);
 
             document.getElementsByClassName(
-              "leaflet-control-simpleMapScreenshoter"
+              "leaflet-control-simpleMapScreenshoter",
             )[0].id = "screenShoter";
             let screenShoter = document.getElementById("screenShoter");
             screenShoter.classList.remove(
-              "leaflet-control-simpleMapScreenshoter"
+              "leaflet-control-simpleMapScreenshoter",
             );
             screenShoter.classList.add("leaflet-bar");
             screenShoter.children[0].id = "screenShoter-btn";
@@ -320,29 +322,34 @@ $("body").on("pluginLoad", function (event, plugin) {
 
             let screenShoterBtn = document.getElementById("screenShoter-btn");
             screenShoterBtn.classList.remove(
-              "leaflet-control-simpleMapScreenshoter-btn"
+              "leaflet-control-simpleMapScreenshoter-btn",
             );
             screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
             gestorMenu.plugins["screenShoter"].setStatus("visible");
           }
           break;
-        case 'ZoomHome':
+        case "ZoomHome":
           // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
           let zoomHome = L.Control.zoomHome({
-            zoomHomeTitle: 'Inicio',
-            zoomInTitle: 'Acercarse',
-            zoomOutTitle: 'Alejarse',
+            zoomHomeTitle: "Inicio",
+            zoomInTitle: "Acercarse",
+            zoomOutTitle: "Alejarse",
             //zoomHomeIcon: 'solid fa-earth-americas',
-            homeCoordinates: [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
+            homeCoordinates: [
+              app.mapConfig.center.latitude,
+              app.mapConfig.center.longitude,
+            ],
             homeZoom: app.mapConfig.zoom.initial,
-            position: 'bottomright'
+            position: "bottomright",
           });
 
           zoomHome.addTo(mapa);
 
           // Select the zoomHome icon and add 'center-flex' class
-          let zoomHomeIcon = document.querySelector(".leaflet-control-zoomhome-home");
+          let zoomHomeIcon = document.querySelector(
+            ".leaflet-control-zoomhome-home",
+          );
           zoomHomeIcon.classList.add("center-flex");
 
           // Change icon on hover to 'fa fa-home' using CSS classes
@@ -355,27 +362,26 @@ $("body").on("pluginLoad", function (event, plugin) {
             zoomText.textContent = mapa.getZoom();
           });
 
-          gestorMenu.plugins['ZoomHome'].setStatus('visible');
+          gestorMenu.plugins["ZoomHome"].setStatus("visible");
           break;
-        case 'FullScreen':
+        case "FullScreen":
           const fs = new Fullscreen();
           fs.createComponent();
           break;
-        case 'helpTour':
+        case "helpTour":
           if (!isMobile) {
-            const help = new HelpTour;
+            const help = new HelpTour();
             const helpData = await help.fetchHelpTourData();
             help.createComponent(helpData);
           } else {
             document.getElementById("nav-help-btn").style.display = "none";
-            ;
           }
           break;
-        case 'loadLayer':
+        case "loadLayer":
           const loadLayersModal = new LoadLayersModal();
           //modal.createModal();          //loadLayersModal.createComponent();
           break;
-        case 'betterScale':
+        case "betterScale":
           // Leaflet BetterScale plugin
           /*
           L.control.betterscale({
@@ -392,71 +398,81 @@ $("body").on("pluginLoad", function (event, plugin) {
           gestorMenu.plugins["betterScale"].setStatus("visible");
           loadDeveloperLogo();
           break;
-        case 'minimap':
+        case "minimap":
           // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
           var miniArgenmap = new L.TileLayer(argenmap._url, {
             minZoom: 0,
             maxZoom: 21,
             attribution: atrib_ign,
-            tms: true
+            tms: true,
           });
           var miniMap = new L.Control.MiniMap(miniArgenmap, {
             toggleDisplay: false,
             minimized: false,
-            position: 'bottomleft',
+            position: "bottomleft",
             //collapsedWidth: 32,
             //collapsedHeight: 32,
             width: 100,
             height: 100,
             strings: {
-              hideText: 'Ocultar minimapa',
-              showText: 'Mostrar minimapa'
-            }
+              hideText: "Ocultar minimapa",
+              showText: "Mostrar minimapa",
+            },
           }).addTo(mapa);
-          gestorMenu.plugins['minimap'].setStatus('visible');
+          gestorMenu.plugins["minimap"].setStatus("visible");
           break;
-        case 'locate':
+        case "locate":
           // Leaflet-Locate plugin https://github.com/domoritz/leaflet-locatecontrol
-          var locateControl = L.control.locate({
-            position: "topleft",
-            drawCircle: true,
-            follow: true,
-            setView: true,
-            keepCurrentZoomLevel: true,
-            markerStyle: {
-              weight: 1,
-              opacity: 0.8,
-              fillOpacity: 0.8
-            },
-            circleStyle: {
-              weight: 1,
-              clickable: false
-            },
-            icon: "fa fa-crosshairs",
-            metric: true,
-            strings: {
-              title: "Mi posición",
-              popup: "Usted se encuentra a {distance} {unit} desde este punto",
-              outsideMapBoundsMsg: "Se encuentra situado fuera de los límites del mapa"
-            },
-            locateOptions: {
-              maxZoom: 21,
-              watch: true,
-              enableHighAccuracy: true,
-              maximumAge: 10000,
-              timeout: 10000
-            }
-          }).addTo(mapa);
-          gestorMenu.plugins['locate'].setStatus('visible');
+          var locateControl = L.control
+            .locate({
+              position: "topleft",
+              drawCircle: true,
+              follow: true,
+              setView: true,
+              keepCurrentZoomLevel: true,
+              markerStyle: {
+                weight: 1,
+                opacity: 0.8,
+                fillOpacity: 0.8,
+              },
+              circleStyle: {
+                weight: 1,
+                clickable: false,
+              },
+              icon: "fa fa-crosshairs",
+              metric: true,
+              strings: {
+                title: "Mi posición",
+                popup:
+                  "Usted se encuentra a {distance} {unit} desde este punto",
+                outsideMapBoundsMsg:
+                  "Se encuentra situado fuera de los límites del mapa",
+              },
+              locateOptions: {
+                maxZoom: 21,
+                watch: true,
+                enableHighAccuracy: true,
+                maximumAge: 10000,
+                timeout: 10000,
+              },
+            })
+            .addTo(mapa);
+          gestorMenu.plugins["locate"].setStatus("visible");
           break;
-        case 'graticula':
+        case "graticula":
           // Leaflet-SimpleGraticule plugin https://github.com/turban/Leaflet.Graticule
           var customGraticule = null;
           L.Control.CustomGraticule = L.Control.extend({
             onAdd: function (map) {
-              var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-customgraticule');
-              container.title = 'Cuadrícula';
-              var icon = L.DomUtil.create('a', 'leaflet-control-customgraticule');
+              var container = L.DomUtil.create(
+                "div",
+                "leaflet-control leaflet-bar leaflet-control-customgraticule",
+              );
+              container.title = "Cuadrícula";
+              var icon = L.DomUtil.create(
+                "a",
+                "leaflet-control-customgraticule",
+              );
               container.appendChild(icon);
 
               container.onclick = function () {
@@ -510,11 +526,11 @@ $("body").on("pluginLoad", function (event, plugin) {
               collapsed: true,
               decPoint: DECIMAL_SEPARATOR,
               thousandsSep: THOUSANDS_SEPARATOR,
-              activeColor: '#157DB9',
-              completedColor: '#0db2e0'
+              activeColor: "#157DB9",
+              completedColor: "#0db2e0",
             });
             measureControl.addTo(mapa);
-            gestorMenu.plugins['Measure'].setStatus('visible');
+            gestorMenu.plugins["Measure"].setStatus("visible");
           }
           break;
         case "geoprocessing":
@@ -522,32 +538,32 @@ $("body").on("pluginLoad", function (event, plugin) {
             let HTMLhead = document.querySelector("head");
             HTMLhead.insertAdjacentHTML(
               "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">'
+              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">',
             );
             HTMLhead.insertAdjacentHTML(
               "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
+              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">',
             );
             HTMLhead.insertAdjacentHTML(
               "beforeend",
-              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">'
+              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">',
             );
             $.getScript(
-              "src/js/plugins/geoprocess-executor/geoprocess-executor.js"
+              "src/js/plugins/geoprocess-executor/geoprocess-executor.js",
             ).done(function () {
               $.getScript(
-                "src/js/components/form-builder/form-builder.js"
+                "src/js/components/form-builder/form-builder.js",
               ).done(function () {
                 geoProcessingManager = new Geoprocessing();
                 geoProcessingManager.createIcon();
                 geoProcessingManager.setAvailableGeoprocessingConfig(
-                  app.geoprocessing
+                  app.geoprocessing,
                 );
                 geoProcessingManager.getProcesses().forEach((process) => {
                   if (process.geoprocess === "waterRise") {
                     // script loading test without jQuery
                     app._loadScript(
-                      "./src/js/components/geoprocessing/IHeight.js"
+                      "./src/js/components/geoprocessing/IHeight.js",
                     );
                   }
                   geoProcessingManager.getNewProcessPrefix();
@@ -556,18 +572,17 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
           }
           break;
-        case 'pdfPrinter':
+        case "pdfPrinter":
           if (!L.Browser.safari) {
             const pdfP = new PdfPrinter();
             pdfP.createComponent();
           }
           break;
-        case 'consultData':
+        case "consultData":
           const consultData = new ConsultData();
           consultData.createComponent();
           break;
-        case 'Draw':
-
+        case "Draw":
           var orgReadbleDistance = L.GeometryUtil.readableArea;
 
           L.GeometryUtil.readableArea = function (area, isMetric, precision) {
@@ -633,24 +648,12 @@ $("body").on("pluginLoad", function (event, plugin) {
               if (_nodes > 3000) {
                 if (
                   window.confirm(
-                    `ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`
+                    `ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`,
                   )
                 ) {
                   !this._enabled &&
                     this._hasAvailableLayers() &&
                     (this.fire("enabled", { handler: this.type }),
-                      this._map.fire(L.Draw.Event.EDITSTART, {
-                        handler: this.type,
-                      }),
-                      L.Handler.prototype.enable.call(this),
-                      this._featureGroup
-                        .on("layeradd", this._enableLayerEdit, this)
-                        .on("layerremove", this._disableLayerEdit, this));
-                }
-              } else {
-                !this._enabled &&
-                  this._hasAvailableLayers() &&
-                  (this.fire("enabled", { handler: this.type }),
                     this._map.fire(L.Draw.Event.EDITSTART, {
                       handler: this.type,
                     }),
@@ -658,6 +661,18 @@ $("body").on("pluginLoad", function (event, plugin) {
                     this._featureGroup
                       .on("layeradd", this._enableLayerEdit, this)
                       .on("layerremove", this._disableLayerEdit, this));
+                }
+              } else {
+                !this._enabled &&
+                  this._hasAvailableLayers() &&
+                  (this.fire("enabled", { handler: this.type }),
+                  this._map.fire(L.Draw.Event.EDITSTART, {
+                    handler: this.type,
+                  }),
+                  L.Handler.prototype.enable.call(this),
+                  this._featureGroup
+                    .on("layeradd", this._enableLayerEdit, this)
+                    .on("layerremove", this._disableLayerEdit, this));
               }
             },
             _enableLayerEdit: function (t) {
@@ -668,12 +683,12 @@ $("body").on("pluginLoad", function (event, plugin) {
                 //to disallow editing in geoprocesses
                 this._backupLayer(o),
                   this.options.poly &&
-                  ((i = L.Util.extend({}, this.options.poly)),
+                    ((i = L.Util.extend({}, this.options.poly)),
                     (o.options.poly = i)),
                   this.options.selectedPathOptions &&
-                  ((e = L.Util.extend({}, this.options.selectedPathOptions)),
+                    ((e = L.Util.extend({}, this.options.selectedPathOptions)),
                     e.maintainColor &&
-                    ((e.color = o.options.color),
+                      ((e.color = o.options.color),
                       (e.fillColor = o.options.fillColor)),
                     (o.options.original = L.extend({}, o.options)),
                     (o.options.editing = e)),
@@ -698,10 +713,10 @@ $("body").on("pluginLoad", function (event, plugin) {
                   delete e.options.editing,
                   delete e.options.original,
                   this._selectedPathOptions &&
-                  (e instanceof L.Marker
-                    ? this._toggleMarkerHighlight(e)
-                    : (e.setStyle(e.options.previousOptions),
-                      delete e.options.previousOptions)),
+                    (e instanceof L.Marker
+                      ? this._toggleMarkerHighlight(e)
+                      : (e.setStyle(e.options.previousOptions),
+                        delete e.options.previousOptions)),
                   e instanceof L.Marker
                     ? (e.dragging.disable(),
                       e
@@ -726,7 +741,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                   t,
                   "Dibujos",
                   "dibujos",
-                  "dibujos"
+                  "dibujos",
                 ); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
               }, this);
             },
@@ -746,8 +761,8 @@ $("body").on("pluginLoad", function (event, plugin) {
               var e = t.layer || t.target || t;
               let isFile = e.id
                 ? e.id.includes("json") ||
-                e.id.includes("zip") ||
-                e.id.includes("kml")
+                  e.id.includes("zip") ||
+                  e.id.includes("kml")
                 : false;
               if (
                 typeof e != "string" &&
@@ -862,12 +877,12 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer,
                 "Dibujos",
                 "dibujos",
-                "dibujos"
+                "dibujos",
               );
             }
 
             mapa.methodsEvents["add-layer"].forEach((method) =>
-              method(mapa.editableLayers)
+              method(mapa.editableLayers),
             );
 
             if (layer.type === "marker") {
@@ -889,7 +904,7 @@ $("body").on("pluginLoad", function (event, plugin) {
               mapa.checkLayersInDrawedGeometry(layer, layer.type);
             }); */
             mapa.methodsEvents["edit-layer"].forEach((method) =>
-              method(mapa.editableLayers)
+              method(mapa.editableLayers),
             );
           });
 
@@ -1096,7 +1111,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
                 let result = mapa.createLayerFromGeoJSON(
                   geojsonMarker,
-                  "addedMarker_" + name
+                  "addedMarker_" + name,
                 );
                 addLayerToAllGroups(result, "addedMarker_" + name);
 
@@ -1201,7 +1216,7 @@ $("body").on("pluginLoad", function (event, plugin) {
               return new UserMessage(
                 "La capa ya no se encuentra disponible.",
                 true,
-                "error"
+                "error",
               );
             }
             if (layer.hasOwnProperty("_leaflet_id")) {
@@ -1821,22 +1836,22 @@ $("body").on("pluginLoad", function (event, plugin) {
                 downloadBtn1.classList.add(
                   enableMarkerInput.checked
                     ? "download-btn-active"
-                    : "download-btn-disable"
+                    : "download-btn-disable",
                 );
                 downloadBtn1.classList.remove(
                   enableMarkerInput.checked
                     ? "download-btn-disable"
-                    : "download-btn-active"
+                    : "download-btn-active",
                 );
                 downloadBtn2.classList.add(
                   enableMarkerInput.checked
                     ? "download-btn-active"
-                    : "download-btn-disable"
+                    : "download-btn-disable",
                 );
                 downloadBtn2.classList.remove(
                   enableMarkerInput.checked
                     ? "download-btn-disable"
-                    : "download-btn-active"
+                    : "download-btn-active",
                 );
                 if (!enableMarkerInput.checked) {
                   layer.setIcon(new L.Icon.Default());
@@ -2008,22 +2023,22 @@ $("body").on("pluginLoad", function (event, plugin) {
               downloadBtn1.classList.add(
                 enableMarkerInput.checked
                   ? "download-btn-active"
-                  : "download-btn-disable"
+                  : "download-btn-disable",
               );
               downloadBtn1.classList.remove(
                 enableMarkerInput.checked
                   ? "download-btn-disable"
-                  : "download-btn-active"
+                  : "download-btn-active",
               );
               downloadBtn2.classList.add(
                 enableMarkerInput.checked
                   ? "download-btn-active"
-                  : "download-btn-disable"
+                  : "download-btn-disable",
               );
               downloadBtn2.classList.remove(
                 enableMarkerInput.checked
                   ? "download-btn-disable"
-                  : "download-btn-active"
+                  : "download-btn-active",
               );
 
               downloadDiv.appendChild(downloadTitle);
@@ -2129,7 +2144,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer.options.icon.options.html.style.setProperty(
                   "border-color",
                   borderColor,
-                  "important"
+                  "important",
                 );
                 layer.options.borderColor = borderColor;
               });
@@ -2154,7 +2169,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer.options.icon.options.html.style.setProperty(
                   "background-color",
                   fillColor,
-                  "important"
+                  "important",
                 );
                 layer.options.fillColor = fillColor;
               });
@@ -2195,7 +2210,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer.options.icon.options.html.style.setProperty(
                   "color",
                   textColor,
-                  "important"
+                  "important",
                 );
                 layer.options.color = textColor;
               });
@@ -2310,10 +2325,10 @@ $("body").on("pluginLoad", function (event, plugin) {
             if (!activeLayersDiv) return;
 
             const activeLayersDivChilds = Array.from(
-              activeLayersDiv.childNodes
+              activeLayersDiv.childNodes,
             );
             const containerIdx = activeLayersDivChilds.findIndex(
-              (layerDiv) => layerDiv.id.split("container_")[1] === layer
+              (layerDiv) => layerDiv.id.split("container_")[1] === layer,
             );
             if (containerIdx >= 0 && !addToList) {
               activeLayersDiv.removeChild(activeLayersDivChilds[containerIdx]);
@@ -2410,7 +2425,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             popUpBtn.innerHTML =
               '<p class="popup-btn-text">Consultar capas seleccionadas en área</p>';
             popUpBtn.classList.add(
-              consultLayers.length === 0 ? "btn-disabled" : "btn-active"
+              consultLayers.length === 0 ? "btn-disabled" : "btn-active",
             );
 
             popUpDiv.appendChild(selectedLayersDiv);
@@ -2428,7 +2443,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             popUpBtn2.classList.add(
               Object.keys(layer.data).length === 0
                 ? "btn-disabled"
-                : "btn-active"
+                : "btn-active",
             );
 
             popUpDiv.appendChild(popUpBtn2);
@@ -2439,7 +2454,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           mapa.showInfoLayer = (layerName, showLastSearch) => {
             const type = layerName.split("_")[0];
             const layer = mapa.editableLayers[type].find(
-              (lyr) => lyr.name === layerName
+              (lyr) => lyr.name === layerName,
             );
 
             if (showLastSearch) {
@@ -2454,7 +2469,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const selectedLayersInputs = Array.from(
               document
                 .getElementById("activeLayers")
-                .getElementsByTagName("input")
+                .getElementsByTagName("input"),
             );
             const selectedLayers = [];
             selectedLayersInputs.forEach((selectedLayer) => {
@@ -2484,11 +2499,11 @@ $("body").on("pluginLoad", function (event, plugin) {
             const filteredActiveLayers = getAllActiveLayers().filter(
               (activeLayer) => {
                 return selectedLayers.find(
-                  (selectedLayer) => selectedLayer === activeLayer.name
+                  (selectedLayer) => selectedLayer === activeLayer.name,
                 )
                   ? true
                   : false;
-              }
+              },
             );
 
             let coords = getGeometryCoords(layer);
@@ -2543,8 +2558,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layer.split("_")[0];
             return mapa.editableLayers.hasOwnProperty(type)
               ? mapa.editableLayers[type]
-                .find((lyr) => lyr.name === layer)
-                .toGeoJSON()
+                  .find((lyr) => lyr.name === layer)
+                  .toGeoJSON()
               : null;
           };
 
@@ -2552,7 +2567,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layer.split("_")[0];
             if (mapa.editableLayers.hasOwnProperty(type)) {
               const lyr = mapa.editableLayers[type].find(
-                (lyr) => lyr.name === layer
+                (lyr) => lyr.name === layer,
               );
               if (lyr) {
                 drawnItems.addLayer(lyr);
@@ -2592,7 +2607,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layerName.split("_")[0]; // Extract layer type from layerName
 
             const idx = mapa.editableLayers[type].findIndex(
-              (lyr) => lyr.name === layerName
+              (lyr) => lyr.name === layerName,
             ); // Find the index of the layer to delete in the editableLayers array
 
             // If the layer exists in the editableLayers array, remove it from the map and editableLayers array
@@ -2612,7 +2627,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             // Remove the layer from the addedLayers array, if it exists
             addedLayers.forEach((lyr) => {
               const idx = lyr.layer.features?.findIndex(
-                (e) => e.properties.name === layerName
+                (e) => e.properties.name === layerName,
               );
               if (geoProcessingManager)
                 geoProcessingManager.updateLayerSelect(layerName, false);
@@ -2629,7 +2644,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
 
             mapa.methodsEvents["delete-layer"].forEach((method) =>
-              method(mapa.editableLayers)
+              method(mapa.editableLayers),
             );
             controlSeccionGeom();
             showTotalNumberofLayers();
@@ -2657,7 +2672,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             if (mapa.groupLayers.hasOwnProperty(group)) {
               if (
                 mapa.groupLayers[group].find(
-                  (layerName) => layerName === feature
+                  (layerName) => layerName === feature,
                 )
               ) {
                 return; // feature already exist in group
@@ -2672,7 +2687,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           mapa.removeLayerFromGroup = (layer, group) => {
             if (mapa.groupLayers.hasOwnProperty(group)) {
               const layerIdx = mapa.groupLayers[group].findIndex(
-                (layerName) => layerName === layer
+                (layerName) => layerName === layer,
               );
               if (layerIdx >= 0) mapa.groupLayers[group].splice(layerIdx, 1);
             }
@@ -2710,7 +2725,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                       },
                     },
                   ],
-                })
+                }),
               );
 
             // Create download link and click it to download the file.
@@ -2776,7 +2791,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             // Determine the geoprocessing type of the layer group, if it has one.
             const addedLayer = addedLayers.find((layer) => layer.id === id);
             const geoProcessingType = geoProcessingTypes.find(
-              (type) => addedLayer && addedLayer.id.includes(type.id)
+              (type) => addedLayer && addedLayer.id.includes(type.id),
             );
             if (geoProcessingType)
               jsonToDownload.process = geoProcessingType.process;
@@ -2838,7 +2853,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
             const borderGradient = document.createElementNS(
               svgNS,
-              "linearGradient"
+              "linearGradient",
             );
             borderGradient.setAttribute("id", "strokeGradient");
             borderGradient.setAttribute("x1", "0");
@@ -2858,7 +2873,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
             const fillGradient = document.createElementNS(
               svgNS,
-              "linearGradient"
+              "linearGradient",
             );
             fillGradient.setAttribute("id", "fillGradient");
             fillGradient.setAttribute("x1", "0");
@@ -2885,7 +2900,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const path = document.createElementNS(svgNS, "path");
             path.setAttribute(
               "d",
-              "m27.3 3.1c-13.694 0-25.092 11.382-25.092 23.732 0 5.556 3.258 12.616 5.613 17.492l19.388 35.744 19.296-35.744c2.354-4.876 5.704-11.582 5.704-17.492 0-12.35-11.215-23.732-24.908-23.732zm0 14.31c5.383.034 9.748 4.244 9.748 9.42s-4.365 9.326-9.748 9.358c-5.383-.034-9.748-4.18-9.748-9.358 0-5.176 4.365-9.386 9.748-9.42z"
+              "m27.3 3.1c-13.694 0-25.092 11.382-25.092 23.732 0 5.556 3.258 12.616 5.613 17.492l19.388 35.744 19.296-35.744c2.354-4.876 5.704-11.582 5.704-17.492 0-12.35-11.215-23.732-24.908-23.732zm0 14.31c5.383.034 9.748 4.244 9.748 9.42s-4.365 9.326-9.748 9.358c-5.383-.034-9.748-4.18-9.748-9.358 0-5.176 4.365-9.386 9.748-9.42z",
             );
             path.setAttribute("stroke", `url(#strokeGradient)`);
             path.setAttribute("fill", `url(#fillGradient)`);
@@ -3004,7 +3019,9 @@ $("body").on("pluginLoad", function (event, plugin) {
             };
             layer.downloadGeoJSON = () => {
               mapa.downloadLayerGeoJSON(
-                mapa.editableLayers[type].find((lyr) => lyr.name === layer.name)
+                mapa.editableLayers[type].find(
+                  (lyr) => lyr.name === layer.name,
+                ),
               );
             };
             mapa.addContextMenuToLayer(layer);
@@ -3091,13 +3108,13 @@ $("body").on("pluginLoad", function (event, plugin) {
       mapa.resetView = () => {
         mapa.setView(
           [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
-          app.mapConfig.zoom.initial
+          app.mapConfig.zoom.initial,
         );
       };
 
       setValidZoomLevel(selectedBasemap.nombre);
 
-      gestorMenu.plugins['leaflet'].setStatus('visible');
+      gestorMenu.plugins["leaflet"].setStatus("visible");
 
       mapa.on("click", function (e) {
         setTimeout(function () {
@@ -3108,28 +3125,34 @@ $("body").on("pluginLoad", function (event, plugin) {
       showMainMenuTpl();
 
       break;
-    case 'MousePosition':
+    case "MousePosition":
       // Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
-      L.control.mousePosition({
-        position: 'bottomright',
-        separator: ' , ',
-        emptyString: '&nbsp;',
-        numDigits: 10,
-        lngFormatter: function (num) {
-          var direction = (num < 0) ? 'O' : 'E';
-          return deg_to_dms(Math.abs(num)) + direction;
-        },
-        latFormatter: function (num) {
-          var direction = (num < 0) ? 'S' : 'N';
-          return deg_to_dms(Math.abs(num)) + direction;
-        }
-      }).addTo(mapa);
-      gestorMenu.plugins['MousePosition'].setStatus('visible');
+      L.control
+        .mousePosition({
+          position: "bottomright",
+          separator: " , ",
+          emptyString: "&nbsp;",
+          numDigits: 10,
+          lngFormatter: function (num) {
+            var direction = num < 0 ? "O" : "E";
+            return deg_to_dms(Math.abs(num)) + direction;
+          },
+          latFormatter: function (num) {
+            var direction = num < 0 ? "S" : "N";
+            return deg_to_dms(Math.abs(num)) + direction;
+          },
+        })
+        .addTo(mapa);
+      gestorMenu.plugins["MousePosition"].setStatus("visible");
       // loadDeveloperLogo(); // move to bottomleft before scale
       break;
-    case 'BingLayer':
-      if (gestorMenu.pluginExists('BingLayer') && gestorMenu.plugins['leaflet'].getStatus() == 'visible' && gestorMenu.plugins['BingLayer'].getStatus() == 'ready') {
-        gestorMenu.plugins['BingLayer'].setStatus('visible');
+    case "BingLayer":
+      if (
+        gestorMenu.pluginExists("BingLayer") &&
+        gestorMenu.plugins["leaflet"].getStatus() == "visible" &&
+        gestorMenu.plugins["BingLayer"].getStatus() == "ready"
+      ) {
+        gestorMenu.plugins["BingLayer"].setStatus("visible");
       }
     default:
       break;
@@ -3195,7 +3218,7 @@ function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
 
 function addSelectionLayersMenuToLayer(layer) {
   const popUpDiv = mapa.createPopUp(
-    mapa.editableLayers[layer.type].find((lyr) => lyr.name === layer.name)
+    mapa.editableLayers[layer.type].find((lyr) => lyr.name === layer.name),
   );
   layer.bindPopup(popUpDiv).openPopup();
   if (layer._popup) {
@@ -3266,7 +3289,7 @@ function printFinished() {
   $("[data-toggle2='tooltip']").tooltip({
     placement: "right",
     trigger: "hover",
-    container: ".menu-container"
+    container: ".menu-container",
   });
 }
 
@@ -3277,7 +3300,7 @@ function showMainMenuTpl() {
   gestorMenu.setPrintCallback(printFinished);
   gestorMenu.setLazyInitialization(true);
   gestorMenu.setShowSearcher(
-    app.hasOwnProperty("showSearchBar") ? app.showSearchBar : false
+    app.hasOwnProperty("showSearchBar") ? app.showSearchBar : false,
   );
   gestorMenu.print();
 }
@@ -3478,13 +3501,13 @@ function loadWmsTpl(objLayer) {
           var aux = $(this).text().split(":");
           info = info.replace(
             "<b>" + aux[0] + "</b>:",
-            "<b>" + ucwords(aux[0].replace(/_/g, " ")) + ":</b>"
+            "<b>" + ucwords(aux[0].replace(/_/g, " ")) + ":</b>",
           );
         });
 
       info = info.replace(
         'class="featureInfo"',
-        'class="featureInfo" id="featureInfoPopup' + idTxt + '"'
+        'class="featureInfo" id="featureInfoPopup' + idTxt + '"',
       );
 
       return info;
@@ -3561,7 +3584,7 @@ function loadWmsTpl(objLayer) {
           var infoParsed = parseFeatureInfoJSON(
             info,
             popupInfo.length,
-            this.options.title
+            this.options.title,
           );
         }
         if (infoParsed != "") {
@@ -3574,7 +3597,7 @@ function loadWmsTpl(objLayer) {
           latlngTmp = latlng;
           this._map.openPopup(
             paginateFeatureInfo(popupInfo, 0, false, true),
-            latlng
+            latlng,
           ); //Show all info
           popupInfoPage = 0;
         }
@@ -3677,17 +3700,17 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div id="popupPageSeeker">' +
-          sAux +
-          '</div><div class="featureInfo" id="featureInfoPopup' +
-          i +
-          '">'
+            sAux +
+            '</div><div class="featureInfo" id="featureInfoPopup' +
+            i +
+            '">',
         );
       } else {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div class="featureInfo" style="display:none" id="featureInfoPopup' +
-          i +
-          '">'
+            i +
+            '">',
         );
       }
     }
@@ -3717,7 +3740,7 @@ function changePopupPage(changeType) {
 
   mapa.openPopup(
     paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext),
-    latlngTmp
+    latlngTmp,
   ); //Show all info
 }
 
@@ -3731,6 +3754,6 @@ function copytoClipboard(coords) {
   new UserMessage(
     "Las coordenadas se copiaron al portapapeles",
     true,
-    "information"
+    "information",
   );
 }

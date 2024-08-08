@@ -1,10 +1,11 @@
-# Configuración
+<!-- trunk-ignore-all(markdownlint/MD041) -->
 
-   > Esta sección explica cómo se pueden configurar las capas, los mapas base, el aspecto visual, extensiones y vista del mapa.
+> Esta sección explica cómo se pueden configurar las capas, los mapas base, el aspecto visual, extensiones y vista del mapa.
 
 Los mapas base y capas se definen en el archivo `src/config/data.json`, la ubicación y zoom iniciales junto a otras opciones en `src/config/preferences.json`, ambos deben ser creados sino se carga la configuración por defecto en `src/config/default`.
 
 ## Mapas base y capas
+
 ---
 
 El archivo `data.json` se compone de bloques llamados **items**, el primero agrupa los mapas base y los siguientes las secciones desplegables que agrupan capas.
@@ -32,6 +33,7 @@ Ejemplo con comentarios:
 ![definición de secciones en data.json](img/seccionjson.png)
 
 ## Parámetros de aplicación
+
 ---
 
 En el archivo `preferences.json` se pueden definir opciones de inicio de la aplicación como extensiones a omitir, posición y zoom del mapa entre otros.
@@ -41,9 +43,10 @@ Ejemplo con comentarios:
 ![parámetros de inicio de la aplicación en preferences.json](img/preferences.png)
 
 ## Apariencia
+
 ---
 
-Para modificar el aspecto visual de la aplicación debe agregarse en  `src/config/styles` los siguientes directorios y archivos:
+Para modificar el aspecto visual de la aplicación debe agregarse en `src/config/styles` los siguientes directorios y archivos:
 
 - `src/config/styles/css/main.css` : reglas de estilos CSS (el original está en `src/styles/css`)
 - `src/config/styles/images` : logos y otras imágenes

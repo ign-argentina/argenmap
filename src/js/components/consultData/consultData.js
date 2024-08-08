@@ -16,7 +16,9 @@ class ConsultData {
     elem.className = "leaflet-bar leaflet-control";
     elem.id = "consultData";
     elem.innerHTML = this.component;
-    elem.onclick = (e) => { activateDataConsult(), e.stopPropagation() };
+    elem.onclick = (e) => {
+      activateDataConsult(), e.stopPropagation();
+    };
     //elem.onmouseover = showConsultList;
     //elem.onmouseout = hideConsultList;
     if (loadQueryLayer) {
@@ -34,8 +36,8 @@ function hideConsultList() {
 }
 function activateDataConsult() {
   if (consultDataBtnClose) {
-    Object.values(mapa.editableLayers).forEach(editLayer => {
-      editLayer.forEach(layer => {
+    Object.values(mapa.editableLayers).forEach((editLayer) => {
+      editLayer.forEach((layer) => {
         if (layer.activeData === false) {
           layer.activeData = true;
         }
@@ -51,8 +53,8 @@ function activateDataConsult() {
     consultDataBtnClose = false;
     getPopupForWMS(true);
   } else {
-    Object.values(mapa.editableLayers).forEach(editLayer => {
-      editLayer.forEach(layer => {
+    Object.values(mapa.editableLayers).forEach((editLayer) => {
+      editLayer.forEach((layer) => {
         if (layer.activeData === true) {
           layer.activeData = false;
         }
@@ -71,31 +73,34 @@ function activateDataConsult() {
   }
 }
 function getPopupForWMS(isActive) {
-  let itemNames = [], itemCapa = [];
+  let itemNames = [],
+    itemCapa = [];
 
-  gestorMenu.getActiveLayersWithoutBasemap().forEach(lyr => {
+  gestorMenu.getActiveLayersWithoutBasemap().forEach((lyr) => {
     if (!itemNames.includes(lyr.name)) itemNames.push(lyr.name);
-  })
-  itemNames.forEach(activeLayerName => {
-    Object.values(gestorMenu.items).forEach(item => {
-      Object.values(item.itemsComposite).forEach(itemComposite => {
-
+  });
+  itemNames.forEach((activeLayerName) => {
+    Object.values(gestorMenu.items).forEach((item) => {
+      Object.values(item.itemsComposite).forEach((itemComposite) => {
         if (activeLayerName == itemComposite.nombre) {
           if (!itemCapa.includes(itemComposite)) itemCapa.push(itemComposite);
         }
       });
     });
-  })
+  });
 
   //Menu WMS & WMTS
-  itemCapa.forEach(item => {
-    if (gestorMenu.layerIsWmts(item.nombre)) {  //is WMTS
+  itemCapa.forEach((item) => {
+    if (gestorMenu.layerIsWmts(item.nombre)) {
+      //is WMTS
       chooseLyrType(item, isActive, "lyrJoin");
-
-    } else {    //is WMS
-      if (item.capas[1]) {    //is double WMS
+    } else {
+      //is WMS
+      if (item.capas[1]) {
+        //is double WMS
         chooseLyrType(item, isActive, "lyrJoin");
-      } else {                //is single WMS
+      } else {
+        //is single WMS
         chooseLyrType(item, isActive, "singleLyr");
       }
     }
@@ -103,7 +108,7 @@ function getPopupForWMS(isActive) {
 
   //Import WMS
   let importedWMS;
-  addedLayers.forEach(lyr => {
+  addedLayers.forEach((lyr) => {
     if (lyr.type === "WMS" && lyr.isActive === true) {
       importedWMS = lyr.layer;
       overlayMaps[importedWMS.name].removeFrom(mapa);
@@ -114,11 +119,10 @@ function getPopupForWMS(isActive) {
       overlayMaps[importedWMS.name].addTo(mapa);
     }
   });
-
 }
 function chooseLyrType(item, isActive, lyrType) {
   if (lyrType === "lyrJoin") {
-    let capaWMS = item.capas[1].nombre
+    let capaWMS = item.capas[1].nombre;
     if (overlayMaps[capaWMS]) {
       overlayMaps[capaWMS].removeFrom(mapa);
       delete overlayMaps[capaWMS];
@@ -151,11 +155,12 @@ function createImportWmsLayer(layer) {
           var infoParsed = parseFeatureInfoJSON(
             info,
             popupInfo.length,
-            this.options.title
+            this.options.title,
           );
         }
-        if (infoParsed === "LayerNotQueryable") {//if layer is not queryable
-          return 0
+        if (infoParsed === "LayerNotQueryable") {
+          //if layer is not queryable
+          return 0;
         }
         if (infoParsed != "") {
           // check if info has any content, if so shows popup
@@ -167,7 +172,7 @@ function createImportWmsLayer(layer) {
           latlngTmp = latlng;
           this._map.openPopup(
             paginateFeatureInfo(popupInfo, 0, false, true),
-            latlng
+            latlng,
           ); //Show all info
           popupInfoPage = 0;
         }
@@ -185,7 +190,7 @@ function createImportWmsLayer(layer) {
     maxZoom: 21,
     title: layer.title,
     format: "image/png",
-    INFO_FORMAT: "application/json"
+    INFO_FORMAT: "application/json",
   });
   overlayMaps[layer.name] = layerPopUp.getLayer(layer.name);
 }

@@ -1,5 +1,5 @@
 .list-group-gc {
-  padding-left: 0
+  padding-left: 0;
 }
 .list-group-item-gc {
   position: relative;
@@ -11,10 +11,10 @@
   text-overflow: ellipsis;
   height: 36px;
   width: 100%;
-  overflow: hidden
+  overflow: hidden;
 }
 .itemgc-focus {
-  background-color: #ececec
+  background-color: #ececec;
 }
 .search-bar-list {
   position: absolute;
@@ -22,14 +22,14 @@
 }
 .list-group-item-heading-gc {
   margin-top: 0;
-  margin-bottom: 5px
+  margin-bottom: 5px;
 }
 #search_bar {
   outline: 0 !important;
   overflow: auto;
   box-sizing: border-box;
-  -webkit-transition: width .4s ease-in-out;
-  transition: width .4s ease-in-out;
+  -webkit-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
 }
 .search-bar-no-empty {
   border-right: 0px;
@@ -73,6 +73,6 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-#div-icon-close-searchbar:hover>.fa-times {
+#div-icon-close-searchbar:hover > .fa-times {
   color: var(--btn-primary-color);
 }

@@ -60,7 +60,7 @@
   padding: 10px;
   margin: 0 !important;
 }
-#tooltip-helper-active-description-text>div {
+#tooltip-helper-active-description-text > div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -73,12 +73,12 @@
   align-items: center;
   padding: 10px;
 }
-.tooltip-helper-footer>div {
+.tooltip-helper-footer > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.tooltip-helper-footer>button {
+.tooltip-helper-footer > button {
   width: auto;
 }
 .tooltip-helper-active {

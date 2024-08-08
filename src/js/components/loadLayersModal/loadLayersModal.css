@@ -32,7 +32,8 @@
   margin-bottom: 6px;
   margin-right: 6px; */
 }
-.modalNavButton:hover img, .modalNavButtonActive img {
+.modalNavButton:hover img,
+.modalNavButtonActive img {
   filter: contrast(0%) brightness(200%);
 }
 .modalNavButtonActive {
@@ -60,7 +61,7 @@
   background-color: white !important; */
   width: auto;
 }
-#loadLayersButtonContent>img {
+#loadLayersButtonContent > img {
   opacity: 0.9;
 }
 /* #loadLayersButtonContent {

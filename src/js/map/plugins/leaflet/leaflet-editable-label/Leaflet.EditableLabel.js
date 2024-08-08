@@ -32,19 +32,16 @@ class EditableLabel {
     },
 
     onAdd: function (map) {
-      let controlDiv = L.DomUtil.create(
-        "div",
-        "leaflet-bar leaflet-control"
-      );
+      let controlDiv = L.DomUtil.create("div", "leaflet-bar leaflet-control");
       let controlUI = L.DomUtil.create(
         "a",
-        "leaflet-editable-label leaflet-editable-label-interior center-flex"
+        "leaflet-editable-label leaflet-editable-label-interior center-flex",
       );
       controlDiv.appendChild(controlUI);
 
       L.DomEvent.addListener(controlDiv, "click", L.DomEvent.stopPropagation)
         .addListener(controlDiv, "click", L.DomEvent.preventDefault)
-        .addListener(controlDiv, "click", function () { });
+        .addListener(controlDiv, "click", function () {});
 
       const icon = document.createElement("span");
       //icon.src= "src/styles/images/icon-text-regular.png"
@@ -79,14 +76,15 @@ class EditableLabel {
    * @param {number} options.lng - The longitude of the marker.
    */
   addText = ({ lat, lng }) => {
-    let name = "label_";// Set the default name of the marker.
+    let name = "label_"; // Set the default name of the marker.
 
     // If there are existing markers, use the last one's name to generate a new name.
     if (mapa.editableLayers["label"].length === 0) {
       name += "1";
     } else {
       const lastLayerName =
-        mapa.editableLayers["label"][mapa.editableLayers["label"].length - 1].name;
+        mapa.editableLayers["label"][mapa.editableLayers["label"].length - 1]
+          .name;
       name += parseInt(lastLayerName.split("_")[1]) + 1;
     }
 
@@ -108,12 +106,12 @@ class EditableLabel {
     // Create a new div icon for the marker's label.
     const divIcon = L.divIcon({
       className: "div-icon",
-      html: textarea
+      html: textarea,
     });
 
     // Create a new marker for the label.
     const textLayer = L.marker([lat, lng], {
-      icon: divIcon
+      icon: divIcon,
     });
 
     // Set the name and type of the marker, and store its geoJSON data.
@@ -124,17 +122,21 @@ class EditableLabel {
 
     // Update the marker's geoJSON data as the user types.
     textarea.onkeyup = function () {
-      textLayer.data.geoJSON.properties.text = textLayer.options.icon.options.html.value;
-      textLayer._icon.lastChild.textContent = textLayer.options.icon.options.html.value;
+      textLayer.data.geoJSON.properties.text =
+        textLayer.options.icon.options.html.value;
+      textLayer._icon.lastChild.textContent =
+        textLayer.options.icon.options.html.value;
     };
 
     // Add custom functions to the marker.
     textLayer.getGeoJSON = () => {
       return mapa.getLayerGeoJSON(textLayer.name);
-    }
+    };
     textLayer.downloadGeoJSON = () => {
-      mapa.downloadLayerGeoJSON(mapa.editableLayers["label"].find(lyr => lyr.name === textLayer.name));
-    }
+      mapa.downloadLayerGeoJSON(
+        mapa.editableLayers["label"].find((lyr) => lyr.name === textLayer.name),
+      );
+    };
 
     // Add the new marker to the map and to the list of editable layers.
     mapa.editableLayers["label"].push(textLayer);
@@ -148,23 +150,33 @@ class EditableLabel {
   };
 
   /**
- * Creates and uploads a label to the map at the given coordinates.
- *
- * @param {number[]} coordinates - Array of latitude and longitude coordinates.
- * @param {string} text - The label's text content.
- * @param {string} borderWidth - The width of the label's border.
- * @param {string} borderColor - The color of the label's border.
- * @param {string} backgroundColor - The background color of the label.
- * @param {string} color - The text color of the label.
- * @param {string} id - The ID of the layer group to which the label belongs.
- */
-  uploadLabel = (coordinates, text, borderWidth, borderColor, backgroundColor, color, id) => {
+   * Creates and uploads a label to the map at the given coordinates.
+   *
+   * @param {number[]} coordinates - Array of latitude and longitude coordinates.
+   * @param {string} text - The label's text content.
+   * @param {string} borderWidth - The width of the label's border.
+   * @param {string} borderColor - The color of the label's border.
+   * @param {string} backgroundColor - The background color of the label.
+   * @param {string} color - The text color of the label.
+   * @param {string} id - The ID of the layer group to which the label belongs.
+   */
+  uploadLabel = (
+    coordinates,
+    text,
+    borderWidth,
+    borderColor,
+    backgroundColor,
+    color,
+    id,
+  ) => {
     // Create a unique name for the label layer
     let name = "label_";
     if (mapa.editableLayers["label"].length === 0) {
       name += "1";
     } else {
-      const lastLayerName = mapa.editableLayers["label"][mapa.editableLayers["label"].length - 1].name;
+      const lastLayerName =
+        mapa.editableLayers["label"][mapa.editableLayers["label"].length - 1]
+          .name;
       name += parseInt(lastLayerName.split("_")[1]) + 1;
     }
 
@@ -190,12 +202,12 @@ class EditableLabel {
     // Create the divIcon with the textarea element
     var divIcon = L.divIcon({
       className: "div-icon",
-      html: textarea
+      html: textarea,
     });
 
     // Create the textLayer marker with the divIcon
     var textLayer = L.marker(coordinates, {
-      icon: divIcon
+      icon: divIcon,
     });
 
     // Set properties for the textLayer marker
@@ -207,17 +219,21 @@ class EditableLabel {
 
     // Update the label's text content when the user types
     textarea.onkeyup = function () {
-      textLayer.data.geoJSON.properties.text = textLayer.options.icon.options.html.value;
-      textLayer._icon.lastChild.textContent = textLayer.options.icon.options.html.value;
+      textLayer.data.geoJSON.properties.text =
+        textLayer.options.icon.options.html.value;
+      textLayer._icon.lastChild.textContent =
+        textLayer.options.icon.options.html.value;
     };
 
     // Add custom functions to the textLayer marker
     textLayer.getGeoJSON = () => {
       return mapa.getLayerGeoJSON(textLayer.name);
-    }
+    };
     textLayer.downloadGeoJSON = () => {
-      mapa.downloadLayerGeoJSON(mapa.editableLayers["label"].find(lyr => lyr.name === textLayer.name));
-    }
+      mapa.downloadLayerGeoJSON(
+        mapa.editableLayers["label"].find((lyr) => lyr.name === textLayer.name),
+      );
+    };
 
     // Add the label layer to the specified layer group and the map
     mapa.groupLayers[id].push(name);
@@ -226,7 +242,7 @@ class EditableLabel {
     drawnItems.addLayer(textLayer);
 
     // Adjust the height of textarea if there is more than one line
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { key: 'Tab' }));
+    textarea.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" }));
   };
 
   activate = () => {

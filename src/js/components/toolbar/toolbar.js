@@ -3,7 +3,7 @@
  * @class
  */
 class ToolbarVisibilityToggler {
-  constructor() { }
+  constructor() {}
 
   /**
    * Creates a button element and appends it to the right side of the map.
@@ -15,7 +15,7 @@ class ToolbarVisibilityToggler {
    */
   createBtn(id, btnId, title, iconClass) {
     const elem = document.createElement("div");
-    elem.className = 'leaflet-bar leaflet-control';
+    elem.className = "leaflet-bar leaflet-control";
     elem.id = btnId;
     elem.title = title;
     elem.style = "cursor: pointer;";
@@ -28,7 +28,10 @@ class ToolbarVisibilityToggler {
     // Event listener to toggle visibility of map buttons on click
     elem.addEventListener("click", (e) => {
       e.stopPropagation(); // Prevent click event propagation
-      const btnToolId = e.target.offsetParent.id === "hideBtnRight" ? ".leaflet-top.leaflet-right" : ".leaflet-top.leaflet-left";
+      const btnToolId =
+        e.target.offsetParent.id === "hideBtnRight"
+          ? ".leaflet-top.leaflet-right"
+          : ".leaflet-top.leaflet-left";
       const btnTool = document.querySelector(btnToolId);
 
       // Iterate through each child node of the selected maps buttons and toggle visibility
@@ -50,7 +53,7 @@ class ToolbarVisibilityToggler {
    */
   toggleToolbarVisibility(btnTool) {
     // Iterate through each child node of the selected maps buttons and toggle visibility
-    btnTool.childNodes.forEach(node => {
+    btnTool.childNodes.forEach((node) => {
       // Toggle visibility for nodes that are not "hideBtnRight" or "hideBtnLeft"
       if (node.id !== "hideBtnRight" && node.id !== "hideBtnLeft") {
         node.hidden = !node.hidden;
@@ -59,12 +62,12 @@ class ToolbarVisibilityToggler {
   }
 
   /**
-    * Hides or shows the toolbar based on the provided parameter.
-    * @param {HTMLElement} toolbar - The toolbar element.
-    * @param {boolean} show - Whether to show or hide the toolbar.
-    */
+   * Hides or shows the toolbar based on the provided parameter.
+   * @param {HTMLElement} toolbar - The toolbar element.
+   * @param {boolean} show - Whether to show or hide the toolbar.
+   */
   hideToolbar(toolbar, show) {
-    toolbar.childNodes.forEach(node => {
+    toolbar.childNodes.forEach((node) => {
       if (node.id !== "hideBtnRight" && node.id !== "hideBtnLeft") {
         node.hidden = !show;
       }
@@ -78,8 +81,18 @@ class ToolbarVisibilityToggler {
    */
   createComponent(showToolbar) {
     // Create the toolbar buttons
-    this.createBtn("map-toolbar-icon-left", "hideBtnLeft", "Esconder herramientas", "glyphicon glyphicon-wrench");
-    this.createBtn("map-toolbar-icon-right", "hideBtnRight", "Esconder herramientas de dibujo", "glyphicon glyphicon-pencil");
+    this.createBtn(
+      "map-toolbar-icon-left",
+      "hideBtnLeft",
+      "Esconder herramientas",
+      "glyphicon glyphicon-wrench",
+    );
+    this.createBtn(
+      "map-toolbar-icon-right",
+      "hideBtnRight",
+      "Esconder herramientas de dibujo",
+      "glyphicon glyphicon-pencil",
+    );
 
     // Use an arrow function to ensure the 'this' context is preserved
     window.onload = () => {
