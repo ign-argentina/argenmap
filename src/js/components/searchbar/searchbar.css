@@ -74,5 +74,5 @@
   border-bottom-left-radius: 0;
 }
 #div-icon-close-searchbar:hover > .fa-times {
-  color: var(--btn-primary-color);
+  color: var(--btn-secondary-color);
 }

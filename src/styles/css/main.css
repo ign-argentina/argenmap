@@ -123,9 +123,9 @@ Ejemplos:
   --btn-secondary-color: var(--secondary-color);
   --btn-disabled-color: #838788;
   /* #AAAAAA */
-  --btn-confirm-color: #2e7d33;
+  --btn-confirm-color: #448148;
   /* #33B560  #3A8555*/
-  --btn-danger-color: #c62828;
+  --btn-danger-color: #bd5555;
   /*#CE4946 #EF4D3D */
   /*Argenmap ui input text */
   --input-text-ftn-size: 14px;
@@ -384,7 +384,7 @@ div.leaflet-top.leaflet-left {
   padding-left: 10px;
   font-size: var(--input-text-ftn-size);
   background-color: var(--input-text-bg-color);
-  border: 2px solid var(--btn-disabled-color);
+  border: 1px solid #a3a3a3;
   border-radius: var(--input-text-border-radius);
 }
 .form-control:focus {
@@ -405,9 +405,8 @@ div.leaflet-top.leaflet-left {
   z-index: 1000;
   border-radius: 6px;
   padding: 0;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(7px) saturate(18%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(5px) brightness(105%);
 }
 .menu-section-btn {
   width: 3.5rem;
@@ -424,7 +423,6 @@ div.leaflet-top.leaflet-left {
   height: 30px;
   background-color: var(--active-bg-color);
   padding: 5px;
-  /* display: none; */
 }
 .panel-body {
   padding: 5px;
