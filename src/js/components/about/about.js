@@ -2,7 +2,7 @@
  * Represents a utility class to get data from various sources.
  */
 class DataGetter {
-  constructor() {}
+  constructor() { }
 
   /**
    * Loads the content of a Markdown file from the specified URL and selects the specified lines.
@@ -64,11 +64,11 @@ class AboutUs {
       {
         name: "Funciones",
         id: "load-functions",
-      } /*,
-            {
-                name: 'Colaboradores',
-                id: 'load-colaboradores',
-            }*/,
+      }/* ,
+      {
+        name: 'Colaboradores',
+        id: 'load-colaboradores',
+      } */,
     ];
     this.dataGetter = new DataGetter();
     this.check();
@@ -86,39 +86,39 @@ class AboutUs {
     //this.addContributorsContent();
   }
 
-  /**
+  /* *
    * Adds the contributors content to the contributors container.
-  
+
   addContributorsContent() {
-      this.contributors.sort((a, b) => a.login.localeCompare(b.login));
-      this.contributors.forEach((contributor, i) => {
-          if (contributor.login.toLowerCase() === "dependabot[bot]") {
-              return;
-          }
-          const card = document.createElement('div');
-          card.className = "contributor-card";
-          card.title = "Visitar GitHub";
-          card.addEventListener('click', () => {
-              this.goTo(contributor.html_url);
-          });
-
-          const presentImg = document.createElement('img');
-          presentImg.src = contributor.avatar_url;
-
-          const userName = document.createElement('p');
-          userName.innerHTML = contributor.login;
-
-          presentImg.className = "contributor-img";
-          userName.className = "contributor-user";
-
-          card.appendChild(presentImg);
-          card.appendChild(userName);
-
-          const contributorContainer = document.getElementById("contributors-container");
-          contributorContainer.appendChild(card);
+    this.contributors.sort((a, b) => a.login.localeCompare(b.login));
+    this.contributors.forEach((contributor, i) => {
+      if (contributor.login.toLowerCase() === "dependabot[bot]") {
+        return;
+      }
+      const card = document.createElement('div');
+      card.className = "contributor-card";
+      card.title = "Visitar GitHub";
+      card.addEventListener('click', () => {
+        this.goTo(contributor.html_url);
       });
+
+      const presentImg = document.createElement('img');
+      presentImg.src = contributor.avatar_url;
+
+      const userName = document.createElement('p');
+      userName.innerHTML = contributor.login;
+
+      presentImg.className = "contributor-img";
+      userName.className = "contributor-user";
+
+      card.appendChild(presentImg);
+      card.appendChild(userName);
+
+      const contributorContainer = document.getElementById("contributors-container");
+      contributorContainer.appendChild(card);
+    });
   }
-   */
+ */
 
   /**
    * Adds the functions content to the functions container.

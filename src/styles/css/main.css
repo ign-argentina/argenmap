@@ -246,6 +246,12 @@ a:focus {
 .row {
   height: 100%;
 }
+nav .container-fluid{
+  padding: 0;
+}
+.pe-0{
+  padding-right: 0;
+}
 #wms-combo-list {
   display: none;
 }
@@ -1289,7 +1295,7 @@ input:checked.switch + label:after {
 #geoserver-login-btn {
   width: auto;
   align-self: center;
-  margin-right: 10px;
+  margin-right: 25px;
 }
 #logo-navbar > div > a,
 #logoText {

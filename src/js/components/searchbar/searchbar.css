@@ -30,6 +30,10 @@
   box-sizing: border-box;
   -webkit-transition: width 0.4s ease-in-out;
   transition: width 0.4s ease-in-out;
+  width: 130px;
+}
+#search_bar:focus {
+  width: 160px;
 }
 .search-bar-no-empty {
   border-right: 0px;
