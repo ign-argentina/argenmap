@@ -134,7 +134,7 @@ Ejemplos:
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
   /*Menu capas*/
-  --lyr-menu-bg-color: #eeeeee54;
+  --lyr-menu-bg-color: #eeeeee60;
   --lyr-menu-panel-head-bg-color: var(--primary-color);
   --lyr-menu-panel-head-text-color: #FFF;
   --menu-title-text-color: #fff;

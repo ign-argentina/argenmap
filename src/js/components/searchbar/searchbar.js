@@ -70,7 +70,7 @@ class Searchbar_UI {
 
     let icon = document.createElement("button");
     icon.id = "div-icon-close-searchbar";
-    icon.classList = "ag-btn ag-btn-primary"
+    icon.classList = "ag-btn ag-btn-secondary";
     icon.innerHTML = `<i class="fa fa-times" aria-hidden="true"></i>`;
     maininput.append(input);
     maininput.append(icon);
