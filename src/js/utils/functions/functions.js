@@ -236,9 +236,9 @@ function showTotalNumberofLayers() {
   if (activeLayers > 0) {
     $("#cleanTrash").html(
       "<div class='glyphicon glyphicon-refresh'></div>" +
-        "<span class='total-active-layers-counter'>" +
-        activeLayers +
-        "</span>",
+      "<span class='total-active-layers-counter'>" +
+      activeLayers +
+      "</span>",
     );
   } else {
     $("#cleanTrash").html("<span class='glyphicon glyphicon-refresh'></span>");
@@ -561,12 +561,12 @@ function setCoordinatesFormat(coords) {
 
 async function getWfsLayerFields(url, params) {
   let _params = {
-      typeName: params.typeName,
-      service: params.service,
-      version: params.version,
-      request: "DescribeFeatureType",
-      outputFormat: params.outputFormat,
-    },
+    typeName: params.typeName,
+    service: params.service,
+    version: params.version,
+    request: "DescribeFeatureType",
+    outputFormat: params.outputFormat,
+  },
     paramsStr = [],
     res,
     geom;
@@ -852,9 +852,13 @@ function setSelectedBasemapAsActive(layerName, availableBasemaps) {
 }
 
 function adaptToImage(imgDiv) {
+  /**
+  * Detects the size of the incoming layer legend and adds a
+  * collapsible div for holding a larger legend image.
+  */
   let img = imgDiv.childNodes[0],
     item = imgDiv.parentNode.parentNode;
-  if (img.naturalHeight > 24) {
+  if (img.naturalHeight > 24 || img.naturalWidth > 24) {
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
     resize_img_icon.style = "align-self: center;font-size: 14px";
@@ -868,11 +872,11 @@ function adaptToImage(imgDiv) {
 
     let max_url_img = img.src.replace(/off/g, "on");
     img.src.includes("svg") ||
-    img.src.includes("png") ||
-    img.src.includes("jpg")
+      img.src.includes("png") ||
+      img.src.includes("jpg")
       ? max_url_img
       : (max_url_img +=
-          ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
+        ";fontAntiAliasing:true;wrap:true;wrap_limit:200;fontName:Verdana;");
     container_expand_legend_grafic.innerHTML = `<img class='legend-img-max' loading='lazy'  src='${max_url_img}' onerror='showImageOnError(this);this.parentNode.append(" Image not found")'></img>`;
 
     resize_img_icon.onclick = (event) => {
@@ -1354,7 +1358,7 @@ function parseXml(str, lyr, sys) {
     xmlNodes;
   try {
     xmlDoc = parser.parseFromString(str, "text/xml");
-  } catch (error) {}
+  } catch (error) { }
   xmlDoc.documentElement.nodeName == "parsererror"
     ? console.error("error while parsing")
     : (xmlNodes = xmlDoc.getElementsByTagName("Name"));
@@ -1519,9 +1523,9 @@ function addCounterForSection(groupnamev, layerType) {
   if (counter > 0) {
     $("#" + groupnamev + "-a").html(
       groupnamev +
-        " <span class='active-layers-counter'>" +
-        counter +
-        "</span>",
+      " <span class='active-layers-counter'>" +
+      counter +
+      "</span>",
     );
   } else {
     $("#" + groupnamev + "-a").html(groupnamev);
