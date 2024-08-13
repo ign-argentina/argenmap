@@ -142,13 +142,11 @@ class ImpresorItemHTML extends Impresor {
     btn.id = childId;
     btn.classList = "capa list-group-item" + activated;
     btn.style.padding = "10px 1px 10px 1px";
-    //btn.setAttribute("onClick", `gestorMenu.muestraCapa('${childId}')`);
-    btn.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`);
+    btn.setAttribute("onClick", `gestorMenu.muestraCapa('${childId}')`);
 
     const btn_title = document.createElement("div");
     btn_title.className = "capa-title";
     btn_title.innerHTML = legendImg;
-    btn_title.setAttribute("onClick", `gestorMenu.muestraCapa('${childId}')`);
 
     const btn_name = document.createElement("div");
     btn_name.className = "name-layer";
