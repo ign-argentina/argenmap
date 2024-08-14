@@ -498,7 +498,7 @@ class LayersInfo {
     this.customized_layers = customized_layers;
   }
 
-  isAllowebLayer(layer_name) {
+  isAllowedLayer(layer_name) {
     if (this.allowed_layers == null) {
       return true;
     }
