@@ -742,8 +742,7 @@ class LayersInfoWMS extends LayersInfo {
             try {
               const iName = layer.querySelector("Name").textContent;
               const iTitle = layer.querySelector("Title").textContent;
-              const iAbstract =
-                layer.querySelectorAll("Abstract").textContent ?? "";
+              const iAbstract = layer.querySelectorAll("Abstract")[0].textContent ?? ""; // returns layer's abstract
 
               // Extract keywords
               const keywordsHTMLList = layer.querySelectorAll(
