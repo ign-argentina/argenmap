@@ -498,7 +498,7 @@ class LayersInfo {
     this.customized_layers = customized_layers;
   }
 
-  isAllowebLayer(layer_name) {
+  isAllowedLayer(layer_name) {
     if (this.allowed_layers == null) {
       return true;
     }
@@ -736,14 +736,13 @@ class LayersInfoWMS extends LayersInfo {
         const items = Array.from(capaInfoList)
           .filter((layer) => {
             const iName = layer.querySelector("Name").textContent;
-            return thisObj.isAllowebLayer(iName);
+            return thisObj.isAllowedLayer(iName);
           })
           .map((layer, index) => {
             try {
               const iName = layer.querySelector("Name").textContent;
               const iTitle = layer.querySelector("Title").textContent;
-              const iAbstract =
-                layer.querySelectorAll("Abstract").textContent ?? "";
+              const iAbstract = layer.querySelectorAll("Abstract")[0].textContent ?? ""; // returns layer's abstract
 
               // Extract keywords
               const keywordsHTMLList = layer.querySelectorAll(
@@ -945,7 +944,7 @@ class LayersInfoWMS extends LayersInfo {
         capas_info.each(function (index, b) {
           var i = $(this);
           var iName = $("name", i).html();
-          if (thisObj.isAllowebLayer(iName)) {
+          if (thisObj.isAllowedLayer(iName)) {
             var iTitle = $("title", i).html();
             iTitle = thisObj.formatLayerTitle(iName, iTitle);
             var iAbstract = $("abstract", i).html();
@@ -1317,7 +1316,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
         var i = $(this);
 
         var iName = $("ows\\:identifier", i).html();
-        if (thisObj.isAllowebLayer(iName)) {
+        if (thisObj.isAllowedLayer(iName)) {
           var iTitle = $("ows\\:title", i).html();
           iTitle = thisObj.formatLayerTitle(iName, iTitle);
           var iAbstract = $("ows\\:abstract", i).html();

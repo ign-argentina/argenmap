@@ -13,6 +13,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
     profile: "default",
     profiles: {},
     layers: {},
+    dependencies: {},
     layerNameByDomId: {},
     templates: ["ign-geoportal-basic"],
 
@@ -452,6 +453,105 @@ let getGeoserverCounter = 0,
   templateFeatureInfoFieldException = [],
   gestorMenu = new GestorMenu();
 
+/**
+ * Utils functions
+ */
+
+function isURL(urlString) {
+  try {
+    new URL(urlString);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function checkFileType(filePath, extension) {
+  // check file extension using regex
+}
+
+/**
+ * This reads the configuration from two JSON files (app parameters and data references).
+ * These files could be customized, if not the function parses and loads
+ * default configuration files which are referenced in constats for such usage.
+ */
+
+async function getJson(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      let errorMsg = `${response.url.split("/").at(-1)} ${response.statusText.toLowerCase()}`
+      new UserMessage(errorMsg, true, "warning");
+      // throw new Error(`Response status: ${response.statusText}`);
+    }
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    return error.message;
+  }
+}
+
+async function getPreferences(preferencesURL, load = false) {
+  /**
+   * TODO
+   * check file type, URL and JSON syntax
+   * throw error message in UI if configuration parsing fails
+   * process each object with specialized methods
+   */
+  let preferences = null;
+  if (typeof preferencesURL === "object" && preferencesURL.hasOwnProperty("title")) {
+    preferences = preferencesURL;
+  } else {
+    preferences = await getJson(preferencesURL);
+  }
+  if (typeof preferences !== "object") {
+    preferences = await getJson(DEFAULT_PREFERENCES);
+  }
+  if (load) {
+    loadTemplate(preferences);
+  }
+  return preferences;
+  // loadTemplate(preferences);
+}
+
+async function getData(dataURL, load = false) {
+  // getData("./src/config/ign.data.json", true);
+  /**
+   * TODO
+   * check file type, URL and JSON syntax
+   * throw error message in UI if configuration parsing fails
+   * process each object with specialized methods
+   */
+  let data = null;
+  if (typeof dataURL === "object" && dataURL.hasOwnProperty("items")) {
+    data = dataURL;
+  } else {
+    data = await getJson(dataURL);
+  }
+  if (typeof data !== "object") {
+    data = await getJson(DEFAULT_DATA);
+  }
+  if (load) {
+    loadTemplate(data); // moved into getConfig()
+  }
+  return data;
+}
+
+/**
+ * Read preferences and data configuration at application start.
+ */
+async function getConfig(preferencesURL, dataURL) {
+  try {
+    const preferences = await getPreferences(preferencesURL);
+    const data = await getData(dataURL);
+    await loadTemplate({ ...data, ...preferences }, true);
+  } catch (error) {
+    console.log(error);
+    // loadDefaultJson();
+  }
+}
+
+/*
 $.getJSON("./src/config/data.json", async function (data) {
   $.getJSON("./src/config/preferences.json", async function (preferences) {
     gestorMenu.setLegendImgPath("src/config/styles/images/legends/");
@@ -464,9 +564,19 @@ $.getJSON("./src/config/data.json", async function (data) {
   console.warn("Template not found. Default configuration will be loaded.");
   await loadDefaultJson();
 });
+*/
 
-async function loadDefaultJson() {
-  $.getJSON("./src/config/default/data.json", async function (data) {
+const CONFIG_PATH = "./src/config/";
+const DEFAULT_PREFERENCES = CONFIG_PATH + "default/preferences.json";
+const DEFAULT_DATA = CONFIG_PATH + "default/data.json";
+
+const CUSTOM_PREFERENCES = CONFIG_PATH + "preferences.json";
+const CUSTOM_DATA = CONFIG_PATH + "data.json";
+
+getConfig(CUSTOM_PREFERENCES, CUSTOM_DATA);
+
+async function loadDefaultJson() { // deprecated
+  /* $.getJSON("./src/config/default/data.json", async function (data) {
     $.getJSON(
       "./src/config/default/preferences.json",
       async function (preferences) {
@@ -476,7 +586,9 @@ async function loadDefaultJson() {
         await loadTemplate({ ...data, ...preferences }, true);
       },
     );
-  });
+  }); */
+
+  await loadTemplate({ ...data, ...preferences }, true);
 }
 
 async function loadTemplate(data, isDefaultTemplate) {
@@ -523,16 +635,17 @@ async function loadTemplate(data, isDefaultTemplate) {
     app.addLayers();
 
     //if charts is active in menu.json
-    if (loadCharts) {
+    if (loadCharts && !app.dependencies.d3) {
       $.getScript("https://d3js.org/d3.v5.min.js");
       $.getScript("src/js/components/charts/charts.js");
       $("head").append(
         '<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">',
       );
+      app.dependencies.d3 = true;
     }
 
     //if searchbar is active in menu.json
-    if (loadSearchbar) {
+    if (loadSearchbar && !app.dependencies.searchbar) {
       $.getScript("src/js/components/searchbar/searchbar.js").done(function () {
         var searchBar_ui = new Searchbar_UI();
         searchBar_ui.create_sarchbar();
@@ -540,11 +653,15 @@ async function loadTemplate(data, isDefaultTemplate) {
       $("head").append(
         '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">',
       );
+      app.dependencies.searchbar = true;
     }
 
     //Load dynamic mapa.js
     app.template_id = template;
-    $.getScript(`src/js/map/map.js`, (res) => {});
+    if (!app.dependencies.map) {
+      $.getScript(`src/js/map/map.js`, (res) => { });
+      app.dependencies.map = true;
+    }
 
     template = "templates/" + template + "/main.html";
 
@@ -643,7 +760,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     }
 
     //load elevationProfile
-    if (loadElevationProfile) {
+    if (loadElevationProfile && !app.dependencies.highcharts) {
       $.getScript("https://code.highcharts.com/highcharts.js").done(() => {
         $.getScript("https://code.highcharts.com/highcharts-more.js");
         $.getScript("https://code.highcharts.com/modules/windbarb.js");
@@ -652,6 +769,7 @@ async function loadTemplate(data, isDefaultTemplate) {
         $.getScript("https://code.highcharts.com/modules/timeline.js");
         $.getScript("src/js/plugins/highcharts.theme.js");
       });
+      app.dependencies.highcharts = true;
 
       // TODO: replace script loads by ES modules architecture
       $.getScript("src/js/components/elevation-profile/elevation-profile.js");
