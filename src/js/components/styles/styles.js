@@ -25,7 +25,7 @@ class StylesUI {
     background-color: ${app.theme.menuBackground};
     }
     .panel-default > .panel-heading {
-      background-color: ${app.theme.menuBackground} !important;
+      background-color: ${app.theme.headerBackground} !important;
       ${app.theme.textMenuStyle}
     }
     .featureInfo h4{
