@@ -736,7 +736,7 @@ class LayersInfoWMS extends LayersInfo {
         const items = Array.from(capaInfoList)
           .filter((layer) => {
             const iName = layer.querySelector("Name").textContent;
-            return thisObj.isAllowebLayer(iName);
+            return thisObj.isAllowedLayer(iName);
           })
           .map((layer, index) => {
             try {
@@ -945,7 +945,7 @@ class LayersInfoWMS extends LayersInfo {
         capas_info.each(function (index, b) {
           var i = $(this);
           var iName = $("name", i).html();
-          if (thisObj.isAllowebLayer(iName)) {
+          if (thisObj.isAllowedLayer(iName)) {
             var iTitle = $("title", i).html();
             iTitle = thisObj.formatLayerTitle(iName, iTitle);
             var iAbstract = $("abstract", i).html();
@@ -1317,7 +1317,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
         var i = $(this);
 
         var iName = $("ows\\:identifier", i).html();
-        if (thisObj.isAllowebLayer(iName)) {
+        if (thisObj.isAllowedLayer(iName)) {
           var iTitle = $("ows\\:title", i).html();
           iTitle = thisObj.formatLayerTitle(iName, iTitle);
           var iAbstract = $("ows\\:abstract", i).html();
