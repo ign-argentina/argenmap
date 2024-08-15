@@ -544,7 +544,7 @@ async function getConfig(preferencesURL, dataURL) {
   try {
     const preferences = await getPreferences(preferencesURL);
     const data = await getData(dataURL);
-    await loadTemplate({ ...data, ...preferences }, true);
+    await loadTemplate({ ...data, ...preferences }, false);
   } catch (error) {
     console.log(error);
     // loadDefaultJson();
