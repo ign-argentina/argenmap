@@ -29,14 +29,14 @@ class StylesUI {
       ${app.theme.textMenuStyle}
     }
     .featureInfo h4{
-      border-bottom:3px solid ${app.theme.menuBackground};
+      border-bottom:3px solid ${app.theme.headerBackground};
       margin:2em;
     }
     .featuresGroup {
-      border-bottom: 2px solid ${app.theme.menuBackground};
+      border-bottom: 2px solid ${app.theme.headerBackground};
     }
     .individualFeature {
-      border-bottom: 1px dashed ${app.theme.menuBackground};
+      border-bottom: 1px dashed ${app.theme.headerBackground};
     }
     .nav-tabs > li.active > a {
       background-color: ${app.theme.activeLayer} !important;
@@ -45,13 +45,13 @@ class StylesUI {
       background-color: ${app.theme.activeLayer} !important;
     }
     .featureInfo h4 {
-    border-bottom: 3px solid ${app.theme.menuBackground};
+    border-bottom: 3px solid ${app.theme.headerBackground};
     }
     .featuresGroup {
-    border-bottom: 2px solid ${app.theme.menuBackground};
+    border-bottom: 2px solid ${app.theme.headerBackground};
     }
     .individualFeature {
-    border-bottom: 1px dashed ${app.theme.menuBackground};
+    border-bottom: 1px dashed ${app.theme.headerBackground};
     }
     .active-layers-counter {
       background: ${app.theme.activeLayer} !important;

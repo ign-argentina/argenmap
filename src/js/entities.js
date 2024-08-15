@@ -701,201 +701,161 @@ class LayersInfoWMS extends LayersInfo {
   }
 
   /**
-   * Parses geoserver capabilities and creates a menu.
-   * @param {Object} _gestorMenu - The menu manager.
-   */
-  _parseRequest(_gestorMenu) {
-    const impresorGroup = this.itemGroupPrinter;
+ * Parses the request to fetch and process WMS capabilities,
+ * creating menu items based on the available layers.
+ * 
+ * @param {Object} gestorMenu - The menu manager object responsible for handling layers.
+ */
+  _parseRequest(gestorMenu) {
+    const { itemGroupPrinter: impresorGroup, tab, host, service, version, type, icons, section, weight, short_abstract } = this;
     const impresorItem = new ImpresorItemHTML();
 
-    const thisObj = this;
+    // Default listType to null if not provided
+    const listType = tab.listType || null;
 
-    // Determine the listType, defaulting to null if not provided
-    let ilistType = this.tab.listType || null;
+    // Construct the URL for fetching WMS capabilities
+    const serviceParams = `?service=${service}&version=${version}&request=GetCapabilities`;
+    const hostUrl = `${this.getHostOWS()}${serviceParams}`;
 
-    // Construct the URL for fetching capabilities
-    const serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
-    const host = thisObj.getHostOWS() + serviceParams;
-
-    fetch(host)
-      .then((response) => response.text())
-      .then((responseText) => {
+    fetch(hostUrl)
+      .then(response => response.text())
+      .then(responseText => {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(responseText, "text/xml");
 
         // Extract metadata from capabilities XML
         const capability = xmlDoc.querySelector("Capability");
-        const keyword = xmlDoc.querySelector("Keyword").textContent;
-        const abstract = xmlDoc.querySelectorAll("Abstract").textContent;
+        const keyword = xmlDoc.querySelector("Keyword")?.textContent || '';
+        const abstract = xmlDoc.querySelector("Abstract")?.textContent || '';
 
-        // Extract layer information from capabilities XML
-        const capaLyrList = capability.querySelector("Layer");
-        const capaInfoList = capaLyrList.querySelectorAll("Layer");
-
-        // Process each layer and create menu items
-        const items = Array.from(capaInfoList)
-          .filter((layer) => {
-            const iName = layer.querySelector("Name").textContent;
-            return thisObj.isAllowedLayer(iName);
-          })
-          .map((layer, index) => {
-            try {
-              const iName = layer.querySelector("Name").textContent;
-              const iTitle = layer.querySelector("Title").textContent;
-              const iAbstract = layer.querySelectorAll("Abstract")[0].textContent ?? ""; // returns layer's abstract
-
-              // Extract keywords
-              const keywordsHTMLList = layer.querySelectorAll(
-                "KeywordList keyword",
-              );
-              const keywords = Array.from(keywordsHTMLList).map(
-                (keyword) => keyword.textContent,
-              );
-
-              // Extract bounding box information
-              const iBoundingBox = layer.querySelector("BoundingBox");
-              const iSrs = iBoundingBox
-                ? iBoundingBox.getAttribute("srs") ||
-                iBoundingBox.getAttribute("crs")
-                : null;
-              const iMaxY = iBoundingBox
-                ? iBoundingBox.getAttribute("maxy")
-                : null;
-              const iMinY = iBoundingBox
-                ? iBoundingBox.getAttribute("miny")
-                : null;
-              const iMinX = iBoundingBox
-                ? iBoundingBox.getAttribute("minx")
-                : null;
-              const iMaxX = iBoundingBox
-                ? iBoundingBox.getAttribute("maxx")
-                : null;
-
-              // Extract legend URL
-              const ilegendURL = thisObj.icons ? thisObj.icons[iName] : null;
-
-              // Create appropriate capa object based on type
-              const capa =
-                thisObj.type === "wmslayer_mapserver"
-                  ? new CapaMapserver(
-                    iName,
-                    iTitle,
-                    iSrs,
-                    thisObj.host,
-                    thisObj.service,
-                    thisObj.version,
-                    thisObj.feature_info_format,
-                    iMinX,
-                    iMaxX,
-                    iMinY,
-                    iMaxY,
-                  )
-                  : new Capa(
-                    iName,
-                    iTitle,
-                    iSrs,
-                    thisObj.host,
-                    thisObj.service,
-                    thisObj.version,
-                    thisObj.feature_info_format,
-                    keywords,
-                    iMinX,
-                    iMaxX,
-                    iMinY,
-                    iMaxY,
-                    null,
-                    ilegendURL,
-                  );
-
-              // Create menu item
-              const item = new Item(
-                capa.nombre,
-                thisObj.section + index,
-                keywords,
-                iAbstract,
-                capa.titulo,
-                capa,
-                thisObj.getCallback(),
-                ilistType,
-              );
-              item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
-              item.setImpresor(impresorItem);
-              gestorMenu.setAvailableLayer(iName);
-              return item;
-            } catch (err) {
-              console.error(
-                `Error processing layer '${layer.querySelector("Name").textContent}':`,
-                err,
-              );
-              return null; // Return null for failed items
+        // Extract layer information and filter layers
+        const capaInfoList = Array.from(capability.querySelectorAll("Layer > Layer"))
+          .filter(layer => {
+            const hasNestedLayers = layer.querySelectorAll("Layer").length > 0;
+            if (hasNestedLayers) {
+              return false;
             }
+            const iName = layer.querySelector("Name")?.textContent;
+            return this.isAllowedLayer(iName);
           })
-          .filter((item) => item !== null);
+          .map((layer, index) => this._createMenuItem(layer, index, impresorItem, listType))
+          .filter(item => item !== null);
 
-        let groupAux;
-        try {
-          // Create item group
-          groupAux = new ItemGroup(
-            thisObj.tab,
-            thisObj.name,
-            thisObj.section,
-            thisObj.weight,
-            keyword,
-            abstract,
-            thisObj.short_abstract,
-          );
-          groupAux.setImpresor(impresorGroup);
-          groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-          items.forEach((item) => groupAux.setItem(item));
-        } catch (err) {
-          console.error("Error creating item group", err);
-          if (err.name == "ReferenceError") {
-            groupAux = new ItemGroup(
-              thisObj.tab,
-              thisObj.name,
-              thisObj.section,
-              thisObj.weight,
-              "",
-              "",
-              thisObj.short_abstract,
-            );
-            groupAux.setImpresor(impresorGroup);
-            groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-            items.forEach((item) => groupAux.setItem(item));
-          }
-        }
-
-        // Add item group to menu manager
-        _gestorMenu.addItemGroup(groupAux);
-
-        // Handle menu printing based on initialization mode
-        if (_gestorMenu.getLazyInitialization() === true) {
-          _gestorMenu.removeLazyInitLayerInfoCounter(
-            ItemGroupPrefix + thisObj.section,
-          );
-          if (
-            _gestorMenu.finishLazyInitLayerInfo(
-              ItemGroupPrefix + thisObj.section,
-            )
-          ) {
-            // If all requested layers have been loaded
-            _gestorMenu.printOnlySection(thisObj.section);
-            gestorMenu.allLayersAreLoaded = true;
-          }
-        } else {
-          _gestorMenu.addLayerInfoCounter();
-          if (_gestorMenu.finishLayerInfo()) {
-            // If all requested layers have been loaded
-            _gestorMenu.printMenu();
-            gestorMenu.allLayersAreLoaded = true;
-          }
-        }
-        gestorMenu.printMenu();
+        this._createAndAddItemGroup(gestorMenu, impresorGroup, keyword, abstract, capaInfoList);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error loading capabilities:", error);
       });
   }
+
+  /**
+  * Creates a menu item from the layer information.
+  * 
+  * @param {Element} layer - The layer XML element.
+  * @param {number} index - The index of the layer in the list.
+  * @param {Object} impresorItem - The printer item object.
+  * @param {string|null} listType - The type of the list.
+  * @returns {Item|null} The created menu item or null if an error occurs.
+  */
+  _createMenuItem(layer, index, impresorItem, listType) {
+    try {
+      const iName = layer.querySelector("Name")?.textContent || '';
+      const iTitle = layer.querySelector("Title")?.textContent || '';
+      const iAbstract = layer.querySelector("Abstract")?.textContent || ''; // returns layer's abstract for tooltips
+
+      // Extract keywords
+      const keywords = Array.from(layer.querySelectorAll("KeywordList > keyword")).map(keyword => keyword.textContent);
+
+      // Extract bounding box information
+      const boundingBox = layer.querySelector("BoundingBox");
+      const iSrs = boundingBox?.getAttribute("srs") || boundingBox?.getAttribute("crs") || null;
+      const iMaxY = boundingBox?.getAttribute("maxy") || null;
+      const iMinY = boundingBox?.getAttribute("miny") || null;
+      const iMinX = boundingBox?.getAttribute("minx") || null;
+      const iMaxX = boundingBox?.getAttribute("maxx") || null;
+
+      // Extract legend URL
+      const legendURL = this.icons ? this.icons[iName] : null;
+
+      // Create appropriate capa object based on type
+      const capa = this._createCapaObject(iName, iTitle, iSrs, iMinX, iMaxX, iMinY, iMaxY, keywords, legendURL);
+
+      // Create and return menu item
+      const item = new Item(capa.nombre, `${this.section}${index}`, keywords, iAbstract, capa.titulo, capa, this.getCallback(), listType);
+      item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
+      item.setImpresor(impresorItem);
+      gestorMenu.setAvailableLayer(iName);
+      return item;
+    } catch (err) {
+      console.error(`Error processing layer '${layer.querySelector("Name")?.textContent || ''}':`, err);
+      // Return null for failed items
+      return null;
+    }
+  }
+
+  /**
+  * Creates a Capa or CapaMapserver object based on the provided information.
+  * 
+  * @param {string} name - The name of the layer.
+  * @param {string} title - The title of the layer.
+  * @param {string|null} srs - The spatial reference system.
+  * @param {string|null} minX - The minimum X coordinate.
+  * @param {string|null} maxX - The maximum X coordinate.
+  * @param {string|null} minY - The minimum Y coordinate.
+  * @param {string|null} maxY - The maximum Y coordinate.
+  * @param {Array<string>} keywords - The keywords associated with the layer.
+  * @param {string|null} legendURL - The URL of the legend.
+  * @returns {Capa|CapaMapserver} The created capa object.
+  */
+  _createCapaObject(name, title, srs, minX, maxX, minY, maxY, keywords, legendURL) {
+    if (this.type === "wmslayer_mapserver") {
+      return new CapaMapserver(name, title, srs, this.host, this.service, this.version, this.feature_info_format, minX, maxX, minY, maxY);
+    } else {
+      return new Capa(name, title, srs, this.host, this.service, this.version, this.feature_info_format, keywords, minX, maxX, minY, maxY, null, legendURL);
+    }
+  }
+
+  /**
+  * Creates an item group and adds it to the menu manager.
+  * 
+  * @param {Object} gestorMenu - The menu manager object.
+  * @param {Object} impresorGroup - The printer group object.
+  * @param {string} keyword - The keyword for the group.
+  * @param {string} abstract - The abstract for the group.
+  * @param {Array<Item>} items - The list of menu items.
+  */
+  _createAndAddItemGroup(gestorMenu, impresorGroup, keyword, abstract, items) {
+    let groupAux;
+    try {
+      groupAux = new ItemGroup(this.tab, this.name, this.section, this.weight, keyword, abstract, this.short_abstract);
+    } catch (err) {
+      console.error("Error creating item group", err);
+      groupAux = new ItemGroup(this.tab, this.name, this.section, this.weight, "", "", this.short_abstract);
+    }
+    groupAux.setImpresor(impresorGroup);
+    groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+    items.forEach(item => groupAux.setItem(item));
+    // Add item group to menu manager
+    gestorMenu.addItemGroup(groupAux);
+
+    // Handle menu printing based on initialization mode
+    if (gestorMenu.getLazyInitialization()) {
+      gestorMenu.removeLazyInitLayerInfoCounter(`${ItemGroupPrefix}${this.section}`);
+      if (gestorMenu.finishLazyInitLayerInfo(`${ItemGroupPrefix}${this.section}`)) {
+        // If all requested layers have been loaded
+        gestorMenu.printOnlySection(this.section);
+        gestorMenu.allLayersAreLoaded = true;
+      }
+    } else {
+      gestorMenu.addLayerInfoCounter();
+      if (gestorMenu.finishLayerInfo()) {
+        // If all requested layers have been loaded
+        gestorMenu.printMenu();
+        gestorMenu.allLayersAreLoaded = true;
+      }
+    }
+  }
+
 
   _parseRequest_without_print(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
