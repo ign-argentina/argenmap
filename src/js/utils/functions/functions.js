@@ -449,6 +449,64 @@ function parseFeatureInfoJSON(info, idTxt, title) {
   return "";
 }
 
+/**
+ * Parses FeatureInfo XML and generates HTML to display in a popup.
+ * 
+ * @param {string} info - The XML string containing FeatureInfo.
+ * @param {string} idTxt - The unique identifier for the popup element.
+ * @param {string} title - The title to display in the popup.
+ * @returns {string} - The generated HTML string for the popup.
+ */
+function parseFeatureInfoXML(info, idTxt, title) {
+  const xmlDoc = new DOMParser().parseFromString(info, "text/xml");
+
+  // Check if the root element is 'FeatureInfoResponse'
+  if (xmlDoc.documentElement.nodeName !== "FeatureInfoResponse") {
+    return "";
+  }
+  const fields = xmlDoc.getElementsByTagName("FIELDS");
+  if (fields.length === 0) {
+    return "";
+  }
+
+  // Initialize the HTML structure for the popup
+  let infoAux = `
+      <div class="featureInfo" id="featureInfoPopup${idTxt}">
+          <div class="featureGroup">
+              <div class="individualFeature">
+                  <h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">${title}</h4>
+                  <ul>
+  `;
+
+  // Iterate over each <FIELDS> element
+  for (let i = 0; i < fields.length; i++) {
+    const attributes = fields[i].attributes;
+
+    // Iterate over each attribute in the <FIELDS> element
+    for (let j = 0; j < attributes.length; j++) {
+      const { name: attrName, value: attrValue } = attributes[j];
+
+      // Format the attribute name (replace underscores with spaces and capitalize words)
+      const formattedName = ucwords(attrName.replace(/_/g, " "));
+
+      infoAux += `
+              <li>
+                  <b>${formattedName}:</b>
+                  <span>${attrValue ?? ''}</span>
+              </li>
+          `;
+    }
+  }
+  infoAux += `
+                  </ul>
+              </div>
+          </div>
+      </div>
+  `;
+
+  return infoAux;
+}
+
 function createWmsLayer(objLayer) {
   let layer, layerSelected, lyrHost;
 
@@ -480,14 +538,24 @@ function createWmsLayer(objLayer) {
       }
 
       if (!loadTableAsPopUp) {
-        if (this.options.INFO_FORMAT == "text/html") {
-          var infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
-        } else {
-          var infoParsed = parseFeatureInfoJSON(
-            info,
-            popupInfo.length,
-            this.options.title,
-          );
+        let infoParsed;
+        switch (this.options.INFO_FORMAT) {
+          case "application/json":
+            if (info.trim().startsWith('{') || info.trim().startsWith('[')) {
+              infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
+            } else if (info.trim().startsWith('<')) {
+              infoParsed = parseFeatureInfoXML(info, popupInfo.length, this.options.title);
+            } else {
+              console.warn('Formato de datos no reconocido');
+              infoParsed = '';
+            }
+            break;
+          case "text/html":
+            infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
+            break;
+          default:
+            console.warn("Unsupported INFO_FORMAT: " + this.options.INFO_FORMAT);
+            infoParsed = "";
         }
         if (infoParsed === "LayerNotQueryable") {
           //if layer is not queryable
@@ -516,7 +584,7 @@ function createWmsLayer(objLayer) {
   });
   var wmsSource = new MySource(lyrHost, {
     transparent: true,
-    version: "1.3.0",
+    version: layerSelected.version,
     tiled: true,
     maxZoom: 21,
     title: layerSelected.titulo,
