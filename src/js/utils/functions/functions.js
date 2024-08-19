@@ -138,7 +138,7 @@ function getDarkerColorTone(hex, lum) {
 function showImageOnError(image) {
   image.onerror = "";
   image.src = LEGEND_ERROR ?? ERROR_IMG;
-  image.title = "Image legend not found! :P";
+  image.title = "Image legend not found";
   return true;
 }
 
