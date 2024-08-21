@@ -64,7 +64,12 @@ class AboutUs {
       {
         name: "Funciones",
         id: "load-functions",
-      }/* ,
+      },
+      {
+        name: "Shorcuts",
+        id: "load-shortcuts",
+      }
+      /* ,
       {
         name: 'Colaboradores',
         id: 'load-colaboradores',
