@@ -1,4 +1,6 @@
 // moqued shortcuts json
+
+console.log("shortcuts");
 const shortcuts = {
     shortcuts: [
         {
