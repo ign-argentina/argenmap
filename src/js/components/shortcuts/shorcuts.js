@@ -1,27 +1,31 @@
 // moqued shortcuts json
 const shortcuts = {
     shortcuts: [
-      {
-        keys: ["ctrl", "s"],
-        action: "guardarDatos"
-      },
-      {
-        keys: ["ctrl", "o"],
-        action: "abrirArchivo"
-      },
-      {
-        keys: ["alt", "p"],
-        action: "imprimirDocumento"
-      }
+        {
+            keys: ["ctrl", "s"],
+            action: "addLayer"
+        },
+        {
+            keys: ["ctrl", "o"],
+            action: "goToDefaultZoom"
+        },
+        {
+            keys: ["alt", "p"],
+            action: "toggleBaseLayersMenu"
+        }
     ]
-  };
-  
+};
+
+// const preferences =  app.preferences;
+
+// console.log(preferences);
+
 
 
 function configurarShortcuts(shortcuts) {
 
     shortcuts.shortcuts.forEach(shortcut => {
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function (event) {
             const keysPressed = [
                 event.ctrlKey ? 'ctrl' : null,
                 event.altKey ? 'alt' : null,
@@ -40,14 +44,23 @@ function configurarShortcuts(shortcuts) {
 
 function ejecutarAccion(action) {
     switch (action) {
-        case 'guardarDatos':
-            guardarDatos();
+        case 'addLayer':
+            addLayer();
             break;
-        case 'abrirArchivo':
-            abrirArchivo();
+        case 'goToDefaultZoom':
+            goToDefaultZoom();
             break;
-        case 'imprimirDocumento':
-            imprimirDocumento();
+        case 'toggleAbout':
+            toggleAbout();
+            break;
+        case 'toggleBaseLayersMenu':
+            toggleBaseLayersMenu();
+            break;
+        case 'toggleHelp':
+            toggleHelp();
+            break;
+        case 'toggleLayersMenu':
+            toggleLayersMenu();
             break;
         default:
             console.warn(`Acción no reconocida: ${action}`);
@@ -55,16 +68,21 @@ function ejecutarAccion(action) {
 }
 
 // Funciones de ejemplo
-function guardarDatos() {
-    console.log('Datos guardados');
+function addLayer() {
+    console.log('Se agrega un nuevo capa');
 }
-
-function abrirArchivo() {
-    console.log('Archivo abierto');
+function goToDefaultZoom() {
+    console.log('Se va a la zoom predeterminada');
 }
-
-function imprimirDocumento() {
-    console.log('Documento impreso');
+function toggleAbout() {
+    console.log('Se abre la información del programa');
 }
-
-configurarShortcuts(shortcuts)
+function toggleBaseLayersMenu() {
+    console.log('Se abre el menú de capas base');
+}
+function toggleHelp() {
+    console.log('Se abre la ayuda');
+}
+function toggleLayersMenu() {
+    console.log('Se abre el menú de capas');
+}
