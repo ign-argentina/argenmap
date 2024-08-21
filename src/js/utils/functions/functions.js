@@ -1925,6 +1925,7 @@ document.addEventListener("DOMContentLoaded", function () {
         targetSection.style.display = "none";
       } else {
         // Oculta todas las secciones antes de mostrar la deseada
+        
         buttons.forEach(function (otherButton) {
           var otherTargetId = otherButton.getAttribute("data-target");
           var otherTargetSection = document.getElementById(otherTargetId);
