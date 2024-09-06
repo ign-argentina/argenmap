@@ -14,7 +14,6 @@ Esta sección explica cómo se pueden configurar las capas, los mapas base, el a
 
 
 ## Mapas base y capas
----
 
 El archivo `data.json` se compone de bloques llamados **items**, el primero agrupa los mapas base y los siguientes las secciones desplegables que agrupan capas.
 
@@ -23,7 +22,7 @@ El archivo `data.json` se compone de bloques llamados **items**, el primero agru
 
 ### Estructura del archivo data.json 
 
-*comentarios después de cada "//"*
+*comentarios después de cada `"//"`*
 <!-- </details>
 
 <summary>### Estructura del archivo data.json</summary> -->
@@ -64,12 +63,12 @@ El archivo `data.json` se compone de bloques llamados **items**, el primero agru
 
 ### Definir un mapa base
 
-Tomando como referencia la estructura anterior, dentro del atributo "capas" del primer bloque, agregar uno nuevo por cada mapa base. 
-
 > [!TIP]
-> Si el mapa base es un servicio TMS, el mapa podría quedar con las teselas desordenadas. Para resolverlo se puede agregar un "-" al parámetro y o cambiar el orden de los demás parámetros. 
+> Si el mapa base es un servicio TMS se puede agregar un "-" al parámetro "y" quedando `{-y}` o invertir el orden de los demás parámetros para evitar que el mapa quede con las teselas desordenadas ya que TMS invierte el valor de `{y}` con respecto a los servicios XYZ.
 > 
 > Consultar la documentación del servicio a agregar.
+
+Tomando como referencia la estructura descrita en el apartado anterior, dentro del atributo "capas" del primer bloque, agregar uno nuevo bloque por cada mapa base como se muestra a continuación.
 
 **Ejemplo de un bloque de mapa base:**
 
@@ -94,14 +93,18 @@ Tomando como referencia la estructura anterior, dentro del atributo "capas" del 
 }
 ```
 
-### Definir servicios WMS o WMTS (fuentes de capas)
+### Definir servicios WMS o WMTS
 
 Dentro de "items", después del primer bloque que define los mapas base se pueden definir servicios de capas, cada uno dentro de un bloque.
 
 > [!NOTE]
-> Cada bloque sirve para que la aplicación solicite el documento de capacidades al servicio WMS / WMTS, ese archivo contiene un listado de las capas que publica. Con esa información la aplicación genera de forma automática en el panel de capas o menú lateral una sección colapsable que contiene las capas de ese servicio como se ve en la siguiente imagen.
+> Cada bloque sirve para que la aplicación solicite al servicio WMS / WMTS el listado de las capas que publica, ese listado se conoce como *documento de capacidades* o simplemente *capabilities*. 
+> 
+> Con esa información la aplicación genera en el panel o menú de capas una sección colapsable o "carpeta" que contiene las capas de ese servicio como se ve en la siguiente imagen.
 
-![secciones desplegables en el panel de capas](img/secciones.jpeg)
+**Ejemplo de carpeta "Infraestrucutra Social"**
+
+![secciones desplegables en el panel de capas](img/secciones.png)
 
 **Ejemplo del bloque WMS**
 
