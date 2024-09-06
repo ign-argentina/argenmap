@@ -15,10 +15,10 @@
 .icon_close_mf {
   color: silver;
   font-size: 16px !important;
-  cursor: pointer
+  cursor: pointer;
 }
 .icon_close_mf:hover {
-  color: #73CFF2;
+  color: #73cff2;
 }
 .modal-file-delete {
   top: 25%;
@@ -30,7 +30,9 @@
   border-radius: 8px;
   -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow:
+    0 4px 10px 0 rgba(0, 0, 0, 0.2),
+    0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .modal-file-delete-body {
   font-family: Poppins, sans-serif;
@@ -65,7 +67,7 @@
   user-select: none;
   margin-bottom: -1px;
 }
-.active>div>a {
+.active > div > a {
   color: white;
 }
 .file-img {
@@ -156,7 +158,9 @@
   margin-bottom: 10px;
   -moz-box-shadow: inset 0 0 10px #000000;
   -webkit-box-shadow: inset 0 0 10px #000000;
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow:
+    0 4px 10px 0 rgba(0, 0, 0, 0.2),
+    0 4px 20px 0 rgba(0, 0, 0, 0.19);
 }
 #btnclose-icon-modalfile {
   text-align: right;
@@ -170,10 +174,8 @@
 .icon-modalfile {
   display: inline-block;
 }
-
 /* Import Google font - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 .wrapper {
   display: flex;
   align-items: center;
@@ -189,7 +191,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  font-family: "Poppins", sans-serif
+  font-family: "Poppins", sans-serif;
 }
 #logo_up {
   font-size: 50px;
@@ -204,15 +206,16 @@
   font-size: 20px;
 }
 .fa-times:hover {
-  color: #73CFF2;
+  color: #73cff2;
 }
 .upload p {
   margin-top: 15px;
   font-size: 16px;
+  color: var(--secondary-color);
 }
 section .row {
   margin: 0px;
-  background: #EBF8FD;
+  background: #ebf8fd;
   list-style: none;
   padding: 10px 10px;
   border-radius: 5px;
@@ -221,7 +224,7 @@ section .row {
   justify-content: space-between;
 }
 section .row i {
-  color: #37bbed;
+  color: var(--secondary-color);
 }
 section .details span {
   font-size: 14px;
@@ -246,12 +249,13 @@ section .details span {
 .content .progress-bar .progress {
   height: 100%;
   width: 0%;
-  background: #37bbed;
+  background: var(--secondary-color);
   border-radius: inherit;
 }
 .uploaded-area {
   width: 90%;
-
+  box-shadow: 1px 1px 10px #ccc;
+  border-radius: 6px;
   overflow-y: auto;
 }
 .uploaded-area.onprogress {
@@ -273,27 +277,32 @@ section .details span {
 }
 .upload {
   width: 100%;
-  color: #37bbed !important;
+  color: var(--secondary-color);
   cursor: pointer;
 }
 .upload:hover {
-  color: #73CFF2;
+  color: var(--secondary-color);
   cursor: pointer;
 }
 #uploaded-area::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 #uploaded-area::-webkit-scrollbar {
   width: 10px;
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 #uploaded-area::-webkit-scrollbar-thumb {
-  background-color: #37bbed;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%,
-      color-stop(.5, rgba(255, 255, 255, .2)),
-      color-stop(.5, transparent), to(transparent));
+  background-color: var(--primary-color);
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    color-stop(0.5, rgba(255, 255, 255, 0.2)),
+    color-stop(0.5, transparent),
+    to(transparent)
+  );
 }
 .active-tab-upload {
   color: #37bbed;
@@ -322,6 +331,7 @@ section .details span {
   justify-content: space-between;
   margin-top: 5px;
   margin-bottom: 15px;
+  color: var(--menu-text-color);
 }
 .btn-info {
   color: #fff;
@@ -333,7 +343,7 @@ section .details span {
   filter: alpha(opacity=65);
   -webkit-box-shadow: none;
   box-shadow: none;
-  opacity: .65;
+  opacity: 0.65;
 }
 @media (max-width: 768px) {
   #modalOpenFile {

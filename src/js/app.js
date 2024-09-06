@@ -13,6 +13,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
     profile: "default",
     profiles: {},
     layers: {},
+    dependencies: {},
     layerNameByDomId: {},
     templates: ["ign-geoportal-basic"],
 
@@ -66,6 +67,28 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         });
       }
 
+      //Temporal
+      if (app.hasOwnProperty("addLayer")) {
+        setAddLayer(app.addLayer.isActive);
+      }
+      if (app.hasOwnProperty("queryLayer")) {
+        setQueryLayer(app.queryLayer.isActive);
+      }
+      //Temporal
+
+      if (app.hasOwnProperty("tools")) {
+        if (app.tools.hasOwnProperty("addLayer")) {
+          setAddLayer(app.tools.addLayer.isActive);
+        }
+        if (app.tools.hasOwnProperty("queryLayer")) {
+          setQueryLayer(app.tools.queryLayer.isActive);
+        }
+      }
+
+      if (app.hasOwnProperty("configToolMain")) {
+        setConfigToolMain(app.configToolMain.isActive);
+      }
+
       await this._startModules();
     },
 
@@ -84,7 +107,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       } catch (error) {
         if (app.profiles == undefined) {
           console.warn(
-            "Profiles attribute isn't defined in configuration file."
+            "Profiles attribute isn't defined in configuration file.",
           );
         } else {
           console.error(error);
@@ -95,7 +118,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
     _loadScript: function (
       scriptUrl,
       type = "application/javascript",
-      inBody = true
+      inBody = true,
     ) {
       const script = document.createElement("script");
       script.src = scriptUrl;
@@ -146,7 +169,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
         false,
         false,
         0,
-        null
+        null,
       );
       a.dispatchEvent(e);
     },
@@ -168,10 +191,10 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               "",
               "",
               item.short_abstract,
-              null
+              null,
             );
           groupAux.setImpresor(impresorBaseMap);
-          groupAux.setObjDom(".basemap-selector");
+          groupAux.setObjDom("#basemap-selector");
 
           for (let key2 in item.capas) {
             gestorMenu.setAvailableBaseLayer(item.capas[key2].nombre);
@@ -188,7 +211,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               null,
               null,
               null,
-              item.capas[key2].attribution
+              item.capas[key2].attribution,
             );
             let basemap = new Item(
               capa.nombre,
@@ -197,7 +220,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
               capa.attribution,
               capa.titulo,
               capa,
-              null
+              null,
             );
             basemap.setLegendImg(item.capas[key2].legendImg); // basemap thumbnail, not a legend
             item.capas[key2].legend
@@ -221,7 +244,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
       });
       selectedBasemap = setBasemapToLoad(
         urlInteraction.layers,
-        gestorMenu.availableBaseLayers
+        gestorMenu.availableBaseLayers,
       );
     },
 
@@ -257,7 +280,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           } else {
             // Process item if it's in profile
             matchItemProfile = app.profiles[app.profile].data.find(
-              (e) => e == item.class
+              (e) => e == item.class,
             );
           }
 
@@ -292,7 +315,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
                   item.type,
                   item.icons,
                   customizedLayers,
-                  impresorGroupTemp
+                  impresorGroupTemp,
                 );
                 if (item.allowed_layers) {
                   wmsLayerInfo.setAllowebLayers(item.allowed_layers);
@@ -324,7 +347,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
                   item.type,
                   item.icons,
                   customizedLayers,
-                  impresorGroupTemp
+                  impresorGroupTemp,
                 );
                 if (item.allowed_layers) {
                   wmtsLayerInfo.setAllowebLayers(item.allowed_layers);
@@ -362,7 +385,7 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
           }
         } else {
           let message = `Profile '${profile}' missing or not present in profiles property. Available profiles: ${Object.keys(
-            app.profiles
+            app.profiles,
           )}`;
           console.warn(message);
         }
@@ -430,6 +453,105 @@ let getGeoserverCounter = 0,
   templateFeatureInfoFieldException = [],
   gestorMenu = new GestorMenu();
 
+/**
+ * Utils functions
+ */
+
+function isURL(urlString) {
+  try {
+    new URL(urlString);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function checkFileType(filePath, extension) {
+  // check file extension using regex
+}
+
+/**
+ * This reads the configuration from two JSON files (app parameters and data references).
+ * These files could be customized, if not the function parses and loads
+ * default configuration files which are referenced in constats for such usage.
+ */
+
+async function getJson(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      let errorMsg = `${response.url.split("/").at(-1)} ${response.statusText.toLowerCase()}`
+      new UserMessage(errorMsg, true, "warning");
+      // throw new Error(`Response status: ${response.statusText}`);
+    }
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    return error.message;
+  }
+}
+
+async function getPreferences(preferencesURL, load = false) {
+  /**
+   * TODO
+   * check file type, URL and JSON syntax
+   * throw error message in UI if configuration parsing fails
+   * process each object with specialized methods
+   */
+  let preferences = null;
+  if (typeof preferencesURL === "object" && preferencesURL.hasOwnProperty("title")) {
+    preferences = preferencesURL;
+  } else {
+    preferences = await getJson(preferencesURL);
+  }
+  if (typeof preferences !== "object") {
+    preferences = await getJson(DEFAULT_PREFERENCES);
+  }
+  if (load) {
+    loadTemplate(preferences);
+  }
+  return preferences;
+  // loadTemplate(preferences);
+}
+
+async function getData(dataURL, load = false) {
+  // getData("./src/config/ign.data.json", true);
+  /**
+   * TODO
+   * check file type, URL and JSON syntax
+   * throw error message in UI if configuration parsing fails
+   * process each object with specialized methods
+   */
+  let data = null;
+  if (typeof dataURL === "object" && dataURL.hasOwnProperty("items")) {
+    data = dataURL;
+  } else {
+    data = await getJson(dataURL);
+  }
+  if (typeof data !== "object") {
+    data = await getJson(DEFAULT_DATA);
+  }
+  if (load) {
+    loadTemplate(data); // moved into getConfig()
+  }
+  return data;
+}
+
+/**
+ * Read preferences and data configuration at application start.
+ */
+async function getConfig(preferencesURL, dataURL) {
+  try {
+    const preferences = await getPreferences(preferencesURL);
+    const data = await getData(dataURL);
+    await loadTemplate({ ...data, ...preferences }, false);
+  } catch (error) {
+    console.log(error);
+    // loadDefaultJson();
+  }
+}
+
+/*
 $.getJSON("./src/config/data.json", async function (data) {
   $.getJSON("./src/config/preferences.json", async function (preferences) {
     gestorMenu.setLegendImgPath("src/config/styles/images/legends/");
@@ -442,19 +564,31 @@ $.getJSON("./src/config/data.json", async function (data) {
   console.warn("Template not found. Default configuration will be loaded.");
   await loadDefaultJson();
 });
+*/
 
-async function loadDefaultJson() {
-  $.getJSON("./src/config/default/data.json", async function (data) {
+const CONFIG_PATH = "./src/config/";
+const DEFAULT_PREFERENCES = CONFIG_PATH + "default/preferences.json";
+const DEFAULT_DATA = CONFIG_PATH + "default/data.json";
+
+const CUSTOM_PREFERENCES = CONFIG_PATH + "preferences.json";
+const CUSTOM_DATA = CONFIG_PATH + "data.json";
+
+getConfig(CUSTOM_PREFERENCES, CUSTOM_DATA);
+
+async function loadDefaultJson() { // deprecated
+  /* $.getJSON("./src/config/default/data.json", async function (data) {
     $.getJSON(
       "./src/config/default/preferences.json",
       async function (preferences) {
         gestorMenu.setLegendImgPath(
-          "src/config/default/styles/images/legends/"
+          "src/config/default/styles/images/legends/",
         );
         await loadTemplate({ ...data, ...preferences }, true);
-      }
+      },
     );
-  });
+  }); */
+
+  await loadTemplate({ ...data, ...preferences }, true);
 }
 
 async function loadTemplate(data, isDefaultTemplate) {
@@ -501,28 +635,33 @@ async function loadTemplate(data, isDefaultTemplate) {
     app.addLayers();
 
     //if charts is active in menu.json
-    if (loadCharts) {
+    if (loadCharts && !app.dependencies.d3) {
       $.getScript("https://d3js.org/d3.v5.min.js");
       $.getScript("src/js/components/charts/charts.js");
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">',
       );
+      app.dependencies.d3 = true;
     }
 
     //if searchbar is active in menu.json
-    if (loadSearchbar) {
+    if (loadSearchbar && !app.dependencies.searchbar) {
       $.getScript("src/js/components/searchbar/searchbar.js").done(function () {
         var searchBar_ui = new Searchbar_UI();
         searchBar_ui.create_sarchbar();
       });
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">',
       );
+      app.dependencies.searchbar = true;
     }
 
     //Load dynamic mapa.js
     app.template_id = template;
-    $.getScript(`src/js/map/map.js`, (res) => { });
+    if (!app.dependencies.map) {
+      $.getScript(`src/js/map/map.js`, (res) => { });
+      app.dependencies.map = true;
+    }
 
     template = "templates/" + template + "/main.html";
 
@@ -535,19 +674,19 @@ async function loadTemplate(data, isDefaultTemplate) {
           mapa.setView(
             L.latLng(
               urlInteraction.center.latitude,
-              urlInteraction.center.longitude
+              urlInteraction.center.longitude,
             ),
-            urlInteraction.zoom
+            urlInteraction.zoom,
           );
         }
 
-        const zoomLevel = new ZoomLevel(mapa.getZoom());
+        //const zoomLevel = new ZoomLevel(mapa.getZoom());
 
         urlInteraction.zoom = mapa.getZoom();
         mapa.on("zoom", () => {
           if (Number.isInteger(mapa.getZoom())) {
             urlInteraction.zoom = mapa.getZoom();
-            zoomLevel.zoom = mapa.getZoom();
+            //zoomLevel.zoom = mapa.getZoom();
             if (geoProcessingManager) {
               geoProcessingManager.svgZoomStyle(mapa.getZoom());
             }
@@ -561,27 +700,32 @@ async function loadTemplate(data, isDefaultTemplate) {
 
         gestorMenu.loadInitialLayers(urlInteraction);
 
-        const sidebarTool = new SidebarTools();
-        sidebarTool.createComponent();
+        // Default values for showToolbar and showLayerMenu
+        let showToolbar = true;
+        let showLayerMenu = true;
 
-        // const modalgeojson = new IconModalGeojson;
-        // modalgeojson.createComponent();
+        // Check if app.onInit exists and assign values accordingly
+        if (app?.onInit) {
+          showToolbar = app.onInit.showToolbar ?? true;
+          showLayerMenu = app.onInit.showLayerMenu ?? true;
+        }
 
-        // const modalserviceLayers = new IconModalLoadServices;
-        // modalserviceLayers.createComponent();
+        // Initialize toolbar visibility toggler and create components
+        const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
+        toolbarVisibilityToggler.createComponent(showToolbar);
 
-        //setProperStyleToCtrlBtns();
+        //consultar si el navegador es mobile
+        const isMobile = window.matchMedia(
+          "only screen and (max-width: 760px)",
+        ).matches;
 
-        /*      
-                let bm = document.getElementById("collapseBaseMapLayers");
-                bm.addEventListener("dblclick", function () {
-                  event.stopPropagation();
-                });
-                bm.addEventListener("click", function () {
-                  event.stopPropagation();
-                }); 
-        */
+        // Show layer menu if showLayerMenu is true
+        if (showLayerMenu && !isMobile) {
+          document.getElementById("sidebar").style.display = "block";
+        }
 
+        const editableLabel = new EditableLabel();
+        editableLabel.addTo(mapa);
       }
     }, 100);
   });
@@ -590,7 +734,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     //load loginatic
     if (loadLogin) {
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">',
       );
       $.getScript("src/js/components/cookies/cookies.js").done(() => {
         $.getScript("src/js/components/login/loginatic.js").done(function () {
@@ -604,17 +748,19 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     if (mainPopup) {
       $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/main-popup/mainPopup.css">'
+        '<link rel="stylesheet" type="text/css" href="src/js/components/main-popup/mainPopup.css">',
       );
-      $.getScript("src/js/components/main-popup/mainPopup.js").done(function () {
-        mainPopup = new mainPopup();
-        mainPopup.check();
-        mainPopup._addPopupWrapper();
-      });
+      $.getScript("src/js/components/main-popup/mainPopup.js").done(
+        function () {
+          mainPopup = new mainPopup();
+          mainPopup.check();
+          mainPopup._addPopupWrapper();
+        },
+      );
     }
 
     //load elevationProfile
-    if (loadElevationProfile) {
+    if (loadElevationProfile && !app.dependencies.highcharts) {
       $.getScript("https://code.highcharts.com/highcharts.js").done(() => {
         $.getScript("https://code.highcharts.com/highcharts-more.js");
         $.getScript("https://code.highcharts.com/modules/windbarb.js");
@@ -623,6 +769,7 @@ async function loadTemplate(data, isDefaultTemplate) {
         $.getScript("https://code.highcharts.com/modules/timeline.js");
         $.getScript("src/js/plugins/highcharts.theme.js");
       });
+      app.dependencies.highcharts = true;
 
       // TODO: replace script loads by ES modules architecture
       $.getScript("src/js/components/elevation-profile/elevation-profile.js");
@@ -644,7 +791,10 @@ let conaeCheck = setInterval(() => {
 
 document.addEventListener("contextmenu", (e) => {
   let allowedInputs = ["text", "search", "number"];
-  if (!e.target.classList.contains("leaflet-container") && !allowedInputs.includes(e.target.type)) {
+  if (
+    !e.target.classList.contains("leaflet-container") &&
+    !allowedInputs.includes(e.target.type)
+  ) {
     e.preventDefault();
   }
   //ui_component.getContextMenu(e.target.classList);

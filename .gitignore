@@ -1,4 +1,5 @@
 src/config
 !src/config/default/*
+src/js/map/plugins/leaflet/leaflet-measure/languages
 .vscode
 .hintrc

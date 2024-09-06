@@ -21,7 +21,7 @@ class Capa {
     miny,
     maxy,
     attribution,
-    legendURL
+    legendURL,
   ) {
     this.nombre = nombre;
     this.titulo = titulo;
@@ -104,7 +104,8 @@ class ImpresorItemHTML extends Impresor {
     var childId = item.getId();
     let lyr = item.capa,
       legend,
-      legendParams = _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;",
+      legendParams =
+        _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;",
       aux = {
         ...item,
         childid: childId,
@@ -141,6 +142,7 @@ class ImpresorItemHTML extends Impresor {
     btn.id = childId;
     btn.classList = "capa list-group-item" + activated;
     btn.style.padding = "10px 1px 10px 1px";
+    btn.setAttribute("onClick", `gestorMenu.muestraCapa('${childId}')`);
 
     const btn_title = document.createElement("div");
     btn_title.className = "capa-title";
@@ -148,7 +150,6 @@ class ImpresorItemHTML extends Impresor {
 
     const btn_name = document.createElement("div");
     btn_name.className = "name-layer";
-    btn_name.setAttribute("onClick", `gestorMenu.muestraCapa(\'${childId}\')`);
     btn_name.style.alignSelf = "center";
 
     const btn_link = document.createElement("a");
@@ -162,6 +163,15 @@ class ImpresorItemHTML extends Impresor {
       ? item.titulo.replace(/_/g, " ")
       : "por favor ingrese un nombre";
 
+    const btn_options_icon = document.createElement("i");
+    btn_options_icon.classList = "fas fa-angle-down";
+    btn_options_icon.title = "Zoom a capa";
+
+    const btn_options = document.createElement("div");
+    btn_options.className = "layer-menu-options";
+    btn_options.id = "layer-options-" + item.nombre;
+    btn_options.setAttribute("onClick", "event.stopPropagation()");
+
     const btn_zoom = document.createElement("div");
     btn_zoom.className = "zoom-layer";
     btn_zoom.setAttribute("layername", item.nombre);
@@ -171,28 +181,32 @@ class ImpresorItemHTML extends Impresor {
     btn_zoom_icon.classList = "fas fa-search-plus";
     btn_zoom_icon.title = "Zoom a capa";
 
-    const btn_options_icon_div = document.createElement("div");
-    btn_options_icon_div.className = "layer-options-icon";
-    btn_options_icon_div.setAttribute("layername", item.nombre);
-    btn_options_icon_div.title = "Opciones";
+    const btn_opacity = document.createElement("div");
+    btn_opacity.className = "opacity-layer";
+    btn_opacity.setAttribute("layername", item.nombre);
+    btn_opacity.style = "align-self: center; display: flex;";
 
-    const btn_options_icon = document.createElement("i");
-    btn_options_icon.classList = "fas fa-angle-down";
-    btn_options_icon.title = "Zoom a capa";
+    const btn_opacity_icon = document.createElement("i");
+    btn_opacity_icon.classList = "fa-solid fa-circle-half-stroke";
+    btn_opacity_icon.title = "Modificar la opacidad de la capa";
 
-    const btn_options_list = document.createElement("div");
-    btn_options_list.className = "display-none";
-    btn_options_list.id = "layer-options-" + item.nombre;
+    /**
+     * Adds a range input to change the layer's opacity
+    */
+    const input_opacity = document.createElement('input');
+    input_opacity.id = 'range-' + item.nombre;
+    input_opacity.type = 'range';
+    input_opacity.min = '0';
+    input_opacity.max = '1';
+    input_opacity.step = '0.05';
+    input_opacity.defaultValue = '1';
+    input_opacity.style = 'width: auto; margin-left: 10px;';
+    input_opacity.setAttribute("onInput", `overlayMaps['${item.nombre}'].setOpacity(this.value)`);
 
-    const btn_options = document.createElement("div");
-    btn_options.className = "display-none";
-    btn_options.id = "layer-options-" + item.nombre;
-
-    if (loadLayerOptions) {
-      btn.style.padding = "10px 1px 1px 1px";
-      btn_name.removeAttribute("style");
-      btn_zoom.removeAttribute("style");
-      btn_options_icon_div.appendChild(btn_options_icon);
+    if (activated) {
+      btn_options.style.display = "flex";
+    } else {
+      btn_options.style.display = "none";
     }
 
     btn_link.appendChild(btn_tooltip);
@@ -200,15 +214,20 @@ class ImpresorItemHTML extends Impresor {
     btn_title.appendChild(btn_name);
 
     btn_zoom.appendChild(btn_zoom_icon);
-    btn_title.appendChild(btn_zoom);
+    btn_options.appendChild(btn_zoom);
+
+    btn_opacity.appendChild(btn_opacity_icon);
+    btn_opacity.appendChild(input_opacity);
+    btn_options.appendChild(btn_opacity);
+    btn_options.appendChild(input_opacity);
 
     btn.appendChild(btn_title);
-    btn.appendChild(btn_options_icon_div);
     btn.appendChild(btn_options);
 
     return btn.outerHTML;
   }
 }
+
 
 class ImpresorItemWMSSelector extends Impresor {
   imprimir(itemComposite) {
@@ -245,7 +264,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const OVERLAY_SWITCH = document.createElement("div");
     if (app.hillshade) {
       const enableHillshade = app.hillshade.addTo.find(
-        (el) => el === itemComposite.capa.nombre
+        (el) => el === itemComposite.capa.nombre,
       );
       if (enableHillshade) {
         const OVERLAY_CHECKBOX = document.createElement("input");
@@ -256,7 +275,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         OVERLAY_CHECKBOX.classList.add("hillshade");
         OVERLAY_CHECKBOX.disabled = true;
 
-        if(OVERLAY_CHECKBOX.title == gestorMenu.getActiveBasemap()){
+        if (OVERLAY_CHECKBOX.title == gestorMenu.getActiveBasemap()) {
           OVERLAY_CHECKBOX.disabled = false;
         }
 
@@ -278,15 +297,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     }
 
     const iconSvg = `
-            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 92 92" enable-background="new 0 0 92 92" xml:space="preserve">
-                <path fill="${DEFAULT_ZOOM_INFO_ICON_COLOR}" id="XMLID_89_" d="M43.3,73.8c-0.8,0-1.6-0.3-2.2-0.8c-1-0.8-1.5-2.1-1.2-3.4l4.9-25l-2.7,1.5c-1.7,0.9-3.8,0.4-4.8-1.3
-                    c-0.9-1.7-0.4-3.8,1.3-4.8l9.3-5.3c1.2-0.7,2.7-0.6,3.8,0.2c1.1,0.8,1.6,2.2,1.4,3.5L48,64.4l4.2-1.8c1.8-0.8,3.8,0,4.6,1.8
-                    c0.8,1.8,0,3.8-1.8,4.6l-10.3,4.5C44.3,73.7,43.8,73.8,43.3,73.8z M53.2,26c0.9-0.9,1.5-2.2,1.5-3.5c0-1.3-0.5-2.6-1.5-3.5
-                    c-0.9-0.9-2.2-1.5-3.5-1.5c-1.3,0-2.6,0.5-3.5,1.5c-0.9,0.9-1.5,2.2-1.5,3.5c0,1.3,0.5,2.6,1.5,3.5c0.9,0.9,2.2,1.5,3.5,1.5
-                    C51,27.5,52.3,27,53.2,26z M92,46C92,20.6,71.4,0,46,0S0,20.6,0,46s20.6,46,46,46S92,71.4,92,46z M84,46c0,21-17,38-38,38S8,67,8,46
-                    S25,8,46,8S84,25,84,46z"
-                />
-            </svg>
+    <svg fill="${DEFAULT_ZOOM_INFO_ICON_COLOR}" xmlns="http://www.w3.org/2000/svg" height="16" width="6" viewBox="0 0 192 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32H96c17.7 0 32 14.3 32 32V448h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H64V256H32c-17.7 0-32-14.3-32-32z"/></svg>
         `;
 
     let minZoom = DEFAULT_MIN_ZOOM_LEVEL;
@@ -321,10 +332,12 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const LEGEND_BTN_TEXT = STRINGS.basemap_legend_button_text;
 
     const BASEMAP_LEGEND = document.createElement("button");
+    BASEMAP_LEGEND.classList = "ag-btn ag-btn-secondary";
+    BASEMAP_LEGEND.style = "margin: 0; width: auto;";
     BASEMAP_LEGEND.innerHTML = LEGEND_BTN_TEXT;
     BASEMAP_LEGEND.setAttribute(
       "onclick",
-      `clickReferencias("${BASEMAP_LEGEND_IMG}");`
+      `clickReferencias("${BASEMAP_LEGEND_IMG}");`,
     );
 
     const BASEMAP_TOOLTIP = document.createElement("span");
@@ -336,7 +349,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_LEGEND_IMG ? BASEMAP_TOOLTIP.append(BASEMAP_LEGEND) : "";
 
     const INFO_ICON = document.createElement("div");
-    INFO_ICON.classList.add("zoom-info-icon");
+    INFO_ICON.classList.add("zoom-info-icon", "ag-btn", "ag-btn-secondary");
     INFO_ICON.innerHTML = iconSvg;
     INFO_ICON.appendChild(BASEMAP_TOOLTIP);
     INFO_ICON.setAttribute(
@@ -349,7 +362,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
       });
       toggleVisibility("${BASEMAP_TOOLTIP.id}");
       event.stopPropagation();
-      `
+      `,
     );
 
     const SECOND_DIV = document.createElement("div");
@@ -369,19 +382,14 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     BASEMAP_ITEM.id = childId;
     BASEMAP_ITEM.title = itemComposite.capa.nombre;
     BASEMAP_ITEM.setAttribute(
-      "onclick", 
+      "onclick",
       `function handleClick(){
-
         document.getElementById('collapseBaseMapLayers').classList.toggle('in')
         gestorMenu.muestraCapa("${childId}")
-        
         let checkboxes = document.querySelectorAll('.hillshade')
         checkboxes.forEach(function(checkbox) {
-          
           if(checkbox.title == gestorMenu.getActiveBasemap()){
-            
             checkbox.disabled = false;
-            
           }else{
             if(checkbox.checked == true){  
               hillShade()
@@ -396,10 +404,10 @@ class ImpresorItemCapaBaseHTML extends Impresor {
         }else{
           document.getElementById('collapseBaseMapLayers').classList.toggle('in')
         }
-      `
-      ); // 2nd sentence hides basemaps menu after click
-      BASEMAP_ITEM.appendChild(FIRST_DIV);
-      
+      `,
+    ); // 2nd sentence hides basemaps menu after click
+    BASEMAP_ITEM.appendChild(FIRST_DIV);
+
     return BASEMAP_ITEM.outerHTML; // TODO: change reference fn for expect an object instead string
   }
 }
@@ -412,41 +420,23 @@ class ImpresorGrupoHTML extends Impresor {
 
     var active = itemComposite.getActive() == true ? " in " : "";
 
-    return (
-      '<div id="' +
-      listaId +
-      '" class="' +
-      itemClass +
-      ' panel-default">' +
-      '<div class="panel-heading">' +
-      '<h4 class="panel-title">' +
-      '<a id="' +
-      listaId +
-      '-a" data-toggle="collapse" data-parent="#accordion1" href="#' +
-      itemComposite.seccion +
-      '" class="item-group-title">' +
-      itemComposite.nombre +
-      "</a>" +
-      "<div class='item-group-short-desc'><a data-toggle='collapse' data-toggle2='tooltip' title='" +
-      itemComposite.descripcion +
-      "' href='#" +
-      itemComposite.seccion +
-      "'>" +
-      itemComposite.shortDesc +
-      "</a></div>" +
-      "</h4>" +
-      "</div>" +
-      "<div id='" +
-      itemComposite.seccion +
-      "' class='panel-collapse collapse" +
-      active +
-      "'>" +
-      '<div class="panel-body">' +
-      itemComposite.itemsStr +
-      "</div>" +
-      "</div>" +
-      "</div>"
-    );
+    return `
+    <div id="${listaId}" class="${itemClass} panel-default">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}">
+        <h4 class="panel-title">
+          <span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
+          <div class='item-group-short-desc'>
+            <span data-toggle='tooltip' title='${itemComposite.descripcion}'>${itemComposite.shortDesc}</span>
+          </div>
+        </h4>
+      </div>
+      <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}'>
+        <div class="panel-body">
+          ${itemComposite.itemsStr}
+        </div>
+      </div>
+    </div>
+  `;
   }
 }
 
@@ -464,7 +454,7 @@ class ImpresorCapasBaseHTML extends Impresor {
   imprimir(itemComposite) {
     var listaId = itemComposite.getId();
     // Only one basemap-selector
-    if ($(".basemap-selector a[data-toggle='collapse']").length == 0) {
+    if ($("div#basemap-selector>ul").length === 0) {
       const baseMapsMenu = document.createElement("a");
       baseMapsMenu.classList = "leaflet-control-layers-toggle";
       baseMapsMenu.title = itemComposite.nombre;
@@ -474,16 +464,12 @@ class ImpresorCapasBaseHTML extends Impresor {
       //baseMapsMenu.setAttribute('aria-controls', 'collapseExample');
       //baseMapsMenu.href = '#collapseBaseMapLayers';
 
-      const baseMapsContainer = document.createElement("ul");
-      baseMapsContainer.id = "collapseBaseMapLayers";
-      baseMapsContainer.classList = "collapse pull-right";
-
       const baseMapsList = document.createElement("ul");
+      baseMapsList.id = "collapseBaseMapLayers";
       baseMapsList.classList = "list-inline";
       baseMapsList.innerHTML = itemComposite.itemsStr;
 
-      baseMapsContainer.appendChild(baseMapsList);
-      baseMapsMenu.appendChild(baseMapsContainer);
+      baseMapsMenu.appendChild(baseMapsList);
 
       baseMapsMenu.addEventListener("click", function (event) {
         event.preventDefault();
@@ -493,12 +479,7 @@ class ImpresorCapasBaseHTML extends Impresor {
         event.stopPropagation();
       });
 
-      return baseMapsMenu;
-
-      /* return '<a class="leaflet-control-layers-toggle pull-left" role="button" data-toggle="collapse" href="#collapseBaseMapLayers" aria-expanded="false" aria-controls="collapseExample" title="' + itemComposite.nombre + '"></a>' +
-                '<div class="collapse pull-right" id="collapseBaseMapLayers">' +
-                '<ul class="list-inline">' + itemComposite.itemsStr + '</ul>' +
-                '</div>'; */
+      return baseMapsList;
     }
   }
 }
@@ -520,7 +501,7 @@ class LayersInfo {
     this.customized_layers = customized_layers;
   }
 
-  isAllowebLayer(layer_name) {
+  isAllowedLayer(layer_name) {
     if (this.allowed_layers == null) {
       return true;
     }
@@ -577,7 +558,7 @@ class LayersInfoWMS extends LayersInfo {
     type,
     icons,
     customizedLayers,
-    itemGroupPrinter
+    itemGroupPrinter,
   ) {
     super();
     this.host = host;
@@ -609,7 +590,7 @@ class LayersInfoWMS extends LayersInfo {
       ) {
         const impresorItem = new ImpresorItemHTML();
         var itemGroup = _gestorMenu.getItemGroupById(
-          ItemGroupPrefix + this.section
+          ItemGroupPrefix + this.section,
         );
         if (itemGroup != null) {
           for (var key in this.customizedLayers) {
@@ -630,7 +611,7 @@ class LayersInfoWMS extends LayersInfo {
                 null,
                 null,
                 null,
-                null
+                null,
               );
             } else {
               var capa = new Capa(
@@ -647,7 +628,7 @@ class LayersInfoWMS extends LayersInfo {
                 this.miny,
                 this.maxy,
                 this.attribution,
-                legend
+                legend,
               );
               //var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
             }
@@ -669,7 +650,7 @@ class LayersInfoWMS extends LayersInfo {
               capa.titulo,
               capa,
               this.getCallback(),
-              null
+              null,
             );
 
             gestorMenu.setAllLayersAreDeclaredInJson(true);
@@ -681,7 +662,7 @@ class LayersInfoWMS extends LayersInfo {
           }
         }
         _gestorMenu.removeLazyInitLayerInfoCounter(
-          ItemGroupPrefix + this.section
+          ItemGroupPrefix + this.section,
         );
         if (
           _gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + this.section)
@@ -715,7 +696,7 @@ class LayersInfoWMS extends LayersInfo {
       thisObj.weight,
       "",
       "",
-      thisObj.short_abstract
+      thisObj.short_abstract,
     );
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
@@ -723,23 +704,23 @@ class LayersInfoWMS extends LayersInfo {
   }
 
   /**
-   * Parses geoserver capabilities and creates a menu.
-   * @param {Object} _gestorMenu - The menu manager.
-   */
-  _parseRequest(_gestorMenu) {
-    const impresorGroup = this.itemGroupPrinter;
+ * Parses the request to fetch and process WMS capabilities,
+ * creating menu items based on the available layers.
+ * 
+ * @param {Object} gestorMenu - The menu manager object responsible for handling layers.
+ */
+  _parseRequest(gestorMenu) {
+    const { itemGroupPrinter: impresorGroup, tab, host, service, version, type, icons, section, weight, short_abstract } = this;
     const impresorItem = new ImpresorItemHTML();
 
-    const thisObj = this;
+    // Default listType to null if not provided
+    const listType = tab.listType || null;
 
-    // Determine the listType, defaulting to null if not provided
-    let ilistType = this.tab.listType || null;
+    // Construct the URL for fetching WMS capabilities
+    const serviceParams = `?service=${service}&version=${version}&request=GetCapabilities`;
+    const hostUrl = `${this.getHostOWS()}${serviceParams}`;
 
-    // Construct the URL for fetching capabilities
-    const serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
-    const host = thisObj.getHostOWS() + serviceParams;
-
-    fetch(host)
+    fetch(hostUrl)
       .then(response => response.text())
       .then(responseText => {
         const parser = new DOMParser();
@@ -747,100 +728,137 @@ class LayersInfoWMS extends LayersInfo {
 
         // Extract metadata from capabilities XML
         const capability = xmlDoc.querySelector("Capability");
-        const keyword = xmlDoc.querySelector("Keyword").textContent;
-        const abstract = xmlDoc.querySelectorAll("Abstract").textContent;
+        const keyword = xmlDoc.querySelector("Keyword")?.textContent || '';
+        const abstract = xmlDoc.querySelector("Abstract")?.textContent || '';
 
-        // Extract layer information from capabilities XML
-        const capaLyrList = capability.querySelector("Layer");
-        const capaInfoList = capaLyrList.querySelectorAll("Layer");
-
-        // Process each layer and create menu items
-        const items = Array.from(capaInfoList)
+        // Extract layer information and filter layers
+        const capaInfoList = Array.from(capability.querySelectorAll("Layer > Layer"))
           .filter(layer => {
-            const iName = layer.querySelector("Name").textContent;
-            return thisObj.isAllowebLayer(iName);
-          })
-          .map((layer, index) => {
-            try {
-              const iName = layer.querySelector("Name").textContent;
-              const iTitle = layer.querySelector("Title").textContent;
-              const iAbstract = layer.querySelectorAll("Abstract").textContent ?? "";
-
-              // Extract keywords
-              const keywordsHTMLList = layer.querySelectorAll("KeywordList keyword");
-              const keywords = Array.from(keywordsHTMLList).map(keyword => keyword.textContent);
-
-              // Extract bounding box information
-              const iBoundingBox = layer.querySelector("BoundingBox");
-              const iSrs = iBoundingBox ? (iBoundingBox.getAttribute("srs") || iBoundingBox.getAttribute("crs")) : null;
-              const iMaxY = iBoundingBox ? iBoundingBox.getAttribute("maxy") : null;
-              const iMinY = iBoundingBox ? iBoundingBox.getAttribute("miny") : null;
-              const iMinX = iBoundingBox ? iBoundingBox.getAttribute("minx") : null;
-              const iMaxX = iBoundingBox ? iBoundingBox.getAttribute("maxx") : null;
-
-              // Extract legend URL
-              const ilegendURL = thisObj.icons ? thisObj.icons[iName] : null;
-
-              // Create appropriate capa object based on type
-              const capa = thisObj.type === "wmslayer_mapserver"
-                ? new CapaMapserver(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, iMinX, iMaxX, iMinY, iMaxY)
-                : new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
-
-              // Create menu item
-              const item = new Item(capa.nombre, thisObj.section + index, keywords, iAbstract, capa.titulo, capa, thisObj.getCallback(), ilistType);
-              item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
-              item.setImpresor(impresorItem);
-              gestorMenu.setAvailableLayer(iName);
-              return item;
-            } catch (err) {
-              console.error(`Error processing layer '${layer.querySelector("Name").textContent}':`, err);
-              return null; // Return null for failed items
+            const hasNestedLayers = layer.querySelectorAll("Layer").length > 0;
+            if (hasNestedLayers) {
+              return false;
             }
+            const iName = layer.querySelector("Name")?.textContent;
+            return this.isAllowedLayer(iName);
           })
+          .map((layer, index) => this._createMenuItem(layer, index, impresorItem, listType))
           .filter(item => item !== null);
 
-        let groupAux;
-        try {
-          // Create item group
-          groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, keyword, abstract, thisObj.short_abstract);
-          groupAux.setImpresor(impresorGroup);
-          groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-          items.forEach(item => groupAux.setItem(item));
-        } catch (err) {
-          console.error('Error creating item group', err);
-          if (err.name == "ReferenceError") {
-            groupAux = new ItemGroup(thisObj.tab, thisObj.name, thisObj.section, thisObj.weight, "", "", thisObj.short_abstract);
-            groupAux.setImpresor(impresorGroup);
-            groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-            items.forEach(item => groupAux.setItem(item));
-          }
-        }
-
-        // Add item group to menu manager
-        _gestorMenu.addItemGroup(groupAux);
-
-        // Handle menu printing based on initialization mode
-        if (_gestorMenu.getLazyInitialization() === true) {
-          _gestorMenu.removeLazyInitLayerInfoCounter(ItemGroupPrefix + thisObj.section);
-          if (_gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)) {
-            // If all requested layers have been loaded
-            _gestorMenu.printOnlySection(thisObj.section);
-            gestorMenu.allLayersAreLoaded = true;
-          }
-        } else {
-          _gestorMenu.addLayerInfoCounter();
-          if (_gestorMenu.finishLayerInfo()) {
-            // If all requested layers have been loaded
-            _gestorMenu.printMenu();
-            gestorMenu.allLayersAreLoaded = true;
-          }
-        }
-        gestorMenu.printMenu();
+        this._createAndAddItemGroup(gestorMenu, impresorGroup, keyword, abstract, capaInfoList);
       })
       .catch(error => {
         console.error("Error loading capabilities:", error);
       });
   }
+
+  /**
+  * Creates a menu item from the layer information.
+  * 
+  * @param {Element} layer - The layer XML element.
+  * @param {number} index - The index of the layer in the list.
+  * @param {Object} impresorItem - The printer item object.
+  * @param {string|null} listType - The type of the list.
+  * @returns {Item|null} The created menu item or null if an error occurs.
+  */
+  _createMenuItem(layer, index, impresorItem, listType) {
+    try {
+      const iName = layer.querySelector("Name")?.textContent || '';
+      const iTitle = layer.querySelector("Title")?.textContent || '';
+      const iAbstract = layer.querySelector("Abstract")?.textContent || ''; // returns layer's abstract for tooltips
+
+      // Extract keywords
+      const keywords = Array.from(layer.querySelectorAll("KeywordList > keyword")).map(keyword => keyword.textContent);
+
+      // Extract bounding box information
+      const boundingBox = layer.querySelector("BoundingBox");
+      const iSrs = boundingBox?.getAttribute("srs") || boundingBox?.getAttribute("crs") || null;
+      const iMaxY = boundingBox?.getAttribute("maxy") || null;
+      const iMinY = boundingBox?.getAttribute("miny") || null;
+      const iMinX = boundingBox?.getAttribute("minx") || null;
+      const iMaxX = boundingBox?.getAttribute("maxx") || null;
+
+      // Extract legend URL
+      const legendURL = this.icons ? this.icons[iName] : null;
+
+      // Create appropriate capa object based on type
+      const capa = this._createCapaObject(iName, iTitle, iSrs, iMinX, iMaxX, iMinY, iMaxY, keywords, legendURL);
+
+      // Create and return menu item
+      const item = new Item(capa.nombre, `${this.section}${index}`, keywords, iAbstract, capa.titulo, capa, this.getCallback(), listType);
+      item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
+      item.setImpresor(impresorItem);
+      gestorMenu.setAvailableLayer(iName);
+      return item;
+    } catch (err) {
+      console.error(`Error processing layer '${layer.querySelector("Name")?.textContent || ''}':`, err);
+      // Return null for failed items
+      return null;
+    }
+  }
+
+  /**
+  * Creates a Capa or CapaMapserver object based on the provided information.
+  * 
+  * @param {string} name - The name of the layer.
+  * @param {string} title - The title of the layer.
+  * @param {string|null} srs - The spatial reference system.
+  * @param {string|null} minX - The minimum X coordinate.
+  * @param {string|null} maxX - The maximum X coordinate.
+  * @param {string|null} minY - The minimum Y coordinate.
+  * @param {string|null} maxY - The maximum Y coordinate.
+  * @param {Array<string>} keywords - The keywords associated with the layer.
+  * @param {string|null} legendURL - The URL of the legend.
+  * @returns {Capa|CapaMapserver} The created capa object.
+  */
+  _createCapaObject(name, title, srs, minX, maxX, minY, maxY, keywords, legendURL) {
+    if (this.type === "wmslayer_mapserver") {
+      return new CapaMapserver(name, title, srs, this.host, this.service, this.version, this.feature_info_format, minX, maxX, minY, maxY);
+    } else {
+      return new Capa(name, title, srs, this.host, this.service, this.version, this.feature_info_format, keywords, minX, maxX, minY, maxY, null, legendURL);
+    }
+  }
+
+  /**
+  * Creates an item group and adds it to the menu manager.
+  * 
+  * @param {Object} gestorMenu - The menu manager object.
+  * @param {Object} impresorGroup - The printer group object.
+  * @param {string} keyword - The keyword for the group.
+  * @param {string} abstract - The abstract for the group.
+  * @param {Array<Item>} items - The list of menu items.
+  */
+  _createAndAddItemGroup(gestorMenu, impresorGroup, keyword, abstract, items) {
+    let groupAux;
+    try {
+      groupAux = new ItemGroup(this.tab, this.name, this.section, this.weight, keyword, abstract, this.short_abstract);
+    } catch (err) {
+      console.error("Error creating item group", err);
+      groupAux = new ItemGroup(this.tab, this.name, this.section, this.weight, "", "", this.short_abstract);
+    }
+    groupAux.setImpresor(impresorGroup);
+    groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
+    items.forEach(item => groupAux.setItem(item));
+    // Add item group to menu manager
+    gestorMenu.addItemGroup(groupAux);
+
+    // Handle menu printing based on initialization mode
+    if (gestorMenu.getLazyInitialization()) {
+      gestorMenu.removeLazyInitLayerInfoCounter(`${ItemGroupPrefix}${this.section}`);
+      if (gestorMenu.finishLazyInitLayerInfo(`${ItemGroupPrefix}${this.section}`)) {
+        // If all requested layers have been loaded
+        gestorMenu.printOnlySection(this.section);
+        gestorMenu.allLayersAreLoaded = true;
+      }
+    } else {
+      gestorMenu.addLayerInfoCounter();
+      if (gestorMenu.finishLayerInfo()) {
+        // If all requested layers have been loaded
+        gestorMenu.printMenu();
+        gestorMenu.allLayersAreLoaded = true;
+      }
+    }
+  }
+
 
   _parseRequest_without_print(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
@@ -856,7 +874,7 @@ class LayersInfoWMS extends LayersInfo {
 
     if (!$("#temp-menu").hasClass("temp")) {
       $("body").append(
-        '<div id="temp-menu" class="temp" style="display:none"></div>'
+        '<div id="temp-menu" class="temp" style="display:none"></div>',
       );
     }
 
@@ -889,7 +907,7 @@ class LayersInfoWMS extends LayersInfo {
         capas_info.each(function (index, b) {
           var i = $(this);
           var iName = $("name", i).html();
-          if (thisObj.isAllowebLayer(iName)) {
+          if (thisObj.isAllowedLayer(iName)) {
             var iTitle = $("title", i).html();
             iTitle = thisObj.formatLayerTitle(iName, iTitle);
             var iAbstract = $("abstract", i).html();
@@ -938,7 +956,7 @@ class LayersInfoWMS extends LayersInfo {
                 iMinX,
                 iMaxX,
                 iMinY,
-                iMaxY
+                iMaxY,
               );
             } else {
               var capa = new Capa(
@@ -955,7 +973,7 @@ class LayersInfoWMS extends LayersInfo {
                 iMinY,
                 iMaxY,
                 null,
-                ilegendURL
+                ilegendURL,
               );
               gestorMenu.layersDataForWfs[capa.nombre] = {
                 name: capa.nombre,
@@ -971,7 +989,7 @@ class LayersInfoWMS extends LayersInfo {
               capa.titulo,
               capa,
               thisObj.getCallback(),
-              ilistType
+              ilistType,
             );
             item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
             item.setImpresor(impresorItem);
@@ -989,7 +1007,7 @@ class LayersInfoWMS extends LayersInfo {
             thisObj.weight,
             keyword,
             abstract,
-            thisObj.short_abstract
+            thisObj.short_abstract,
           );
           groupAux.setImpresor(impresorGroup);
           groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
@@ -1005,7 +1023,7 @@ class LayersInfoWMS extends LayersInfo {
               thisObj.weight,
               "",
               "",
-              thisObj.short_abstract
+              thisObj.short_abstract,
             );
             groupAux.setImpresor(impresorGroup);
             groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
@@ -1019,11 +1037,11 @@ class LayersInfoWMS extends LayersInfo {
 
         if (_gestorMenu.getLazyInitialization() == true) {
           _gestorMenu.removeLazyInitLayerInfoCounter(
-            ItemGroupPrefix + thisObj.section
+            ItemGroupPrefix + thisObj.section,
           );
           if (
             _gestorMenu.finishLazyInitLayerInfo(
-              ItemGroupPrefix + thisObj.section
+              ItemGroupPrefix + thisObj.section,
             )
           ) {
             //Si ya cargó todas las capas solicitadas
@@ -1045,7 +1063,7 @@ class LayersInfoWMS extends LayersInfo {
         nuevo_impresor.addLayers_combobox(groupAux);
         document.getElementById("temp-menu").innerHTML = "";
         return;
-      }
+      },
     );
   }
 
@@ -1086,7 +1104,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
     feature_info_format,
     type,
     customizedLayers,
-    itemGroupPrinter
+    itemGroupPrinter,
   ) {
     super();
     this.host = host;
@@ -1116,7 +1134,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
       ) {
         const impresorItem = new ImpresorItemHTML();
         var itemGroup = _gestorMenu.getItemGroupById(
-          ItemGroupPrefix + this.section
+          ItemGroupPrefix + this.section,
         );
         if (itemGroup != null) {
           for (var key in this.customizedLayers) {
@@ -1137,7 +1155,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
                 null,
                 null,
                 null,
-                null
+                null,
               );
             } else {
               var capa = new Capa(
@@ -1154,7 +1172,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
                 this.miny,
                 this.maxy,
                 this.attribution,
-                legend
+                legend,
               );
             }
 
@@ -1176,7 +1194,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
               capa.titulo,
               capa,
               this.getCallback(),
-              null
+              null,
             );
 
             gestorMenu.setAllLayersAreDeclaredInJson(true);
@@ -1190,7 +1208,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
           }
         }
         _gestorMenu.removeLazyInitLayerInfoCounter(
-          ItemGroupPrefix + this.section
+          ItemGroupPrefix + this.section,
         );
         if (
           _gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + this.section)
@@ -1220,7 +1238,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
       thisObj.weight,
       "",
       "",
-      thisObj.short_abstract
+      thisObj.short_abstract,
     );
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
@@ -1235,169 +1253,163 @@ class LayersInfoWMTS extends LayersInfoWMS {
 
     if (!$("#temp-menu").hasClass("temp")) {
       $("body").append(
-        '<div id="temp-menu" class="temp" style="display:none"></div>'
+        '<div id="temp-menu" class="temp" style="display:none"></div>',
       );
     }
 
     // Load geoserver Capabilities, if success Create menu and append to DOM
     let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
     let host = thisObj.getHost() + serviceParams;
-    $("#temp-menu").load(
-      host,
-      function () {
-        var content = $("#temp-menu").find("contents");
-        var keywordHtml = $("#temp-menu").find("Keyword");
-        var keyword = "";
-        if (keywordHtml.length > 0) {
-          keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
-        }
-        var abstractHtml = $("#temp-menu").find("Abstract");
-        var abstract = "";
-        if (abstractHtml.length > 0) {
-          abstract = abstractHtml[0].innerText; // reads wms 1st abstract
-        }
-        var capas_layer = $("layer", content);
-        var items = new Array();
+    $("#temp-menu").load(host, function () {
+      var content = $("#temp-menu").find("contents");
+      var keywordHtml = $("#temp-menu").find("Keyword");
+      var keyword = "";
+      if (keywordHtml.length > 0) {
+        keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+      }
+      var abstractHtml = $("#temp-menu").find("Abstract");
+      var abstract = "";
+      if (abstractHtml.length > 0) {
+        abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+      }
+      var capas_layer = $("layer", content);
+      var items = new Array();
 
-        capas_layer.each(function (index, b) {
-          var i = $(this);
+      capas_layer.each(function (index, b) {
+        var i = $(this);
 
-          var iName = $("ows\\:identifier", i).html();
-          if (thisObj.isAllowebLayer(iName)) {
-            var iTitle = $("ows\\:title", i).html();
-            iTitle = thisObj.formatLayerTitle(iName, iTitle);
-            var iAbstract = $("ows\\:abstract", i).html();
-            iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
-            var keywordsHTMLList = $("keywordlist", i).find("keyword");
-            var keywords = [];
-            $.each(keywordsHTMLList, function (i, el) {
-              keywords.push(el.innerText);
-            });
-            let iBoundingBox = $("ows\\:wgs84boundingbox", i),
-              iSrs = null,
-              lowerCorner =
-                iBoundingBox[0].firstElementChild.innerText.split(" "),
-              upperCorner =
-                iBoundingBox[0].lastElementChild.innerText.split(" "),
-              iMaxY = lowerCorner[1],
-              iMaxX = lowerCorner[0],
-              iMinY = upperCorner[1],
-              iMinX = upperCorner[0];
+        var iName = $("ows\\:identifier", i).html();
+        if (thisObj.isAllowedLayer(iName)) {
+          var iTitle = $("ows\\:title", i).html();
+          iTitle = thisObj.formatLayerTitle(iName, iTitle);
+          var iAbstract = $("ows\\:abstract", i).html();
+          iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
+          var keywordsHTMLList = $("keywordlist", i).find("keyword");
+          var keywords = [];
+          $.each(keywordsHTMLList, function (i, el) {
+            keywords.push(el.innerText);
+          });
+          let iBoundingBox = $("ows\\:wgs84boundingbox", i),
+            iSrs = null,
+            lowerCorner =
+              iBoundingBox[0].firstElementChild.innerText.split(" "),
+            upperCorner = iBoundingBox[0].lastElementChild.innerText.split(" "),
+            iMaxY = lowerCorner[1],
+            iMaxX = lowerCorner[0],
+            iMinY = upperCorner[1],
+            iMinX = upperCorner[0];
 
-            if (thisObj.type == "wmslayer_mapserver") {
-              var capa = new CapaMapserver(
-                iName,
-                iTitle,
-                iSrs,
-                thisObj.host,
-                thisObj.service,
-                thisObj.version,
-                thisObj.feature_info_format,
-                iMinX,
-                iMaxX,
-                iMinY,
-                iMaxY
-              );
-            } else {
-              var capa = new Capa(
-                iName,
-                iTitle,
-                iSrs,
-                thisObj.host,
-                thisObj.service,
-                thisObj.version,
-                thisObj.feature_info_format,
-                keywords,
-                iMinX,
-                iMaxX,
-                iMinY,
-                iMaxY
-              );
-            }
-            var item = new Item(
-              capa.nombre,
-              thisObj.section + index,
-              keywords,
-              iAbstract,
-              capa.titulo,
-              capa,
-              thisObj.getCallback(),
-              null
+          if (thisObj.type == "wmslayer_mapserver") {
+            var capa = new CapaMapserver(
+              iName,
+              iTitle,
+              iSrs,
+              thisObj.host,
+              thisObj.service,
+              thisObj.version,
+              thisObj.feature_info_format,
+              iMinX,
+              iMaxX,
+              iMinY,
+              iMaxY,
             );
-            item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
-            item.setImpresor(impresorItem);
-            items.push(item);
-            gestorMenu.setAvailableLayer(iName);
-            gestorMenu.setAvailableWmtsLayer(iName);
+          } else {
+            var capa = new Capa(
+              iName,
+              iTitle,
+              iSrs,
+              thisObj.host,
+              thisObj.service,
+              thisObj.version,
+              thisObj.feature_info_format,
+              keywords,
+              iMinX,
+              iMaxX,
+              iMinY,
+              iMaxY,
+            );
           }
-        });
+          var item = new Item(
+            capa.nombre,
+            thisObj.section + index,
+            keywords,
+            iAbstract,
+            capa.titulo,
+            capa,
+            thisObj.getCallback(),
+            null,
+          );
+          item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
+          item.setImpresor(impresorItem);
+          items.push(item);
+          gestorMenu.setAvailableLayer(iName);
+          gestorMenu.setAvailableWmtsLayer(iName);
+        }
+      });
 
-        var groupAux;
-        try {
+      var groupAux;
+      try {
+        var groupAux = new ItemGroup(
+          thisObj.tab,
+          thisObj.name,
+          thisObj.section,
+          thisObj.weight,
+          keyword,
+          abstract,
+          thisObj.short_abstract,
+        );
+        groupAux.setImpresor(impresorGroup);
+        groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
+        for (var i = 0; i < items.length; i++) {
+          groupAux.setItem(items[i]);
+        }
+      } catch (err) {
+        if (err.name == "ReferenceError") {
           var groupAux = new ItemGroup(
             thisObj.tab,
             thisObj.name,
             thisObj.section,
             thisObj.weight,
-            keyword,
-            abstract,
-            thisObj.short_abstract
+            "",
+            "",
+            thisObj.short_abstract,
           );
           groupAux.setImpresor(impresorGroup);
           groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
           for (var i = 0; i < items.length; i++) {
             groupAux.setItem(items[i]);
           }
-        } catch (err) {
-          if (err.name == "ReferenceError") {
-            var groupAux = new ItemGroup(
-              thisObj.tab,
-              thisObj.name,
-              thisObj.section,
-              thisObj.weight,
-              "",
-              "",
-              thisObj.short_abstract
-            );
-            groupAux.setImpresor(impresorGroup);
-            groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-            for (var i = 0; i < items.length; i++) {
-              groupAux.setItem(items[i]);
-            }
-          }
         }
-
-        _gestorMenu.addItemGroup(groupAux);
-
-        if (_gestorMenu.getLazyInitialization() == true) {
-          _gestorMenu.removeLazyInitLayerInfoCounter(
-            ItemGroupPrefix + thisObj.section
-          );
-          if (
-            _gestorMenu.finishLazyInitLayerInfo(
-              ItemGroupPrefix + thisObj.section
-            )
-          ) {
-            //Si ya cargó todas las capas solicitadas
-            _gestorMenu.printOnlySection(thisObj.section);
-
-            //
-            gestorMenu.allLayersAreLoaded = true;
-          }
-        } else {
-          _gestorMenu.addLayerInfoCounter();
-          if (_gestorMenu.finishLayerInfo()) {
-            //Si ya cargó todas las capas solicitadas
-            _gestorMenu.printMenu();
-
-            //
-            gestorMenu.allLayersAreLoaded = true;
-          }
-        }
-
-        return;
       }
-    );
+
+      _gestorMenu.addItemGroup(groupAux);
+
+      if (_gestorMenu.getLazyInitialization() == true) {
+        _gestorMenu.removeLazyInitLayerInfoCounter(
+          ItemGroupPrefix + thisObj.section,
+        );
+        if (
+          _gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)
+        ) {
+          //Si ya cargó todas las capas solicitadas
+          _gestorMenu.printOnlySection(thisObj.section);
+
+          //
+          gestorMenu.allLayersAreLoaded = true;
+        }
+      } else {
+        _gestorMenu.addLayerInfoCounter();
+        if (_gestorMenu.finishLayerInfo()) {
+          //Si ya cargó todas las capas solicitadas
+          _gestorMenu.printMenu();
+
+          //
+          gestorMenu.allLayersAreLoaded = true;
+        }
+      }
+
+      return;
+    });
   }
 
   getHost() {
@@ -1539,7 +1551,7 @@ class ItemGroup extends ItemComposite {
     peso,
     palabrasClave,
     descripcion,
-    shortDesc
+    shortDesc,
   ) {
     super(nombre, seccion, palabrasClave, descripcion);
     this.shortDesc = shortDesc;
@@ -1592,7 +1604,7 @@ class ItemGroup extends ItemComposite {
     var itemsAux = new Array();
     for (var key in this.itemsComposite) {
       this.itemsComposite[key].setQuerySearch(
-        this.tab.getId() == "" ? this.querySearch : this.tab.getSearchQuery()
+        this.tab.getId() == "" ? this.querySearch : this.tab.getSearchQuery(),
       );
       if (this.itemsComposite[key].match() == true) {
         //Returns true on item match with querySearch string
@@ -1632,7 +1644,7 @@ class ItemGroup extends ItemComposite {
         this.nombre +
         " <span class='active-layers-counter'>" +
         iCapasVisibles +
-        "</span>"
+        "</span>",
       );
     } else {
       $("#" + this.getId() + "-a").html(this.nombre);
@@ -1654,7 +1666,7 @@ class ItemGroup extends ItemComposite {
     var availableTags = [];
     for (var key in this.itemsComposite) {
       availableTags = availableTags.concat(
-        this.itemsComposite[key].getAvailableTags()
+        this.itemsComposite[key].getAvailableTags(),
       );
     }
     return availableTags;
@@ -1701,7 +1713,7 @@ class wmsSelector {
     service,
     version,
     featureInfoFormat,
-    type
+    type,
   ) {
     if (type == "wmslayer_mapserver") {
       this.capa = new CapaMapserver(
@@ -1716,7 +1728,7 @@ class wmsSelector {
         null,
         null,
         null,
-        null
+        null,
       );
     } else {
       this.capa = new Capa(
@@ -1731,7 +1743,7 @@ class wmsSelector {
         null,
         null,
         null,
-        null
+        null,
       );
     }
     this.id = id;
@@ -1762,7 +1774,7 @@ class ItemGroupWMSSelector extends ItemGroup {
       service,
       version,
       featureInfoFormat,
-      type
+      type,
     );
   }
 }
@@ -1778,7 +1790,7 @@ class Item extends ItemComposite {
     callback,
     legendImg,
     legend,
-    listType
+    listType,
   ) {
     super(nombre, seccion, palabrasClave, descripcion);
     this.titulo = titulo;
@@ -1850,9 +1862,20 @@ class Item extends ItemComposite {
   showHide() {
     $("#" + this.getId()).toggleClass("active");
 
-    if (this.seccion.includes("mapasbase0") && !$("#" + this.getId()).hasClass("active")) {
+    let options_layer = $("#" + this.getId());
+
+    if (options_layer[0].children[1] && options_layer.hasClass("active")) {
+      options_layer[0].children[1].style.display = "flex";
+    } else if (options_layer[0].children[1]) {
+      options_layer[0].children[1].style.display = "none";
+    }
+
+    if (
+      this.seccion.includes("mapasbase0") &&
+      !$("#" + this.getId()).hasClass("active")
+    ) {
       $("#" + this.getId()).toggleClass("active");
-    }//fixes main mapabase active bug by asking if its not activated.
+    } //fixes main mapabase active bug by asking if its not activated.
 
     if (typeof this.callback == "string") {
       this.callback = eval(this.callback);
@@ -1949,7 +1972,7 @@ class ItemsGetterSearcher extends ItemsGetter {
       0,
       "",
       "",
-      gestorMenu.getQuerySearch()
+      gestorMenu.getQuerySearch(),
     );
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
@@ -1990,7 +2013,7 @@ class ItemsGetterSearcherWithTabs extends ItemsGetter {
         0,
         "",
         "",
-        gestorMenu._tabs[key].getSearchQuery()
+        gestorMenu._tabs[key].getSearchQuery(),
       );
       groupAux.setImpresor(impresorGroup);
       groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
@@ -2006,7 +2029,7 @@ class ItemsGetterSearcherWithTabs extends ItemsGetter {
       0,
       "",
       "",
-      gestorMenu.getQuerySearch()
+      gestorMenu.getQuerySearch(),
     );
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
@@ -2270,7 +2293,7 @@ class GestorMenu {
                     if (this.layerIsValid(rejectedLayers[i])) {
                       validLayers.unshift(i);
                       this.muestraCapa(
-                        this.getLayerIdByName(rejectedLayers[i])
+                        this.getLayerIdByName(rejectedLayers[i]),
                       );
                     }
                   }
@@ -2557,7 +2580,7 @@ class GestorMenu {
             var showingId = this.id;
             if ($("#" + showingId + " > div").html() == "") {
               $("#" + showingId + " > div").html(
-                '<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>'
+                '<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>',
               );
             }
             for (var key in thisObj.layersInfo) {
@@ -2627,7 +2650,7 @@ class GestorMenu {
                           ].visible = true;
                           item.itemsComposite[keyItem].loadLayer(
                             item.itemsComposite[keyItem],
-                            keyItemInt
+                            keyItemInt,
                           );
                         }
                       }
@@ -2653,16 +2676,28 @@ class GestorMenu {
         <form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>
           <div class='center-flex'>
             <div class='has-feedback has-clear formBtns center-flex'>
-              <input type='text' class='form-control ui-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
-              <button onClick='reloadMenu()' class='ui-btn ui-btn-primary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
+              <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
+              <button onClick='reloadMenu()' class='ag-btn ag-btn-secondary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
-            <button class='ui-btn ui-btn-primary btn-search' type='submit'><span class='glyphicon glyphicon-search' aria-hidden='true'></span></button>
-            <button class='ui-btn ui-btn-primary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar Capas'><span class='glyphicon glyphicon-trash'></span></button>
+            <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
+            <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
+            </button>
+            <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar capas'></button>
+            <button class='ag-btn ag-btn-secondary btn-search' id='menuPined' type='button' onClick='gestorMenu._menuFixed()' title='Fijar menú de capas'>
+            <span class='glyphicon glyphicon-pushpin'></span>
+            </button>
           </div>
         </form>`;
 
       return formContent;
     }
+  }
+
+  _menuFixed() {
+    const sidebar = document.getElementById("sidebar");
+    const menuPined = document.getElementById("menuPined");
+    menuPined.classList.toggle("ag-btn-danger");
+    sidebar.classList.toggle("menuFixed");
   }
 
   getAvailableTags() {
@@ -2698,10 +2733,10 @@ class GestorMenu {
         sClassAux +
         "' id='" +
         this._tabs[key].getExtendedId() +
-        "'>"
+        "'>",
       );
       aSections[this._tabs[key].getExtendedId()].push(
-        this._tabs[key].getInitialPrint()
+        this._tabs[key].getInitialPrint(),
       );
       sClassAux = "";
     }
@@ -2722,10 +2757,10 @@ class GestorMenu {
         itemComposite
           .getTab()
           .setSearchQuery(
-            this._tabs[itemComposite.getTab().getId()].getSearchQuery()
+            this._tabs[itemComposite.getTab().getId()].getSearchQuery(),
           ); //Set query search for filtering items
         aSections[itemComposite.getTab().getExtendedId()].push(
-          itemComposite.imprimir()
+          itemComposite.imprimir(),
         );
       } else {
         if ($("#" + itemComposite.seccion).length != 0) {
@@ -2739,7 +2774,7 @@ class GestorMenu {
     //Set end html printing for all tabs
     for (var key in this._tabs) {
       aSections[this._tabs[key].getExtendedId()].push(
-        this._tabs[key].getEndPrint()
+        this._tabs[key].getEndPrint(),
       );
     }
 
@@ -2752,7 +2787,7 @@ class GestorMenu {
         var sClassAux = "active";
       }
       sInitialHTML +=
-        "<li role='presentation' class='" +
+        "<li role='presentation'  class='" +
         sClassAux +
         "'><a href='#" +
         this._tabs[key].getExtendedId() +
@@ -2775,7 +2810,8 @@ class GestorMenu {
     this.getMenuDOM().html(sInitialHTML);
 
     let sidebar = document.getElementById("sidebar");
-    const searcher = document.createElement("div")
+    const searcher = document.createElement("div");
+    searcher.style = "position: fixed; display: contents;";
     searcher.innerHTML = this._printSearcher();
     sidebar.insertBefore(searcher, sidebar.firstChild);
   }
@@ -2801,7 +2837,7 @@ class GestorMenu {
                 itemComposite.peso,
                 itemComposite.palabrasClave,
                 folder.resumen,
-                folder.resumen
+                folder.resumen,
               );
               itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
               itemsToPrint[folderIndex].itemsComposite = {};
@@ -2824,7 +2860,7 @@ class GestorMenu {
                 itemComposite.peso,
                 itemComposite.palabrasClave,
                 folder.resumen,
-                folder.resumen
+                folder.resumen,
               );
               itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
               itemsToPrint[folderIndex].itemsComposite = {};
@@ -2881,7 +2917,7 @@ class GestorMenu {
                 itemComposite.peso,
                 itemComposite.palabrasClave,
                 folder.resumen,
-                folder.resumen
+                folder.resumen,
               );
               itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
               itemsToPrint[folderIndex].itemsComposite = {};
@@ -2915,7 +2951,7 @@ class GestorMenu {
               itemComposite.peso,
               itemComposite.palabrasClave,
               folder.resumen,
-              folder.resumen
+              folder.resumen,
             );
             itemsToPrint[folderIndex].setImpresor(new ImpresorGrupoHTML());
             itemsToPrint[folderIndex].itemsComposite = {};
@@ -2941,7 +2977,6 @@ class GestorMenu {
     if (this._hasMoreTabsThanOne()) {
       this._printWithTabs();
     } else {
-
       this.getMenuDOM().html(this._printSearcher());
 
       var itemsAux = new Array();
@@ -2972,7 +3007,7 @@ class GestorMenu {
     for (var key in this.layersInfo) {
       if (this.layersInfo[key].tab.listType != "combobox") {
         this.addLazyInitLayerInfoCounter(
-          ItemGroupPrefix + this.layersInfo[key].section
+          ItemGroupPrefix + this.layersInfo[key].section,
         );
         this.layersInfo[key].get(this);
       }
@@ -3055,13 +3090,13 @@ class GestorMenu {
       source: function (request, response) {
         var matcher = new RegExp(
           $.ui.autocomplete.escapeRegex(request.term),
-          "i"
+          "i",
         );
         response(
           $.grep(gestorMenu.getAvailableTags(), function (value) {
             value = value.label || value.value || value;
             return matcher.test(value) || matcher.test(normalize(value));
-          })
+          }),
         );
       },
       select: function (event, ui) {
@@ -3117,14 +3152,14 @@ class GestorMenu {
 
     if (isBaseLayer && this.lastBaseMapSelected !== baseLayerName) {
       if (this.baseMapDependencies[this.lastBaseMapSelected])
-      this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
-    if (this.activeLayers.find((lyr) => lyr === layer))
-    this.muestraCapa(this.getLayerIdByName(layer));
-});
-}
+        this.baseMapDependencies[this.lastBaseMapSelected].forEach((layer) => {
+          if (this.activeLayers.find((lyr) => lyr === layer))
+            this.muestraCapa(this.getLayerIdByName(layer));
+        });
+    }
 
-//Show or hide selected item
-for (var key in this.items) {
+    //Show or hide selected item
+    for (var key in this.items) {
       var itemComposite = this.items[key];
       if (isBaseLayer && itemComposite.isBaseLayer()) {
         this.availableBaseLayers.forEach((baseLayer) => {
@@ -3200,7 +3235,7 @@ for (var key in this.items) {
     //Realiza el GET de las capas
 
     let tempMenu = document.getElementById("temp-menu");
-    tempMenu ? tempMenu.remove() : 0
+    tempMenu ? tempMenu.remove() : 0;
 
     var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, "");
     for (var key in this.layersInfo) {
@@ -3337,9 +3372,9 @@ class Menu_UI {
     let itemnew = document.createElement("div");
     itemnew.innerHTML = `
         <div id="lista-${groupnamev}" class="menu5 panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="false">
             <h4 class="panel-title">
-                <a id="${groupnamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${groupnamev}-content" class="item-group-title">${name}</a>
+            <a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
             </h4>
         </div>
         <div id='${groupnamev}-content' class="panel-collapse collapse">
@@ -3369,7 +3404,6 @@ class Menu_UI {
       </div>
       </div>`;
 
-
     let subItemnew = document.createElement("div");
     subItemnew.innerHTML = `
       <div id="lista-${childName}" class="menu5 panel-default">
@@ -3390,7 +3424,7 @@ class Menu_UI {
       searchForm.after(parentItemnew);
     }
     let location = document.getElementById(`${parentNamev}-panel-body`);
-    location.appendChild(subItemnew)
+    location.appendChild(subItemnew);
   }
 
   addLayerOption({
@@ -3639,7 +3673,7 @@ class Menu_UI {
         title,
         url_img,
         descripcion,
-        false
+        false,
       );
       list.append(li_layer);
     }
@@ -3650,7 +3684,10 @@ class Menu_UI {
   add_btn_Layer_combobox(id_dom, title, url_img, descripcion, options) {
     // reemplazar =title
     let min_url_img =
-      url_img + _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
+      url_img +
+      _LEGEND_PARAMS +
+      _LEGEND_OPTIONS +
+      "forceTitles:off;forceLabels:off;";
     let max_url_img =
       url_img + _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceLabels:on;";
     let li = document.createElement("li");
@@ -3708,6 +3745,7 @@ class Menu_UI {
     };
 
     img_legend.addEventListener("load", (event) => {
+      /* This code seems to be replaced adaptToImage function in functions.js */
       if (img_legend.naturalHeight > 22) {
         capa_legend_div.removeChild(img_legend);
         capa_legend_div.append(resize_img_icon);
@@ -3817,11 +3855,11 @@ class Menu_UI {
       "display: flex; flex-direction: row;  justify-content: space-between;margin:0px 20px 10px 20px;";
 
     let btn_si = document.createElement("button");
-    btn_si.className = "ui-btn ui-btn-danger";
+    btn_si.className = "ag-btn ag-btn-danger";
     btn_si.innerHTML = "Eliminar";
     btn_si.onclick = function () {
       let section;
-      addedLayers.forEach(lyr => {
+      addedLayers.forEach((lyr) => {
         if (lyr.id === id) {
           section = lyr.section;
         }
@@ -3843,7 +3881,7 @@ class Menu_UI {
     };
 
     let btn_no = document.createElement("button");
-    btn_no.className = "ui-btn ui-btn-primary";
+    btn_no.className = "ag-btn ag-btn-primary";
     btn_no.innerHTML = "Cancelar";
     btn_no.onclick = function () {
       $("#modal_layer_del").remove();
@@ -3996,20 +4034,28 @@ class Menu_UI {
     layer_item.id = "srvcLyr-" + id + textName;
     layer_item.className = "file-layer";
 
-    if (!layer.legend) { layer.legend = layer.host + '?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name }; // maybe this should be implemented within layer definition, not in menu methods
+    if (!layer.legend) {
+      layer.legend =
+        layer.host +
+        "?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=" +
+        layer.name;
+    } // maybe this should be implemented within layer definition, not in menu methods
 
     let imageFormats = ["png", "jpg", "gif", "webp", "svg", "bmp", "ico"],
-      notLegendFromFile = !imageFormats.some(imgFormat => layer.legend.includes("." + imgFormat));
+      notLegendFromFile = !imageFormats.some((imgFormat) =>
+        layer.legend.includes("." + imgFormat),
+      );
 
     if (notLegendFromFile) {
-      layer.legend += _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
+      layer.legend +=
+        _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;";
     }
 
     let img_icon = document.createElement("div");
     img_icon.className = "loadservice-layer-img";
     img_icon.innerHTML = `<img loading="lazy" src="${layer.legend}" onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'>`;
     img_icon.onclick = function () {
-      clickWMSLayer(layer, layer_item, fileName)
+      clickWMSLayer(layer, layer_item, fileName);
     };
 
     let layer_name = document.createElement("div");
@@ -4019,7 +4065,7 @@ class Menu_UI {
     layer_name.innerHTML = "<a>" + capitalizedTitle + "</a>";
     layer_name.title = fileName;
     layer_name.onclick = function () {
-      clickWMSLayer(layer, layer_item, fileName)
+      clickWMSLayer(layer, layer_item, fileName);
       // layer_item.classList.toggle("active");
       // if (!layer.active) {
       //   layer.L_layer = L.tileLayer
@@ -4036,18 +4082,17 @@ class Menu_UI {
       //     section: layer.title,
       //     host: layer.host,
       //   };
-      // } else {     
+      // } else {
       //   mapa.removeLayer(layer.L_layer);
       //   layer.active = false;
       // }
-
     };
 
     let zoom_button = document.createElement("div");
     zoom_button.className = "loadservice-layer-img";
     zoom_button.innerHTML = `<i class="fas fa-search-plus" title="Zoom a capa"></i>`;
     zoom_button.onclick = function () {
-      clickWMSLayer(layer, layer_item, fileName)
+      clickWMSLayer(layer, layer_item, fileName);
       let bounds = [
         [layer.maxy, layer.maxx],
         [layer.miny, layer.minx],
@@ -4072,16 +4117,16 @@ class Menu_UI {
     location = "top",
     text = "A custom button",
     link = "#",
-    title = "A custom button"
+    title = "A custom button",
   }) {
     let btn = document.getElementById(id);
 
     if (!btn) {
-      let btnHtml = `<li id="${id}" onclick="window.open('${link}', '_blank');" class="list-group-item menu-button" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li>`
+      let btnHtml = `<li id="${id}" onclick="window.open('${link}', '_blank');" class="list-group-item menu-button" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li>`;
 
       let menuItems = document.getElementById("sidebar"); //document.getElementsByClassName('menu5 panel-default');
       if (location === "top") {
-        menuItems.insertAdjacentHTML("beforebegin", btnHtml)
+        menuItems.insertAdjacentHTML("beforebegin", btnHtml);
       }
       if (location === "bottom") {
         menuItems.insertAdjacentHTML("afterend", btnHtml);

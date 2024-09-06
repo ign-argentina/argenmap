@@ -6,7 +6,6 @@ var atrib_ign =
   layerData;
 var argenmap = "";
 var mapa = "";
-
 let currentBaseMap = null;
 
 let countour_styles = false;
@@ -16,7 +15,7 @@ gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
     if (
       !app.hasOwnProperty("excluded_plugins") ||
       !app.excluded_plugins.find(
-        (excluded_plugin) => excluded_plugin === plugin
+        (excluded_plugin) => excluded_plugin === plugin,
       )
     ) {
       gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
@@ -26,7 +25,7 @@ gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
 
 const onClickAllActiveLayers = () => {
   const inputs = Array.from(
-    document.getElementById("activeLayers").getElementsByTagName("input")
+    document.getElementById("activeLayers").getElementsByTagName("input"),
   );
   inputs[0].checked = !inputs[0].checked;
   if (inputs.length > 1) {
@@ -48,15 +47,19 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
   layer.options.fillColor = fillColor;
 };
 
+const isMobile = window.matchMedia(
+  "only screen and (max-width: 760px)",
+).matches;
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = "";
-var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
 var ordenZoomHome = 1;
 var ordenFullScreen = 5;
-var ordenMeasure = 3;
+var ordenMeasure = 2;
 var ordenGraticula = 4;
-var ordenLocate = 2;
+var ordenLocate = 3;
 var ordenDraw = 6;
 var ordenBetterScale = 7;
 var ordenMinimap = 8;
@@ -67,6 +70,7 @@ var ordenLoadLayer = 12;
 var ordenGeoprocessing = 13;
 var ordenConsultData = 14;
 var ordenHelp = 15;
+var ordenConfig = 16;
 var visiblesActivar = true;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function (event, plugin) {
@@ -124,6 +128,9 @@ $("body").on("pluginLoad", function (event, plugin) {
       break;
     case "helpTour":
       ordered.splice(ordenHelp, 1, plugin.pluginName);
+      break;
+    case "configTool":
+      ordered.splice(ordenConfig, 1, plugin.pluginName);
       break;
     default:
       // Add unordered plugins
@@ -271,6 +278,15 @@ $("body").on("pluginLoad", function (event, plugin) {
       visiblesActivar = false;
     }
   }
+  if (visiblesActivar && gestorMenu.pluginExists("configTool")) {
+    if (
+      gestorMenu.plugins["configTool"].getStatus() == "ready" ||
+      gestorMenu.plugins["configTool"].getStatus() == "fail"
+    ) {
+    } else {
+      visiblesActivar = false;
+    }
+  }
   if (visiblesActivar) {
     ordered.forEach(async function (e) {
       switch (e) {
@@ -286,19 +302,19 @@ $("body").on("pluginLoad", function (event, plugin) {
                 ".leaflet-bottom.leaflet-right",
                 "leaflet-control-container",
                 "#zoom-level",
-                "#sidebar-toolbar-icon-left",
-                "#sidebar-toolbar-icon-right",
                 "#btn-logout",
+                "#developerLogo",
               ],
               screenName: "mapaIGN" + n,
+              position: "topleft",
             }).addTo(mapa);
 
             document.getElementsByClassName(
-              "leaflet-control-simpleMapScreenshoter"
+              "leaflet-control-simpleMapScreenshoter",
             )[0].id = "screenShoter";
             let screenShoter = document.getElementById("screenShoter");
             screenShoter.classList.remove(
-              "leaflet-control-simpleMapScreenshoter"
+              "leaflet-control-simpleMapScreenshoter",
             );
             screenShoter.classList.add("leaflet-bar");
             screenShoter.children[0].id = "screenShoter-btn";
@@ -306,7 +322,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
             let screenShoterBtn = document.getElementById("screenShoter-btn");
             screenShoterBtn.classList.remove(
-              "leaflet-control-simpleMapScreenshoter-btn"
+              "leaflet-control-simpleMapScreenshoter-btn",
             );
             screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
@@ -315,18 +331,37 @@ $("body").on("pluginLoad", function (event, plugin) {
           break;
         case "ZoomHome":
           // Leaflet Zoomhome plugin https://github.com/torfsen/leaflet.
-          var zoomHome = L.Control.zoomHome({
+          let zoomHome = L.Control.zoomHome({
             zoomHomeTitle: "Inicio",
             zoomInTitle: "Acercarse",
             zoomOutTitle: "Alejarse",
-            zoomHomeIcon: "solid fa-earth-americas",
+            //zoomHomeIcon: 'solid fa-earth-americas',
             homeCoordinates: [
               app.mapConfig.center.latitude,
               app.mapConfig.center.longitude,
             ],
             homeZoom: app.mapConfig.zoom.initial,
+            position: "bottomright",
           });
+
           zoomHome.addTo(mapa);
+
+          // Select the zoomHome icon and add 'center-flex' class
+          let zoomHomeIcon = document.querySelector(
+            ".leaflet-control-zoomhome-home",
+          );
+          zoomHomeIcon.classList.add("center-flex");
+
+          // Change icon on hover to 'fa fa-home' using CSS classes
+          zoomHomeIcon.classList.add("zoom-home-icon");
+          zoomHomeIcon.innerHTML = `<i class="fas fa-home"></i><span class="zoom-home-text">${mapa.getZoom()}</span>`;
+
+          // Update zoom level displayed on zoom end
+          mapa.on("zoomend", () => {
+            const zoomText = zoomHomeIcon.querySelector(".zoom-home-text");
+            zoomText.textContent = mapa.getZoom();
+          });
+
           gestorMenu.plugins["ZoomHome"].setStatus("visible");
           break;
         case "FullScreen":
@@ -334,22 +369,26 @@ $("body").on("pluginLoad", function (event, plugin) {
           fs.createComponent();
           break;
         case "helpTour":
-          const help = new HelpTour();
-          const helpData = await help.fetchHelpTourData();
-          help.createComponent(helpData);
+          if (!isMobile) {
+            const help = new HelpTour();
+            const helpData = await help.fetchHelpTourData();
+            help.createComponent(helpData);
+          } else {
+            document.getElementById("nav-help-btn").style.display = "none";
+          }
           break;
         case "loadLayer":
           const loadLayersModal = new LoadLayersModal();
-          loadLayersModal.createComponent();
+          //modal.createModal();          //loadLayersModal.createComponent();
           break;
         case "betterScale":
           // Leaflet BetterScale plugin
           /*
-					L.control.betterscale({
-						metric: true,
-						imperial: false
-					}).addTo(mapa);
-					*/
+          L.control.betterscale({
+            metric: true,
+            imperial: false
+          }).addTo(mapa);
+          */
           L.control
             .scale({
               metric: true,
@@ -357,6 +396,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             })
             .addTo(mapa);
           gestorMenu.plugins["betterScale"].setStatus("visible");
+          loadDeveloperLogo();
           break;
         case "minimap":
           // Leaflet-MiniMap plugin https://github.com/Norkart/Leaflet-MiniMap
@@ -426,12 +466,12 @@ $("body").on("pluginLoad", function (event, plugin) {
             onAdd: function (map) {
               var container = L.DomUtil.create(
                 "div",
-                "leaflet-control leaflet-bar leaflet-control-customgraticule"
+                "leaflet-control leaflet-bar leaflet-control-customgraticule",
               );
               container.title = "Cuadrícula";
               var icon = L.DomUtil.create(
                 "a",
-                "leaflet-control-customgraticule"
+                "leaflet-control-customgraticule",
               );
               container.appendChild(icon);
 
@@ -475,59 +515,55 @@ $("body").on("pluginLoad", function (event, plugin) {
           break;
         case "Measure":
           // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
-		  // set decimal and thousands dividers from local configuration
-
-          var measureControl = new L.Control.Measure({
-            position: "topleft",
-            primaryLengthUnit: "meters",
-            secondaryLengthUnit: "kilometers",
-            primaryAreaUnit: "sqmeters",
-            secondaryAreaUnit: "hectares",
-            collapsed: true,
-            decPoint: DECIMAL_SEPARATOR,
-            thousandsSep: THOUSANDS_SEPARATOR
-          });
-          measureControl.addTo(mapa);
-          /* if (!L.Browser.android) {
-						// replaces event listener for Measure icon in favor of click
-						L.DomEvent.off(measureControl._container, 'mouseenter', measureControl._expand, measureControl);
-						L.DomEvent.off(measureControl._container, 'mouseleave', measureControl._collapse, measureControl);
-						L.DomEvent.on(measureControl._container, 'click', measureControl._expand, measureControl);
-						L.DomEvent.on(measureControl._container, 'click', measureControl._collapse, measureControl);
-					} */
-          gestorMenu.plugins["Measure"].setStatus("visible");
+          // set decimal and thousands dividers from local configuration
+          if (!isMobile) {
+            var measureControl = new L.Control.Measure({
+              position: "topleft",
+              primaryLengthUnit: "meters",
+              secondaryLengthUnit: "kilometers",
+              primaryAreaUnit: "sqmeters",
+              secondaryAreaUnit: "hectares",
+              collapsed: true,
+              decPoint: DECIMAL_SEPARATOR,
+              thousandsSep: THOUSANDS_SEPARATOR,
+              activeColor: "#157DB9",
+              completedColor: "#0db2e0",
+            });
+            measureControl.addTo(mapa);
+            gestorMenu.plugins["Measure"].setStatus("visible");
+          }
           break;
         case "geoprocessing":
           if (loadGeoprocessing) {
             let HTMLhead = document.querySelector("head");
             HTMLhead.insertAdjacentHTML(
               "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">'
+              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">',
             );
             HTMLhead.insertAdjacentHTML(
               "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">'
+              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">',
             );
             HTMLhead.insertAdjacentHTML(
               "beforeend",
-              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">'
+              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">',
             );
             $.getScript(
-              "src/js/plugins/geoprocess-executor/geoprocess-executor.js"
+              "src/js/plugins/geoprocess-executor/geoprocess-executor.js",
             ).done(function () {
               $.getScript(
-                "src/js/components/form-builder/form-builder.js"
+                "src/js/components/form-builder/form-builder.js",
               ).done(function () {
                 geoProcessingManager = new Geoprocessing();
                 geoProcessingManager.createIcon();
                 geoProcessingManager.setAvailableGeoprocessingConfig(
-                  app.geoprocessing
+                  app.geoprocessing,
                 );
                 geoProcessingManager.getProcesses().forEach((process) => {
                   if (process.geoprocess === "waterRise") {
                     // script loading test without jQuery
                     app._loadScript(
-                      "./src/js/components/geoprocessing/IHeight.js"
+                      "./src/js/components/geoprocessing/IHeight.js",
                     );
                   }
                   geoProcessingManager.getNewProcessPrefix();
@@ -612,7 +648,7 @@ $("body").on("pluginLoad", function (event, plugin) {
               if (_nodes > 3000) {
                 if (
                   window.confirm(
-                    `ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`
+                    `ADVERTENCIA: Existen ${_nodes} vértices en el mapa. Esta cantidad puede afectar el funcionamiento del navegador, ocasionando que deje de responder.`,
                   )
                 ) {
                   !this._enabled &&
@@ -705,7 +741,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                   t,
                   "Dibujos",
                   "dibujos",
-                  "dibujos"
+                  "dibujos",
                 ); //add layer to groupLayer[dibujos] and addedLayers from _deletableLayers
               }, this);
             },
@@ -841,12 +877,12 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer,
                 "Dibujos",
                 "dibujos",
-                "dibujos"
+                "dibujos",
               );
             }
 
             mapa.methodsEvents["add-layer"].forEach((method) =>
-              method(mapa.editableLayers)
+              method(mapa.editableLayers),
             );
 
             if (layer.type === "marker") {
@@ -865,39 +901,39 @@ $("body").on("pluginLoad", function (event, plugin) {
             var layers = e.layers;
             //Each layer recently edited..
             /* layers.eachLayer(function (layer) {
-							mapa.checkLayersInDrawedGeometry(layer, layer.type);
-						}); */
+              mapa.checkLayersInDrawedGeometry(layer, layer.type);
+            }); */
             mapa.methodsEvents["edit-layer"].forEach((method) =>
-              method(mapa.editableLayers)
+              method(mapa.editableLayers),
             );
           });
 
           mapa.on("draw:deleted", function (e) {
             var layers = e.layers;
             /* Object.values(layers._layers).forEach(deletedLayer => {
-							const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
-							if (lyrIdx >= 0) {
-								let layerSection;
-								addedLayers.forEach(lyr => {
-									if (lyr.id === deletedLayer.id) {
-										let index = addedLayers.indexOf(lyr);
-										if (index > -1) {
-											layerSection = lyr.section;
-											addedLayers.splice(index, 1);
-											updateNumberofLayers(layerSection);
-											showTotalNumberofLayers();
-										}
-									}
-								});
-								mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
-								deleteLayerFromMenu(deletedLayer);
-							}
-						}); */
+              const lyrIdx = mapa.editableLayers[deletedLayer.type].findIndex((lyr) => deletedLayer.name == lyr.name);
+              if (lyrIdx >= 0) {
+                let layerSection;
+                addedLayers.forEach(lyr => {
+                  if (lyr.id === deletedLayer.id) {
+                    let index = addedLayers.indexOf(lyr);
+                    if (index > -1) {
+                      layerSection = lyr.section;
+                      addedLayers.splice(index, 1);
+                      updateNumberofLayers(layerSection);
+                      showTotalNumberofLayers();
+                    }
+                  }
+                });
+                mapa.editableLayers[deletedLayer.type].splice(lyrIdx, 1);
+                deleteLayerFromMenu(deletedLayer);
+              }
+            }); */
 
             /*if(geoProcessingManager){
-							let layerName = Object.values(layers._layers)[0].name;
-							geoProcessingManager.updateLayerSelect(layerName, false);
-						}*/
+              let layerName = Object.values(layers._layers)[0].name;
+              geoProcessingManager.updateLayerSelect(layerName, false);
+            }*/
 
             //mapa.methodsEvents['delete-layer'].forEach(method => method(mapa.editableLayers));
           });
@@ -1009,47 +1045,47 @@ $("body").on("pluginLoad", function (event, plugin) {
             }
 
             /* if (Object.values(drawnItems._layers).length != 0) {
-							contextMenu.createOption({
-								isDisabled: false,
-								text: 'Descargar todas las capas',
-								onclick: (option) => {
-									mapa.closePopup(contextPopup);
-									mapa.downloadAllActiveLayer();
-								}
-							});
-						} */
+              contextMenu.createOption({
+                isDisabled: false,
+                text: 'Descargar todas las capas',
+                onclick: (option) => {
+                  mapa.closePopup(contextPopup);
+                  mapa.downloadAllActiveLayer();
+                }
+              });
+            } */
 
             /* contextMenu.createOption({
-							isDisabled: false,
-							text: "Share",
-							onclick: (option) => {
-								mapa.closePopup(contextPopup);
-								let _url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}`;
-								window.open(_url);
-								}
-							}); */
+              isDisabled: false,
+              text: "Share",
+              onclick: (option) => {
+                mapa.closePopup(contextPopup);
+                let _url = `${window.location.protocol}//${window.location.host}${window.location.pathname}${window.location.search}`;
+                window.open(_url);
+                }
+              }); */
 
             /* contextMenu.createOption({
-							isDisabled: false,
-							text: "Save",
-							onclick: () => {
-								mapa.closePopup(contextPopup);
-								let markedId = 0;
-								(!app.markers) ? app.markers = {} : markedId = Object.keys(app.markers).length++;
-								
-								let marker = window.prompt("Set marker name","name...");
-								let _markerName;
-								(marker == null || marker == "")
-								? _markerName = `${lat},${lng}`
-								: _markerName = marker;
-
-								app.markers[markedId] = { 
-									name: _markerName,
-									location: [lat,lng] 
-								};
-								new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
-							},
-							}); */
+              isDisabled: false,
+              text: "Save",
+              onclick: () => {
+                mapa.closePopup(contextPopup);
+                let markedId = 0;
+                (!app.markers) ? app.markers = {} : markedId = Object.keys(app.markers).length++;
+              	
+                let marker = window.prompt("Set marker name","name...");
+                let _markerName;
+                (marker == null || marker == "")
+                ? _markerName = `${lat},${lng}`
+                : _markerName = marker;
+    
+                app.markers[markedId] = { 
+                  name: _markerName,
+                  location: [lat,lng] 
+                };
+                new UserMessage(`${lat},${lng} saved on Markers`, true, "information");
+              },
+              }); */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1075,7 +1111,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
                 let result = mapa.createLayerFromGeoJSON(
                   geojsonMarker,
-                  "addedMarker_" + name
+                  "addedMarker_" + name,
                 );
                 addLayerToAllGroups(result, "addedMarker_" + name);
 
@@ -1180,7 +1216,7 @@ $("body").on("pluginLoad", function (event, plugin) {
               return new UserMessage(
                 "La capa ya no se encuentra disponible.",
                 true,
-                "error"
+                "error",
               );
             }
             if (layer.hasOwnProperty("_leaflet_id")) {
@@ -1272,15 +1308,15 @@ $("body").on("pluginLoad", function (event, plugin) {
             }
 
             /* contextMenu.createOption({
-							isDisabled: true,
-							text: 'Ocultar geometría',
-							onclick: (option) => {
-								if (!option.disabled) {
-									mapa.closePopup(contextPopup);
-									mapa.hideLayer(layer.name);
-								}
-							}
-						}); */
+              isDisabled: true,
+              text: 'Ocultar geometría',
+              onclick: (option) => {
+                if (!option.disabled) {
+                  mapa.closePopup(contextPopup);
+                  mapa.hideLayer(layer.name);
+                }
+              }
+            }); */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1292,15 +1328,15 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
 
             /* if (Object.values(drawnItems._layers).length != 0) {
-							contextMenu.createOption({
-								isDisabled: false,
-								text: 'Descargar todas la capas',
-								onclick: (option) => {
-									mapa.closePopup(contextPopup);
-									mapa.downloadAllActiveLayer();
-								}
-							});
-						} */
+              contextMenu.createOption({
+                isDisabled: false,
+                text: 'Descargar todas la capas',
+                onclick: (option) => {
+                  mapa.closePopup(contextPopup);
+                  mapa.downloadAllActiveLayer();
+                }
+              });
+            } */
 
             contextMenu.createOption({
               isDisabled: false,
@@ -1342,8 +1378,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
 
             /* L.DomEvent.on(editStylePopup, 'click', function (e) {
-							L.DomEvent.stopPropagation(e);
-						}); */
+              L.DomEvent.stopPropagation(e);
+            }); */
           };
 
           mapa.measurementsWrapper = (layer) => {
@@ -1800,22 +1836,22 @@ $("body").on("pluginLoad", function (event, plugin) {
                 downloadBtn1.classList.add(
                   enableMarkerInput.checked
                     ? "download-btn-active"
-                    : "download-btn-disable"
+                    : "download-btn-disable",
                 );
                 downloadBtn1.classList.remove(
                   enableMarkerInput.checked
                     ? "download-btn-disable"
-                    : "download-btn-active"
+                    : "download-btn-active",
                 );
                 downloadBtn2.classList.add(
                   enableMarkerInput.checked
                     ? "download-btn-active"
-                    : "download-btn-disable"
+                    : "download-btn-disable",
                 );
                 downloadBtn2.classList.remove(
                   enableMarkerInput.checked
                     ? "download-btn-disable"
-                    : "download-btn-active"
+                    : "download-btn-active",
                 );
                 if (!enableMarkerInput.checked) {
                   layer.setIcon(new L.Icon.Default());
@@ -1987,22 +2023,22 @@ $("body").on("pluginLoad", function (event, plugin) {
               downloadBtn1.classList.add(
                 enableMarkerInput.checked
                   ? "download-btn-active"
-                  : "download-btn-disable"
+                  : "download-btn-disable",
               );
               downloadBtn1.classList.remove(
                 enableMarkerInput.checked
                   ? "download-btn-disable"
-                  : "download-btn-active"
+                  : "download-btn-active",
               );
               downloadBtn2.classList.add(
                 enableMarkerInput.checked
                   ? "download-btn-active"
-                  : "download-btn-disable"
+                  : "download-btn-disable",
               );
               downloadBtn2.classList.remove(
                 enableMarkerInput.checked
                   ? "download-btn-disable"
-                  : "download-btn-active"
+                  : "download-btn-active",
               );
 
               downloadDiv.appendChild(downloadTitle);
@@ -2108,7 +2144,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer.options.icon.options.html.style.setProperty(
                   "border-color",
                   borderColor,
-                  "important"
+                  "important",
                 );
                 layer.options.borderColor = borderColor;
               });
@@ -2133,7 +2169,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer.options.icon.options.html.style.setProperty(
                   "background-color",
                   fillColor,
-                  "important"
+                  "important",
                 );
                 layer.options.fillColor = fillColor;
               });
@@ -2174,7 +2210,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 layer.options.icon.options.html.style.setProperty(
                   "color",
                   textColor,
-                  "important"
+                  "important",
                 );
                 layer.options.color = textColor;
               });
@@ -2289,10 +2325,10 @@ $("body").on("pluginLoad", function (event, plugin) {
             if (!activeLayersDiv) return;
 
             const activeLayersDivChilds = Array.from(
-              activeLayersDiv.childNodes
+              activeLayersDiv.childNodes,
             );
             const containerIdx = activeLayersDivChilds.findIndex(
-              (layerDiv) => layerDiv.id.split("container_")[1] === layer
+              (layerDiv) => layerDiv.id.split("container_")[1] === layer,
             );
             if (containerIdx >= 0 && !addToList) {
               activeLayersDiv.removeChild(activeLayersDivChilds[containerIdx]);
@@ -2389,7 +2425,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             popUpBtn.innerHTML =
               '<p class="popup-btn-text">Consultar capas seleccionadas en área</p>';
             popUpBtn.classList.add(
-              consultLayers.length === 0 ? "btn-disabled" : "btn-active"
+              consultLayers.length === 0 ? "btn-disabled" : "btn-active",
             );
 
             popUpDiv.appendChild(selectedLayersDiv);
@@ -2407,7 +2443,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             popUpBtn2.classList.add(
               Object.keys(layer.data).length === 0
                 ? "btn-disabled"
-                : "btn-active"
+                : "btn-active",
             );
 
             popUpDiv.appendChild(popUpBtn2);
@@ -2418,7 +2454,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           mapa.showInfoLayer = (layerName, showLastSearch) => {
             const type = layerName.split("_")[0];
             const layer = mapa.editableLayers[type].find(
-              (lyr) => lyr.name === layerName
+              (lyr) => lyr.name === layerName,
             );
 
             if (showLastSearch) {
@@ -2433,7 +2469,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const selectedLayersInputs = Array.from(
               document
                 .getElementById("activeLayers")
-                .getElementsByTagName("input")
+                .getElementsByTagName("input"),
             );
             const selectedLayers = [];
             selectedLayersInputs.forEach((selectedLayer) => {
@@ -2463,11 +2499,11 @@ $("body").on("pluginLoad", function (event, plugin) {
             const filteredActiveLayers = getAllActiveLayers().filter(
               (activeLayer) => {
                 return selectedLayers.find(
-                  (selectedLayer) => selectedLayer === activeLayer.name
+                  (selectedLayer) => selectedLayer === activeLayer.name,
                 )
                   ? true
                   : false;
-              }
+              },
             );
 
             let coords = getGeometryCoords(layer);
@@ -2531,7 +2567,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layer.split("_")[0];
             if (mapa.editableLayers.hasOwnProperty(type)) {
               const lyr = mapa.editableLayers[type].find(
-                (lyr) => lyr.name === layer
+                (lyr) => lyr.name === layer,
               );
               if (lyr) {
                 drawnItems.addLayer(lyr);
@@ -2571,7 +2607,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layerName.split("_")[0]; // Extract layer type from layerName
 
             const idx = mapa.editableLayers[type].findIndex(
-              (lyr) => lyr.name === layerName
+              (lyr) => lyr.name === layerName,
             ); // Find the index of the layer to delete in the editableLayers array
 
             // If the layer exists in the editableLayers array, remove it from the map and editableLayers array
@@ -2591,7 +2627,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             // Remove the layer from the addedLayers array, if it exists
             addedLayers.forEach((lyr) => {
               const idx = lyr.layer.features?.findIndex(
-                (e) => e.properties.name === layerName
+                (e) => e.properties.name === layerName,
               );
               if (geoProcessingManager)
                 geoProcessingManager.updateLayerSelect(layerName, false);
@@ -2608,7 +2644,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
 
             mapa.methodsEvents["delete-layer"].forEach((method) =>
-              method(mapa.editableLayers)
+              method(mapa.editableLayers),
             );
             controlSeccionGeom();
             showTotalNumberofLayers();
@@ -2636,7 +2672,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             if (mapa.groupLayers.hasOwnProperty(group)) {
               if (
                 mapa.groupLayers[group].find(
-                  (layerName) => layerName === feature
+                  (layerName) => layerName === feature,
                 )
               ) {
                 return; // feature already exist in group
@@ -2651,7 +2687,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           mapa.removeLayerFromGroup = (layer, group) => {
             if (mapa.groupLayers.hasOwnProperty(group)) {
               const layerIdx = mapa.groupLayers[group].findIndex(
-                (layerName) => layerName === layer
+                (layerName) => layerName === layer,
               );
               if (layerIdx >= 0) mapa.groupLayers[group].splice(layerIdx, 1);
             }
@@ -2689,7 +2725,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                       },
                     },
                   ],
-                })
+                }),
               );
 
             // Create download link and click it to download the file.
@@ -2755,7 +2791,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             // Determine the geoprocessing type of the layer group, if it has one.
             const addedLayer = addedLayers.find((layer) => layer.id === id);
             const geoProcessingType = geoProcessingTypes.find(
-              (type) => addedLayer && addedLayer.id.includes(type.id)
+              (type) => addedLayer && addedLayer.id.includes(type.id),
             );
             if (geoProcessingType)
               jsonToDownload.process = geoProcessingType.process;
@@ -2817,7 +2853,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
             const borderGradient = document.createElementNS(
               svgNS,
-              "linearGradient"
+              "linearGradient",
             );
             borderGradient.setAttribute("id", "strokeGradient");
             borderGradient.setAttribute("x1", "0");
@@ -2837,7 +2873,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
             const fillGradient = document.createElementNS(
               svgNS,
-              "linearGradient"
+              "linearGradient",
             );
             fillGradient.setAttribute("id", "fillGradient");
             fillGradient.setAttribute("x1", "0");
@@ -2864,7 +2900,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             const path = document.createElementNS(svgNS, "path");
             path.setAttribute(
               "d",
-              "m27.3 3.1c-13.694 0-25.092 11.382-25.092 23.732 0 5.556 3.258 12.616 5.613 17.492l19.388 35.744 19.296-35.744c2.354-4.876 5.704-11.582 5.704-17.492 0-12.35-11.215-23.732-24.908-23.732zm0 14.31c5.383.034 9.748 4.244 9.748 9.42s-4.365 9.326-9.748 9.358c-5.383-.034-9.748-4.18-9.748-9.358 0-5.176 4.365-9.386 9.748-9.42z"
+              "m27.3 3.1c-13.694 0-25.092 11.382-25.092 23.732 0 5.556 3.258 12.616 5.613 17.492l19.388 35.744 19.296-35.744c2.354-4.876 5.704-11.582 5.704-17.492 0-12.35-11.215-23.732-24.908-23.732zm0 14.31c5.383.034 9.748 4.244 9.748 9.42s-4.365 9.326-9.748 9.358c-5.383-.034-9.748-4.18-9.748-9.358 0-5.176 4.365-9.386 9.748-9.42z",
             );
             path.setAttribute("stroke", `url(#strokeGradient)`);
             path.setAttribute("fill", `url(#fillGradient)`);
@@ -2983,7 +3019,9 @@ $("body").on("pluginLoad", function (event, plugin) {
             };
             layer.downloadGeoJSON = () => {
               mapa.downloadLayerGeoJSON(
-                mapa.editableLayers[type].find((lyr) => lyr.name === layer.name)
+                mapa.editableLayers[type].find(
+                  (lyr) => lyr.name === layer.name,
+                ),
               );
             };
             mapa.addContextMenuToLayer(layer);
@@ -3070,28 +3108,13 @@ $("body").on("pluginLoad", function (event, plugin) {
       mapa.resetView = () => {
         mapa.setView(
           [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
-          app.mapConfig.zoom.initial
+          app.mapConfig.zoom.initial,
         );
       };
 
       setValidZoomLevel(selectedBasemap.nombre);
 
       gestorMenu.plugins["leaflet"].setStatus("visible");
-
-      // Base Map Control
-      L.Control.Watermark = L.Control.extend({
-        onAdd: function (map) {
-          var container = L.DomUtil.create(
-            "div",
-            "leaflet-control leaflet-bar basemap-selector"
-          );
-          return container;
-        },
-      });
-      L.control.watermark = function (opts) {
-        return new L.Control.Watermark(opts);
-      };
-      L.control.watermark({ position: "topleft" }).addTo(mapa);
 
       mapa.on("click", function (e) {
         setTimeout(function () {
@@ -3121,7 +3144,7 @@ $("body").on("pluginLoad", function (event, plugin) {
         })
         .addTo(mapa);
       gestorMenu.plugins["MousePosition"].setStatus("visible");
-      loadDeveloperLogo();
+      // loadDeveloperLogo(); // move to bottomleft before scale
       break;
     case "BingLayer":
       if (
@@ -3195,7 +3218,7 @@ function addLayerToDrawingsGroup(name, layer, section, groupId, group) {
 
 function addSelectionLayersMenuToLayer(layer) {
   const popUpDiv = mapa.createPopUp(
-    mapa.editableLayers[layer.type].find((lyr) => lyr.name === layer.name)
+    mapa.editableLayers[layer.type].find((lyr) => lyr.name === layer.name),
   );
   layer.bindPopup(popUpDiv).openPopup();
   if (layer._popup) {
@@ -3266,7 +3289,7 @@ function printFinished() {
   $("[data-toggle2='tooltip']").tooltip({
     placement: "right",
     trigger: "hover",
-    container: "body",
+    container: ".menu-container",
   });
 }
 
@@ -3277,7 +3300,7 @@ function showMainMenuTpl() {
   gestorMenu.setPrintCallback(printFinished);
   gestorMenu.setLazyInitialization(true);
   gestorMenu.setShowSearcher(
-    app.hasOwnProperty("showSearchBar") ? app.showSearchBar : false
+    app.hasOwnProperty("showSearchBar") ? app.showSearchBar : false,
   );
   gestorMenu.print();
 }
@@ -3478,13 +3501,13 @@ function loadWmsTpl(objLayer) {
           var aux = $(this).text().split(":");
           info = info.replace(
             "<b>" + aux[0] + "</b>:",
-            "<b>" + ucwords(aux[0].replace(/_/g, " ")) + ":</b>"
+            "<b>" + ucwords(aux[0].replace(/_/g, " ")) + ":</b>",
           );
         });
 
       info = info.replace(
         'class="featureInfo"',
-        'class="featureInfo" id="featureInfoPopup' + idTxt + '"'
+        'class="featureInfo" id="featureInfoPopup' + idTxt + '"',
       );
 
       return info;
@@ -3561,7 +3584,7 @@ function loadWmsTpl(objLayer) {
           var infoParsed = parseFeatureInfoJSON(
             info,
             popupInfo.length,
-            this.options.title
+            this.options.title,
           );
         }
         if (infoParsed != "") {
@@ -3574,7 +3597,7 @@ function loadWmsTpl(objLayer) {
           latlngTmp = latlng;
           this._map.openPopup(
             paginateFeatureInfo(popupInfo, 0, false, true),
-            latlng
+            latlng,
           ); //Show all info
           popupInfoPage = 0;
         }
@@ -3680,14 +3703,14 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
             sAux +
             '</div><div class="featureInfo" id="featureInfoPopup' +
             i +
-            '">'
+            '">',
         );
       } else {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div class="featureInfo" style="display:none" id="featureInfoPopup' +
             i +
-            '">'
+            '">',
         );
       }
     }
@@ -3717,7 +3740,7 @@ function changePopupPage(changeType) {
 
   mapa.openPopup(
     paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext),
-    latlngTmp
+    latlngTmp,
   ); //Show all info
 }
 
@@ -3731,6 +3754,6 @@ function copytoClipboard(coords) {
   new UserMessage(
     "Las coordenadas se copiaron al portapapeles",
     true,
-    "information"
+    "information",
   );
 }

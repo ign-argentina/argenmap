@@ -1,3 +1,4 @@
+
 <img width="256" src="src/styles/images/argenmap-banner.png" alt="Argenmap" />
 
 ---
@@ -5,7 +6,7 @@
 
 Argenmap es un visor de mapas desarrollado por el [Instituto Geográfico Nacional][] de licencia libre que permite mostrar mapas base, capas superpuestas, consultar y crear datos.
 
-Está basado en [Leaflet][] y para funcionar sólo requiere ser publicado con un servidor web. 
+Está basado en [Leaflet][] y para funcionar sólo requiere ser publicado con un servidor web. A partir de un archivo de configuración en formato JSON genera un panel lateral con todas las capas publicadas.
 
 Las capas se agrupan en el panel en secciones que son definidas en el archivo de configuración.
 

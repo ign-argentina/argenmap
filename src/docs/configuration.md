@@ -1,4 +1,4 @@
-# Configuración
+<!-- trunk-ignore-all(markdownlint/MD041) -->
 
 Esta sección explica cómo se pueden configurar las capas, los mapas base, el aspecto visual, extensiones y vista del mapa y otras opciones.
 
@@ -14,6 +14,7 @@ Esta sección explica cómo se pueden configurar las capas, los mapas base, el a
 
 
 ## Mapas base y capas
+---
 
 El archivo `data.json` se compone de bloques llamados **items**, el primero agrupa los mapas base y los siguientes las secciones desplegables que agrupan capas.
 
