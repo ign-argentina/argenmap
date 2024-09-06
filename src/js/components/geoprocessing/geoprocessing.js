@@ -46,7 +46,7 @@ class Geoprocessing {
     btnElement.id = "geoprocesos-btn";
     btnElement.title = "Geoprocesos";
 
-    btnElement.innerHTML = `<i class="fa-solid fa-gear"></i>`;
+    btnElement.innerHTML = `<i class="fa-solid fa-wrench"></i>`;
     btnElement.setAttribute("aria-hidden", "true");
 
     btnElement.onclick = () => {
