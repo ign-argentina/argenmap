@@ -190,13 +190,16 @@ class ImpresorItemHTML extends Impresor {
     btn_opacity_icon.classList = "fa-solid fa-circle-half-stroke";
     btn_opacity_icon.title = "Modificar la opacidad de la capa";
 
+    /**
+     * Adds a range input to change the layer's opacity
+    */
     const input_opacity = document.createElement('input');
     input_opacity.id = 'range-' + item.nombre;
     input_opacity.type = 'range';
-    input_opacity.min = 0;
-    input_opacity.max = 1;
-    input_opacity.step = 0.05;
-    input_opacity.value = 1;
+    input_opacity.min = '0';
+    input_opacity.max = '1';
+    input_opacity.step = '0.05';
+    input_opacity.defaultValue = '1';
     input_opacity.style = 'width: auto; margin-left: 10px;';
     input_opacity.setAttribute("onInput", `overlayMaps['${item.nombre}'].setOpacity(this.value)`);
 
