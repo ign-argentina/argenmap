@@ -46,6 +46,7 @@ class Geoprocessing {
     btnElement.id = "geoprocesos-btn";
     btnElement.title = "Geoprocesos";
 
+    // Icon options: fa-microchip, fa-screwdriver-wrench, fa-toolbox, fa-wand-magic-sparkles
     btnElement.innerHTML = `<i class="fa-solid fa-wrench"></i>`;
     btnElement.setAttribute("aria-hidden", "true");
 
