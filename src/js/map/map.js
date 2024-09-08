@@ -3079,6 +3079,10 @@ $("body").on("pluginLoad", function (event, plugin) {
         });
       }
 
+      /**
+       * @worldCopyJump solves the no repeating layers when map is dragged crossing 
+       * the antimeridian to another new map
+       */
       mapa = new L.map("mapa", {
         center: app.hasOwnProperty("mapConfig")
           ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude]
@@ -3095,6 +3099,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           ? app.mapConfig.zoom.max
           : DEFAULT_MAX_ZOOM_LEVEL,
         closePopupOnClick: false,
+        worldCopyJump: true
         /* renderer: L.svg() */
       });
 
