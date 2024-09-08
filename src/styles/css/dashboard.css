@@ -13,17 +13,20 @@
   width: fit-content;
   /*   max-width: 550px; */
 }
+
 @media (max-width: 1115px) {
   .navbar-fixed-top {
     max-width: fit-content;
     width: auto;
   }
 }
+
 .navbar-sticky {
   position: sticky;
   height: 60px;
   background-color: transparent;
 }
+
 /*
  * Sidebar
  */
@@ -31,12 +34,15 @@
   display: none;
   padding: 0;
 }
+
 .panel-heading {
   padding: 10px 5px;
 }
+
 .panel-title {
   padding: 0 15px;
 }
+
 /* Hide for mobile, show later */
 @media (min-width: 768px) {
   .sidebar {
@@ -48,27 +54,33 @@
     border-right: 1px solid #eee;
   }
 }
+
 /* Sidebar navigation */
-.nav-sidebar > li > a {
+.nav-sidebar>li>a {
   padding-right: 20px;
   padding-left: 20px;
 }
-.nav-sidebar > .active > a,
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
+
+.nav-sidebar>.active>a,
+.nav-sidebar>.active>a:hover,
+.nav-sidebar>.active>a:focus {
   color: #fff;
   background-color: #428bca;
 }
+
 * Placeholder dashboard ideas */ .placeholders {
   margin-bottom: 30px;
   text-align: center;
 }
+
 .placeholders h4 {
   margin-bottom: 0;
 }
+
 .placeholder {
   margin-bottom: 20px;
 }
+
 .placeholder img {
   display: inline-block;
   border-radius: 50%;
