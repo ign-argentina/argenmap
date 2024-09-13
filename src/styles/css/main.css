@@ -141,7 +141,7 @@ Ejemplos:
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
   /*Menu capas*/
-  --lyr-menu-bg-color: #eeeeee60;
+  --lyr-menu-bg-color: ##ffffff70;
   --lyr-menu-panel-head-bg-color: var(--primary-color);
   --lyr-menu-panel-head-text-color: #fff;
   --menu-title-text-color: #fff;
@@ -481,6 +481,9 @@ div.leaflet-top.leaflet-left {
 .menu-section-btn .fa-question,
 .menu-section-btn .fa-gear {
   font-size: large;
+}
+.menu-section-btn .fa-universal-access {
+  font-size: x-large;
 }
 
 .layer-menu-options {

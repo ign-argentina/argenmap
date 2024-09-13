@@ -1,0 +1,42 @@
+#accessibility {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  max-width: 320px;
+}
+.accessibility-panel {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #ffffffbb;
+  color: black;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
+  border-radius: 6px;
+}
+.accessibility-panel {
+  text-align: center;
+}
+.accessibility-main {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.accessibility-btn {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+.accessibility-btn h5 {
+  text-align: center;
+}
+.accessibility-icon {
+  font-size: x-large;
+}

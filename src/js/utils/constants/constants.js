@@ -93,6 +93,7 @@ const PLUGINS = {
   consultData: "src/js/components/consultData/consultData.js",
   helpTour: "src/js/components/help/helpTour.js",
   configTool: "src/js/components/config-tool/configTool.js",
+  accessibility: "src/js/components/accessibility/accessibility.js",
 };
 
 const MESSAGE_PROPERTIES = {

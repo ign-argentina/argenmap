@@ -1,5 +1,5 @@
 var atrib_ign =
-    "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+  "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
   baseMaps = {},
   overlayMaps = new Object(),
   layerName,
@@ -54,7 +54,7 @@ const isMobile = window.matchMedia(
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = "";
-var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
 var ordenZoomHome = 1;
 var ordenFullScreen = 5;
 var ordenMeasure = 2;
@@ -71,6 +71,7 @@ var ordenGeoprocessing = 13;
 var ordenConsultData = 14;
 var ordenHelp = 15;
 var ordenConfig = 16;
+var ordenAccessibility = 17;
 var visiblesActivar = true;
 var visiblesActivar = true;
 $("body").on("pluginLoad", function (event, plugin) {
@@ -128,6 +129,9 @@ $("body").on("pluginLoad", function (event, plugin) {
       break;
     case "helpTour":
       ordered.splice(ordenHelp, 1, plugin.pluginName);
+      break;
+    case "accessibility":
+      ordered.splice(ordenAccessibility, 1, plugin.pluginName);
       break;
     case "configTool":
       ordered.splice(ordenConfig, 1, plugin.pluginName);
@@ -278,6 +282,15 @@ $("body").on("pluginLoad", function (event, plugin) {
       visiblesActivar = false;
     }
   }
+  if (visiblesActivar && gestorMenu.pluginExists("accessibility")) {
+    if (
+      gestorMenu.plugins["accessibility"].getStatus() == "ready" ||
+      gestorMenu.plugins["accessibility"].getStatus() == "fail"
+    ) {
+    } else {
+      visiblesActivar = false;
+    }
+  }
   if (visiblesActivar && gestorMenu.pluginExists("configTool")) {
     if (
       gestorMenu.plugins["configTool"].getStatus() == "ready" ||
@@ -377,6 +390,10 @@ $("body").on("pluginLoad", function (event, plugin) {
             document.getElementById("nav-help-btn").style.display = "none";
           }
           break;
+        case "accessibility":
+          const accessibility = new Accessibility();
+          accessibility.createComponent();
+          break
         case "loadLayer":
           const loadLayersModal = new LoadLayersModal();
           //modal.createModal();          //loadLayersModal.createComponent();
@@ -654,6 +671,18 @@ $("body").on("pluginLoad", function (event, plugin) {
                   !this._enabled &&
                     this._hasAvailableLayers() &&
                     (this.fire("enabled", { handler: this.type }),
+                      this._map.fire(L.Draw.Event.EDITSTART, {
+                        handler: this.type,
+                      }),
+                      L.Handler.prototype.enable.call(this),
+                      this._featureGroup
+                        .on("layeradd", this._enableLayerEdit, this)
+                        .on("layerremove", this._disableLayerEdit, this));
+                }
+              } else {
+                !this._enabled &&
+                  this._hasAvailableLayers() &&
+                  (this.fire("enabled", { handler: this.type }),
                     this._map.fire(L.Draw.Event.EDITSTART, {
                       handler: this.type,
                     }),
@@ -661,18 +690,6 @@ $("body").on("pluginLoad", function (event, plugin) {
                     this._featureGroup
                       .on("layeradd", this._enableLayerEdit, this)
                       .on("layerremove", this._disableLayerEdit, this));
-                }
-              } else {
-                !this._enabled &&
-                  this._hasAvailableLayers() &&
-                  (this.fire("enabled", { handler: this.type }),
-                  this._map.fire(L.Draw.Event.EDITSTART, {
-                    handler: this.type,
-                  }),
-                  L.Handler.prototype.enable.call(this),
-                  this._featureGroup
-                    .on("layeradd", this._enableLayerEdit, this)
-                    .on("layerremove", this._disableLayerEdit, this));
               }
             },
             _enableLayerEdit: function (t) {
@@ -683,12 +700,12 @@ $("body").on("pluginLoad", function (event, plugin) {
                 //to disallow editing in geoprocesses
                 this._backupLayer(o),
                   this.options.poly &&
-                    ((i = L.Util.extend({}, this.options.poly)),
+                ((i = L.Util.extend({}, this.options.poly)),
                     (o.options.poly = i)),
                   this.options.selectedPathOptions &&
-                    ((e = L.Util.extend({}, this.options.selectedPathOptions)),
+                ((e = L.Util.extend({}, this.options.selectedPathOptions)),
                     e.maintainColor &&
-                      ((e.color = o.options.color),
+                ((e.color = o.options.color),
                       (e.fillColor = o.options.fillColor)),
                     (o.options.original = L.extend({}, o.options)),
                     (o.options.editing = e)),
@@ -713,10 +730,10 @@ $("body").on("pluginLoad", function (event, plugin) {
                   delete e.options.editing,
                   delete e.options.original,
                   this._selectedPathOptions &&
-                    (e instanceof L.Marker
-                      ? this._toggleMarkerHighlight(e)
-                      : (e.setStyle(e.options.previousOptions),
-                        delete e.options.previousOptions)),
+                  (e instanceof L.Marker
+                    ? this._toggleMarkerHighlight(e)
+                    : (e.setStyle(e.options.previousOptions),
+                      delete e.options.previousOptions)),
                   e instanceof L.Marker
                     ? (e.dragging.disable(),
                       e
@@ -761,8 +778,8 @@ $("body").on("pluginLoad", function (event, plugin) {
               var e = t.layer || t.target || t;
               let isFile = e.id
                 ? e.id.includes("json") ||
-                  e.id.includes("zip") ||
-                  e.id.includes("kml")
+                e.id.includes("zip") ||
+                e.id.includes("kml")
                 : false;
               if (
                 typeof e != "string" &&
@@ -2558,8 +2575,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layer.split("_")[0];
             return mapa.editableLayers.hasOwnProperty(type)
               ? mapa.editableLayers[type]
-                  .find((lyr) => lyr.name === layer)
-                  .toGeoJSON()
+                .find((lyr) => lyr.name === layer)
+                .toGeoJSON()
               : null;
           };
 
@@ -3705,17 +3722,17 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div id="popupPageSeeker">' +
-            sAux +
-            '</div><div class="featureInfo" id="featureInfoPopup' +
-            i +
-            '">',
+          sAux +
+          '</div><div class="featureInfo" id="featureInfoPopup' +
+          i +
+          '">',
         );
       } else {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div class="featureInfo" style="display:none" id="featureInfoPopup' +
-            i +
-            '">',
+          i +
+          '">',
         );
       }
     }
