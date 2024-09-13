@@ -168,6 +168,11 @@ class Searchbar_UI {
           selected_item = false;
           //si contienen caracteres invalidos #$%#$% o es igual a url
           if (regexValidator(search_term) && !itsloading) {
+            if (isCoordinates(search_term)) {
+              const lat = Number(search_term.split(",")[0]);
+              const lon = Number(search_term.split(",")[1]);
+              mapa.setView([lat, lon], 16);
+            }
             itsloading = true;
             showGeocoderResults();
           }
@@ -465,6 +470,15 @@ function regexValidator(val) {
     return true;
   } else {
     ui_elements.create_character_invalid();
+    return false;
+  }
+}
+
+function isCoordinates(string) {
+  const regex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
+  if (string.match(regex)) {
+    return true;
+  } else {
     return false;
   }
 }
