@@ -14,7 +14,7 @@
   /*   max-width: 550px; */
 }
 
-@media (max-width: 1115px) {
+@media (max-width: 915px) {
   .navbar-fixed-top {
     /* max-width: fit-content; */
     width: auto;

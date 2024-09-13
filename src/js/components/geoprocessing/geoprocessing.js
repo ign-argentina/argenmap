@@ -47,7 +47,13 @@ class Geoprocessing {
     btnElement.title = "Geoprocesos";
 
     // Icon options: fa-microchip, fa-screwdriver-wrench, fa-toolbox, fa-wand-magic-sparkles
-    btnElement.innerHTML = `<i class="fa-solid fa-wrench"></i>`;
+    // btnElement.innerHTML = `<i class="fa-solid fa-wrench"></i>`;
+    btnElement.innerHTML = `<svg width="24" height="23" viewBox="0 0 74 73" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44.2008 19.9065L47.2008 25.0965C47.3999 25.4408 47.7277 25.6918 48.1119 25.7945C48.4961 25.8972 48.9054 25.843 49.2498 25.644L51.3438 24.435C52.2138 25.1205 53.1753 25.683 54.1863 26.103V28.5C54.1863 28.8978 54.3443 29.2794 54.6256 29.5607C54.9069 29.842 55.2884 30 55.6863 30H61.6863C62.0841 30 62.4656 29.842 62.7469 29.5607C63.0282 29.2794 63.1863 28.8978 63.1863 28.5V26.103C64.2052 25.6788 65.1615 25.1176 66.0288 24.435L68.1228 25.644C68.8383 26.0565 69.7593 25.809 70.1718 25.0965L73.1718 19.9065C73.3692 19.5618 73.4224 19.1531 73.3199 18.7693C73.2173 18.3855 72.9673 18.0578 72.6243 17.8575L70.5663 16.668C70.7271 15.5617 70.7261 14.438 70.5633 13.332L72.6213 12.1425C73.3353 11.73 73.5828 10.8075 73.1688 10.0935L70.1688 4.9035C69.9696 4.55925 69.6419 4.30818 69.2576 4.20551C68.8734 4.10284 68.4641 4.15697 68.1198 4.356L66.0258 5.565C65.1596 4.88157 64.2037 4.32032 63.1848 3.897V1.5C63.1848 1.10218 63.0267 0.720644 62.7454 0.43934C62.4641 0.158035 62.0826 0 61.6848 0H55.6848C55.2869 0 54.9054 0.158035 54.6241 0.43934C54.3428 0.720644 54.1848 1.10218 54.1848 1.5V3.897C53.1658 4.32121 52.2095 4.88238 51.3423 5.565L49.2498 4.356C49.0793 4.25725 48.8911 4.19308 48.6958 4.16715C48.5005 4.14123 48.302 4.15406 48.1117 4.20491C47.9214 4.25576 47.743 4.34364 47.5867 4.46351C47.4304 4.58338 47.2992 4.73289 47.2008 4.9035L44.2008 10.0935C44.0033 10.4382 43.9501 10.8469 44.0527 11.2307C44.1552 11.6145 44.4052 11.9422 44.7483 12.1425L46.8063 13.332C46.6445 14.4381 46.6445 15.5619 46.8063 16.668L44.7483 17.8575C44.0343 18.27 43.7868 19.1925 44.2008 19.9065ZM58.6848 9C61.9938 9 64.6848 11.691 64.6848 15C64.6848 18.309 61.9938 21 58.6848 21C55.3758 21 52.6848 18.309 52.6848 15C52.6848 11.691 55.3758 9 58.6848 9Z" fill="#fff" />
+      <path d="M25 23C20.7853 23.0096 16.6413 24.0848 12.9533 26.1252L16.0248 28.2859L20.4927 26.7576L23.2363 27.3848L24.2162 32.95L25.9015 31.6567L30.4871 30.0891L32.525 33.1853L28.5272 35.3017L26.0191 37.1044L25.7448 39.6127L22.9622 41.9643L22.1783 45.7661L20.6106 45.8836L21.3944 41.5722L15.4762 41.2589L14.0655 43.3359L14.0544 43.3348V46.3085L16.9365 46.5301L19.597 48.4146L19.3753 51.2414L23.1443 51.9066L23.1041 51.9914L29.0198 48.5809L39.1626 55.1767L36.8735 60.595L33.2257 62.8445L26.4017 71.546L24.8952 71.1169L25.6938 60.1652L20.9825 55.4539L21.8589 53.907L18.9871 52.8488L16.1605 49.4124L13.7215 48.858L9.4221 42.6429H8.92857L8.35748 45.6279L7.95123 41.2589L8.53906 38.0059L8.46094 35.4191L7.28203 30.3884C2.62455 35.067 0.00669643 41.3981 0 48C0 61.8071 11.1929 73 25 73C34.1979 72.9969 42.6512 67.9433 47.0084 59.843L45.8504 52.7031L45.2232 48.6663L41.4219 45.6092L42.1663 41.3763L43.93 39.1032L48.1214 38.5396C44.2819 29.148 35.1465 23.008 25 23ZM34.9383 28.3571H37.5V33.7143L33.9286 35.5V32.8397L34.9383 28.3571ZM21.2374 46.9417L24.5689 47.4906L24.0987 48.196L21.3944 47.6473L21.2374 46.9417Z" fill="#fff" />
+    </svg>
+    `;
+
     btnElement.setAttribute("aria-hidden", "true");
 
     btnElement.onclick = () => {
@@ -163,7 +169,7 @@ class Geoprocessing {
         this.contour_result_active = true;
         let style_fix_textpath = document.createElement("style");
         style_fix_textpath.id = "fix-textpath";
-        style_fix_textpath.innerHTML = `.leaflet-pane svg text { font-size: 0.8em; }`;
+        style_fix_textpath.innerHTML = `.leaflet - pane svg text { font - size: 0.8em; } `;
 
         document.head.appendChild(style_fix_textpath);
         let layername = this.namePrefix + counterContour;
@@ -222,7 +228,7 @@ class Geoprocessing {
       case "waterRise": {
         btn_modal_loading = true;
         const height = this.lastHeightProcessed;
-        let layername = `${this.namePrefix + counterHeight}_${height}m`;
+        let layername = `${this.namePrefix + counterHeight}_${height} m`;
         counterHeight++;
 
         let selectedRectangle;
@@ -267,10 +273,10 @@ class Geoprocessing {
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
 
-        const title = `${imageLayer.name}`;
+        const title = `${imageLayer.name} `;
         const download = () => {
           const latlngs = selectedRectangle.getLatLngs()[0];
-          const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat}`;
+          const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat} `;
 
           this.geoprocessing
             .execute(coords, height, "image/tiff", "#0368ff60", 1.0)
@@ -737,7 +743,7 @@ class Geoprocessing {
       switch (field.element) {
         case "select":
           {
-            const selectId = `select-${id}`;
+            const selectId = `select - ${id} `;
 
             const options = [];
             options.push({ value: "", text: "" });
@@ -875,7 +881,7 @@ class Geoprocessing {
             if (field.hasOwnProperty("max")) {
               extraProps.max = field.max;
             }
-            const inputId = `input-${id}`;
+            const inputId = `input - ${id} `;
             const input = this.optionsForm.addElement("input", inputId, {
               title: field.name,
               extraProps: extraProps,

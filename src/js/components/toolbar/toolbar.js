@@ -85,13 +85,13 @@ class ToolbarVisibilityToggler {
       "map-toolbar-icon-left",
       "hideBtnLeft",
       "Esconder herramientas",
-      "glyphicon glyphicon-wrench",
+      "fa-solid fa-wrench",
     );
     this.createBtn(
       "map-toolbar-icon-right",
       "hideBtnRight",
       "Esconder herramientas de dibujo",
-      "glyphicon glyphicon-pencil",
+      "bx bxs-pencil",
     );
 
     // Use an arrow function to ensure the 'this' context is preserved

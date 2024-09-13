@@ -392,8 +392,9 @@ div.leaflet-top.leaflet-left {
   border-color: var(--btn-primary-color);
 }
 
-.ag-btn-primary:hover {
+.ag-btn-primary:hover, .ag-btn-primary:hover svg path {
   color: var(--btn-primary-color);
+  fill: var(--btn-primary-color);
 }
 
 .ag-btn-secondary {
@@ -930,7 +931,7 @@ li.active>div>a {
 }
 
 /* Leaflet */
-@media (max-width: 1115px) {
+@media (max-width: 915px) {
   .leaflet-top {
     top: 60px;
   }
@@ -1586,6 +1587,14 @@ input:checked.switch+label:after {
   font-size: x-large;
 }
 
+.bxs-pencil {
+  font-size: large;
+  line-height: inherit;
+}
+.fa-wrench {
+  font-size: medium;
+  line-height: inherit;
+}
 /* Perfil Topografico */
 #pt-wrapper {
   position: absolute;
@@ -1686,6 +1695,7 @@ input:checked.switch+label:after {
 .leaflet-bar a.leaflet-disabled {
   color: var(--map-btn-color) !important;
   background-color: var(--map-btn-bg-color);
+
 }
 
 .leaflet-bar a:hover {
