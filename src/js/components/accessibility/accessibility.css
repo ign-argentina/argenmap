@@ -25,9 +25,10 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  flex-wrap: wrap;
 }
 .accessibility-btn {
-  width: 100px;
+  width: 125px;
   height: 100px;
   display: flex;
   flex-direction: column;
@@ -39,4 +40,19 @@
 }
 .accessibility-icon {
   font-size: x-large;
+}
+.invert-colors {
+  filter: invert(1);
+}
+.grey-colors {
+  filter: grayscale(1);
+}
+.saturation-colors-low {
+  filter: saturate(0.5);
+}
+.saturation-colors-high {
+  filter: saturate(2);
+}
+.readable-font {
+  font-family: Verdana, Arial, Helvetica, sans-serif !important;
 }

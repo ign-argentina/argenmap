@@ -4,6 +4,11 @@
  */
 class Accessibility {
   constructor() {
+    this.fontSizeState = 1; // Track the current font size state
+    this.changeFontSize = this.changeFontSize.bind(this);
+    this.invertColors = this.invertColors.bind(this);
+    this.greyColors = this.greyColors.bind(this);
+    this.saturationColors = this.saturationColors.bind(this);
   }
 
   /**
@@ -17,11 +22,17 @@ class Accessibility {
 
     // Create buttons with relevant actions
     const fontSizeButton = this.createAccessibilityButton("Tamaño de fuente", "fa-solid fa-text-height", this.changeFontSize);
-    const increaseButton = this.createAccessibilityButton("Aumentar algo", "fa-solid fa-underline", this.increaseSomething);
+    const increaseButton = this.createAccessibilityButton("Invertir colores", "fa-solid fa-circle-half-stroke", this.invertColors);
+    const greyButton = this.createAccessibilityButton("Escala de grises", "fa-solid fa-barcode", this.greyColors);
+    const saturationButton = this.createAccessibilityButton("Saturación", "fa-solid fa-palette", this.saturationColors);
+    const readableFontButton = this.createAccessibilityButton("Fuente legible", "fa-solid fa-font", this.readableFont);
 
     // Append elements to the panel
     accessibilityMain.appendChild(fontSizeButton);
     accessibilityMain.appendChild(increaseButton);
+    accessibilityMain.appendChild(greyButton);
+    accessibilityMain.appendChild(saturationButton);
+    accessibilityMain.appendChild(readableFontButton);
     accessibilityPanel.appendChild(accessibilityTitle);
     accessibilityPanel.appendChild(accessibilityMain);
 
@@ -70,21 +81,88 @@ class Accessibility {
 
   /**
    * @function changeFontSize
-   * @description Changes the font size for accessibility purposes.
+   * @description Alternates between three font sizes for accessibility purposes.
    */
   changeFontSize() {
-    const fontSize = document.querySelectorAll(".item-group-short-desc span, .item-group-title, .nav-tabs>li>a, .base-layer-item-info>div, #argenmap-tooltip span, .tabs_upload, .upload p, .initModal p, .form-element, label");
-    fontSize.forEach((element) => {
-      element.style.fontSize = "18px";
+    const fontSizeElements = document.querySelectorAll(".item-group-short-desc span, .item-group-title, .nav-tabs>li>a, .base-layer-item-info>div, #argenmap-tooltip span, .tabs_upload, .upload p, .initModal p, .form-element, label, .accessibility-btn h5");
+
+    fontSizeElements.forEach((element) => {
+      switch (this.fontSizeState) {
+        case 0:
+          element.style.fontSize = ""; // Reset to the default size
+          break;
+        case 1:
+          element.style.fontSize = "18px"; // Medium size
+          break;
+        case 2:
+          element.style.fontSize = "20px"; // Large size
+          break;
+      }
     });
+
+    // Update the font size state to alternate between 0, 1, and 2
+    this.fontSizeState = (this.fontSizeState + 1) % 3;
   }
 
   /**
-   * @function increaseSomething
-   * @description Increases a specific setting for accessibility purposes.
+   * @function invertColors
+   * @description Toggles a CSS class on the body element to invert the colors of the page for accessibility.
    */
-  increaseSomething() {
-    console.log("Increasing something...");
-    // Functionality to increase a specific setting goes here
+  invertColors() {
+    const body = document.querySelector('body');
+
+    if (body) {
+      body.classList.remove('grey-colors', 'saturation-colors-low', 'saturation-colors-high');
+      body.classList.toggle('invert-colors');
+    } else {
+      console.warn("Body element not found. Could not apply color inversion.");
+    }
   }
+
+  /**
+   * @function greyColors
+   * @description Toggles a CSS class on the body element to apply grayscale colors for accessibility.
+   */
+  greyColors() {
+    const body = document.querySelector('body');
+
+    if (body) {
+      body.classList.remove('invert-colors', 'saturation-colors-low', 'saturation-colors-high');
+      body.classList.toggle('grey-colors');
+    } else {
+      console.warn("Body element not found. Could not apply grayscale colors.");
+    }
+  }
+
+  /**
+   * @function saturationColors
+   * @description Toggles between three saturation levels (low, high, and normal).
+   */
+  saturationColors() {
+    const body = document.querySelector('body');
+
+    if (body) {
+      body.classList.remove('invert-colors', 'grey-colors');
+      // Toggle between saturation levels
+      if (body.classList.contains('saturation-colors-low')) {
+        body.classList.replace('saturation-colors-low', 'saturation-colors-high');
+      } else if (body.classList.contains('saturation-colors-high')) {
+        body.classList.remove('saturation-colors-high'); // Reset to normal (no class)
+      } else {
+        body.classList.add('saturation-colors-low'); // Default to low saturation
+      }
+    } else {
+      console.warn("Body element not found. Could not toggle saturation classes.");
+    }
+  }
+
+  readableFont() {
+    const body = document.querySelector('body');
+    if (body) {
+      body.classList.toggle('readable-font');
+    }
+  }
+
+
+
 }

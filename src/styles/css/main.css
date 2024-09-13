@@ -632,7 +632,6 @@ div.leaflet-top.leaflet-left {
 }
 
 .panel-heading {
-  font-family: var(--main-font-family);
   border: none;
   border-radius: 0;
   border-top: 1px solid #f5f5f5 !important;
@@ -726,7 +725,6 @@ li.active>div>a {
 .item-group-title {
   -webkit-user-select: none;
   user-select: none;
-  font-family: var(--main-font-family);
   font-size: var(--group-title-fnt-size, 15px);
   font-weight: bolder;
 }
