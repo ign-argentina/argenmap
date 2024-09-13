@@ -44,7 +44,7 @@ class Geoprocessing {
     const btnElement = document.createElement("button");
     btnElement.classList = "ag-btn ag-btn-primary menu-section-btn";
     btnElement.id = "geoprocesos-btn";
-    //btnElement.ariaLabel = "Geoprocesos";
+    btnElement.ariaLabel = "Geoprocesos";
     btnElement.title = "Geoprocesos";
 
     // Icon options: fa-microchip, fa-screwdriver-wrench, fa-toolbox, fa-wand-magic-sparkles
@@ -168,7 +168,7 @@ class Geoprocessing {
         this.contour_result_active = true;
         let style_fix_textpath = document.createElement("style");
         style_fix_textpath.id = "fix-textpath";
-        style_fix_textpath.innerHTML = `.leaflet - pane svg text { font - size: 0.8em; } `;
+        style_fix_textpath.innerHTML = `.leaflet-pane svg text { font-size: 0.8em; }`;
 
         document.head.appendChild(style_fix_textpath);
         let layername = this.namePrefix + counterContour;
@@ -272,10 +272,10 @@ class Geoprocessing {
         mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
 
-        const title = `${imageLayer.name} `;
+        const title = `${imageLayer.name}`;
         const download = () => {
           const latlngs = selectedRectangle.getLatLngs()[0];
-          const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat} `;
+          const coords = `${latlngs[0].lng} ${latlngs[0].lat}, ${latlngs[1].lng} ${latlngs[1].lat},${latlngs[2].lng} ${latlngs[2].lat},${latlngs[3].lng} ${latlngs[3].lat},${latlngs[0].lng} ${latlngs[0].lat}`;
 
           this.geoprocessing
             .execute(coords, height, "image/tiff", "#0368ff60", 1.0)
@@ -742,7 +742,7 @@ class Geoprocessing {
       switch (field.element) {
         case "select":
           {
-            const selectId = `select - ${id} `;
+            const selectId = `select-${id}`;
 
             const options = [];
             options.push({ value: "", text: "" });
@@ -880,7 +880,7 @@ class Geoprocessing {
             if (field.hasOwnProperty("max")) {
               extraProps.max = field.max;
             }
-            const inputId = `input - ${id} `;
+            const inputId = `input-${id}`;
             const input = this.optionsForm.addElement("input", inputId, {
               title: field.name,
               extraProps: extraProps,
