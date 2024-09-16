@@ -1018,7 +1018,7 @@ li.active>div>a {
 }
 
 .leaflet-popup-content {
-  font-family: "Encode Sans", sans-serif;
+/*   font-family: "Encode Sans", sans-serif; */
   letter-spacing: 0.02em;
 }
 

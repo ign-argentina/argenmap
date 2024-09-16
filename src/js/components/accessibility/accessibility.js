@@ -5,10 +5,13 @@
 class Accessibility {
   constructor() {
     this.fontSizeState = 1; // Track the current font size state
+    this.fontFamilyState = 1; // Track the current font family state
     this.changeFontSize = this.changeFontSize.bind(this);
     this.invertColors = this.invertColors.bind(this);
     this.greyColors = this.greyColors.bind(this);
     this.saturationColors = this.saturationColors.bind(this);
+    this.readableFont = this.readableFont.bind(this);
+
   }
 
   /**
@@ -16,16 +19,16 @@ class Accessibility {
    * @description Initializes the accessibility panel and appends it to the DOM.
    */
   createComponent() {
-    const accessibilityPanel = this.createElement("div", "accessibility-panel");
-    const accessibilityTitle = this.createElement("h2", "", "Accesibilidad");
-    const accessibilityMain = this.createElement("div", "accessibility-main");
+    const accessibilityPanel = this.createElement("div", "accessibilityPanel", "accessibility-panel");
+    const accessibilityTitle = this.createElement("h2", "accessibilityTitle", "", "Accesibilidad");
+    const accessibilityMain = this.createElement("div", "accessibilityMain", "accessibility-main");
 
     // Create buttons with relevant actions
-    const fontSizeButton = this.createAccessibilityButton("Tamaño de fuente", "fa-solid fa-text-height", this.changeFontSize);
-    const increaseButton = this.createAccessibilityButton("Invertir colores", "fa-solid fa-circle-half-stroke", this.invertColors);
-    const greyButton = this.createAccessibilityButton("Escala de grises", "fa-solid fa-barcode", this.greyColors);
-    const saturationButton = this.createAccessibilityButton("Saturación", "fa-solid fa-palette", this.saturationColors);
-    const readableFontButton = this.createAccessibilityButton("Fuente legible", "fa-solid fa-font", this.readableFont);
+    const fontSizeButton = this.createAccessibilityButton("Tamaño de fuente", "fontSize", "fa-solid fa-text-height", this.changeFontSize);
+    const invertColorsButton = this.createAccessibilityButton("Invertir colores", "invertColors", "fa-solid fa-circle-half-stroke", this.invertColors);
+    const greyButton = this.createAccessibilityButton("Escala de grises", "grey", "fa-solid fa-barcode", this.greyColors);
+    const saturationButton = this.createAccessibilityButton("Saturación", "saturation", "fa-solid fa-palette", this.saturationColors);
+    const readableFontButton = this.createAccessibilityButton("Seleccionar fuente", "readableFont", "fa-solid fa-font", this.readableFont);
     const constrastButton = this.createAccessibilityButton("Contraste", "fa-solid fa-adjust", this.contrast);
     const bigCursorButton = this.createAccessibilityButton("Cursor grande", "fa-solid fa-mouse-pointer", this.bigCursor);
     const toUpperCaseButton = this.createAccessibilityButton("Mayúsculas", "fa-solid fa-font", this.toUpperCase);
@@ -33,7 +36,7 @@ class Accessibility {
 
     // Append elements to the panel
     accessibilityMain.appendChild(fontSizeButton);
-    accessibilityMain.appendChild(increaseButton);
+    accessibilityMain.appendChild(invertColorsButton);
     accessibilityMain.appendChild(greyButton);
     accessibilityMain.appendChild(saturationButton);
     accessibilityMain.appendChild(readableFontButton);
@@ -51,12 +54,14 @@ class Accessibility {
    * @function createElement
    * @description Utility method to create an HTML element with specified classes and content.
    * @param {string} tag - The tag name of the element (e.g., 'div', 'h2').
+   * @param {string} id - The ID to assign to the element.
    * @param {string} classList - Class names to add to the element.
    * @param {string} [innerHTML] - Optional inner HTML content for the element.
    * @returns {HTMLElement} - The created HTML element.
    */
-  createElement(tag, classList, innerHTML = "") {
+  createElement(tag, id, classList, innerHTML = "") {
     const element = document.createElement(tag);
+    element.id = id;
     element.className = classList;
     if (innerHTML) element.innerHTML = innerHTML;
     return element;
@@ -66,19 +71,20 @@ class Accessibility {
    * @function createAccessibilityButton
    * @description Creates a button element for the accessibility panel with an associated action.
    * @param {string} title - The button title and tooltip text.
+   * @param {string} id - The ID to assign to the button element.
    * @param {string} icon - Font Awesome icon class.
    * @param {function} action - The function to be executed when the button is clicked.
    * @returns {HTMLElement} - The created button element.
    */
-  createAccessibilityButton(title, icon, action) {
-    const button = this.createElement("div", "ag-btn ag-btn-secondary accessibility-btn");
+  createAccessibilityButton(title, id, icon, action) {
+    const button = this.createElement("div", id + "-btn", "ag-btn ag-btn-secondary accessibility-btn", "");
     button.setAttribute("title", title);
 
-    const iconElement = this.createElement("i", icon + " accessibility-icon");
+    const iconElement = this.createElement("i", id + "-icon", icon + " accessibility-icon");
 
     iconElement.setAttribute("aria-hidden", "true");
 
-    const titleElement = this.createElement("h5", "", title);
+    const titleElement = this.createElement("h5", id + "-title", "", title);
 
     button.appendChild(iconElement);
     button.appendChild(titleElement);
@@ -164,12 +170,45 @@ class Accessibility {
     }
   }
 
+  /**
+   * Toggles between three font classes ('readable-font', 'dyslexic-font', 'tiresias-font')
+   * on the specified elements to enhance readability.
+   */
   readableFont() {
-    const body = document.querySelector('body');
-    if (body) {
-      body.classList.toggle('readable-font');
+    // Select all elements matching the specified selectors
+    const fontElements = document.querySelectorAll('body, .featureInfo, .leaflet-container, .list-group-item, .leaflet-popup-content, .leaflet-draw-actions a');
+    const btnTitle = document.querySelector('#readableFont-title');
+    // Remove previously applied font classes
+    fontElements.forEach((element) => {
+      element.classList.remove('readable-font', 'dyslexic-font', 'tiresias-font');
+    });
+
+    // Apply the appropriate class based on the current state
+    fontElements.forEach((element) => {
+      switch (this.fontFamilyState) {
+        case 0: element.classList.remove('readable-font', 'dyslexic-font', 'tiresias-font');
+          btnTitle.innerHTML = "Seleccionar fuente";
+          break;
+        case 1:
+          element.classList.add('dyslexic-font');
+          btnTitle.innerHTML = "Fuente dislexia";
+          break;
+        case 2:
+          element.classList.add('tiresias-font');
+          btnTitle.innerHTML = "Fuente baja visión";
+          break;
+        case 3:
+          element.classList.add('readable-font');
+          btnTitle.innerHTML = "Fuente legible";
+          break;
     }
+    });
+
+    // Update the font size state to alternate between 0, 1, 2, and 3
+    this.fontFamilyState = (this.fontFamilyState + 1) % 4;
   }
+
+
 
 
 

@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/open-dyslexic');
+@import url('https://fonts.cdnfonts.com/css/tiresias-pcfont');
 #accessibility {
   overflow: auto;
   position: relative;
@@ -54,5 +57,11 @@
   filter: saturate(2);
 }
 .readable-font {
-  font-family: Verdana, Arial, Helvetica, sans-serif !important;
+  font-family: "Lexend", sans-serif !important;
+  }
+  .dyslexic-font {
+    font-family: 'Open-Dyslexic', sans-serif;
+  }
+  .tiresias-font {
+    font-family: "Tiresias PCfont", sans-serif !important;
 }
