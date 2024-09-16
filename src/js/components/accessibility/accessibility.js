@@ -26,6 +26,10 @@ class Accessibility {
     const greyButton = this.createAccessibilityButton("Escala de grises", "fa-solid fa-barcode", this.greyColors);
     const saturationButton = this.createAccessibilityButton("Saturación", "fa-solid fa-palette", this.saturationColors);
     const readableFontButton = this.createAccessibilityButton("Fuente legible", "fa-solid fa-font", this.readableFont);
+    const constrastButton = this.createAccessibilityButton("Contraste", "fa-solid fa-adjust", this.contrast);
+    const bigCursorButton = this.createAccessibilityButton("Cursor grande", "fa-solid fa-mouse-pointer", this.bigCursor);
+    const toUpperCaseButton = this.createAccessibilityButton("Mayúsculas", "fa-solid fa-font", this.toUpperCase);
+
 
     // Append elements to the panel
     accessibilityMain.appendChild(fontSizeButton);
@@ -33,6 +37,10 @@ class Accessibility {
     accessibilityMain.appendChild(greyButton);
     accessibilityMain.appendChild(saturationButton);
     accessibilityMain.appendChild(readableFontButton);
+    accessibilityMain.appendChild(constrastButton);
+    accessibilityMain.appendChild(bigCursorButton);
+    accessibilityMain.appendChild(toUpperCaseButton);
+
     accessibilityPanel.appendChild(accessibilityTitle);
     accessibilityPanel.appendChild(accessibilityMain);
 

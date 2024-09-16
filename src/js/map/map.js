@@ -2721,7 +2721,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             const styleOptions = { ...layer.options };
 
             if (layer.type === "label") {
-              geoJSON.properties.text = layer.data.properties.text;
+              // Extract label text from layer properties.
+              layer.data.geoJSON ? geoJSON.properties.text = layer.data.geoJSON.properties.text : geoJSON.properties.text = layer.data.properties.text;
             }
 
             const fileName = layer.name + ".geojson"; // Create file name.

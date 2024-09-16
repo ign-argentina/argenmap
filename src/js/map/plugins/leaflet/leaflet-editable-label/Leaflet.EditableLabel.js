@@ -1,3 +1,7 @@
+/**
+ * @class EditableLabel
+ * @description Provides functionality to add editable text labels on a Leaflet map.
+ */
 class EditableLabel {
   constructor() {
     this._map = null;
@@ -7,7 +11,12 @@ class EditableLabel {
     this.title = "Agregar etiqueta";
   }
 
-  _initialize = () => {
+  /**
+   * @private
+   * @function _initialize
+   * @description Initializes the control and adds it to the map.
+   */
+  _initialize() {
     this.control = new this.labelsControl({
       title: this.title,
       click: this.addLabel,
@@ -23,131 +32,83 @@ class EditableLabel {
     });
 
     this.labelsLayer = new L.LayerGroup();
-  };
+  }
 
+  /**
+   * @class labelsControl
+   * @description Custom Leaflet control for adding labels.
+   */
   labelsControl = L.Control.extend({
     options: {
       position: "topright",
       title: "Editable Labels",
     },
 
-    onAdd: function (map) {
-      let controlDiv = L.DomUtil.create("div", "leaflet-bar leaflet-control");
-      let controlUI = L.DomUtil.create(
+    onAdd(map) {
+      const controlDiv = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+      const controlUI = L.DomUtil.create(
         "a",
-        "leaflet-editable-label leaflet-editable-label-interior center-flex",
+        "leaflet-editable-label leaflet-editable-label-interior center-flex"
       );
       controlDiv.appendChild(controlUI);
 
-      L.DomEvent.addListener(controlDiv, "click", L.DomEvent.stopPropagation)
-        .addListener(controlDiv, "click", L.DomEvent.preventDefault)
-        .addListener(controlDiv, "click", function () {});
+      L.DomEvent.disableClickPropagation(controlDiv);
 
       const icon = document.createElement("span");
-      //icon.src= "src/styles/images/icon-text-regular.png"
       icon.classList = "icon-text";
-
       controlUI.title = this.options.title;
       controlUI.id = "editableLabelBtn";
       controlUI.appendChild(icon);
+
       return controlDiv;
     },
   });
 
-  _addLayerGroup = () => {
+  /**
+   * @private
+   * @function _addLayerGroup
+   * @description Adds a new layer group to the map for labels.
+   */
+  _addLayerGroup() {
     this.labelsLayer = L.layerGroup().addTo(this._map);
-    /* addedLayers.push({
-      id: "labels",
-      layer: this.labelsLayer,
-      name: "Etiquetas",
-      file_name: "labels",
-    });
-    menu_ui.addFileLayer("Etiquetas", "Etiquetas", "labels", "labels") */
-  };
+  }
 
-  _removeLayerGroup = () => {
-    this.labelsLayer.remove();
-  };
+  /**
+   * @private
+   * @function _removeLayerGroup
+   * @description Removes the labels layer group from the map.
+   */
+  _removeLayerGroup() {
+    if (this.labelsLayer) {
+      this.labelsLayer.clearLayers();
+      this._map.removeLayer(this.labelsLayer);
+    }
+  }
 
   /**
    * Add a new text marker to the map.
-   * @param {Object} options - The options for the new marker.
-   * @param {number} options.lat - The latitude of the marker.
-   * @param {number} options.lng - The longitude of the marker.
+   * @param {L.LatLng} latlng - The latitude and longitude of the marker.
    */
-  addText = ({ lat, lng }) => {
-    let name = "label_"; // Set the default name of the marker.
+  addText(latlng) {
+    let name = this._generateLabelName();
 
-    // If there are existing markers, use the last one's name to generate a new name.
-    if (mapa.editableLayers["label"].length === 0) {
-      name += "1";
-    } else {
-      const lastLayerName =
-        mapa.editableLayers["label"][mapa.editableLayers["label"].length - 1]
-          .name;
-      name += parseInt(lastLayerName.split("_")[1]) + 1;
-    }
-
-    // Create a new textarea element for the marker's label.
-    const textarea = document.createElement("textarea");
-    textarea.name = name;
-    textarea.autocomplete = "off";
-    textarea.placeholder = "Escribe algo aquí...";
-    textarea.className = "map-label";
-    textarea.style.resize = "";
-    textarea.maxlength = "255";
-
-    // Resize the textarea as the user types.
-    textarea.onkeydown = function () {
-      this.style.height = "20px";
-      this.style.height = this.scrollHeight + 4 + "px";
-    };
-
-    // Create a new div icon for the marker's label.
+    const textarea = this._createTextarea(name);
     const divIcon = L.divIcon({
       className: "div-icon",
       html: textarea,
     });
 
-    // Create a new marker for the label.
-    const textLayer = L.marker([lat, lng], {
+    const textLayer = L.marker(latlng, {
       icon: divIcon,
     });
 
-    // Set the name and type of the marker, and store its geoJSON data.
-    textLayer.name = name;
-    textLayer.type = "label";
-    textLayer.data = textLayer.toGeoJSON();
-    textLayer.data.properties.text = "";
+    this._configureTextLayer(textLayer, name);
 
-    // Update the marker's geoJSON data as the user types.
-    textarea.onkeyup = function () {
-      textLayer.data.geoJSON.properties.text =
-        textLayer.options.icon.options.html.value;
-      textLayer._icon.lastChild.textContent =
-        textLayer.options.icon.options.html.value;
-    };
-
-    // Add custom functions to the marker.
-    textLayer.getGeoJSON = () => {
-      return mapa.getLayerGeoJSON(textLayer.name);
-    };
-    textLayer.downloadGeoJSON = () => {
-      mapa.downloadLayerGeoJSON(
-        mapa.editableLayers["label"].find((lyr) => lyr.name === textLayer.name),
-      );
-    };
-
-    // Add the new marker to the map and to the list of editable layers.
-    mapa.editableLayers["label"].push(textLayer);
-    addLayerToDrawingsGroup(name, textLayer, "Dibujos", "dibujos", "dibujos");
-    mapa.addContextMenuToLayer(textLayer);
-    drawnItems.addLayer(textLayer);
-
-    // Set focus on the new textarea and deactivate the drawing mode.
+    this._addLayerToMap(textLayer);
+    addLayerToDrawingsGroup(textLayer.name, textLayer, "Dibujos", "dibujos", "dibujos");
     textarea.focus();
     this.deactivate();
-  };
+  }
 
   /**
    * Creates and uploads a label to the map at the given coordinates.
@@ -160,16 +121,45 @@ class EditableLabel {
    * @param {string} color - The text color of the label.
    * @param {string} id - The ID of the layer group to which the label belongs.
    */
-  uploadLabel = (
+  uploadLabel(
     coordinates,
     text,
     borderWidth,
     borderColor,
     backgroundColor,
     color,
-    id,
-  ) => {
-    // Create a unique name for the label layer
+    id
+  ) {
+    let name = this._generateLabelName();
+
+    const textarea = this._createTextarea(name, text, {
+      borderWidth,
+      borderColor,
+      backgroundColor,
+      color,
+    });
+
+    const divIcon = L.divIcon({
+      className: "div-icon",
+      html: textarea,
+    });
+
+    const textLayer = L.marker(coordinates, {
+      icon: divIcon,
+    });
+
+    this._configureTextLayer(textLayer, name, text, id);
+    this._addLayerToMap(textLayer);
+    textarea.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" }));
+  }
+
+  /**
+   * @private
+   * @function _generateLabelName
+   * @description Generates a unique name for a new label.
+   * @returns {string} - The generated label name.
+   */
+  _generateLabelName() {
     let name = "label_";
     if (mapa.editableLayers["label"].length === 0) {
       name += "1";
@@ -179,19 +169,29 @@ class EditableLabel {
           .name;
       name += parseInt(lastLayerName.split("_")[1]) + 1;
     }
+    return name;
+  }
 
-    // Create the textarea element for the label
-    var textarea = document.createElement("textarea");
+  /**
+   * @private
+   * @function _createTextarea
+   * @description Creates a textarea element for the label.
+   * @param {string} name - The name attribute for the textarea.
+   * @param {string} [text=''] - The text content of the textarea.
+   * @param {Object} [styles={}] - The styles to apply to the textarea.
+   * @returns {HTMLTextAreaElement} - The created textarea element.
+   */
+  _createTextarea(name, text = '', styles = {}) {
+    const textarea = document.createElement("textarea");
     textarea.name = name;
     textarea.autocomplete = "off";
-    textarea.innerHTML = text;
     textarea.className = "map-label";
     textarea.style.resize = "none";
-    textarea.style.borderWidth = borderWidth;
-    textarea.style.borderColor = borderColor;
-    textarea.style.backgroundColor = backgroundColor;
-    textarea.style.color = color;
-    textarea.maxlength = "255";
+    textarea.maxLength = 255;
+    textarea.placeholder = "Escribe algo aquí...";
+    textarea.innerHTML = text;
+
+    Object.assign(textarea.style, styles);
 
     // Resize the textarea as needed when the user types
     textarea.onkeydown = function () {
@@ -199,75 +199,100 @@ class EditableLabel {
       this.style.height = this.scrollHeight + 4 + "px";
     };
 
-    // Create the divIcon with the textarea element
-    var divIcon = L.divIcon({
-      className: "div-icon",
-      html: textarea,
-    });
+    return textarea;
+  }
 
-    // Create the textLayer marker with the divIcon
-    var textLayer = L.marker(coordinates, {
-      icon: divIcon,
-    });
-
-    // Set properties for the textLayer marker
+  /**
+   * @private
+   * @function _configureTextLayer
+   * @description Configures a text layer with properties and event handlers.
+   * @param {L.Marker} textLayer - The text layer to configure.
+   * @param {string} name - The name of the text layer.
+   * @param {string} [text=''] - The initial text content.
+   * @param {string} [id] - The ID of the layer group to which the label belongs.
+   */
+  _configureTextLayer(textLayer, name, text = '', id) {
     textLayer.name = name;
     textLayer.type = "label";
     textLayer.data = textLayer.toGeoJSON();
+
+    // Ensure data and properties are initialized
+    if (!textLayer.data.properties) {
+      textLayer.data.properties = {};
+    }
+
     textLayer.data.properties.text = text;
     textLayer.id = id;
 
-    // Update the label's text content when the user types
-    textarea.onkeyup = function () {
-      textLayer.data.geoJSON.properties.text =
-        textLayer.options.icon.options.html.value;
-      textLayer._icon.lastChild.textContent =
-        textLayer.options.icon.options.html.value;
+    const textarea = textLayer.options.icon.options.html;
+
+    textarea.onkeyup = () => {
+      textLayer.data.geoJSON ? textLayer.data.geoJSON.properties.text = textarea.value : textLayer.data.properties.text = textarea.value;
+      textLayer._icon.lastChild.textContent = textarea.value;
     };
 
-    // Add custom functions to the textLayer marker
     textLayer.getGeoJSON = () => {
       return mapa.getLayerGeoJSON(textLayer.name);
     };
+
     textLayer.downloadGeoJSON = () => {
       mapa.downloadLayerGeoJSON(
-        mapa.editableLayers["label"].find((lyr) => lyr.name === textLayer.name),
+        mapa.editableLayers["label"].find((lyr) => lyr.name === textLayer.name)
       );
     };
+  }
 
-    // Add the label layer to the specified layer group and the map
-    mapa.groupLayers[id].push(name);
+
+  /**
+   * @private
+   * @function _addLayerToMap
+   * @description Adds a text layer to the map and editable layers array.
+   * @param {L.Marker} textLayer - The text layer to add.
+   */
+  _addLayerToMap(textLayer) {
     mapa.editableLayers["label"].push(textLayer);
     mapa.addContextMenuToLayer(textLayer);
     drawnItems.addLayer(textLayer);
+  }
 
-    // Adjust the height of textarea if there is more than one line
-    textarea.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab" }));
-  };
-
-  activate = () => {
+  /**
+   * Activates the label adding mode.
+   */
+  activate() {
     this._addLayerGroup();
     this._updateButton();
     this._map.on("click", (e) => {
       this.addText(e.latlng);
     });
-  };
+  }
 
-  deactivate = () => {
+  /**
+   * Deactivates the label adding mode.
+   */
+  deactivate() {
     this.activated = false;
     this._updateButton();
-    this.labelsLayer.clearLayers();
+    this._removeLayerGroup();
     this._map.off("click");
-  };
+  }
 
-  addTo = (map) => {
+  /**
+   * Adds the EditableLabel control to the specified map.
+   * @param {L.Map} map - The Leaflet map instance.
+   */
+  addTo(map) {
     this._map = map;
     this._initialize();
-  };
+  }
 
+  /**
+   * @private
+   * @function _updateButton
+   * @description Updates the control button UI.
+   */
   _updateButton() {
-    let control = this.control.getContainer().firstElementChild;
-    let controlIcon = control.querySelectorAll("span")[0];
+    const control = this.control.getContainer().firstElementChild;
+    const controlIcon = control.querySelector("span");
 
     if (controlIcon.classList.contains("icon-text")) {
       controlIcon.classList.remove("icon-text");
@@ -277,10 +302,6 @@ class EditableLabel {
       controlIcon.classList.add("icon-text");
     }
 
-    if (controlIcon.classList.contains("redIcon")) {
-      control.title = "Desactivar";
-    } else {
-      control.title = this.title;
-    }
+    control.title = controlIcon.classList.contains("redIcon") ? "Desactivar" : this.title;
   }
 }
