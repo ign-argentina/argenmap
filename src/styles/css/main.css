@@ -96,7 +96,7 @@ Ejemplos:
 #0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE Colores de prueba
 #0091CE #F38A00 Logo IGN
 #37bbec MapaMuni
-#157DB9 Color institucional 2024
+#157DB9#0094d4 Color institucional 2024
 #0db2e0 Color institucional 2023
 #242C4F #45659D #E7BA61 Paleta Manual de marca Presi 2024
 */
@@ -540,7 +540,7 @@ div.leaflet-top.leaflet-left {
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-  max-width: 320px;
+  max-width: 350px;
 }
 
 .menuFixed {
@@ -651,7 +651,7 @@ li.active>div>a {
 
 .list-group-item {
   position: initial;
-  font-family: "Encode Sans Medium", sans-serif;
+/*   font-family: "Encode Sans Medium", sans-serif; */
   cursor: pointer;
   padding: 8px 15px;
   background-color: #ffffffcc;
@@ -960,10 +960,6 @@ li.active>div>a {
   font-size: 17px !important;
 }
 
-.individualFeature h4 {
-  text-decoration: none !important;
-}
-
 .leaflet-control-minimap {
   border: 2px solid rgba(0, 0, 0, 0.2);
   -webkit-background-clip: padding-box;
@@ -980,7 +976,7 @@ li.active>div>a {
 /* Leaflet popup featureInfo */
 .featureInfo {
   font-family: inherit;
-  font-size: var(--popup-fnt-size, 12px);
+/*   font-size: var(--popup-fnt-size, 12px); */
   width: 100%;
 }
 
@@ -997,17 +993,15 @@ li.active>div>a {
   margin-bottom: 1em;
 }
 
-.featureInfo h4 {
-  margin: 1em;
-}
-
 .individualFeature {
   word-wrap: break-word;
   padding: 1em 0em !important;
 }
 
-.individualFeature h4 {
+.individualFeatureTitle {
+  font-size: 18px;
   margin: 9px 0px !important;
+  text-decoration: none !important;
 }
 
 .individualFeature ul {

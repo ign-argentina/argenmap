@@ -28,10 +28,6 @@ class StylesUI {
       background-color: ${app.theme.headerBackground} !important;
       ${app.theme.textMenuStyle}
     }
-    .featureInfo h4{
-      border-bottom:3px solid ${app.theme.headerBackground};
-      margin:2em;
-    }
     .featuresGroup {
       border-bottom: 2px solid ${app.theme.headerBackground};
     }
@@ -44,7 +40,7 @@ class StylesUI {
     .active {
       background-color: ${app.theme.activeLayer} !important;
     }
-    .featureInfo h4 {
+    .individualFeatureTitle {
     border-bottom: 3px solid ${app.theme.headerBackground};
     }
     .featuresGroup {

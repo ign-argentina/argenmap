@@ -31,8 +31,8 @@
   flex-wrap: wrap;
 }
 .accessibility-btn {
-  width: 121px;
-  height: 100px;
+  width: 120px;
+    height: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -6,6 +6,7 @@ class Accessibility {
   constructor() {
     this.fontSizeState = 1; // Track the current font size state
     this.fontFamilyState = 1; // Track the current font family state
+    this.fontElements = 'body, .featureInfo, .leaflet-container, .list-group-item, .leaflet-popup-content, .leaflet-draw-actions a, .item-group-short-desc span, .item-group-title, .nav-tabs>li>a, .base-layer-item-info>div, #argenmap-tooltip span, .tabs_upload, .upload p, .initModal p, .form-element, label, .accessibility-btn h4, .name-layer, .individualFeatureTitle'; // Elements to apply font classes to 
     this.changeFontSize = this.changeFontSize.bind(this);
     this.invertColors = this.invertColors.bind(this);
     this.greyColors = this.greyColors.bind(this);
@@ -29,9 +30,9 @@ class Accessibility {
     const greyButton = this.createAccessibilityButton("Escala de grises", "grey", "fa-solid fa-barcode", this.greyColors);
     const saturationButton = this.createAccessibilityButton("Saturación", "saturation", "fa-solid fa-palette", this.saturationColors);
     const readableFontButton = this.createAccessibilityButton("Seleccionar fuente", "readableFont", "fa-solid fa-font", this.readableFont);
-    const constrastButton = this.createAccessibilityButton("Contraste", "fa-solid fa-adjust", this.contrast);
-    const bigCursorButton = this.createAccessibilityButton("Cursor grande", "fa-solid fa-mouse-pointer", this.bigCursor);
-    const toUpperCaseButton = this.createAccessibilityButton("Mayúsculas", "fa-solid fa-font", this.toUpperCase);
+    /*     const constrastButton = this.createAccessibilityButton("Contraste", "fa-solid fa-adjust", this.contrast);
+        const bigCursorButton = this.createAccessibilityButton("Cursor grande", "fa-solid fa-mouse-pointer", this.bigCursor);
+        const toUpperCaseButton = this.createAccessibilityButton("Mayúsculas", "fa-solid fa-font", this.toUpperCase); */
 
 
     // Append elements to the panel
@@ -40,9 +41,9 @@ class Accessibility {
     accessibilityMain.appendChild(greyButton);
     accessibilityMain.appendChild(saturationButton);
     accessibilityMain.appendChild(readableFontButton);
-    accessibilityMain.appendChild(constrastButton);
-    accessibilityMain.appendChild(bigCursorButton);
-    accessibilityMain.appendChild(toUpperCaseButton);
+    /*     accessibilityMain.appendChild(constrastButton);
+        accessibilityMain.appendChild(bigCursorButton);
+        accessibilityMain.appendChild(toUpperCaseButton); */
 
     accessibilityPanel.appendChild(accessibilityTitle);
     accessibilityPanel.appendChild(accessibilityMain);
@@ -79,12 +80,13 @@ class Accessibility {
   createAccessibilityButton(title, id, icon, action) {
     const button = this.createElement("div", id + "-btn", "ag-btn ag-btn-secondary accessibility-btn", "");
     button.setAttribute("title", title);
+    button.setAttribute("aria-label", title);
 
     const iconElement = this.createElement("i", id + "-icon", icon + " accessibility-icon");
 
     iconElement.setAttribute("aria-hidden", "true");
 
-    const titleElement = this.createElement("h5", id + "-title", "", title);
+    const titleElement = this.createElement("h4", id + "-title", "", title);
 
     button.appendChild(iconElement);
     button.appendChild(titleElement);
@@ -98,24 +100,33 @@ class Accessibility {
    * @description Alternates between three font sizes for accessibility purposes.
    */
   changeFontSize() {
-    const fontSizeElements = document.querySelectorAll(".item-group-short-desc span, .item-group-title, .nav-tabs>li>a, .base-layer-item-info>div, #argenmap-tooltip span, .tabs_upload, .upload p, .initModal p, .form-element, label, .accessibility-btn h5");
+    const fontSizeElements = document.querySelectorAll(this.fontElements);
+    const fontSizeButton = document.getElementById("fontSize-btn");
+    const fontSizeTitle = document.getElementById("fontSize-title");
 
+    // Define font sizes to alternate between
+    const fontSizes = ["", "18px", "20px"];
+
+    // Get the current font size based on the state
+    const newSize = fontSizes[this.fontSizeState];
+    const defaultTitle = "Tamaño de fuente";
+
+    // Set title and aria-label
+    fontSizeTitle.title = newSize ? `${defaultTitle}: ${newSize}` : defaultTitle;
+    fontSizeTitle.innerHTML = newSize ? `${defaultTitle}: ${newSize}` : defaultTitle;
+    fontSizeButton.setAttribute('aria-label', fontSizeTitle.title);
+
+    // Toggle button classes based on font size
+    fontSizeButton.classList.toggle('ag-btn-secondary', !newSize);
+    fontSizeButton.classList.toggle('ag-btn-confirm', !!newSize);
+
+    // Apply the new font size to each element
     fontSizeElements.forEach((element) => {
-      switch (this.fontSizeState) {
-        case 0:
-          element.style.fontSize = ""; // Reset to the default size
-          break;
-        case 1:
-          element.style.fontSize = "18px"; // Medium size
-          break;
-        case 2:
-          element.style.fontSize = "20px"; // Large size
-          break;
-      }
+      element.style.setProperty('font-size', newSize, 'important');
     });
 
     // Update the font size state to alternate between 0, 1, and 2
-    this.fontSizeState = (this.fontSizeState + 1) % 3;
+    this.fontSizeState = (this.fontSizeState + 1) % fontSizes.length;
   }
 
   /**
@@ -124,13 +135,29 @@ class Accessibility {
    */
   invertColors() {
     const body = document.querySelector('body');
+    const invertButton = document.getElementById("invertColors-btn");
 
-    if (body) {
-      body.classList.remove('grey-colors', 'saturation-colors-low', 'saturation-colors-high');
-      body.classList.toggle('invert-colors');
-    } else {
+    if (!body) {
       console.warn("Body element not found. Could not apply color inversion.");
+      return;
     }
+
+    // Remove other color-related classes and toggle the 'invert-colors' class
+    this.resetGreyColors();
+    this.resetSaturationColors();
+    body.classList.toggle('invert-colors');
+
+    // Toggle button classes for visual indication
+    invertButton.classList.toggle('ag-btn-secondary');
+    invertButton.classList.toggle('ag-btn-confirm');
+  }
+
+  resetInvertColors() {
+    const body = document.querySelector('body');
+    const invertButton = document.getElementById("invertColors-btn");
+    body.classList.remove('invert-colors');
+    invertButton.classList.remove('ag-btn-confirm');
+    invertButton.classList.add('ag-btn-secondary');
   }
 
   /**
@@ -139,13 +166,28 @@ class Accessibility {
    */
   greyColors() {
     const body = document.querySelector('body');
+    const greyButton = document.getElementById("grey-btn");
 
-    if (body) {
-      body.classList.remove('invert-colors', 'saturation-colors-low', 'saturation-colors-high');
-      body.classList.toggle('grey-colors');
-    } else {
-      console.warn("Body element not found. Could not apply grayscale colors.");
+    if (!body) {
+      console.warn("Body element not found. Could not apply color inversion.");
+      return;
     }
+
+    this.resetInvertColors();
+    this.resetSaturationColors();
+    body.classList.toggle('grey-colors');
+
+    // Toggle button classes for visual indication
+    greyButton.classList.toggle('ag-btn-secondary');
+    greyButton.classList.toggle('ag-btn-confirm');
+  }
+
+  resetGreyColors() {
+    const body = document.querySelector('body');
+    const greyButton = document.getElementById("grey-btn");
+    body.classList.remove('grey-colors');
+    greyButton.classList.remove('ag-btn-confirm');
+    greyButton.classList.add('ag-btn-secondary');
   }
 
   /**
@@ -154,60 +196,98 @@ class Accessibility {
    */
   saturationColors() {
     const body = document.querySelector('body');
+    const saturationButton = document.getElementById("saturation-btn");
+    const saturationTitle = document.getElementById("saturation-title");
 
-    if (body) {
-      body.classList.remove('invert-colors', 'grey-colors');
-      // Toggle between saturation levels
-      if (body.classList.contains('saturation-colors-low')) {
-        body.classList.replace('saturation-colors-low', 'saturation-colors-high');
-      } else if (body.classList.contains('saturation-colors-high')) {
-        body.classList.remove('saturation-colors-high'); // Reset to normal (no class)
-      } else {
-        body.classList.add('saturation-colors-low'); // Default to low saturation
-      }
-    } else {
+    if (!body) {
       console.warn("Body element not found. Could not toggle saturation classes.");
+      return;
+    }
+
+    // Remove conflicting classes
+    this.resetInvertColors();
+    this.resetGreyColors();
+
+    // Toggle between saturation levels
+    if (body.classList.contains('saturation-colors-low')) {
+      body.classList.replace('saturation-colors-low', 'saturation-colors-high');
+      this.updateSaturationUI(saturationTitle, saturationButton, "Saturación Alta");
+      saturationButton.classList.remove('ag-btn-secondary');
+      saturationButton.classList.add('ag-btn-confirm');
+    } else if (body.classList.contains('saturation-colors-high')) {
+      body.classList.remove('saturation-colors-high'); // Reset to normal (no class)
+      this.updateSaturationUI(saturationTitle, saturationButton, "Saturación");
+      saturationButton.classList.remove('ag-btn-confirm');
+      saturationButton.classList.add('ag-btn-secondary');
+    } else {
+      body.classList.add('saturation-colors-low'); // Default to low saturation
+      this.updateSaturationUI(saturationTitle, saturationButton, "Saturación Baja");
+      saturationButton.classList.remove('ag-btn-secondary');
+      saturationButton.classList.add('ag-btn-confirm');
     }
   }
 
   /**
-   * Toggles between three font classes ('readable-font', 'dyslexic-font', 'tiresias-font')
+   * @function updateSaturationUI
+   * @description Updates the UI elements for saturation button and title.
+   * @param {HTMLElement} titleElement - The element to update the inner HTML of.
+   * @param {HTMLElement} buttonElement - The button element to update the classes of.
+   * @param {string} labelText - The text to set for title and aria-label.
+   */
+  updateSaturationUI(titleElement, buttonElement, labelText) {
+    titleElement.innerHTML = labelText;
+    buttonElement.setAttribute('aria-label', labelText);
+  }
+
+  resetSaturationColors() {
+    const body = document.querySelector('body');
+    const saturationButton = document.getElementById("saturation-btn");
+    const saturationTitle = document.getElementById("saturation-title");
+
+    body.classList.remove('saturation-colors-low', 'saturation-colors-high');
+    this.updateSaturationUI(saturationTitle, saturationButton, "Saturación");
+    saturationButton.classList.remove('ag-btn-confirm');
+    saturationButton.classList.add('ag-btn-secondary');
+  }
+
+  /**
+   * @function readableFont
+   * @description Toggles between four font classes ('readable-font', 'dyslexic-font', 'tiresias-font')
    * on the specified elements to enhance readability.
    */
   readableFont() {
-    // Select all elements matching the specified selectors
-    const fontElements = document.querySelectorAll('body, .featureInfo, .leaflet-container, .list-group-item, .leaflet-popup-content, .leaflet-draw-actions a');
+    const fontElements = document.querySelectorAll(this.fontElements);
+    const readableFontBtn = document.getElementById("readableFont-btn");
     const btnTitle = document.querySelector('#readableFont-title');
-    // Remove previously applied font classes
+
+    // Define font classes and button titles
+    const fontOptions = [
+      { class: '', title: 'Seleccionar fuente', btnClass: 'ag-btn-secondary' },
+      { class: 'dyslexic-font', title: 'Fuente dislexia', btnClass: 'ag-btn-confirm' },
+      { class: 'tiresias-font', title: 'Fuente baja visión', btnClass: 'ag-btn-confirm' },
+      { class: 'readable-font', title: 'Fuente legible', btnClass: 'ag-btn-confirm' }
+    ];
+
+    // Get the current font option based on the state
+    const { class: classToAdd, title: buttonText } = fontOptions[this.fontFamilyState];
+
+    // Update the font classes
     fontElements.forEach((element) => {
       element.classList.remove('readable-font', 'dyslexic-font', 'tiresias-font');
+      if (classToAdd) {
+        element.classList.add(classToAdd);
+      }
     });
 
-    // Apply the appropriate class based on the current state
-    fontElements.forEach((element) => {
-      switch (this.fontFamilyState) {
-        case 0: element.classList.remove('readable-font', 'dyslexic-font', 'tiresias-font');
-          btnTitle.innerHTML = "Seleccionar fuente";
-          break;
-        case 1:
-          element.classList.add('dyslexic-font');
-          btnTitle.innerHTML = "Fuente dislexia";
-          break;
-        case 2:
-          element.classList.add('tiresias-font');
-          btnTitle.innerHTML = "Fuente baja visión";
-          break;
-        case 3:
-          element.classList.add('readable-font');
-          btnTitle.innerHTML = "Fuente legible";
-          break;
-    }
-    });
+    // Update the button title
+    btnTitle.innerHTML = buttonText;
+    readableFontBtn.setAttribute('aria-label', buttonText);
+    readableFontBtn.classList.remove('ag-btn-secondary', 'ag-btn-confirm');
+    readableFontBtn.classList.add(fontOptions[this.fontFamilyState].btnClass);
 
     // Update the font size state to alternate between 0, 1, 2, and 3
-    this.fontFamilyState = (this.fontFamilyState + 1) % 4;
+    this.fontFamilyState = (this.fontFamilyState + 1) % fontOptions.length;
   }
-
 
 
 
