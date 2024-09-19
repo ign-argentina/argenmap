@@ -20,8 +20,6 @@
   color: black;
   box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   border-radius: 6px;
-}
-.accessibility-panel {
   text-align: center;
 }
 .accessibility-main {
@@ -64,4 +62,10 @@
   }
   .tiresias-font {
     font-family: "Tiresias PCfont", sans-serif !important;
+}
+.font-size18 {
+  font-size: 18px;
+}
+.font-size20 {
+  font-size: 20px;
 }

@@ -712,11 +712,11 @@ li.active>div>a {
 
 .item-group-short-desc {
   font-size: 11px;
-  line-height: 11px;
+  line-height: 15px;
 }
 
 .item-group-short-desc span {
-  font-size: 11px;
+/*   font-size: 11px; */
   font-weight: 500;
   color: var(--lyr-menu-panel-head-text-color);
   user-select: none;
