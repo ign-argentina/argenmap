@@ -11,49 +11,66 @@ class StylesUI {
     --primary-color: ${app.theme.headerBackground};
     --secondary-color: ${app.theme.bodyBackground};
     --active-bg-color: ${app.theme.activeLayer};
+    --text-color: ${app.theme.textMenu};
+    --lyr-menu-panel-head-text-color: ${app.theme.textMenu};
+    --lyr-menu-bg-color: ${app.theme.menuBackground};
     }
     .navbar{
-      background-color: ${app.theme.headerBackground};
+      background-color: var(--primary-color);
     }
     body{
-      background-color: ${app.theme.headerBackground};
+      background-color: var(--primary-color);
+    }
+    a {
+      color: var(--menu-text-color);
+    }
+    a:hover {
+      color: var(--menu-text-color-hover);
+    }
+    a:focus {
+      color: var(--menu-text-color-hover);
     }
     /* .nav-tabs {
-      background-color: ${app.theme.headerBackground};
+      background-color: var(--primary-color);
      } */
     .panel-body {	
-    background-color: ${app.theme.menuBackground};
+    background-color: var(--primary-color);
     }
     .panel-default > .panel-heading {
-      background-color: ${app.theme.headerBackground} !important;
+      background-color: var(--primary-color) !important;
+      color:var(--text-color);
       ${app.theme.textMenuStyle}
     }
     .featuresGroup {
-      border-bottom: 2px solid ${app.theme.headerBackground};
+      border-bottom: 2px solid var(--primary-color);
     }
     .individualFeature {
-      border-bottom: 1px dashed ${app.theme.headerBackground};
+      border-bottom: 1px dashed var(--primary-color);
     }
     .nav-tabs > li.active > a {
-      background-color: ${app.theme.activeLayer} !important;
+      background-color: var(--active-bg-color) !important;
     }
     .active {
-      background-color: ${app.theme.activeLayer} !important;
+      background-color: var(--active-bg-color) !important;
     }
     .individualFeatureTitle {
-    border-bottom: 3px solid ${app.theme.headerBackground};
+    border-bottom: 3px solid var(--primary-color);
+    }
+    .list-group-item.capa{
+      background-color: var(--lyr-menu-bg-color);
+    }
+    .list-group-item:hover, .file-layer:hover {
+      background-color: var(--menu-section-hover-color);
+      font-weight: bold;
     }
     .featuresGroup {
-    border-bottom: 2px solid ${app.theme.headerBackground};
+    border-bottom: 2px solid var(--primary-color);
     }
     .individualFeature {
     border-bottom: 1px dashed ${app.theme.headerBackground};
     }
     .active-layers-counter {
-      background: ${app.theme.activeLayer} !important;
-    }
-    .panel-default > .panel-heading {
-      color:${app.theme.textMenu};
+      background: var(--active-bg-color) !important;
     }
     .item-group-short-desc a {
       color:${app.theme.textLegendMenu};
@@ -160,10 +177,10 @@ class StylesUI {
       border-bottom: 1px dashed #164A5E;
     }
     .nav-tabs > li.active > a {
-      background-color: ${app.theme.activeLayer} !important;
+      background-color: var(--active-bg-color) !important;
     }
     .active {
-      background-color: ${app.theme.activeLayer} !important;
+      background-color: var(--active-bg-color) !important;
     }
     .featureInfo h4 {
     border-bottom: 3px solid #164A5E;

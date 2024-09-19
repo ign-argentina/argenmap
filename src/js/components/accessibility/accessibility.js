@@ -5,9 +5,10 @@
 class Accessibility {
   constructor() {
     // Define initial states for accessibility features
-    this.fontSizeState = 0; // Tracks the current font size state (0: Default, 1: 18px, 2: 20px)
+    this.fontSizeState = 1; // Tracks the current font size state (0: Default, 1: 18px, 2: 20px)
     this.fontFamilyState = 1; // Tracks the current font family state (0: Default, 1: Dyslexic, 2: Tiresias, 3: Readable)
-    this.saturationState = 0; // Tracks the current saturation state (0: Low, 1: High, 2: Normal)
+    this.saturationState = 1; // Tracks the current saturation state (0: Default, 1: Low, 2: High)
+    this.contrastState = 1; // Tracks the current contrast state (0: Default, 1: DarkBackground, 2: LightBackground)
 
     // CSS selectors for elements to apply font classes
     this.fontElements = `
@@ -25,12 +26,14 @@ class Accessibility {
       .nav-tabs>li>a, 
       .base-layer-item-info>div, 
       .tabs_upload, 
-      .upload p, 
+      .upload p,
+      .basemap-title,
       .initModal p, 
       .form-element, 
-      .accessibility-btn h4, 
+      .accessibility-btn h4,
       .name-layer, 
       .individualFeatureTitle,
+      #child-mapasbase1 > div > div > div.base-layer-item-info > div > p,
       #argenmap-tooltip span,
       #msgRectangle
     `;
@@ -46,6 +49,8 @@ class Accessibility {
     this.resetSaturationColors = this.resetSaturationColors.bind(this);
     this.readableFont = this.readableFont.bind(this);
     this.resetReadableFont = this.resetReadableFont.bind(this);
+    this.contrast = this.contrast.bind(this);
+
   }
 
   /**
@@ -70,7 +75,7 @@ class Accessibility {
       { title: "Escala de grises", id: "grey", icon: "fa-solid fa-barcode", action: this.greyColors },
       { title: "Saturación", id: "saturation", icon: "fa-solid fa-palette", action: this.saturationColors },
       { title: "Seleccionar fuente", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
-      { title: "Contraste", id: "contrast", icon: "fa-solid fa-adjust", action: this.contrast },
+      { title: "Contraste", id: "contrast", icon: "fa-solid fa-lightbulb", action: this.contrast },
       /* { title: "Cursor grande", id: "bigCursor", icon: "fa-solid fa-mouse-pointer", action: this.bigCursor }, */
       { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-font", action: this.toUpperCase }
     ];
@@ -99,14 +104,14 @@ class Accessibility {
    * @param {string} tag - The tag name of the element (e.g., 'div', 'h2').
    * @param {string} id - The ID to assign to the element.
    * @param {string} classList - Optional class names to add to the element.
-   * @param {string} innerHTML - Optional inner HTML content for the element.
+   * @param {string} textContent - Optional inner HTML content for the element.
    * @returns {HTMLElement} - The created HTML element.
    */
-  createElement(tag, id = "", classList = "", innerHTML = "") {
+  createElement(tag, id = "", classList = "", textContent = "") {
     const element = document.createElement(tag);
     if (id) element.id = id;
     if (classList) element.className = classList;
-    if (innerHTML) element.innerHTML = innerHTML;
+    if (textContent) element.textContent = textContent;
     return element;
   }
 
@@ -156,9 +161,9 @@ class Accessibility {
 
     // Define font sizes to alternate between
     const fontSizeOptions = [
+      { class: '', title: "Tamaño de fuente", btnClass: 'ag-btn-secondary' },
       { class: 'font-size18', title: "Tamaño de fuente 18", btnClass: 'ag-btn-confirm' },
-      { class: 'font-size20', title: "Tamaño de fuente 20", btnClass: 'ag-btn-confirm' },
-      { class: '', title: "Tamaño de fuente", btnClass: 'ag-btn-secondary' }
+      { class: 'font-size20', title: "Tamaño de fuente 20", btnClass: 'ag-btn-confirm' }
     ];
 
     // Determine the font size state and corresponding class, title, and button class
@@ -204,7 +209,7 @@ class Accessibility {
     fontSizeButton.classList.remove('ag-btn-confirm');
     fontSizeButton.classList.add('ag-btn-secondary');
     fontSizeTitle.title = "Tamaño de fuente";
-    fontSizeTitle.innerHTML = "Tamaño de fuente";
+    fontSizeTitle.textContent = "Tamaño de fuente";
     fontSizeButton.setAttribute('aria-label', "Tamaño de fuente");
     this.fontSizeState = 0;
   }
@@ -316,9 +321,9 @@ class Accessibility {
 
     // Define saturation options
     const saturationOptions = [
+      { class: '', title: "Saturación", btnClass: 'ag-btn-secondary' },
       { class: 'saturation-colors-low', title: "Saturación Baja", btnClass: 'ag-btn-confirm' },
-      { class: 'saturation-colors-high', title: "Saturación Alta", btnClass: 'ag-btn-confirm' },
-      { class: '', title: "Saturación", btnClass: 'ag-btn-secondary' }
+      { class: 'saturation-colors-high', title: "Saturación Alta", btnClass: 'ag-btn-confirm' }
     ];
 
     // Determine the current saturation option based on the state
@@ -331,7 +336,7 @@ class Accessibility {
     }
 
     // Update UI elements for saturation
-    saturationTitle.innerHTML = saturationText;
+    saturationTitle.textContent = saturationText;
     saturationButton.setAttribute('aria-label', saturationText);
 
     // Toggle button classes based on the new saturation state
@@ -402,7 +407,7 @@ class Accessibility {
     });
 
     // Update the button title and aria-label for accessibility
-    btnTitle.innerHTML = buttonText;
+    btnTitle.textContent = buttonText;
     readableFontBtn.setAttribute('aria-label', buttonText);
 
     // Update button classes for visual indication
@@ -428,10 +433,99 @@ class Accessibility {
 
     readableFontBtn.classList.remove('ag-btn-confirm');
     readableFontBtn.classList.add('ag-btn-secondary');
-    btnTitle.innerHTML = "Seleccionar fuente";
+    btnTitle.textContent = "Seleccionar fuente";
     readableFontBtn.setAttribute('aria-label', "Seleccionar fuente");
     this.fontFamilyState = 0;
   }
+
+  /**
+   * @function contrast
+   * @description Toggles between different contrast styles by updating CSS variables for primary and secondary colors directly.
+   */
+  contrast() {
+    const contrastButton = document.getElementById("contrast-btn");
+    const contrastTitle = document.getElementById("contrast-title");
+
+    // Define the different contrast styles as objects
+    const contrastStyles = [
+      // Default contrast (no changes)
+      {
+        '--primary-color': '',
+        '--secondary-color': '',
+        '--btn-hover-color': '',
+        '--text-color': '',
+        '--lyr-menu-panel-head-text-color': '',
+        '--danger-color': '',
+        '--btn-confirm-color': '',
+        '--active-bg-color': '',
+        '--lyr-menu-bg-color': '',
+        '--menu-text-color': '',
+        '--menu-text-color-hover': '',
+        '--menu-section-hover-color': '',
+        '--modal-bg-color': '',
+        '--hoverSelect-bg-color': ''
+      },
+      // Dark contrast
+      {
+        '--primary-color': '#000000',
+        '--secondary-color': '#222222',
+        '--btn-hover-color': '#FFFF00',
+        '--text-color': '#FFFF00',
+        '--lyr-menu-panel-head-text-color': '#FFFF00',
+        '--danger-color': '#c62828',
+        '--btn-confirm-color': '#006400',
+        '--active-bg-color': '#228B22',
+        '--lyr-menu-bg-color': '#222222',
+        '--menu-text-color': '#FFFF66',
+        '--menu-text-color-hover': '#FFFF00',
+        '--menu-section-hover-color': '#333333',
+        '--modal-bg-color': '#666666ee',
+        '--hoverSelect-bg-color': '#333333'
+      },
+      // Light contrast
+      {
+        '--primary-color': '#bbbbbb',
+        '--secondary-color': '#cccccc',
+        '--btn-hover-color': '#000000',
+        '--text-color': '#000000',
+        '--lyr-menu-panel-head-text-color': '#000000',
+        '--danger-color': '#FA8072',
+        '--btn-confirm-color': '#3CB371',
+        '--active-bg-color': '#33B560',
+        '--lyr-menu-bg-color': '#cccccc',
+        '--menu-text-color': '#151515',
+        '--menu-text-color-hover': '#000000',
+        '--menu-section-hover-color': '#f0f0f0',
+        '--modal-bg-color': '#aaaaaaee',
+        '--hoverSelect-bg-color': '#f0f0f0'
+      }
+    ];
+
+    // Define the text to display in the button based on the current contrast style
+    const contrastTexts = ["Contraste", "Fondo oscuro", "Fondo claro"];
+
+    // Get the :root element to modify CSS variables
+    const root = document.documentElement;
+
+    // Update the CSS variables with the selected contrast style
+    const selectedStyle = contrastStyles[this.contrastState];
+    Object.keys(selectedStyle).forEach(variable => {
+      root.style.setProperty(variable, selectedStyle[variable]);
+    });
+
+    // Update UI elements for contrast
+    const contrastText = contrastTexts[this.contrastState];
+    contrastTitle.textContent = contrastText;
+    contrastButton.setAttribute('aria-label', contrastText);
+
+    // Update button classes based on the contrast state
+    contrastButton.classList.toggle('ag-btn-secondary', this.contrastState === 0);
+    contrastButton.classList.toggle('ag-btn-confirm', this.contrastState > 0);
+
+    // Cycle through the contrast styles
+    this.contrastState = (this.contrastState + 1) % contrastStyles.length;
+  }
+
 
 
 }

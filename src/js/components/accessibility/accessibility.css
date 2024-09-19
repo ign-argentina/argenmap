@@ -44,9 +44,11 @@
 }
 .invert-colors {
   filter: invert(1);
+  overflow: hidden;
 }
 .grey-colors {
   filter: grayscale(1);
+  overflow: hidden;
 }
 .saturation-colors-low {
   filter: saturate(0.5);

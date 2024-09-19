@@ -318,6 +318,7 @@ class ImpresorItemCapaBaseHTML extends Impresor {
     const TITLE_PARAGRAPH = document.createElement("p");
     TITLE_PARAGRAPH.style.margin = 0;
     TITLE_PARAGRAPH.innerText = titulo;
+    TITLE_PARAGRAPH.classList.add("basemap-title");
 
     const BASEMAP_TITLE = document.createElement("div");
     BASEMAP_TITLE.classList.add("non-selectable-text");
