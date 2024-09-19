@@ -735,9 +735,9 @@ class LayersInfoWMS extends LayersInfo {
         const capaInfoList = Array.from(capability.querySelectorAll("Layer > Layer"))
           .filter(layer => {
             const hasNestedLayers = layer.querySelectorAll("Layer").length > 0;
-            if (hasNestedLayers) {
-              return false;
-            }
+            // if (hasNestedLayers) {
+            //   return false;
+            // }
             const iName = layer.querySelector("Name")?.textContent;
             return this.isAllowedLayer(iName);
           })
