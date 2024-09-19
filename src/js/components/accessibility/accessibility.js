@@ -50,6 +50,10 @@ class Accessibility {
     this.readableFont = this.readableFont.bind(this);
     this.resetReadableFont = this.resetReadableFont.bind(this);
     this.contrast = this.contrast.bind(this);
+    this.resetContrast = this.resetContrast.bind(this);
+    this.toUpperCase = this.toUpperCase.bind(this);
+
+    this.resetAllAccessibility = this.resetAllAccessibility.bind(this);
 
   }
 
@@ -77,7 +81,8 @@ class Accessibility {
       { title: "Seleccionar fuente", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
       { title: "Contraste", id: "contrast", icon: "fa-solid fa-lightbulb", action: this.contrast },
       /* { title: "Cursor grande", id: "bigCursor", icon: "fa-solid fa-mouse-pointer", action: this.bigCursor }, */
-      { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-font", action: this.toUpperCase }
+      { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-font", action: this.toUpperCase },
+      { title: "Restablecer", id: "resetAccessibility", icon: "fa-solid fa-undo", action: this.resetAllAccessibility }
     ];
 
     // Create and append buttons based on accessibility features
@@ -526,6 +531,105 @@ class Accessibility {
     this.contrastState = (this.contrastState + 1) % contrastStyles.length;
   }
 
+  /**
+   * @function resetContrast
+   * @description Resets all custom CSS variables related to contrast back to their default values.
+   */
+  resetContrast() {
+    const contrastButton = document.getElementById("contrast-btn");
+    const contrastTitle = document.getElementById("contrast-title");
+
+    // Get the :root element to reset CSS variables
+    const root = document.documentElement;
+
+    // List of all custom CSS variables to reset
+    const contrastVariables = [
+      '--primary-color',
+      '--secondary-color',
+      '--btn-hover-color',
+      '--text-color',
+      '--lyr-menu-panel-head-text-color',
+      '--danger-color',
+      '--btn-confirm-color',
+      '--active-bg-color',
+      '--lyr-menu-bg-color',
+      '--menu-text-color',
+      '--menu-text-color-hover',
+      '--menu-section-hover-color',
+      '--modal-bg-color',
+      '--hoverSelect-bg-color'
+    ];
+
+    // Remove each CSS variable from the root element
+    contrastVariables.forEach(variable => root.style.removeProperty(variable));
+
+    // Update UI elements for contrast
+    contrastTitle.textContent = "Contraste";
+    contrastButton.setAttribute('aria-label', "Contraste");
+
+    // Toggle button classes to reflect default contrast state
+    contrastButton.classList.remove('ag-btn-confirm');
+    contrastButton.classList.add('ag-btn-secondary');
+
+    // Reset the internal contrast state to default (0)
+    this.contrastState = 0;
+  }
+
+  /**
+   * @function toUpperCase
+   * @description Toggles between uppercase and normal text for all elements by adding/removing a CSS class on the body.
+   */
+  toUpperCase() {
+    const body = document.body;
+    const toUpperCaseButton = document.getElementById("toUpperCase-btn");
+
+    // Check if the body element exists
+    if (!body) {
+      console.warn("Body element not found. Could not apply uppercase text.");
+      return;
+    }
+
+    // Toggle the 'uppercase-text' class on the body to apply uppercase styling
+    body.classList.toggle('uppercase-text');
+
+    // Update the button's visual state to indicate the text transformation state
+    toUpperCaseButton.classList.toggle('ag-btn-confirm');
+  }
+
+  /**
+   * @function resetToUpperCase
+   * @description Resets the text transformation to normal (non-uppercase) by removing the 'uppercase-text' class.
+   */
+  resetToUpperCase() {
+    const body = document.body;
+    const toUpperCaseButton = document.getElementById("toUpperCase-btn");
+
+    // Check if the body element exists
+    if (!body) {
+      console.warn("Body element not found. Could not reset uppercase text.");
+      return;
+    }
+
+    // Remove the 'uppercase-text' class from the body to reset text to normal
+    body.classList.remove('uppercase-text');
+
+    // Update the button's visual state to indicate the reset
+    toUpperCaseButton.classList.remove('ag-btn-confirm');
+  }
+
+  /**
+   * @function resetAllAccessibility
+   * @description Resets all accessibility-related settings to their default values.
+   */
+  resetAllAccessibility() {
+    this.resetFontSize();            // Resets font size to default
+    this.resetInvertColors();        // Resets color inversion to default
+    this.resetGreyColors();          // Resets grayscale mode to default
+    this.resetSaturationColors();    // Resets color saturation to default
+    this.resetReadableFont();        // Resets readable font settings to default
+    this.resetContrast();            // Resets contrast settings to default
+    this.resetToUpperCase();         // Resets text transformation to default
+  }
 
 
 }

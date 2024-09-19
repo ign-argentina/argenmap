@@ -71,3 +71,6 @@
 .font-size20 {
   font-size: 20px;
 }
+.uppercase-text {
+  text-transform: uppercase !important;
+}
