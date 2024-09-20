@@ -13,7 +13,7 @@ class StylesUI {
     --active-bg-color: ${app.theme.activeLayer};
     --text-color: ${app.theme.textMenu};
     --lyr-menu-panel-head-text-color: ${app.theme.textMenu};
-    --lyr-menu-bg-color: ${app.theme.menuBackground};
+
     }
     .navbar{
       background-color: var(--primary-color);
