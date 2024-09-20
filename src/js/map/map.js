@@ -337,6 +337,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             screenShoterBtn.classList.remove(
               "leaflet-control-simpleMapScreenshoter-btn",
             );
+            screenShoterBtn.style.fontSize = "16px";
             screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
 
             gestorMenu.plugins["screenShoter"].setStatus("visible");
@@ -474,6 +475,8 @@ $("body").on("pluginLoad", function (event, plugin) {
               },
             })
             .addTo(mapa);
+          const locateIcon = document.querySelector(".leaflet-control-locate a");
+          locateIcon.style.fontSize = "18px";
           gestorMenu.plugins["locate"].setStatus("visible");
           break;
         case "graticula":

@@ -1,5 +1,9 @@
 #iconPDF {
   font-size: 16px;
+    line-height: inherit;
+  }
+  .iconPDF-container {
+  font-size: 16px;
   line-height: inherit;
 }
 /*******************************

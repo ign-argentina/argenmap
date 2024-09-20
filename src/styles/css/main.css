@@ -959,11 +959,15 @@ li.active>div>a {
 .leaflet-control-measure-interaction h3 {
   font-size: 17px !important;
 }
-
+#map-toolbar-icon-left, #map-toolbar-icon-right {
+  font-size: large;
+}
 .leaflet-control-measure-interaction.js-interaction {
   background-color: var(--map-btn-bg-color);
 }
-
+a.leaflet-control-zoomhome-in, a.leaflet-control-zoomhome-out {
+  font-size: x-large !important;
+}
 .leaflet-popup-content h3 {
   font-size: 17px !important;
 }
