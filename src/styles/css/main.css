@@ -534,7 +534,7 @@ div.leaflet-top.leaflet-left {
   max-width: 320px;
 }
 .basemap-title {
-  color: var(--text-color);
+  color: var(--menu-text-color-hover);
 }
 #load-layer {
   overflow: auto;
@@ -950,7 +950,12 @@ li.active>div>a {
 .leaflet-container {
   font-family: "Encode Sans", sans-serif;
 }
-
+.leaflet-container a.leaflet-popup-close-button {
+  color: #505050;
+  width: 25px;
+  height: 25px;
+  font-size: 20px;
+}
 .leaflet-control-measure-interaction h3 {
   font-size: 17px !important;
 }
@@ -1014,10 +1019,11 @@ li.active>div>a {
   max-height: 60vh;
 }
 
-.leaflet-popup-content {
-/*   font-family: "Encode Sans", sans-serif; */
+/* .leaflet-popup-content {
+  font-family: "Encode Sans", sans-serif;
   letter-spacing: 0.02em;
 }
+*/
 
 #popupPageSeeker {
   float: left;

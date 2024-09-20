@@ -54,6 +54,7 @@ class Accessibility {
     this.toUpperCase = this.toUpperCase.bind(this);
 
     this.resetAllAccessibility = this.resetAllAccessibility.bind(this);
+    this.toggleResetButtonVisibility = this.toggleResetButtonVisibility.bind(this);
 
   }
 
@@ -64,10 +65,23 @@ class Accessibility {
   createComponent() {
     // Create the main accessibility panel container
     const accessibilityPanel = this.createElement("div", "accessibilityPanel", "accessibility-panel");
+    const accessibilityHeader = this.createElement("div", "accessibilityHeader", "accessibility-header");
 
     // Create and append the title
-    const accessibilityTitle = this.createElement("h2", "accessibilityTitle", "accessibility-title", "Accesibilidad");
-    accessibilityPanel.appendChild(accessibilityTitle);
+    const accessibilityTitle = this.createElement("h3", "accessibilityTitle", "accessibility-title", "Accesibilidad");
+
+    // Create and append the reset button
+    const resetButton = this.createAccessibilityButton("Restaurar", "resetAccessibility", "fa-solid fa-undo", this.resetAllAccessibility);
+    resetButton.classList.remove('accessibility-btn', 'ag-btn-secondary');
+    resetButton.classList.add('reset-btn', 'ag-btn-danger');
+    resetButton.setAttribute('title', 'Restaurar configuración de accesibilidad');
+    resetButton.setAttribute('aria-label', 'Restaurar configuración de accesibilidad');
+    resetButton.addEventListener('click', () => this.toggleResetButtonVisibility(resetButton));
+
+    // Append the title and reset button to the header
+    accessibilityHeader.appendChild(accessibilityTitle);
+    accessibilityHeader.appendChild(resetButton);
+    accessibilityPanel.appendChild(accessibilityHeader);
 
     // Create the container for accessibility buttons
     const accessibilityMain = this.createElement("div", "accessibilityMain", "accessibility-main");
@@ -80,14 +94,19 @@ class Accessibility {
       { title: "Saturación", id: "saturation", icon: "fa-solid fa-palette", action: this.saturationColors },
       { title: "Seleccionar fuente", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
       { title: "Contraste", id: "contrast", icon: "fa-solid fa-lightbulb", action: this.contrast },
-      /* { title: "Cursor grande", id: "bigCursor", icon: "fa-solid fa-mouse-pointer", action: this.bigCursor }, */
       { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-font", action: this.toUpperCase },
-      { title: "Restablecer", id: "resetAccessibility", icon: "fa-solid fa-undo", action: this.resetAllAccessibility }
+      { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-arrows-alt-h", action: this.horizontalSpace }
     ];
 
     // Create and append buttons based on accessibility features
     accessibilityFeatures.forEach(feature => {
       const button = this.createAccessibilityButton(feature.title, feature.id, feature.icon, feature.action);
+
+      // Add event listener to each button to check if any button is active
+      button.addEventListener('click', () => {
+        this.toggleResetButtonVisibility(resetButton);
+      });
+
       accessibilityMain.appendChild(button);
     });
 
@@ -100,6 +119,30 @@ class Accessibility {
       accessibilityContainer.appendChild(accessibilityPanel);
     } else {
       console.warn("Accessibility container not found in the DOM.");
+    }
+  }
+
+  /**
+   * @function toggleResetButtonVisibility
+   * @description Shows or hides the reset button depending on whether any button has the 'ag-btn-confirm' class.
+   * @param {HTMLElement} resetButton - The reset button element.
+   */
+  toggleResetButtonVisibility(resetButton) {
+    const buttons = document.querySelectorAll('.accessibility-btn');
+    let hasActiveButton = false;
+
+    // Check if any button has the 'ag-btn-confirm' class
+    buttons.forEach(button => {
+      if (button.classList.contains('ag-btn-confirm')) {
+        hasActiveButton = true;
+      }
+    });
+
+    // Show the reset button if any button is active, otherwise hide it
+    if (hasActiveButton) {
+      resetButton.style.display = 'flex';
+    } else {
+      resetButton.style.display = 'none';
     }
   }
 
@@ -216,7 +259,7 @@ class Accessibility {
     fontSizeTitle.title = "Tamaño de fuente";
     fontSizeTitle.textContent = "Tamaño de fuente";
     fontSizeButton.setAttribute('aria-label', "Tamaño de fuente");
-    this.fontSizeState = 0;
+    this.fontSizeState = 1;
   }
 
   /**
@@ -259,7 +302,7 @@ class Accessibility {
 
     // Reset saturation state if specified
     if (resetSaturationState) {
-      this.saturationState = 0;
+      this.saturationState = 1;
     }
   }
 
@@ -302,7 +345,7 @@ class Accessibility {
 
     // Reset saturation state if specified
     if (resetSaturationState) {
-      this.saturationState = 0;
+      this.saturationState = 1;
     }
   }
 
@@ -378,7 +421,7 @@ class Accessibility {
     saturationButton.classList.add('ag-btn-secondary');
 
     // Reset the saturation state
-    this.saturationState = 0;
+    this.saturationState = 1;
   }
 
 
@@ -440,7 +483,7 @@ class Accessibility {
     readableFontBtn.classList.add('ag-btn-secondary');
     btnTitle.textContent = "Seleccionar fuente";
     readableFontBtn.setAttribute('aria-label', "Seleccionar fuente");
-    this.fontFamilyState = 0;
+    this.fontFamilyState = 1;
   }
 
   /**
@@ -572,7 +615,7 @@ class Accessibility {
     contrastButton.classList.add('ag-btn-secondary');
 
     // Reset the internal contrast state to default (0)
-    this.contrastState = 0;
+    this.contrastState = 1;
   }
 
   /**
@@ -618,6 +661,61 @@ class Accessibility {
   }
 
   /**
+   * @function horizontalSpace
+   * @description Toggles horizontal spacing on the body element by adding/removing a CSS class. 
+   */
+  horizontalSpace() {
+    const body = document.body;
+    const horizontalSpaceButton = document.getElementById("horizontalSpace-btn");
+
+    // Check if the body element exists
+    if (!body) {
+      console.warn("Body element not found. Could not apply horizontal space.");
+      return;
+    }
+
+    // Check if the button exists
+    if (!horizontalSpaceButton) {
+      console.warn("Horizontal space button not found.");
+      return;
+    }
+
+    // Toggle the 'horizontal-space' class on the body to apply horizontal space
+    body.classList.toggle('horizontal-space');
+
+    // Update the button's visual state to indicate the state of horizontal space
+    horizontalSpaceButton.classList.toggle('ag-btn-confirm');
+  }
+
+  /**
+   * @function resetHorizontalSpace
+   * @description Resets the horizontal spacing by removing the 'horizontal-space' class from the body element. 
+   */
+  resetHorizontalSpace() {
+    const body = document.body;
+    const horizontalSpaceButton = document.getElementById("horizontalSpace-btn");
+
+    // Check if the body element exists
+    if (!body) {
+      console.warn("Body element not found. Could not reset horizontal space.");
+      return;
+    }
+
+    // Check if the button exists
+    if (!horizontalSpaceButton) {
+      console.warn("Horizontal space button not found.");
+      return;
+    }
+
+    // Remove the 'horizontal-space' class from the body to reset horizontal spacing
+    body.classList.remove('horizontal-space');
+
+    // Update the button's visual state to indicate the reset
+    horizontalSpaceButton.classList.remove('ag-btn-confirm');
+  }
+
+
+  /**
    * @function resetAllAccessibility
    * @description Resets all accessibility-related settings to their default values.
    */
@@ -629,7 +727,7 @@ class Accessibility {
     this.resetReadableFont();        // Resets readable font settings to default
     this.resetContrast();            // Resets contrast settings to default
     this.resetToUpperCase();         // Resets text transformation to default
+    this.resetHorizontalSpace();     // Resets horizontal space to default
   }
-
 
 }

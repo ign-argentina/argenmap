@@ -8,15 +8,16 @@
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-  max-width: 320px;
+  max-width: min-content;
+    min-width: 330px;
 }
 .accessibility-panel {
   display: flex;
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
-  padding: 10px;
-  background-color: #ffffffbb;
+  padding: 5px;
+    background-color: var(--modal-bg-color);
   color: black;
   box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   border-radius: 6px;
@@ -28,19 +29,36 @@
   align-items: center;
   flex-wrap: wrap;
 }
+.accessibility-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .accessibility-btn {
-  width: 120px;
-    height: 120px;
+  width: 135px;
+    height: 135px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 2px;
+    margin: 4px;
 }
-.accessibility-btn h5 {
+.accessibility-btn h4 {
   text-align: center;
+  overflow-wrap: anywhere;
 }
 .accessibility-icon {
   font-size: x-large;
+}
+.reset-btn {
+  border-radius: 45px;
+  padding: 10px;
+  cursor: pointer;
+  display: none;
+  flex-direction: column;
+}
+.reset-btn h4 {
+  font-size: small;
 }
 .invert-colors {
   filter: invert(1);
@@ -73,4 +91,8 @@
 }
 .uppercase-text {
   text-transform: uppercase !important;
+}
+.horizontal-space {
+  letter-spacing: 2px;
+  word-spacing: 2px;
 }
