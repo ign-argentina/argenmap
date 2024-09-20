@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/open-dyslexic');
+@import url('https://fonts.cdnfonts.com/css/tiresias-pcfont');
+#accessibility {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  max-width: min-content;
+    min-width: 330px;
+}
+.accessibility-panel {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  padding: 5px;
+    background-color: var(--modal-bg-color);
+  color: black;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
+  border-radius: 6px;
+  text-align: center;
+}
+.accessibility-main {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.accessibility-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.accessibility-btn {
+  width: 135px;
+    height: 135px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px;
+    margin: 4px;
+}
+.accessibility-btn h4 {
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.accessibility-icon {
+  font-size: x-large;
+}
+.reset-btn {
+  border-radius: 45px;
+  padding: 10px;
+  cursor: pointer;
+  display: none;
+  flex-direction: column;
+}
+.reset-btn h4 {
+  font-size: small;
+}
+.invert-colors {
+  filter: invert(1);
+  overflow: hidden;
+}
+.grey-colors {
+  filter: grayscale(1);
+  overflow: hidden;
+}
+.saturation-colors-low {
+  filter: saturate(0.5);
+}
+.saturation-colors-high {
+  filter: saturate(2);
+}
+.readable-font {
+  font-family: "Lexend", sans-serif !important;
+  }
+  .dyslexic-font {
+    font-family: 'Open-Dyslexic', sans-serif;
+  }
+  .tiresias-font {
+    font-family: "Tiresias PCfont", sans-serif !important;
+}
+.font-size18 {
+  font-size: 18px;
+}
+.font-size20 {
+  font-size: 20px;
+}
+.uppercase-text {
+  text-transform: uppercase !important;
+}
+.horizontal-space {
+  letter-spacing: 2px;
+  word-spacing: 2px;
+}

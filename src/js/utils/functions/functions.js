@@ -1620,9 +1620,11 @@ function createLayerByType(geoJSON, groupName) {
   if (type === "multipolygon") {
     layer = createLayerMultilinestring(geoJSON, layer);
   }
-
-  layer.id = groupName;
-  layer.data = { geoJSON };
+  console.log(geoJSON.properties.type)
+  if (geoJSON.properties.type !== "label") {
+    layer.id = groupName;
+    layer.data = { geoJSON };
+  }
   return layer;
 }
 
@@ -1765,6 +1767,7 @@ function createLayerForPoint(geoJSON, groupName, layer, options) {
       layer = L.marker(invertedCoords);
       layer.type = "marker";
       setDefaultMarkerStyles(layer, geoJSON);
+      console.log(layer)
       return layer;
     }
     if (geoJsonType === "label") {
@@ -1778,7 +1781,8 @@ function createLayerForPoint(geoJSON, groupName, layer, options) {
         geoJSON.properties.styles.color,
         groupName,
       );
-      return;
+      layer = mapa.editableLayers.label[mapa.editableLayers.label.length - 1];
+      return layer;
     } else {
       layer = L.marker(invertedCoords);
       layer.type = "marker";

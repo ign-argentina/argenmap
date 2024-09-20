@@ -1,7 +1,9 @@
 #fullscreen :hover {
   cursor: pointer;
 }
-
+#iconFS-container {
+  font-size: 18px;
+}
 #iconFS {
   font-size: 18px;
   line-height: inherit;

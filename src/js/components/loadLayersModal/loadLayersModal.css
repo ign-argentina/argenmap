@@ -38,16 +38,17 @@
 }
 .modalNavButtonActive {
   background: var(--secondary-color);
-  color: white;
+
 }
 .modalContent {
   border-radius: 6px;
-  background-color: #ffffffbb;
+  background-color: var(--modal-bg-color);
 }
 .actionContent {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 337px;
 }
 .disableAction {
   display: none;

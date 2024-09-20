@@ -397,7 +397,7 @@ function createFeatureInfoHTML(features, idTxt, title) {
   let infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
   infoAux += '<div class="featureGroup">';
   infoAux += '<div style="/*padding:1em*/" class="individualFeature">';
-  infoAux += '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' + title + '</h4>';
+  infoAux += '<div class="individualFeatureTitle" class="individualFeatureTitle" style="border-top:1px solid gray;">' + title + '</div>';
   infoAux += '<ul>';
 
   features.forEach(feature => {
@@ -445,7 +445,7 @@ function parseFeatureInfoXML(info, idTxt, title) {
       <div class="featureInfo" id="featureInfoPopup${idTxt}">
           <div class="featureGroup">
               <div class="individualFeature">
-                  <h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">${title}</h4>
+                  <h4 class="individualFeatureTitle" style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">${title}</h4>
                   <ul>
   `;
 

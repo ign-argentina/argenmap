@@ -19,6 +19,9 @@
 #geoprocesos-icon :hover {
   cursor: pointer;
 }
+#geoprocesos-btn>svg {
+  fill: var(--text-color);
+}
 .icons-modalfile {
   display: flex;
   flex-direction: row;

@@ -96,7 +96,7 @@ Ejemplos:
 #0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE Colores de prueba
 #0091CE #F38A00 Logo IGN
 #37bbec MapaMuni
-#157DB9 Color institucional 2024
+#157DB9#0094d4 Color institucional 2024
 #0db2e0 Color institucional 2023
 #242C4F #45659D #E7BA61 Paleta Manual de marca Presi 2024
 */
@@ -108,7 +108,7 @@ Ejemplos:
   --active-bg-color: #33b560;
   --hoverSelect-bg-color: #61ca86;
   --text-color: #fff;
-  --danger-color: #c62828;
+  --danger-color: #bd5555;
   --map-btn-color: #303030;
   --map-btn-bg-color: #fff;
   --popup-fnt-size: 12px;
@@ -121,6 +121,7 @@ Ejemplos:
   --layer-btn-hover-color: #e7e7e7;
   /*#d1cccc  */
   --main-font-family: "Encode Sans", sans-serif;
+  --modal-bg-color: #ffffffbb;
   /*Argenmap ui Button*/
   --btn-ftn-size: 1.5rem;
   --btn-border-radius: 6px;
@@ -133,19 +134,20 @@ Ejemplos:
   /* #AAAAAA */
   --btn-confirm-color: #448148;
   /* #33B560  #3A8555*/
-  --btn-danger-color: #bd5555;
-  /*#CE4946 #EF4D3D */
+  --btn-danger-color: var(--danger-color);
+    /*#CE4946 #EF4D3D #c62828*/
   /*Argenmap ui input text */
   --input-text-ftn-size: 14px;
   --input-text-bg-color: #fff;
   --input-text-border-radius: 6px;
   --input-text-border-color: #939697;
   /*Menu capas*/
-  --lyr-menu-bg-color: #eeeeee60;
+  --lyr-menu-bg-color: ##ffffff;
   --lyr-menu-panel-head-bg-color: var(--primary-color);
   --lyr-menu-panel-head-text-color: #fff;
   --menu-title-text-color: #fff;
-  --menu-text-color: #303030;
+  --menu-text-color: #505050;
+    --menu-text-color-hover: #202020
 }
 
 /* General */
@@ -459,7 +461,6 @@ div.leaflet-top.leaflet-left {
   width: auto;
   max-width: -webkit-fill-available;
   height: auto;
-  background-color: var(--lyr-menu-bg-color);
   margin: 1rem;
   position: absolute;
   top: 60px;
@@ -481,6 +482,9 @@ div.leaflet-top.leaflet-left {
 .menu-section-btn .fa-question,
 .menu-section-btn .fa-gear {
   font-size: large;
+}
+.menu-section-btn .fa-universal-access {
+  font-size: x-large;
 }
 
 .layer-menu-options {
@@ -529,7 +533,9 @@ div.leaflet-top.leaflet-left {
   border-radius: 6px;
   max-width: 320px;
 }
-
+.basemap-title {
+  color: var(--menu-text-color-hover);
+}
 #load-layer {
   overflow: auto;
   position: relative;
@@ -537,7 +543,7 @@ div.leaflet-top.leaflet-left {
   max-height: 80vh;
   border: 0;
   border-radius: 6px;
-  max-width: 320px;
+  max-width: 350px;
 }
 
 .menuFixed {
@@ -629,14 +635,13 @@ div.leaflet-top.leaflet-left {
 }
 
 .panel-heading {
-  font-family: var(--main-font-family);
   border: none;
   border-radius: 0;
   border-top: 1px solid #f5f5f5 !important;
 }
 
 .panel-heading:hover .item-group-short-desc span {
-  color: var(--menu-title-text-color);
+  color: var(--lyr-menu-panel-head-text-color);
 }
 
 .active {
@@ -649,7 +654,7 @@ li.active>div>a {
 
 .list-group-item {
   position: initial;
-  font-family: "Encode Sans Medium", sans-serif;
+/*   font-family: "Encode Sans Medium", sans-serif; */
   cursor: pointer;
   padding: 8px 15px;
   background-color: #ffffffcc;
@@ -710,11 +715,11 @@ li.active>div>a {
 
 .item-group-short-desc {
   font-size: 11px;
-  line-height: 11px;
+  line-height: 15px;
 }
 
 .item-group-short-desc span {
-  font-size: 11px;
+/*   font-size: 11px; */
   font-weight: 500;
   color: var(--lyr-menu-panel-head-text-color);
   user-select: none;
@@ -723,7 +728,6 @@ li.active>div>a {
 .item-group-title {
   -webkit-user-select: none;
   user-select: none;
-  font-family: var(--main-font-family);
   font-size: var(--group-title-fnt-size, 15px);
   font-weight: bolder;
 }
@@ -946,21 +950,26 @@ li.active>div>a {
 .leaflet-container {
   font-family: "Encode Sans", sans-serif;
 }
-
+.leaflet-container a.leaflet-popup-close-button {
+  color: #505050;
+  width: 25px;
+  height: 25px;
+  font-size: 20px;
+}
 .leaflet-control-measure-interaction h3 {
   font-size: 17px !important;
 }
-
+#map-toolbar-icon-left, #map-toolbar-icon-right {
+  font-size: large;
+}
 .leaflet-control-measure-interaction.js-interaction {
   background-color: var(--map-btn-bg-color);
 }
-
+a.leaflet-control-zoomhome-in, a.leaflet-control-zoomhome-out {
+  font-size: x-large !important;
+}
 .leaflet-popup-content h3 {
   font-size: 17px !important;
-}
-
-.individualFeature h4 {
-  text-decoration: none !important;
 }
 
 .leaflet-control-minimap {
@@ -979,7 +988,7 @@ li.active>div>a {
 /* Leaflet popup featureInfo */
 .featureInfo {
   font-family: inherit;
-  font-size: var(--popup-fnt-size, 12px);
+/*   font-size: var(--popup-fnt-size, 12px); */
   width: 100%;
 }
 
@@ -996,17 +1005,15 @@ li.active>div>a {
   margin-bottom: 1em;
 }
 
-.featureInfo h4 {
-  margin: 1em;
-}
-
 .individualFeature {
   word-wrap: break-word;
   padding: 1em 0em !important;
 }
 
-.individualFeature h4 {
+.individualFeatureTitle {
+  font-size: 18px;
   margin: 9px 0px !important;
+  text-decoration: none !important;
 }
 
 .individualFeature ul {
@@ -1016,10 +1023,11 @@ li.active>div>a {
   max-height: 60vh;
 }
 
-.leaflet-popup-content {
+/* .leaflet-popup-content {
   font-family: "Encode Sans", sans-serif;
   letter-spacing: 0.02em;
 }
+*/
 
 #popupPageSeeker {
   float: left;
@@ -1338,7 +1346,7 @@ input:checked.switch+label:after {
 }
 
 #collapseBaseMapLayers .list-group-item {
-  background: #ffffffcc;
+  background-color: var(--modal-bg-color);
   font-size: var(--body-fnt-size, 14px);
 }
 

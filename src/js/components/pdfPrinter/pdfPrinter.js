@@ -1,7 +1,7 @@
 class PdfPrinter {
   constructor() {
     this.component = `
-        <a title="Imprimir/ Guardar en PDF" onclick=print()>
+        <a class="iconPDF-container" title="Imprimir/ Guardar en PDF" onclick=print()>
               <i id="iconPDF" class="fas fa-print" aria-hidden="true"></i>
         </a>
         `;
