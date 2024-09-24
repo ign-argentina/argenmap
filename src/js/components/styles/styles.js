@@ -22,7 +22,7 @@ class StylesUI {
       background-color: var(--primary-color);
     }
     a {
-      color: var(--menu-text-color);
+      color: var(--menu-text-color) !important;
     }
     a:hover {
       color: var(--menu-text-color-hover);

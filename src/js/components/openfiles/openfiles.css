@@ -61,7 +61,7 @@
   justify-content: space-between;
   padding: 10px 1px 10px 1px;
   /* border: 1px solid #ddd; */
-  background-color: white;
+  background-color: var(--lyr-menu-bg-color);
   -ms-user-select: none;
   -webkit-user-select: none;
   user-select: none;

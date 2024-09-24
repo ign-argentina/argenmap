@@ -92,9 +92,9 @@ class Accessibility {
       { title: "Invertir colores", id: "invertColors", icon: "fa-solid fa-circle-half-stroke", action: this.invertColors },
       { title: "Escala de grises", id: "grey", icon: "fa-solid fa-barcode", action: this.greyColors },
       { title: "Saturación", id: "saturation", icon: "fa-solid fa-palette", action: this.saturationColors },
-      { title: "Seleccionar fuente", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
+      { title: "Alternar fuentes legibles", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
       { title: "Contraste", id: "contrast", icon: "fa-solid fa-lightbulb", action: this.contrast },
-      { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-font", action: this.toUpperCase },
+      { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-m", action: this.toUpperCase },
       { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-arrows-alt-h", action: this.horizontalSpace }
     ];
 
@@ -437,7 +437,7 @@ class Accessibility {
 
     // Define font classes, titles, and button classes
     const fontOptions = [
-      { class: '', title: 'Seleccionar fuente', btnClass: 'ag-btn-secondary' },
+      { class: '', title: 'Alternar fuentes legibles', btnClass: 'ag-btn-secondary' },
       { class: 'dyslexic-font', title: 'Fuente dislexia', btnClass: 'ag-btn-confirm' },
       { class: 'tiresias-font', title: 'Fuente baja visión', btnClass: 'ag-btn-confirm' },
       { class: 'readable-font', title: 'Fuente legible', btnClass: 'ag-btn-confirm' }
@@ -523,10 +523,10 @@ class Accessibility {
         '--danger-color': '#c62828',
         '--btn-confirm-color': '#006400',
         '--active-bg-color': '#228B22',
-        '--lyr-menu-bg-color': '#222222',
+        '--lyr-menu-bg-color': '#333333',
         '--menu-text-color': '#FFFF66',
         '--menu-text-color-hover': '#FFFF00',
-        '--menu-section-hover-color': '#333333',
+        '--menu-section-hover-color': '#444444',
         '--modal-bg-color': '#666666ee',
         '--hoverSelect-bg-color': '#333333'
       },
@@ -540,10 +540,10 @@ class Accessibility {
         '--danger-color': '#FA8072',
         '--btn-confirm-color': '#3CB371',
         '--active-bg-color': '#33B560',
-        '--lyr-menu-bg-color': '#cccccc',
+        '--lyr-menu-bg-color': '#f5f5f5',
         '--menu-text-color': '#151515',
         '--menu-text-color-hover': '#000000',
-        '--menu-section-hover-color': '#f0f0f0',
+        '--menu-section-hover-color': '#eeeeee',
         '--modal-bg-color': '#aaaaaaee',
         '--hoverSelect-bg-color': '#f0f0f0'
       }

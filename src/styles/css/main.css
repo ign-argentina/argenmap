@@ -132,8 +132,8 @@ Ejemplos:
   --btn-secondary-color: var(--secondary-color);
   --btn-disabled-color: #838788;
   /* #AAAAAA */
-  --btn-confirm-color: #448148;
-  /* #33B560  #3A8555*/
+  --btn-confirm-color: #336337;
+    /* #33B560  #3A8555 #448148*/
   --btn-danger-color: var(--danger-color);
     /*#CE4946 #EF4D3D #c62828*/
   /*Argenmap ui input text */
@@ -536,6 +536,9 @@ div.leaflet-top.leaflet-left {
 .basemap-title {
   color: var(--menu-text-color-hover);
 }
+.basemap-info-icon-svg {
+  fill: var(--text-color);
+}
 #load-layer {
   overflow: auto;
   position: relative;
@@ -603,7 +606,7 @@ div.leaflet-top.leaflet-left {
   margin-left: 1px;
   padding: 5px 15px;
   background-color: var(--btn-secondary-color);
-  color: var(--btn-hover-color);
+  color: var(--btn-hover-color) !important;
 }
 
 .nav-tabs>li>a:hover {
@@ -660,9 +663,10 @@ li.active>div>a {
   background-color: #ffffffcc;
 }
 
-.list-group-item.capa {
+/* .list-group-item.capa {
   background-color: #ffffff;
 }
+*/
 
 .menu-button {
   background-color: #6e6d6d;
@@ -732,6 +736,9 @@ li.active>div>a {
   font-weight: bolder;
 }
 
+#Archivos-a, #Dibujos-a, #Geoprocesos-a {
+  color: var(--text-color) !important;
+}
 .legend-layer {
   width: 15%;
   display: table-cell;
