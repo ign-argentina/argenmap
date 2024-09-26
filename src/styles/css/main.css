@@ -1393,13 +1393,17 @@ input:checked.switch+label:after {
 }
 
 .list-inline li {
-  width: auto;
-    max-width: 320px;
+  width: 320px;
   display: block;
   padding-right: 15px;
   padding-left: 15px;
 }
 
+@media (max-width: 600px) {
+  .list-inline li {
+    width: 100%;
+  }
+}
 .base-layer-item-info img {
   width: 50px;
   height: 40px;
