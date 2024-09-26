@@ -43,6 +43,16 @@
   padding: 2px;
     margin: 4px;
 }
+@media (max-width: 600px) {
+  #accessibility {
+    max-width: 280px;
+    min-width: 280px;
+  }
+  .accessibility-btn {
+    width: 120px;
+    height: 100px;
+  }
+}
 .accessibility-btn h4 {
   text-align: center;
   overflow-wrap: anywhere;

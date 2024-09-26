@@ -1308,6 +1308,11 @@ input:checked.switch+label:after {
   font-weight: normal;
 }
 
+@media (max-width: 700px) {
+  .tooltiptext {
+    display: none;
+  }
+}
 .tooltiptext,
 #argenmap-tooltip span,
 #argenmap-tooltip span button:hover {
@@ -1388,7 +1393,8 @@ input:checked.switch+label:after {
 }
 
 .list-inline li {
-  width: 320px;
+  width: auto;
+    max-width: 320px;
   display: block;
   padding-right: 15px;
   padding-left: 15px;
