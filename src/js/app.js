@@ -526,42 +526,10 @@ async function getConfig(preferencesURL, dataURL) {
     await loadTemplate({ ...data, ...preferences }, false);
   } catch (error) {
     console.log(error);
-    // loadDefaultJson();
   }
 }
 
-/*
-$.getJSON("./src/config/data.json", async function (data) {
-  $.getJSON("./src/config/preferences.json", async function (preferences) {
-    gestorMenu.setLegendImgPath("src/config/styles/images/legends/");
-    await loadTemplate({ ...data, ...preferences }, false);
-  }).fail(async function (jqxhr, textStatus, error) {
-    console.warn("Template not found. Default configuration will be loaded.");
-    await loadDefaultJson();
-  });
-}).fail(async function (jqxhr, textStatus, error) {
-  console.warn("Template not found. Default configuration will be loaded.");
-  await loadDefaultJson();
-});
-*/
-
 getConfig("./src/config/preferences.json", "./src/config/data.json");
-
-async function loadDefaultJson() { // deprecated
-  /* $.getJSON("./src/config/default/data.json", async function (data) {
-    $.getJSON(
-      "./src/config/default/preferences.json",
-      async function (preferences) {
-        gestorMenu.setLegendImgPath(
-          "src/config/default/styles/images/legends/",
-        );
-        await loadTemplate({ ...data, ...preferences }, true);
-      },
-    );
-  }); */
-
-  await loadTemplate({ ...data, ...preferences }, true);
-}
 
 async function loadTemplate(data, isDefaultTemplate) {
   $(document).ready(async function () {
