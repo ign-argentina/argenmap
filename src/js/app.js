@@ -689,9 +689,12 @@ async function loadTemplate(data, isDefaultTemplate) {
           showLayerMenu = app.onInit.showLayerMenu ?? true;
         }
 
-        // Initialize toolbar visibility toggler and create components
-        const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
-        toolbarVisibilityToggler.createComponent(showToolbar);
+        if (!app.dependencies.toolbarToggler) {
+          // Initialize toolbar visibility toggler and create components
+          const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
+          toolbarVisibilityToggler.createComponent(showToolbar);
+          app.dependencies.toolbarToggler = true;
+        }
 
         //consultar si el navegador es mobile
         const isMobile = window.matchMedia(
@@ -703,8 +706,11 @@ async function loadTemplate(data, isDefaultTemplate) {
           document.getElementById("sidebar").style.display = "block";
         }
 
-        const editableLabel = new EditableLabel();
-        editableLabel.addTo(mapa);
+        if (!app.dependencies.editableLabel) {
+          const editableLabel = new EditableLabel();
+          editableLabel.addTo(mapa);
+          app.dependencies.editableLabel = true;
+        }
       }
     }, 100);
   });
