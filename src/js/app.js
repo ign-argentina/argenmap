@@ -3,13 +3,10 @@ var baseLayersInfo = {};
 var selectedBasemap = null;
 let menu_ui = new Menu_UI();
 var geoProcessingManager = null;
-const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
-  impresorBaseMap = new ImpresorCapasBaseHTML(),
-  impresorGroup = new ImpresorGrupoHTML(),
-  impresorGroupWMSSelector = new ImpresorGroupWMSSelector(),
-  urlInteraction = new URLInteraction(),
-  geometry = new Geometry(),
-  app = {
+
+const  urlInteraction = new URLInteraction();
+const  geometry = new Geometry();
+const  app = {
     profile: "default",
     profiles: {},
     layers: {},
@@ -179,73 +176,57 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
     },
 
     addBasemaps: function () {
-      app.items.forEach((element) => {
-        if (element.type == "basemap") {
-          let item = element,
-            tab = new Tab(item.tab),
-            groupAux = new ItemGroupBaseMap(
-              tab,
-              item.nombre,
-              item.seccion,
-              item.peso,
-              "",
-              "",
-              item.short_abstract,
-              null,
-            );
-          groupAux.setImpresor(impresorBaseMap);
-          groupAux.setObjDom("#basemap-selector");
+      /**
+       * TODO: refactor this method into many functions
+       */
 
-          for (let key2 in item.capas) {
-            gestorMenu.setAvailableBaseLayer(item.capas[key2].nombre);
-            let capa = new Capa(
-              item.capas[key2].nombre,
-              item.capas[key2].titulo,
-              null,
-              item.capas[key2].host,
-              item.capas[key2].servicio,
-              item.capas[key2].version,
-              null,
-              item.capas[key2].key,
-              null,
-              null,
-              null,
-              null,
-              item.capas[key2].attribution,
-            );
-            let basemap = new Item(
-              capa.nombre,
-              item.seccion + key2,
-              "",
-              capa.attribution,
-              capa.titulo,
-              capa,
-              null,
-            );
-            basemap.setLegendImg(item.capas[key2].legendImg); // basemap thumbnail, not a legend
-            item.capas[key2].legend
-              ? basemap.setLegend(item.capas[key2].legend)
-              : basemap.setLegend(null); // basemap legend
-            if (item.capas[key2].peso) {
-              basemap.setPeso(item.capas[key2].peso);
-            }
-            if (
-              item.capas[key2].selected &&
-              item.capas[key2].selected == true
-            ) {
-              gestorMenu.setBasemapSelected(item.seccion + key2);
-            }
-            basemap.setImpresor(impresorItemCapaBase);
-            groupAux.setItem(basemap);
-          }
-          gestorMenu.addTab(tab);
-          gestorMenu.addItemGroup(groupAux);
-        }
-      });
-      selectedBasemap = setBasemapToLoad(
-        urlInteraction.layers,
-        gestorMenu.availableBaseLayers,
+      // Get basemaps menu configuration
+      const baseMapMenuConfig = app.items.find(
+        (item) => item.type === "basemap"
       );
+      // Basemaps configuration array
+      const baseMapsConfig = baseMapMenuConfig.capas;
+      // Create tab menu
+      const tab = new Tab(baseMapMenuConfig.tab);
+      // Create basemap menu object
+      const basemapsMenu = new ItemGroupBaseMap(tab, baseMapMenuConfig.nombre, baseMapMenuConfig.seccion, baseMapMenuConfig.peso, "", "", baseMapMenuConfig.short_abstract, null);
+      // Object for menu DOM elements creation
+      const impresorBaseMap = new ImpresorCapasBaseHTML();
+
+      basemapsMenu.setImpresor(impresorBaseMap);
+      basemapsMenu.setObjDom("#basemap-selector");
+
+      // Process each basemap configuration
+      baseMapsConfig.forEach((basemapConf, index) => {
+        const capa = new Capa(basemapConf.nombre, basemapConf.titulo, null, basemapConf.host, basemapConf.servicio, basemapConf.version, null, basemapConf.key, null, null, null, null, basemapConf.attribution);
+        // Create a basemap menu object
+        const basemap = new Item(capa.nombre, baseMapMenuConfig.seccion + index, "", capa.attribution, capa.titulo, capa, null);
+        // Sets the 'printer', which creates its menu button 
+        const impresorItemCapaBase = new ImpresorItemCapaBaseHTML();
+
+        // Set the basemap preview thumbnail, it isn't not a legend (description of map objects)
+        basemap.setLegendImg(basemapConf.legendImg);
+        // Basemap legend
+        basemapConf.legend ? basemap.setLegend(basemapConf.legend) : basemap.setLegend(null);
+
+        gestorMenu.setAvailableBaseLayer(basemapConf.nombre);
+        
+        // Set basemap order
+        if (basemapConf.peso) {
+          basemap.setPeso(basemapConf.peso);
+        }
+
+        if (basemapConf?.selected === true) {
+          gestorMenu.setBasemapSelected(baseMapMenuConfig.seccion + index);
+        }
+
+        // Button printer injection
+        basemap.setImpresor(impresorItemCapaBase);
+        basemapsMenu.setItem(basemap);
+      });
+      gestorMenu.addTab(tab);
+      gestorMenu.addItemGroup(basemapsMenu);
+      selectedBasemap = setBasemapToLoad(urlInteraction.layers, gestorMenu.availableBaseLayers);
     },
 
     removeLayers: function () {
@@ -264,15 +245,11 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
     addLayers: function () {
       app.items.forEach((element) => {
         if (element.type != "basemap") {
-          let item = element,
-            tab = new Tab(item.tab),
-            customizedLayers =
-              item.customize_layers == undefined ? "" : item.customize_layers,
-            featureInfoFormat =
-              item.feature_info_format == undefined
-                ? "application/json"
-                : item.feature_info_format,
-            impresorGroupTemp = impresorGroup;
+          const item = element;
+          const  tab = new Tab(item.tab);
+          const customizedLayers = item.customize_layers == undefined ? "" : item.customize_layers;
+          const featureInfoFormat = item.feature_info_format == undefined ? "application/json" : item.feature_info_format;
+          const impresorGroupTemp = new ImpresorGrupoHTML();
           let profile = app.profiles[app.profile],
             matchItemProfile;
           if (profile.data.length === 0) {
@@ -295,6 +272,8 @@ const impresorItemCapaBase = new ImpresorItemCapaBaseHTML(),
             ) {
               item.type = "wms";
             }
+
+            const impresorGroupWMSSelector = new ImpresorGroupWMSSelector();
 
             switch (item.type) {
               case "wms":
