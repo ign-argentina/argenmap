@@ -484,7 +484,7 @@ async function getPreferences(preferencesURL, load = false) {
     preferences = await getJson(preferencesURL);
   }
   if (typeof preferences !== "object") {
-    preferences = await getJson(DEFAULT_PREFERENCES);
+    preferences = await getJson("src/config/default/preferences.json");
   }
   if (load) {
     loadTemplate(preferences);
@@ -508,7 +508,7 @@ async function getData(dataURL, load = false) {
     data = await getJson(dataURL);
   }
   if (typeof data !== "object") {
-    data = await getJson(DEFAULT_DATA);
+    data = await getJson("src/config/default/data.json");
   }
   if (load) {
     loadTemplate(data); // moved into getConfig()
@@ -545,14 +545,7 @@ $.getJSON("./src/config/data.json", async function (data) {
 });
 */
 
-const CONFIG_PATH = "./src/config/";
-const DEFAULT_PREFERENCES = CONFIG_PATH + "default/preferences.json";
-const DEFAULT_DATA = CONFIG_PATH + "default/data.json";
-
-const CUSTOM_PREFERENCES = CONFIG_PATH + "preferences.json";
-const CUSTOM_DATA = CONFIG_PATH + "data.json";
-
-getConfig(CUSTOM_PREFERENCES, CUSTOM_DATA);
+getConfig("./src/config/preferences.json", "./src/config/data.json");
 
 async function loadDefaultJson() { // deprecated
   /* $.getJSON("./src/config/default/data.json", async function (data) {
