@@ -9,6 +9,7 @@ class Accessibility {
     this.fontFamilyState = 1; // Tracks the current font family state (0: Default, 1: Dyslexic, 2: Tiresias, 3: Readable)
     this.saturationState = 1; // Tracks the current saturation state (0: Default, 1: Low, 2: High)
     this.contrastState = 1; // Tracks the current contrast state (0: Default, 1: DarkBackground, 2: LightBackground)
+    this.lineHeightState = 1; // Rastrea el estado actual del interlineado (0: Predeterminado, 1: 1.5, 2: 2)
 
     // CSS selectors for elements to apply font classes
     this.fontElements = `
@@ -52,6 +53,8 @@ class Accessibility {
     this.contrast = this.contrast.bind(this);
     this.resetContrast = this.resetContrast.bind(this);
     this.toUpperCase = this.toUpperCase.bind(this);
+    this.lineHeight = this.lineHeight.bind(this);
+    this.resetLineHeight = this.resetLineHeight.bind(this);
 
     this.resetAllAccessibility = this.resetAllAccessibility.bind(this);
     this.toggleResetButtonVisibility = this.toggleResetButtonVisibility.bind(this);
@@ -95,7 +98,8 @@ class Accessibility {
       { title: "Alternar fuentes legibles", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
       { title: "Contraste", id: "contrast", icon: "fa-solid fa-lightbulb", action: this.contrast },
       { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-m", action: this.toUpperCase },
-      { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-arrows-alt-h", action: this.horizontalSpace }
+      { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-arrows-alt-h", action: this.horizontalSpace },
+      { title: "Espaciado de líneas", id: "lineHeight", icon: "fa-solid fa-text-height", action: this.lineHeight }
     ];
 
     // Create and append buttons based on accessibility features
@@ -139,11 +143,7 @@ class Accessibility {
     });
 
     // Show the reset button if any button is active, otherwise hide it
-    if (hasActiveButton) {
-      resetButton.style.display = 'flex';
-    } else {
-      resetButton.style.display = 'none';
-    }
+    resetButton.style.display = hasActiveButton ? 'flex' : 'none';
   }
 
   /**
@@ -714,6 +714,65 @@ class Accessibility {
     horizontalSpaceButton.classList.remove('ag-btn-confirm');
   }
 
+  /**
+ * @function lineHeight
+ * @description Changes the line height of the specified elements to improve readability.
+ */
+  lineHeight() {
+    const lineHeightElements = document.querySelectorAll(this.fontElements);
+    const lineHeightButton = document.getElementById("lineHeight-btn");
+    const lineHeightTitle = document.getElementById("lineHeight-title");
+
+    // Define the options for line height
+    const lineHeightOptions = [
+      { class: '', title: 'Espaciado de líneas', btnClass: 'ag-btn-secondary' },
+      { class: 'line-height1-5', title: 'Interlineado 1.5', btnClass: 'ag-btn-confirm' },
+      { class: 'line-height2', title: 'Interlineado 2', btnClass: 'ag-btn-confirm' }
+    ];
+
+    // Get the current line height option based on the state
+    const { class: classToAdd, title: buttonText, btnClass } = lineHeightOptions[this.lineHeightState];
+
+    // Update the line height classes on target elements
+    lineHeightElements.forEach((element) => {
+      element.classList.remove('line-height1-5', 'line-height2');
+      if (classToAdd) {
+        element.classList.add(classToAdd);
+      }
+    });
+
+    // Update the line height title and button aria-label for accessibility
+    lineHeightTitle.textContent = buttonText;
+    lineHeightButton.setAttribute('aria-label', buttonText);
+
+    // Update button classes for visual indication
+    lineHeightButton.classList.remove('ag-btn-secondary', 'ag-btn-confirm');
+    lineHeightButton.classList.add(btnClass);
+
+    // Update the line height state to cycle through 0, 1, and 2
+    this.lineHeightState = (this.lineHeightState + 1) % lineHeightOptions.length;
+  }
+
+  /**
+ * @function resetLineHeight
+ * @description Reset the line height to the default value.
+ */
+  resetLineHeight() {
+    const lineHeightElements = document.querySelectorAll(this.fontElements);
+    const lineHeightButton = document.getElementById("lineHeight-btn");
+    const lineHeightTitle = document.getElementById("lineHeight-title");
+
+    lineHeightElements.forEach((element) => {
+      element.classList.remove('line-height1-5', 'line-height2');
+    });
+
+    lineHeightButton.classList.remove('ag-btn-confirm');
+    lineHeightButton.classList.add('ag-btn-secondary');
+    lineHeightTitle.textContent = 'Espaciado de líneas';
+    lineHeightButton.setAttribute('aria-label', 'Espaciado de líneas');
+    this.lineHeightState = 1;
+  }
+
 
   /**
    * @function resetAllAccessibility
@@ -728,6 +787,7 @@ class Accessibility {
     this.resetContrast();            // Resets contrast settings to default
     this.resetToUpperCase();         // Resets text transformation to default
     this.resetHorizontalSpace();     // Resets horizontal space to default
+    this.resetLineHeight();          // Resets line height to default
   }
 
 }

@@ -9,7 +9,7 @@
   border: 0;
   border-radius: 6px;
   max-width: min-content;
-    min-width: 330px;
+  min-width: 330px;
 }
 .accessibility-panel {
   display: flex;
@@ -17,7 +17,7 @@
   align-items: center;
   flex-direction: column;
   padding: 5px;
-    background-color: var(--modal-bg-color);
+  background-color: var(--modal-bg-color);
   color: black;
   box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   border-radius: 6px;
@@ -36,12 +36,12 @@
 }
 .accessibility-btn {
   width: 135px;
-    height: 135px;
+  height: 135px;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2px;
-    margin: 4px;
+  margin: 4px;
 }
 @media (max-width: 600px) {
   #accessibility {
@@ -86,12 +86,12 @@
 }
 .readable-font {
   font-family: "Lexend", sans-serif !important;
-  }
-  .dyslexic-font {
-    font-family: 'Open-Dyslexic', sans-serif;
-  }
-  .tiresias-font {
-    font-family: "Tiresias PCfont", sans-serif !important;
+}
+.dyslexic-font {
+  font-family: 'Open-Dyslexic', sans-serif;
+}
+.tiresias-font {
+  font-family: "Tiresias PCfont", sans-serif !important;
 }
 .font-size18 {
   font-size: 18px;
@@ -105,4 +105,11 @@
 .horizontal-space {
   letter-spacing: 2px;
   word-spacing: 2px;
+}
+/* Clases para ajustar el interlineado */
+.line-height1-5 {
+  line-height: 1.5 !important;
+}
+.line-height2 {
+  line-height: 2 !important;
 }
