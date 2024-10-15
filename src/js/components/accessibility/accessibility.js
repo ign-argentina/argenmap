@@ -251,7 +251,7 @@ class Accessibility {
     const fontSizeTitle = document.getElementById("fontSize-title");
 
     fontSizeElements.forEach((element) => {
-      element.style.setProperty('font-size', "");
+      element.classList.remove('font-size18', 'font-size20');
     });
 
     fontSizeButton.classList.remove('ag-btn-confirm');
