@@ -153,9 +153,9 @@ class Accessibility {
       { title: "Alternar fuentes legibles", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
       { title: "Contraste", id: "contrast", icon: "fa-solid fa-lightbulb", action: this.contrast },
       { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-m", action: this.toUpperCase },
-      { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-arrows-alt-h", action: this.horizontalSpace },
-      { title: "Espaciado de líneas", id: "lineHeight", icon: "fa-solid fa-text-height", action: this.lineHeight },
-      { title: "Filtros para Daltonismo", id: "colorBlindness", icon: "fa-solid fa-adjust", action: this.colorBlindness }
+      { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-left-right", action: this.horizontalSpace },
+      { title: "Espaciado de líneas", id: "lineHeight", icon: "fa-solid fa-up-down", action: this.lineHeight },
+      { title: "Filtros para daltonismo", id: "colorBlindness", icon: "fa-solid fa-eye", action: this.colorBlindness }
     ];
 
     // Create and append buttons based on accessibility features
@@ -883,7 +883,7 @@ class Accessibility {
 
     // Definir los tipos de daltonismo y sus etiquetas
     const types = [
-      { type: null, title: 'Daltonismo', btnClass: 'ag-btn-secondary' },
+      { type: null, title: 'Filtros para daltonismo', btnClass: 'ag-btn-secondary' },
       { type: 'deuteranomaly', title: 'Deuteranomalía', btnClass: 'ag-btn-confirm' },
       { type: 'protanomaly', title: 'Protanomalía', btnClass: 'ag-btn-confirm' },
       { type: 'tritanomaly', title: 'Tritanomalía', btnClass: 'ag-btn-confirm' }
@@ -923,8 +923,8 @@ class Accessibility {
     this.removeColorBlindnessFilter();
 
     // Restablecer el título y el aria-label
-    colorBlindnessTitle.textContent = 'Daltonismo';
-    colorBlindnessButton.setAttribute('aria-label', 'Daltonismo');
+    colorBlindnessTitle.textContent = 'Filtros para daltonismo';
+    colorBlindnessButton.setAttribute('aria-label', 'Filtros para daltonismo');
 
     // Restablecer las clases del botón
     colorBlindnessButton.classList.remove('ag-btn-confirm');
