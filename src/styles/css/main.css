@@ -1291,14 +1291,14 @@ input:checked.switch+label:after {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 250px;
-  height: 40px;
+  width: fit-content;
+  height: fit-content;
   background-color: var(--main-bg-color, white) !important;
   border: 1px solid #008dc9;
   color: #008dc9;
   text-align: center;
   border-radius: 6px;
-  padding: 5px 0;
+  padding: 5px 8px;
   white-space: pre;
   position: absolute;
   top: -20px;
