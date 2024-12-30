@@ -20,7 +20,7 @@
   cursor: pointer;
 }
 #geoprocesos-btn>svg {
-  fill: var(--text-color);
+  fill: var(--btn-hover-color);
 }
 .icons-modalfile {
   display: flex;
