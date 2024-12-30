@@ -3,6 +3,48 @@ const colorBlindnessShaders = {
   deuteranomaly: `
     void main() {
       vec4 color = texture2D(uTexture0, vTextureCoords);
+      // Modificación para destacar colores morado y naranja
+      mat4 colorMatrix = mat4(
+        0.8, 0.2, 0.0, 0.0, // rojo a un tono más neutral
+        0.0, 0.6, 0.4, 0.0, // verde suavizado con azul
+        0.2, 0.3, 0.5, 0.0, // mayor peso en azul y morado
+        0.0, 0.0, 0.0, 1.0
+      );
+      gl_FragColor = colorMatrix * color;
+    }
+  `,
+  protanomaly: `
+    void main() {
+      vec4 color = texture2D(uTexture0, vTextureCoords);
+      // Ajuste para mejorar morado y naranja
+      mat4 colorMatrix = mat4(
+        0.7, 0.3, 0.0, 0.0, // reduce el impacto del rojo
+        0.2, 0.6, 0.2, 0.0, // mezcla verde con rojo y azul para tonos morado
+        0.0, 0.4, 0.6, 0.0, // aumenta azules y morados
+        0.0, 0.0, 0.0, 1.0
+      );
+      gl_FragColor = colorMatrix * color;
+    }
+  `,
+  tritanomaly: `
+    void main() {
+      vec4 color = texture2D(uTexture0, vTextureCoords);
+      // Modificación para mejor percepción en azul y amarillo
+      mat4 colorMatrix = mat4(
+        0.95, 0.05, 0.0, 0.0, // enfatiza azul en lugar de rojo
+        0.0, 0.7, 0.3, 0.0,   // mezcla verde-amarillo en azul
+        0.1, 0.3, 0.6, 0.0,   // agrega peso a azules
+        0.0, 0.0, 0.0, 1.0
+      );
+      gl_FragColor = colorMatrix * color;
+    }
+  `
+};
+const colorBlindnessShaders2 = {
+
+  deuteranomaly: `
+    void main() {
+      vec4 color = texture2D(uTexture0, vTextureCoords);
       mat4 colorMatrix = mat4(
         1.0, 0.0, 0.0, 0.0,
         0.0, 0.74, 0.26, 0.0,
@@ -37,7 +79,47 @@ const colorBlindnessShaders = {
     }
   `
 };
-
+const colorBlindnessShaders1 = {
+  deuteranomaly: `
+    void main() {
+      vec4 color = texture2D(uTexture0, vTextureCoords);
+      // Modificación para destacar morado y naranja
+      mat4 colorMatrix = mat4(
+        0.8, 0.2, 0.0, 0.0, // Reduce impacto de rojo, resalta tonos amarillos
+        0.0, 0.7, 0.3, 0.0, // Mezcla verde con azul para mejor diferenciación
+        0.2, 0.2, 0.6, 0.0, // Refuerza azul y morado
+        0.0, 0.0, 0.0, 1.0
+      );
+      gl_FragColor = colorMatrix * color;
+    }
+  `,
+  protanomaly: `
+    void main() {
+      vec4 color = texture2D(uTexture0, vTextureCoords);
+      // Ajuste para mejor percepción de tonos azules y amarillos
+      mat4 colorMatrix = mat4(
+        0.7, 0.3, 0.0, 0.0, // Reduce peso de rojo
+        0.2, 0.6, 0.2, 0.0, // Acentúa el verde-amarillo
+        0.1, 0.4, 0.5, 0.0, // Refuerza azul y morado
+        0.0, 0.0, 0.0, 1.0
+      );
+      gl_FragColor = colorMatrix * color;
+    }
+  `,
+  tritanomaly: `
+    void main() {
+      vec4 color = texture2D(uTexture0, vTextureCoords);
+      // Mejora la diferenciación entre azules y amarillos
+      mat4 colorMatrix = mat4(
+        0.95, 0.05, 0.0, 0.0, // Enfatiza tonos amarillos
+        0.0, 0.8, 0.2, 0.0,   // Ajusta verde y amarillo
+        0.2, 0.3, 0.5, 0.0,   // Resalta azules
+        0.0, 0.0, 0.0, 1.0
+      );
+      gl_FragColor = colorMatrix * color;
+    }
+  `
+};
 
 
 /**
