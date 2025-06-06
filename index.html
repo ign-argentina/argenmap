@@ -6,6 +6,9 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Argenmap es un visor de mapas interactivo que permite visualizar y consultar información geográfica de Argentina." />
+  <meta name="keywords" content="mapas, geografía, Argentina, visor de mapas, información geográfica" />
+  <meta name="author" content="Instituto Geográfico Nacional" />
   <title>Argenmap</title>
   <link rel="icon" href="src/styles/images/favicon.ico" type="image/x-icon" />
 
@@ -139,10 +142,10 @@
       <div class="row center-flex">
         <div class="col-xs-4 col-sm-8 col-md-8 start-flex">
           <div id="logo-navbar" class="navbar-content">
-            <a id="top-left-logo-link" href="#" title="left logo" target="_blank">
-              <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="" title="" />
+            <a id="top-left-logo-link" href="#" title="Logo" target="_blank" aria-label="Logo">
+              <img id="top-left-logo" src="src/styles/images/noimage.webp" alt="Logo" title="Logo" />
             </a>
-            <a id="logoText"></a>
+            <a id="logoText" aria-label="Texto del logo"></a>
           </div>
         </div>
 
@@ -152,8 +155,8 @@
 
         <div id="logo-help" class="navbar-new-content">
           <span class="xxsmall-hide">
-            <a id="top-right-logo-link" href="#" title="right logo" target="_blank">
-              <img id="top-right-logo" src="src/styles/images/noimage.webp" alt="" title="" />
+            <a id="top-right-logo-link" href="#" title="Logo" target="_blank" aria-label="Logo">
+              <img id="top-right-logo" src="src/styles/images/noimage.webp" alt="Logo" title="Logo" />
             </a>
           </span>
         </div>
@@ -165,20 +168,20 @@
 
   <div class="menu-container top-around-flex">
     <div id="botonera">
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="sidebar-btn" data-target="sidebar" aria-label="Menú de capas" title="Menú de capas">
-        <i class="fa-solid fa-layer-group"></i>
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="sidebar-btn" data-target="sidebar" aria-label="Abrir menú de capas" title="Menú de capas">
+        <i class="fa-solid fa-layer-group" aria-label="Ícono de capas"></i>
       </button>
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="basemap-selector-btn" data-target="basemap-selector" aria-label="Selector de mapas base" title="Selector de mapas base">
-        <i class="fa-solid fa-map"></i>
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="basemap-selector-btn" data-target="basemap-selector" aria-label="Abrir selector de mapas base" title="Selector de mapas base">
+        <i class="fa-solid fa-map" aria-label="Ícono de mapa base"></i>
       </button>
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="load-layer-btn" data-target="load-layer" aria-label="Cargar capas" title="Agregar capas">
-        <i class="bx bxs-layer-plus"></i>
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="load-layer-btn" data-target="load-layer" aria-label="Cargar nuevas capas" title="Agregar capas">
+        <i class="bx bxs-layer-plus" aria-label="Ícono de agregar capas"></i>
       </button>
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="nav-help-btn" title="Ayuda" aria-label="Ayuda" data-target="help-tour">
-        <i class="fa-solid fa-question"></i>
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="nav-help-btn" title="Ayuda" aria-label="Abrir ayuda" data-target="help-tour">
+        <i class="fa-solid fa-question" aria-label="Ícono de ayuda"></i>
       </button>
-      <button class="ag-btn ag-btn-primary menu-section-btn" id="accessibility-btn" title="Accesibilidad" aria-label="Accesibilidad" data-target="accessibility">
-        <i class="fa-solid fa-universal-access"></i>
+      <button class="ag-btn ag-btn-primary menu-section-btn" id="accessibility-btn" title="Accesibilidad" aria-label="Abrir opciones de accesibilidad" data-target="accessibility">
+        <i class="fa-solid fa-universal-access" aria-label="Ícono de accesibilidad"></i>
       </button>
     </div>
     <div id="menu-content" style="display: flex">
