@@ -598,6 +598,7 @@ async function getConfig(preferencesURL, dataURL) {
     const preferences = await getPreferences(preferencesURL);
     const data = await getData(dataURL);
     await loadTemplate({ ...data, ...preferences }, false);
+    gestorMenu.setLegendImgPath("src/config/styles/images/legends/");
   } catch (error) {
     console.log(error);
   }
