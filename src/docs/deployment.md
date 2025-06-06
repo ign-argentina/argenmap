@@ -1,33 +1,105 @@
 # Guía rápida de instalación
 
-### Requerimientos
+### Requisitos previos
 
-- Servidor web (Nginx, Apache, lighttpd, etc.)
+- Un servidor web (Nginx, Apache, lighttpd, o similar)
+- Acceso a la terminal o consola de comandos
+- Git instalado (opcional, pero recomendado)
+- Editor de texto (Visual Studio Code, Sublime Text, etc.)
 
-## 1. Descargar código
+---
 
-Clonar con el comando:
+## 1. Descargar el código fuente
 
-    git clone https://github.com/ign-argentina/argenmap.git
+**Opción 1: Usando Git**
 
-O descargar el código en formato ZIP y descomprimirlo con la sig. URL: 
+```powershell
+git clone https://github.com/ign-argentina/argenmap.git
+cd argenmap
+```
 
+**Opción 2: Descarga manual**
+
+1. Ve a: https://github.com/ign-argentina/argenmap
+2. Haz clic en "Code" > "Download ZIP"
+3. Extrae el archivo ZIP en la carpeta deseada
+
+Link de descarga directa:
+
+```plaintext
 https://github.com/ign-argentina/argenmap/archive/master.zip
+```
 
-## 2. Definir la configuración 
+---
 
-Copiar los archivos de configuración por defecto que están en el directorio `src/config/default` al directorio `src/config` y editar los nuevos archivos según se desee.
+## 2. Configurar archivos de configuración de la aplicación
 
-> [!TIP]
-> Los mapas base, capas y modo en que se agrupan y ordenan se definen en el archivo `data.json` 
->
-> La apariencia, vista inicial del mapa y otras opciones en `preferences.json`.
+Copia los archivos de configuración que están en el directorio `src/config/default` al directorio `src/config` y editar los nuevos archivos según se desee.
 
-En el artículo de **[Configuración](configuration.md)** se detalla esta parte del proceso.
+1. Copia los archivos de configuración por defecto:
 
-## 3. Publicar el visor 
+   ```bash
+   # En Linux
+   cp -r src/config/default/* src/config/
+   ```
 
-Mover o copiar el código del visor al directorio raíz de un servidor web o con alguna herramienta de depuración como LiveServer en Visual Studio Code, etc y abrir en un navegador web la URL donde se encuentra publicado.
+2. Edita los archivos de configuración según tus necesidades:
+
+   - [`src/config/data.json`](../config/data.json): Define mapas base, capas y agrupaciones.
+   - [`src/config/preferences.json`](../config/preferences.json): Configura la apariencia y opciones iniciales.
+
+   **Ejemplo de edición:**
+
+   ```json
+   // src/config/preferences.json
+   {
+     "mapConfig": {
+    "center": {
+      "latitude": -40,
+      "longitude": -59
+    },
+    "zoom": {
+      "initial": 4,
+      "min": 3,
+      "max": 21
+    }
+   },
+   [...]
+   }
+   ```
+
+> Consulta el artículo de **[Configuración](configuration.md)** para detalles avanzados.
+
+---
+
+## 3. Publicar el visor en un servidor web
+
+**Opción 1: Usando Live Server en Visual Studio Code**
+
+1. Instala la extensión "Live Server".
+2. Haz clic derecho en `index.html` y selecciona "Open with Live Server".
+
+**Opción 2: Usando Apache/Nginx**
+
+1. Copia todo el contenido del proyecto a la carpeta pública de tu servidor web.
+
+   Ejemplo para Apache en Linux:
+
+   ```sh
+   sudo cp -r ~/argenmap /var/www/html/argenmap
+   ```
+
+2. Accede desde tu navegador a:  
+   `http://localhost/argenmap/`
+
+---
+
+## 4. Verificar funcionamiento
+
+- Abre la URL donde publicaste el visor.
+- Si realizas cambios en la configuración, recarga la página para ver los cambios.
+
+---
 
 > [!IMPORTANT]
 > Para ver cambios en la configuración es necesario recargar el visor en el navegador.
