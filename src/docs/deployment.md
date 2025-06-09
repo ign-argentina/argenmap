@@ -2,58 +2,57 @@
 
 ### Requisitos previos
 
-- Un servidor web (Nginx, Apache, lighttpd, o similar)
+- Servidor web (Nginx, Apache, lighttpd, etc.)
 - Acceso a la terminal o consola de comandos
-- Git instalado (opcional, pero recomendado)
-- Editor de texto (Visual Studio Code, Sublime Text, etc.)
+- Git (opcional pero recomendado)
+- Editor de código (VS Code, Sublime Text, etc.)
 
 ---
 
-## 1. Descargar el código fuente
+## 1. Obtener el código fuente
 
-**Opción 1: Usando Git**
+### Opción 1: Clonar con Git
 
-```powershell
+```bash
 git clone https://github.com/ign-argentina/argenmap.git
 cd argenmap
 ```
 
-**Opción 2: Descarga manual**
+### Opción 2: Descargar ZIP
 
-1. Ve a: https://github.com/ign-argentina/argenmap
-2. Haz clic en "Code" > "Download ZIP"
-3. Extrae el archivo ZIP en la carpeta deseada
+1. Accede a: [https://github.com/ign-argentina/argenmap](https://github.com/ign-argentina/argenmap)
+2. Haz clic en **Code > Download ZIP**
+3. Extrae el archivo en la carpeta deseada
 
-Link de descarga directa:
+Enlace directo:
 
-```plaintext
+```
 https://github.com/ign-argentina/argenmap/archive/master.zip
 ```
 
 ---
 
-## 2. Configurar archivos de configuración de la aplicación
+## 2. Configurar la aplicación
 
 Copia los archivos de configuración que están en el directorio `src/config/default` al directorio `src/config` y editar los nuevos archivos según se desee.
 
-1. Copia los archivos de configuración por defecto:
+### Paso 1: Copiar archivos por defecto de la configuración
 
-   ```bash
-   # En Linux
-   cp -r src/config/default/* src/config/
-   ```
+```bash
+# En Linux/macOS
+cp -r src/config/default/* src/config/
+```
 
-2. Edita los archivos de configuración según tus necesidades:
+### Paso 2: Editar configuración
 
-   - [`src/config/data.json`](../config/data.json): Define mapas base, capas y agrupaciones.
-   - [`src/config/preferences.json`](../config/preferences.json): Configura la apariencia y opciones iniciales.
+* [`src/config/data.json`](../config/data.json): Define mapas base, capas y agrupaciones.
+* [`src/config/preferences.json`](../config/preferences.json): Configura la apariencia y opciones iniciales.
 
-   **Ejemplo de edición:**
+**Ejemplo básico (`preferences.json`):**
 
-   ```json
-   // src/config/preferences.json
-   {
-     "mapConfig": {
+```json
+{
+  "mapConfig": {
     "center": {
       "latitude": -40,
       "longitude": -59
@@ -63,12 +62,11 @@ Copia los archivos de configuración que están en el directorio `src/config/def
       "min": 3,
       "max": 21
     }
-   },
-   [...]
-   }
-   ```
+  }
+}
+```
 
-> Consulta el artículo de **[Configuración](configuration.md)** para detalles avanzados.
+📘 Consulta más detalles en la guía de **[Configuración](configuration.md)**.
 
 ---
 
@@ -96,12 +94,16 @@ Copia los archivos de configuración que están en el directorio `src/config/def
 
 ## 4. Verificar funcionamiento
 
-- Abre la URL donde publicaste el visor.
-- Si realizas cambios en la configuración, recarga la página para ver los cambios.
+* Abre la URL donde publicaste el visor
+* Si editaste archivos de configuración, recarga la página para aplicar los cambios
 
 ---
 
 > [!IMPORTANT]
-> Para ver cambios en la configuración es necesario recargar el visor en el navegador.
+> ⚠️ Cada vez que modifiques la configuración, debes recargar el visor en el navegador.
 
-### Siguiente: [Configurar el visor](configuration.md)
+---
+
+➡️ **Siguiente paso:** [Configurar el visor](configuration.md)
+
+---
