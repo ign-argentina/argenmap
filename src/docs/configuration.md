@@ -32,7 +32,7 @@ src/config/data.json           → Mapas base, capas, agrupaciones.
 ```
 
 > [!TIP]
-> 🔧 Se recomienda copiar los archivos desde `src/config/default/` si es la primera vez que configuras el visor.
+> Se recomienda copiar los archivos desde `src/config/default/` si es la primera vez que configuras el visor.
 
 ---
 
@@ -79,14 +79,14 @@ El archivo `data.json` se compone de bloques llamados **items**, el primero agru
 
 ### Definir un mapa base
 
-> [!TIP] > **✅ Recomendaciones**
+> [!TIP] >
 > Si el mapa base es un servicio TMS se puede agregar un "-" al parámetro "y" quedando `{-y}` o invertir el orden de los demás parámetros para evitar que el mapa quede con las teselas desordenadas ya que TMS invierte el valor de `{y}` con respecto a los servicios XYZ.
 >
 > Consultar la documentación del servicio a agregar.
 
 Tomando como referencia la estructura descrita en el apartado anterior, dentro del atributo "capas" del primer bloque, agregar uno nuevo bloque por cada mapa base como se muestra a continuación.
 
-### Ejemplo real de mapas base
+### Ejemplo de mapas base
 
 ```jsonc
 {
@@ -211,6 +211,7 @@ Dentro del bloque "layers_joins", agregar un bloque para unir dos capas.
 ```
 
 ➡️ Esto genera un botón único en menú que activa ambas capas simultáneamente.
+
 ![secciones desplegables en el panel de capas](img/wms.png)
 
 ---
