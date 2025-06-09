@@ -79,7 +79,7 @@ El archivo `data.json` se compone de bloques llamados **items**, el primero agru
 
 ### Definir un mapa base
 
-> [!TIP] >
+> [!TIP]
 > Si el mapa base es un servicio TMS se puede agregar un "-" al parámetro "y" quedando `{-y}` o invertir el orden de los demás parámetros para evitar que el mapa quede con las teselas desordenadas ya que TMS invierte el valor de `{y}` con respecto a los servicios XYZ.
 >
 > Consultar la documentación del servicio a agregar.
