@@ -1,11 +1,18 @@
 <!-- trunk-ignore-all(markdownlint/MD041) -->
 
-Esta sección explica cómo se pueden configurar las capas, los mapas base, el aspecto visual, extensiones y vista del mapa y otras opciones.
+# Guía de configuración de Argenmap
+
+Esta guía explica cómo personalizar el visor Argenmap editando los archivos `preferences.json` y `data.json` para configurar las capas, los mapas base, el aspecto visual, extensiones y vista del mapa y otras opciones. Incluye ejemplos reales y recomendaciones para cada sección.
+
+> 🛠️ **Destinado a**: Desarrolladores y administradores con conocimientos básicos de JSON.
+> 💡 **Recomendación**: Usa un editor con soporte de JSON (vscode, webstorm) y validadores de sintaxis.
 
 > [!TIP]
-> Para facilitar la creación de una nueva configuración, copiar los archivos de configuración por defecto que están en el directorio `src/config/default` al directorio `src/config` y editar los nuevos archivos JSON.
+> Para facilitar la configuración, se recomienda utilizar un editor de texto con soporte para JSON y validación de sintaxis.
 
 > [!CAUTION]
+>
+> ### ⚠️ Advertencias importantes
 >
 > 1. Si la sintaxis de los archivos JSON es incorrecta, la aplicación podría detener su ejecución o quedar cargada parcialmente. Validar la sintaxis de los archivos JSON con validadores web o los que incluyen editores de código fuente.
 >
@@ -13,20 +20,30 @@ Esta sección explica cómo se pueden configurar las capas, los mapas base, el a
 >
 > 3. Validar que las URL de las imagenes de logos y otros recursos a referenciar en los archivos JSON sean correctas.
 
-## Mapas base y capas
+---
+
+## 1. Ubicación de los archivos de configuración
+
+Los archivos principales de configuración se encuentran en:
+
+```text
+src/config/preferences.json    → Configuración general, apariencia, plugins.
+src/config/data.json           → Mapas base, capas, agrupaciones.
+```
+
+> [!TIP]
+> 🔧 Se recomienda copiar los archivos desde `src/config/default/` si es la primera vez que configuras el visor.
+
+---
+
+## 2. Configuración de mapas base y capas (`data.json`)
+
+### Estructura básica
 
 El archivo `data.json` se compone de bloques llamados **items**, el primero agrupa los mapas base y los siguientes las secciones desplegables que agrupan capas.
 
 > [!NOTE]
 > Llamamos bloque a lo que está entre dos llaves `{ }`
-
-### Estructura del archivo data.json
-
-_comentarios después de cada `"//"`_
-
-<!-- </details>
-
-<summary>### Estructura del archivo data.json</summary> -->
 
 ```jsonc
 {
@@ -60,18 +77,16 @@ _comentarios después de cada `"//"`_
 }
 ```
 
-<!-- </details> -->
-
 ### Definir un mapa base
 
-> [!TIP]
+> [!TIP] > **✅ Recomendaciones**
 > Si el mapa base es un servicio TMS se puede agregar un "-" al parámetro "y" quedando `{-y}` o invertir el orden de los demás parámetros para evitar que el mapa quede con las teselas desordenadas ya que TMS invierte el valor de `{y}` con respecto a los servicios XYZ.
 >
 > Consultar la documentación del servicio a agregar.
 
 Tomando como referencia la estructura descrita en el apartado anterior, dentro del atributo "capas" del primer bloque, agregar uno nuevo bloque por cada mapa base como se muestra a continuación.
 
-**Ejemplo de un bloque de mapa base:**
+### Ejemplo real de mapas base
 
 ```jsonc
 {
@@ -103,11 +118,9 @@ Dentro de "items", después del primer bloque que define los mapas base se puede
 >
 > Con esa información la aplicación genera en el panel o menú de capas una sección colapsable o "carpeta" que contiene las capas de ese servicio como se ve en la siguiente imagen.
 
-**Ejemplo de carpeta "Infraestrucutra Social"**
+### Ejemplo de sección de capas WMS
 
 ![secciones desplegables en el panel de capas](img/secciones.png)
-
-**Ejemplo del bloque WMS**
 
 ```jsonc
 {
@@ -153,8 +166,6 @@ Dentro de "items", después del primer bloque que define los mapas base se puede
 }
 ```
 
-**Resultado del bloque anterior**
-
 ![secciones desplegables en el panel de capas](img/wms.png)
 
 **Ejemplo del bloque WMTS**
@@ -172,19 +183,17 @@ Dentro de "items", después del primer bloque que define los mapas base se puede
   "short_abstract": "Cartas topográficas, atlas topográficos, cartografía, etc.", // Texto debajo del título
   "class": "",
   "seccion": "cartografia",
-  "servicio": "wmts", 
+  "servicio": "wmts",
   "version": "1.0.0", // Versión del servicio
   "host": "https://imagenes.ign.gob.ar/geoserver/cartas_mosaicos" // URL del servicio
 }
 ```
 
-### Unificar 2 capas en un botón
+### Unir dos capas en un botón
 
-Pueden fusionarse dos capas en un mismo botón, por ejemplo para poder superponer una capa vectorial desde un WMS sobre una capa de imágenes WMTS. 
+Pueden fusionarse dos capas en un mismo botón, por ejemplo para poder superponer una capa vectorial desde un WMS sobre una capa de imágenes WMTS.
 
 Dentro del bloque "layers_joins", agregar un bloque para unir dos capas.
-
-**Ejemplo de bloque de unión de 2 capas**
 
 ```jsonc
 {
@@ -201,15 +210,16 @@ Dentro del bloque "layers_joins", agregar un bloque para unir dos capas.
 }
 ```
 
-**El último botón de la siguiente imagen es resultado del bloque anterior**
-
+➡️ Esto genera un botón único en menú que activa ambas capas simultáneamente.
 ![secciones desplegables en el panel de capas](img/wms.png)
 
-## Parámetros del visor
+---
 
-El archivo `preferences.json` es utilizado para configurar varios aspectos de la aplicaciónse como pueden ser definir opciones de inicio como la posición y zoom del mapa, estilos, entre otros.
+## 3. Configuración general y apariencia (`preferences.json`)
 
-**Ejemplo con comentarios**
+El archivo `preferences.json` es utilizado para configurar varios aspectos de la aplicación como pueden ser definir opciones de inicio como la posición y zoom del mapa, estilos, entre otros.
+
+### Estructura básica
 
 ```jsonc
 {
@@ -364,7 +374,7 @@ El archivo `preferences.json` es utilizado para configurar varios aspectos de la
   "title": "IGN - Argenmap", // Título de la aplicación.
   "website": "https://www.ign.gob.ar/", // URL de la aplicación.
   "mainPopup": {
-    // Configura el popup principal mostrado al cargar la aplicación.
+    // Configura el popup de bienvenida mostrado al cargar la aplicación.
     "isActive": false, // Habilita o deshabilita el popup. Deshabilitado por defecto.
     "welcomeSign": "",
     "image": "https://static.ign.gob.ar/img/logo.png", // URL de la imagen.
@@ -373,7 +383,9 @@ El archivo `preferences.json` es utilizado para configurar varios aspectos de la
 }
 ```
 
-## Personalizar más la apariencia
+---
+
+## 4. Recomendaciones y validaciones
 
 Para modificar más el aspecto visual de la aplicación puede agregarse en `src/config/styles` los siguientes directorios y archivos:
 
@@ -382,4 +394,23 @@ Para modificar más el aspecto visual de la aplicación puede agregarse en `src/
 
 - `src/config/styles/css/main.css` : reglas de estilos CSS (el original está en `src/styles/css`)
 - `src/config/styles/images` : logos y otras imágenes. Se pueden referenciar en los archivos JSON.
-- `src/config/styles/images/legends` : la aplicación busca por defecto en esta ubicación imágenes con el mismo nombre que las capas y las agrega al panel usándolas como leyenda o previsualización
+- `src/config/styles/images/legends` : la aplicación busca por defecto en esta ubicación imágenes con el mismo nombre que las capas y las agrega al panel usándolas como leyenda o previsualización.
+
+---
+
+## 5. Recomendaciones y validaciones
+
+- 🧪 Valida sintaxis JSON.
+- 🔗 Comprueba accesibilidad de URLs.
+- ♻️ Recarga el visor tras cambios.
+
+---
+
+## 6. Recursos adicionales
+
+- [Ejemplo para excluir capas](../docs/ejemplos_data_json/excluir_capas.json)
+- [Ejemplo mapa base híbrido](../docs/ejemplos_data_json/mapa_base_hibrido.json)
+- [Ejemplo para renombrar capas](../docs/ejemplos_data_json/renombrar_datos_capas.json)
+- [Ejemplo con solapas](../docs/ejemplos_data_json/tabs.json)
+
+---
