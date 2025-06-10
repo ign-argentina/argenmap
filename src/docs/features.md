@@ -17,6 +17,9 @@
 - Incluir en la URL como parámetros la posición y zoom actuales del mapa y capas activas para compartir
 - Captura de pantalla
 - Imprimir pantalla
+- Panel de ayuda
+- Panel de accesibilidad
+
 
 La lista de cambios está en [GitHub][]
 

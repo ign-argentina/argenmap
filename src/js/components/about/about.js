@@ -227,70 +227,70 @@ class AboutUs {
   }
 
   /**
-   * Adds a notification dot to the specified element.
-   * @param {string} id - The ID of the element to add the notification dot to.
+   * Añade un punto de notificación al elemento especificado solo si no se mostró antes.
+   * @param {string} id - El ID del elemento al que se le agrega el punto de notificación.
    */
   addNoti(id) {
-    const temporaryNotification = document.createElement("div");
-    temporaryNotification.classList.add("notification-dot");
-    temporaryNotification.id = "notification-dot";
-
-    const temporaryDivToChange = document.getElementById(id);
-    if (temporaryDivToChange) {
-      temporaryDivToChange.appendChild(temporaryNotification);
+    if (document.getElementById("notification-dot")) return;
+    localStorage.setItem("notificationDotShown", "true");
+    const target = document.getElementById(id);
+    if (target) {
+      const dot = document.createElement("div");
+      dot.className = "notification-dot";
+      dot.id = "notification-dot";
+      target.appendChild(dot);
     } else {
       this.waitForElementAndAddNoti(id);
     }
   }
 
   /**
-   * Waits for the specified element to appear and adds a notification dot to it.
-   * @param {string} id - The ID of the element to wait for and add the notification dot to.
+   * Espera a que el elemento esté en el DOM y luego agrega el punto de notificación.
+   * @param {string} id - El ID del elemento objetivo.
    */
   waitForElementAndAddNoti(id) {
     const targetNode = document.getElementById(id);
     if (targetNode) {
       this.addNoti(id);
-    } else {
-      const observer = new MutationObserver((mutationsList, observer) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
-            for (const addedNode of mutation.addedNodes) {
-              if (addedNode.id === id) {
-                this.addNoti(id);
-                observer.disconnect();
-                break;
-              }
-            }
+      return;
+    }
+    const observer = new MutationObserver((mutations, obs) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.id === id) {
+            this.addNoti(id);
+            obs.disconnect();
+            return;
           }
         }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   /**
-   * Checks if there are new functions and adds a notification dot if necessary.
+   * Verifica si hay funciones nuevas y muestra el dot solo la primera vez que hay un cambio.
+   * El dot debe mostrarse si:
+   * - No hay lastFunctionSeen en localStorage
+   * - O si hay una línea nueva respecto al valor guardado
    */
   check() {
-    this.dataGetter
-      .loadMD("src/docs/features.md", 2, Infinity)
-      .then((selectedText) => {
-        const lines = selectedText.split("\n");
-        const lastIndex = lines.length - 4; // Index of the antepenultimate line
-
-        lines.forEach((line, i) => {
-          if (i > lastIndex) {
-            localStorage.setItem("lastFunctionSeen", i - 3);
-            return; // Ignore lines after the antepenultimate line
-          }
-          this.getExited = localStorage.getItem("lastFunctionSeen"); //First time here or any change since last time?
-
-          if (this.getExited != null && parseInt(this.getExited) < i) {
-            this.addNoti("developerLogo");
-          }
-        });
-      });
+    this.dataGetter.loadMD("src/docs/features.md", 2, Infinity).then((selectedText) => {
+      const lines = selectedText.split("\n");
+      const lastIndex = lines.length - 4;
+      const lastFunctionSeen = localStorage.getItem("lastFunctionSeen");
+      const notificationDotShown = localStorage.getItem("notificationDotShown") === "true";
+      let newFunctionIndex = lastIndex;
+      // Si nunca se guardó lastFunctionSeen o hay una línea nueva
+      if (lastFunctionSeen === null || parseInt(lastFunctionSeen, 10) < newFunctionIndex) {
+        // Solo mostrar el dot si no se mostró para este índice
+        if (!notificationDotShown || parseInt(lastFunctionSeen, 10) < newFunctionIndex) {
+          this.addNoti("developerLogo");
+          localStorage.setItem("lastFunctionSeen", newFunctionIndex);
+          localStorage.setItem("notificationDotShown", "true");
+        }
+      }
+    });
   }
 }
 

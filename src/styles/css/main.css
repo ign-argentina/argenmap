@@ -556,6 +556,13 @@ div.leaflet-top.leaflet-left {
   max-width: 350px;
 }
 
+
+@media (max-width: 768px) {
+  #load-layer {
+    max-width: 295px
+  }
+}
+
 .menuFixed {
   display: block !important;
 }
