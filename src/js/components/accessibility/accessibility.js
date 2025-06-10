@@ -68,10 +68,10 @@ void main() {
 void main() {
   vec4 color = texture2D(uTexture0, vTextureCoords);
   mat4 colorMatrix = mat4(
-1.00,  0.00,  0.00, 0.0,  // R: sin cambio
-  0.00,  0.85,  0.15, 0.0,  // G: leve mezcla con B
-  0.00,  0.25,  0.75, 0.0,  // B: se refuerza
-  0.00,  0.00,  0.00, 1.0
+    1.00,  0.00,  0.00, 0.0,  // R: sin cambios
+    0.00,  1.05, -0.05, 0.0,  // G: refuerza verde, resta azul
+    0.00, -0.10,  1.10, 0.0,  // B: refuerza azul, resta verde
+    0.00,  0.00,  0.00, 1.0
   );
   gl_FragColor = colorMatrix * color;
 }
@@ -1063,7 +1063,7 @@ class Accessibility {
     colorBlindnessButton.classList.add('ag-btn-secondary');
 
     // Restablecer el estado
-    this.colorBlindnessState = 0;
+    this.colorBlindnessState = 1;
   }
 
   /**
