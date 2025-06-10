@@ -69,7 +69,7 @@ class PdfPrinter {
    * Genera e imprime/guarda el PDF con el mapa, símbolo norte, escala y capas activas con leyendas.
    * Mantiene la proporción del mapa y muestra un loading mientras se procesa.
    */
-  print() {
+  async print() {
     try {
       const PDFClass = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
       if (typeof PDFClass === 'undefined' || typeof window.L === 'undefined' || typeof window.leafletImage === 'undefined') {
@@ -116,51 +116,84 @@ class PdfPrinter {
         scaleClone.style.zIndex = '10000';
         mapElem.appendChild(scaleClone);
       }
-      // Usar leaflet-image para capturar el mapa base
-      window.leafletImage(mapa, (err, canvas) => {
-        // Restaurar overlays y remover loading
+
+      // Timeout para la generación del mapa (por ejemplo, 15 segundos)
+      let timeoutId;
+      const leafletImagePromise = new Promise((resolve, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error('Tiempo de espera agotado al generar la imagen del mapa. Puede que alguna capa no esté respondiendo.'));
+        }, 10000); // 10 segundos
+
+        window.leafletImage(mapObj, (err, canvas) => {
+          clearTimeout(timeoutId);
+          if (err || !canvas) {
+            reject(new Error('No se pudo capturar el mapa.'));
+          } else {
+            resolve(canvas);
+          }
+        });
+      });
+
+      let canvas;
+      try {
+        canvas = await leafletImagePromise;
+      } catch (err) {
         overlays.forEach(el => { el.style.visibility = ''; });
         if (scaleClone) mapElem.removeChild(scaleClone);
         if (document.getElementById('pdf-loading')) document.body.removeChild(loadingDiv);
-        if (err || !canvas) {
-          alert('No se pudo capturar el mapa.');
-          return;
-        }
-        // Calcular tamaño proporcional para el PDF
-        const pdfW = 277, pdfH = 150;
-        const ratio = Math.min(pdfW / canvas.width, pdfH / canvas.height);
-        const imgW = Math.round(canvas.width * ratio);
-        const imgH = Math.round(canvas.height * ratio);
-        const offsetX = 10 + Math.floor((pdfW - imgW) / 2);
-        const offsetY = 20 + Math.floor((pdfH - imgH) / 2);
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new PDFClass({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-        pdf.addImage(imgData, 'PNG', offsetX, offsetY, imgW, imgH);
-        // Agregar símbolo de norte (triángulo hueco y N debajo, esquina superior derecha)
-        this.#drawNorthSymbol(pdf, offsetX + imgW - 20, offsetY + 10);
-        // Agregar la escala (capturada como imagen)
-        if (scaleElem) {
-          this.#drawScaleToPDF(pdf, scaleElem, 200, 170);
-        }
-        // Agregar lista de capas activas con leyendas en el lateral derecho
-        const capas = this.#getActiveLayersWithLegends();
-        pdf.setFontSize(10);
-        let y = 30;
-        capas.forEach(({ titulo, legendImg }, idx) => {
-          pdf.text(titulo, offsetX + imgW + 10, y);
-          // Si quieres agregar leyenda, puedes hacerlo aquí (opcional)
-          y += 8;
-        });
+        alert(err.message);
+        return;
+      }
 
-        // Nombre de archivo con fecha y hora
-        const now = new Date();
-        const fecha = now.toLocaleDateString('es-AR').replace(/\//g, '-');
-        const hora = now.toTimeString().slice(0, 5).replace(':', '-');
-        pdf.save(`mapa_${fecha}_${hora}.pdf`);
+      overlays.forEach(el => { el.style.visibility = ''; });
+      if (scaleClone) mapElem.removeChild(scaleClone);
+      if (document.getElementById('pdf-loading')) document.body.removeChild(loadingDiv);
+
+      // Calcular área del mapa (75% del ancho, 98% del alto, 1cm de margen izq/sup/inf)
+      const pageW = 297, pageH = 210; // A4 horizontal en mm
+      const margin = 10; // 1cm
+      const mapAreaW = Math.floor(pageW * 0.75) - margin; // ~75% del ancho
+      const mapAreaH = pageH - 2 * margin; // casi todo el alto
+      const rightPanelX = margin + mapAreaW + 5;
+      // Ajustar proporción del mapa
+      const ratio = Math.min(mapAreaW / canvas.width, mapAreaH / canvas.height);
+      const imgW = Math.round(canvas.width * ratio);
+      const imgH = Math.round(canvas.height * ratio);
+      const offsetX = margin + Math.floor((mapAreaW - imgW) / 2);
+      const offsetY = margin + Math.floor((mapAreaH - imgH) / 2);
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new PDFClass({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      pdf.addImage(imgData, 'PNG', offsetX, offsetY, imgW, imgH);
+      // Agregar símbolo de norte (triángulo hueco y N debajo, esquina superior derecha del mapa)
+      this.#drawNorthSymbol(pdf, offsetX + imgW - 15, offsetY + 10);
+      // Agregar la escala (capturada como imagen) sobre el mapa, esquina inferior izquierda
+      if (scaleElem) {
+        await this.#drawScaleToPDF(pdf, scaleElem, offsetX + 3, offsetY + imgH - 4);
+      }
+      // Panel derecho: título y capas activas
+      const capas = this.#getActiveLayersWithLegends ? this.#getActiveLayersWithLegends() : [];
+      pdf.setFontSize(12);
+      pdf.text('Capas activas:', rightPanelX, margin + 10);
+      pdf.setFontSize(10);
+      let y = margin + 18;
+      const maxWidth = pageW - rightPanelX - 5;
+      capas.forEach(({ titulo }, idx) => {
+        const lines = this.#splitTextToLines(pdf, titulo, maxWidth);
+        lines.forEach(line => {
+          pdf.text(line, rightPanelX, y);
+          y += 6;
+        });
       });
+
+      // Nombre de archivo con fecha y hora
+      const now = new Date();
+      const fecha = now.toLocaleDateString('es-AR').replace(/\//g, '-');
+      const hora = now.toTimeString().slice(0, 5).replace(':', '-');
+      pdf.save(`mapa_${fecha}_${hora}.pdf`);
     } catch (e) {
       if (document.getElementById('pdf-loading')) document.body.removeChild(document.getElementById('pdf-loading'));
       console.error('Error al imprimir/guardar PDF:', e);
+      alert('Error al imprimir/guardar PDF: ' + e.message);
     }
   }
 
@@ -172,12 +205,18 @@ class PdfPrinter {
    * @param {number} y
    * @private
    */
-  #drawScaleToPDF(pdf, scaleElem, x, y) {
+  async #drawScaleToPDF(pdf, scaleElem, x, y) {
     if (window.html2canvas) {
-      window.html2canvas(scaleElem).then(canvas => {
-        const img = canvas.toDataURL('image/png');
-        pdf.addImage(img, 'PNG', x, y, 40, 10);
-      });
+      const canvas = await window.html2canvas(scaleElem);
+      const img = canvas.toDataURL('image/png');
+      // Obtener el tamaño original del canvas en píxeles
+      const imgWidthPx = canvas.width;
+      const imgHeightPx = canvas.height;
+      // Calcular el tamaño en mm (jsPDF usa 96 dpi por defecto)
+      const pxPerMm = 96 / 15;
+      const imgWidthMm = imgWidthPx / pxPerMm;
+      const imgHeightMm = imgHeightPx / pxPerMm;
+      pdf.addImage(img, 'PNG', x, y, imgWidthMm, imgHeightMm);
     }
   }
 
@@ -204,11 +243,11 @@ class PdfPrinter {
    * @private
    */
   #drawNorthSymbol(pdf, x, y) {
-    pdf.setLineWidth(3);
+    const lineWidth = Math.max(1, 2 * 0.2646);
+    pdf.setLineWidth(lineWidth);
     pdf.setDrawColor(0);
     pdf.setFillColor(255, 255, 255); // Triángulo hueco
     pdf.triangle(x, y + 10, x + 5, y, x + 10, y + 10, 'D');
-    pdf.setLineWidth(0.200025); // Restaurar a valor por defecto de jsPDF
     pdf.setFontSize(8);
     pdf.text('N', x + 3, y + 16);
   }
@@ -244,5 +283,17 @@ class PdfPrinter {
       this.elem.parentNode.removeChild(this.elem);
     }
     this.elem = null;
+  }
+
+  /**
+   * Divide un texto en líneas para que no se corte en el PDF.
+   * @param {jsPDF} pdf
+   * @param {string} text
+   * @param {number} maxWidth
+   * @returns {string[]}
+   * @private
+   */
+  #splitTextToLines(pdf, text, maxWidth) {
+    return pdf.splitTextToSize(text, maxWidth);
   }
 }
