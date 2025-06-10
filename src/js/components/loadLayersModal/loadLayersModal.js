@@ -4,7 +4,7 @@ class LoadLayersModal {
   constructor() {
     this.component = `
         <a id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
-            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="17" height="17">
+            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="17" height="17" alt="Agregar capas">
         </a>
     `;
   }
@@ -63,36 +63,24 @@ class modalUI {
     divContainer.id = "loadLayersModal";
     divContainer.className = "loadLayersModal";
 
-    let header = document.createElement("div");
-    header.classList.add("modalHeader", "center-flex-space-btw");
-
-    let modalTitle = document.createElement("h3");
-    modalTitle.innerText = "Agregar capas";
-
-    /* let closeButton = document.createElement('button');
-    closeButton.classList.add('modalCloseButton');
-
-    closeButton.innerHTML = '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
-    closeButton.onclick = function () {
-      document.body.removeChild(loadLayersModal);
-      document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-      LOAD_LAYERS_MODAL_OPEN = false;
-    }; */
-
-    header.appendChild(modalTitle);
-
-    //header.appendChild(closeButton);
-
-    divContainer.appendChild(header);
-
+    // Main section
     let mainSection = document.createElement("div");
     mainSection.classList.add("modalMainSection");
 
-    let nav = document.createElement("div");
-    nav.classList.add("modalNav");
-
+    // Content (header irá aquí arriba)
     let content = document.createElement("div");
     content.classList.add("modalContent");
+
+    // Header (ahora dentro de content)
+    let header = document.createElement("div");
+    header.classList.add("modalHeader", "center-flex-space-around");
+
+    let modalTitle = document.createElement("h3");
+    modalTitle.innerText = "Agregar capas";
+    header.appendChild(modalTitle);
+
+    let nav = document.createElement("div");
+    nav.classList.add("modalNav");
 
     this.actions.forEach((action, i) => {
       let btn = document.createElement("button");
@@ -102,43 +90,39 @@ class modalUI {
         btn.innerText = action.name;
       }
       btn.classList.add("modalNavButton", "ag-btn", "ag-btn-secondary");
-      btn.addEventListener("click", function () {
+      btn.addEventListener("click", () => {
         this.selectedAction = i;
         modal.showActions(this.selectedAction);
       });
-
       nav.appendChild(btn);
-
-      let actionContent = document.createElement("div");
-      actionContent.id = action.id;
-      actionContent.classList.add("actionContent");
-      actionContent.classList.add("disableAction");
-      actionContent.innerText = action.content;
-
-      content.appendChild(actionContent);
     });
 
     header.appendChild(nav);
-    //mainSection.appendChild(nav);
-    mainSection.appendChild(content);
+    content.appendChild(header);
 
+    // Action contents
+    this.actions.forEach((action) => {
+      let actionContent = document.createElement("div");
+      actionContent.id = action.id;
+      actionContent.classList.add("actionContent", "disableAction");
+      content.appendChild(actionContent);
+    });
+
+    mainSection.appendChild(content);
     divContainer.appendChild(mainSection);
     document.getElementById("load-layer").append(divContainer);
-
-    /* $("#loadLayersModal").draggable({
-      containment: "#mapa"
-    }) */
   }
 
   open() {
     if (!LOAD_LAYERS_MODAL_OPEN) {
-      //document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
       modal.createModal();
       modal.showActions(0);
       LOAD_LAYERS_MODAL_OPEN = true;
     } else {
-      document.getElementById("load-layer").removeChild(loadLayersModal);
-      //document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+      const modalElem = document.getElementById("loadLayersModal");
+      if (modalElem) {
+        document.getElementById("load-layer").removeChild(modalElem);
+      }
       LOAD_LAYERS_MODAL_OPEN = false;
     }
   }
@@ -151,10 +135,6 @@ class modalUI {
     let buttons = document.querySelectorAll(".modalNavButton");
     buttons.forEach((el) => el.classList.remove("modalNavButtonActive"));
     buttons[actionIndx].classList.add("modalNavButtonActive");
-
-    // console.log(this.actions);
-    // Remove previous
-    // if (previous) this.actions[previous].component.removeComponent();
 
     let component = this.actions[actionIndx].component.createComponent();
     document.getElementById(this.actions[actionIndx].id).innerHTML = "";
