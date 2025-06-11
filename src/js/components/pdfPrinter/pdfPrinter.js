@@ -566,60 +566,27 @@ class PdfPrinter {
    */
   #addScaleTextToPDF(pdf, mapObj, x, y) {
     try {
-      let scaleText = '';
-      let drawGraphicScale = false;
       let scaleInfo = null;
 
       if (mapObj && typeof mapObj.getZoom === 'function' && typeof mapObj.getCenter === 'function') {
         const zoom = mapObj.getZoom();
         const center = mapObj.getCenter();
 
-        // Calcular escala numérica usando la fórmula estándar para Web Mercator (EPSG:3857)
+        // Calcular resolución (metros por pixel) para Web Mercator
         const resolution = 156543.03392804097 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, zoom);
-
-        // Convertir resolución (metros por pixel) a escala
-        const pixelSizeMm = 0.264583333;
-        const pixelSizeM = pixelSizeMm / 1000;
-        const scale = Math.round(resolution / pixelSizeM);
-
-        scaleText = `Escala 1:${scale.toLocaleString('es-AR')}`;
 
         // Calcular información para escala gráfica
         scaleInfo = this.#calculateGraphicScale(resolution);
-        drawGraphicScale = true;
-
-        // También intentar obtener la escala gráfica como referencia adicional
-        const scaleElem = document.querySelector('.leaflet-control-scale-line');
-        if (scaleElem && scaleElem.innerText && scaleElem.innerText.trim()) {
-          scaleText += ` (${scaleElem.innerText.trim()})`;
-        }
-
-      } else {
-        // Fallback: solo escala gráfica del DOM
-        const scaleElem = document.querySelector('.leaflet-control-scale-line');
-        if (scaleElem && scaleElem.innerText && scaleElem.innerText.trim()) {
-          scaleText = `Escala: ${scaleElem.innerText.trim()}`;
-        } else {
-          scaleText = `Zoom: ${mapObj ? mapObj.getZoom() : 'No disponible'}`;
-        }
       }
 
-      // Dibujar el texto de escala numérica
-      pdf.setFontSize(10);
-      pdf.setTextColor(60, 60, 60);
-      pdf.text(scaleText, x, y);
-
-      // Dibujar escala gráfica si es posible
-      if (drawGraphicScale && scaleInfo) {
-        this.#drawGraphicScale(pdf, x, y + 5, scaleInfo);
+      // Dibujar solo la escala gráfica si es posible
+      if (scaleInfo) {
+        this.#drawGraphicScale(pdf, x, y - 4, scaleInfo);
       }
 
     } catch (e) {
-      console.warn('Error agregando escala al PDF:', e);
-      // Fallback final
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text('Escala no disponible', x, y);
+      console.warn('Error agregando escala gráfica al PDF:', e);
+      // No dibujar nada si falla
     }
   }
 
@@ -639,25 +606,26 @@ class PdfPrinter {
     // Calcular el ancho máximo deseado para la barra (en mm)
     const maxBarWidthMm = 40;
 
-    // Convertir mm a metros en el mapa
-    const pixelSizeMm = 0.264583333;
+    const pixelSizeMm = 0.16; // 1 pixel = 0.16 mm (ajustar según la resolución del PDF)
     const pixelsPerMm = 1 / pixelSizeMm;
-    const maxDistanceMeters = maxBarWidthMm * pixelsPerMm * resolution;
 
     // Encontrar la distancia estándar más apropiada
     let bestDistance = standardDistances[0];
     for (const distance of standardDistances) {
-      if (distance <= maxDistanceMeters) {
+      if (distance <= maxBarWidthMm * resolution * pixelsPerMm) {
         bestDistance = distance;
       } else {
         break;
       }
     }
 
-    // Calcular el ancho de la barra en mm
-    const barWidthMm = (bestDistance / resolution) / pixelsPerMm;
+    // Calcular el ancho de la barra en mm para el PDF
+    const barWidthPx = bestDistance / resolution;
+    const barWidthMm = barWidthPx * pixelSizeMm;
 
-    // Determinar la unidad y el texto
+    // Limitar el ancho máximo
+    const finalBarWidthMm = Math.min(barWidthMm, maxBarWidthMm);
+
     let unit, displayDistance;
     if (bestDistance >= 1000) {
       unit = 'km';
@@ -671,11 +639,10 @@ class PdfPrinter {
       distance: bestDistance,
       displayDistance,
       unit,
-      barWidthMm: Math.min(barWidthMm, maxBarWidthMm),
+      barWidthMm: finalBarWidthMm,
       text: `${displayDistance} ${unit}`
     };
   }
-
   /**
    * Dibuja una escala gráfica (barra) en el PDF
    * @param {jsPDF} pdf
