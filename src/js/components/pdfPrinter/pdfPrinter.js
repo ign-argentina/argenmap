@@ -210,7 +210,7 @@ class PdfPrinter {
       const canvas = await this.#captureMapWithTimeout(mapObj, this.config.timeout);
 
       // Generar PDF
-      const pdf = this.#createPDFDocument(canvas, mapObj, scaleElem);
+      const pdf = await this.#createPDFDocument(canvas, mapObj, scaleElem);
 
       // Guardar con nombre optimizado
       const filename = this.#generateFilename();
@@ -239,19 +239,50 @@ class PdfPrinter {
   }
 
   /**
-   * Agrega la imagen de la leyenda al PDF si es posible.
+   * Agrega la imagen de la leyenda al PDF manteniendo su proporción original.
    * @param {jsPDF} pdf
-   * @param {string} legendImg
-   * @param {number} x
-   * @param {number} y
-   * @param {number} w
-   * @param {number} h
+   * @param {string} legendImg - URL de la imagen de leyenda
+   * @param {number} x - Posición X
+   * @param {number} y - Posición Y  
+   * @param {number} maxWidth - Ancho máximo permitido (en px)
+   * @param {number} maxHeight - Alto máximo permitido (en px)
+   * @returns {Promise<number>} Alto real de la imagen agregada (en mm)
    * @private
    */
-  #addLegendImageToPDF(pdf, legendImg, x, y, w, h) {
-    // Si la imagen es base64 o CORS compatible
-    pdf.addImage(legendImg, 'PNG', x, y, w, h);
+  async #addLegendImageToPDF(pdf, legendImg, x, y) {
+    return new Promise((resolve) => {
+      try {
+        const img = new window.Image();
+        img.onload = () => {
+          try {
+            // Usar el tamaño original de la imagen (en px)
+            // Conversión px a mm (96 dpi)
+            const pxToMm = 25.4 / 96;
+            const widthMm = img.width * pxToMm;
+            const heightMm = img.height * pxToMm;
+            pdf.addImage(img, 'PNG', x, y, widthMm, heightMm);
+            resolve(heightMm);
+          } catch (error) {
+            console.warn('Error procesando imagen de leyenda:', error);
+            resolve(0);
+          }
+        };
+        img.onerror = () => {
+          console.warn('No se pudo cargar la imagen de leyenda:', legendImg);
+          pdf.setFontSize(7);
+          pdf.setTextColor(150, 150, 150);
+          pdf.text('(Leyenda no disponible)', x, y + 3);
+          resolve(5);
+        };
+        img.crossOrigin = 'anonymous';
+        img.src = legendImg;
+      } catch (error) {
+        console.warn('Error cargando imagen de leyenda:', error);
+        resolve(0);
+      }
+    });
   }
+
   /**
    * Dibuja un símbolo de norte mejorado (triángulo y N) en el PDF.
    * @param {jsPDF} pdf - Documento PDF
@@ -307,7 +338,7 @@ class PdfPrinter {
         console.log(gestorMenu.getActiveLayersWithoutBasemap());
         return gestorMenu.getActiveLayersWithoutBasemap().map(l => ({
           titulo: l.titulo || l.name || l.nombre || 'Capa desconocida',
-          legendImg: l.LegendsGraphics || null
+          host: l.host || null
         }));
       }
     } catch (e) {
@@ -345,10 +376,10 @@ class PdfPrinter {
    * @param {HTMLCanvasElement} canvas - Canvas con la imagen del mapa
    * @param {Object} mapObj - Objeto del mapa de Leaflet
    * @param {HTMLElement} scaleElem - Elemento de escala
-   * @returns {jsPDF} Documento PDF generado
+   * @returns {Promise<jsPDF>} Documento PDF generado
    * @private
    */
-  #createPDFDocument(canvas, mapObj, scaleElem) {
+  async #createPDFDocument(canvas, mapObj, scaleElem) {
     const PDFClass = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
     const { width: pageW, height: pageH } = this.config.pageFormat;
     const margin = this.config.margin;
@@ -385,7 +416,6 @@ class PdfPrinter {
     // Escala como texto robusto
     this.#addScaleTextToPDF(pdf, mapObj, offsetX + 2, offsetY + imgH - 5);
 
-    // Panel derecho: capas activas
     const capas = this.#getActiveLayersWithLegends();
     pdf.setFontSize(12);
     pdf.text('Capas activas:', rightPanelX, margin + 15);
@@ -393,15 +423,35 @@ class PdfPrinter {
 
     let y = margin + 23;
     const maxWidth = pageW - rightPanelX - 5;
-    capas.forEach(({ titulo }) => {
+
+    // Procesar capas de forma asíncrona para manejar las imágenes
+    for (const { titulo, host } of capas) {
+      if (y >= pageH - margin - 20) break;
       const lines = this.#splitTextToLines(pdf, titulo, maxWidth);
-      lines.forEach(line => {
-        if (y < pageH - margin) { // Verificar que no se salga de la página
+      for (const line of lines) {
+        if (y < pageH - margin - 15) {
           pdf.text(line, rightPanelX, y);
-          y += 6;
+          y += 4;
         }
-      });
-    });
+      }
+      if (host && y < pageH - margin - 20) {
+        try {
+          const legendImg = `${host}/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=${titulo}&transparent=true&scale=1&LEGEND_OPTIONS=fontAntiAliasing:true;dpi:111;fontName:verdana;hideEmptyRules:false;labelMargin:5;forceTitles:on;forceLabels:on;`;
+          const imageHeight = await this.#addLegendImageToPDF(
+            pdf,
+            legendImg,
+            rightPanelX + 2,
+            y
+          );
+          y += Math.max(imageHeight + 6, 8);
+        } catch (error) {
+          console.warn('Error agregando leyenda para capa:', titulo, error);
+          y += 3;
+        }
+      } else {
+        y += 3;
+      }
+    }
 
     // Atribución del mapa base
     this.#addAttribution(pdf, mapObj, offsetX, offsetY, imgW, imgH);
