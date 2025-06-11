@@ -337,8 +337,10 @@ class PdfPrinter {
       if (typeof gestorMenu !== 'undefined' && gestorMenu.getActiveLayersWithoutBasemap) {
         console.log(gestorMenu.getActiveLayersWithoutBasemap());
         return gestorMenu.getActiveLayersWithoutBasemap().map(l => ({
-          titulo: l.titulo || l.name || l.nombre || 'Capa desconocida',
-          host: l.host || null
+          name: l.name || l.nombre || 'Capa desconocida',
+          titulo: l.titulo || 'Capa desconocida',
+          host: l.host || null,
+          legendURL: l.legendURL || null
         }));
       }
     } catch (e) {
@@ -425,7 +427,7 @@ class PdfPrinter {
     const maxWidth = pageW - rightPanelX - 5;
 
     // Procesar capas de forma asíncrona para manejar las imágenes
-    for (const { titulo, host } of capas) {
+    for (const { name, titulo, host, legendURL } of capas) {
       if (y >= pageH - margin - 20) break;
       const lines = this.#splitTextToLines(pdf, titulo, maxWidth);
       for (const line of lines) {
@@ -436,10 +438,13 @@ class PdfPrinter {
       }
       if (host && y < pageH - margin - 20) {
         try {
-          const legendImg = `${host}/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=${titulo}&transparent=true&scale=1&LEGEND_OPTIONS=fontAntiAliasing:true;dpi:111;fontName:verdana;hideEmptyRules:false;labelMargin:5;forceTitles:on;forceLabels:on;`;
+          let legendImgUrl = legendURL;
+          if (!legendImgUrl) {
+            legendImgUrl = `${host}/wms?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=${name}&transparent=true&scale=1&LEGEND_OPTIONS=fontAntiAliasing:true;dpi:111;fontName:verdana;hideEmptyRules:false;labelMargin:5;forceTitles:on;forceLabels:on;`;
+          }
           const imageHeight = await this.#addLegendImageToPDF(
             pdf,
-            legendImg,
+            legendImgUrl,
             rightPanelX + 2,
             y
           );
@@ -647,11 +652,12 @@ class PdfPrinter {
    * @private
    */
   #calculateGraphicScale(resolution) {
-    // Definir distancias estándar para escalas gráficas
-    const standardDistances = [
-      1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000,
-      2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000
-    ];
+ // Definir distancias estándar para escalas gráficas (hasta 1000 km)
+  const standardDistances = [
+    1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000,
+    2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000,
+    200000, 500000, 1000000
+  ]; // hasta 1000 km
 
     // Calcular el ancho máximo deseado para la barra (en mm)
     const maxBarWidthMm = 40;

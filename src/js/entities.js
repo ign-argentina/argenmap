@@ -2150,16 +2150,34 @@ class GestorMenu {
     const activeLayers = this.activeLayers.filter((layer) => {
       return !this.availableBaseLayers.includes(layer);
     });
-    return Object.keys(this.layersDataForWfs).length === 0
-      ? []
-      : activeLayers.map((activeLayer) => {
-        if (
-          this.layersDataForWfs.hasOwnProperty(activeLayer) &&
-          this.layersDataForWfs[activeLayer]
-        ) {
-          return this.layersDataForWfs[activeLayer];
+
+    let result = [];
+    for (const section in this.items) {
+      if (this.items[section].hasOwnProperty("itemsComposite")) {
+        for (const key in this.items[section].itemsComposite) {
+          const item = this.items[section].itemsComposite[key];
+          if (activeLayers.includes(item.nombre) && item.capa) {
+            result.push({
+              nombre: item.capa.nombre,
+              titulo: item.capa.titulo,
+              host: item.capa.host,
+              servicio: item.capa.servicio,
+              version: item.capa.version,
+              featureInfoFormat: item.capa.featureInfoFormat,
+              srs: item.capa.srs,
+              minx: item.capa.minx,
+              maxx: item.capa.maxx,
+              miny: item.capa.miny,
+              maxy: item.capa.maxy,
+              attribution: item.capa.attribution,
+              legendURL: item.capa.legendURL,
+              // add more properties if needed
+            });
+          }
         }
-      });
+      }
+    }
+    return result;
   }
 
   addActiveLayer(layer_id) {
