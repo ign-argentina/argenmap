@@ -1,44 +1,5 @@
-// Matrices de corrección de color para distintos tipos de daltonismo
+// Matriz de corrección de color para distintos tipos de daltonismo
 
-const colorBlindnessShaders = {
-  deuteranomaly: ` 
-  void main() {
-    vec4 color = texture2D(uTexture0, vTextureCoords);
-    mat4 colorMatrix = mat4(
-      1.0,  0.0,   0.0,  0.0,  // R
-      0.0,  0.55,  0.45, 0.0,  // G (más puro)
-      0.0,  0.40,  0.60, 0.0,  // B (menos mezcla con verde)
-      0.0,  0.0,   0.0,  1.0
-    );
-    gl_FragColor = colorMatrix * color;
-  }
-`,
-  protanomaly: `
-void main() {
-  vec4 color = texture2D(uTexture0, vTextureCoords);
-  mat4 colorMatrix = mat4(
-    0.817, 0.183, 0.0,   0.0, // R
-    0.333, 0.667, 0.0,   0.0, // G
-    0.0,   0.125, 0.875, 0.0, // B compensado
-    0.0,   0.0,   0.0,   1.0
-  );
-  gl_FragColor = colorMatrix * color;
-}
-`,
-  tritanomaly: `
-void main() {
-  vec4 color = texture2D(uTexture0, vTextureCoords);
-  mat4 colorMatrix = mat4(
-    0.967, 0.033, 0.0,   0.0, // R
-    0.0,   0.733, 0.267, 0.0, // G compensado
-    0.0,   0.183, 0.817, 0.0, // B compensado
-    0.0,   0.0,   0.0,   1.0
-  );
-  gl_FragColor = colorMatrix * color;
-}
-`
-
-};
 const colorBlindnessShaders3 = {
   deuteranomaly: ` 
   void main() {
@@ -76,101 +37,7 @@ void main() {
   gl_FragColor = colorMatrix * color;
 }
 `
-
 };
-const colorBlindnessShaders2 = {
-  deuteranomaly: `
-  void main() {
-    vec4 color = texture2D(uTexture0, vTextureCoords);
-
-    // Matriz ajustada para mantener equilibrio entre beige, amarillo y verde
-    mat4 colorMatrix = mat4(
-      1.05, -0.05,  0.0,  0.0,  // Rojo reforzado, verde reducido
-      0.0,   0.65,  0.35, 0.0,  // Verde compensado con azul
-      0.0,   0.10,  0.90, 0.0,  // Azul sin sobresaturación
-      0.0,   0.0,   0.0,  1.0
-    );
-
-    vec3 filtered = (colorMatrix * color).rgb;
-
-    // Boost de saturación leve
-    float avg = (filtered.r + filtered.g + filtered.b) / 3.0;
-    vec3 saturated = mix(vec3(avg), filtered, 1.15); // boost leve
-
-    // Gamma solo sobre luces altas
-    vec3 gammaCorrected = mix(
-      saturated,
-      pow(saturated, vec3(1.15)),
-      smoothstep(0.7, 1.0, avg)  // Solo afecta tonos muy claros
-    );
-
-    gl_FragColor = vec4(gammaCorrected, color.a);
-  }
-`,
-  protanomaly: `
-    void main() {
-      vec4 color = texture2D(uTexture0, vTextureCoords);
-      mat4 colorMatrix = mat4(
-        0.817, 0.183, 0.0, 0.0,
-        0.333, 0.667, 0.0, 0.0,
-        0.0, 0.125, 0.875, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-      gl_FragColor = colorMatrix * color;
-    }
-  `,
-  tritanomaly: `
-    void main() {
-      vec4 color = texture2D(uTexture0, vTextureCoords);
-      mat4 colorMatrix = mat4(
-        0.967, 0.033, 0.0, 0.0,
-        0.0, 0.733, 0.267, 0.0,
-        0.0, 0.183, 0.817, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-      gl_FragColor = colorMatrix * color;
-    }
-  `
-};
-const colorBlindnessShaders1 = {
-  deuteranomaly: `
-    void main() {
-      vec4 color = texture2D(uTexture0, vTextureCoords);
-      mat4 colorMatrix = mat4(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 0.74, 0.26, 0.0,
-        0.0, 0.26, 0.74, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-      gl_FragColor = colorMatrix * color;
-    }
-  `,
-  protanomaly: `
-    void main() {
-      vec4 color = texture2D(uTexture0, vTextureCoords);
-      mat4 colorMatrix = mat4(
-        0.817, 0.183, 0.0, 0.0,
-        0.333, 0.667, 0.0, 0.0,
-        0.0, 0.125, 0.875, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-      gl_FragColor = colorMatrix * color;
-    }
-  `,
-  tritanomaly: `
-    void main() {
-      vec4 color = texture2D(uTexture0, vTextureCoords);
-      mat4 colorMatrix = mat4(
-        0.967, 0.033, 0.0, 0.0,
-        0.0, 0.733, 0.267, 0.0,
-        0.0, 0.183, 0.817, 0.0,
-        0.0, 0.0, 0.0, 1.0
-      );
-      gl_FragColor = colorMatrix * color;
-    }
-  `
-};
-
 
 /**
  * @class Accessibility
@@ -242,6 +109,8 @@ class Accessibility {
     this.removeColorBlindnessFilter = this.removeColorBlindnessFilter.bind(this);
     this.colorBlindness = this.colorBlindness.bind(this);
     this.resetColorBlindness = this.resetColorBlindness.bind(this);
+    this.toggleBigCursor = this.toggleBigCursor.bind(this);
+    this.resetBigCursor = this.resetBigCursor.bind(this);
 
     this.resetAllAccessibility = this.resetAllAccessibility.bind(this);
     this.toggleResetButtonVisibility = this.toggleResetButtonVisibility.bind(this);
@@ -287,7 +156,8 @@ class Accessibility {
       { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-m", action: this.toUpperCase },
       { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-left-right", action: this.horizontalSpace },
       { title: "Espaciado de líneas", id: "lineHeight", icon: "fa-solid fa-up-down", action: this.lineHeight },
-      { title: "Filtros para daltonismo", id: "colorBlindness", icon: "fa-solid fa-eye", action: this.colorBlindness }
+      { title: "Filtros para daltonismo", id: "colorBlindness", icon: "fa-solid fa-eye", action: this.colorBlindness },
+      { title: "Cursor grande", id: "bigCursor", icon: "fa-solid fa-mouse-pointer", action: this.toggleBigCursor }
     ];
 
     // Create and append buttons based on accessibility features
@@ -1067,6 +937,31 @@ class Accessibility {
   }
 
   /**
+   * @function toggleBigCursor
+   * @description Alterna entre el cursor original y un cursor de tamaño doble para accesibilidad.
+   */
+  toggleBigCursor() {
+    const body = document.body;
+    const cursorButton = document.getElementById("bigCursor-btn");
+    if (!body || !cursorButton) return;
+
+    body.classList.toggle('big-cursor');
+    cursorButton.classList.toggle('ag-btn-confirm');
+  }
+
+  /**
+ * @function resetBigCursor
+ * @description Restaura el cursor al tamaño original.
+ */
+  resetBigCursor() {
+    const body = document.body;
+    const cursorButton = document.getElementById("bigCursor-btn");
+    if (!body || !cursorButton) return;
+    body.classList.remove('big-cursor');
+    cursorButton.classList.remove('ag-btn-confirm');
+  }
+
+  /**
    * @function resetAllAccessibility
    * @description Resets all accessibility-related settings to their default values.
    */
@@ -1081,6 +976,7 @@ class Accessibility {
     this.resetHorizontalSpace();     // Resets horizontal space to default
     this.resetLineHeight();          // Resets line height to default
     this.resetColorBlindness();    // Restablece el filtro de daltonismo
+    this.resetBigCursor();        // Resets big cursor to default
   }
 
 }

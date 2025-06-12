@@ -1,49 +1,61 @@
 .message-container {
-    border-radius: 12px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    bottom: 1.5rem;
-    padding: 1rem;
-    z-index: 10000;
-    box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
-    justify-content: space-between;
-    position: absolute;
-    max-width: 90%;
-    margin: auto;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  padding: 1.5rem 2.5rem;
+  z-index: 10000;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  max-width: 90vw;
+  min-width: 320px;
+  background: #222;
+  margin: 0;
+  opacity: 0.98;
 }
 .message-text {
-    margin: 0;
-    max-height: 100px;
-    font-weight: bold;
-    font-size: 1.1em;
+  margin: 0 1.5rem 0 0;
+  max-height: 100px;
+  font-weight: bold;
+  font-size: 1.25em;
+  color: #fff;
+  text-shadow: 0 1px 2px #0008;
+  letter-spacing: 0.02em;
 }
 .message-close-btn {
-    width: 25px;
-    height: 25px;
-    line-height: 22px;
-    border-radius: 100%;
-    margin: 3px;
-    padding: 5px;
-    text-align: center;
-    font-weight: bolder;
-    cursor: pointer;
-    font-size: large;
-    color:antiquewhite;
-    align-self: center;
-    display: flex;
-} 
-.message-close-btn:hover {
-    background-color: white;
-    border: solid 1px #444;
-    color: #444;
+  width: 32px;
+  height: 32px;
+  line-height: 28px;
+  border-radius: 100%;
+  margin: 3px;
+  padding: 5px;
+  text-align: center;
+  font-weight: bolder;
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #fffbe7;
+  align-self: center;
+  display: flex;
+  transition: background 0.2s, color 0.2s;
+}
+.message-close-btn:hover, .message-close-btn:focus {
+  background-color: #fff;
+  border: solid 1px #444;
+  color: #444;
+  outline: none;
 }
 .message-close-btn i {
-    align-self: center;
+  align-self: center;
+  margin: auto;
 }
-
 @media (max-width: 769px) {
-    .message-container {
-        width: 80%;
-    }
+  .message-container {
+    width: 90vw;
+    min-width: unset;
+    padding: 1rem;
+  }
 }
