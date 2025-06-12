@@ -81,6 +81,10 @@ class PdfPrinter {
    * Crea y agrega el componente al mapa.
    */
   createComponent() {
+    // Solo mostrar si la pantalla es mayor a 1150px
+    if (window.innerWidth <= 1150) {
+      return;
+    }
     try {
       // Verificar si ya existe el componente
       if (this.elem) {
@@ -239,45 +243,155 @@ class PdfPrinter {
   }
 
   /**
-   * Agrega la imagen de la leyenda al PDF manteniendo su proporción original.
-   * @param {jsPDF} pdf
-   * @param {string} legendImg - URL de la imagen de leyenda
-   * @param {number} x - Posición X
-   * @param {number} y - Posición Y  
-   * @param {number} maxWidth - Ancho máximo permitido (en px)
-   * @param {number} maxHeight - Alto máximo permitido (en px)
-   * @returns {Promise<number>} Alto real de la imagen agregada (en mm)
-   * @private
-   */
-  async #addLegendImageToPDF(pdf, legendImg, x, y) {
+ * Agrega la imagen de la leyenda al PDF manteniendo su proporción original.
+ * @param {jsPDF} pdf
+ * @param {string} legendImg - URL de la imagen de leyenda o path relativo
+ * @param {number} x - Posición X
+ * @param {number} y - Posición Y  
+ * @returns {Promise<number>} Alto real de la imagen agregada (en mm)
+ * @private
+ */
+  async #addLegendImageToPDF(pdf, legendImg, x, y, maxWidth = 60) {
     return new Promise((resolve) => {
       try {
-        const img = new window.Image();
-        img.onload = () => {
+        if (!legendImg) {
+          resolve(0);
+          return;
+        }
+
+        // Función para manejar SVG local
+        const handleLocalSVG = async (svgPath) => {
           try {
-            // Usar el tamaño original de la imagen (en px)
-            // Conversión px a mm (96 dpi)
-            const pxToMm = 25.4 / 96;
-            const widthMm = img.width * pxToMm;
-            const heightMm = img.height * pxToMm;
-            pdf.addImage(img, 'PNG', x, y, widthMm, heightMm);
-            resolve(heightMm);
+            // Construir la URL absoluta si es un path relativo
+            let fullPath = svgPath;
+            if (!svgPath.startsWith('http') && !svgPath.startsWith('/')) {
+              // Si es un path relativo, construir desde la base del documento
+              const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+              fullPath = baseUrl + svgPath.replace(/^\.\//, '');
+            }
+
+            const response = await fetch(fullPath);
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const svgText = await response.text();
+
+            // Crear un elemento img temporal para obtener las dimensiones
+            const tempImg = new Image();
+            const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+            const svgUrl = URL.createObjectURL(svgBlob);
+
+            tempImg.onload = () => {
+              try {
+                // Calcular dimensiones manteniendo proporción
+                const maxWidthMm = 40; // Ancho máximo en mm
+                const maxHeightMm = 15; // Alto máximo en mm
+
+                const pxToMm = 25.4 / 96; // Conversión estándar
+                const originalWidthMm = tempImg.width * pxToMm;
+                const originalHeightMm = tempImg.height * pxToMm;
+
+                // Aplicar límites manteniendo proporción
+                const scaleX = maxWidthMm / originalWidthMm;
+                const scaleY = maxHeightMm / originalHeightMm;
+                const scale = Math.min(scaleX, scaleY, 1); // No agrandar
+
+                const finalWidthMm = originalWidthMm * scale;
+                const finalHeightMm = originalHeightMm * scale;
+
+                // Convertir SVG a data URL para jsPDF
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = tempImg.width;
+                canvas.height = tempImg.height;
+
+                ctx.drawImage(tempImg, 0, 0);
+                const dataUrl = canvas.toDataURL('image/png');
+
+                pdf.addImage(dataUrl, 'PNG', x, y, finalWidthMm, finalHeightMm);
+
+                // Limpiar recursos
+                URL.revokeObjectURL(svgUrl);
+                resolve(finalHeightMm);
+
+              } catch (error) {
+                console.warn('Error procesando SVG:', error);
+                URL.revokeObjectURL(svgUrl);
+                resolve(0);
+              }
+            };
+
+            tempImg.onerror = () => {
+              console.warn('Error cargando SVG como imagen:', svgPath);
+              URL.revokeObjectURL(svgUrl);
+              resolve(0);
+            };
+
+            tempImg.src = svgUrl;
+
           } catch (error) {
-            console.warn('Error procesando imagen de leyenda:', error);
+            console.warn('Error al obtener SVG local:', error);
             resolve(0);
           }
         };
-        img.onerror = () => {
-          console.warn('No se pudo cargar la imagen de leyenda:', legendImg);
-          pdf.setFontSize(7);
-          pdf.setTextColor(150, 150, 150);
-          pdf.text('(Leyenda no disponible)', x, y + 3);
-          resolve(5);
+
+        // Función para manejar imágenes normales (PNG, JPG, etc.)
+        const handleRegularImage = () => {
+          const img = new Image();
+
+          img.onload = () => {
+            try {
+              // Calcular dimensiones manteniendo proporción solo ajustando al ancho máximo
+              const maxWidthMm = maxWidth || 60;
+
+              const pxToMm = 25.4 / 96;
+              const originalWidthMm = img.width * pxToMm;
+              const originalHeightMm = img.height * pxToMm;
+
+              let finalWidthMm = originalWidthMm;
+              let finalHeightMm = originalHeightMm;
+
+              // Solo escalar si sobrepasa el maxWidth
+              if (originalWidthMm > maxWidthMm) {
+                const scale = maxWidthMm / originalWidthMm;
+                finalWidthMm = originalWidthMm * scale;
+                finalHeightMm = originalHeightMm * scale;
+              }
+
+              pdf.addImage(img, 'PNG', x, y, finalWidthMm, finalHeightMm);
+              resolve(finalHeightMm);
+
+            } catch (error) {
+              console.warn('Error procesando imagen de leyenda:', error);
+              resolve(0);
+            }
+          };
+
+          img.onerror = () => {
+            console.warn('No se pudo cargar la imagen de leyenda:', legendImg);
+            // Dibujar texto de fallback
+            pdf.setFontSize(7);
+            pdf.setTextColor(150, 150, 150);
+            pdf.text('(Leyenda no disponible)', x, y + 3);
+            resolve(5);
+          };
+
+          img.crossOrigin = 'anonymous';
+          img.src = legendImg;
         };
-        img.crossOrigin = 'anonymous';
-        img.src = legendImg;
+
+        // Determinar el tipo de archivo y procesarlo
+        if (legendImg.toLowerCase().includes('.svg')) {
+          // Manejar SVG (tanto local como remoto)
+          handleLocalSVG(legendImg);
+        } else {
+          // Manejar imágenes regulares
+          handleRegularImage();
+        }
+
       } catch (error) {
-        console.warn('Error cargando imagen de leyenda:', error);
+        console.warn('Error general cargando imagen de leyenda:', error);
         resolve(0);
       }
     });
@@ -335,7 +449,6 @@ class PdfPrinter {
   #getActiveLayersWithLegends() {
     try {
       if (typeof gestorMenu !== 'undefined' && gestorMenu.getActiveLayersWithoutBasemap) {
-        console.log(gestorMenu.getActiveLayersWithoutBasemap());
         return gestorMenu.getActiveLayersWithoutBasemap().map(l => ({
           name: l.name || l.nombre || 'Capa desconocida',
           titulo: l.titulo || 'Capa desconocida',
@@ -405,7 +518,7 @@ class PdfPrinter {
     pdf.setFontSize(18);
     pdf.setFont('helvetica', 'bold');
     const title = (typeof app !== 'undefined' && app.title) ? app.title : 'Mapa';
-    pdf.text(title, margin, margin + 15);
+    pdf.text(title, margin, margin + 5);
     pdf.setFont('helvetica', 'normal');
 
     // Imagen del mapa
@@ -446,7 +559,8 @@ class PdfPrinter {
             pdf,
             legendImgUrl,
             rightPanelX + 2,
-            y
+            y,
+            65
           );
           y += Math.max(imageHeight + 6, 8);
         } catch (error) {
@@ -652,12 +766,12 @@ class PdfPrinter {
    * @private
    */
   #calculateGraphicScale(resolution) {
- // Definir distancias estándar para escalas gráficas (hasta 1000 km)
-  const standardDistances = [
-    1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000,
-    2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000,
-    200000, 500000, 1000000
-  ]; // hasta 1000 km
+    // Definir distancias estándar para escalas gráficas (hasta 1000 km)
+    const standardDistances = [
+      1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000,
+      2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000,
+      200000, 500000, 1000000
+    ]; // hasta 1000 km
 
     // Calcular el ancho máximo deseado para la barra (en mm)
     const maxBarWidthMm = 40;
