@@ -712,7 +712,12 @@ async function loadTemplate(data, isDefaultTemplate) {
         mapa.on("moveend", () => {
           urlInteraction.center = mapa.getCenter();
         });
-
+        
+        if (urlInteraction.markers.length > 0) {
+          urlInteraction.markers.forEach(marker => {
+            L.marker([marker.latitude, marker.longitude]).addTo(mapa);
+          });
+        }
         gestorMenu.loadInitialLayers(urlInteraction);
 
         // Default values for showToolbar and showLayerMenu

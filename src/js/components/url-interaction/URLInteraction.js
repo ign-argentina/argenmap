@@ -14,7 +14,19 @@ function parseUrlParams(search) {
   for (const pair of pairs) {
     const [key, value] = pair.split('=');
     if (key && value !== undefined) {
-      params[decodeURIComponent(key)] = decodeURIComponent(value);
+      const decodedKey = decodeURIComponent(key);
+      const decodedValue = decodeURIComponent(value);
+
+      // Manejar parámetros repetidos (como múltiples markers)
+      if (params[decodedKey]) {
+        if (Array.isArray(params[decodedKey])) {
+          params[decodedKey].push(decodedValue);
+        } else {
+          params[decodedKey] = [params[decodedKey], decodedValue];
+        }
+      } else {
+        params[decodedKey] = decodedValue;
+      }
     }
   }
 
@@ -33,6 +45,18 @@ function roundToDecimal(num, decimals) {
 }
 
 /**
+ * Valida si unas coordenadas están dentro de límites razonables
+ * @param {number} lat - Latitud
+ * @param {number} lng - Longitud
+ * @returns {boolean} True si las coordenadas son válidas
+ */
+function isValidCoordinate(lat, lng) {
+  return !isNaN(lat) && !isNaN(lng) &&
+    lat >= -90 && lat <= 90 &&
+    lng >= -180 && lng <= 180;
+}
+
+/**
  * Clase que gestiona la interacción entre los parámetros de la URL y el estado del mapa
  * Mantiene sincronizados el zoom, centro y capas con la URL del navegador
  */
@@ -47,12 +71,12 @@ class URLInteraction {
     this._latitude = DEFAULT_LATITUDE;
     this._longitude = DEFAULT_LONGITUDE;
     this._layers = [];
+    this._markers = []; // Nuevo: array de marcadores
     this._areParamsInUrl = false;
 
     // Parsear parámetros iniciales de la URL
     this._parseInitialParams();
 
-    // Actualizar URL con el estado inicial
     this.updateURL();
   }
 
@@ -94,6 +118,37 @@ class URLInteraction {
       if (params[LAYERS]) {
         const layers = params[LAYERS].split(',').filter(layer => layer.trim() !== '');
         this._layers = [...new Set(layers)]; // Eliminar duplicados
+      }
+
+      // Procesar marcadores
+      this._parseMarkers(params[MARKER]);
+    }
+  }
+
+  /**
+   * Parsea y valida los marcadores desde los parámetros
+   * @private
+   * @param {string|string[]} markerParam - Parámetro(s) de marcador
+   */
+  _parseMarkers(markerParam) {
+    if (!markerParam) return;
+
+    // Normalizar a array para manejar un solo marker o múltiples
+    const markers = Array.isArray(markerParam) ? markerParam : [markerParam];
+
+    for (const marker of markers) {
+      const coords = marker.split(',');
+      if (coords.length === 2) {
+        const lat = parseFloat(coords[0]);
+        const lng = parseFloat(coords[1]);
+
+        // Validar coordenadas
+        if (isValidCoordinate(lat, lng)) {
+          this._markers.push({
+            latitude: lat,
+            longitude: lng
+          });
+        }
       }
     }
   }
@@ -143,6 +198,14 @@ class URLInteraction {
     return this._layers;
   }
 
+  /**
+   * Devuelve los marcadores
+   * @returns {Array<{latitude: number, longitude: number}>} Lista de marcadores
+   */
+  get markers() {
+    return [...this._markers]; // Devolver copia para evitar modificaciones externas
+  }
+
   // Setters
 
   /**
@@ -175,6 +238,7 @@ class URLInteraction {
 
   /**
    * Actualiza la URL con los valores actuales del estado
+   * No incluye markers ya que no se modifican programáticamente
    * @public
    */
   updateURL() {
@@ -190,6 +254,12 @@ class URLInteraction {
     if (this._layers.length > 0) {
       const layers = this._layers.join(',');
       url += `&${LAYERS}=${layers}`;
+    }
+
+    // Agregar marcadores si existen
+    if (this._markers.length > 0) {
+      const markers = this._markers.map(marker => `${marker.latitude},${marker.longitude}`).join('&');
+      url += `&${MARKER}=${markers}`;
     }
 
     // Actualizar la URL sin recargar la página
