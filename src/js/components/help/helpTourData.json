@@ -1,6 +1,6 @@
 {
   "welcomeTitle": "Ayuda",
-  "welcomeText": "¡Explora el visor de mapas! Este tutorial te guiará a través de las distintas herramientas y funcionalidades del visor para que puedas explorar y analizar la información geográfica de manera eficiente.",
+  "welcomeText": "¡Explorá el visor de mapas! Este tutorial te guiará a través de las distintas secciones y herramientas del visor para que puedas explorar y analizar la información geográfica de manera eficiente. Podés utilizar las flechas del teclado o los botones de navegación para avanzar por el recorrido.",
   "confirmText": "Comenzar tutorial",
   "cancelText": "Cerrar",
   "backdropColor": "#55555585",
@@ -111,6 +111,23 @@
       "description": {
         "title": "Agregar capas",
         "text": "Es posible cargar capas desde archivos en formato KML, GeoJSON, GPX, SHP (en formato .zip), WKT (en formato .txt o .wkt) y TopoJSON (en formato .json). También se pueden agregar capas a través de un WMS proporcionando su URL."
+      },
+      "placement": "right"
+    },
+    {
+      "element": "#accessibility-btn",
+      "description": {
+        "title": "Panel de Accesibilidad",
+        "text": "Botón para abrir y cerrar el menú de accesibilidad. Aquí podrás acceder a herramientas de accesibilidad para mejorar la experiencia de uso del visor."
+      },
+      "placement": "right"
+    },
+    {
+      "element": "#accessibility",
+      "needClickToOpen": "#accessibility-btn",
+      "description": {
+        "title": "Herramientas de accesibilidad",
+        "text": "Configurá opciones de accesibilidad y visualización del visor, incluyendo tamaño de texto, estilo de mapas base y colores de la interfaz."
       },
       "placement": "right"
     },
@@ -234,6 +251,15 @@
         "text": "Controla el nivel de zoom del mapa. Puedes hacer clic en los botones de más y menos o utilizar la rueda del ratón para acercar o alejar la vista."
       },
       "placement": "left"
+    },
+    {
+      "element": "#help-tour",
+      "needClickToOpen": "#nav-help-btn",
+      "description": {
+        "title": "Panel de ayuda",
+        "text": "Vuelve a acceder al recorrido guiado por el visor de mapas cuando lo necesites."
+      },
+      "placement": "right"
     }
   ]
 }
