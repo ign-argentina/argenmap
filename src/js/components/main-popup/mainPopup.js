@@ -51,9 +51,8 @@ mainPopup = function () {
         contentWrapper.appendChild(contentTxt);
       }
       //ExitBtn
-      let popupExitBtn = document.createElement("a");
+      let popupExitBtn = document.createElement("button");
       popupExitBtn.id = "popupExitBtn";
-      popupExitBtn.href = "javascript:void(0)";
       popupExitBtn.classList = "exit-btn";
       popupExitBtn.innerHTML ='<i class="fa fa-times"></i>';
       popupExitBtn.onclick = () => {

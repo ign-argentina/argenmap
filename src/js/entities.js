@@ -2146,21 +2146,87 @@ class GestorMenu {
   }
 
   getActiveLayersWithoutBasemap() {
-    // Filter active layers to exclude base layers
+    // Filtrar capas activas excluyendo las base
     const activeLayers = this.activeLayers.filter((layer) => {
       return !this.availableBaseLayers.includes(layer);
     });
-    return Object.keys(this.layersDataForWfs).length === 0
-      ? []
-      : activeLayers.map((activeLayer) => {
-        if (
-          this.layersDataForWfs.hasOwnProperty(activeLayer) &&
-          this.layersDataForWfs[activeLayer]
-        ) {
-          return this.layersDataForWfs[activeLayer];
+
+    // Si no hay datos en layersDataForWfs, devolver vacío
+    if (Object.keys(this.layersDataForWfs).length === 0) {
+      return [];
+    }
+
+    // Buscar en this.items para obtener metadatos adicionales
+    const metadataMap = new Map();
+
+    for (const section in this.items) {
+      const sectionData = this.items[section];
+      if (sectionData.hasOwnProperty("itemsComposite")) {
+        for (const key in sectionData.itemsComposite) {
+          const item = sectionData.itemsComposite[key];
+          if (item.nombre && item.capa) {
+            // Mapear por nombre de capa para acceso rápido
+            metadataMap.set(item.nombre, item.capa);
+          }
         }
+      }
+    }
+
+    // Construir resultado basado en layersDataForWfs, pero enriquecido
+    return activeLayers
+      .filter((layer) => {
+        // Solo incluir si existe en layersDataForWfs
+        return (
+          this.layersDataForWfs.hasOwnProperty(layer) &&
+          this.layersDataForWfs[layer]
+        );
+      })
+      .map((layer) => {
+        const baseData = this.layersDataForWfs[layer];
+        const extraMetadata = metadataMap.get(layer);
+
+        // Si hay metadatos adicionales, combinarlos con baseData
+        if (extraMetadata) {
+          return {
+            ...baseData, // datos originales (probablemente WFS)
+            // Añadir metadatos adicionales (WMS, etc.)
+            titulo: extraMetadata.titulo,
+            host: extraMetadata.host,
+            servicio: extraMetadata.servicio,
+            version: extraMetadata.version,
+            featureInfoFormat: extraMetadata.featureInfoFormat,
+            srs: extraMetadata.srs,
+            minx: extraMetadata.minx,
+            maxx: extraMetadata.maxx,
+            miny: extraMetadata.miny,
+            maxy: extraMetadata.maxy,
+            attribution: extraMetadata.attribution,
+            legendURL: extraMetadata.legendURL,
+            // Agrega más campos si son relevantes
+          };
+        }
+
+        // Si no hay metadatos adicionales, devuelve solo los datos de WFS
+        return baseData;
       });
   }
+
+  /*   getActiveLayersWithoutBasemap() {
+      // Filter active layers to exclude base layers
+      const activeLayers = this.activeLayers.filter((layer) => {
+        return !this.availableBaseLayers.includes(layer);
+      });
+      return Object.keys(this.layersDataForWfs).length === 0
+        ? []
+        : activeLayers.map((activeLayer) => {
+          if (
+            this.layersDataForWfs.hasOwnProperty(activeLayer) &&
+            this.layersDataForWfs[activeLayer]
+          ) {
+            return this.layersDataForWfs[activeLayer];
+          }
+        });
+    } */
 
   addActiveLayer(layer_id) {
     const idx = this.activeLayers.findIndex((layer) => layer === layer_id);
