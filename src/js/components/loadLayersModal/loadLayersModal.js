@@ -4,7 +4,7 @@ class LoadLayersModal {
   constructor() {
     this.component = `
         <a id="loadLayersButtonContent" class="center-flex" onClick=modal.open()>
-            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="17" height="17">
+            <img src="src/js/components/loadLayersModal/add-layers-icon.svg" width="17" height="17" alt="Agregar capas">
         </a>
     `;
   }
@@ -14,148 +14,134 @@ class LoadLayersModal {
     elem.id = "loadLayersButton";
     elem.title = "Agregar capas";
     elem.innerHTML = this.component;
-    document.querySelector(".leaflet-top.leaflet-left").append(elem);
+    if (loadAddLayer) {
+      document.querySelector(".leaflet-top.leaflet-left").append(elem);
+    }
   }
 }
 
 class modalUI {
-	constructor() {
-		this.isOpen = false;
-		this.actions = [
-			{
-				name: 'Archivos',
-				id: 'files-action',
-				icon: 'src/js/components/openfiles/folder-open-solid.svg',
-				component: new IconModalGeojson
-			},
-			{
-				name: 'WMS',
-				id: 'wms-action',
-				icon: 'src/js/components/loadServices/icon-load-services.svg',
-				component: new IconModalLoadServices
-			},
-			// {
-			// 	name: 'WMTS',
-			// 	id: 'wmts-action',
-			// 	icon: 'src/js/components/wmts/wmts-solid.svg',
-			// 	component: new WmtsLoadLayers
-			// },
-		];
-		
-		this.selectedAction = 0;
-	}
+  constructor() {
+    this.isOpen = false;
+    this.actions = [
+      {
+        name: "Archivos",
+        id: "files-action",
+        icon: "fa-solid fa-folder",
+        component: new IconModalGeojson(),
+      },
+      {
+        name: "WMS",
+        id: "wms-action",
+        icon: "fa-solid fa-link",
+        component: new IconModalLoadServices(),
+      },
+      // {
+      // 	name: 'WMTS',
+      // 	id: 'wmts-action',
+      // 	icon: 'src/js/components/wmts/wmts-solid.svg',
+      // 	component: new WmtsLoadLayers
+      // },
+    ];
 
-	createElement(element, id, className) {
-		let aux = document.createElement(element);
-		if (id) {
-			aux.id = id;
-		}
-		if (className) {
-			aux.className = className;
-		}
-		return aux;
-	}
+    this.selectedAction = 0;
+  }
 
-	createModal() {
-		let divContainer = document.createElement("div")
-		divContainer.id = "loadLayersModal"
-		divContainer.className = "loadLayersModal"
+  createElement(element, id, className) {
+    let aux = document.createElement(element);
+    if (id) {
+      aux.id = id;
+    }
+    if (className) {
+      aux.className = className;
+    }
+    return aux;
+  }
 
-		let header = document.createElement('div');
-		header.classList.add('modalHeader');
+  createModal() {
+    let divContainer = document.createElement("div");
+    divContainer.id = "loadLayersModal";
+    divContainer.className = "loadLayersModal";
 
-		let modalTitle = document.createElement('h4');
-		modalTitle.innerText = 'Agregar capas';
+    // Main section
+    let mainSection = document.createElement("div");
+    mainSection.classList.add("modalMainSection");
 
-		let closeButton = document.createElement('button');
-		closeButton.classList.add('modalCloseButton');
+    // Content (header irá aquí arriba)
+    let content = document.createElement("div");
+    content.classList.add("modalContent");
 
-		closeButton.innerHTML = '<i title="cerrar" class="fa fa-times icon_close_mf" aria-hidden="true"></i>';
-		closeButton.onclick = function () {
-			document.body.removeChild(loadLayersModal);
-			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-			LOAD_LAYERS_MODAL_OPEN = false;
-		};
+    // Header (ahora dentro de content)
+    let header = document.createElement("div");
+    header.classList.add("modalHeader", "center-flex-space-around");
 
-		header.appendChild(modalTitle);
-		header.appendChild(closeButton);
+    let modalTitle = document.createElement("h3");
+    modalTitle.innerText = "Agregar capas";
+    header.appendChild(modalTitle);
 
-		divContainer.appendChild(header);
+    let nav = document.createElement("div");
+    nav.classList.add("modalNav");
 
-		let mainSection = document.createElement('div');
-		mainSection.classList.add('modalMainSection');
+    this.actions.forEach((action, i) => {
+      let btn = document.createElement("button");
+      if (action.icon && action.icon.length) {
+        btn.innerHTML = `<i class="${action.icon}"></i>`;
+      } else {
+        btn.innerText = action.name;
+      }
+      btn.classList.add("modalNavButton", "ag-btn", "ag-btn-secondary");
+      btn.addEventListener("click", () => {
+        this.selectedAction = i;
+        modal.showActions(this.selectedAction);
+      });
+      nav.appendChild(btn);
+    });
 
-		let nav = document.createElement('div');
-		nav.classList.add('modalNav');
+    header.appendChild(nav);
+    content.appendChild(header);
 
-		let content = document.createElement('div');
-		content.classList.add('modalContent');
+    // Action contents
+    this.actions.forEach((action) => {
+      let actionContent = document.createElement("div");
+      actionContent.id = action.id;
+      actionContent.classList.add("actionContent", "disableAction");
+      content.appendChild(actionContent);
+    });
 
-		this.actions.forEach((action, i) => {
-			let btn = document.createElement('button');
-			if (action.icon && action.icon.length) {
-				btn.innerHTML = `<img src="${action.icon}" width="18" height="18">`
-			} else {
-				btn.innerText = action.name;
-			}
-			btn.classList.add('modalNavButton');
-			btn.addEventListener('click', function () {
-				this.selectedAction = i;
-				modal.showActions(this.selectedAction);
-			})
+    mainSection.appendChild(content);
+    divContainer.appendChild(mainSection);
+    document.getElementById("load-layer").append(divContainer);
+  }
 
-			nav.appendChild(btn);
+  open() {
+    if (!LOAD_LAYERS_MODAL_OPEN) {
+      modal.createModal();
+      modal.showActions(0);
+      LOAD_LAYERS_MODAL_OPEN = true;
+    } else {
+      const modalElem = document.getElementById("loadLayersModal");
+      if (modalElem) {
+        document.getElementById("load-layer").removeChild(modalElem);
+      }
+      LOAD_LAYERS_MODAL_OPEN = false;
+    }
+  }
 
-			let actionContent = document.createElement('div');
-			actionContent.id = action.id;
-			actionContent.classList.add('actionContent');
-			actionContent.classList.add('disableAction');
-			actionContent.innerText = action.content;
+  showActions(actionIndx) {
+    let elements = document.querySelectorAll(".actionContent");
+    elements.forEach((el) => el.classList.add("disableAction"));
+    elements[actionIndx].classList.remove("disableAction");
 
-			content.appendChild(actionContent);
-		})
+    let buttons = document.querySelectorAll(".modalNavButton");
+    buttons.forEach((el) => el.classList.remove("modalNavButtonActive"));
+    buttons[actionIndx].classList.add("modalNavButtonActive");
 
-		mainSection.appendChild(nav);
-		mainSection.appendChild(content);
-
-		divContainer.appendChild(mainSection);
-		document.body.appendChild(divContainer);
-
-		$("#loadLayersModal").draggable({
-			containment: "#mapa"
-		})
-	}
-
-	open() {
-		if(!LOAD_LAYERS_MODAL_OPEN){
-			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
-			modal.createModal();
-			modal.showActions(0);
-			LOAD_LAYERS_MODAL_OPEN = true;
-		} else {
-			document.body.removeChild(loadLayersModal);
-			document.getElementById("loadLayersButtonContent").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-			LOAD_LAYERS_MODAL_OPEN = false;
-		}
-	}
-
-	showActions(actionIndx) {
-		let elements = document.querySelectorAll('.actionContent');
-		elements.forEach(el => el.classList.add('disableAction'))
-		elements[actionIndx].classList.remove('disableAction');
-
-		let buttons = document.querySelectorAll('.modalNavButton');
-		buttons.forEach(el => el.classList.remove('modalNavButtonActive'))
-		buttons[actionIndx].classList.add('modalNavButtonActive');
-
-		// console.log(this.actions);
-		// Remove previous
-		// if (previous) this.actions[previous].component.removeComponent();
-
-		let component = this.actions[actionIndx].component.createComponent();
-		document.getElementById(this.actions[actionIndx].id).innerHTML = '';
-		document.getElementById(this.actions[actionIndx].id).append(component);
-	}
+    let component = this.actions[actionIndx].component.createComponent();
+    document.getElementById(this.actions[actionIndx].id).innerHTML = "";
+    document.getElementById(this.actions[actionIndx].id).append(component);
+  }
 }
 
 let modal = new modalUI();
+modal.createModal();
+modal.showActions(0);

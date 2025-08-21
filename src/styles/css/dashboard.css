@@ -1,33 +1,37 @@
 /*
- * Base structure
- */
-
-/* Move down content because we have a fixed navbar that is 50px tall */
-body {
-  padding-top: 50px;
-}
-
-/*
- * Global add-ons
- */
-
-.sub-header {
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-/*
  * Top navigation
  * Hide default border to remove 1px line.
  */
 .navbar-fixed-top {
+  /* position: sticky; */
+  margin: 0;
   border: 0;
+  height: 50px;
+  margin: 10px 10px 0;
+  border-radius: 6px;
+  min-width: 380px;
+  width: fit-content;
+;
+  /*   max-width: 550px; */
+}
+
+@media (max-width: 915px) {
+  .navbar-fixed-top {
+    /* max-width: fit-content; */
+    width: auto;
+    min-width: fit-content;
+  }
+}
+
+.navbar-sticky {
+  position: sticky;
+  height: 60px;
+  background-color: transparent;
 }
 
 /*
  * Sidebar
  */
-
 .sidebar {
   display: none;
   padding: 0;
@@ -44,11 +48,6 @@ body {
 /* Hide for mobile, show later */
 @media (min-width: 768px) {
   .sidebar {
-    position: fixed;
-    top: 51px;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
     display: block;
     overflow-x: hidden;
     overflow-y: auto;
@@ -71,22 +70,7 @@ body {
   background-color: #428bca;
 }
 
-
-/*
- * Main content
- */
-.main {
-  padding: 20px;
-}
-
-.main .page-header {
-  margin-top: 0;
-}
-
-
-/*
- * Placeholder dashboard ideas
- */
+/* Placeholder dashboard ideas */ 
 .placeholders {
   margin-bottom: 30px;
   text-align: center;
@@ -103,11 +87,4 @@ body {
 .placeholder img {
   display: inline-block;
   border-radius: 50%;
-}
-
-@media (min-width: 768px) {
-  .main {
-    padding-right: 40px;
-    padding-left: 40px;
-  }
 }

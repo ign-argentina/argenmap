@@ -1,33 +1,33 @@
 #main-popup {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: RGBA(0, 0, 0, .6);
-    z-index: 1050;
-    display: flex;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: RGBA(0, 0, 0, .6);
+  z-index: 1050;
+  display: flex;
 }
-
 .mainPopup {
-    padding: 2rem;
-    background-color: var(--bg-color), opacity(0.2%);
-    width: 100%;
-    border-radius: 10px;
-    /* -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
+  padding: 2rem;
+  background-color: var(--bg-color), opacity(0.2%);
+  width: 100%;
+  border-radius: 10px;
+  /* -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
     box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75); */
-    color: white;
+  color: white;
 }
 .exit-btn {
-    float:right;
-    color: white;
-    /* color:#676767; */
-    overflow-y:auto;
+  float: right;
+  color: white;
+  border: none;
+  overflow-y: auto;
+  background-color: transparent;
 }
 .not-again-check {
-    font-weight: bold;
+  font-weight: bold;
 }
 .not-again-check input {
-    margin-right: 5px;
+  margin-right: 5px;
 }

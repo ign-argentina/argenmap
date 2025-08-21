@@ -4,7 +4,9 @@ let process = {};
 let contourRectangles = [];
 let isValidRectangle = false;
 let isSelectionDrawingActive = false;
-let counterContour = 0, counterHeight = 0, counterBuffer = 0,
+let counterContour = 0,
+  counterHeight = 0,
+  counterBuffer = 0,
   counterElevProfile = 0; //soon to be moved to their respective class
 
 class Geoprocessing {
@@ -21,8 +23,8 @@ class Geoprocessing {
     contour: "curvas_de_nivel_",
     waterRise: "cota_",
     buffer: "area_de_influencia_",
-    elevationProfile: "perfil_de_elevacion_"
-  }
+    elevationProfile: "perfil_de_elevacion_",
+  };
 
   svgZoomStyle(zoom) {
     if (this.contour_result_active) {
@@ -39,43 +41,40 @@ class Geoprocessing {
     }
   }
   createIcon() {
-    const modalIcon = `
-    <a id="geoPIcon">
-        <i  class="${app.geoprocessing.buttonIcon}" aria-hidden="true" ></i>
-    </a>
-    `;
-    const elem = document.createElement("div");
-    elem.className = "leaflet-bar leaflet-control";
-    elem.id = "geoprocesos-icon";
-    elem.title = app.geoprocessing.buttonTitle;
-    elem.innerHTML = modalIcon;
+    const btnElement = document.createElement("button");
+    btnElement.classList = "ag-btn ag-btn-primary menu-section-btn";
+    btnElement.id = "geoprocesos-btn";
+    btnElement.ariaLabel = "Geoprocesos";
+    btnElement.title = "Geoprocesos";
 
-    elem.onclick = () => {
+    // Icon options: fa-microchip, fa-screwdriver-wrench, fa-toolbox, fa-wand-magic-sparkles
+    // btnElement.innerHTML = `<i class="fa-solid fa-wrench"></i>`;
+    btnElement.innerHTML = `<svg width="24" height="23" viewBox="0 0 74 73" xmlns="http://www.w3.org/2000/svg">
+      <path d="M44.2008 19.9065L47.2008 25.0965C47.3999 25.4408 47.7277 25.6918 48.1119 25.7945C48.4961 25.8972 48.9054 25.843 49.2498 25.644L51.3438 24.435C52.2138 25.1205 53.1753 25.683 54.1863 26.103V28.5C54.1863 28.8978 54.3443 29.2794 54.6256 29.5607C54.9069 29.842 55.2884 30 55.6863 30H61.6863C62.0841 30 62.4656 29.842 62.7469 29.5607C63.0282 29.2794 63.1863 28.8978 63.1863 28.5V26.103C64.2052 25.6788 65.1615 25.1176 66.0288 24.435L68.1228 25.644C68.8383 26.0565 69.7593 25.809 70.1718 25.0965L73.1718 19.9065C73.3692 19.5618 73.4224 19.1531 73.3199 18.7693C73.2173 18.3855 72.9673 18.0578 72.6243 17.8575L70.5663 16.668C70.7271 15.5617 70.7261 14.438 70.5633 13.332L72.6213 12.1425C73.3353 11.73 73.5828 10.8075 73.1688 10.0935L70.1688 4.9035C69.9696 4.55925 69.6419 4.30818 69.2576 4.20551C68.8734 4.10284 68.4641 4.15697 68.1198 4.356L66.0258 5.565C65.1596 4.88157 64.2037 4.32032 63.1848 3.897V1.5C63.1848 1.10218 63.0267 0.720644 62.7454 0.43934C62.4641 0.158035 62.0826 0 61.6848 0H55.6848C55.2869 0 54.9054 0.158035 54.6241 0.43934C54.3428 0.720644 54.1848 1.10218 54.1848 1.5V3.897C53.1658 4.32121 52.2095 4.88238 51.3423 5.565L49.2498 4.356C49.0793 4.25725 48.8911 4.19308 48.6958 4.16715C48.5005 4.14123 48.302 4.15406 48.1117 4.20491C47.9214 4.25576 47.743 4.34364 47.5867 4.46351C47.4304 4.58338 47.2992 4.73289 47.2008 4.9035L44.2008 10.0935C44.0033 10.4382 43.9501 10.8469 44.0527 11.2307C44.1552 11.6145 44.4052 11.9422 44.7483 12.1425L46.8063 13.332C46.6445 14.4381 46.6445 15.5619 46.8063 16.668L44.7483 17.8575C44.0343 18.27 43.7868 19.1925 44.2008 19.9065ZM58.6848 9C61.9938 9 64.6848 11.691 64.6848 15C64.6848 18.309 61.9938 21 58.6848 21C55.3758 21 52.6848 18.309 52.6848 15C52.6848 11.691 55.3758 9 58.6848 9Z"/>
+      <path d="M25 23C20.7853 23.0096 16.6413 24.0848 12.9533 26.1252L16.0248 28.2859L20.4927 26.7576L23.2363 27.3848L24.2162 32.95L25.9015 31.6567L30.4871 30.0891L32.525 33.1853L28.5272 35.3017L26.0191 37.1044L25.7448 39.6127L22.9622 41.9643L22.1783 45.7661L20.6106 45.8836L21.3944 41.5722L15.4762 41.2589L14.0655 43.3359L14.0544 43.3348V46.3085L16.9365 46.5301L19.597 48.4146L19.3753 51.2414L23.1443 51.9066L23.1041 51.9914L29.0198 48.5809L39.1626 55.1767L36.8735 60.595L33.2257 62.8445L26.4017 71.546L24.8952 71.1169L25.6938 60.1652L20.9825 55.4539L21.8589 53.907L18.9871 52.8488L16.1605 49.4124L13.7215 48.858L9.4221 42.6429H8.92857L8.35748 45.6279L7.95123 41.2589L8.53906 38.0059L8.46094 35.4191L7.28203 30.3884C2.62455 35.067 0.00669643 41.3981 0 48C0 61.8071 11.1929 73 25 73C34.1979 72.9969 42.6512 67.9433 47.0084 59.843L45.8504 52.7031L45.2232 48.6663L41.4219 45.6092L42.1663 41.3763L43.93 39.1032L48.1214 38.5396C44.2819 29.148 35.1465 23.008 25 23ZM34.9383 28.3571H37.5V33.7143L33.9286 35.5V32.8397L34.9383 28.3571ZM21.2374 46.9417L24.5689 47.4906L24.0987 48.196L21.3944 47.6473L21.2374 46.9417Z"/>
+    </svg>
+    `;
+
+    btnElement.onclick = () => {
       if (g_modal_close) {
         geoProcessingManager.createModal();
-        document.getElementById("geoPIcon").style.backgroundColor = "rgba(238, 238, 238, 0.9)";
         g_modal_close = false;
-      }
-      else {
+      } else {
         //Close geoprocess window and clear
-        document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
         this.closeModal();
       }
     };
-    document.querySelector(".leaflet-top.leaflet-left").appendChild(elem);
+    document.querySelector("#botonera").append(btnElement);
   }
 
   closeModal() {
     document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
       "";
-    document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style =
-      "";
+    document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style = "";
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
     document.getElementById("mr").remove();
     g_modal_close = true;
-    document.getElementById("geoPIcon").style.backgroundColor = "rgba(255, 255, 255, 0.9)";
-
     this.resetHeightLayerColor();
   }
 
@@ -135,7 +134,6 @@ class Geoprocessing {
         "filter: contrast(22%) brightness(157%);pointer-events:none;";
     }
   }
-
   setAvailableGeoprocessingConfig(geoprocessingConfig) {
     this.geoprocessingConfig = geoprocessingConfig;
   }
@@ -145,11 +143,11 @@ class Geoprocessing {
   }
 
   getNewProcessPrefix() {
-    this.getProcesses().forEach(process => {
+    this.getProcesses().forEach((process) => {
       if (process.namePrefix) {
         this.GEOPROCESS[process.geoprocess] = process.namePrefix;
       }
-    })
+    });
   }
 
   set namePrefix(processId) {
@@ -162,7 +160,7 @@ class Geoprocessing {
 
   displayResult(result, chosenRectangle) {
     let layerType = "geoprocess",
-      sectionName = "Geoprocesos"
+      sectionName = "Geoprocesos";
 
     switch (this.geoprocessId) {
       case "contour": {
@@ -176,16 +174,18 @@ class Geoprocessing {
         let layername = this.namePrefix + counterContour;
         counterContour++;
 
-        mapa.getEditableLayer(this.editableLayer_name).setStyle({ fillOpacity: 0 });
+        mapa
+          .getEditableLayer(this.editableLayer_name)
+          .setStyle({ fillOpacity: 0 });
         let resultGeoJson = mapa.createLayerFromGeoJSON(result, layername);
         addLayerToAllGroups(resultGeoJson, layername);
 
         let selectedRectangle = mapa.editableLayers.rectangle.at(-1);
         selectedRectangle._uneditable = true; //aux to disallow editing the layer
         selectedRectangle.process = layername; //aux to relate contour with waterRise
-        mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer 
+        mapa.groupLayers[layername].push(selectedRectangle.name); // hack for including rectangle in contour lines layer
 
-        result.features.push(selectedRectangle.getGeoJSON()) //include rectangle in contour lines addedLayers 
+        result.features.push(selectedRectangle.getGeoJSON()); //include rectangle in contour lines addedLayers
 
         addedLayers.push({
           id: layername,
@@ -195,7 +195,7 @@ class Geoprocessing {
           rectangle: selectedRectangle,
           type: layerType,
           isActive: true,
-          section: sectionName
+          section: sectionName,
         });
 
         removeGeometryFromDrawingsGroup(selectedRectangle);
@@ -213,18 +213,25 @@ class Geoprocessing {
         //mapa.featureGroups.setStyle({color: '#876508'});
         // **
 
-        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
-        updateNumberofLayers(sectionName)
+        menu_ui.addFileLayer(
+          sectionName,
+          layerType,
+          layername,
+          layername,
+          layername,
+          true,
+        );
+        updateNumberofLayers(sectionName);
         break;
       }
       case "waterRise": {
         btn_modal_loading = true;
         const height = this.lastHeightProcessed;
-        let layername = `${this.namePrefix + counterHeight}_${height}m`;
+        let layername = `${this.namePrefix + counterHeight}_${height} m`;
         counterHeight++;
 
         let selectedRectangle;
-        mapa.editableLayers.rectangle.forEach(rect => {
+        mapa.editableLayers.rectangle.forEach((rect) => {
           if (rect.process === chosenRectangle.process) {
             selectedRectangle = rect;
           }
@@ -248,7 +255,7 @@ class Geoprocessing {
         if (!hasPane) {
           mapa.createPane("heightPane");
         }
-        const options = { opacity: 0.3, pane: "heightPane" }
+        const options = { opacity: 0.3, pane: "heightPane" };
 
         let imageLayer = L.imageOverlay(imageUrl, imageBounds, options); // makes leaflet image overlay from received blob
         imageLayer.title = layername;
@@ -257,12 +264,12 @@ class Geoprocessing {
 
         mapa.addLayerToGroup(imageLayer, layername, layername); // adds imageLayer to mapa.groupLayers
 
-        const type = layername.split('_')[0]; // gets gruop name without count number
+        const type = layername.split("_")[0]; // gets gruop name without count number
 
         if (!mapa.editableLayers[type]) {
           mapa.editableLayers[type] = [];
         }
-        mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy 
+        mapa.editableLayers[type].push(imageLayer); // adds new custom type into editableLayers for show/hideLayer functions legacy
         drawnItems.addLayer(imageLayer); // makes imageLayer into the map
 
         const title = `${imageLayer.name}`;
@@ -289,11 +296,18 @@ class Geoprocessing {
           isActive: true,
           download: download,
           type: layerType,
-          section: sectionName
+          section: sectionName,
         });
 
-        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
-        updateNumberofLayers(sectionName)
+        menu_ui.addFileLayer(
+          sectionName,
+          layerType,
+          layername,
+          layername,
+          layername,
+          true,
+        );
+        updateNumberofLayers(sectionName);
 
         break;
       }
@@ -305,11 +319,11 @@ class Geoprocessing {
         let resultGeoJson = mapa.createLayerFromGeoJSON(result, layername);
         addLayerToAllGroups(resultGeoJson, layername);
 
-        mapa.editableLayers.polygon.forEach(lyr => {
+        mapa.editableLayers.polygon.forEach((lyr) => {
           if (lyr.id === layername) {
             lyr._uneditable = true; //aux to disallow editing the layer
           }
-        })
+        });
 
         addedLayers.push({
           id: layername,
@@ -318,10 +332,17 @@ class Geoprocessing {
           file_name: layername,
           type: layerType,
           isActive: true,
-          section: sectionName
+          section: sectionName,
         });
-        menu_ui.addFileLayer(sectionName, layerType, layername, layername, layername, true);
-        updateNumberofLayers(sectionName)
+        menu_ui.addFileLayer(
+          sectionName,
+          layerType,
+          layername,
+          layername,
+          layername,
+          true,
+        );
+        updateNumberofLayers(sectionName);
 
         break;
       }
@@ -402,7 +423,10 @@ class Geoprocessing {
     document.getElementById("sliderValue").classList.remove("hidden");
     let arraySlider = []; //Array that contains all unique values
     sliderLayer.layer.features.forEach((element) => {
-      if (!arraySlider.includes(element.properties.value) && element.geometry.type == "LineString") {
+      if (
+        !arraySlider.includes(element.properties.value) &&
+        element.geometry.type == "LineString"
+      ) {
         arraySlider.push(element.properties.value);
       }
     });
@@ -423,13 +447,16 @@ class Geoprocessing {
   }
 
   setSliderHeight(sliderLayer) {
-    $("#ejec_gp").removeClass("ui-btn-disabled");
+    $("#ejec_gp").removeClass("ag-btn-disabled");
 
     //Contains all unique values
     let arraySlider = []; //Array that contains all unique values
 
     sliderLayer.layer.features.forEach((element) => {
-      if (!arraySlider.includes(element.properties.value) && element.geometry.type == "LineString") {
+      if (
+        !arraySlider.includes(element.properties.value) &&
+        element.geometry.type == "LineString"
+      ) {
         arraySlider.push(element.properties.value);
       }
     });
@@ -502,14 +529,14 @@ class Geoprocessing {
 
     if (event === "add-layer") {
       L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-        $("#ejec_gp").addClass("ui-btn-disabled");
+        $("#ejec_gp").addClass("ag-btn-disabled");
         rectPos = mapa.editableLayers.rectangle;
         formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
         _area = formattedArea + " km²";
 
         if (formattedArea > maxSize) {
           isValidRectangle = false;
-          $("#ejec_gp").addClass("ui-btn-disabled");
+          $("#ejec_gp").addClass("ag-btn-disabled");
           $("#invalidRect").removeClass("hidden");
         } else if (formattedArea < maxSize) {
           isValidRectangle = true;
@@ -519,28 +546,28 @@ class Geoprocessing {
             $("#input-equidistancia").val() >= 10 &&
             $("#input-equidistancia").val() <= 10000
           ) {
-            $("#ejec_gp").removeClass("ui-btn-disabled");
+            $("#ejec_gp").removeClass("ag-btn-disabled");
           }
         }
         contourRectangles = [];
         return _area;
       };
     } else if (event === "edit-layer") {
-      $("#ejec_gp").addClass("ui-btn-disabled");
+      $("#ejec_gp").addClass("ag-btn-disabled");
       rectPos = mapa.editableLayers.rectangle;
 
       contourRectangles.push(rectPos[rectPos.length - 1]);
       rectangleArea = L.GeometryUtil.geodesicArea(
-        contourRectangles[contourRectangles.length - 1].getLatLngs()[0]
+        contourRectangles[contourRectangles.length - 1].getLatLngs()[0],
       );
       formattedArea = L.GeometryUtil.formattedNumber(
         rectangleArea / 1000000,
-        2
+        2,
       );
 
       if (formattedArea > maxSize) {
         isValidRectangle = false;
-        $("#ejec_gp").addClass("ui-btn-disabled");
+        $("#ejec_gp").addClass("ag-btn-disabled");
         $("#invalidRect").removeClass("hidden");
       } else if (formattedArea < maxSize) {
         isValidRectangle = true;
@@ -550,7 +577,7 @@ class Geoprocessing {
           $("#input-equidistancia").val() >= 10 &&
           $("#input-equidistancia").val() <= 10000
         ) {
-          $("#ejec_gp").removeClass("ui-btn-disabled");
+          $("#ejec_gp").removeClass("ag-btn-disabled");
         }
       }
       contourRectangles = [];
@@ -570,8 +597,8 @@ class Geoprocessing {
       case "delete-layer":
         contourRectangles = [];
         $("#invalidRect").addClass("hidden");
-        $("#ejec_gp").addClass("ui-btn-disabled");
-        $("#drawRectangleBtn").removeClass("ui-btn-disabled");
+        $("#ejec_gp").addClass("ag-btn-disabled");
+        $("#drawRectangleBtn").removeClass("ag-btn-disabled");
         $("#msgRectangle").removeClass("hidden");
         break;
 
@@ -587,7 +614,7 @@ class Geoprocessing {
           if (layer.name.includes("polyline")) {
             setTimeout(function () {
               $("#select-capa").val(layer.name).change();
-              $("#ejec_gp").removeClass("ui-btn-disabled");
+              $("#ejec_gp").removeClass("ag-btn-disabled");
             }, 500);
           }
         });
@@ -595,8 +622,8 @@ class Geoprocessing {
 
       case "delete-layer":
         document.getElementById("select-capa").selectedIndex = 0;
-        $("#ejec_gp").addClass("ui-btn-disabled");
-        $("#drawBtn").removeClass("ui-btn-disabled");
+        $("#ejec_gp").addClass("ag-btn-disabled");
+        $("#drawBtn").removeClass("ag-btn-disabled");
         $("#msgRectangle").removeClass("hidden");
         break;
 
@@ -605,7 +632,6 @@ class Geoprocessing {
     }
   }
 
-
   checkLayersForBuffer() {
     let isBuffer = false;
     getAllActiveLayers().forEach((layer) => {
@@ -613,19 +639,17 @@ class Geoprocessing {
         isBuffer = true;
       }
     });
-    addedLayers.forEach(lyr => {
+    addedLayers.forEach((lyr) => {
       if (lyr.type === "WMS") {
         isBuffer = true;
       }
-    })
+    });
     if (isBuffer) {
       $("#msgNoLayer").addClass("hidden");
       $("#msgRectangle").removeClass("hidden");
       //$("#drawRectangleBtn").removeClass("disabledbutton");
       $('label[for="input-equidistancia"]').show();
-      document
-        .getElementById("input-equidistancia")
-        .classList.remove("hidden");
+      document.getElementById("input-equidistancia").classList.remove("hidden");
     }
   }
 
@@ -635,13 +659,11 @@ class Geoprocessing {
     rectSizeMsg.innerHTML =
       "Se superó el limite. <br> Edite o elimine el rectángulo.";
     rectSizeMsg.id = "invalidRect";
-    rectSizeMsg.style = "color: #ff1100; font-weight: bolder;";
     document.getElementsByClassName("form")[1].appendChild(rectSizeMsg);
     $("#invalidRect").addClass("hidden");
 
     let layerMessage = document.createElement("div");
     layerMessage.id = "msgRectangle";
-    layerMessage.style = "color: #37bbed; font-weight: bolder; font-size: 13px";
 
     //Contour Messages
     if (this.geoprocessId === "contour") {
@@ -667,7 +689,7 @@ class Geoprocessing {
 
       $('label[for="select-capa"]').show();
       $('label[for="input-equidistancia"]').hide();
-      $("#drawRectangleBtn").addClass("ui-btn-disabled");
+      $("#drawRectangleBtn").addClass("ag-btn-disabled");
       document.getElementById("input-equidistancia").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
 
@@ -679,17 +701,19 @@ class Geoprocessing {
       let message = document.createElement("div");
       message.innerHTML = "No hay Curvas de Nivel";
       message.id = "msgNoContour";
-      message.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(message);
       $("#msgRectangle").addClass("hidden");
 
       for (let polyline of mapa.editableLayers.polyline) {
-        if (polyline.layer && polyline.layer.includes(this.GEOPROCESS.contour)) {
+        if (
+          polyline.layer &&
+          polyline.layer.includes(this.GEOPROCESS.contour)
+        ) {
           this.setSliderHeight(sliderLayer);
           $("#msgNoContour").addClass("hidden");
           break;
         }
-      };
+      }
 
       $('label[for="select-capa"]').show();
       document.getElementById("drawRectangleBtn").classList.add("hidden");
@@ -749,16 +773,16 @@ class Geoprocessing {
                 let layerTitle;
                 getAllActiveLayers().forEach((layer) => {
                   if (layer && gestorMenu.layerIsWmts(layer.name) == false) {
-                    gestorMenu.getLayerData(layer.name).title ?
-                    layerTitle = gestorMenu.getLayerData(layer.name).title :
-                    layerTitle = layer.name;
+                    gestorMenu.getLayerData(layer.name).title
+                      ? (layerTitle = gestorMenu.getLayerData(layer.name).title)
+                      : (layerTitle = layer.name);
                     options.push({
                       value: layer.name,
                       text: layerTitle,
                     });
                   }
                 });
-                addedLayers.forEach(lyr => {
+                addedLayers.forEach((lyr) => {
                   if (lyr.type === "WMS") {
                     options.push({
                       value: lyr.name,
@@ -791,15 +815,17 @@ class Geoprocessing {
                     let selectedLayer = "";
                     if (!element.value) {
                       this.resetHeightLayerColor();
-                      document.getElementById("rangeSlider").classList.add("hidden");
-                      document.getElementById("sliderValue").classList.add("hidden");
-                      $("#ejec_gp").addClass("ui-btn-disabled");
+                      document
+                        .getElementById("rangeSlider")
+                        .classList.add("hidden");
+                      document
+                        .getElementById("sliderValue")
+                        .classList.add("hidden");
+                      $("#ejec_gp").addClass("ag-btn-disabled");
                       return;
                     }
                     addedLayers.forEach((lyr) => {
-                      lyr.id == element.value
-                        ? (selectedLayer = lyr)
-                        : null;
+                      lyr.id == element.value ? (selectedLayer = lyr) : null;
                     });
                     if (selectedLayer.layer.features.length != 0) {
                       this.resetHeightLayerColor();
@@ -807,19 +833,19 @@ class Geoprocessing {
 
                       sliderLayer = selectedLayer;
                       this.updateSliderHeight(sliderLayer);
-                      $("#ejec_gp").removeClass("ui-btn-disabled");
+                      $("#ejec_gp").removeClass("ag-btn-disabled");
                     }
                   } else if (this.geoprocessId === "buffer") {
                     if (!element.value) {
-                      $("#drawRectangleBtn").addClass("ui-btn-disabled");
-                      $("#ejec_gp").addClass("ui-btn-disabled");
+                      $("#drawRectangleBtn").addClass("ag-btn-disabled");
+                      $("#ejec_gp").addClass("ag-btn-disabled");
                     } else {
-                      this.checkLayersForBuffer()
-                      $("#drawRectangleBtn").removeClass("ui-btn-disabled");
+                      this.checkLayersForBuffer();
+                      $("#drawRectangleBtn").removeClass("ag-btn-disabled");
                     }
                   } else if (this.geoprocessId === "elevationProfile") {
                     if (!element.value) {
-                      $("#ejec_gp").addClass("ui-btn-disabled");
+                      $("#ejec_gp").addClass("ag-btn-disabled");
                       return;
                     }
                     let selectedLayer = "";
@@ -831,7 +857,7 @@ class Geoprocessing {
                           : null;
                       });
                       mapa.centerLayer(selectedLayer.getGeoJSON());
-                      $("#ejec_gp").removeClass("ui-btn-disabled");
+                      $("#ejec_gp").removeClass("ag-btn-disabled");
                     }
                   }
                 },
@@ -892,12 +918,12 @@ class Geoprocessing {
         $("#input-equidistancia").val() <= 10000 &&
         isValidRectangle == true
       ) {
-        $("#ejec_gp").removeClass("ui-btn-disabled");
+        $("#ejec_gp").removeClass("ag-btn-disabled");
       } else if (
         $("#input-equidistancia").val() < 10 ||
         $("#input-equidistancia").val() > 10000
       ) {
-        $("#ejec_gp").addClass("ui-btn-disabled");
+        $("#ejec_gp").addClass("ag-btn-disabled");
       }
     }
     $(document).ready(function () {
@@ -915,12 +941,12 @@ class Geoprocessing {
       rectangleBtn,
       () => {
         let drawingRectangle = new L.Draw.Rectangle(mapa);
-        $("#drawRectangleBtn").addClass("ui-btn-disabled");
+        $("#drawRectangleBtn").addClass("ag-btn-disabled");
         drawingRectangle.enable();
         this.checkRectangleArea("add-layer");
         isSelectionDrawingActive = true;
       },
-      "drawRectangleBtn"
+      "drawRectangleBtn",
     );
 
     //Execute Button
@@ -938,13 +964,12 @@ class Geoprocessing {
           this.executeGeoprocess(formFields);
         }
       },
-      "ejec_gp"
+      "ejec_gp",
     );
 
-    $("#ejec_gp").addClass("ui-btn-disabled"); //Execute Button disabled from the start
+    $("#ejec_gp").addClass("ag-btn-disabled"); //Execute Button disabled from the start
     this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
   }
-
 
   executeBuffer() {
     let drawnRectangle,
@@ -956,12 +981,12 @@ class Geoprocessing {
         drawnRectangle = lyr;
       }
     });
-    
-    allLayers.forEach(lyr => {
+
+    allLayers.forEach((lyr) => {
       if (lyr.name === selctedLayerName) {
         layerSelected = lyr.layer;
       }
-    })
+    });
 
     let coords = getGeometryCoords(drawnRectangle);
 
@@ -971,28 +996,26 @@ class Geoprocessing {
     loadingBtn("on", "ejec_gp");
 
     let buffer;
-    if (!layerSelected.host ) {
+    if (!layerSelected.host) {
       try {
         let arrayForBuffer = [],
           selecCoords = drawnRectangle.getGeoJSON(),
           within;
-        
+
         turf.featureEach(layerSelected, function (feature) {
           within = turf.booleanIntersects(feature, selecCoords);
           if (within) {
-            arrayForBuffer.push(feature)
+            arrayForBuffer.push(feature);
           }
         });
         let bufferFeature = turf.featureCollection(arrayForBuffer);
-        buffer = turf.buffer(bufferFeature, distanceBuffer)
-
-      } catch (error) {        
+        buffer = turf.buffer(bufferFeature, distanceBuffer);
+      } catch (error) {
         console.error(error);
         new UserMessage(error.message, true, "error");
         loadingBtn("off", "ejec_gp");
       }
       this.displayResult(buffer);
-
     } else {
       buffer = getLayerDataByWFS(coords, drawnRectangle.type, layerSelected)
         .then((data) => {
@@ -1030,7 +1053,9 @@ class Geoprocessing {
           }
         });
 
-        drawnRectangle != null ? (this.editableLayer_name = drawnRectangle.name) : null;
+        drawnRectangle != null
+          ? (this.editableLayer_name = drawnRectangle.name)
+          : null;
 
         switch (this.geoprocessId) {
           case "contour": {
@@ -1043,24 +1068,24 @@ class Geoprocessing {
             break;
           }
           case "waterRise": {
-            mapa.editableLayers.rectangle.forEach(rect => {
-              if (rect.process === document.getElementById("select-capa").value) {
+            mapa.editableLayers.rectangle.forEach((rect) => {
+              if (
+                rect.process === document.getElementById("select-capa").value
+              ) {
                 selectedRectangle = rect;
                 rect._latlngs[0].forEach((coord) => {
                   arrayWaterRise += coord.lng + " " + coord.lat + ",";
                 });
                 arrayWaterRise +=
-                  rect._latlngs[0][0].lng +
-                  " " +
-                  rect._latlngs[0][0].lat;
+                  rect._latlngs[0][0].lng + " " + rect._latlngs[0][0].lat;
               }
-            })
+            });
 
             let waterRiseValue =
               document.getElementById("sliderValue").innerHTML;
             waterRiseValue = waterRiseValue.substring(
               0,
-              waterRiseValue.length - 4
+              waterRiseValue.length - 4,
             );
             valueOfWaterRise = parseInt(waterRiseValue);
             break;
@@ -1086,7 +1111,7 @@ class Geoprocessing {
     } else if (this.geoprocessId === "waterRise") {
       let waterRise = new GeoserviceFactory.WaterRise(
         this.geoprocessing.host,
-        this.geoprocessing.mdeLayerFullname
+        this.geoprocessing.mdeLayerFullname,
       );
       this.lastHeightProcessed = valueOfWaterRise;
       waterRise
@@ -1141,7 +1166,7 @@ class Geoprocessing {
             // });
           }
           if (this.geoprocessId == "buffer") {
-            let layerForBuffer = getAllActiveLayers()[0]
+            let layerForBuffer = getAllActiveLayers()[0];
 
             if (
               layerForBuffer &&
@@ -1149,7 +1174,7 @@ class Geoprocessing {
             ) {
               setTimeout(function () {
                 $("#select-capa").val(layerForBuffer.name).change();
-                $("#drawRectangleBtn").removeClass("ui-btn-disabled");
+                $("#drawRectangleBtn").removeClass("ag-btn-disabled");
               }, 500);
             }
           }
@@ -1158,7 +1183,7 @@ class Geoprocessing {
           }
 
           const item = this.geoprocessingConfig.availableProcesses.find(
-            (e) => e.geoprocess === this.geoprocessId
+            (e) => e.geoprocess === this.geoprocessId,
           );
 
           this.process = {
@@ -1170,12 +1195,12 @@ class Geoprocessing {
 
           this.geoprocessing = new this.process[this.geoprocessId](
             item.baseUrl,
-            item.layer
+            item.layer,
           );
           this.buildOptionForm(this.geoprocessing.getFields());
           //this.namePrefix = item.namePrefix;
-        }
-      }
+        },
+      },
     });
 
     const options = [];
@@ -1199,27 +1224,28 @@ class Geoprocessing {
       this.formContainer = this.buildForm();
       mapa.addMethodToEvent(
         this.updateReferencedDrawedLayers.bind(this, "add-layer"),
-        "add-layer"
+        "add-layer",
       );
       mapa.addMethodToEvent(
         this.updateReferencedDrawedLayers.bind(this, "delete-layer"),
-        "delete-layer"
+        "delete-layer",
       );
       mapa.addMethodToEvent(
         this.updateReferencedDrawedLayers.bind(this, "edit-layer"),
-        "edit-layer"
+        "edit-layer",
       );
     }
     return this.formContainer;
   }
 
-  updateLayerSelect(layerName, addToList) { //updates elvePorfile polylines & buffer
+  updateLayerSelect(layerName, addToList) {
+    //updates elvePorfile polylines & buffer
     let select = document.getElementById("select-capa"),
       option = document.createElement("option");
     option.value = layerName;
     option.innerHTML = gestorMenu.getLayerData(layerName).title;
 
-    if (layerName.includes('polyline') && select !== null) {
+    if (layerName.includes("polyline") && select !== null) {
       if (addToList) {
         for (let i = 0; i < select.length; i++) {
           if (select[i].value !== layerName) {
@@ -1233,8 +1259,8 @@ class Geoprocessing {
             select[i].remove();
           }
           if (!document.getElementById("select-capa")[1]) {
-            $("#drawRectangleBtn").addClass("ui-btn-disabled");
-            $("#ejec_gp").addClass("ui-btn-disabled");
+            $("#drawRectangleBtn").addClass("ag-btn-disabled");
+            $("#ejec_gp").addClass("ag-btn-disabled");
           }
         }
       }
@@ -1243,7 +1269,10 @@ class Geoprocessing {
     if (select && this.geoprocessId === "buffer") {
       if (addToList && gestorMenu.layerIsWmts(layerName) == false) {
         for (let i = 0; i < select.length; i++) {
-          if (select[i].value !== layerName && option.innerHTML !== "undefined") {
+          if (
+            select[i].value !== layerName &&
+            option.innerHTML !== "undefined"
+          ) {
             select.appendChild(option);
             this.checkLayersForBuffer();
           }
@@ -1254,8 +1283,8 @@ class Geoprocessing {
             select[i].remove();
           }
           if (!document.getElementById("select-capa")[1]) {
-            $("#drawRectangleBtn").addClass("ui-btn-disabled");
-            $("#ejec_gp").addClass("ui-btn-disabled");
+            $("#drawRectangleBtn").addClass("ag-btn-disabled");
+            $("#ejec_gp").addClass("ag-btn-disabled");
           }
         }
       }

@@ -1,4 +1,5 @@
 {
+  "analytics_ids": [],
   "table": {
     "isActive": false,
     "rowsLimit": 5
@@ -14,7 +15,6 @@
     "description": "",
     "image": ""
   },
-  "analytics_ids": [],
   "excluded_plugins": ["minimap"],
   "mapConfig": {
     "center": {
@@ -25,11 +25,6 @@
       "initial": 4,
       "min": 3,
       "max": 21
-    }
-  },
-  "service":{
-    "wmts": {
-      "maxZoom": 21
     }
   },
   "showSearchBar": true,
@@ -55,22 +50,24 @@
   "referencias": {
     "show": false,
     "icon": "src/config/default/styles/images/referencias.png",
+    "image": "src/config/styles/images/legends/referencias.png",
     "width":"25px",
     "height":"31px"
   },
   "theme": {
-    "bodyBackground": "#0db2e0",
-    "headerBackground": "#0db2e0",
-    "menuBackground": "#0db2e0",
+    "headerBackground": "#157DB9",
+    "menuBackground": "#157DB9",
+    "bodyBackground": "#0094d4",
     "activeLayer": "#33b560",
-    "textMenu":"white",
-    "textMenuStyle":"",
-    "textLegendMenu":"#fafafa",
-    "textLegendMenuStyle":"",
-    "iconBar":"#4f4f4f"
+    "iconBar": "#4f4f4f",
+    "btnColor": "#FFFFFF",
+    "textLegendMenu": "#FFFFFF",
+    "textLegendMenuStyle": "",
+    "textMenu": "#FFFFFF",
+    "textMenuStyle": ""
     },
   "logo": {
-    "title":"Argenmap viewer",
+    "title":"Argenmap",
     "src": "src/styles/images/argenmap-banner-white.webp",
     "height": "",
     "width": "",
@@ -132,18 +129,25 @@
       }
     ]
   },
-  "hillshade" : {
-    "name": "hillshade",
+  "hillshade": {
+    "addTo": [
+      "argenmap",
+      "argenmap_gris"
+    ],
     "attribution": "sombra de montaña <a target='_blank' href='https://www.arcgis.com/home/item.html?id=1b243539f4514b6ba35e7d995890db1d'>©Esri</a>",
-    "url": "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}.png",
-    "addTo": ["argenmap", "argenmap_gris"],
     "icon": "src/styles/images/mountains.svg",
-    "switchLabel": "Agregar sombra de montaña Esri"
+    "name": "hillshade",
+    "switchLabel": "Agregar sombra de montaña Esri",
+    "url": "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}.png"
   },
   "strings": {
     "basemap_min_zoom": "Zoom mínimo de ",
     "basemap_max_zoom": " y máximo de ",
     "basemap_legend_button_text": "Ver leyenda del mapa",
     "delete_geometry": "Eliminar geometría"
+  },
+    "onInit": {
+    "showToolbar": true,
+    "showLayerMenu": true
   }
 }

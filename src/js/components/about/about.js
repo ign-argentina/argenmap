@@ -2,8 +2,7 @@
  * Represents a utility class to get data from various sources.
  */
 class DataGetter {
-  constructor() {
-  }
+  constructor() { }
 
   /**
    * Loads the content of a Markdown file from the specified URL and selects the specified lines.
@@ -14,16 +13,16 @@ class DataGetter {
    */
   loadMD(url, from, to) {
     return fetch(url)
-      .then(response => response.text())
-      .then(markdown => {
+      .then((response) => response.text())
+      .then((markdown) => {
         const html = marked(markdown);
-        const lines = html.split('\n');
+        const lines = html.split("\n");
         const selectedLines = lines.slice(from, to);
-        const selectedText = selectedLines.join('\n');
+        const selectedText = selectedLines.join("\n");
         return selectedText;
       })
-      .catch(error => {
-        console.error('Error loading the Markdown file:', error);
+      .catch((error) => {
+        console.error("Error loading the Markdown file:", error);
       });
   }
 
@@ -47,7 +46,6 @@ class DataGetter {
       return null;
     }
   }
-
 }
 
 /**
@@ -60,17 +58,17 @@ class AboutUs {
     this.contributors = [];
     this.tabs = [
       {
-        name: 'Acerca',
-        id: 'load-readme',
+        name: "Acerca",
+        id: "load-readme",
       },
       {
-        name: 'Funciones',
-        id: 'load-functions',
-      } /*,
-            {
-                name: 'Colaboradores',
-                id: 'load-colaboradores',
-            }*/
+        name: "Funciones",
+        id: "load-functions",
+      }/* ,
+      {
+        name: 'Colaboradores',
+        id: 'load-colaboradores',
+      } */,
     ];
     this.dataGetter = new DataGetter();
     this.check();
@@ -88,71 +86,74 @@ class AboutUs {
     //this.addContributorsContent();
   }
 
-  /**
+  /* *
    * Adds the contributors content to the contributors container.
-  
+
   addContributorsContent() {
-      this.contributors.sort((a, b) => a.login.localeCompare(b.login));
-      this.contributors.forEach((contributor, i) => {
-          if (contributor.login.toLowerCase() === "dependabot[bot]") {
-              return;
-          }
-          const card = document.createElement('div');
-          card.className = "contributor-card";
-          card.title = "Visitar GitHub";
-          card.addEventListener('click', () => {
-              this.goTo(contributor.html_url);
-          });
-
-          const presentImg = document.createElement('img');
-          presentImg.src = contributor.avatar_url;
-
-          const userName = document.createElement('p');
-          userName.innerHTML = contributor.login;
-
-          presentImg.className = "contributor-img";
-          userName.className = "contributor-user";
-
-          card.appendChild(presentImg);
-          card.appendChild(userName);
-
-          const contributorContainer = document.getElementById("contributors-container");
-          contributorContainer.appendChild(card);
+    this.contributors.sort((a, b) => a.login.localeCompare(b.login));
+    this.contributors.forEach((contributor, i) => {
+      if (contributor.login.toLowerCase() === "dependabot[bot]") {
+        return;
+      }
+      const card = document.createElement('div');
+      card.className = "contributor-card";
+      card.title = "Visitar GitHub";
+      card.addEventListener('click', () => {
+        this.goTo(contributor.html_url);
       });
+
+      const presentImg = document.createElement('img');
+      presentImg.src = contributor.avatar_url;
+
+      const userName = document.createElement('p');
+      userName.innerHTML = contributor.login;
+
+      presentImg.className = "contributor-img";
+      userName.className = "contributor-user";
+
+      card.appendChild(presentImg);
+      card.appendChild(userName);
+
+      const contributorContainer = document.getElementById("contributors-container");
+      contributorContainer.appendChild(card);
+    });
   }
-   */
+ */
 
   /**
    * Adds the functions content to the functions container.
    */
   addFunctionsContent() {
-    this.dataGetter.loadMD("src/docs/features.md", 2, Infinity)
-      .then(selectedText => {
-        const lines = selectedText.split('\n');
+    this.dataGetter
+      .loadMD("src/docs/features.md", 2, Infinity)
+      .then((selectedText) => {
+        const lines = selectedText.split("\n");
         const lastIndex = lines.length - 4; // Index of the antepenultimate line
 
         lines.forEach((line, i) => {
           if (i > lastIndex) {
-            localStorage.setItem('lastFunctionSeen', (i - 3));
+            localStorage.setItem("lastFunctionSeen", i - 3);
             return; // Ignore lines after the antepenultimate line
           }
 
-          const divFuncion = document.createElement('div');
-          divFuncion.classList.add('all-function-div');
+          const divFuncion = document.createElement("div");
+          divFuncion.classList.add("all-function-div");
 
           if (i % 2 == 0) {
-            divFuncion.classList.add('even-function');
+            divFuncion.classList.add("even-function");
           }
 
-          if ((this.getExited != null) && (parseInt(this.getExited) < i)) {
+          if (this.getExited != null && parseInt(this.getExited) < i) {
             divFuncion.innerHTML = `<strong>¡Nuevo! &nbsp;</strong> ${line}`;
-            divFuncion.classList.add('new-function');
-            this.waitForElementAndAddNoti('load-functions');
+            divFuncion.classList.add("new-function");
+            this.waitForElementAndAddNoti("load-functions");
           } else {
             divFuncion.innerHTML = line;
           }
 
-          const functionsContainer = document.getElementById("functions-container");
+          const functionsContainer = document.getElementById(
+            "functions-container",
+          );
           functionsContainer.prepend(divFuncion);
         });
       });
@@ -162,11 +163,16 @@ class AboutUs {
    * Adds the readme content to the readme container.
    */
   addReadmeContent() {
-    const innerReadmeText = document.createElement('div');
+    const innerReadmeText = document.createElement("div");
     innerReadmeText.style.margin = "10px";
 
-    this.dataGetter.loadMD(`${window.location.origin+window.location.pathname}/README.md`, 4, 7)
-      .then(selectedText => {
+    this.dataGetter
+      .loadMD(
+        `${window.location.origin + window.location.pathname}/README.md`,
+        4,
+        7,
+      )
+      .then((selectedText) => {
         innerReadmeText.innerHTML = selectedText;
       });
 
@@ -174,7 +180,7 @@ class AboutUs {
     readmeContainer.prepend(innerReadmeText);
 
     let linkRepo = document.getElementById("link-to-repo");
-    linkRepo.addEventListener('click', () => {
+    linkRepo.addEventListener("click", () => {
       this.goTo("https://github.com/ign-argentina/argenmap");
     });
   }
@@ -192,13 +198,15 @@ class AboutUs {
    * @param {number} tabIndex - The index of the tab to show.
    */
   showTab(tabIndex) {
-    const contentToDisplay = document.querySelectorAll('.content-about-tab');
-    contentToDisplay.forEach(el => el.classList.add('content-about-deactivate'));
-    contentToDisplay[tabIndex].classList.remove('content-about-deactivate');
+    const contentToDisplay = document.querySelectorAll(".content-about-tab");
+    contentToDisplay.forEach((el) =>
+      el.classList.add("content-about-deactivate"),
+    );
+    contentToDisplay[tabIndex].classList.remove("content-about-deactivate");
 
-    const tabsToDisplay = document.querySelectorAll('.tab');
-    tabsToDisplay.forEach(el => el.classList.remove('tab-active'));
-    tabsToDisplay[tabIndex].classList.add('tab-active');
+    const tabsToDisplay = document.querySelectorAll(".tab");
+    tabsToDisplay.forEach((el) => el.classList.remove("tab-active"));
+    tabsToDisplay[tabIndex].classList.add("tab-active");
   }
 
   /**
@@ -219,69 +227,70 @@ class AboutUs {
   }
 
   /**
-   * Adds a notification dot to the specified element.
-   * @param {string} id - The ID of the element to add the notification dot to.
+   * Añade un punto de notificación al elemento especificado solo si no se mostró antes.
+   * @param {string} id - El ID del elemento al que se le agrega el punto de notificación.
    */
   addNoti(id) {
-    const temporaryNotification = document.createElement("div");
-    temporaryNotification.classList.add('notification-dot');
-    temporaryNotification.id = "notification-dot";
-
-    const temporaryDivToChange = document.getElementById(id);
-    if (temporaryDivToChange) {
-      temporaryDivToChange.appendChild(temporaryNotification);
+    if (document.getElementById("notification-dot")) return;
+    localStorage.setItem("notificationDotShown", "true");
+    const target = document.getElementById(id);
+    if (target) {
+      const dot = document.createElement("div");
+      dot.className = "notification-dot";
+      dot.id = "notification-dot";
+      target.appendChild(dot);
     } else {
-      this.waitForElementAndAddNoti(id)
+      this.waitForElementAndAddNoti(id);
     }
   }
 
   /**
-   * Waits for the specified element to appear and adds a notification dot to it.
-   * @param {string} id - The ID of the element to wait for and add the notification dot to.
+   * Espera a que el elemento esté en el DOM y luego agrega el punto de notificación.
+   * @param {string} id - El ID del elemento objetivo.
    */
   waitForElementAndAddNoti(id) {
     const targetNode = document.getElementById(id);
     if (targetNode) {
       this.addNoti(id);
-    } else {
-      const observer = new MutationObserver((mutationsList, observer) => {
-        for (const mutation of mutationsList) {
-          if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-            for (const addedNode of mutation.addedNodes) {
-              if (addedNode.id === id) {
-                this.addNoti(id);
-                observer.disconnect();
-                break;
-              }
-            }
+      return;
+    }
+    const observer = new MutationObserver((mutations, obs) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node.id === id) {
+            this.addNoti(id);
+            obs.disconnect();
+            return;
           }
         }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    }
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
   /**
-   * Checks if there are new functions and adds a notification dot if necessary.
+   * Verifica si hay funciones nuevas y muestra el dot solo la primera vez que hay un cambio.
+   * El dot debe mostrarse si:
+   * - No hay lastFunctionSeen en localStorage
+   * - O si hay una línea nueva respecto al valor guardado
    */
   check() {
-    this.dataGetter.loadMD("src/docs/features.md", 2, Infinity)
-      .then(selectedText => {
-        const lines = selectedText.split('\n');
-        const lastIndex = lines.length - 4; // Index of the antepenultimate line
-
-        lines.forEach((line, i) => {
-          if (i > lastIndex) {
-            localStorage.setItem('lastFunctionSeen', (i - 3));
-            return; // Ignore lines after the antepenultimate line
-          }
-          this.getExited = localStorage.getItem('lastFunctionSeen'); //First time here or any change since last time?
-
-          if ((this.getExited != null) && (parseInt(this.getExited) < i)) {
-            this.addNoti('developerLogo');
-          }
-        });
-      });
+    this.dataGetter.loadMD("src/docs/features.md", 2, Infinity).then((selectedText) => {
+      const lines = selectedText.split("\n");
+      const lastIndex = lines.length - 4;
+      const lastFunctionSeen = localStorage.getItem("lastFunctionSeen");
+      const notificationDotShown = localStorage.getItem("notificationDotShown") === "true";
+      let newFunctionIndex = lastIndex;
+      // Si nunca se guardó lastFunctionSeen o hay una línea nueva
+      if (lastFunctionSeen === null || parseInt(lastFunctionSeen, 10) < newFunctionIndex) {
+        // Solo mostrar el dot si no se mostró para este índice
+        if (!notificationDotShown || parseInt(lastFunctionSeen, 10) < newFunctionIndex) {
+          this.addNoti("developerLogo");
+          localStorage.setItem("lastFunctionSeen", newFunctionIndex);
+          localStorage.setItem("notificationDotShown", "true");
+        }
+      }
+    });
   }
 }
 

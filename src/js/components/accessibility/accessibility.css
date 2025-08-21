@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import url('https://fonts.cdnfonts.com/css/open-dyslexic');
+@import url('https://fonts.cdnfonts.com/css/tiresias-pcfont');
+#accessibility {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  max-width: min-content;
+  min-width: 330px;
+}
+.accessibility-panel {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  padding: 5px;
+  background-color: var(--modal-bg-color);
+  color: black;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
+  border-radius: 6px;
+  text-align: center;
+}
+.accessibility-main {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.accessibility-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.accessibility-btn {
+  width: 135px;
+  height: 135px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px;
+  margin: 4px;
+}
+@media (max-width: 600px) {
+  #accessibility {
+    max-width: 280px;
+    min-width: 280px;
+  }
+  .accessibility-btn {
+    width: 120px;
+    height: 100px;
+  }
+}
+.accessibility-btn h4 {
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.accessibility-icon {
+  font-size: x-large;
+}
+.reset-btn {
+  border-radius: 45px;
+  padding: 10px;
+  cursor: pointer;
+  display: none;
+  flex-direction: column;
+}
+.reset-btn h4 {
+  font-size: small;
+}
+.invert-colors {
+  filter: invert(1);
+  overflow: hidden;
+}
+.grey-colors {
+  filter: grayscale(1);
+  overflow: hidden;
+}
+.saturation-colors-low {
+  filter: saturate(0.5);
+}
+.saturation-colors-high {
+  filter: saturate(2);
+}
+.readable-font {
+  font-family: "Lexend", sans-serif !important;
+}
+.dyslexic-font {
+  font-family: 'Open-Dyslexic', sans-serif;
+}
+.tiresias-font {
+  font-family: "Tiresias PCfont", sans-serif !important;
+}
+.font-size18 {
+  font-size: 18px;
+}
+.font-size20 {
+  font-size: 20px;
+}
+.uppercase-text {
+  text-transform: uppercase !important;
+}
+.horizontal-space {
+  letter-spacing: 2px;
+  word-spacing: 2px;
+}
+/* Clases para ajustar el interlineado */
+.line-height1-5 {
+  line-height: 1.5 !important;
+}
+.line-height2 {
+  line-height: 2 !important;
+}
+.big-cursor, .big-cursor * {
+  cursor: url('data:image/svg+xml;utf8,<svg width="50" height="50" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M20.5056 10.7754C21.1225 10.5355 21.431 10.4155 21.5176 10.2459C21.5926 10.099 21.5903 9.92446 21.5115 9.77954C21.4205 9.61226 21.109 9.50044 20.486 9.2768L4.59629 3.5728C4.0866 3.38983 3.83175 3.29835 3.66514 3.35605C3.52029 3.40621 3.40645 3.52004 3.35629 3.6649C3.29859 3.8315 3.39008 4.08635 3.57304 4.59605L9.277 20.4858C9.50064 21.1088 9.61246 21.4203 9.77973 21.5113C9.92465 21.5901 10.0991 21.5924 10.2461 21.5174C10.4157 21.4308 10.5356 21.1223 10.7756 20.5054L13.3724 13.8278C13.4194 13.707 13.4429 13.6466 13.4792 13.5957C13.5114 13.5506 13.5508 13.5112 13.5959 13.479C13.6468 13.4427 13.7072 13.4192 13.828 13.3722L20.5056 10.7754Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 2 2, auto !important;
+}

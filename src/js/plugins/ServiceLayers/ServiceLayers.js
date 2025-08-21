@@ -118,7 +118,7 @@ class ServiceLayers{
     
         return {
             host: a.origin + a.pathname,
-            capability: a.origin + a.pathname + '?service=wms&request=GetCapabilities'
+            capability: a.origin + a.pathname + '?service=WMS&request=GetCapabilities'
         }
     }
 }

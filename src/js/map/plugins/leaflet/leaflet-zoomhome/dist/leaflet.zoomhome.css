@@ -1,14 +1,34 @@
 .leaflet-control-zoomhome a {
-  font: bold 18px "Lucida Console", Monaco, monospace;
+  font:
+    bold 18px "Lucida Console",
+    Monaco,
+    monospace;
 }
-
 a.leaflet-control-zoomhome-in,
 a.leaflet-control-zoomhome-out {
   font-size: 1.5em;
   line-height: 26px;
   color: #000 !important;
 }
-
 .leaflet-control-zoomhome a:not(.leaflet-control-zoomhome-out) {
   border-bottom: 1px solid #ccc !important;
+}
+a.leaflet-control-zoomhome-home {
+  display: flex;
+}
+.zoom-home-icon {
+  display: inline-block;
+}
+.zoom-home-icon .fas {
+  display: none;
+  font-size: 15px;
+}
+.zoom-home-icon:hover .fas {
+  display: inline;
+}
+.zoom-home-icon .zoom-home-text {
+  display: inline;
+}
+.zoom-home-icon:hover .zoom-home-text {
+  display: none;
 }

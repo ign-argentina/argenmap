@@ -3,25 +3,28 @@
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
-  width: 400px;
-  height: auto;
-  background-color: #f6f6f6ee;
+  padding: 10px;
+  background-color: var(--modal-bg-color);
   color: black;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 65%);
   border-radius: 6px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
+}
+#help-tour {
+  overflow: auto;
+  position: relative;
+  margin: 0.5rem;
+  max-height: 80vh;
+  border: 0;
+  border-radius: 6px;
+  max-width: 320px;
 }
 .initModalBtn {
   display: flex;
   justify-content: space-around;
   width: 100%;
 }
-.initModal p {
+.initModal p, .initModal h3 {
   text-align: center;
+  color: var(--menu-text-color-hover);
 }
 .stop-scroll {
   overflow: hidden;
@@ -57,7 +60,7 @@
   padding: 10px;
   margin: 0 !important;
 }
-#tooltip-helper-active-description-text>div {
+#tooltip-helper-active-description-text > div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -70,12 +73,12 @@
   align-items: center;
   padding: 10px;
 }
-.tooltip-helper-footer>div {
+.tooltip-helper-footer > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.tooltip-helper-footer>button {
+.tooltip-helper-footer > button {
   width: auto;
 }
 .tooltip-helper-active {
