@@ -100,6 +100,10 @@ class Geoprocessing {
       //Close geoprocess window and clear
       this.closeModal();
     };
+    btnclose.ontouchstart = (e) => {
+      e.preventDefault();
+      this.closeModal();
+    };
     s_sec.append(btnclose);
 
     mainIcons.append(f_sec);

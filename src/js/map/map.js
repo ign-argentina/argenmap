@@ -1421,6 +1421,10 @@ $("body").on("pluginLoad", function (event, plugin) {
             btncloseWrapper.onclick = () => {
               wrapper.remove();
             };
+            // Soporte para pantallas táctiles
+            btncloseWrapper.addEventListener("touchstart", () => {
+              wrapper.remove();
+            });
             wrapper.appendChild(btncloseWrapper);
 
             const measurement = document.createElement("div");
