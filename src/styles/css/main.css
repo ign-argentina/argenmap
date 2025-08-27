@@ -629,6 +629,8 @@ div.leaflet-top.leaflet-left {
   font-weight: normal;
   border: 2px solid var(--btn-secondary-color);
   border-bottom: 0;
+  color: var(--btn-secondary-color) !important;
+  font-weight: 600;
 }
 
 .nav-tabs>li.active>a,
@@ -641,9 +643,10 @@ div.leaflet-top.leaflet-left {
 }
 
 .nav-tabs>li.active>a:hover {
-  color: white;
+  color: white !important;
   border: 2px solid var(--active-bg-color);
   border-bottom: 0;
+  font-weight: 600;
 }
 
 .tab-content {
@@ -748,6 +751,11 @@ li.active>div>a {
   user-select: none;
   font-size: var(--group-title-fnt-size, 15px);
   font-weight: bolder;
+}
+
+a.item-group-title:hover {
+  text-decoration: none;
+  color: var(--layer-btn-hover-color);
 }
 
 #Archivos-a, #Dibujos-a, #Geoprocesos-a {
@@ -1085,6 +1093,12 @@ a.leaflet-control-zoomhome-in, a.leaflet-control-zoomhome-out {
   border-width: 1px;
   margin-top: 7px;
   transition: 0.2s;
+}
+
+.popup-btn:hover {
+  background-color: var(--btn-secondary-color);
+  color: var(--btn-hover-color);
+  border: solid 1px var(--btn-secondary-color);
 }
 
 .popup-btn-text {

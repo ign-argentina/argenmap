@@ -22,7 +22,7 @@ class StylesUI {
       background-color: var(--primary-color);
     }
     a {
-      color: var(--menu-text-color) !important;
+      color: var(--menu-text-color);
     }
     a:hover {
       color: var(--menu-text-color-hover);
@@ -110,6 +110,7 @@ class StylesUI {
       logoText.href = app.logoText.link ?? "";
       logoText.title = app.logoText.title ?? "";
       logoText.target = "_blank";
+      logoText.style.color = app.theme.textMenu;
     }
 
     document.head.appendChild(style);

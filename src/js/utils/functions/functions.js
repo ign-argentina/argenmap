@@ -633,7 +633,7 @@ function loadTemplateStyleConfig(template, isDefaultTemplate) {
       : "src/config/styles/css/main.css";
     $("head").append(`<link rel="stylesheet" href=${STYLE_PATH}>`);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
@@ -1620,7 +1620,8 @@ function createLayerByType(geoJSON, groupName) {
   if (type === "multipolygon") {
     layer = createLayerMultilinestring(geoJSON, layer);
   }
-  console.log(geoJSON.properties.type)
+  /* Guardar propiedades de editable label */
+  /* console.log(geoJSON.properties.type) */
   if (geoJSON.properties.type !== "label") {
     layer.id = groupName;
     layer.data = { geoJSON };
@@ -1767,7 +1768,6 @@ function createLayerForPoint(geoJSON, groupName, layer, options) {
       layer = L.marker(invertedCoords);
       layer.type = "marker";
       setDefaultMarkerStyles(layer, geoJSON);
-      console.log(layer)
       return layer;
     }
     if (geoJsonType === "label") {

@@ -30,7 +30,7 @@
 }
 #btnclose-icon-modalfile {
   text-align: right;
-  width: 5%;
+  /* width: 5%; */
 }
 .icon-modalfile {
   display: inline-block;
