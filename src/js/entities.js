@@ -4101,6 +4101,17 @@ class Menu_UI {
     layer_item.id = "srvcLyr-" + id + textName;
     layer_item.className = "file-layer";
 
+    // add default layer options if not defined in layer definition ASAP
+    if (!layer.version) {
+      layer.version = "1.3.0";
+    }
+
+    //console.log(layer);
+
+    if (!layer.featureInfoFormat) {
+      layer.featureInfoFormat = "application/json";
+    }
+
     if (!layer.legend) {
       layer.legend =
         layer.host +
