@@ -4202,12 +4202,13 @@ class Menu_UI {
     if (!btn) {
       let btnHtml = `<li id="${id}" onclick="window.open('${link}', '_blank');" class="list-group-item menu-button" style="cursor: pointer; padding: 10px 1px;"><div class="capa-title"><div class="name-layer" style="align-self: center;"><a href="#"><span data-toggle2="tooltip" title="${title}">${text}</span></a></div><div class="zoom-layer" style="align-self: center;"><i class="fas fa-external-link" title="Abrir link"></i></div></div></li>`;
 
-      let menuItems = document.getElementById("sidebar"); //document.getElementsByClassName('menu5 panel-default');
+      let menuItems = document.getElementById("sidebar");
       if (location === "top") {
-        menuItems.insertAdjacentHTML("beforebegin", btnHtml);
+        const searchBar = document.getElementById("searchForm");
+        searchBar.insertAdjacentHTML("afterend", btnHtml); // It is removed after searching a layer in the search layer form
       }
       if (location === "bottom") {
-        menuItems.insertAdjacentHTML("afterend", btnHtml);
+        menuItems.insertAdjacentHTML("beforend", btnHtml);
       }
     }
   }
