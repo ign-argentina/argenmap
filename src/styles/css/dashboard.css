@@ -3,7 +3,6 @@
  * Hide default border to remove 1px line.
  */
 .navbar-fixed-top {
-  /* position: sticky; */
   margin: 0;
   border: 0;
   height: 50px;
@@ -11,13 +10,10 @@
   border-radius: 6px;
   min-width: 380px;
   width: fit-content;
-;
-  /*   max-width: 550px; */
 }
 
 @media (max-width: 915px) {
   .navbar-fixed-top {
-    /* max-width: fit-content; */
     width: auto;
     min-width: fit-content;
   }

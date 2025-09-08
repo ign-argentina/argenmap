@@ -77,29 +77,7 @@ Ejemplos:
   src: url("../../../dist/fonts/fa-solid-900.woff2");
 }
 
-@font-face {
-  font-family: "Star Wars Jedi";
-  src: url("../../../dist/fonts/Starjedi-Regular.ttf");
-}
 
-@font-face {
-  font-family: "Aurebesh";
-  src: url("../../../dist/fonts/Aurebesh.otf");
-}
-
-@font-face {
-  font-family: "Aurebesh Bold";
-  src: url("../../../dist/fonts/Aurebesh-Bold.otf");
-}
-
-/* 
-#0C74A0 #105C97 #3A6EA7 #0094D4 #5BC0DE Colores de prueba
-#0091CE #F38A00 Logo IGN
-#37bbec MapaMuni
-#157DB9#0094d4 Color institucional 2024
-#0db2e0 Color institucional 2023
-#242C4F #45659D #E7BA61 Paleta Manual de marca Presi 2024
-*/
 :root {
   --primary-color: #3a6ea7;
   --secondary-color: #0094d4;
@@ -117,9 +95,7 @@ Ejemplos:
   --layer-cont-fnt-size: 11px;
   --layer-border-color: 1px solid #ddd;
   --menu-section-hover-color: #e7e7e7;
-  /*#969393 #AAAAAA*/
   --layer-btn-hover-color: #e7e7e7;
-  /*#d1cccc  */
   --main-font-family: "Encode Sans", sans-serif;
   --modal-bg-color: #ffffffbb;
   /*Argenmap ui Button*/
@@ -131,11 +107,8 @@ Ejemplos:
   --btn-primary-color: var(--primary-color);
   --btn-secondary-color: var(--secondary-color);
   --btn-disabled-color: #838788;
-  /* #AAAAAA */
   --btn-confirm-color: #336337;
-    /* #33B560  #3A8555 #448148*/
   --btn-danger-color: var(--danger-color);
-    /*#CE4946 #EF4D3D #c62828*/
   /*Argenmap ui input text */
   --input-text-ftn-size: 14px;
   --input-text-bg-color: #fff;
@@ -178,12 +151,9 @@ body {
   z-index: 1;
   position: absolute;
   width: 0;
-  /*   height:100%; */
   overflow-y: hidden;
   opacity: 0.9;
   transition: all 0.5s;
-  /* 	display:flex;
-	align-items:center; */
 }
 
 /* Main Content */

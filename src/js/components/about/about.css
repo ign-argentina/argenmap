@@ -94,43 +94,6 @@
 .even-function {
   background-color: #d0e7f1;
 }
-/*
-.contributor-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    overflow-x: hidden;
-    justify-content: space-around;
-    align-items: center;
-    justify-items: center;
-    gap: 5px;
-}
-.contributor-card {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    background-color: #3074BA;
-    border-radius: 6px;
-    margin-top: 5px;
-    padding: 5px;
-    cursor: pointer;
-    width: 90%;
-    height: 50px;
-    font-size: 11px;
-}
-.contributor-card:hover {
-    background-color: #1a4570;
-    transition: 200ms;
-}
-.contributor-img {
-    border-radius: 4px;
-    object-fit: cover;
-    width: 40px;
-}
-.contributor-user {
-    margin-top: 10px;
-    margin-left: 2px;
-    color: white;
-} */
 #link-to-repo {
   width: 170px;
 }
