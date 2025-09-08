@@ -9,7 +9,7 @@ function addAnalytics(analytics_ids) {
         }
         gtag("js", new Date());
         gtag("config", id);
-      }
+      },
     );
   });
 }

@@ -48,7 +48,7 @@ class EditableLabel {
       const controlDiv = L.DomUtil.create("div", "leaflet-bar leaflet-control");
       const controlUI = L.DomUtil.create(
         "a",
-        "leaflet-editable-label leaflet-editable-label-interior center-flex"
+        "leaflet-editable-label leaflet-editable-label-interior center-flex",
       );
       controlDiv.appendChild(controlUI);
 
@@ -105,7 +105,13 @@ class EditableLabel {
     this._configureTextLayer(textLayer, name);
 
     this._addLayerToMap(textLayer);
-    addLayerToDrawingsGroup(textLayer.name, textLayer, "Dibujos", "dibujos", "dibujos");
+    addLayerToDrawingsGroup(
+      textLayer.name,
+      textLayer,
+      "Dibujos",
+      "dibujos",
+      "dibujos",
+    );
     textarea.focus();
     this.deactivate();
   }
@@ -128,7 +134,7 @@ class EditableLabel {
     borderColor,
     backgroundColor,
     color,
-    id
+    id,
   ) {
     let name = this._generateLabelName();
 
@@ -181,7 +187,7 @@ class EditableLabel {
    * @param {Object} [styles={}] - The styles to apply to the textarea.
    * @returns {HTMLTextAreaElement} - The created textarea element.
    */
-  _createTextarea(name, text = '', styles = {}) {
+  _createTextarea(name, text = "", styles = {}) {
     const textarea = document.createElement("textarea");
     textarea.name = name;
     textarea.autocomplete = "off";
@@ -211,7 +217,7 @@ class EditableLabel {
    * @param {string} [text=''] - The initial text content.
    * @param {string} [id] - The ID of the layer group to which the label belongs.
    */
-  _configureTextLayer(textLayer, name, text = '', id) {
+  _configureTextLayer(textLayer, name, text = "", id) {
     textLayer.name = name;
     textLayer.type = "label";
     textLayer.data = textLayer.toGeoJSON();
@@ -227,7 +233,9 @@ class EditableLabel {
     const textarea = textLayer.options.icon.options.html;
 
     textarea.onkeyup = () => {
-      textLayer.data.geoJSON ? textLayer.data.geoJSON.properties.text = textarea.value : textLayer.data.properties.text = textarea.value;
+      textLayer.data.geoJSON
+        ? (textLayer.data.geoJSON.properties.text = textarea.value)
+        : (textLayer.data.properties.text = textarea.value);
       textLayer._icon.lastChild.textContent = textarea.value;
     };
 
@@ -237,11 +245,10 @@ class EditableLabel {
 
     textLayer.downloadGeoJSON = () => {
       mapa.downloadLayerGeoJSON(
-        mapa.editableLayers["label"].find((lyr) => lyr.name === textLayer.name)
+        mapa.editableLayers["label"].find((lyr) => lyr.name === textLayer.name),
       );
     };
   }
-
 
   /**
    * @private
@@ -302,6 +309,8 @@ class EditableLabel {
       controlIcon.classList.add("icon-text");
     }
 
-    control.title = controlIcon.classList.contains("redIcon") ? "Desactivar" : this.title;
+    control.title = controlIcon.classList.contains("redIcon")
+      ? "Desactivar"
+      : this.title;
   }
 }

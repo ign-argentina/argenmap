@@ -104,9 +104,7 @@ const app = {
       }
     } catch (error) {
       if (app.profiles == undefined) {
-        console.warn(
-          "Profiles attribute isn't defined in configuration file.",
-        );
+        console.warn("Profiles attribute isn't defined in configuration file.");
       } else {
         console.error(error);
       }
@@ -186,7 +184,11 @@ const app = {
         item.capas.forEach((layer, index) => {
           gestorMenu.setAvailableBaseLayer(layer.nombre);
           const capa = this.createCapa(layer);
-          const basemap = this.createBasemapItem(capa, item.seccion + index, layer);
+          const basemap = this.createBasemapItem(
+            capa,
+            item.seccion + index,
+            layer,
+          );
 
           this.setBasemapProperties(basemap, layer);
           groupAux.setItem(basemap);
@@ -296,7 +298,7 @@ const app = {
       gestorMenu.setBasemapSelected(basemap.id);
     }
 
-    // Sets the 'printer', which creates its menu button 
+    // Sets the 'printer', which creates its menu button
     const impresorItemCapaBase = new ImpresorItemCapaBaseHTML();
 
     basemap.setImpresor(impresorItemCapaBase);
@@ -325,13 +327,17 @@ const app = {
         const listType = tab.listType || "default";
 
         const customizedLayers = item.customize_layers || "";
-        const featureInfoFormat = item.feature_info_format || "application/json";
+        const featureInfoFormat =
+          item.feature_info_format || "application/json";
 
         // Mantener impresorGroupTemp inicializado como ImpresorGrupoHTML
         let impresorGroupTemp = new ImpresorGrupoHTML();
 
         const profile = app.profiles[app.profile];
-        const matchItemProfile = profile.data.length === 0 ? "" : app.profiles[app.profile].data.find(e => e === item.class);
+        const matchItemProfile =
+          profile.data.length === 0
+            ? ""
+            : app.profiles[app.profile].data.find((e) => e === item.class);
 
         if (matchItemProfile !== undefined) {
           if (!item.tab) {
@@ -416,7 +422,10 @@ const app = {
               break;
 
             default:
-              console.warn("El parámetro 'type' no está configurado para la fuente:", item.host);
+              console.warn(
+                "El parámetro 'type' no está configurado para la fuente:",
+                item.host,
+              );
           }
         }
       }
@@ -496,7 +505,7 @@ const app = {
 
 class Module {
   constructor(scriptUrl, type, target) {
-    (this.scriptUrl = scriptUrl), (this.type = type), (this.target = target);
+    ((this.scriptUrl = scriptUrl), (this.type = type), (this.target = target));
   }
 }
 
@@ -533,7 +542,7 @@ async function getJson(url) {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      let errorMsg = `${response.url.split("/").at(-1)} ${response.statusText.toLowerCase()}`
+      let errorMsg = `${response.url.split("/").at(-1)} ${response.statusText.toLowerCase()}`;
       new UserMessage(errorMsg, true, "warning");
       // throw new Error(`Response status: ${response.statusText}`);
     }
@@ -552,7 +561,10 @@ async function getPreferences(preferencesURL, load = false) {
    * process each object with specialized methods
    */
   let preferences = null;
-  if (typeof preferencesURL === "object" && preferencesURL.hasOwnProperty("title")) {
+  if (
+    typeof preferencesURL === "object" &&
+    preferencesURL.hasOwnProperty("title")
+  ) {
     preferences = preferencesURL;
   } else {
     preferences = await getJson(preferencesURL);
@@ -674,7 +686,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     //Load dynamic mapa.js
     app.template_id = template;
     if (!app.dependencies.map) {
-      $.getScript(`src/js/map/map.js`, (res) => { });
+      $.getScript(`src/js/map/map.js`, (res) => {});
       app.dependencies.map = true;
     }
 
@@ -712,9 +724,9 @@ async function loadTemplate(data, isDefaultTemplate) {
         mapa.on("moveend", () => {
           urlInteraction.center = mapa.getCenter();
         });
-        
+
         if (urlInteraction.markers.length > 0) {
-          urlInteraction.markers.forEach(marker => {
+          urlInteraction.markers.forEach((marker) => {
             L.marker([marker.latitude, marker.longitude]).addTo(mapa);
           });
         }

@@ -91,7 +91,10 @@ function getPopupForWMS(isActive) {
   activeLayerNames.forEach((layerName) => {
     Object.values(gestorMenu.items).forEach((item) => {
       Object.values(item.itemsComposite).forEach((itemComposite) => {
-        if (layerName === itemComposite.nombre && !activeLayers.includes(itemComposite)) {
+        if (
+          layerName === itemComposite.nombre &&
+          !activeLayers.includes(itemComposite)
+        ) {
           activeLayers.push(itemComposite);
         }
       });
@@ -133,7 +136,8 @@ function getPopupForWMS(isActive) {
  * @param {string} lyrType - The type of layer (either "lyrJoin" or "singleLyr").
  */
 function toggleLayerPopup(item, isActive, lyrType) {
-  const layerName = lyrType === "lyrJoin" ? item.capas[1].nombre : item.capa.nombre;
+  const layerName =
+    lyrType === "lyrJoin" ? item.capas[1].nombre : item.capa.nombre;
 
   if (overlayMaps[layerName]) {
     overlayMaps[layerName].removeFrom(mapa);
@@ -163,21 +167,31 @@ function createImportWmsLayer(layer) {
         let infoParsed;
         switch (this.options.INFO_FORMAT) {
           case "application/json":
-            if (info.trim().startsWith('{') || info.trim().startsWith('[')) {
-              infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
-            } else if (info.trim().startsWith('<')) {
-              infoParsed = parseFeatureInfoXML(info, popupInfo.length, this.options.title);
+            if (info.trim().startsWith("{") || info.trim().startsWith("[")) {
+              infoParsed = parseFeatureInfoJSON(
+                info,
+                popupInfo.length,
+                this.options.title,
+              );
+            } else if (info.trim().startsWith("<")) {
+              infoParsed = parseFeatureInfoXML(
+                info,
+                popupInfo.length,
+                this.options.title,
+              );
             } else {
-              console.warn('Unrecognized data format');
-              infoParsed = '';
+              console.warn("Unrecognized data format");
+              infoParsed = "";
             }
             break;
           case "text/html":
             infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
             break;
           default:
-            console.warn(`Unsupported INFO_FORMAT: ${this.options.INFO_FORMAT}`);
-            infoParsed = '';
+            console.warn(
+              `Unsupported INFO_FORMAT: ${this.options.INFO_FORMAT}`,
+            );
+            infoParsed = "";
         }
         if (infoParsed === "LayerNotQueryable") {
           // If the layer is not queryable, exit function
@@ -192,7 +206,7 @@ function createImportWmsLayer(layer) {
           latlngTmp = latlng;
           this._map.openPopup(
             paginateFeatureInfo(popupInfo, 0, false, true),
-            latlng
+            latlng,
           ); // Display popup with paginated info
           popupInfoPage = 0;
         }
@@ -250,21 +264,31 @@ function createWmsLayer(objLayer) {
         let infoParsed;
         switch (this.options.INFO_FORMAT) {
           case "application/json":
-            if (info.trim().startsWith('{') || info.trim().startsWith('[')) {
-              infoParsed = parseFeatureInfoJSON(info, popupInfo.length, this.options.title);
-            } else if (info.trim().startsWith('<')) {
-              infoParsed = parseFeatureInfoXML(info, popupInfo.length, this.options.title);
+            if (info.trim().startsWith("{") || info.trim().startsWith("[")) {
+              infoParsed = parseFeatureInfoJSON(
+                info,
+                popupInfo.length,
+                this.options.title,
+              );
+            } else if (info.trim().startsWith("<")) {
+              infoParsed = parseFeatureInfoXML(
+                info,
+                popupInfo.length,
+                this.options.title,
+              );
             } else {
-              console.warn('Unrecognized data format');
-              infoParsed = '';
+              console.warn("Unrecognized data format");
+              infoParsed = "";
             }
             break;
           case "text/html":
             infoParsed = parseFeatureInfoHTML(info, popupInfo.length);
             break;
           default:
-            console.warn(`Unsupported INFO_FORMAT: ${this.options.INFO_FORMAT}`);
-            infoParsed = '';
+            console.warn(
+              `Unsupported INFO_FORMAT: ${this.options.INFO_FORMAT}`,
+            );
+            infoParsed = "";
         }
         if (infoParsed === "LayerNotQueryable") {
           // If the layer is not queryable, exit function
@@ -279,7 +303,7 @@ function createWmsLayer(objLayer) {
           latlngTmp = latlng;
           this._map.openPopup(
             paginateFeatureInfo(popupInfo, 0, false, true),
-            latlng
+            latlng,
           ); // Display popup with paginated info
           popupInfoPage = 0;
         }
@@ -307,7 +331,6 @@ function createWmsLayer(objLayer) {
   overlayMaps[layerSelected.nombre]._source.options.identify = true;
 }
 
-
 /**
  * Parses the HTML feature info to display in a popup.
  * @param {string} info - The raw feature info in HTML format.
@@ -319,18 +342,20 @@ function parseFeatureInfoHTML(info, idTxt) {
   let hasList = info.includes("<ul>");
   if (hasList) {
     // Process the list items
-    info = $(info).find("li").each(function () {
-      let [key, value] = $(this).text().split(":");
-      info = info.replace(
-        "<b>" + key + "</b>:",
-        "<b>" + ucwords(key.replace(/_/g, " ")) + ":</b>"
-      );
-    });
+    info = $(info)
+      .find("li")
+      .each(function () {
+        let [key, value] = $(this).text().split(":");
+        info = info.replace(
+          "<b>" + key + "</b>:",
+          "<b>" + ucwords(key.replace(/_/g, " ")) + ":</b>",
+        );
+      });
 
     // Add an ID to the featureInfo class
     info = info.replace(
       'class="featureInfo"',
-      'class="featureInfo" id="featureInfoPopup' + idTxt + '"'
+      'class="featureInfo" id="featureInfoPopup' + idTxt + '"',
     );
 
     return info;
@@ -342,14 +367,13 @@ function parseFeatureInfoHTML(info, idTxt) {
     // Add an ID to the table
     info = info.replace(
       "<table",
-      '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"'
+      '<table class="featureInfo" id="featureInfoPopup' + idTxt + '"',
     );
     return info;
   }
 
   return "";
 }
-
 
 /**
  * Parses the JSON feature info to display in a popup.
@@ -360,7 +384,11 @@ function parseFeatureInfoHTML(info, idTxt) {
  */
 function parseFeatureInfoJSON(info, idTxt, title) {
   // Check if the layer is not queryable or no layers were specified
-  if (info.includes("Either no layer was queryable, or no layers were specified using QUERY_LAYERS")) {
+  if (
+    info.includes(
+      "Either no layer was queryable, or no layers were specified using QUERY_LAYERS",
+    )
+  ) {
     return "LayerNotQueryable";
   }
 
@@ -397,32 +425,34 @@ function createFeatureInfoHTML(features, idTxt, title) {
   let infoAux = '<div class="featureInfo" id="featureInfoPopup' + idTxt + '">';
   infoAux += '<div class="featureGroup">';
   infoAux += '<div style="/*padding:1em*/" class="individualFeature">';
-  infoAux += '<div class="individualFeatureTitle" class="individualFeatureTitle" style="border-top:1px solid gray;">' + title + '</div>';
-  infoAux += '<ul>';
+  infoAux +=
+    '<div class="individualFeatureTitle" class="individualFeatureTitle" style="border-top:1px solid gray;">' +
+    title +
+    "</div>";
+  infoAux += "<ul>";
 
-  features.forEach(feature => {
-    Object.keys(feature.properties).forEach(key => {
+  features.forEach((feature) => {
+    Object.keys(feature.properties).forEach((key) => {
       if (key !== "bbox" && !templateFeatureInfoFieldException.includes(key)) {
-        infoAux += '<li>';
-        infoAux += '<b>' + ucwords(key.replace(/_/g, " ")) + ':</b>';
+        infoAux += "<li>";
+        infoAux += "<b>" + ucwords(key.replace(/_/g, " ")) + ":</b>";
         if (feature.properties[key] != null) {
-          infoAux += '<span>' + feature.properties[key] + '</span>';
+          infoAux += "<span>" + feature.properties[key] + "</span>";
         }
-        infoAux += '</li>';
+        infoAux += "</li>";
       }
     });
   });
 
-  infoAux += '</ul>';
-  infoAux += '</div></div></div>';
+  infoAux += "</ul>";
+  infoAux += "</div></div></div>";
 
   return infoAux;
 }
 
-
 /**
  * Parses FeatureInfo XML and generates HTML to display in a popup.
- * 
+ *
  * @param {string} info - The XML string containing FeatureInfo.
  * @param {string} idTxt - The unique identifier for the popup element.
  * @param {string} title - The title to display in the popup.
@@ -463,7 +493,7 @@ function parseFeatureInfoXML(info, idTxt, title) {
       infoAux += `
               <li>
                   <b>${formattedName}:</b>
-                  <span>${attrValue ?? ''}</span>
+                  <span>${attrValue ?? ""}</span>
               </li>
           `;
     }
@@ -485,7 +515,7 @@ function parseFeatureInfoXML(info, idTxt, title) {
  */
 function ucwords(str) {
   // Check if the input is not empty and is a string
-  if (typeof str !== 'string' || str.length === 0) {
+  if (typeof str !== "string" || str.length === 0) {
     return str; // Return as is if it's not a string or empty
   }
 

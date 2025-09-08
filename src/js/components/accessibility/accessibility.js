@@ -36,7 +36,7 @@ void main() {
   );
   gl_FragColor = colorMatrix * color;
 }
-`
+`,
 };
 
 /**
@@ -44,7 +44,6 @@ void main() {
  * @description Class to manage accessibility features for a webpage.
  */
 class Accessibility {
-
   constructor() {
     // Define initial states for accessibility features
     this.fontSizeState = 1; // Tracks the current font size state (0: Default, 1: 18px, 2: 20px)
@@ -59,7 +58,6 @@ class Accessibility {
     if (!this.map) {
       this.map = mapa; // Replace 'map' with the actual ID of your map container
     }
-
 
     // CSS selectors for elements to apply font classes
     this.fontElements = `
@@ -106,15 +104,16 @@ class Accessibility {
     this.lineHeight = this.lineHeight.bind(this);
     this.resetLineHeight = this.resetLineHeight.bind(this);
     this.applyColorBlindnessFilter = this.applyColorBlindnessFilter.bind(this);
-    this.removeColorBlindnessFilter = this.removeColorBlindnessFilter.bind(this);
+    this.removeColorBlindnessFilter =
+      this.removeColorBlindnessFilter.bind(this);
     this.colorBlindness = this.colorBlindness.bind(this);
     this.resetColorBlindness = this.resetColorBlindness.bind(this);
     this.toggleBigCursor = this.toggleBigCursor.bind(this);
     this.resetBigCursor = this.resetBigCursor.bind(this);
 
     this.resetAllAccessibility = this.resetAllAccessibility.bind(this);
-    this.toggleResetButtonVisibility = this.toggleResetButtonVisibility.bind(this);
-
+    this.toggleResetButtonVisibility =
+      this.toggleResetButtonVisibility.bind(this);
   }
 
   /**
@@ -123,19 +122,45 @@ class Accessibility {
    */
   createComponent() {
     // Create the main accessibility panel container
-    const accessibilityPanel = this.createElement("div", "accessibilityPanel", "accessibility-panel");
-    const accessibilityHeader = this.createElement("div", "accessibilityHeader", "accessibility-header");
+    const accessibilityPanel = this.createElement(
+      "div",
+      "accessibilityPanel",
+      "accessibility-panel",
+    );
+    const accessibilityHeader = this.createElement(
+      "div",
+      "accessibilityHeader",
+      "accessibility-header",
+    );
 
     // Create and append the title
-    const accessibilityTitle = this.createElement("h3", "accessibilityTitle", "accessibility-title", "Accesibilidad");
+    const accessibilityTitle = this.createElement(
+      "h3",
+      "accessibilityTitle",
+      "accessibility-title",
+      "Accesibilidad",
+    );
 
     // Create and append the reset button
-    const resetButton = this.createAccessibilityButton("Restaurar", "resetAccessibility", "fa-solid fa-undo", this.resetAllAccessibility);
-    resetButton.classList.remove('accessibility-btn', 'ag-btn-secondary');
-    resetButton.classList.add('reset-btn', 'ag-btn-danger');
-    resetButton.setAttribute('title', 'Restaurar configuración de accesibilidad');
-    resetButton.setAttribute('aria-label', 'Restaurar configuración de accesibilidad');
-    resetButton.addEventListener('click', () => this.toggleResetButtonVisibility(resetButton));
+    const resetButton = this.createAccessibilityButton(
+      "Restaurar",
+      "resetAccessibility",
+      "fa-solid fa-undo",
+      this.resetAllAccessibility,
+    );
+    resetButton.classList.remove("accessibility-btn", "ag-btn-secondary");
+    resetButton.classList.add("reset-btn", "ag-btn-danger");
+    resetButton.setAttribute(
+      "title",
+      "Restaurar configuración de accesibilidad",
+    );
+    resetButton.setAttribute(
+      "aria-label",
+      "Restaurar configuración de accesibilidad",
+    );
+    resetButton.addEventListener("click", () =>
+      this.toggleResetButtonVisibility(resetButton),
+    );
 
     // Append the title and reset button to the header
     accessibilityHeader.appendChild(accessibilityTitle);
@@ -143,29 +168,93 @@ class Accessibility {
     accessibilityPanel.appendChild(accessibilityHeader);
 
     // Create the container for accessibility buttons
-    const accessibilityMain = this.createElement("div", "accessibilityMain", "accessibility-main");
+    const accessibilityMain = this.createElement(
+      "div",
+      "accessibilityMain",
+      "accessibility-main",
+    );
 
     // Define accessibility features with titles, IDs, icons, and actions
     const accessibilityFeatures = [
-      { title: "Tamaño de fuente", id: "fontSize", icon: "fa-solid fa-text-height", action: this.changeFontSize },
-      { title: "Invertir colores", id: "invertColors", icon: "fa-solid fa-circle-half-stroke", action: this.invertColors },
-      { title: "Escala de grises", id: "grey", icon: "fa-solid fa-barcode", action: this.greyColors },
-      { title: "Saturación", id: "saturation", icon: "fa-solid fa-palette", action: this.saturationColors },
-      { title: "Alternar fuentes legibles", id: "readableFont", icon: "fa-solid fa-font", action: this.readableFont },
-      { title: "Contraste", id: "contrast", icon: "fa-solid fa-lightbulb", action: this.contrast },
-      { title: "Mayúsculas", id: "toUpperCase", icon: "fa-solid fa-m", action: this.toUpperCase },
-      { title: "Espacio horizontal", id: "horizontalSpace", icon: "fa-solid fa-left-right", action: this.horizontalSpace },
-      { title: "Espaciado de líneas", id: "lineHeight", icon: "fa-solid fa-up-down", action: this.lineHeight },
-      { title: "Filtros para daltonismo", id: "colorBlindness", icon: "fa-solid fa-eye", action: this.colorBlindness },
-      { title: "Cursor grande", id: "bigCursor", icon: "fa-solid fa-mouse-pointer", action: this.toggleBigCursor }
+      {
+        title: "Tamaño de fuente",
+        id: "fontSize",
+        icon: "fa-solid fa-text-height",
+        action: this.changeFontSize,
+      },
+      {
+        title: "Invertir colores",
+        id: "invertColors",
+        icon: "fa-solid fa-circle-half-stroke",
+        action: this.invertColors,
+      },
+      {
+        title: "Escala de grises",
+        id: "grey",
+        icon: "fa-solid fa-barcode",
+        action: this.greyColors,
+      },
+      {
+        title: "Saturación",
+        id: "saturation",
+        icon: "fa-solid fa-palette",
+        action: this.saturationColors,
+      },
+      {
+        title: "Alternar fuentes legibles",
+        id: "readableFont",
+        icon: "fa-solid fa-font",
+        action: this.readableFont,
+      },
+      {
+        title: "Contraste",
+        id: "contrast",
+        icon: "fa-solid fa-lightbulb",
+        action: this.contrast,
+      },
+      {
+        title: "Mayúsculas",
+        id: "toUpperCase",
+        icon: "fa-solid fa-m",
+        action: this.toUpperCase,
+      },
+      {
+        title: "Espacio horizontal",
+        id: "horizontalSpace",
+        icon: "fa-solid fa-left-right",
+        action: this.horizontalSpace,
+      },
+      {
+        title: "Espaciado de líneas",
+        id: "lineHeight",
+        icon: "fa-solid fa-up-down",
+        action: this.lineHeight,
+      },
+      {
+        title: "Filtros para daltonismo",
+        id: "colorBlindness",
+        icon: "fa-solid fa-eye",
+        action: this.colorBlindness,
+      },
+      {
+        title: "Cursor grande",
+        id: "bigCursor",
+        icon: "fa-solid fa-mouse-pointer",
+        action: this.toggleBigCursor,
+      },
     ];
 
     // Create and append buttons based on accessibility features
-    accessibilityFeatures.forEach(feature => {
-      const button = this.createAccessibilityButton(feature.title, feature.id, feature.icon, feature.action);
+    accessibilityFeatures.forEach((feature) => {
+      const button = this.createAccessibilityButton(
+        feature.title,
+        feature.id,
+        feature.icon,
+        feature.action,
+      );
 
       // Add event listener to each button to check if any button is active
-      button.addEventListener('click', () => {
+      button.addEventListener("click", () => {
         this.toggleResetButtonVisibility(resetButton);
       });
 
@@ -190,18 +279,18 @@ class Accessibility {
    * @param {HTMLElement} resetButton - The reset button element.
    */
   toggleResetButtonVisibility(resetButton) {
-    const buttons = document.querySelectorAll('.accessibility-btn');
+    const buttons = document.querySelectorAll(".accessibility-btn");
     let hasActiveButton = false;
 
     // Check if any button has the 'ag-btn-confirm' class
-    buttons.forEach(button => {
-      if (button.classList.contains('ag-btn-confirm')) {
+    buttons.forEach((button) => {
+      if (button.classList.contains("ag-btn-confirm")) {
         hasActiveButton = true;
       }
     });
 
     // Show the reset button if any button is active, otherwise hide it
-    resetButton.style.display = hasActiveButton ? 'flex' : 'none';
+    resetButton.style.display = hasActiveButton ? "flex" : "none";
   }
 
   /**
@@ -232,12 +321,20 @@ class Accessibility {
    */
   createAccessibilityButton(title, id, icon, action) {
     // Create the button container
-    const button = this.createElement("div", `${id}-btn`, "ag-btn ag-btn-secondary accessibility-btn");
+    const button = this.createElement(
+      "div",
+      `${id}-btn`,
+      "ag-btn ag-btn-secondary accessibility-btn",
+    );
     button.setAttribute("title", title);
     button.setAttribute("aria-label", title);
 
     // Create and append the icon element
-    const iconElement = this.createElement("i", `${id}-icon`, `${icon} accessibility-icon`);
+    const iconElement = this.createElement(
+      "i",
+      `${id}-icon`,
+      `${icon} accessibility-icon`,
+    );
     iconElement.setAttribute("aria-hidden", "true");
     button.appendChild(iconElement);
 
@@ -267,33 +364,51 @@ class Accessibility {
 
     // Define font sizes to alternate between
     const fontSizeOptions = [
-      { class: '', title: "Tamaño de fuente", btnClass: 'ag-btn-secondary' },
-      { class: 'font-size18', title: "Tamaño de fuente 18", btnClass: 'ag-btn-confirm' },
-      { class: 'font-size20', title: "Tamaño de fuente 20", btnClass: 'ag-btn-confirm' }
+      { class: "", title: "Tamaño de fuente", btnClass: "ag-btn-secondary" },
+      {
+        class: "font-size18",
+        title: "Tamaño de fuente 18",
+        btnClass: "ag-btn-confirm",
+      },
+      {
+        class: "font-size20",
+        title: "Tamaño de fuente 20",
+        btnClass: "ag-btn-confirm",
+      },
     ];
 
     // Determine the font size state and corresponding class, title, and button class
-    const { class: classToAdd, title: fontSizeText, btnClass } = fontSizeOptions[this.fontSizeState];
+    const {
+      class: classToAdd,
+      title: fontSizeText,
+      btnClass,
+    } = fontSizeOptions[this.fontSizeState];
 
     // Remove all font size classes from the elements
-    fontSizeElements.forEach(element => {
-      element.classList.remove('font-size18', 'font-size20');
+    fontSizeElements.forEach((element) => {
+      element.classList.remove("font-size18", "font-size20");
     });
 
     // Apply the new font size class if not resetting to the default size
     if (classToAdd) {
-      fontSizeElements.forEach(element => {
+      fontSizeElements.forEach((element) => {
         element.classList.add(classToAdd);
       });
     }
 
     // Update the font size title and button aria-label
     fontSizeTitle.textContent = fontSizeText;
-    fontSizeButton.setAttribute('aria-label', fontSizeText);
+    fontSizeButton.setAttribute("aria-label", fontSizeText);
 
     // Update button appearance based on the current font size state
-    fontSizeButton.classList.toggle('ag-btn-secondary', btnClass === 'ag-btn-secondary');
-    fontSizeButton.classList.toggle('ag-btn-confirm', btnClass === 'ag-btn-confirm');
+    fontSizeButton.classList.toggle(
+      "ag-btn-secondary",
+      btnClass === "ag-btn-secondary",
+    );
+    fontSizeButton.classList.toggle(
+      "ag-btn-confirm",
+      btnClass === "ag-btn-confirm",
+    );
 
     // Cycle the font size state to the next option
     this.fontSizeState = (this.fontSizeState + 1) % fontSizeOptions.length;
@@ -309,14 +424,14 @@ class Accessibility {
     const fontSizeTitle = document.getElementById("fontSize-title");
 
     fontSizeElements.forEach((element) => {
-      element.classList.remove('font-size18', 'font-size20');
+      element.classList.remove("font-size18", "font-size20");
     });
 
-    fontSizeButton.classList.remove('ag-btn-confirm');
-    fontSizeButton.classList.add('ag-btn-secondary');
+    fontSizeButton.classList.remove("ag-btn-confirm");
+    fontSizeButton.classList.add("ag-btn-secondary");
     fontSizeTitle.title = "Tamaño de fuente";
     fontSizeTitle.textContent = "Tamaño de fuente";
-    fontSizeButton.setAttribute('aria-label', "Tamaño de fuente");
+    fontSizeButton.setAttribute("aria-label", "Tamaño de fuente");
     this.fontSizeState = 1;
   }
 
@@ -336,11 +451,11 @@ class Accessibility {
     // Remove other color-related classes and toggle the 'invert-colors' class
     this.resetGreyColors();
     this.resetSaturationColors();
-    body.classList.toggle('invert-colors');
+    body.classList.toggle("invert-colors");
 
     // Toggle button classes for visual indication
-    invertButton.classList.toggle('ag-btn-secondary');
-    invertButton.classList.toggle('ag-btn-confirm');
+    invertButton.classList.toggle("ag-btn-secondary");
+    invertButton.classList.toggle("ag-btn-confirm");
   }
 
   /**
@@ -353,10 +468,10 @@ class Accessibility {
     const invertButton = document.getElementById("invertColors-btn");
 
     // Remove 'invert-colors' class from the body element
-    body.classList.remove('invert-colors');
+    body.classList.remove("invert-colors");
 
     // Update the button's classes to reflect the non-active state
-    invertButton.classList.replace('ag-btn-confirm', 'ag-btn-secondary');
+    invertButton.classList.replace("ag-btn-confirm", "ag-btn-secondary");
 
     // Reset saturation state if specified
     if (resetSaturationState) {
@@ -379,11 +494,11 @@ class Accessibility {
 
     this.resetInvertColors();
     this.resetSaturationColors();
-    body.classList.toggle('grey-colors');
+    body.classList.toggle("grey-colors");
 
     // Toggle button classes for visual indication
-    greyButton.classList.toggle('ag-btn-secondary');
-    greyButton.classList.toggle('ag-btn-confirm');
+    greyButton.classList.toggle("ag-btn-secondary");
+    greyButton.classList.toggle("ag-btn-confirm");
   }
 
   /**
@@ -396,10 +511,10 @@ class Accessibility {
     const greyButton = document.getElementById("grey-btn");
 
     // Remove 'grey-colors' class from the body element
-    body.classList.remove('grey-colors');
+    body.classList.remove("grey-colors");
 
     // Update the button's classes to reflect the non-active state
-    greyButton.classList.replace('ag-btn-confirm', 'ag-btn-secondary');
+    greyButton.classList.replace("ag-btn-confirm", "ag-btn-secondary");
 
     // Reset saturation state if specified
     if (resetSaturationState) {
@@ -417,7 +532,9 @@ class Accessibility {
     const saturationTitle = document.getElementById("saturation-title");
 
     if (!body) {
-      console.warn("Body element not found. Could not toggle saturation classes.");
+      console.warn(
+        "Body element not found. Could not toggle saturation classes.",
+      );
       return;
     }
 
@@ -427,14 +544,26 @@ class Accessibility {
 
     // Define saturation options
     const saturationOptions = [
-      { class: '', title: "Saturación", btnClass: 'ag-btn-secondary' },
-      { class: 'saturation-colors-low', title: "Saturación Baja", btnClass: 'ag-btn-confirm' },
-      { class: 'saturation-colors-high', title: "Saturación Alta", btnClass: 'ag-btn-confirm' }
+      { class: "", title: "Saturación", btnClass: "ag-btn-secondary" },
+      {
+        class: "saturation-colors-low",
+        title: "Saturación Baja",
+        btnClass: "ag-btn-confirm",
+      },
+      {
+        class: "saturation-colors-high",
+        title: "Saturación Alta",
+        btnClass: "ag-btn-confirm",
+      },
     ];
 
     // Determine the current saturation option based on the state
-    const { class: classToAdd, title: saturationText, btnClass } = saturationOptions[this.saturationState];
-    body.classList.remove('saturation-colors-low', 'saturation-colors-high');
+    const {
+      class: classToAdd,
+      title: saturationText,
+      btnClass,
+    } = saturationOptions[this.saturationState];
+    body.classList.remove("saturation-colors-low", "saturation-colors-high");
 
     // Apply the new saturation class if not resetting to normal
     if (classToAdd) {
@@ -443,14 +572,21 @@ class Accessibility {
 
     // Update UI elements for saturation
     saturationTitle.textContent = saturationText;
-    saturationButton.setAttribute('aria-label', saturationText);
+    saturationButton.setAttribute("aria-label", saturationText);
 
     // Toggle button classes based on the new saturation state
-    saturationButton.classList.toggle('ag-btn-secondary', btnClass === 'ag-btn-secondary');
-    saturationButton.classList.toggle('ag-btn-confirm', btnClass === 'ag-btn-confirm');
+    saturationButton.classList.toggle(
+      "ag-btn-secondary",
+      btnClass === "ag-btn-secondary",
+    );
+    saturationButton.classList.toggle(
+      "ag-btn-confirm",
+      btnClass === "ag-btn-confirm",
+    );
 
     // Update the saturation state to cycle through 0, 1, and 2
-    this.saturationState = (this.saturationState + 1) % saturationOptions.length;
+    this.saturationState =
+      (this.saturationState + 1) % saturationOptions.length;
   }
 
   /**
@@ -468,20 +604,19 @@ class Accessibility {
     }
 
     // Remove saturation-related classes from the body element
-    body.classList.remove('saturation-colors-low', 'saturation-colors-high');
+    body.classList.remove("saturation-colors-low", "saturation-colors-high");
 
     // Reset the saturation title text and button attributes
     saturationTitle.textContent = "Saturación";
-    saturationButton.setAttribute('aria-label', "Saturación");
+    saturationButton.setAttribute("aria-label", "Saturación");
 
     // Update button appearance to indicate it is inactive
-    saturationButton.classList.remove('ag-btn-confirm');
-    saturationButton.classList.add('ag-btn-secondary');
+    saturationButton.classList.remove("ag-btn-confirm");
+    saturationButton.classList.add("ag-btn-secondary");
 
     // Reset the saturation state
     this.saturationState = 1;
   }
-
 
   /**
    * @function readableFont
@@ -491,22 +626,46 @@ class Accessibility {
   readableFont() {
     const fontElements = document.querySelectorAll(this.fontElements);
     const readableFontBtn = document.getElementById("readableFont-btn");
-    const btnTitle = document.querySelector('#readableFont-title');
+    const btnTitle = document.querySelector("#readableFont-title");
 
     // Define font classes, titles, and button classes
     const fontOptions = [
-      { class: '', title: 'Alternar fuentes legibles', btnClass: 'ag-btn-secondary' },
-      { class: 'dyslexic-font', title: 'Fuente dislexia', btnClass: 'ag-btn-confirm' },
-      { class: 'tiresias-font', title: 'Fuente baja visión', btnClass: 'ag-btn-confirm' },
-      { class: 'readable-font', title: 'Fuente legible', btnClass: 'ag-btn-confirm' }
+      {
+        class: "",
+        title: "Alternar fuentes legibles",
+        btnClass: "ag-btn-secondary",
+      },
+      {
+        class: "dyslexic-font",
+        title: "Fuente dislexia",
+        btnClass: "ag-btn-confirm",
+      },
+      {
+        class: "tiresias-font",
+        title: "Fuente baja visión",
+        btnClass: "ag-btn-confirm",
+      },
+      {
+        class: "readable-font",
+        title: "Fuente legible",
+        btnClass: "ag-btn-confirm",
+      },
     ];
 
     // Get the current font option based on the state
-    const { class: classToAdd, title: buttonText, btnClass } = fontOptions[this.fontFamilyState];
+    const {
+      class: classToAdd,
+      title: buttonText,
+      btnClass,
+    } = fontOptions[this.fontFamilyState];
 
     // Update the font classes on target elements
     fontElements.forEach((element) => {
-      element.classList.remove('readable-font', 'dyslexic-font', 'tiresias-font');
+      element.classList.remove(
+        "readable-font",
+        "dyslexic-font",
+        "tiresias-font",
+      );
       if (classToAdd) {
         element.classList.add(classToAdd);
       }
@@ -514,10 +673,10 @@ class Accessibility {
 
     // Update the button title and aria-label for accessibility
     btnTitle.textContent = buttonText;
-    readableFontBtn.setAttribute('aria-label', buttonText);
+    readableFontBtn.setAttribute("aria-label", buttonText);
 
     // Update button classes for visual indication
-    readableFontBtn.classList.remove('ag-btn-secondary', 'ag-btn-confirm');
+    readableFontBtn.classList.remove("ag-btn-secondary", "ag-btn-confirm");
     readableFontBtn.classList.add(btnClass);
 
     // Update the font family state to cycle through 0, 1, 2, and 3
@@ -531,16 +690,20 @@ class Accessibility {
   resetReadableFont() {
     const fontElements = document.querySelectorAll(this.fontElements);
     const readableFontBtn = document.getElementById("readableFont-btn");
-    const btnTitle = document.querySelector('#readableFont-title');
+    const btnTitle = document.querySelector("#readableFont-title");
 
     fontElements.forEach((element) => {
-      element.classList.remove('readable-font', 'dyslexic-font', 'tiresias-font');
+      element.classList.remove(
+        "readable-font",
+        "dyslexic-font",
+        "tiresias-font",
+      );
     });
 
-    readableFontBtn.classList.remove('ag-btn-confirm');
-    readableFontBtn.classList.add('ag-btn-secondary');
+    readableFontBtn.classList.remove("ag-btn-confirm");
+    readableFontBtn.classList.add("ag-btn-secondary");
     btnTitle.textContent = "Seleccionar fuente";
-    readableFontBtn.setAttribute('aria-label', "Seleccionar fuente");
+    readableFontBtn.setAttribute("aria-label", "Seleccionar fuente");
     this.fontFamilyState = 1;
   }
 
@@ -556,55 +719,55 @@ class Accessibility {
     const contrastStyles = [
       // Default contrast (no changes)
       {
-        '--primary-color': '',
-        '--secondary-color': '',
-        '--btn-hover-color': '',
-        '--text-color': '',
-        '--lyr-menu-panel-head-text-color': '',
-        '--danger-color': '',
-        '--btn-confirm-color': '',
-        '--active-bg-color': '',
-        '--lyr-menu-bg-color': '',
-        '--menu-text-color': '',
-        '--menu-text-color-hover': '',
-        '--menu-section-hover-color': '',
-        '--modal-bg-color': '',
-        '--hoverSelect-bg-color': ''
+        "--primary-color": "",
+        "--secondary-color": "",
+        "--btn-hover-color": "",
+        "--text-color": "",
+        "--lyr-menu-panel-head-text-color": "",
+        "--danger-color": "",
+        "--btn-confirm-color": "",
+        "--active-bg-color": "",
+        "--lyr-menu-bg-color": "",
+        "--menu-text-color": "",
+        "--menu-text-color-hover": "",
+        "--menu-section-hover-color": "",
+        "--modal-bg-color": "",
+        "--hoverSelect-bg-color": "",
       },
       // Dark contrast
       {
-        '--primary-color': '#000000',
-        '--secondary-color': '#222222',
-        '--btn-hover-color': '#FFFF00',
-        '--text-color': '#FFFF00',
-        '--lyr-menu-panel-head-text-color': '#FFFF00',
-        '--danger-color': '#c62828',
-        '--btn-confirm-color': '#006400',
-        '--active-bg-color': '#228B22',
-        '--lyr-menu-bg-color': '#333333',
-        '--menu-text-color': '#FFFF66',
-        '--menu-text-color-hover': '#FFFF00',
-        '--menu-section-hover-color': '#444444',
-        '--modal-bg-color': '#666666ee',
-        '--hoverSelect-bg-color': '#333333'
+        "--primary-color": "#000000",
+        "--secondary-color": "#222222",
+        "--btn-hover-color": "#FFFF00",
+        "--text-color": "#FFFF00",
+        "--lyr-menu-panel-head-text-color": "#FFFF00",
+        "--danger-color": "#c62828",
+        "--btn-confirm-color": "#006400",
+        "--active-bg-color": "#228B22",
+        "--lyr-menu-bg-color": "#333333",
+        "--menu-text-color": "#FFFF66",
+        "--menu-text-color-hover": "#FFFF00",
+        "--menu-section-hover-color": "#444444",
+        "--modal-bg-color": "#666666ee",
+        "--hoverSelect-bg-color": "#333333",
       },
       // Light contrast
       {
-        '--primary-color': '#bbbbbb',
-        '--secondary-color': '#cccccc',
-        '--btn-hover-color': '#000000',
-        '--text-color': '#000000',
-        '--lyr-menu-panel-head-text-color': '#000000',
-        '--danger-color': '#FA8072',
-        '--btn-confirm-color': '#3CB371',
-        '--active-bg-color': '#33B560',
-        '--lyr-menu-bg-color': '#f5f5f5',
-        '--menu-text-color': '#151515',
-        '--menu-text-color-hover': '#000000',
-        '--menu-section-hover-color': '#eeeeee',
-        '--modal-bg-color': '#aaaaaaee',
-        '--hoverSelect-bg-color': '#f0f0f0'
-      }
+        "--primary-color": "#bbbbbb",
+        "--secondary-color": "#cccccc",
+        "--btn-hover-color": "#000000",
+        "--text-color": "#000000",
+        "--lyr-menu-panel-head-text-color": "#000000",
+        "--danger-color": "#FA8072",
+        "--btn-confirm-color": "#3CB371",
+        "--active-bg-color": "#33B560",
+        "--lyr-menu-bg-color": "#f5f5f5",
+        "--menu-text-color": "#151515",
+        "--menu-text-color-hover": "#000000",
+        "--menu-section-hover-color": "#eeeeee",
+        "--modal-bg-color": "#aaaaaaee",
+        "--hoverSelect-bg-color": "#f0f0f0",
+      },
     ];
 
     // Define the text to display in the button based on the current contrast style
@@ -615,18 +778,21 @@ class Accessibility {
 
     // Update the CSS variables with the selected contrast style
     const selectedStyle = contrastStyles[this.contrastState];
-    Object.keys(selectedStyle).forEach(variable => {
+    Object.keys(selectedStyle).forEach((variable) => {
       root.style.setProperty(variable, selectedStyle[variable]);
     });
 
     // Update UI elements for contrast
     const contrastText = contrastTexts[this.contrastState];
     contrastTitle.textContent = contrastText;
-    contrastButton.setAttribute('aria-label', contrastText);
+    contrastButton.setAttribute("aria-label", contrastText);
 
     // Update button classes based on the contrast state
-    contrastButton.classList.toggle('ag-btn-secondary', this.contrastState === 0);
-    contrastButton.classList.toggle('ag-btn-confirm', this.contrastState > 0);
+    contrastButton.classList.toggle(
+      "ag-btn-secondary",
+      this.contrastState === 0,
+    );
+    contrastButton.classList.toggle("ag-btn-confirm", this.contrastState > 0);
 
     // Cycle through the contrast styles
     this.contrastState = (this.contrastState + 1) % contrastStyles.length;
@@ -645,32 +811,34 @@ class Accessibility {
 
     // List of all custom CSS variables to reset
     const contrastVariables = [
-      '--primary-color',
-      '--secondary-color',
-      '--btn-hover-color',
-      '--text-color',
-      '--lyr-menu-panel-head-text-color',
-      '--danger-color',
-      '--btn-confirm-color',
-      '--active-bg-color',
-      '--lyr-menu-bg-color',
-      '--menu-text-color',
-      '--menu-text-color-hover',
-      '--menu-section-hover-color',
-      '--modal-bg-color',
-      '--hoverSelect-bg-color'
+      "--primary-color",
+      "--secondary-color",
+      "--btn-hover-color",
+      "--text-color",
+      "--lyr-menu-panel-head-text-color",
+      "--danger-color",
+      "--btn-confirm-color",
+      "--active-bg-color",
+      "--lyr-menu-bg-color",
+      "--menu-text-color",
+      "--menu-text-color-hover",
+      "--menu-section-hover-color",
+      "--modal-bg-color",
+      "--hoverSelect-bg-color",
     ];
 
     // Remove each CSS variable from the root element
-    contrastVariables.forEach(variable => root.style.removeProperty(variable));
+    contrastVariables.forEach((variable) =>
+      root.style.removeProperty(variable),
+    );
 
     // Update UI elements for contrast
     contrastTitle.textContent = "Contraste";
-    contrastButton.setAttribute('aria-label', "Contraste");
+    contrastButton.setAttribute("aria-label", "Contraste");
 
     // Toggle button classes to reflect default contrast state
-    contrastButton.classList.remove('ag-btn-confirm');
-    contrastButton.classList.add('ag-btn-secondary');
+    contrastButton.classList.remove("ag-btn-confirm");
+    contrastButton.classList.add("ag-btn-secondary");
 
     // Reset the internal contrast state to default (0)
     this.contrastState = 1;
@@ -691,10 +859,10 @@ class Accessibility {
     }
 
     // Toggle the 'uppercase-text' class on the body to apply uppercase styling
-    body.classList.toggle('uppercase-text');
+    body.classList.toggle("uppercase-text");
 
     // Update the button's visual state to indicate the text transformation state
-    toUpperCaseButton.classList.toggle('ag-btn-confirm');
+    toUpperCaseButton.classList.toggle("ag-btn-confirm");
   }
 
   /**
@@ -712,19 +880,21 @@ class Accessibility {
     }
 
     // Remove the 'uppercase-text' class from the body to reset text to normal
-    body.classList.remove('uppercase-text');
+    body.classList.remove("uppercase-text");
 
     // Update the button's visual state to indicate the reset
-    toUpperCaseButton.classList.remove('ag-btn-confirm');
+    toUpperCaseButton.classList.remove("ag-btn-confirm");
   }
 
   /**
    * @function horizontalSpace
-   * @description Toggles horizontal spacing on the body element by adding/removing a CSS class. 
+   * @description Toggles horizontal spacing on the body element by adding/removing a CSS class.
    */
   horizontalSpace() {
     const body = document.body;
-    const horizontalSpaceButton = document.getElementById("horizontalSpace-btn");
+    const horizontalSpaceButton = document.getElementById(
+      "horizontalSpace-btn",
+    );
 
     // Check if the body element exists
     if (!body) {
@@ -739,19 +909,21 @@ class Accessibility {
     }
 
     // Toggle the 'horizontal-space' class on the body to apply horizontal space
-    body.classList.toggle('horizontal-space');
+    body.classList.toggle("horizontal-space");
 
     // Update the button's visual state to indicate the state of horizontal space
-    horizontalSpaceButton.classList.toggle('ag-btn-confirm');
+    horizontalSpaceButton.classList.toggle("ag-btn-confirm");
   }
 
   /**
    * @function resetHorizontalSpace
-   * @description Resets the horizontal spacing by removing the 'horizontal-space' class from the body element. 
+   * @description Resets the horizontal spacing by removing the 'horizontal-space' class from the body element.
    */
   resetHorizontalSpace() {
     const body = document.body;
-    const horizontalSpaceButton = document.getElementById("horizontalSpace-btn");
+    const horizontalSpaceButton = document.getElementById(
+      "horizontalSpace-btn",
+    );
 
     // Check if the body element exists
     if (!body) {
@@ -766,16 +938,16 @@ class Accessibility {
     }
 
     // Remove the 'horizontal-space' class from the body to reset horizontal spacing
-    body.classList.remove('horizontal-space');
+    body.classList.remove("horizontal-space");
 
     // Update the button's visual state to indicate the reset
-    horizontalSpaceButton.classList.remove('ag-btn-confirm');
+    horizontalSpaceButton.classList.remove("ag-btn-confirm");
   }
 
   /**
- * @function lineHeight
- * @description Changes the line height of the specified elements to improve readability.
- */
+   * @function lineHeight
+   * @description Changes the line height of the specified elements to improve readability.
+   */
   lineHeight() {
     const lineHeightElements = document.querySelectorAll(this.fontElements);
     const lineHeightButton = document.getElementById("lineHeight-btn");
@@ -783,17 +955,29 @@ class Accessibility {
 
     // Define the options for line height
     const lineHeightOptions = [
-      { class: '', title: 'Espaciado de líneas', btnClass: 'ag-btn-secondary' },
-      { class: 'line-height1-5', title: 'Interlineado 1.5', btnClass: 'ag-btn-confirm' },
-      { class: 'line-height2', title: 'Interlineado 2', btnClass: 'ag-btn-confirm' }
+      { class: "", title: "Espaciado de líneas", btnClass: "ag-btn-secondary" },
+      {
+        class: "line-height1-5",
+        title: "Interlineado 1.5",
+        btnClass: "ag-btn-confirm",
+      },
+      {
+        class: "line-height2",
+        title: "Interlineado 2",
+        btnClass: "ag-btn-confirm",
+      },
     ];
 
     // Get the current line height option based on the state
-    const { class: classToAdd, title: buttonText, btnClass } = lineHeightOptions[this.lineHeightState];
+    const {
+      class: classToAdd,
+      title: buttonText,
+      btnClass,
+    } = lineHeightOptions[this.lineHeightState];
 
     // Update the line height classes on target elements
     lineHeightElements.forEach((element) => {
-      element.classList.remove('line-height1-5', 'line-height2');
+      element.classList.remove("line-height1-5", "line-height2");
       if (classToAdd) {
         element.classList.add(classToAdd);
       }
@@ -801,41 +985,42 @@ class Accessibility {
 
     // Update the line height title and button aria-label for accessibility
     lineHeightTitle.textContent = buttonText;
-    lineHeightButton.setAttribute('aria-label', buttonText);
+    lineHeightButton.setAttribute("aria-label", buttonText);
 
     // Update button classes for visual indication
-    lineHeightButton.classList.remove('ag-btn-secondary', 'ag-btn-confirm');
+    lineHeightButton.classList.remove("ag-btn-secondary", "ag-btn-confirm");
     lineHeightButton.classList.add(btnClass);
 
     // Update the line height state to cycle through 0, 1, and 2
-    this.lineHeightState = (this.lineHeightState + 1) % lineHeightOptions.length;
+    this.lineHeightState =
+      (this.lineHeightState + 1) % lineHeightOptions.length;
   }
 
   /**
- * @function resetLineHeight
- * @description Reset the line height to the default value.
- */
+   * @function resetLineHeight
+   * @description Reset the line height to the default value.
+   */
   resetLineHeight() {
     const lineHeightElements = document.querySelectorAll(this.fontElements);
     const lineHeightButton = document.getElementById("lineHeight-btn");
     const lineHeightTitle = document.getElementById("lineHeight-title");
 
     lineHeightElements.forEach((element) => {
-      element.classList.remove('line-height1-5', 'line-height2');
+      element.classList.remove("line-height1-5", "line-height2");
     });
 
-    lineHeightButton.classList.remove('ag-btn-confirm');
-    lineHeightButton.classList.add('ag-btn-secondary');
-    lineHeightTitle.textContent = 'Espaciado de líneas';
-    lineHeightButton.setAttribute('aria-label', 'Espaciado de líneas');
+    lineHeightButton.classList.remove("ag-btn-confirm");
+    lineHeightButton.classList.add("ag-btn-secondary");
+    lineHeightTitle.textContent = "Espaciado de líneas";
+    lineHeightButton.setAttribute("aria-label", "Espaciado de líneas");
     this.lineHeightState = 1;
   }
 
   /**
- * @function applyColorBlindnessFilter
- * @description Aplica un filtro de color para simular diferentes tipos de daltonismo en el mapa.
- * @param {string} type - El tipo de daltonismo ('deuteranomaly', 'protanomaly', 'tritanomaly').
- */
+   * @function applyColorBlindnessFilter
+   * @description Aplica un filtro de color para simular diferentes tipos de daltonismo en el mapa.
+   * @param {string} type - El tipo de daltonismo ('deuteranomaly', 'protanomaly', 'tritanomaly').
+   */
   applyColorBlindnessFilter(type) {
     // Si ya existe una capa de filtro, eliminarla
     if (this.colorFilterLayer) {
@@ -850,13 +1035,16 @@ class Accessibility {
     // Crear una nueva capa con el shader aplicado
     this.colorFilterLayer = L.tileLayer.gl({
       fragmentShader: fragmentShader,
-      tileUrls: [selectedBasemap.host]
+      tileUrls: [selectedBasemap.host],
     });
 
     // Ajustar opciones si es necesario
-    const zIndex = selectedBasemap && selectedBasemap.options && selectedBasemap.options.zIndex
-      ? selectedBasemap.options.zIndex
-      : 1;
+    const zIndex =
+      selectedBasemap &&
+      selectedBasemap.options &&
+      selectedBasemap.options.zIndex
+        ? selectedBasemap.options.zIndex
+        : 1;
 
     this.colorFilterLayer.setZIndex(zIndex);
 
@@ -885,10 +1073,26 @@ class Accessibility {
 
     // Definir los tipos de daltonismo y sus etiquetas
     const types = [
-      { type: null, title: 'Filtros para daltonismo', btnClass: 'ag-btn-secondary' },
-      { type: 'deuteranomaly', title: 'Deuteranomalía', btnClass: 'ag-btn-confirm' },
-      { type: 'protanomaly', title: 'Protanomalía', btnClass: 'ag-btn-confirm' },
-      { type: 'tritanomaly', title: 'Tritanomalía', btnClass: 'ag-btn-confirm' }
+      {
+        type: null,
+        title: "Filtros para daltonismo",
+        btnClass: "ag-btn-secondary",
+      },
+      {
+        type: "deuteranomaly",
+        title: "Deuteranomalía",
+        btnClass: "ag-btn-confirm",
+      },
+      {
+        type: "protanomaly",
+        title: "Protanomalía",
+        btnClass: "ag-btn-confirm",
+      },
+      {
+        type: "tritanomaly",
+        title: "Tritanomalía",
+        btnClass: "ag-btn-confirm",
+      },
     ];
 
     // Obtener el tipo actual basado en el estado
@@ -903,10 +1107,10 @@ class Accessibility {
 
     // Actualizar el título y el aria-label
     colorBlindnessTitle.textContent = title;
-    colorBlindnessButton.setAttribute('aria-label', title);
+    colorBlindnessButton.setAttribute("aria-label", title);
 
     // Actualizar las clases del botón
-    colorBlindnessButton.classList.remove('ag-btn-secondary', 'ag-btn-confirm');
+    colorBlindnessButton.classList.remove("ag-btn-secondary", "ag-btn-confirm");
     colorBlindnessButton.classList.add(btnClass);
 
     // Actualizar el estado
@@ -925,12 +1129,12 @@ class Accessibility {
     this.removeColorBlindnessFilter();
 
     // Restablecer el título y el aria-label
-    colorBlindnessTitle.textContent = 'Filtros para daltonismo';
-    colorBlindnessButton.setAttribute('aria-label', 'Filtros para daltonismo');
+    colorBlindnessTitle.textContent = "Filtros para daltonismo";
+    colorBlindnessButton.setAttribute("aria-label", "Filtros para daltonismo");
 
     // Restablecer las clases del botón
-    colorBlindnessButton.classList.remove('ag-btn-confirm');
-    colorBlindnessButton.classList.add('ag-btn-secondary');
+    colorBlindnessButton.classList.remove("ag-btn-confirm");
+    colorBlindnessButton.classList.add("ag-btn-secondary");
 
     // Restablecer el estado
     this.colorBlindnessState = 1;
@@ -945,20 +1149,20 @@ class Accessibility {
     const cursorButton = document.getElementById("bigCursor-btn");
     if (!body || !cursorButton) return;
 
-    body.classList.toggle('big-cursor');
-    cursorButton.classList.toggle('ag-btn-confirm');
+    body.classList.toggle("big-cursor");
+    cursorButton.classList.toggle("ag-btn-confirm");
   }
 
   /**
- * @function resetBigCursor
- * @description Restaura el cursor al tamaño original.
- */
+   * @function resetBigCursor
+   * @description Restaura el cursor al tamaño original.
+   */
   resetBigCursor() {
     const body = document.body;
     const cursorButton = document.getElementById("bigCursor-btn");
     if (!body || !cursorButton) return;
-    body.classList.remove('big-cursor');
-    cursorButton.classList.remove('ag-btn-confirm');
+    body.classList.remove("big-cursor");
+    cursorButton.classList.remove("ag-btn-confirm");
   }
 
   /**
@@ -966,19 +1170,18 @@ class Accessibility {
    * @description Resets all accessibility-related settings to their default values.
    */
   resetAllAccessibility() {
-    this.resetFontSize();            // Resets font size to default
-    this.resetInvertColors();        // Resets color inversion to default
-    this.resetGreyColors();          // Resets grayscale mode to default
-    this.resetSaturationColors();    // Resets color saturation to default
-    this.resetReadableFont();        // Resets readable font settings to default
-    this.resetContrast();            // Resets contrast settings to default
-    this.resetToUpperCase();         // Resets text transformation to default
-    this.resetHorizontalSpace();     // Resets horizontal space to default
-    this.resetLineHeight();          // Resets line height to default
-    this.resetColorBlindness();    // Restablece el filtro de daltonismo
-    this.resetBigCursor();        // Resets big cursor to default
+    this.resetFontSize(); // Resets font size to default
+    this.resetInvertColors(); // Resets color inversion to default
+    this.resetGreyColors(); // Resets grayscale mode to default
+    this.resetSaturationColors(); // Resets color saturation to default
+    this.resetReadableFont(); // Resets readable font settings to default
+    this.resetContrast(); // Resets contrast settings to default
+    this.resetToUpperCase(); // Resets text transformation to default
+    this.resetHorizontalSpace(); // Resets horizontal space to default
+    this.resetLineHeight(); // Resets line height to default
+    this.resetColorBlindness(); // Restablece el filtro de daltonismo
+    this.resetBigCursor(); // Resets big cursor to default
   }
-
 }
 
 /*
@@ -1107,7 +1310,10 @@ L.TileLayer.GL = L.GridLayer.extend({
     var vertexShader = gl.createShader(gl.VERTEX_SHADER);
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     gl.shaderSource(vertexShader, vertexShaderCode);
-    gl.shaderSource(fragmentShader, fragmentShaderHeader + this.options.fragmentShader);
+    gl.shaderSource(
+      fragmentShader,
+      fragmentShaderHeader + this.options.fragmentShader,
+    );
     gl.compileShader(vertexShader);
     gl.compileShader(fragmentShader);
 
@@ -1220,11 +1426,12 @@ L.TileLayer.GL = L.GridLayer.extend({
         if (defaultValue.length === 1) {
           defs += "uniform float " + uniformName + ";\n";
         } else {
-          defs += "uniform vec" + defaultValue.length + " " + uniformName + ";\n";
+          defs +=
+            "uniform vec" + defaultValue.length + " " + uniformName + ";\n";
         }
       } else {
         throw new Error(
-          "Default value for uniforms must be either number or array of numbers"
+          "Default value for uniforms must be either number or array of numbers",
         );
       }
     }
@@ -1246,7 +1453,10 @@ L.TileLayer.GL = L.GridLayer.extend({
 
     this._uniformLocations = {};
     for (var uniformName in this.options.uniforms) {
-      this._uniformLocations[uniformName] = gl.getUniformLocation(program, uniformName);
+      this._uniformLocations[uniformName] = gl.getUniformLocation(
+        program,
+        uniformName,
+      );
       this.setUniform(uniformName, this.options.uniforms[uniformName]);
       this._isReRenderable = true;
     }
@@ -1286,7 +1496,11 @@ L.TileLayer.GL = L.GridLayer.extend({
 
     // ...upload them to the GPU...
     gl.bindBuffer(gl.ARRAY_BUFFER, this._LatLngBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(latLngData), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array(latLngData),
+      gl.STATIC_DRAW,
+    );
 
     // ...also create data array for CRS buffer...
     // Kinda inefficient, but doesn't look performance-critical
@@ -1328,8 +1542,19 @@ L.TileLayer.GL = L.GridLayer.extend({
 
     gl.activeTexture(gl.TEXTURE0 + index);
     gl.bindTexture(gl.TEXTURE_2D, this._textures[index]);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      imageData,
+    );
+    gl.texParameteri(
+      gl.TEXTURE_2D,
+      gl.TEXTURE_MIN_FILTER,
+      gl.LINEAR_MIPMAP_NEAREST,
+    );
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -1381,7 +1606,7 @@ L.TileLayer.GL = L.GridLayer.extend({
       }.bind(this),
       function (err) {
         L.TileLayer.prototype._tileOnError.call(this, done, tile, err);
-      }.bind(this)
+      }.bind(this),
     );
 
     return tile;
@@ -1419,7 +1644,9 @@ L.TileLayer.GL = L.GridLayer.extend({
 
   // Runs the shader (again) on all tiles
   reRender: function () {
-    if (!this._isReRenderable) { return; }
+    if (!this._isReRenderable) {
+      return;
+    }
     var gl = this._gl;
 
     gl.uniform1f(this._uNowPosition, performance.now());
@@ -1479,7 +1706,7 @@ L.TileLayer.GL = L.GridLayer.extend({
         tile.src = layer.getTileUrl(coords);
         L.DomEvent.on(tile, "load", resolve.bind(this, tile));
         L.DomEvent.on(tile, "error", reject.bind(this, tile));
-      }.bind(this)
+      }.bind(this),
     );
   },
 });

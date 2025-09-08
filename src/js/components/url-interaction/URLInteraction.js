@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Utilidad para parsear parámetros de URL
@@ -9,10 +9,10 @@ function parseUrlParams(search) {
   if (!search) return {};
 
   const params = {};
-  const pairs = search.substring(1).split('&');
+  const pairs = search.substring(1).split("&");
 
   for (const pair of pairs) {
-    const [key, value] = pair.split('=');
+    const [key, value] = pair.split("=");
     if (key && value !== undefined) {
       const decodedKey = decodeURIComponent(key);
       const decodedValue = decodeURIComponent(value);
@@ -51,9 +51,14 @@ function roundToDecimal(num, decimals) {
  * @returns {boolean} True si las coordenadas son válidas
  */
 function isValidCoordinate(lat, lng) {
-  return !isNaN(lat) && !isNaN(lng) &&
-    lat >= -90 && lat <= 90 &&
-    lng >= -180 && lng <= 180;
+  return (
+    !isNaN(lat) &&
+    !isNaN(lng) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180
+  );
 }
 
 /**
@@ -116,7 +121,9 @@ class URLInteraction {
 
       // Procesar capas
       if (params[LAYERS]) {
-        const layers = params[LAYERS].split(',').filter(layer => layer.trim() !== '');
+        const layers = params[LAYERS].split(",").filter(
+          (layer) => layer.trim() !== "",
+        );
         this._layers = [...new Set(layers)]; // Eliminar duplicados
       }
 
@@ -137,7 +144,7 @@ class URLInteraction {
     const markers = Array.isArray(markerParam) ? markerParam : [markerParam];
 
     for (const marker of markers) {
-      const coords = marker.split(',');
+      const coords = marker.split(",");
       if (coords.length === 2) {
         const lat = parseFloat(coords[0]);
         const lng = parseFloat(coords[1]);
@@ -146,7 +153,7 @@ class URLInteraction {
         if (isValidCoordinate(lat, lng)) {
           this._markers.push({
             latitude: lat,
-            longitude: lng
+            longitude: lng,
           });
         }
       }
@@ -170,7 +177,7 @@ class URLInteraction {
   get center() {
     return {
       latitude: this._latitude,
-      longitude: this._longitude
+      longitude: this._longitude,
     };
   }
 
@@ -252,13 +259,15 @@ class URLInteraction {
 
     // Agregar capas si existen
     if (this._layers.length > 0) {
-      const layers = this._layers.join(',');
+      const layers = this._layers.join(",");
       url += `&${LAYERS}=${layers}`;
     }
 
     // Agregar marcadores si existen
     if (this._markers.length > 0) {
-      const markers = this._markers.map(marker => `${marker.latitude},${marker.longitude}`).join('&');
+      const markers = this._markers
+        .map((marker) => `${marker.latitude},${marker.longitude}`)
+        .join("&");
       url += `&${MARKER}=${markers}`;
     }
 

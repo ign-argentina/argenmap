@@ -3,7 +3,7 @@ const ZOOM_LEVEL = "zoom";
 const LATITUDE = "lat";
 const LONGITUDE = "lng";
 const LAYERS = "layers";
-const MARKER = 'marker';
+const MARKER = "marker";
 
 //Default Map Values
 const DEFAULT_MIN_ZOOM_LEVEL = 3;

@@ -38,18 +38,22 @@ class Fullscreen {
       elem.id = "fullscreen";
       elem.innerHTML = this.component;
       // Accesibilidad: soporte de teclado
-      const icon = elem.querySelector('#iconFS-container');
+      const icon = elem.querySelector("#iconFS-container");
       if (icon) {
-        icon.addEventListener('keydown', this.#onKeyDown.bind(this));
-        this.handlers.push({el: icon, type: 'keydown', fn: this.#onKeyDown.bind(this)});
+        icon.addEventListener("keydown", this.#onKeyDown.bind(this));
+        this.handlers.push({
+          el: icon,
+          type: "keydown",
+          fn: this.#onKeyDown.bind(this),
+        });
       }
       elem.onclick = this.toggleFullScreen.bind(this);
-      this.handlers.push({el: elem, type: 'click', fn: elem.onclick});
+      this.handlers.push({ el: elem, type: "click", fn: elem.onclick });
       const container = document.querySelector(".leaflet-top.leaflet-left");
       if (container) container.append(elem);
       this.elem = elem;
     } catch (e) {
-      console.error('Error creando el componente Fullscreen:', e);
+      console.error("Error creando el componente Fullscreen:", e);
     }
   }
 
@@ -59,7 +63,7 @@ class Fullscreen {
    * @private
    */
   #onKeyDown(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       this.toggleFullScreen();
     }
@@ -78,17 +82,17 @@ class Fullscreen {
         icon.classList.remove("fas", "fa-expand");
         icon.classList.add("fas", "fa-compress");
         container.title = "Salir de pantalla completa";
-        container.setAttribute('aria-pressed', 'true');
+        container.setAttribute("aria-pressed", "true");
         document.documentElement.requestFullscreen();
       } else if (document.exitFullscreen) {
         icon.classList.remove("fas", "fa-compress");
         icon.classList.add("fas", "fa-expand");
         container.title = "Pantalla completa";
-        container.setAttribute('aria-pressed', 'false');
+        container.setAttribute("aria-pressed", "false");
         document.exitFullscreen();
       }
     } catch (e) {
-      console.error('Error al alternar pantalla completa:', e);
+      console.error("Error al alternar pantalla completa:", e);
     }
   }
 }

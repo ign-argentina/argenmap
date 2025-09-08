@@ -192,16 +192,19 @@ class ImpresorItemHTML extends Impresor {
 
     /**
      * Adds a range input to change the layer's opacity
-    */
-    const input_opacity = document.createElement('input');
-    input_opacity.id = 'range-' + item.nombre;
-    input_opacity.type = 'range';
-    input_opacity.min = '0';
-    input_opacity.max = '1';
-    input_opacity.step = '0.05';
-    input_opacity.defaultValue = '1';
-    input_opacity.style = 'width: auto; margin-left: 10px;';
-    input_opacity.setAttribute("onInput", `overlayMaps['${item.nombre}'].setOpacity(this.value)`);
+     */
+    const input_opacity = document.createElement("input");
+    input_opacity.id = "range-" + item.nombre;
+    input_opacity.type = "range";
+    input_opacity.min = "0";
+    input_opacity.max = "1";
+    input_opacity.step = "0.05";
+    input_opacity.defaultValue = "1";
+    input_opacity.style = "width: auto; margin-left: 10px;";
+    input_opacity.setAttribute(
+      "onInput",
+      `overlayMaps['${item.nombre}'].setOpacity(this.value)`,
+    );
 
     if (activated) {
       btn_options.style.display = "flex";
@@ -227,7 +230,6 @@ class ImpresorItemHTML extends Impresor {
     return btn.outerHTML;
   }
 }
-
 
 class ImpresorItemWMSSelector extends Impresor {
   imprimir(itemComposite) {
@@ -705,13 +707,24 @@ class LayersInfoWMS extends LayersInfo {
   }
 
   /**
- * Parses the request to fetch and process WMS capabilities,
- * creating menu items based on the available layers.
- * 
- * @param {Object} gestorMenu - The menu manager object responsible for handling layers.
- */
+   * Parses the request to fetch and process WMS capabilities,
+   * creating menu items based on the available layers.
+   *
+   * @param {Object} gestorMenu - The menu manager object responsible for handling layers.
+   */
   _parseRequest(gestorMenu) {
-    const { itemGroupPrinter: impresorGroup, tab, host, service, version, type, icons, section, weight, short_abstract } = this;
+    const {
+      itemGroupPrinter: impresorGroup,
+      tab,
+      host,
+      service,
+      version,
+      type,
+      icons,
+      section,
+      weight,
+      short_abstract,
+    } = this;
     const impresorItem = new ImpresorItemHTML();
 
     // Default listType to null if not provided
@@ -722,19 +735,21 @@ class LayersInfoWMS extends LayersInfo {
     const hostUrl = `${this.getHostOWS()}${serviceParams}`;
 
     fetch(hostUrl)
-      .then(response => response.text())
-      .then(responseText => {
+      .then((response) => response.text())
+      .then((responseText) => {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(responseText, "text/xml");
 
         // Extract metadata from capabilities XML
         const capability = xmlDoc.querySelector("Capability");
-        const keyword = xmlDoc.querySelector("Keyword")?.textContent || '';
-        const abstract = xmlDoc.querySelector("Abstract")?.textContent || '';
+        const keyword = xmlDoc.querySelector("Keyword")?.textContent || "";
+        const abstract = xmlDoc.querySelector("Abstract")?.textContent || "";
 
         // Extract layer information and filter layers
-        const capaInfoList = Array.from(capability.querySelectorAll("Layer > Layer"))
-          .filter(layer => {
+        const capaInfoList = Array.from(
+          capability.querySelectorAll("Layer > Layer"),
+        )
+          .filter((layer) => {
             const hasNestedLayers = layer.querySelectorAll("Layer").length > 0;
             if (hasNestedLayers) {
               return false;
@@ -742,37 +757,50 @@ class LayersInfoWMS extends LayersInfo {
             const iName = layer.querySelector("Name")?.textContent;
             return this.isAllowedLayer(iName);
           })
-          .map((layer, index) => this._createMenuItem(layer, index, impresorItem, listType))
-          .filter(item => item !== null);
+          .map((layer, index) =>
+            this._createMenuItem(layer, index, impresorItem, listType),
+          )
+          .filter((item) => item !== null);
 
-        this._createAndAddItemGroup(gestorMenu, impresorGroup, keyword, abstract, capaInfoList);
+        this._createAndAddItemGroup(
+          gestorMenu,
+          impresorGroup,
+          keyword,
+          abstract,
+          capaInfoList,
+        );
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error loading capabilities:", error);
       });
   }
 
   /**
-  * Creates a menu item from the layer information.
-  * 
-  * @param {Element} layer - The layer XML element.
-  * @param {number} index - The index of the layer in the list.
-  * @param {Object} impresorItem - The printer item object.
-  * @param {string|null} listType - The type of the list.
-  * @returns {Item|null} The created menu item or null if an error occurs.
-  */
+   * Creates a menu item from the layer information.
+   *
+   * @param {Element} layer - The layer XML element.
+   * @param {number} index - The index of the layer in the list.
+   * @param {Object} impresorItem - The printer item object.
+   * @param {string|null} listType - The type of the list.
+   * @returns {Item|null} The created menu item or null if an error occurs.
+   */
   _createMenuItem(layer, index, impresorItem, listType) {
     try {
-      const iName = layer.querySelector("Name")?.textContent || '';
-      const iTitle = layer.querySelector("Title")?.textContent || '';
-      const iAbstract = layer.querySelector("Abstract")?.textContent || ''; // returns layer's abstract for tooltips
+      const iName = layer.querySelector("Name")?.textContent || "";
+      const iTitle = layer.querySelector("Title")?.textContent || "";
+      const iAbstract = layer.querySelector("Abstract")?.textContent || ""; // returns layer's abstract for tooltips
 
       // Extract keywords
-      const keywords = Array.from(layer.querySelectorAll("KeywordList > keyword")).map(keyword => keyword.textContent);
+      const keywords = Array.from(
+        layer.querySelectorAll("KeywordList > keyword"),
+      ).map((keyword) => keyword.textContent);
 
       // Extract bounding box information
       const boundingBox = layer.querySelector("BoundingBox");
-      const iSrs = boundingBox?.getAttribute("srs") || boundingBox?.getAttribute("crs") || null;
+      const iSrs =
+        boundingBox?.getAttribute("srs") ||
+        boundingBox?.getAttribute("crs") ||
+        null;
       const iMaxY = boundingBox?.getAttribute("maxy") || null;
       const iMinY = boundingBox?.getAttribute("miny") || null;
       const iMinX = boundingBox?.getAttribute("minx") || null;
@@ -782,70 +810,149 @@ class LayersInfoWMS extends LayersInfo {
       const legendURL = this.icons ? this.icons[iName] : null;
 
       // Create appropriate capa object based on type
-      const capa = this._createCapaObject(iName, iTitle, iSrs, iMinX, iMaxX, iMinY, iMaxY, keywords, legendURL);
+      const capa = this._createCapaObject(
+        iName,
+        iTitle,
+        iSrs,
+        iMinX,
+        iMaxX,
+        iMinY,
+        iMaxY,
+        keywords,
+        legendURL,
+      );
 
       // Create and return menu item
-      const item = new Item(capa.nombre, `${this.section}${index}`, keywords, iAbstract, capa.titulo, capa, this.getCallback(), listType);
+      const item = new Item(
+        capa.nombre,
+        `${this.section}${index}`,
+        keywords,
+        iAbstract,
+        capa.titulo,
+        capa,
+        this.getCallback(),
+        listType,
+      );
       item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
       item.setImpresor(impresorItem);
       gestorMenu.setAvailableLayer(iName);
       return item;
     } catch (err) {
-      console.error(`Error processing layer '${layer.querySelector("Name")?.textContent || ''}':`, err);
+      console.error(
+        `Error processing layer '${layer.querySelector("Name")?.textContent || ""}':`,
+        err,
+      );
       // Return null for failed items
       return null;
     }
   }
 
   /**
-  * Creates a Capa or CapaMapserver object based on the provided information.
-  * 
-  * @param {string} name - The name of the layer.
-  * @param {string} title - The title of the layer.
-  * @param {string|null} srs - The spatial reference system.
-  * @param {string|null} minX - The minimum X coordinate.
-  * @param {string|null} maxX - The maximum X coordinate.
-  * @param {string|null} minY - The minimum Y coordinate.
-  * @param {string|null} maxY - The maximum Y coordinate.
-  * @param {Array<string>} keywords - The keywords associated with the layer.
-  * @param {string|null} legendURL - The URL of the legend.
-  * @returns {Capa|CapaMapserver} The created capa object.
-  */
-  _createCapaObject(name, title, srs, minX, maxX, minY, maxY, keywords, legendURL) {
+   * Creates a Capa or CapaMapserver object based on the provided information.
+   *
+   * @param {string} name - The name of the layer.
+   * @param {string} title - The title of the layer.
+   * @param {string|null} srs - The spatial reference system.
+   * @param {string|null} minX - The minimum X coordinate.
+   * @param {string|null} maxX - The maximum X coordinate.
+   * @param {string|null} minY - The minimum Y coordinate.
+   * @param {string|null} maxY - The maximum Y coordinate.
+   * @param {Array<string>} keywords - The keywords associated with the layer.
+   * @param {string|null} legendURL - The URL of the legend.
+   * @returns {Capa|CapaMapserver} The created capa object.
+   */
+  _createCapaObject(
+    name,
+    title,
+    srs,
+    minX,
+    maxX,
+    minY,
+    maxY,
+    keywords,
+    legendURL,
+  ) {
     if (this.type === "wmslayer_mapserver") {
-      return new CapaMapserver(name, title, srs, this.host, this.service, this.version, this.feature_info_format, minX, maxX, minY, maxY);
+      return new CapaMapserver(
+        name,
+        title,
+        srs,
+        this.host,
+        this.service,
+        this.version,
+        this.feature_info_format,
+        minX,
+        maxX,
+        minY,
+        maxY,
+      );
     } else {
-      return new Capa(name, title, srs, this.host, this.service, this.version, this.feature_info_format, keywords, minX, maxX, minY, maxY, null, legendURL);
+      return new Capa(
+        name,
+        title,
+        srs,
+        this.host,
+        this.service,
+        this.version,
+        this.feature_info_format,
+        keywords,
+        minX,
+        maxX,
+        minY,
+        maxY,
+        null,
+        legendURL,
+      );
     }
   }
 
   /**
-  * Creates an item group and adds it to the menu manager.
-  * 
-  * @param {Object} gestorMenu - The menu manager object.
-  * @param {Object} impresorGroup - The printer group object.
-  * @param {string} keyword - The keyword for the group.
-  * @param {string} abstract - The abstract for the group.
-  * @param {Array<Item>} items - The list of menu items.
-  */
+   * Creates an item group and adds it to the menu manager.
+   *
+   * @param {Object} gestorMenu - The menu manager object.
+   * @param {Object} impresorGroup - The printer group object.
+   * @param {string} keyword - The keyword for the group.
+   * @param {string} abstract - The abstract for the group.
+   * @param {Array<Item>} items - The list of menu items.
+   */
   _createAndAddItemGroup(gestorMenu, impresorGroup, keyword, abstract, items) {
     let groupAux;
     try {
-      groupAux = new ItemGroup(this.tab, this.name, this.section, this.weight, keyword, abstract, this.short_abstract);
+      groupAux = new ItemGroup(
+        this.tab,
+        this.name,
+        this.section,
+        this.weight,
+        keyword,
+        abstract,
+        this.short_abstract,
+      );
     } catch (err) {
       console.error("Error creating item group", err);
-      groupAux = new ItemGroup(this.tab, this.name, this.section, this.weight, "", "", this.short_abstract);
+      groupAux = new ItemGroup(
+        this.tab,
+        this.name,
+        this.section,
+        this.weight,
+        "",
+        "",
+        this.short_abstract,
+      );
     }
     groupAux.setImpresor(impresorGroup);
     groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
-    items.forEach(item => groupAux.setItem(item));
+    items.forEach((item) => groupAux.setItem(item));
     // Add item group to menu manager
     gestorMenu.addItemGroup(groupAux);
 
     // Handle menu printing based on initialization mode
     if (gestorMenu.getLazyInitialization()) {
-      gestorMenu.removeLazyInitLayerInfoCounter(`${ItemGroupPrefix}${this.section}`);
-      if (gestorMenu.finishLazyInitLayerInfo(`${ItemGroupPrefix}${this.section}`)) {
+      gestorMenu.removeLazyInitLayerInfoCounter(
+        `${ItemGroupPrefix}${this.section}`,
+      );
+      if (
+        gestorMenu.finishLazyInitLayerInfo(`${ItemGroupPrefix}${this.section}`)
+      ) {
         // If all requested layers have been loaded
         gestorMenu.printOnlySection(this.section);
         gestorMenu.allLayersAreLoaded = true;
@@ -859,7 +966,6 @@ class LayersInfoWMS extends LayersInfo {
       }
     }
   }
-
 
   _parseRequest_without_print(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
@@ -882,11 +988,11 @@ class LayersInfoWMS extends LayersInfo {
     // Load geoserver Capabilities, if success Create menu and append to DOM
     $("#temp-menu").load(
       thisObj.getHostOWS() +
-      "?service=" +
-      thisObj.service +
-      "&version=" +
-      thisObj.version +
-      "&request=GetCapabilities",
+        "?service=" +
+        thisObj.service +
+        "&version=" +
+        thisObj.version +
+        "&request=GetCapabilities",
       function () {
         var capability = $("#temp-menu").find("capability");
         var keywordHtml = $("#temp-menu").find("Keyword");
@@ -1643,9 +1749,9 @@ class ItemGroup extends ItemComposite {
     if (iCapasVisibles > 0) {
       $("#" + this.getId() + "-a").html(
         this.nombre +
-        " <span class='active-layers-counter'>" +
-        iCapasVisibles +
-        "</span>",
+          " <span class='active-layers-counter'>" +
+          iCapasVisibles +
+          "</span>",
       );
     } else {
       $("#" + this.getId() + "-a").html(this.nombre);
@@ -1661,7 +1767,7 @@ class ItemGroup extends ItemComposite {
     }
   }
 
-  hideAllLayersExceptOne(item) { }
+  hideAllLayersExceptOne(item) {}
 
   getAvailableTags() {
     var availableTags = [];
@@ -2688,23 +2794,23 @@ class GestorMenu {
           for (var keyItem in item.itemsComposite) {
             if (
               item.itemsComposite[keyItem].capa.host ==
-              this._layersJoin[keyJoin].host &&
+                this._layersJoin[keyJoin].host &&
               item.itemsComposite[keyItem].capa.nombre ==
-              this._layersJoin[keyJoin].layer
+                this._layersJoin[keyJoin].layer
             ) {
               //Busca las capas a incluir
               for (var keyJoinInt in this._layersJoin[keyJoin].joins) {
                 var itemInt =
                   this.items[
-                  this._layersJoin[keyJoin].joins[keyJoinInt].seccion
+                    this._layersJoin[keyJoin].joins[keyJoinInt].seccion
                   ];
                 if (itemInt) {
                   for (var keyItemInt in itemInt.itemsComposite) {
                     if (
                       itemInt.itemsComposite[keyItemInt].capa.host ==
-                      this._layersJoin[keyJoin].joins[keyJoinInt].host &&
+                        this._layersJoin[keyJoin].joins[keyJoinInt].host &&
                       itemInt.itemsComposite[keyItemInt].capa.nombre ==
-                      this._layersJoin[keyJoin].joins[keyJoinInt].layer
+                        this._layersJoin[keyJoin].joins[keyJoinInt].layer
                     ) {
                       item.itemsComposite[keyItem].capas = item.itemsComposite[
                         keyItem
@@ -2797,10 +2903,10 @@ class GestorMenu {
       aSections[this._tabs[key].getExtendedId()] = [];
       aSections[this._tabs[key].getExtendedId()].push(
         "<div role='tabpanel' class='tab-pane " +
-        sClassAux +
-        "' id='" +
-        this._tabs[key].getExtendedId() +
-        "'>",
+          sClassAux +
+          "' id='" +
+          this._tabs[key].getExtendedId() +
+          "'>",
       );
       aSections[this._tabs[key].getExtendedId()].push(
         this._tabs[key].getInitialPrint(),
@@ -3336,22 +3442,22 @@ class GestorMenu {
       let lyr = layer.capa;
       lyr.nombre === layerName
         ? (layerData = {
-          name: lyr.nombre,
-          title: lyr.titulo,
-          url: lyr.host.substring(0, lyr.host.lastIndexOf("/")),
-          keywords: lyr.keywords ?? [],
-          icon: lyr.legendURL,
-          bbox: {
-            sw: {
-              lng: lyr.minx,
-              lat: lyr.miny,
+            name: lyr.nombre,
+            title: lyr.titulo,
+            url: lyr.host.substring(0, lyr.host.lastIndexOf("/")),
+            keywords: lyr.keywords ?? [],
+            icon: lyr.legendURL,
+            bbox: {
+              sw: {
+                lng: lyr.minx,
+                lat: lyr.miny,
+              },
+              ne: {
+                lng: lyr.maxx,
+                lat: lyr.maxy,
+              },
             },
-            ne: {
-              lng: lyr.maxx,
-              lat: lyr.maxy,
-            },
-          },
-        })
+          })
         : "";
     });
     return layerData ?? {};
@@ -4347,12 +4453,14 @@ class Fechaimagen {
             resolution: md.SRC_RES,
             accuracy: md.SRC_ACC,
             sensor: sensorData[md.SRC_DESC]
-              ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${sensorData[md.SRC_DESC].name
-              }</a>`
+              ? `<a href="${sensorData[md.SRC_DESC].link}" target="_blank">${
+                  sensorData[md.SRC_DESC].name
+                }</a>`
               : md.SRC_DESC,
             provider: providerData[md.NICE_DESC]
-              ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${providerData[md.NICE_DESC].name
-              }</a>`
+              ? `<a href="${providerData[md.NICE_DESC].link}" target="_blank">${
+                  providerData[md.NICE_DESC].name
+                }</a>`
               : md.NICE_DESC,
             sensor_texto: sensorData[md.SRC_DESC].name,
             provider_texto: providerData[md.NICE_DESC].name,

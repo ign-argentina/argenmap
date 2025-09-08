@@ -456,7 +456,7 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
       break;
   }
 
-  (sectionName = "Geoprocesos"), (typeName = "geoprocess");
+  ((sectionName = "Geoprocesos"), (typeName = "geoprocess"));
   let nameId = e.process + counter;
   addedLayers.push({
     id: nameId,
@@ -503,7 +503,7 @@ function addLayersfromFiles() {
     if (e.process) {
       addProcessfromFiles(e, sectionName, typeName, counter);
     } else {
-      (sectionName = "Archivos"), (typeName = "file");
+      ((sectionName = "Archivos"), (typeName = "file"));
 
       addedLayers.push({
         id: e.id,

@@ -4,27 +4,27 @@ mainPopup = function () {
     if ("mainPopup" in localStorage) {
       isChecked = true;
     }
-  }
+  };
 
   this._addPopupWrapper = (flag) => {
     if (flag == false) {
-      isChecked = false
+      isChecked = false;
     }
     if (!isChecked) {
       const mainPopup = document.createElement("div");
-      mainPopup.id="main-popup";
+      mainPopup.id = "main-popup";
       mainPopup.classList = "justify-content-center";
       document.body.append(mainPopup);
-  
+
       const mainWrapper = document.createElement("div");
-      mainWrapper.id="mainWrapper";
-      mainWrapper.style="display: flex;align-items: center;"
-      mainWrapper.classList = "container-fluid col-12 col-xs-12 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
+      mainWrapper.id = "mainWrapper";
+      mainWrapper.style = "display: flex;align-items: center;";
+      mainWrapper.classList =
+        "container-fluid col-12 col-xs-12 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
       $("#main-popup").append(mainWrapper);
-      
-      
+
       const contentWrapper = document.createElement("div");
-      contentWrapper.id="contentWrapper";
+      contentWrapper.id = "contentWrapper";
       contentWrapper.classList = "mainPopup";
       contentWrapper.style = "font-size: 18px";
       //let welcomeSign = "¡Bienvenidos a Argenmap!";
@@ -36,16 +36,16 @@ mainPopup = function () {
       //Image
       if (app.mainPopup.image) {
         const contentImg = document.createElement("div");
-        contentImg.id="contentWrapperImg";
-        let image = app.mainPopup.image
+        contentImg.id = "contentWrapperImg";
+        let image = app.mainPopup.image;
         contentImg.innerHTML = `<h4></h4><img src='${image}' width="100%">`;
         contentWrapper.appendChild(contentImg);
       }
       //Text
       if (app.mainPopup.text) {
-        let text = app.mainPopup.text
+        let text = app.mainPopup.text;
         const contentTxt = document.createElement("div");
-        contentTxt.id="contentWrapperTxt";
+        contentTxt.id = "contentWrapperTxt";
         contentTxt.innerHTML = `<h4></h4>${text}`;
         contentTxt.style = "font-size: 15px; text-align: justify";
         contentWrapper.appendChild(contentTxt);
@@ -54,7 +54,7 @@ mainPopup = function () {
       let popupExitBtn = document.createElement("button");
       popupExitBtn.id = "popupExitBtn";
       popupExitBtn.classList = "exit-btn";
-      popupExitBtn.innerHTML ='<i class="fa fa-times"></i>';
+      popupExitBtn.innerHTML = '<i class="fa fa-times"></i>';
       popupExitBtn.onclick = () => {
         mainWrapper.remove();
         document.getElementById("main-popup").remove();
@@ -62,14 +62,15 @@ mainPopup = function () {
       contentWrapper.insertBefore(popupExitBtn, contentWrapper.firstChild);
       //Checkbox
       let checkbox = document.createElement("div");
-      checkbox.id="contentWrapper";
+      checkbox.id = "contentWrapper";
       checkbox.classList = "not-again-check";
-      checkbox.innerHTML ='<label><input type="checkbox" id="popupCheckbox" name="popupCheckbox">No volver a mostrar</label>';
+      checkbox.innerHTML =
+        '<label><input type="checkbox" id="popupCheckbox" name="popupCheckbox">No volver a mostrar</label>';
       checkbox.style = "font-size: 15px";
-      contentWrapper.appendChild(checkbox); 
-  
+      contentWrapper.appendChild(checkbox);
+
       let check = document.querySelector("input[name=popupCheckbox]");
-      check.addEventListener('change', function() {
+      check.addEventListener("change", function () {
         if (this.checked) {
           localStorage.setItem("mainPopup", true);
         } else {
@@ -78,6 +79,4 @@ mainPopup = function () {
       });
     }
   };
-
-  
 };

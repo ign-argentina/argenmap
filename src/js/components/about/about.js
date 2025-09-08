@@ -2,7 +2,7 @@
  * Represents a utility class to get data from various sources.
  */
 class DataGetter {
-  constructor() { }
+  constructor() {}
 
   /**
    * Loads the content of a Markdown file from the specified URL and selects the specified lines.
@@ -64,7 +64,7 @@ class AboutUs {
       {
         name: "Funciones",
         id: "load-functions",
-      }/* ,
+      } /* ,
       {
         name: 'Colaboradores',
         id: 'load-colaboradores',
@@ -275,22 +275,31 @@ class AboutUs {
    * - O si hay una línea nueva respecto al valor guardado
    */
   check() {
-    this.dataGetter.loadMD("src/docs/features.md", 2, Infinity).then((selectedText) => {
-      const lines = selectedText.split("\n");
-      const lastIndex = lines.length - 4;
-      const lastFunctionSeen = localStorage.getItem("lastFunctionSeen");
-      const notificationDotShown = localStorage.getItem("notificationDotShown") === "true";
-      let newFunctionIndex = lastIndex;
-      // Si nunca se guardó lastFunctionSeen o hay una línea nueva
-      if (lastFunctionSeen === null || parseInt(lastFunctionSeen, 10) < newFunctionIndex) {
-        // Solo mostrar el dot si no se mostró para este índice
-        if (!notificationDotShown || parseInt(lastFunctionSeen, 10) < newFunctionIndex) {
-          this.addNoti("developerLogo");
-          localStorage.setItem("lastFunctionSeen", newFunctionIndex);
-          localStorage.setItem("notificationDotShown", "true");
+    this.dataGetter
+      .loadMD("src/docs/features.md", 2, Infinity)
+      .then((selectedText) => {
+        const lines = selectedText.split("\n");
+        const lastIndex = lines.length - 4;
+        const lastFunctionSeen = localStorage.getItem("lastFunctionSeen");
+        const notificationDotShown =
+          localStorage.getItem("notificationDotShown") === "true";
+        let newFunctionIndex = lastIndex;
+        // Si nunca se guardó lastFunctionSeen o hay una línea nueva
+        if (
+          lastFunctionSeen === null ||
+          parseInt(lastFunctionSeen, 10) < newFunctionIndex
+        ) {
+          // Solo mostrar el dot si no se mostró para este índice
+          if (
+            !notificationDotShown ||
+            parseInt(lastFunctionSeen, 10) < newFunctionIndex
+          ) {
+            this.addNoti("developerLogo");
+            localStorage.setItem("lastFunctionSeen", newFunctionIndex);
+            localStorage.setItem("notificationDotShown", "true");
+          }
         }
-      }
-    });
+      });
   }
 }
 
