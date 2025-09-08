@@ -12,7 +12,7 @@
   width: fit-content;
 }
 
-@media (max-width: 915px) {
+@media (max-width: 57.1875em) {
   .navbar-fixed-top {
     width: auto;
     min-width: fit-content;
@@ -42,7 +42,7 @@
 }
 
 /* Hide for mobile, show later */
-@media (min-width: 768px) {
+@media (min-width: 48em) {
   .sidebar {
     display: block;
     overflow-x: hidden;
