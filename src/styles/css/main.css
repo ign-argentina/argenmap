@@ -89,18 +89,45 @@ Ejemplos:
   --danger-color: #bd5555;
   --map-btn-color: #303030;
   --map-btn-bg-color: #fff;
-  /* Tipografías responsive - móviles primero */
-  --popup-fnt-size: clamp(0.875rem, 2vw + 0.5rem, 1rem);
-  --group-title-fnt-size: clamp(1rem, 2.5vw + 0.75rem, 1.125rem);
-  --body-fnt-size: clamp(1rem, 2vw + 0.75rem, 1.125rem);
-  --layer-cont-fnt-size: clamp(0.875rem, 1.5vw + 0.5rem, 1rem);
+  /* ====================================
+     TIPOGRAFÍAS - SISTEMA RESPONSIVE
+     ==================================== */
+  
+  /* Tamaños base para desktop (fallback en px + rem) */
+  --group-title-fnt-size: 16px; /* fallback */
+  --group-title-fnt-size: 1rem; /* 16px */
+  
+  --layer-cont-fnt-size: 12px; /* fallback */
+  --layer-cont-fnt-size: 0.75rem; /* 12px */
+  
+  --popup-fnt-size: 14px; /* fallback */
+  --popup-fnt-size: 0.875rem; /* 14px */
+  
+  --body-fnt-size: 14px; /* fallback */
+  --body-fnt-size: 0.875rem; /* 14px */
+  
+  --input-fnt-size: 14px; /* fallback */
+  --input-text-fnt-size: 0.875rem; /* 14px */
+  
+  --btn-fnt-size: 16px; /* fallback */
+  --btn-fnt-size: 1rem; /* 16px */
+  
+  --heading-large-fnt-size: 20px; /* fallback */
+  --heading-large-fnt-size: 1.25rem; /* 20px */
+  
+  --heading-xlarge-fnt-size: 24px; /* fallback */
+  --heading-xlarge-fnt-size: 1.5rem; /* 24px */
+
+  /* ====================================
+     OTROS ESTILOS DE UI
+     ==================================== */
   --layer-border-color: 1px solid #ddd;
   --menu-section-hover-color: #e7e7e7;
   --layer-btn-hover-color: #e7e7e7;
   --main-font-family: "Encode Sans", sans-serif;
   --modal-bg-color: #ffffffbb;
+  
   /*Argenmap ui Button*/
-  --btn-ftn-size: 1.5rem;
   --btn-border-radius: 0.375rem;
   --btn-background-color: #fff;
   --btn-hover-bg-color: #fff;
@@ -111,7 +138,6 @@ Ejemplos:
   --btn-confirm-color: #336337;
   --btn-danger-color: var(--danger-color);
   /*Argenmap ui input text */
-  --input-text-fnt-size: clamp(1rem, 2vw + 0.75rem, 1.125rem);
   --input-text-bg-color: #fff;
   --input-text-border-radius: 0.375rem;
   --input-text-border-color: #939697;
@@ -121,12 +147,46 @@ Ejemplos:
   --lyr-menu-panel-head-text-color: #fff;
   --menu-title-text-color: #fff;
   --menu-text-color: #505050;
-    --menu-text-color-hover: #202020
+  --menu-text-color-hover: #202020;
+}
+
+/* ====================================
+   MEDIA QUERIES - RESPONSIVE FONTS
+   ==================================== */
+
+/* Mobile: Tamaños más pequeños para pantallas móviles */
+@media (max-width: 768px) {
+  :root {
+    --group-title-fnt-size: 14px; /* fallback */
+    --group-title-fnt-size: 0.875rem; /* 14px */
+    
+    --layer-cont-fnt-size: 11px; /* fallback */
+    --layer-cont-fnt-size: 0.6875rem; /* 11px */
+    
+    --popup-fnt-size: 12px; /* fallback */
+    --popup-fnt-size: 0.75rem; /* 12px */
+    
+    --body-fnt-size: 12px; /* fallback */
+    --body-fnt-size: 0.75rem; /* 12px */
+    
+    --input-fnt-size: 12px; /* fallback */
+    --input-fnt-size: 0.75rem; /* 12px */
+    
+    --btn-fnt-size: 14px; /* fallback */
+    --btn-fnt-size: 0.875rem; /* 14px */
+    
+    --heading-large-fnt-size: 18px; /* fallback */
+    --heading-large-fnt-size: 1.125rem; /* 18px */
+    
+    --heading-xlarge-fnt-size: 20px; /* fallback */
+    --heading-xlarge-fnt-size: 1.25rem; /* 20px */
+  }
 }
 
 /* General */
 html {
   box-sizing: border-box;
+  font-size: 100%; /* 16px */
 }
 
 *,
@@ -138,7 +198,7 @@ html {
 body {
   min-height: 100vh;
   font-family: var(--main-font-family);
-  font-size: var(--body-fnt-size, 0.875rem);
+  font-size: var(--body-fnt-size);
 }
 
 /* Media queries para móviles - mejora de legibilidad */
@@ -168,9 +228,7 @@ body {
     --popup-fnt-size: 1.125rem;
     --group-title-fnt-size: 1.25rem;
     --body-fnt-size: 1.25rem;
-    --layer-cont-fnt-size: 1.125rem;
-    --input-text-fnt-size: 1.25rem;
-    --btn-ftn-size: 1.75rem;
+    /* Las variables de fuentes están centralizadas en :root */
   }
   
   /* Optimizar botones para touch */
@@ -205,7 +263,7 @@ body {
 
 #menu-toggle {
   transition: all 0.3s;
-  font-size: 2em;
+  font-size: var(--heading-xlarge-fnt-size);
   display: inline-block;
   padding: 0.125rem 0.75rem;
   -ms-touch-action: manipulation;
@@ -394,7 +452,7 @@ div.leaflet-top.leaflet-left {
   user-select: none;
   border-radius: var(--btn-border-radius);
   padding: 0.375rem 0.75rem;
-  font-size: var(--btn-ftn-size);
+  font-size: var(--btn-fnt-size);
   color: var(--btn-hover-color);
   font-weight: 500;
   cursor: pointer;
@@ -460,7 +518,7 @@ div.leaflet-top.leaflet-left {
   overflow: auto;
   box-sizing: border-box;
   padding-left: 10px;
-  font-size: var(--input-text-ftn-size);
+  font-size: var(--input-fnt-size);
   background-color: var(--input-text-bg-color);
   border: 1px solid #a3a3a3;
   border-radius: var(--input-text-border-radius);
@@ -478,7 +536,7 @@ div.leaflet-top.leaflet-left {
   width: auto;
   max-width: -webkit-fill-available;
   height: auto;
-  margin: 1rem;
+  margin: 0.65rem;
   position: absolute;
   top: 60px;
   z-index: 1000;
@@ -489,19 +547,19 @@ div.leaflet-top.leaflet-left {
 }
 
 .menu-section-btn {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 2.2rem;
+  height: 2.2rem;
   padding: 0;
-  margin: 5px;
+  margin: 0.35rem;
 }
 
 .menu-section-btn .fa-layer-group,
 .menu-section-btn .fa-question,
 .menu-section-btn .fa-gear {
-  font-size: large;
+  font-size: var(--heading-large-fnt-size);
 }
 .menu-section-btn .fa-universal-access {
-  font-size: x-large;
+  font-size: var(--heading-xlarge-fnt-size);
 }
 
 .layer-menu-options {
@@ -529,13 +587,13 @@ div.leaflet-top.leaflet-left {
 .panel-default>.panel-heading {
   color: var(--lyr-menu-panel-head-text-color);
   background-color: var(--lyr-menu-panel-head-bg-color);
-  font-size: var(--group-title-fnt-size, 15px);
+  font-size: var(--group-title-fnt-size);
   border-top: 1px solid #f5f5f5 !important;
   cursor: pointer;
 }
 
 .panel-default>.panel-heading>.panel-title>a {
-  font-size: var(--group-title-fnt-size, 15px);
+  font-size: var(--group-title-fnt-size);
 }
 
 #sidebar-container {
@@ -724,7 +782,7 @@ li.active>div>a {
   height: 20px;
   width: 20px;
   display: table-cell;
-  font-size: var(--layer-cont-fnt-size, 11px);
+  font-size: var(--layer-cont-fnt-size);
   font-weight: bolder;
   text-align: center;
   vertical-align: middle;
@@ -735,7 +793,7 @@ li.active>div>a {
 
 .total-active-layers-counter {
   display: inline-block;
-  font-size: var(--layer-cont-fnt-size, 11px);
+  font-size: var(--layer-cont-fnt-size);
   font-weight: bolder;
   width: 16px;
   border-radius: 100%;
@@ -759,7 +817,7 @@ li.active>div>a {
 .item-group-title {
   -webkit-user-select: none;
   user-select: none;
-  font-size: var(--group-title-fnt-size, 15px);
+  font-size: var(--group-title-fnt-size);
   font-weight: bolder;
 }
 
@@ -993,22 +1051,22 @@ a.item-group-title:hover {
   color: #505050;
   width: 25px;
   height: 25px;
-  font-size: 20px;
+  font-size: var(--heading-large-fnt-size);
 }
 .leaflet-control-measure-interaction h3 {
-  font-size: 17px !important;
+  font-size: var(--btn-fnt-size) !important;
 }
 #map-toolbar-icon-left, #map-toolbar-icon-right {
-  font-size: large;
+  font-size: var(--heading-large-fnt-size);
 }
 .leaflet-control-measure-interaction.js-interaction {
   background-color: var(--map-btn-bg-color);
 }
 a.leaflet-control-zoomhome-in, a.leaflet-control-zoomhome-out {
-  font-size: x-large !important;
+  font-size: var(--heading-xlarge-fnt-size) !important;
 }
 .leaflet-popup-content h3 {
-  font-size: 17px !important;
+  font-size: var(--btn-fnt-size) !important;
 }
 
 .leaflet-control-minimap {
@@ -1182,7 +1240,7 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   transform: translate(-50%, -50%);
   top: -10px;
   font-weight: bold;
-  font-size: var(--group-title-fnt-size, 15px);
+  font-size: var(--group-title-fnt-size);
   margin-top: 5px;
 }
 
@@ -1647,15 +1705,15 @@ input:checked.switch+label:after {
 }
 
 .bx {
-  font-size: x-large;
+  font-size: var(--heading-xlarge-fnt-size);
 }
 
 .bxs-pencil {
-  font-size: large;
+  font-size: var(--btn-fnt-size);
   line-height: inherit;
 }
 .fa-wrench {
-  font-size: medium;
+  font-size: var(--btn-fnt-size);
   line-height: inherit;
 }
 /* Perfil Topografico */
@@ -1856,3 +1914,31 @@ input:checked.switch+label:after {
 .individualFeature > ul > li > span {
   float: right;
 } */
+
+/* ====================================
+   SISTEMA DE TIPOGRAFÍAS RESPONSIVE
+   ==================================== 
+   
+   Variables centralizadas en :root con fallbacks en px + rem:
+   
+   Desktop (por defecto):
+   - --group-title-fnt-size: 1rem (16px)
+   - --layer-cont-fnt-size: 0.75rem (12px)  
+   - --popup-fnt-size: 0.875rem (14px)
+   - --body-fnt-size: 0.875rem (14px)
+   - --input-fnt-size: 0.875rem (14px)
+   - --btn-fnt-size: 1rem (16px)
+   - --heading-large-fnt-size: 1.25rem (20px)
+   - --heading-xlarge-fnt-size: 1.5rem (24px)
+   
+   Mobile (max-width: 768px):
+   - --group-title-fnt-size: 0.875rem (14px)
+   - --layer-cont-fnt-size: 0.6875rem (11px)
+   - --popup-fnt-size: 0.75rem (12px)
+   - --body-fnt-size: 0.75rem (12px)
+   - --input-fnt-size: 0.75rem (12px)
+   - --btn-fnt-size: 0.875rem (14px)
+   - --heading-large-fnt-size: 1.125rem (18px)
+   - --heading-xlarge-fnt-size: 1.25rem (20px)
+
+   ====================================== */
