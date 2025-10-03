@@ -3,6 +3,20 @@
 const EmptyTab = "main-menu-tab-";
 const ItemGroupPrefix = "lista-";
 
+function normalizeStr(s) {
+  if (s == null) return "";
+  try {
+    return s
+      .toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
+  } catch (e) {
+    return s.toString().toLowerCase().trim();
+  }
+}
+
 /******************************************
 Class Capa
 ******************************************/
@@ -1550,6 +1564,7 @@ class ItemComposite {
     this.impresor = null;
     this.objDOM = null;
     this.querySearch = "";
+    this._querySearchNorm = "";
     this._active = false;
 
     this.searchOrderIntoKeywords();
@@ -1560,7 +1575,8 @@ class ItemComposite {
   }
 
   setQuerySearch(q) {
-    this.querySearch = q;
+    this.querySearch = q == null ? "" : q;
+    this._querySearchNorm = normalizeStr(this.querySearch);
   }
 
   getActive() {
@@ -1627,18 +1643,28 @@ class ItemComposite {
     if (this.querySearch == "" || this.capa == undefined) {
       return true;
     }
-    if (
-      this.capa.titulo.toLowerCase().indexOf(this.querySearch.toLowerCase()) >=
-      0
-    ) {
+    const normalizedQuery = this._querySearchNorm;
+    if (normalizedQuery === "") {
       return true;
     }
+
+    if (this.capa && this.capa.titulo) {
+      if (normalizeStr(this.capa.titulo).indexOf(normalizedQuery) >= 0) {
+        return true;
+      }
+    }
+
+    if (this.nombre && normalizeStr(this.nombre).indexOf(normalizedQuery) >= 0)
+      return true;
+
+    if (
+      this.descripcion &&
+      normalizeStr(this.descripcion).indexOf(normalizedQuery) >= 0
+    )
+      return true;
+
     for (var key in this.palabrasClave) {
-      if (
-        this.palabrasClave[key]
-          .toLowerCase()
-          .indexOf(this.querySearch.toLowerCase()) >= 0
-      ) {
+      if (normalizeStr(this.palabrasClave[key]).indexOf(normalizedQuery) >= 0) {
         return true;
       }
     }
@@ -2846,11 +2872,11 @@ class GestorMenu {
   _printSearcher() {
     if (this.getShowSearcher()) {
       const formContent = `
-        <form id='searchForm' class='searchFormBtn sticky' onSubmit='mainMenuSearch(event)'>
+        <form id='searchForm' class='searchFormBtn sticky' novalidate>
           <div class='center-flex'>
             <div class='has-feedback has-clear formBtns center-flex'>
-              <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa'>
-              <button onClick='reloadMenu()' class='ag-btn ag-btn-secondary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
+              <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa' autocomplete='off'>
+              <button type='button' class='ag-btn ag-btn-secondary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
             <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
             <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
@@ -3177,12 +3203,16 @@ class GestorMenu {
     this.getLoadingDOM().hide();
 
     //To print all items in background
-    for (var key in this.layersInfo) {
-      if (this.layersInfo[key].tab.listType != "combobox") {
-        this.addLazyInitLayerInfoCounter(
-          ItemGroupPrefix + this.layersInfo[key].section,
-        );
-        this.layersInfo[key].get(this);
+    // Solo cargar capas de geoservicios si NO hay búsqueda activa
+    // Cuando hay búsqueda, solo filtramos las capas ya cargadas
+    if (this.getQuerySearch() === "") {
+      for (var key in this.layersInfo) {
+        if (this.layersInfo[key].tab.listType != "combobox") {
+          this.addLazyInitLayerInfoCounter(
+            ItemGroupPrefix + this.layersInfo[key].section,
+          );
+          this.layersInfo[key].get(this);
+        }
       }
     }
 
@@ -3229,18 +3259,36 @@ class GestorMenu {
         $this.siblings(".form-control-clear").toggleClass("hidden", !visible);
       })
       .trigger("propertychange");
-    $(".form-control-clear").click(function () {
+    $(".form-control-clear").click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
       $(this)
         .siblings('input[type="text"]')
         .val("")
         .trigger("propertychange")
         .focus();
-      $("#searchForm").submit();
+      gestorMenu.setQuerySearch("");
+      gestorMenu.printMenu();
     });
-    $("#searchclear").click(function () {
+    $("#searchclear").click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
       $("#q").val("");
-      $("#searchForm").submit();
+      gestorMenu.setQuerySearch("");
+      gestorMenu.printMenu();
     });
+
+    const searchFormElement = document.getElementById("searchForm");
+    if (searchFormElement && !searchFormElement.dataset.boundSubmit) {
+      searchFormElement.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const queryInput = document.getElementById("q");
+        const queryValue = queryInput ? queryInput.value : "";
+        gestorMenu.setQuerySearch(queryValue);
+        gestorMenu.printMenu();
+      });
+      searchFormElement.dataset.boundSubmit = "true";
+    }
 
     //Jquery autocomplete (begin)
     var accentMap = {
