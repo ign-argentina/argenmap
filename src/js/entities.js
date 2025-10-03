@@ -3773,7 +3773,12 @@ class Menu_UI {
     zoom_layer_opt.onclick = function () {
       addedLayers.forEach((lyr) => {
         if (lyr.id === id) {
-          mapa.centerLayer(lyr.layer);
+          // Si la capa es un imageOverlay (waterRise/cota), usar sus bounds directamente
+          if (lyr.layer && typeof lyr.layer.getBounds === 'function' && lyr.layer._url) {
+            mapa.fitBounds(lyr.layer.getBounds());
+          } else {
+            mapa.centerLayer(lyr.layer);
+          }
         }
       });
     };
