@@ -2,23 +2,23 @@
   "object" == typeof exports && "undefined" != typeof module
     ? t(exports)
     : "function" == typeof define && define.amd
-    ? define(["exports"], t)
-    : t(
-        (e["leaflet-simple-map-screenshoter"] =
-          e["leaflet-simple-map-screenshoter"] || {})
-      );
+      ? define(["exports"], t)
+      : t(
+          (e["leaflet-simple-map-screenshoter"] =
+            e["leaflet-simple-map-screenshoter"] || {}),
+        );
 })(this, function (e) {
   "use strict";
   var t =
     "undefined" != typeof window
       ? window
       : "undefined" != typeof global
-      ? global
-      : "undefined" != typeof self
-      ? self
-      : {};
+        ? global
+        : "undefined" != typeof self
+          ? self
+          : {};
   function n(e, t) {
-    return e((t = { exports: {} }), t.exports), t.exports;
+    return (e((t = { exports: {} }), t.exports), t.exports);
   }
   var o = n(function (e, n) {
       !(function (t) {
@@ -73,7 +73,7 @@
             const n = document.implementation.createHTMLDocument(),
               o = n.createElement("base"),
               r = (n.head.appendChild(o), n.createElement("a"));
-            return n.body.appendChild(r), (o.href = t), (r.href = e), r.href;
+            return (n.body.appendChild(r), (o.href = t), (r.href = e), r.href);
           },
           getAndEncode: function (e) {
             let t = h.impl.urlCache.find(function (t) {
@@ -90,23 +90,24 @@
                   let r;
                   var i;
                   function a(e) {
-                    console.error(e), t("");
+                    (console.error(e), t(""));
                   }
-                  (o.onreadystatechange = function () {
+                  ((o.onreadystatechange = function () {
                     if (4 === o.readyState)
                       if (200 !== o.status)
                         r
                           ? t(r)
                           : a(
-                              `cannot fetch resource: ${e}, status: ` + o.status
+                              `cannot fetch resource: ${e}, status: ` +
+                                o.status,
                             );
                       else {
                         const e = new FileReader();
-                        (e.onloadend = function () {
+                        ((e.onloadend = function () {
                           var n = e.result.split(/,/)[1];
                           t(n);
                         }),
-                          e.readAsDataURL(o.response);
+                          e.readAsDataURL(o.response));
                       }
                   }),
                     (o.ontimeout = function () {
@@ -114,7 +115,7 @@
                         ? t(r)
                         : a(
                             `timeout of ${n}ms occured while fetching resource: ` +
-                              e
+                              e,
                           );
                     }),
                     (o.responseType = "blob"),
@@ -125,7 +126,7 @@
                     h.impl.options.imagePlaceholder &&
                       (i = h.impl.options.imagePlaceholder.split(/,/)) &&
                       i[1] &&
-                      (r = i[1]);
+                      (r = i[1]));
                 }))),
               t.promise
             );
@@ -167,13 +168,13 @@
             return "data:," !== e
               ? new Promise(function (t, n) {
                   const o = new Image();
-                  h.impl.options.useCredentials &&
+                  (h.impl.options.useCredentials &&
                     (o.crossOrigin = "use-credentials"),
                     (o.onload = function () {
                       t(o);
                     }),
                     (o.onerror = n),
-                    (o.src = e);
+                    (o.src = e));
                 })
               : Promise.resolve();
           },
@@ -241,7 +242,7 @@
                   return e.replace(
                     ((r = t),
                     new RegExp(`(url\\(['"]?)(${n.escape(r)})(['"]?\\))`, "g")),
-                    `$1${o}$3`
+                    `$1${o}$3`,
                   );
                   var r;
                 });
@@ -254,7 +255,7 @@
                   return Promise.all(
                     e.map(function (e) {
                       return e.resolve();
-                    })
+                    }),
                   );
                 })
                 .then(function (e) {
@@ -275,7 +276,7 @@
                     } catch (t) {
                       console.log(
                         "Error while reading CSS rules from " + e.href,
-                        t.toString()
+                        t.toString(),
                       );
                     }
                 }),
@@ -327,7 +328,7 @@
                     : Promise.all(
                         n.asArray(t.childNodes).map(function (t) {
                           return e(t);
-                        })
+                        }),
                       );
                 })
               : Promise.resolve(t);
@@ -346,7 +347,7 @@
                     })
                     .then(function (t) {
                       return new Promise(function (n) {
-                        (e.onload = n), (e.onerror = n), (e.src = t);
+                        ((e.onload = n), (e.onerror = n), (e.src = t));
                       });
                     });
             },
@@ -377,7 +378,10 @@
               );
             },
             toBlob: function (e, t) {
-              return ((t = t || {}).raster = !0), m(e, t).then(n.canvasToBlob);
+              return (
+                ((t = t || {}).raster = !0),
+                m(e, t).then(n.canvasToBlob)
+              );
             },
             toPixelData: function (e, t) {
               return (
@@ -390,7 +394,7 @@
               );
             },
             toCanvas: function (e, t) {
-              return ((t = t || {}).raster = !0), m(e, t || {});
+              return (((t = t || {}).raster = !0), m(e, t || {}));
             },
             impl: {
               fontFaces: a,
@@ -424,10 +428,10 @@
                           return e instanceof HTMLCanvasElement
                             ? n.makeImage(e.toDataURL())
                             : "IFRAME" === e.nodeName
-                            ? html2canvas(e.contentDocument.body)
-                                .then((e) => e.toDataURL())
-                                .then(n.makeImage)
-                            : e.cloneNode(!1);
+                              ? html2canvas(e.contentDocument.body)
+                                  .then((e) => e.toDataURL())
+                                  .then(n.makeImage)
+                              : e.cloneNode(!1);
                         })
                         .then(function (r) {
                           return (function (t, r) {
@@ -464,7 +468,7 @@
                                       i.cssText
                                         ? ((t.style.cssText = i.cssText),
                                           (function (e, t) {
-                                            (t.font = e.font),
+                                            ((t.font = e.font),
                                               (t.fontFamily = e.fontFamily),
                                               (t.fontFeatureSettings =
                                                 e.fontFeatureSettings),
@@ -483,7 +487,7 @@
                                                 e.fontVariantNumeric),
                                               (t.fontVariationSettings =
                                                 e.fontVariationSettings),
-                                              (t.fontWeight = e.fontWeight);
+                                              (t.fontWeight = e.fontWeight));
                                           })(i, t.style))
                                         : (o
                                             ? (function (e, t, n, o) {
@@ -495,13 +499,13 @@
                                                     l =
                                                       (i.setProperty(
                                                         a,
-                                                        o ? "initial" : "unset"
+                                                        o ? "initial" : "unset",
                                                       ),
                                                       t.getPropertyValue(a));
-                                                  l !== s
+                                                  (l !== s
                                                     ? r.setProperty(a, s)
                                                     : r.removeProperty(a),
-                                                    i.setProperty(a, c);
+                                                    i.setProperty(a, c));
                                                 }
                                               })(e, i, t, r)
                                             : (function (e, t, o) {
@@ -510,28 +514,28 @@
                                                     y ||
                                                       (((y =
                                                         document.createElement(
-                                                          "iframe"
+                                                          "iframe",
                                                         )).style.visibility =
                                                         "hidden"),
                                                       (y.style.position =
                                                         "fixed"),
                                                       document.body.appendChild(
-                                                        y
+                                                        y,
                                                       ),
                                                       y.contentWindow.document.write(
-                                                        '<!DOCTYPE html><meta charset="UTF-8"><title>sandbox</title><body>'
+                                                        '<!DOCTYPE html><meta charset="UTF-8"><title>sandbox</title><body>',
                                                       ));
                                                     const t =
                                                         document.createElement(
-                                                          e
+                                                          e,
                                                         ),
                                                       o =
                                                         (y.contentWindow.document.body.appendChild(
-                                                          t
+                                                          t,
                                                         ),
                                                         (t.textContent = "."),
                                                         y.contentWindow.getComputedStyle(
-                                                          t
+                                                          t,
                                                         )),
                                                       r = {};
                                                     return (
@@ -543,32 +547,35 @@
                                                             "height" === e
                                                               ? "auto"
                                                               : o.getPropertyValue(
-                                                                  e
+                                                                  e,
                                                                 );
                                                         }),
                                                       y.contentWindow.document.body.removeChild(
-                                                        t
+                                                        t,
                                                       ),
                                                       (v[e] = r)
                                                     );
                                                   })(o.tagName),
                                                   i = o.style;
-                                                n.asArray(e).forEach(function (
-                                                  n
-                                                ) {
-                                                  var o = e.getPropertyValue(n);
-                                                  (o !== r[n] ||
-                                                    (t &&
-                                                      o !==
-                                                        t.getPropertyValue(
-                                                          n
-                                                        ))) &&
-                                                    i.setProperty(
-                                                      n,
-                                                      o,
-                                                      e.getPropertyPriority(n)
-                                                    );
-                                                });
+                                                n.asArray(e).forEach(
+                                                  function (n) {
+                                                    var o =
+                                                      e.getPropertyValue(n);
+                                                    (o !== r[n] ||
+                                                      (t &&
+                                                        o !==
+                                                          t.getPropertyValue(
+                                                            n,
+                                                          ))) &&
+                                                      i.setProperty(
+                                                        n,
+                                                        o,
+                                                        e.getPropertyPriority(
+                                                          n,
+                                                        ),
+                                                      );
+                                                  },
+                                                );
                                               })(i, a, t),
                                           r &&
                                             ([
@@ -576,7 +583,7 @@
                                               "inset-block-start",
                                               "inset-block-end",
                                             ].forEach((e) =>
-                                              t.style.removeProperty(e)
+                                              t.style.removeProperty(e),
                                             ),
                                             [
                                               "left",
@@ -601,10 +608,10 @@
                                               (i &&
                                                 t.setAttribute(
                                                   "class",
-                                                  i + " " + e
+                                                  i + " " + e,
                                                 ),
                                               document.createElement("style"));
-                                          a.appendChild(
+                                          (a.appendChild(
                                             (function () {
                                               const t = `.${e}:` + o,
                                                 i = (
@@ -613,7 +620,7 @@
                                                         return `${
                                                           r.cssText
                                                         } content: ${r.getPropertyValue(
-                                                          "content"
+                                                          "content",
                                                         )};`;
                                                       }
                                                     : function () {
@@ -625,10 +632,10 @@
                                                                 e +
                                                                 ": " +
                                                                 r.getPropertyValue(
-                                                                  e
+                                                                  e,
                                                                 ) +
                                                                 (r.getPropertyPriority(
-                                                                  e
+                                                                  e,
                                                                 )
                                                                   ? " !important"
                                                                   : "")
@@ -639,34 +646,34 @@
                                                       }
                                                 )();
                                               return document.createTextNode(
-                                                t + `{${i}}`
+                                                t + `{${i}}`,
                                               );
-                                            })()
+                                            })(),
                                           ),
-                                            t.appendChild(a);
+                                            t.appendChild(a));
                                         }
                                       })(o);
                                     });
                                   })
                                   .then(function () {
-                                    e instanceof HTMLTextAreaElement &&
+                                    (e instanceof HTMLTextAreaElement &&
                                       (t.innerHTML = e.value),
                                       e instanceof HTMLInputElement &&
-                                        t.setAttribute("value", e.value);
+                                        t.setAttribute("value", e.value));
                                   })
                                   .then(function () {
                                     t instanceof SVGElement &&
                                       (t.setAttribute(
                                         "xmlns",
-                                        "http://www.w3.org/2000/svg"
+                                        "http://www.w3.org/2000/svg",
                                       ),
                                       t instanceof SVGRectElement &&
-                                        ["width", "height"].forEach(function (
-                                          e
-                                        ) {
-                                          const n = t.getAttribute(e);
-                                          n && t.style.setProperty(e, n);
-                                        }));
+                                        ["width", "height"].forEach(
+                                          function (e) {
+                                            const n = t.getAttribute(e);
+                                            n && t.style.setProperty(e, n);
+                                          },
+                                        ));
                                   })
                                   .then(function () {
                                     return t;
@@ -680,13 +687,13 @@
               .then(g)
               .then(w)
               .then(function (e) {
-                t.bgcolor && (e.style.backgroundColor = t.bgcolor),
+                (t.bgcolor && (e.style.backgroundColor = t.bgcolor),
                   t.width && (e.style.width = t.width + "px"),
                   t.height && (e.style.height = t.height + "px"),
                   t.style &&
                     Object.keys(t.style).forEach(function (n) {
                       e.style[n] = t.style[n];
-                    });
+                    }));
                 let n = null;
                 return (
                   "function" == typeof t.onclone && (n = t.onclone(e)),
@@ -721,7 +728,7 @@
                 var r, i;
               })
               .then(function (e) {
-                return (h.impl.urlCache = []), e;
+                return ((h.impl.urlCache = []), e);
               })
           );
         }
@@ -739,8 +746,8 @@
                     t.bgcolor)
                   ) {
                     const e = r.getContext("2d");
-                    (e.fillStyle = t.bgcolor),
-                      e.fillRect(0, 0, r.width, r.height);
+                    ((e.fillStyle = t.bgcolor),
+                      e.fillRect(0, 0, r.width, r.height));
                   }
                   return r;
                 })(e, r),
@@ -755,7 +762,7 @@
                   (y = null),
                   M && clearTimeout(M),
                   (M = setTimeout(() => {
-                    (M = null), (v = {});
+                    ((M = null), (v = {}));
                   }, 2e4))),
                 i
               );
@@ -765,7 +772,9 @@
           return a.resolveAll().then(function (t) {
             const n = document.createElement("style");
             return (
-              e.appendChild(n), n.appendChild(document.createTextNode(t)), e
+              e.appendChild(n),
+              n.appendChild(document.createTextNode(t)),
+              e
             );
           });
         }
@@ -783,7 +792,7 @@
       (function () {
         function n(e, t, n) {
           var o = new XMLHttpRequest();
-          o.open("GET", e),
+          (o.open("GET", e),
             (o.responseType = "blob"),
             (o.onload = function () {
               a(o.response, t, n);
@@ -791,7 +800,7 @@
             (o.onerror = function () {
               console.error("could not download file");
             }),
-            o.send();
+            o.send());
         }
         function o(e) {
           var t = new XMLHttpRequest();
@@ -806,7 +815,7 @@
             e.dispatchEvent(new MouseEvent("click"));
           } catch (n) {
             var t = document.createEvent("MouseEvents");
-            t.initMouseEvent(
+            (t.initMouseEvent(
               "click",
               !0,
               !0,
@@ -821,111 +830,116 @@
               !1,
               !1,
               0,
-              null
+              null,
             ),
-              e.dispatchEvent(t);
+              e.dispatchEvent(t));
           }
         }
         var i =
             "object" == typeof window && window.window === window
               ? window
               : "object" == typeof self && self.self === self
-              ? self
-              : "object" == typeof t && t.global === t
-              ? t
-              : void 0,
+                ? self
+                : "object" == typeof t && t.global === t
+                  ? t
+                  : void 0,
           a =
             i.saveAs ||
             ("object" != typeof window || window !== i
               ? function () {}
               : "download" in HTMLAnchorElement.prototype
-              ? function (e, t, a) {
-                  var s = i.URL || i.webkitURL,
-                    c = document.createElement("a");
-                  (t = t || e.name || "download"),
-                    (c.download = t),
-                    (c.rel = "noopener"),
-                    "string" == typeof e
-                      ? ((c.href = e),
-                        c.origin === location.origin
-                          ? r(c)
-                          : o(c.href)
-                          ? n(e, t, a)
-                          : r(c, (c.target = "_blank")))
-                      : ((c.href = s.createObjectURL(e)),
-                        setTimeout(function () {
-                          s.revokeObjectURL(c.href);
-                        }, 4e4),
-                        setTimeout(function () {
-                          r(c);
-                        }, 0));
-                }
-              : "msSaveOrOpenBlob" in navigator
-              ? function (e, t, i) {
-                  if (((t = t || e.name || "download"), "string" != typeof e))
-                    navigator.msSaveOrOpenBlob(
-                      (function (e, t) {
-                        return (
-                          void 0 === t
-                            ? (t = { autoBom: !1 })
-                            : "object" != typeof t &&
-                              (console.warn(
-                                "Deprecated: Expected third argument to be a object"
-                              ),
-                              (t = { autoBom: !t })),
-                          t.autoBom &&
-                          /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(
-                            e.type
-                          )
-                            ? new Blob(["\ufeff", e], { type: e.type })
-                            : e
+                ? function (e, t, a) {
+                    var s = i.URL || i.webkitURL,
+                      c = document.createElement("a");
+                    ((t = t || e.name || "download"),
+                      (c.download = t),
+                      (c.rel = "noopener"),
+                      "string" == typeof e
+                        ? ((c.href = e),
+                          c.origin === location.origin
+                            ? r(c)
+                            : o(c.href)
+                              ? n(e, t, a)
+                              : r(c, (c.target = "_blank")))
+                        : ((c.href = s.createObjectURL(e)),
+                          setTimeout(function () {
+                            s.revokeObjectURL(c.href);
+                          }, 4e4),
+                          setTimeout(function () {
+                            r(c);
+                          }, 0)));
+                  }
+                : "msSaveOrOpenBlob" in navigator
+                  ? function (e, t, i) {
+                      if (
+                        ((t = t || e.name || "download"), "string" != typeof e)
+                      )
+                        navigator.msSaveOrOpenBlob(
+                          (function (e, t) {
+                            return (
+                              void 0 === t
+                                ? (t = { autoBom: !1 })
+                                : "object" != typeof t &&
+                                  (console.warn(
+                                    "Deprecated: Expected third argument to be a object",
+                                  ),
+                                  (t = { autoBom: !t })),
+                              t.autoBom &&
+                              /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(
+                                e.type,
+                              )
+                                ? new Blob(["\ufeff", e], { type: e.type })
+                                : e
+                            );
+                          })(e, i),
+                          t,
                         );
-                      })(e, i),
-                      t
-                    );
-                  else if (o(e)) n(e, t, i);
-                  else {
-                    var a = document.createElement("a");
-                    (a.href = e),
-                      (a.target = "_blank"),
-                      setTimeout(function () {
-                        r(a);
-                      });
-                  }
-                }
-              : function (e, t, o, r) {
-                  if (
-                    ((r = r || open("", "_blank")) &&
-                      (r.document.title = r.document.body.innerText =
-                        "downloading..."),
-                    "string" == typeof e)
-                  )
-                    return n(e, t, o);
-                  var a = "application/octet-stream" === e.type,
-                    s = /constructor/i.test(i.HTMLElement) || i.safari,
-                    c = /CriOS\/[\d]+/.test(navigator.userAgent);
-                  if ((c || (a && s)) && "object" == typeof FileReader) {
-                    var l = new FileReader();
-                    (l.onloadend = function () {
-                      var e = l.result;
-                      (e = c
-                        ? e
-                        : e.replace(/^data:[^;]*;/, "data:attachment/file;")),
-                        r ? (r.location.href = e) : (location = e),
-                        (r = null);
-                    }),
-                      l.readAsDataURL(e);
-                  } else {
-                    var u = i.URL || i.webkitURL,
-                      h = u.createObjectURL(e);
-                    r ? (r.location = h) : (location.href = h),
-                      (r = null),
-                      setTimeout(function () {
-                        u.revokeObjectURL(h);
-                      }, 4e4);
-                  }
-                });
-        (i.saveAs = a.saveAs = a), (e.exports = a);
+                      else if (o(e)) n(e, t, i);
+                      else {
+                        var a = document.createElement("a");
+                        ((a.href = e),
+                          (a.target = "_blank"),
+                          setTimeout(function () {
+                            r(a);
+                          }));
+                      }
+                    }
+                  : function (e, t, o, r) {
+                      if (
+                        ((r = r || open("", "_blank")) &&
+                          (r.document.title = r.document.body.innerText =
+                            "downloading..."),
+                        "string" == typeof e)
+                      )
+                        return n(e, t, o);
+                      var a = "application/octet-stream" === e.type,
+                        s = /constructor/i.test(i.HTMLElement) || i.safari,
+                        c = /CriOS\/[\d]+/.test(navigator.userAgent);
+                      if ((c || (a && s)) && "object" == typeof FileReader) {
+                        var l = new FileReader();
+                        ((l.onloadend = function () {
+                          var e = l.result;
+                          ((e = c
+                            ? e
+                            : e.replace(
+                                /^data:[^;]*;/,
+                                "data:attachment/file;",
+                              )),
+                            r ? (r.location.href = e) : (location = e),
+                            (r = null));
+                        }),
+                          l.readAsDataURL(e));
+                      } else {
+                        var u = i.URL || i.webkitURL,
+                          h = u.createObjectURL(e);
+                        (r ? (r.location = h) : (location.href = h),
+                          (r = null),
+                          setTimeout(function () {
+                            u.revokeObjectURL(h);
+                          }, 4e4));
+                      }
+                    });
+        ((i.saveAs = a.saveAs = a), (e.exports = a));
       })();
     }),
     i = L.Control.extend({
@@ -953,10 +967,10 @@
             n = e.error;
           return (
             console.warn(
-              "Map node is very big " + t.scrollWidth + "x" + t.scrollHeight
+              "Map node is very big " + t.scrollWidth + "x" + t.scrollHeight,
             ),
             console.warn(
-              "Add function: SimpleMapScreenshoter({\n              onPixelDataFail: function({ node, plugin, error, mapPane, domtoimageOptions }) {\n                 // Solutions:\n                 // decrease size of map\n                 // or decrease zoom level\n                 // or remove elements with big distanses\n                 // and after that return image in Promise - plugin._getPixelDataOfNormalMap\n                 return plugin._getPixelDataOfNormalMap(domtoimageOptions)\n              }\n            })"
+              "Add function: SimpleMapScreenshoter({\n              onPixelDataFail: function({ node, plugin, error, mapPane, domtoimageOptions }) {\n                 // Solutions:\n                 // decrease size of map\n                 // or decrease zoom level\n                 // or remove elements with big distanses\n                 // and after that return image in Promise - plugin._getPixelDataOfNormalMap\n                 return plugin._getPixelDataOfNormalMap(domtoimageOptions)\n              }\n            })",
             ),
             Promise.reject(n)
           );
@@ -966,7 +980,7 @@
         return (
           (this._container = L.DomUtil.create(
             "div",
-            "leaflet-control-simpleMapScreenshoter"
+            "leaflet-control-simpleMapScreenshoter",
           )),
           (this._link = null),
           (this._screenState = { status: 1, promise: null }),
@@ -1003,14 +1017,14 @@
                 return e._getPixelData(o);
               })
               .then(function (t) {
-                return e._setElementsVisible(!0), e._toCanvas(t, o);
+                return (e._setElementsVisible(!0), e._toCanvas(t, o));
               })
               .then(function (n) {
                 return "image" === t
                   ? e._canvasToImage(n, o)
                   : "canvas" === t
-                  ? n
-                  : e._canvasToBlob(n, o);
+                    ? n
+                    : e._canvasToBlob(n, o);
               })
               .then(function (t) {
                 return (
@@ -1046,7 +1060,7 @@
               s.value.style.opacity = !1 === t ? 0 : 1;
             }
           } catch (e) {
-            (i = !0), (a = e);
+            ((i = !0), (a = e));
           } finally {
             try {
               !r && c.return && c.return();
@@ -1082,14 +1096,14 @@
           l = c.screenHeight,
           u = c.screenWidth,
           h = document.createElement("canvas");
-        (h.width = u), (h.height = l);
+        ((h.width = u), (h.height = l));
         for (
           var f = h.getContext("2d"), d = f.createImageData(u, l), p = 0;
           p < e.length;
           ++p
         )
           d.data[p] = e[p];
-        f.putImageData(d, 0, 0), (d = null);
+        (f.putImageData(d, 0, 0), (d = null));
         var m = document.createElement("canvas"),
           g = m.getContext("2d"),
           w = 0,
@@ -1110,7 +1124,7 @@
             D === l && j.push(E);
           }
           var I = this._getMinAndMaxOnValuesBreak(j);
-          (M = I.min),
+          ((M = I.min),
             (C = I.max),
             ((0 === M && 0 === C) || null === C) && (C = u),
             ((0 === w && 0 === T) || null === T) && (T = l),
@@ -1129,8 +1143,8 @@
             (y = T - w),
             (v = C - M),
             (m.width = v),
-            (m.height = y);
-        } else (m.width = v), (m.height = y);
+            (m.height = y));
+        } else ((m.width = v), (m.height = y));
         var A = null;
         return (
           o && (A = "function" == typeof o ? o.call(this) : o),
@@ -1152,7 +1166,7 @@
       _getMinAndMaxOnValuesBreak: function (e) {
         for (var t = 0, n = 0, o = !1, r = 1; r < e.length; r++) {
           if (e[r] - 1 !== e[r - 1]) {
-            (n = e[r]), (o = !0);
+            ((n = e[r]), (o = !0));
             break;
           }
           t = e[r];
@@ -1172,10 +1186,10 @@
           return (
             console.warn(
               "May be map size very big on that zoom level, we have error:",
-              e.toString()
+              e.toString(),
             ),
             console.warn(
-              "You can manually hide map elements with large distances between them for fix that warn"
+              "You can manually hide map elements with large distances between them for fix that warn",
             ),
             t._getPixelDataOfBigMap(o)
           );
@@ -1200,13 +1214,13 @@
             arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {},
           n = this._map.getContainer(),
           r = this._map.getPane("mapPane");
-        (r.style.width = 2 * n.clientWidth + "px"),
+        ((r.style.width = 2 * n.clientWidth + "px"),
           (r.style.height = 2 * n.clientHeight + "px"),
-          (r.style.overflow = "hidden");
+          (r.style.overflow = "hidden"));
         var i = function () {
-          (r.style.width = "initial"),
+          ((r.style.width = "initial"),
             (r.style.height = "initial"),
-            (r.style.overflow = "initial");
+            (r.style.overflow = "initial"));
         };
         return (
           (this._node = {
@@ -1217,7 +1231,7 @@
           o
             .toPixelData(n, t)
             .then(function (e) {
-              return i(), e;
+              return (i(), e);
             })
             .catch(function (o) {
               return (
@@ -1236,14 +1250,14 @@
         );
       },
       _addScreenBtn: function () {
-        (this._link = L.DomUtil.create(
+        ((this._link = L.DomUtil.create(
           "a",
           "leaflet-control-simpleMapScreenshoter-btn",
-          this._container
+          this._container,
         )),
           this._addCss(),
           L.DomEvent.addListener(this._link, "click", this._onScreenBtn, this),
-          L.DomEvent.disableClickPropagation(this._link);
+          L.DomEvent.disableClickPropagation(this._link));
       },
       _addCss: function () {
         var e =
@@ -1252,11 +1266,11 @@
             "');\n       background-position: 46% 41%;\n       background-repeat: no-repeat;\n       background-size: 63%;\n    }\n    .leaflet-control-simpleMapScreenshoter a:hover{\n       cursor: pointer;\n    }\n    ",
           t = document.head || document.getElementsByTagName("head")[0],
           n = document.createElement("style");
-        n.appendChild(document.createTextNode(e)), t.appendChild(n);
+        (n.appendChild(document.createTextNode(e)), t.appendChild(n));
       },
       _onScreenBtn: function () {
         var e = this;
-        this._map.fire("simpleMapScreenshoter.click"),
+        (this._map.fire("simpleMapScreenshoter.click"),
           this.options.preventDownload ||
             this.takeScreen()
               .then(function (t) {
@@ -1268,7 +1282,7 @@
               })
               .catch(function (t) {
                 e._map.fire("simpleMapScreenshoter.error", { e: t });
-              });
+              }));
       },
       _onUserStartInteractWithMap: function () {
         this._interaction = !0;
@@ -1291,8 +1305,8 @@
         return new L.Control.SimpleMapScreenshoter(e);
       }),
       i);
-  (e.default = a),
+  ((e.default = a),
     (e.SimpleMapScreenshoter = i),
-    Object.defineProperty(e, "__esModule", { value: !0 });
+    Object.defineProperty(e, "__esModule", { value: !0 }));
 });
 //# sourceMappingURL=leaflet-simple-map-screenshoter.js.map

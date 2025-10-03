@@ -26,18 +26,6 @@
     /* padding-bottom: 40px; */
 }
 
-/* following block shows copy link as button */
-/* .context-imagen > div:nth-child(1) > a:nth-child(1) { 
-  background-color: #008dc9;
-  margin-top: -8px;
-  margin-left: -8px;
-  color: white;
-  padding: 5px 10px;
-  text-decoration: none;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-} */
 
 .context-menu-item-active {
   color: rgb(0, 92, 131);

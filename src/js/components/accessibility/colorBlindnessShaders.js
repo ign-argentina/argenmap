@@ -36,8 +36,7 @@ void main() {
   );
   gl_FragColor = colorMatrix * color;
 }
-`
-
+`,
 };
 const colorBlindnessShaders2 = {
   deuteranomaly: `
@@ -91,7 +90,7 @@ const colorBlindnessShaders2 = {
       );
       gl_FragColor = colorMatrix * color;
     }
-  `
+  `,
 };
 const colorBlindnessShaders1 = {
   deuteranomaly: `
@@ -129,7 +128,7 @@ const colorBlindnessShaders1 = {
       );
       gl_FragColor = colorMatrix * color;
     }
-  `
+  `,
 };
 const colorBlindnessShaders = {
   deuteranomaly: ` 
@@ -167,6 +166,5 @@ void main() {
   );
   gl_FragColor = colorMatrix * color;
 }
-`
-
+`,
 };

@@ -2,10 +2,10 @@
   function t(n) {
     if (r[n]) return r[n].exports;
     var o = (r[n] = { i: n, l: !1, exports: {} });
-    return e[n].call(o.exports, o, o.exports, t), (o.l = !0), o.exports;
+    return (e[n].call(o.exports, o, o.exports, t), (o.l = !0), o.exports);
   }
   var r = {};
-  (t.m = e),
+  ((t.m = e),
     (t.c = r),
     (t.d = function (e, r, n) {
       t.o(e, r) ||
@@ -24,13 +24,13 @@
           : function () {
               return e;
             };
-      return t.d(r, "a", r), r;
+      return (t.d(r, "a", r), r);
     }),
     (t.o = function (e, t) {
       return Object.prototype.hasOwnProperty.call(e, t);
     }),
     (t.p = "/dist/"),
-    t((t.s = 28));
+    t((t.s = 28)));
 })([
   function (e, t, r) {
     function n(e) {
@@ -72,7 +72,7 @@
       if (void 0 === e) throw new Error("geometry is required");
       if (t && t.constructor !== Object)
         throw new Error("properties must be an Object");
-      n && d(n), o && m(o);
+      (n && d(n), o && m(o));
       var i = { type: "Feature" };
       return (
         o && (i.id = o),
@@ -161,7 +161,7 @@
       if (-1 === ["string", "number"].indexOf(typeof e))
         throw new Error("id must be a number or a string");
     }
-    r.d(t, "b", function () {
+    (r.d(t, "b", function () {
       return n;
     }),
       r.d(t, "f", function () {
@@ -181,7 +181,7 @@
       }),
       r.d(t, "d", function () {
         return h;
-      });
+      }));
     var y = {
       meters: 6371008.8,
       metres: 6371008.8,
@@ -239,7 +239,7 @@
       o = (function () {
         try {
           var e = n(Object, "defineProperty");
-          return e({}, "", {}), e;
+          return (e({}, "", {}), e);
         } catch (e) {}
       })();
     e.exports = o;
@@ -465,9 +465,9 @@
           g < v;
           g++
         ) {
-          (c = m ? e.features[g].geometry : y ? e.geometry : e),
+          ((c = m ? e.features[g].geometry : y ? e.geometry : e),
             (f = !!c && "GeometryCollection" === c.type),
-            (u = f ? c.geometries.length : 1);
+            (u = f ? c.geometries.length : 1));
           for (var b = 0; b < u; b++) {
             var _ = 0,
               j = 0;
@@ -482,13 +482,13 @@
                   break;
                 case "Point":
                   if (!1 === t(l, h, g, _, j)) return !1;
-                  h++, _++;
+                  (h++, _++);
                   break;
                 case "LineString":
                 case "MultiPoint":
                   for (o = 0; o < l.length; o++) {
                     if (!1 === t(l[o], h, g, _, j)) return !1;
-                    h++, "MultiPoint" === x && _++;
+                    (h++, "MultiPoint" === x && _++);
                   }
                   "LineString" === x && _++;
                   break;
@@ -499,7 +499,7 @@
                       if (!1 === t(l[o][i], h, g, _, j)) return !1;
                       h++;
                     }
-                    "MultiLineString" === x && _++, "Polygon" === x && j++;
+                    ("MultiLineString" === x && _++, "Polygon" === x && j++);
                   }
                   "Polygon" === x && _++;
                   break;
@@ -630,7 +630,7 @@
                   if (void 0 === a) return void (a = n);
                   var p = Object(l.e)([a, n], e.properties);
                   if (!1 === t(p, r, o, f, i)) return !1;
-                  i++, (a = n);
+                  (i++, (a = n));
                 }) && void 0
             );
           }
@@ -642,17 +642,17 @@
         o = !1;
       return (
         a(e, function (e, i, s, a, u) {
-          (n = !1 === o && void 0 === r ? e : t(n, e, i, s, a, u)), (o = !0);
+          ((n = !1 === o && void 0 === r ? e : t(n, e, i, s, a, u)), (o = !0));
         }),
         n
       );
     }
-    r.d(t, "a", function () {
+    (r.d(t, "a", function () {
       return i;
     }),
       r.d(t, "b", function () {
         return u;
-      });
+      }));
     var l = r(3);
   },
   function (e, t, r) {
@@ -677,7 +677,7 @@
         if (null != e)
           for (var r in e)
             Object.prototype.hasOwnProperty.call(e, r) && (t[r] = e[r]);
-        return (t.default = e), t;
+        return ((t.default = e), t);
       })(c),
       p = r(86),
       h = n(p),
@@ -692,7 +692,7 @@
       b = (0, i.default)(m.pointPopupTemplate, y),
       _ = (0, i.default)(m.linePopupTemplate, y),
       j = (0, i.default)(m.areaPopupTemplate, y);
-    (L.Control.Measure = L.Control.extend({
+    ((L.Control.Measure = L.Control.extend({
       _className: "leaflet-control-measure",
       options: {
         units: {},
@@ -713,8 +713,8 @@
         var t = this.options,
           r = t.activeColor,
           n = t.completedColor;
-        (this._symbols = new h.default({ activeColor: r, completedColor: n })),
-          (this.options.units = L.extend({}, a.default, this.options.units));
+        ((this._symbols = new h.default({ activeColor: r, completedColor: n })),
+          (this.options.units = L.extend({}, a.default, this.options.units)));
       },
       onAdd: function (e) {
         return (
@@ -727,21 +727,21 @@
         );
       },
       onRemove: function (e) {
-        e.off("click", this._collapse, this), e.removeLayer(this._layer);
+        (e.off("click", this._collapse, this), e.removeLayer(this._layer));
       },
       _initLayout: function () {
         var e = this._className,
           t = (this._container = L.DomUtil.create("div", e + " leaflet-bar"));
-        (t.innerHTML = v({ model: { className: e } })),
+        ((t.innerHTML = v({ model: { className: e } })),
           t.setAttribute("aria-haspopup", !0),
           L.DomEvent.disableClickPropagation(t),
-          L.DomEvent.disableScrollPropagation(t);
+          L.DomEvent.disableScrollPropagation(t));
         var r = (this.$toggle = (0, c.selectOne)(".js-toggle", t));
         this.$interaction = (0, c.selectOne)(".js-interaction", t);
         var n = (0, c.selectOne)(".js-start", t),
           o = (0, c.selectOne)(".js-cancel", t),
           i = (0, c.selectOne)(".js-finish", t);
-        (this.$startPrompt = (0, c.selectOne)(".js-startprompt", t)),
+        ((this.$startPrompt = (0, c.selectOne)(".js-startprompt", t)),
           (this.$measuringPrompt = (0, c.selectOne)(".js-measuringprompt", t)),
           (this.$startHelp = (0, c.selectOne)(".js-starthelp", t)),
           (this.$results = (0, c.selectOne)(".js-results", t)),
@@ -760,37 +760,37 @@
           L.DomEvent.on(o, "click", L.DomEvent.stop),
           L.DomEvent.on(o, "click", this._finishMeasure, this),
           L.DomEvent.on(i, "click", L.DomEvent.stop),
-          L.DomEvent.on(i, "click", this._handleMeasureDoubleClick, this);
+          L.DomEvent.on(i, "click", this._handleMeasureDoubleClick, this));
       },
       _expand: function () {
-        f.hide(this.$toggle), f.show(this.$interaction);
+        (f.hide(this.$toggle), f.show(this.$interaction));
       },
       _collapse: function () {
         this._locked || (f.hide(this.$interaction), f.show(this.$toggle));
       },
       _updateMeasureNotStarted: function () {
-        f.hide(this.$startHelp),
+        (f.hide(this.$startHelp),
           f.hide(this.$results),
           f.hide(this.$measureTasks),
           f.hide(this.$measuringPrompt),
-          f.show(this.$startPrompt);
+          f.show(this.$startPrompt));
       },
       _updateMeasureStartedNoPoints: function () {
-        f.hide(this.$results),
+        (f.hide(this.$results),
           f.show(this.$startHelp),
           f.show(this.$measureTasks),
           f.hide(this.$startPrompt),
-          f.show(this.$measuringPrompt);
+          f.show(this.$measuringPrompt));
       },
       _updateMeasureStartedWithPoints: function () {
-        f.hide(this.$startHelp),
+        (f.hide(this.$startHelp),
           f.show(this.$results),
           f.show(this.$measureTasks),
           f.hide(this.$startPrompt),
-          f.show(this.$measuringPrompt);
+          f.show(this.$measuringPrompt));
       },
       _startMeasure: function () {
-        (this._locked = !0),
+        ((this._locked = !0),
           (this._measureVertexes = L.featureGroup().addTo(this._layer)),
           (this._captureMarker = L.marker(this._map.getCenter(), {
             clickable: !0,
@@ -814,11 +814,11 @@
             this,
           ),
           this._updateMeasureStartedNoPoints(),
-          this._map.fire("measurestart", null, !1);
+          this._map.fire("measurestart", null, !1));
       },
       _finishMeasure: function () {
         var e = L.extend({}, this._resultsModel, { points: this._latlngs });
-        (this._locked = !1),
+        ((this._locked = !1),
           L.DomEvent.off(
             this._container,
             "mouseover",
@@ -841,10 +841,10 @@
           (this._measureVertexes = null),
           this._updateMeasureNotStarted(),
           this._collapse(),
-          this._map.fire("measurefinish", e, !1);
+          this._map.fire("measurefinish", e, !1));
       },
       _clearMeasure: function () {
-        (this._latlngs = []),
+        ((this._latlngs = []),
           (this._resultsModel = null),
           this._measureVertexes.clearLayers(),
           this._measureDrag && this._layer.removeLayer(this._measureDrag),
@@ -853,7 +853,7 @@
             this._layer.removeLayer(this._measureBoundary),
           (this._measureDrag = null),
           (this._measureArea = null),
-          (this._measureBoundary = null);
+          (this._measureBoundary = null));
       },
       _centerCaptureMarker: function () {
         this._captureMarker.setLatLng(this._map.getCenter());
@@ -921,13 +921,13 @@
         this.$results.innerHTML = g({ model: t });
       },
       _handleMeasureMove: function (e) {
-        this._measureDrag
+        (this._measureDrag
           ? this._measureDrag.setLatLng(e.latlng)
           : (this._measureDrag = L.circleMarker(
               e.latlng,
               this._symbols.getSymbol("measureDrag"),
             ).addTo(this._layer)),
-          this._measureDrag.bringToFront();
+          this._measureDrag.bringToFront());
       },
       _handleMeasureDoubleClick: function () {
         var e = this._latlngs,
@@ -970,7 +970,7 @@
               this,
             ));
           var s = (0, c.selectOne)(".js-deletemarkup", o);
-          s &&
+          (s &&
             (L.DomEvent.on(s, "click", L.DomEvent.stop),
             L.DomEvent.on(
               s,
@@ -984,25 +984,25 @@
             t.bindPopup(o, this.options.popupOptions),
             t.getBounds
               ? t.openPopup(t.getBounds().getCenter())
-              : t.getLatLng && t.openPopup(t.getLatLng());
+              : t.getLatLng && t.openPopup(t.getLatLng()));
         }
       },
       _handleMeasureClick: function (e) {
         var t = this._map.mouseEventToLatLng(e.originalEvent),
           r = this._latlngs[this._latlngs.length - 1],
           n = this._symbols.getSymbol("measureVertex");
-        (r && t.equals(r)) ||
+        ((r && t.equals(r)) ||
           (this._latlngs.push(t),
           this._addMeasureArea(this._latlngs),
           this._addMeasureBoundary(this._latlngs),
           this._measureVertexes.eachLayer(function (e) {
-            e.setStyle(n), e._path.setAttribute("class", n.className);
+            (e.setStyle(n), e._path.setAttribute("class", n.className));
           }),
           this._addNewVertex(t),
           this._measureBoundary && this._measureBoundary.bringToFront(),
           this._measureVertexes.bringToFront()),
           this._updateResults(),
-          this._updateMeasureStartedWithPoints();
+          this._updateMeasureStartedWithPoints());
       },
       _handleMapMouseOut: function () {
         this._measureDrag &&
@@ -1050,13 +1050,13 @@
       }),
       (L.control.measure = function (e) {
         return new L.Control.Measure(e);
-      });
+      }));
   },
   function (e, t) {},
   function (e, t, r) {
     function n(e, t, r) {
       var n = h.imports._.templateSettings || h;
-      r && c(e, t, r) && (t = void 0), (e = d(e)), (t = o({}, t, n, a));
+      (r && c(e, t, r) && (t = void 0), (e = d(e)), (t = o({}, t, n, a)));
       var j,
         x,
         M = o({}, t.imports, n.imports, a),
@@ -1077,7 +1077,7 @@
           "g",
         ),
         E = "sourceURL" in t ? "//# sourceURL=" + t.sourceURL + "\n" : "";
-      e.replace(C, function (t, r, n, o, i, s) {
+      (e.replace(C, function (t, r, n, o, i, s) {
         return (
           n || (n = o),
           (k += e.slice(O, s).replace(_, u)),
@@ -1088,9 +1088,9 @@
           t
         );
       }),
-        (k += "';\n");
+        (k += "';\n"));
       var S = t.variable;
-      S || (k = "with (obj) {\n" + k + "\n}\n"),
+      (S || (k = "with (obj) {\n" + k + "\n}\n"),
         (k = (x ? k.replace(m, "") : k).replace(y, "$1").replace(v, "$1;")),
         (k =
           "function(" +
@@ -1103,7 +1103,7 @@
             ? ", __j = Array.prototype.join;\nfunction print() { __p += __j.call(arguments, '') }\n"
             : ";\n") +
           k +
-          "return __p\n}");
+          "return __p\n}"));
       var A = i(function () {
         return Function(w, E + "return " + k).apply(void 0, L);
       });
@@ -1145,7 +1145,7 @@
       for (var a = -1, u = t.length; ++a < u; ) {
         var l = t[a],
           c = n ? n(r[l], e[l], l, r, e) : void 0;
-        void 0 === c && (c = e[l]), s ? i(r, l, c) : o(r, l, c);
+        (void 0 === c && (c = e[l]), s ? i(r, l, c) : o(r, l, c));
       }
       return r;
     }
@@ -1221,7 +1221,7 @@
         var n = !0;
       } catch (e) {}
       var o = a.call(e);
-      return n && (t ? (e[u] = r) : delete e[u]), o;
+      return (n && (t ? (e[u] = r) : delete e[u]), o);
     }
     var o = r(4),
       i = Object.prototype,
@@ -1313,7 +1313,7 @@
             u[s] = n[t + s];
           s = -1;
           for (var l = Array(t + 1); ++s < t; ) l[s] = n[s];
-          return (l[t] = r(u)), o(e, this, l);
+          return ((l[t] = r(u)), o(e, this, l));
         }
       );
     }
@@ -1446,7 +1446,7 @@
       i = r(16),
       s = r(1),
       a = {};
-    (a["[object Float32Array]"] =
+    ((a["[object Float32Array]"] =
       a["[object Float64Array]"] =
       a["[object Int8Array]"] =
       a["[object Int16Array]"] =
@@ -1472,7 +1472,7 @@
         a["[object String]"] =
         a["[object WeakMap]"] =
           !1),
-      (e.exports = n);
+      (e.exports = n));
   },
   function (e, t) {
     function r(e) {
@@ -1633,7 +1633,7 @@
   },
   function (e, t, r) {
     function n(e) {
-      return (e = i(e)), e && a.test(e) ? e.replace(s, o) : e;
+      return ((e = i(e)), e && a.test(e) ? e.replace(s, o) : e);
     }
     var o = r(73),
       i = r(26),
@@ -1697,7 +1697,7 @@
   },
   function (e, t, r) {
     "use strict";
-    Object.defineProperty(t, "__esModule", { value: !0 }),
+    (Object.defineProperty(t, "__esModule", { value: !0 }),
       (t.default = {
         acres: { factor: 24711e-8, display: "acres", decimals: 2 },
         feet: { factor: 3.2808, display: "feet", decimals: 0 },
@@ -1708,7 +1708,7 @@
         sqfeet: { factor: 10.7639, display: "sqfeet", decimals: 0 },
         sqmeters: { factor: 1, display: "Metros cuadrados", decimals: 0 },
         sqmiles: { factor: 3.86102e-7, display: "sqmiles", decimals: 2 },
-      });
+      }));
   },
   function (e, t, r) {
     "use strict";
@@ -1744,7 +1744,7 @@
         area: a,
       };
     }
-    Object.defineProperty(t, "__esModule", { value: !0 }), (t.default = s);
+    (Object.defineProperty(t, "__esModule", { value: !0 }), (t.default = s));
     var a = r(81),
       u = n(a),
       l = r(84),
@@ -1867,7 +1867,7 @@
         f = e.length;
       if (f > 2) {
         for (u = 0; u < f; u++)
-          u === f - 2
+          (u === f - 2
             ? ((o = f - 2), (i = f - 1), (s = 0))
             : u === f - 1
               ? ((o = f - 1), (i = 0), (s = 1))
@@ -1875,7 +1875,7 @@
             (t = e[o]),
             (r = e[i]),
             (n = e[s]),
-            (c += (a(n[0]) - a(t[0])) * Math.sin(a(r[1])));
+            (c += (a(n[0]) - a(t[0])) * Math.sin(a(r[1]))));
         c = (c * l * l) / 2;
       }
       return c;
@@ -1891,24 +1891,25 @@
   function (e, t, r) {
     "use strict";
     function n(e, t) {
-      return t || (t = document), t.querySelector(e);
+      return (t || (t = document), t.querySelector(e));
     }
     function o(e, t) {
       return (
-        t || (t = document), Array.prototype.slice.call(t.querySelectorAll(e))
+        t || (t = document),
+        Array.prototype.slice.call(t.querySelectorAll(e))
       );
     }
     function i(e) {
-      if (e) return e.setAttribute("style", "display:none;"), e;
+      if (e) return (e.setAttribute("style", "display:none;"), e);
     }
     function s(e) {
-      if (e) return e.removeAttribute("style"), e;
+      if (e) return (e.removeAttribute("style"), e);
     }
-    Object.defineProperty(t, "__esModule", { value: !0 }),
+    (Object.defineProperty(t, "__esModule", { value: !0 }),
       (t.selectOne = n),
       (t.selectAll = o),
       (t.hide = i),
-      (t.show = s);
+      (t.show = s));
   },
   function (e, t, r) {
     "use strict";
@@ -1921,20 +1922,20 @@
         function e(e, t) {
           for (var r = 0; r < t.length; r++) {
             var n = t[r];
-            (n.enumerable = n.enumerable || !1),
+            ((n.enumerable = n.enumerable || !1),
               (n.configurable = !0),
               "value" in n && (n.writable = !0),
-              Object.defineProperty(e, n.key, n);
+              Object.defineProperty(e, n.key, n));
           }
         }
         return function (t, r, n) {
-          return r && e(t.prototype, r), n && e(t, n), t;
+          return (r && e(t.prototype, r), n && e(t, n), t);
         };
       })(),
       i = { activeColor: "#ABE67E", completedColor: "#C8F2BE" },
       s = (function () {
         function e(t) {
-          n(this, e), (this._options = L.extend({}, i, this._options, t));
+          (n(this, e), (this._options = L.extend({}, i, this._options, t)));
         }
         return (
           o(e, [
@@ -2049,7 +2050,8 @@
           : "",
       ].join("");
     }
-    Object.defineProperty(t, "__esModule", { value: !0 }), (t.numberFormat = n);
+    (Object.defineProperty(t, "__esModule", { value: !0 }),
+      (t.numberFormat = n));
   },
   function (e, t, r) {
     "use strict";

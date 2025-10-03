@@ -1,5 +1,5 @@
 var atrib_ign =
-  "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+    "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
   baseMaps = {},
   overlayMaps = new Object(),
   layerName,
@@ -54,7 +54,25 @@ const isMobile = window.matchMedia(
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 var unordered = "";
-var ordered = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
+var ordered = [
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+];
 var ordenZoomHome = 1;
 var ordenFullScreen = 5;
 var ordenMeasure = 2;
@@ -394,7 +412,7 @@ $("body").on("pluginLoad", function (event, plugin) {
         case "accessibility":
           const accessibility = new Accessibility();
           accessibility.createComponent();
-          break
+          break;
         case "loadLayer":
           const loadLayersModal = new LoadLayersModal();
           //modal.createModal();          //loadLayersModal.createComponent();
@@ -475,7 +493,9 @@ $("body").on("pluginLoad", function (event, plugin) {
               },
             })
             .addTo(mapa);
-          const locateIcon = document.querySelector(".leaflet-control-locate a");
+          const locateIcon = document.querySelector(
+            ".leaflet-control-locate a",
+          );
           locateIcon.style.fontSize = "18px";
           gestorMenu.plugins["locate"].setStatus("visible");
           break;
@@ -674,18 +694,6 @@ $("body").on("pluginLoad", function (event, plugin) {
                   !this._enabled &&
                     this._hasAvailableLayers() &&
                     (this.fire("enabled", { handler: this.type }),
-                      this._map.fire(L.Draw.Event.EDITSTART, {
-                        handler: this.type,
-                      }),
-                      L.Handler.prototype.enable.call(this),
-                      this._featureGroup
-                        .on("layeradd", this._enableLayerEdit, this)
-                        .on("layerremove", this._disableLayerEdit, this));
-                }
-              } else {
-                !this._enabled &&
-                  this._hasAvailableLayers() &&
-                  (this.fire("enabled", { handler: this.type }),
                     this._map.fire(L.Draw.Event.EDITSTART, {
                       handler: this.type,
                     }),
@@ -693,6 +701,18 @@ $("body").on("pluginLoad", function (event, plugin) {
                     this._featureGroup
                       .on("layeradd", this._enableLayerEdit, this)
                       .on("layerremove", this._disableLayerEdit, this));
+                }
+              } else {
+                !this._enabled &&
+                  this._hasAvailableLayers() &&
+                  (this.fire("enabled", { handler: this.type }),
+                  this._map.fire(L.Draw.Event.EDITSTART, {
+                    handler: this.type,
+                  }),
+                  L.Handler.prototype.enable.call(this),
+                  this._featureGroup
+                    .on("layeradd", this._enableLayerEdit, this)
+                    .on("layerremove", this._disableLayerEdit, this));
               }
             },
             _enableLayerEdit: function (t) {
@@ -701,14 +721,14 @@ $("body").on("pluginLoad", function (event, plugin) {
                 o = t.layer || t.target || t;
               if (typeof o != "string" && !o._uneditable) {
                 //to disallow editing in geoprocesses
-                this._backupLayer(o),
+                (this._backupLayer(o),
                   this.options.poly &&
-                ((i = L.Util.extend({}, this.options.poly)),
+                    ((i = L.Util.extend({}, this.options.poly)),
                     (o.options.poly = i)),
                   this.options.selectedPathOptions &&
-                ((e = L.Util.extend({}, this.options.selectedPathOptions)),
+                    ((e = L.Util.extend({}, this.options.selectedPathOptions)),
                     e.maintainColor &&
-                ((e.color = o.options.color),
+                      ((e.color = o.options.color),
                       (e.fillColor = o.options.fillColor)),
                     (o.options.original = L.extend({}, o.options)),
                     (o.options.editing = e)),
@@ -721,22 +741,22 @@ $("body").on("pluginLoad", function (event, plugin) {
                         .on("MSPointerMove", this._onTouchMove, this)
                         .on("touchend", this._onMarkerDragEnd, this)
                         .on("MSPointerUp", this._onMarkerDragEnd, this))
-                    : o.editing.enable();
+                    : o.editing.enable());
               }
             },
             _disableLayerEdit: function (t) {
               var e = t.layer || t.target || t;
               if (typeof e != "string" && !e._uneditable) {
                 //to disallow editing in geoprocesses
-                (e.edited = !1),
+                ((e.edited = !1),
                   e.editing && e.editing.disable(),
                   delete e.options.editing,
                   delete e.options.original,
                   this._selectedPathOptions &&
-                  (e instanceof L.Marker
-                    ? this._toggleMarkerHighlight(e)
-                    : (e.setStyle(e.options.previousOptions),
-                      delete e.options.previousOptions)),
+                    (e instanceof L.Marker
+                      ? this._toggleMarkerHighlight(e)
+                      : (e.setStyle(e.options.previousOptions),
+                        delete e.options.previousOptions)),
                   e instanceof L.Marker
                     ? (e.dragging.disable(),
                       e
@@ -745,7 +765,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                         .off("MSPointerMove", this._onTouchMove, this)
                         .off("touchend", this._onMarkerDragEnd, this)
                         .off("MSPointerUp", this._onMarkerDragEnd, this))
-                    : e.editing.disable();
+                    : e.editing.disable());
               }
             },
           });
@@ -753,9 +773,9 @@ $("body").on("pluginLoad", function (event, plugin) {
           L.EditToolbar.Delete.include({
             revertLayers: function () {
               this._deletedLayers.eachLayer(function (t) {
-                this._deletableLayers.addLayer(t),
+                (this._deletableLayers.addLayer(t),
                   mapa.editableLayers[t.type].push(t), //add layer to editableLayers from _deletableLayers
-                  t.fire("revert-deleted", { layer: t });
+                  t.fire("revert-deleted", { layer: t }));
                 addLayerToDrawingsGroup(
                   t.name,
                   t,
@@ -773,16 +793,16 @@ $("body").on("pluginLoad", function (event, plugin) {
             _disableLayerDelete: function (t) {
               var e = t.layer || t.target || t;
               if (typeof e != "string" && !e._uneditable && !e.value) {
-                e.off("click", this._removeLayer, this),
-                  this._deletedLayers.removeLayer(e);
+                (e.off("click", this._removeLayer, this),
+                  this._deletedLayers.removeLayer(e));
               }
             },
             _removeLayer: function (t) {
               var e = t.layer || t.target || t;
               let isFile = e.id
                 ? e.id.includes("json") ||
-                e.id.includes("zip") ||
-                e.id.includes("kml")
+                  e.id.includes("zip") ||
+                  e.id.includes("kml")
                 : false;
               if (
                 typeof e != "string" &&
@@ -790,9 +810,9 @@ $("body").on("pluginLoad", function (event, plugin) {
                 !e.value &&
                 !isFile
               ) {
-                mapa.deleteLayer(e.name), //remove geometry from groupLayer[dibujos], drawItem, editableLayers and addedLayers
+                (mapa.deleteLayer(e.name), //remove geometry from groupLayer[dibujos], drawItem, editableLayers and addedLayers
                   this._deletedLayers.addLayer(e),
-                  e.fire("deleted");
+                  e.fire("deleted"));
               }
             },
           });
@@ -2582,8 +2602,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layer.split("_")[0];
             return mapa.editableLayers.hasOwnProperty(type)
               ? mapa.editableLayers[type]
-                .find((lyr) => lyr.name === layer)
-                .toGeoJSON()
+                  .find((lyr) => lyr.name === layer)
+                  .toGeoJSON()
               : null;
           };
 
@@ -2729,7 +2749,9 @@ $("body").on("pluginLoad", function (event, plugin) {
 
             if (layer.type === "label") {
               // Extract label text from layer properties.
-              layer.data.geoJSON ? geoJSON.properties.text = layer.data.geoJSON.properties.text : geoJSON.properties.text = layer.data.properties.text;
+              layer.data.geoJSON
+                ? (geoJSON.properties.text = layer.data.geoJSON.properties.text)
+                : (geoJSON.properties.text = layer.data.properties.text);
             }
 
             const fileName = layer.name + ".geojson"; // Create file name.
@@ -3105,7 +3127,7 @@ $("body").on("pluginLoad", function (event, plugin) {
       }
 
       /**
-       * @worldCopyJump solves the no repeating layers when map is dragged crossing 
+       * @worldCopyJump solves the no repeating layers when map is dragged crossing
        * the antimeridian to another new map
        */
       mapa = new L.map("mapa", {
@@ -3124,7 +3146,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           ? app.mapConfig.zoom.max
           : DEFAULT_MAX_ZOOM_LEVEL,
         closePopupOnClick: false,
-        worldCopyJump: true
+        worldCopyJump: true,
         /* renderer: L.svg() */
       });
 
@@ -3730,17 +3752,17 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div id="popupPageSeeker">' +
-          sAux +
-          '</div><div class="featureInfo" id="featureInfoPopup' +
-          i +
-          '">',
+            sAux +
+            '</div><div class="featureInfo" id="featureInfoPopup' +
+            i +
+            '">',
         );
       } else {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div class="featureInfo" style="display:none" id="featureInfoPopup' +
-          i +
-          '">',
+            i +
+            '">',
         );
       }
     }
