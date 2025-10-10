@@ -22,3 +22,5 @@ yarn-debug.log*
 yarn-error.log*
 coverage/
 *.tsbuildinfo
+package*.json
+biome.json
