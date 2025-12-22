@@ -30,12 +30,9 @@
   "showSearchBar": true,
   "geocoder": {
     "enabled": true,
-    "limit": 5,
-    "places_route": "places",
     "strings": {
       "placeholder": "Nombre o coordenadas"
-    },
-    "url": "https://api.ign.gob.ar/buscador/"
+    }
   },
   "referencias": {
     "show": false,

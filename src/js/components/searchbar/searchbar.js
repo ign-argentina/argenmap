@@ -1,8 +1,8 @@
-const config_url = app.geocoder.url;
-const config_search = "search"; //app.geocoder.search;
-const config_places = app.geocoder.places_route;
+const config_url = "https://api.ign.gob.ar/buscador/"; // app.geocoder.url;
+const config_search = "search"; // app.geocoder.search;
+const config_places = "places"; // app.geocoder.places_route;
 const config_query = "q"; // app.geocoder.query;
-const config_limit = app.geocoder.limit;
+const config_limit = 5; // app.geocoder.limit;
 const sb_strings = app.geocoder.strings;
 // const config_lang = app.geocoder.lang;
 // const config_key = app.geocoder.key;
