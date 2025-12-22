@@ -1,11 +1,11 @@
 const config_url = app.geocoder.url;
-const config_search = app.geocoder.search;
-const config_places = app.geocoder.url_by_id;
-const config_query = app.geocoder.query;
-const config_lang = app.geocoder.lang;
+const config_search = "search"; //app.geocoder.search;
+const config_places = app.geocoder.places_route;
+const config_query = "q"; // app.geocoder.query;
 const config_limit = app.geocoder.limit;
-const config_key = app.geocoder.key;
-const sb_strings = app.searchbar.strings;
+const sb_strings = app.geocoder.strings;
+/* const config_lang = app.geocoder.lang; */
+/* const config_key = app.geocoder.key; */
 /* const geosearchbar_top = "60px";
 const geosearchbar_left = "300px";
 const geosearchbar_color_focus = "#008dc9";

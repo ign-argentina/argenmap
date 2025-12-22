@@ -40,8 +40,8 @@ const app = {
       setCharts(app.charts.isActive);
     }
 
-    if (app.hasOwnProperty("searchbar")) {
-      setSearchbar(app.searchbar.isActive);
+    if (app.hasOwnProperty("geocoder")) {
+      setGeocoder(app.geocoder.enabled);
     }
 
     if (app.hasOwnProperty("login")) {
@@ -671,8 +671,8 @@ async function loadTemplate(data, isDefaultTemplate) {
       app.dependencies.d3 = true;
     }
 
-    //if searchbar is active in menu.json
-    if (loadSearchbar && !app.dependencies.searchbar) {
+    //if geocoder is active in menu.json
+    if (loadGeocoder && !app.dependencies.geocoder) {
       $.getScript("src/js/components/searchbar/searchbar.js").done(function () {
         var searchBar_ui = new Searchbar_UI();
         searchBar_ui.create_sarchbar();
@@ -680,7 +680,7 @@ async function loadTemplate(data, isDefaultTemplate) {
       $("head").append(
         '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">',
       );
-      app.dependencies.searchbar = true;
+      app.dependencies.geocoder = true;
     }
 
     //Load dynamic mapa.js

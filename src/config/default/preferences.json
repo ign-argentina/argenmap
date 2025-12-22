@@ -28,25 +28,15 @@
     }
   },
   "showSearchBar": true,
-  "searchbar":{
-    "isActive": true,
-    "top": "5px",
-    "left": "40%",
-    "color_focus": "#008dc9",
-    "background_color": "rgba(255, 255, 255, 0.7)",
+  "geocoder": {
+    "enabled": true,
+    "limit": 5,
+    "places_route": "places",
     "strings": {
-      "placeholder": "Buscar lugar..."
-    }
+      "placeholder": "Nombre o coordenadas"
+    },
+    "url": "https://api.ign.gob.ar/buscador/"
   },
-  "geocoder":{
-    "url": "https://api.ign.gob.ar/buscador/",
-    "search": "search",
-    "url_by_id": "places",
-    "query": "q",
-    "lang": "es",
-    "limit":5,
-    "key": ""
-  }, 
   "referencias": {
     "show": false,
     "icon": "src/config/default/styles/images/referencias.png",
