@@ -1,6 +1,7 @@
 .list-group-gc {
   padding-left: 0;
 }
+
 .list-group-item-gc {
   position: relative;
   display: block;
@@ -13,17 +14,21 @@
   width: 100%;
   overflow: hidden;
 }
+
 .itemgc-focus {
   background-color: #ececec;
 }
+
 .search-bar-list {
   position: absolute;
   width: 250px;
 }
+
 .list-group-item-heading-gc {
   margin-top: 0;
   margin-bottom: 5px;
 }
+
 #search_bar {
   outline: 0 !important;
   overflow: auto;
@@ -32,44 +37,22 @@
   transition: width 0.4s ease-in-out;
   width: 130px;
 }
+
 #search_bar:focus {
   width: 160px;
 }
+
 .search-bar-no-empty {
   border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
+
 #searchbar {
   z-index: 1500;
   border-radius: var(--input-text-border-radius);
 }
-/* @media (max-width:768px) and (orientation:portrait) {
-  #searchbar {
-    left: 50px;
-    top: 5px;
-  }
-  #logoText {
-    display: none;
-  }
-}
-@media (max-width:768px) and (orientation:landscape) {
-  #searchbar {
-    left: 50px;
-    top: 5px;
-    max-width: 300px;
-    max-height: 340px
-  }
-  .list-group-gc {
-    max-width: 300px;
-    max-height: 270px
-  }
-}
-@media (min-width:769px) {
-  #searchbar {
- max-width: 135px 
-  } 
-}*/
+
 #div-icon-close-searchbar {
   margin: 0;
   width: auto;
@@ -77,6 +60,7 @@
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-#div-icon-close-searchbar:hover > .fa-times {
+
+#div-icon-close-searchbar:hover>.fa-times {
   color: var(--btn-secondary-color);
 }
