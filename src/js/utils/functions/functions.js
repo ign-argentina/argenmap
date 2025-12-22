@@ -2,7 +2,7 @@
 var plugins = new Array("loadGeojson", "loadWms");
 var loadTableAsPopUp = false;
 var tableFeatureCount = 20;
-var loadSearchbar = false;
+var loadGeocoder = false;
 var mainPopup = false;
 var currentlyDrawing = false;
 var loadCharts = false;
@@ -34,8 +34,8 @@ function setCharts(cond) {
   loadCharts = cond;
 }
 
-function setSearchbar(cond) {
-  loadSearchbar = cond;
+function setGeocoder(cond) {
+  loadGeocoder = cond;
 }
 
 function setLogin(cond) {

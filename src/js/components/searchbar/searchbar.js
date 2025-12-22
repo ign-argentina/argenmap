@@ -1,15 +1,11 @@
 const config_url = app.geocoder.url;
-const config_search = app.geocoder.search;
-const config_places = app.geocoder.url_by_id;
-const config_query = app.geocoder.query;
-const config_lang = app.geocoder.lang;
+const config_search = "search"; //app.geocoder.search;
+const config_places = app.geocoder.places_route;
+const config_query = "q"; // app.geocoder.query;
 const config_limit = app.geocoder.limit;
-const config_key = app.geocoder.key;
-const sb_strings = app.searchbar.strings;
-/* const geosearchbar_top = "60px";
-const geosearchbar_left = "300px";
-const geosearchbar_color_focus = "#008dc9";
-const geosearchbar_background_color = "rgba(255, 255, 255, 0.7)"; */
+const sb_strings = app.geocoder.strings;
+// const config_lang = app.geocoder.lang;
+// const config_key = app.geocoder.key;
 
 let results = null;
 let url_consulta = null;
@@ -20,40 +16,11 @@ let selected_item = false;
 let id_selected_item = null;
 
 class Searchbar_UI {
-  constructor() {
-    /*     this.style_top = app.searchbar.top ? app.searchbar.top : geosearchbar_top;
-        this.style_left = app.searchbar.left
-          ? app.searchbar.left
-          : geosearchbar_left;
-        this.style_color_focus = app.searchbar.color_focus
-          ? app.searchbar.color_focus
-          : geosearchbar_color_focus;
-        this.style_background_color = app.searchbar.background_color
-          ? app.searchbar.background_color
-          : geosearchbar_background_color; */
-  }
-
-  /*   createStyle() {
-      const style = document.createElement("style");
-      style.id = "geocoder-style";
-      style.innerHTML = `
-      @media (min-width: 769px) {
-      #searchbar {
-        background-color: ${this.style_background_color};
-      }}
-      #search_bar:focus {
-          box-shadow: 0 0 3px ${this.style_color_focus} !important;
-          -moz-box-shadow: 0 0 3px ${this.style_color_focus}!important;
-          -webkit-box-shadow: 0 0 3px ${this.style_color_focus}!important;
-      }
-        `;
-      document.head.appendChild(style);
-    } */
+  constructor() { }
 
   create_sarchbar() {
     let helpTour = document.getElementById("logo-help");
 
-    //this.createStyle();
     let divsearch = document.createElement("div");
     divsearch.id = "searchbar";
 
