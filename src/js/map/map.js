@@ -12,14 +12,7 @@ let countour_styles = false;
 
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
   for (const plugin in PLUGINS) {
-    if (
-      !app.hasOwnProperty("excluded_plugins") ||
-      !app.excluded_plugins.find(
-        (excluded_plugin) => excluded_plugin === plugin,
-      )
-    ) {
       gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
-    }
   }
 });
 
