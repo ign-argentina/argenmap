@@ -10,12 +10,6 @@
   "layer_options":{
     "isActive": false
   },
-  "metaTags": {
-    "title": "",
-    "description": "",
-    "image": ""
-  },
-  "excluded_plugins": ["minimap"],
   "mapConfig": {
     "center": {
       "latitude": -40,

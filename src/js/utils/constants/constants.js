@@ -74,7 +74,6 @@ const PLUGINS = {
   Draw: _PATH + "leaflet-draw/leaflet.draw.js",
   ZoomHome: _PATH + "leaflet-zoomhome/dist/leaflet.zoomhome.min.js",
   BingLayer: _PATH + "leaflet-bing-layer-gh-pages/leaflet-bing-layer.js",
-  minimap: _PATH + "leaflet-minimap/Control.MiniMap.js",
   locate: _PATH + "leaflet-locate/L.Control.Locate.min.js",
   MousePosition: _PATH + "leaflet-mouseposition/src/L.Control.MousePosition.js",
   Measure: _PATH + "leaflet-measure/leaflet-measure.js",
