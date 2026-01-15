@@ -64,13 +64,45 @@
           "version": "1.0.0",
           "attribution": "Imágenes satelitales © Esri",
           "host": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-          "legendImg": "src/styles/images/esri.png",
+          "legendImg": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/0/0/0",
           "peso": 30,
           "zoom": {
             "min": 3,
-            "max": 17,
+            "max": 21,
             "nativeMin": 3,
             "nativeMax": 17
+          }
+        },
+        {
+          "titulo": "Imágenes satelitales Google",
+          "nombre": "google_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © Google",
+          "host": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+          "legendImg": "https://mt1.google.com/vt/lyrs=s&x=0&y=0&z=0",
+          "peso": 30,
+          "zoom": {
+            "min": 3,
+            "max": 21,
+            "nativeMin": 3,
+            "nativeMax": 21
+          }
+        },
+        {
+          "titulo": "Imágenes satelitales Stadia",
+          "nombre": "stadia_imagery",
+          "servicio": "tms",
+          "version": "1.0.0",
+          "attribution": "Imágenes satelitales © Stadia",
+          "host": "https://tiles.stadiamaps.com/data/imagery/{z}/{x}/{y}.jpg",
+          "legendImg": "https://tiles.stadiamaps.com/data/imagery/0/0/0.jpg",
+          "peso": 35,
+          "zoom": {
+            "min": 3,
+            "max": 21,
+            "nativeMin": 3,
+            "nativeMax": 18
           }
         },
         {
