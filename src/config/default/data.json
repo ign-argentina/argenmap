@@ -90,22 +90,6 @@
           }
         },
         {
-          "titulo": "Imágenes satelitales Stadia",
-          "nombre": "stadia_imagery",
-          "servicio": "tms",
-          "version": "1.0.0",
-          "attribution": "Imágenes satelitales © Stadia",
-          "host": "https://tiles.stadiamaps.com/data/imagery/{z}/{x}/{y}.jpg",
-          "legendImg": "https://tiles.stadiamaps.com/data/imagery/0/0/0.jpg",
-          "peso": 35,
-          "zoom": {
-            "min": 3,
-            "max": 21,
-            "nativeMin": 3,
-            "nativeMax": 18
-          }
-        },
-        {
           "titulo": "Mapa topográfico Esri",
           "nombre": "esri_imagery_t",
           "servicio": "tms",
