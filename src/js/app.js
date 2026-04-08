@@ -40,9 +40,12 @@ const app = {
       setCharts(app.charts.isActive);
     }
 
-    if (app.hasOwnProperty("geocoder")) {
-      setGeocoder(app.geocoder.enabled);
-    }
+    const geocoderEnabled =
+      app?.geocoder?.enabled ??
+      app?.geocoder?.isActive ??
+      app?.searchbar?.isActive ??
+      false;
+    setGeocoder(geocoderEnabled);
 
     if (app.hasOwnProperty("login")) {
       setLogin(app.login.isActive);
@@ -675,7 +678,13 @@ async function loadTemplate(data, isDefaultTemplate) {
     if (loadGeocoder && !app.dependencies.geocoder) {
       $.getScript("src/js/components/searchbar/searchbar.js").done(function () {
         var searchBar_ui = new Searchbar_UI();
-        searchBar_ui.create_sarchbar();
+        if (typeof searchBar_ui.create_sarchbar === "function") {
+          searchBar_ui.create_sarchbar();
+        } else if (typeof searchBar_ui.create_searchbar === "function") {
+          searchBar_ui.create_searchbar();
+        } else {
+          console.warn("No se encontró método de creación para Searchbar_UI");
+        }
       });
       $("head").append(
         '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">',

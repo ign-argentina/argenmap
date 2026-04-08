@@ -1,9 +1,13 @@
-const config_url = "https://api.ign.gob.ar/buscador/"; // app.geocoder.url;
-const config_search = "search"; // app.geocoder.search;
-const config_places = "places"; // app.geocoder.places_route;
-const config_query = "q"; // app.geocoder.query;
-const config_limit = 5; // app.geocoder.limit;
-const sb_strings = app.geocoder.strings;
+const geocoder_cfg = app?.geocoder || {};
+const searchbar_cfg = app?.searchbar || {};
+
+const config_url = geocoder_cfg.url || "https://api.ign.gob.ar/buscador/";
+const config_search = geocoder_cfg.search || "search";
+const config_places =
+  geocoder_cfg.places_route || geocoder_cfg.url_by_id || "places";
+const config_query = geocoder_cfg.query || "q";
+const config_limit = geocoder_cfg.limit || 5;
+const sb_strings = geocoder_cfg.strings || searchbar_cfg.strings || {};
 // const config_lang = app.geocoder.lang;
 // const config_key = app.geocoder.key;
 
@@ -19,6 +23,16 @@ class Searchbar_UI {
   constructor() { }
 
   create_sarchbar() {
+    const searchNavbar = document.getElementById("search-navbar");
+    if (!searchNavbar) {
+      console.warn("No existe el contenedor #search-navbar para la barra de búsqueda");
+      return;
+    }
+
+    if (document.getElementById("searchbar")) {
+      return;
+    }
+
     let helpTour = document.getElementById("logo-help");
 
     let divsearch = document.createElement("div");
@@ -31,7 +45,7 @@ class Searchbar_UI {
     input.id = "search_bar";
     input.classList = "ag-input-text";
     input.type = "search";
-    input.placeholder = sb_strings.placeholder || "Search places...";
+    input.placeholder = sb_strings.placeholder || "Buscar lugares...";
     input.spellcheck = false;
     input.autocomplete = "address-level1"; // Avoids autocomplete. Based on HTML attribute: autocomplete in MDN Web Docs page
 
@@ -49,7 +63,7 @@ class Searchbar_UI {
     divsearch.append(maininput);
     divsearch.append(res);
 
-    document.getElementById("search-navbar").appendChild(divsearch);
+    searchNavbar.appendChild(divsearch);
 
     let textinput = document.getElementById("search_bar");
     let results = document.getElementById("results_search_bar");
@@ -199,6 +213,11 @@ class Searchbar_UI {
       }
     });
     /* CIERRA ACTIVACION AUTOMATICA DE RESULTADO */
+  }
+
+  // Alias para compatibilidad con posibles cambios de nombre de método
+  create_searchbar() {
+    this.create_sarchbar();
   }
 
   create_item_notfound() {
