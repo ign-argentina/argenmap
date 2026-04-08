@@ -3278,17 +3278,31 @@ class GestorMenu {
       gestorMenu.printMenu();
     });
 
+    const performSearch = (queryValue) => {
+      gestorMenu.setQuerySearch(queryValue == null ? "" : queryValue);
+      gestorMenu.printMenu();
+    };
+
     const searchFormElement = document.getElementById("searchForm");
     if (searchFormElement && !searchFormElement.dataset.boundSubmit) {
       searchFormElement.addEventListener("submit", function (event) {
         event.preventDefault();
         const queryInput = document.getElementById("q");
         const queryValue = queryInput ? queryInput.value : "";
-        gestorMenu.setQuerySearch(queryValue);
-        gestorMenu.printMenu();
+        performSearch(queryValue);
       });
       searchFormElement.dataset.boundSubmit = "true";
     }
+
+    $("#q")
+      .off("keydown.searchSubmit")
+      .on("keydown.searchSubmit", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          event.stopPropagation();
+          performSearch(this.value);
+        }
+      });
 
     //Jquery autocomplete (begin)
     var accentMap = {
@@ -3321,8 +3335,10 @@ class GestorMenu {
         );
       },
       select: function (event, ui) {
+        event.preventDefault();
         $("#q").val(ui.item.label);
-        $("#searchForm").submit();
+        performSearch(ui.item.label);
+        return false;
       },
     });
     //Jquery autocomplete (end)
