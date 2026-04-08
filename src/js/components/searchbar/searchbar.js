@@ -77,10 +77,22 @@ class Searchbar_UI {
       q = q.trim();
       q = q.toLowerCase();
 
+      // Si presionan Enter y ya hay un item seleccionado, buscar por ese id
       if (e.which == 13 && selected_item) {
         let id = response_items[id_selected_item].place.id;
         id_search = id;
         searchById();
+        return;
+      }
+
+      // Si presionan Enter y NO hay item seleccionado, pero ya existen resultados
+      // visibles en el DOM, seleccionar el primero y ejecutar su búsqueda
+      if (e.which == 13 && !selected_item && items.length > 0) {
+        // Obtener el primer elemento de la lista
+        let firstItem = items[0];
+        // Simular click en el primer elemento (que ya tiene el handler configurado)
+        firstItem.click();
+        return;
       }
 
       //e.which == 40 down
