@@ -1,5 +1,5 @@
 var atrib_ign =
-    "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
+  "<a href='https://www.ign.gob.ar/AreaServicios/Argenmap/IntroduccionV2' target='_blank'>Instituto Geográfico Nacional</a> + <a href='https://www.osm.org/copyright' target='_blank'>OpenStreetMap</a>",
   baseMaps = {},
   overlayMaps = new Object(),
   layerName,
@@ -12,7 +12,7 @@ let countour_styles = false;
 
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
   for (const plugin in PLUGINS) {
-      gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
+    gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
   }
 });
 
@@ -85,7 +85,7 @@ var ordenConfig = 16;
 var ordenAccessibility = 17;
 var visiblesActivar = true;
 var visiblesActivar = true;
-$("body").on("pluginLoad", function (event, plugin) {
+$("body").on("pluginLoad", async function (event, plugin) {
   unordered = "";
   visiblesActivar = true;
   switch (plugin.pluginName) {
@@ -687,6 +687,18 @@ $("body").on("pluginLoad", function (event, plugin) {
                   !this._enabled &&
                     this._hasAvailableLayers() &&
                     (this.fire("enabled", { handler: this.type }),
+                      this._map.fire(L.Draw.Event.EDITSTART, {
+                        handler: this.type,
+                      }),
+                      L.Handler.prototype.enable.call(this),
+                      this._featureGroup
+                        .on("layeradd", this._enableLayerEdit, this)
+                        .on("layerremove", this._disableLayerEdit, this));
+                }
+              } else {
+                !this._enabled &&
+                  this._hasAvailableLayers() &&
+                  (this.fire("enabled", { handler: this.type }),
                     this._map.fire(L.Draw.Event.EDITSTART, {
                       handler: this.type,
                     }),
@@ -694,18 +706,6 @@ $("body").on("pluginLoad", function (event, plugin) {
                     this._featureGroup
                       .on("layeradd", this._enableLayerEdit, this)
                       .on("layerremove", this._disableLayerEdit, this));
-                }
-              } else {
-                !this._enabled &&
-                  this._hasAvailableLayers() &&
-                  (this.fire("enabled", { handler: this.type }),
-                  this._map.fire(L.Draw.Event.EDITSTART, {
-                    handler: this.type,
-                  }),
-                  L.Handler.prototype.enable.call(this),
-                  this._featureGroup
-                    .on("layeradd", this._enableLayerEdit, this)
-                    .on("layerremove", this._disableLayerEdit, this));
               }
             },
             _enableLayerEdit: function (t) {
@@ -716,12 +716,12 @@ $("body").on("pluginLoad", function (event, plugin) {
                 //to disallow editing in geoprocesses
                 (this._backupLayer(o),
                   this.options.poly &&
-                    ((i = L.Util.extend({}, this.options.poly)),
+                  ((i = L.Util.extend({}, this.options.poly)),
                     (o.options.poly = i)),
                   this.options.selectedPathOptions &&
-                    ((e = L.Util.extend({}, this.options.selectedPathOptions)),
+                  ((e = L.Util.extend({}, this.options.selectedPathOptions)),
                     e.maintainColor &&
-                      ((e.color = o.options.color),
+                    ((e.color = o.options.color),
                       (e.fillColor = o.options.fillColor)),
                     (o.options.original = L.extend({}, o.options)),
                     (o.options.editing = e)),
@@ -746,10 +746,10 @@ $("body").on("pluginLoad", function (event, plugin) {
                   delete e.options.editing,
                   delete e.options.original,
                   this._selectedPathOptions &&
-                    (e instanceof L.Marker
-                      ? this._toggleMarkerHighlight(e)
-                      : (e.setStyle(e.options.previousOptions),
-                        delete e.options.previousOptions)),
+                  (e instanceof L.Marker
+                    ? this._toggleMarkerHighlight(e)
+                    : (e.setStyle(e.options.previousOptions),
+                      delete e.options.previousOptions)),
                   e instanceof L.Marker
                     ? (e.dragging.disable(),
                       e
@@ -794,8 +794,8 @@ $("body").on("pluginLoad", function (event, plugin) {
               var e = t.layer || t.target || t;
               let isFile = e.id
                 ? e.id.includes("json") ||
-                  e.id.includes("zip") ||
-                  e.id.includes("kml")
+                e.id.includes("zip") ||
+                e.id.includes("kml")
                 : false;
               if (
                 typeof e != "string" &&
@@ -2595,8 +2595,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             const type = layer.split("_")[0];
             return mapa.editableLayers.hasOwnProperty(type)
               ? mapa.editableLayers[type]
-                  .find((lyr) => lyr.name === layer)
-                  .toGeoJSON()
+                .find((lyr) => lyr.name === layer)
+                .toGeoJSON()
               : null;
           };
 
@@ -3119,29 +3119,116 @@ $("body").on("pluginLoad", function (event, plugin) {
         });
       }
 
+      async function loadProj4Leaflet() {
+        if (!window.L) {
+          throw new Error("Leaflet no está cargado todavía.");
+        }
+        if (!window.proj4) {
+          throw new Error("proj4 no está cargado todavía.");
+        }
+        // Evita recargar si ya está disponible
+        if (window.L.Proj && window.L.Proj.CRS) return;
+
+        await $.getScript(
+          "https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js",
+        );
+      }
+
+      const initPolarMap = async () => {
+        try {
+          await loadProj4Leaflet();
+
+          // Definición del CRS personalizado con meridiano central a 50° Oeste
+          const projString =
+            "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=-50 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs";
+          proj4.defs("EPSG:100000", projString);
+
+          const test = proj4("EPSG:4326", "EPSG:100000", [-50, -85]);
+          if (!Number.isFinite(test[0]) || !Number.isFinite(test[1])) {
+            throw new Error(`CRS inválido, proyección no finita: ${test}`);
+          }
+
+          const geoServerRes = [
+            156632.54765625,
+            78316.273828125,
+            39158.1369140625,
+            19579.06845703125,
+            9789.534228515626,
+            4894.767114257813,
+            2447.3835571289064,
+            1223.6917785644532,
+            611.8458892822266,
+            305.9229446411133,
+          ];
+
+          // Origin del grid polar (top-left para la transformación en Leaflet)
+          // Derivado del TileMap/BBox del servicio polar.
+          const geoServerOrigin = [-20048966.1, 20048966.1];
+
+          const polarCRS = new L.Proj.CRS("EPSG:100000", projString, {
+            resolutions: geoServerRes,
+            origin: geoServerOrigin,
+          });
+
+          mapa = L.map("mapa", {
+            crs: polarCRS,
+          }).setView([-85, -50], 3);
+
+          // WMTS: My_EPSG:100000 usa identificadores de matrix 0..N
+          // y top-left en coordenadas proyectadas (y=max, x=min).
+          const matrixIds = geoServerRes.map((_, z) => ({
+            identifier: String(z),
+            topLeftCorner: L.latLng(geoServerOrigin[1], geoServerOrigin[0]),
+          }));
+
+          L.tileLayer
+            .wmts("https://antartida-anida.ign.gob.ar/geoserver/gwc/service/wmts", {
+              layer: "Fondo_40bis:fondo_40bis",
+              style: "",
+              format: "image/png",
+              tilematrixSet: "My_EPSG:100000",
+              matrixIds,
+              crs: polarCRS,
+              tileSize: 256,
+              transparent: true,
+              noWrap: true,
+              minZoom: 0,
+              maxZoom: geoServerRes.length - 1,
+              attribution: "IGN",
+            })
+            .addTo(mapa);
+        } catch (error) {
+          console.error("Error inicializando mapa polar:", error);
+          return;
+        }
+      };
+
+      await initPolarMap();
+
+
       /**
        * @worldCopyJump solves the no repeating layers when map is dragged crossing
        * the antimeridian to another new map
        */
-      mapa = new L.map("mapa", {
-        center: app.hasOwnProperty("mapConfig")
-          ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude]
-          : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
-        zoom: app.hasOwnProperty("mapConfig")
-          ? app.mapConfig.zoom.initial
-          : DEFAULT_ZOOM_LEVEL,
-        layers: currentBaseMap ? [currentBaseMap] : undefined,
-        zoomControl: false,
-        minZoom: app.hasOwnProperty("mapConfig")
-          ? app.mapConfig.zoom.min
-          : DEFAULT_MIN_ZOOM_LEVEL,
-        maxZoom: app.hasOwnProperty("mapConfig")
-          ? app.mapConfig.zoom.max
-          : DEFAULT_MAX_ZOOM_LEVEL,
-        closePopupOnClick: false,
-        worldCopyJump: true,
-        /* renderer: L.svg() */
-      });
+      /*       mapa = new L.map("mapa", {
+              center: app.hasOwnProperty("mapConfig")
+                ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude]
+                : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
+              zoom: app.hasOwnProperty("mapConfig")
+                ? app.mapConfig.zoom.initial
+                : DEFAULT_ZOOM_LEVEL,
+              layers: currentBaseMap ? [currentBaseMap] : undefined,
+              zoomControl: false,
+              minZoom: app.hasOwnProperty("mapConfig")
+                ? app.mapConfig.zoom.min
+                : DEFAULT_MIN_ZOOM_LEVEL,
+              maxZoom: app.hasOwnProperty("mapConfig")
+                ? app.mapConfig.zoom.max
+                : DEFAULT_MAX_ZOOM_LEVEL,
+              closePopupOnClick: false,
+              worldCopyJump: true,
+              /* renderer: L.svg() */
+      /* }); */
 
       //Available events
       mapa.methodsEvents = {
@@ -3745,17 +3832,17 @@ function paginateFeatureInfo(infoArray, actualPage, hasPrev, hasNext) {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div id="popupPageSeeker">' +
-            sAux +
-            '</div><div class="featureInfo" id="featureInfoPopup' +
-            i +
-            '">',
+          sAux +
+          '</div><div class="featureInfo" id="featureInfoPopup' +
+          i +
+          '">',
         );
       } else {
         infoStr = infoStr.replace(
           '<div class="featureInfo" id="featureInfoPopup' + i + '">',
           '<div class="featureInfo" style="display:none" id="featureInfoPopup' +
-            i +
-            '">',
+          i +
+          '">',
         );
       }
     }
