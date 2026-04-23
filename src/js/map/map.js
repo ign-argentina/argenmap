@@ -3214,8 +3214,9 @@ $("body").on("pluginLoad", async function (event, plugin) {
 
             L.tileLayer(polarTmsUrl, {
               tileSize: 256,
-              noWrap: true,
-              minZoom: 0,
+              noWrap: false,
+              tms: false,
+              minZoom: 3,
               maxZoom: geoServerRes.length - 1,
               attribution: "IGN",
             }).addTo(mapa);
