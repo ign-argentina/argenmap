@@ -36,6 +36,11 @@ Example with comments:
 
 In the `preferences.json` file you can define application startup options such as extensions to exclude, map position and zoom, among others.
 
+You can also define `mapConfig.projection` to choose the initial CRS:
+
+- `3857`: standard Web Mercator map startup.
+- `100000`: Antarctic polar startup (custom CRS + WMTS polar background).
+
 Example with comments:
 
 ![app startup parameters in preferences.json](../img/preferences.png)

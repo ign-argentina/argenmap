@@ -325,6 +325,7 @@ El archivo `preferences.json` es utilizado para configurar varios aspectos de la
       "latitude": -40,
       "longitude": -59
     },
+    "projection": 3857, // Proyección inicial del visor. 3857: Web Mercator (mapa base configurado). 100000: proyección polar antártica.
     "zoom": {
       "initial": 4, // Zoom al cargar el mapa.
       "min": 3, // Zoom mínimo permitido.

@@ -3076,47 +3076,52 @@ $("body").on("pluginLoad", async function (event, plugin) {
   }
   switch (unordered) {
     case "leaflet":
-      if (selectedBasemap.hasOwnProperty("key")) {
-        const interval = setInterval(() => {
-          if (L.tileLayer.bing) {
-            window.clearInterval(interval);
-            currentBaseMap = L.tileLayer
-              .bing({
-                bingMapsKey: selectedBasemap.key,
-                culture: "es_AR",
-                minZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.min
-                  : DEFAULT_MIN_ZOOM_LEVEL,
-                maxZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.max
-                  : DEFAULT_MAX_ZOOM_LEVEL,
-                minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.nativeMin
-                  : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
-                maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.nativeMax
-                  : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
-                attribution: selectedBasemap.attribution,
-              })
-              .addTo(mapa);
-          }
-        }, 100);
-      } else {
-        currentBaseMap = L.tileLayer(selectedBasemap.host, {
-          minZoom: selectedBasemap.hasOwnProperty("zoom")
-            ? selectedBasemap.zoom.min
-            : DEFAULT_MIN_ZOOM_LEVEL,
-          maxZoom: selectedBasemap.hasOwnProperty("zoom")
-            ? selectedBasemap.zoom.max
-            : DEFAULT_MAX_ZOOM_LEVEL,
-          minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-            ? selectedBasemap.zoom.nativeMin
-            : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
-          maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-            ? selectedBasemap.zoom.nativeMax
-            : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
-          attribution: selectedBasemap.attribution,
-        });
+      const configuredProjection = Number(app?.mapConfig?.projection || 3857);
+      const isPolarProjection = configuredProjection === 100000;
+
+      if (!isPolarProjection) {
+        if (selectedBasemap.hasOwnProperty("key")) {
+          const interval = setInterval(() => {
+            if (L.tileLayer.bing) {
+              window.clearInterval(interval);
+              currentBaseMap = L.tileLayer
+                .bing({
+                  bingMapsKey: selectedBasemap.key,
+                  culture: "es_AR",
+                  minZoom: selectedBasemap.hasOwnProperty("zoom")
+                    ? selectedBasemap.zoom.min
+                    : DEFAULT_MIN_ZOOM_LEVEL,
+                  maxZoom: selectedBasemap.hasOwnProperty("zoom")
+                    ? selectedBasemap.zoom.max
+                    : DEFAULT_MAX_ZOOM_LEVEL,
+                  minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+                    ? selectedBasemap.zoom.nativeMin
+                    : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
+                  maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+                    ? selectedBasemap.zoom.nativeMax
+                    : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
+                  attribution: selectedBasemap.attribution,
+                })
+                .addTo(mapa);
+            }
+          }, 100);
+        } else {
+          currentBaseMap = L.tileLayer(selectedBasemap.host, {
+            minZoom: selectedBasemap.hasOwnProperty("zoom")
+              ? selectedBasemap.zoom.min
+              : DEFAULT_MIN_ZOOM_LEVEL,
+            maxZoom: selectedBasemap.hasOwnProperty("zoom")
+              ? selectedBasemap.zoom.max
+              : DEFAULT_MAX_ZOOM_LEVEL,
+            minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+              ? selectedBasemap.zoom.nativeMin
+              : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
+            maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+              ? selectedBasemap.zoom.nativeMax
+              : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
+            attribution: selectedBasemap.attribution,
+          });
+        }
       }
 
       async function loadProj4Leaflet() {
@@ -3181,54 +3186,73 @@ $("body").on("pluginLoad", async function (event, plugin) {
             topLeftCorner: L.latLng(geoServerOrigin[1], geoServerOrigin[0]),
           }));
 
-          L.tileLayer
-            .wmts("https://antartida-anida.ign.gob.ar/geoserver/gwc/service/wmts", {
-              layer: "Fondo_40bis:fondo_40bis",
-              style: "",
-              format: "image/png",
-              tilematrixSet: "My_EPSG:100000",
-              matrixIds,
-              crs: polarCRS,
+          const polarWmtsUrl =
+            "https://antartida-anida.ign.gob.ar/geoserver/gwc/service/wmts";
+          const polarWmtsOptions = {
+            layer: "Fondo_40bis:fondo_40bis",
+            style: "",
+            format: "image/png",
+            tilematrixSet: "My_EPSG:100000",
+            matrixIds,
+            crs: polarCRS,
+            tileSize: 256,
+            transparent: true,
+            noWrap: true,
+            minZoom: 0,
+            maxZoom: geoServerRes.length - 1,
+            attribution: "IGN",
+          };
+
+          if (L?.tileLayer?.wmts) {
+            L.tileLayer.wmts(polarWmtsUrl, polarWmtsOptions).addTo(mapa);
+          } else if (L?.TileLayer?.WMTS) {
+            new L.TileLayer.WMTS(polarWmtsUrl, polarWmtsOptions).addTo(mapa);
+          } else {
+            // Fallback: TMS con Y invertida ({-y}) para evitar dependencia del plugin WMTS.
+            const polarTmsUrl =
+              "https://antartida-anida.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/Fondo_40bis:fondo_40bis@My_EPSG:100000@png/{z}/{x}/{y}.png";
+
+            L.tileLayer(polarTmsUrl, {
               tileSize: 256,
-              transparent: true,
               noWrap: true,
               minZoom: 0,
               maxZoom: geoServerRes.length - 1,
               attribution: "IGN",
-            })
-            .addTo(mapa);
+            }).addTo(mapa);
+          }
         } catch (error) {
           console.error("Error inicializando mapa polar:", error);
           return;
         }
       };
 
-      await initPolarMap();
-
-
-      /**
-       * @worldCopyJump solves the no repeating layers when map is dragged crossing
-       * the antimeridian to another new map
-       */
-      /*       mapa = new L.map("mapa", {
-              center: app.hasOwnProperty("mapConfig")
-                ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude]
-                : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
-              zoom: app.hasOwnProperty("mapConfig")
-                ? app.mapConfig.zoom.initial
-                : DEFAULT_ZOOM_LEVEL,
-              layers: currentBaseMap ? [currentBaseMap] : undefined,
-              zoomControl: false,
-              minZoom: app.hasOwnProperty("mapConfig")
-                ? app.mapConfig.zoom.min
-                : DEFAULT_MIN_ZOOM_LEVEL,
-              maxZoom: app.hasOwnProperty("mapConfig")
-                ? app.mapConfig.zoom.max
-                : DEFAULT_MAX_ZOOM_LEVEL,
-              closePopupOnClick: false,
-              worldCopyJump: true,
-              /* renderer: L.svg() */
-      /* }); */
+      if (isPolarProjection) {
+        await initPolarMap();
+      } else {
+        /*
+        * @worldCopyJump solves the no repeating layers when map is dragged crossing
+        * the antimeridian to another new map
+        */
+        mapa = new L.map("mapa", {
+          center: app.hasOwnProperty("mapConfig")
+            ? [app.mapConfig.center.latitude, app.mapConfig.center.longitude]
+            : [DEFAULT_LATITUDE, DEFAULT_LONGITUDE],
+          zoom: app.hasOwnProperty("mapConfig")
+            ? app.mapConfig.zoom.initial
+            : DEFAULT_ZOOM_LEVEL,
+          layers: currentBaseMap ? [currentBaseMap] : undefined,
+          zoomControl: false,
+          minZoom: app.hasOwnProperty("mapConfig")
+            ? app.mapConfig.zoom.min
+            : DEFAULT_MIN_ZOOM_LEVEL,
+          maxZoom: app.hasOwnProperty("mapConfig")
+            ? app.mapConfig.zoom.max
+            : DEFAULT_MAX_ZOOM_LEVEL,
+          closePopupOnClick: false,
+          worldCopyJump: true,
+          /* renderer: L.svg() */
+        });
+      }
 
       //Available events
       mapa.methodsEvents = {
@@ -3238,13 +3262,20 @@ $("body").on("pluginLoad", async function (event, plugin) {
       };
 
       mapa.resetView = () => {
+        if (isPolarProjection) {
+          mapa.setView([-85, -50], 3);
+          return;
+        }
+
         mapa.setView(
           [app.mapConfig.center.latitude, app.mapConfig.center.longitude],
           app.mapConfig.zoom.initial,
         );
       };
 
-      setValidZoomLevel(selectedBasemap.nombre);
+      if (!isPolarProjection) {
+        setValidZoomLevel(selectedBasemap.nombre);
+      }
 
       gestorMenu.plugins["leaflet"].setStatus("visible");
 
