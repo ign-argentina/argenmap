@@ -162,6 +162,10 @@ class Geoprocessing {
     return this._namePrefix;
   }
 
+  /**
+   * @param {object} result - GeoJSON devuelto por el executor
+   * @param {object} [chosenRectangle] - Layer del rectángulo seleccionado; requerido solo para waterRise
+   */
   displayResult(result, chosenRectangle) {
     let layerType = "geoprocess",
       sectionName = "Geoprocesos";
@@ -975,6 +979,11 @@ class Geoprocessing {
     this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
   }
 
+  /**
+   * Calcula el área de influencia (buffer) sobre el rectángulo dibujado.
+   * Para capas locales usa turf.buffer(); para capas con host remoto, obtiene los features
+   * por WFS antes de calcular el buffer.
+   */
   executeBuffer() {
     let drawnRectangle,
       layerSelected,
@@ -1039,6 +1048,16 @@ class Geoprocessing {
     mapa.deleteLayer(drawnRectangle.name);
   }
 
+  /**
+   * Ejecuta el geoproceso activo según this.geoprocessId.
+   *
+   * - contour: pasa (swLng, swLat, neLng, neLat) al executor; el plugin arma el XML WPS
+   *   con un GeoJSON Polygon (sin wrapper "geometry") en el campo cropShape.
+   * - waterRise: construye un string WKT "lng lat,lng lat,..." con los vértices del
+   *   rectángulo y lo pasa junto al nivel de agua al executor.
+   *
+   * @param {HTMLElement[]} formFields - Campos del formulario generado por buildForm()
+   */
   executeGeoprocess(formFields) {
     let values = [];
     let arrayWaterRise = "";
