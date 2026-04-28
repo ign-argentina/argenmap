@@ -178,6 +178,9 @@ const app = {
   },
 
   addBasemaps: function () {
+    const configuredProjection = Number(app?.mapConfig?.projection || 3857);
+    const isPolarProjection = configuredProjection === 100000;
+
     app.items
       .filter((element) => element.type === "basemap")
       .forEach((item) => {
@@ -185,6 +188,16 @@ const app = {
         const groupAux = this.createBaseMapGroup(item, tab);
 
         item.capas.forEach((layer, index) => {
+          const layerProjection = Number(
+            layer.projection ||
+              (layer.srs ? layer.srs.replace(/^EPSG:/i, "") : 3857),
+          );
+          const isCompatibleProjection = isPolarProjection
+            ? layerProjection === 100000
+            : layerProjection !== 100000;
+
+          if (!isCompatibleProjection) return;
+
           gestorMenu.setAvailableBaseLayer(layer.nombre);
           const capa = this.createCapa(layer);
           const basemap = this.createBasemapItem(
@@ -244,7 +257,8 @@ const app = {
     return new Capa(
       layer.nombre,
       layer.titulo,
-      null,
+      // propagate srs/projection when provided in config
+      layer.srs || (layer.projection ? `EPSG:${layer.projection}` : null),
       layer.host,
       layer.servicio,
       layer.version,

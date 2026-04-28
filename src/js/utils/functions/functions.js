@@ -738,6 +738,8 @@ function adaptToImage(imgDiv) {
 //3. Si los casos anteriores no se dan, se elige el primer mapa base declarado en el json.
 function setBasemapToLoad(urlLayers, availableBasemaps) {
   const basemap = availableBasemaps[0];
+
+  // If url explicitly requests basemaps, prefer those (as before)
   for (let i = 0; i < urlLayers.length; i++) {
     if (
       availableBasemaps.find(
@@ -751,6 +753,37 @@ function setBasemapToLoad(urlLayers, availableBasemaps) {
       return baseLayersInfo[selected];
     }
   }
+
+  // Respect projection preference: if app.mapConfig.projection is set, prefer basemaps matching it
+  const configuredProjection = Number(app?.mapConfig?.projection || 3857);
+  const basemapsMatchingProjection = availableBasemaps.filter((b) => {
+    const info = baseLayersInfo[b] || {};
+    if (info.hasOwnProperty("projection") && Number(info.projection) === configuredProjection)
+      return true;
+    if (info.hasOwnProperty("srs") && String(info.srs).includes(String(configuredProjection)))
+      return true;
+    if (info.hasOwnProperty("tilematrixSet") && String(info.tilematrixSet).includes(String(configuredProjection)))
+      return true;
+    return false;
+  });
+
+  // Search selected:true within the subset (if any), otherwise fallback to global selected flags
+  if (basemapsMatchingProjection.length > 0) {
+    for (const baseLayer of basemapsMatchingProjection) {
+      if (
+        baseLayersInfo[baseLayer].hasOwnProperty("selected") &&
+        baseLayersInfo[baseLayer].selected
+      ) {
+        setSelectedBasemapAsActive(baseLayer, availableBasemaps);
+        return baseLayersInfo[baseLayer];
+      }
+    }
+    // no explicit selected in matching projection -> pick first matching
+    setSelectedBasemapAsActive(basemapsMatchingProjection[0], availableBasemaps);
+    return baseLayersInfo[basemapsMatchingProjection[0]];
+  }
+
+  // Fallback: previous behavior (selected flag anywhere or first available)
   for (const baseLayer of availableBasemaps) {
     if (
       baseLayersInfo[baseLayer].hasOwnProperty("selected") &&

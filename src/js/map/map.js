@@ -3186,36 +3186,66 @@ $("body").on("pluginLoad", async function (event, plugin) {
             topLeftCorner: L.latLng(geoServerOrigin[1], geoServerOrigin[0]),
           }));
 
-          const polarWmtsUrl =
-            "https://antartida-anida.ign.gob.ar/geoserver/gwc/service/wmts";
-          const polarWmtsOptions = {
-            layer: "Fondo_40bis:fondo_40bis",
-            style: "",
-            format: "image/png",
-            tilematrixSet: "My_EPSG:100000",
-            matrixIds,
-            crs: polarCRS,
-            tileSize: 256,
-            transparent: true,
-            noWrap: true,
-            minZoom: 0,
-            maxZoom: geoServerRes.length - 1,
-            attribution: "IGN",
-          };
+          // Try to find a polar basemap declared in configuration (data.json)
+          const polarLayerConfig = Object.values(baseLayersInfo || {}).find(
+            (l) =>
+              (l.hasOwnProperty("projection") && Number(l.projection) === 100000) ||
+              (l.hasOwnProperty("srs") && String(l.srs).includes("100000")) ||
+              (l.hasOwnProperty("tilematrixSet") && String(l.tilematrixSet).includes("100000")),
+          );
 
-          if (L?.tileLayer?.wmts) {
-            L.tileLayer.wmts(polarWmtsUrl, polarWmtsOptions).addTo(mapa);
-          } else if (L?.TileLayer?.WMTS) {
-            new L.TileLayer.WMTS(polarWmtsUrl, polarWmtsOptions).addTo(mapa);
+          if (polarLayerConfig) {
+            const polarBaseOptions = {
+              tileSize: polarLayerConfig.tileSize || 256,
+              noWrap: polarLayerConfig.noWrap !== undefined ? polarLayerConfig.noWrap : false,
+              tms: polarLayerConfig.tms !== undefined ? polarLayerConfig.tms : false,
+              minZoom: polarLayerConfig.zoom?.min ?? 0,
+              maxZoom: polarLayerConfig.zoom?.max ?? geoServerRes.length - 1,
+              attribution: polarLayerConfig.attribution || "IGN",
+            };
+
+            // The base-layer flow of this app is TMS-first.
+            // If a WMTS basemap is ever configured, use the WMTS plugin directly.
+            if (polarLayerConfig.servicio === "wmts" && L?.TileLayer?.WMTS) {
+              const polarWmtsOptions = {
+                layer: polarLayerConfig.layer || polarLayerConfig.nombre,
+                style: polarLayerConfig.style || "",
+                format: polarLayerConfig.format || "image/png",
+                tilematrixSet:
+                  polarLayerConfig.tilematrixSet ||
+                  polarLayerConfig.tileMatrixSet ||
+                  "My_EPSG:100000",
+                matrixIds,
+                crs: polarCRS,
+                tileSize: polarLayerConfig.tileSize || 256,
+                transparent:
+                  polarLayerConfig.transparent !== undefined
+                    ? polarLayerConfig.transparent
+                    : true,
+                noWrap:
+                  polarLayerConfig.noWrap !== undefined
+                    ? polarLayerConfig.noWrap
+                    : true,
+                minZoom: polarBaseOptions.minZoom,
+                maxZoom: polarBaseOptions.maxZoom,
+                attribution: polarBaseOptions.attribution,
+              };
+
+              new L.TileLayer.WMTS(polarLayerConfig.host, polarWmtsOptions).addTo(
+                mapa,
+              );
+            } else {
+              L.tileLayer(polarLayerConfig.host, polarBaseOptions).addTo(mapa);
+            }
           } else {
-            // Fallback: TMS con Y invertida ({-y}) para evitar dependencia del plugin WMTS.
+            // No polar basemap declared in config: fallback to the hardcoded service
             const polarTmsUrl =
               "https://antartida-anida.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/Fondo_40bis:fondo_40bis@My_EPSG:100000@png/{z}/{x}/{y}.png";
 
             L.tileLayer(polarTmsUrl, {
               tileSize: 256,
               noWrap: false,
-              tms: false,
+              tms: true,
               minZoom: 3,
               maxZoom: geoServerRes.length - 1,
               attribution: "IGN",
