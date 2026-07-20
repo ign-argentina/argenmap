@@ -77,6 +77,109 @@ El archivo `data.json` se compone de bloques llamados **items**, el primero agru
 }
 ```
 
+También se admite una estructura separada con `sections` y `layers`. Es la
+opción recomendada cuando varias capas comparten encabezado, pestaña o estilo:
+
+```jsonc
+{
+  "items": [
+    {
+      "capas": [/* mapas base */]
+    }
+  ],
+  "sections": [
+    {
+      "id": "eventos",
+      "nombre": "Eventos",
+      "tab": {
+        "id": "IG",
+        "searcheable": true,
+        "content": "Info. Geoespacial"
+      },
+      "short_abstract": "Capas relacionadas con eventos"
+    }
+  ],
+  "layers": [
+    {
+      "type": "file",
+      "section": "eventos",
+      "titulo": "Sedes",
+      "source": {
+        "url": "datos/sedes.geojson",
+        "format": "geojson"
+      }
+    }
+  ]
+}
+```
+
+Cada capa debe indicar en `section` el `id` de una sección existente. Durante
+la carga, la aplicación combina los datos de la sección con los de la capa. La
+definición de la capa tiene prioridad cuando un atributo aparece en ambos
+bloques. Los mapas base permanecen dentro de `items`.
+
+#### Estilos de una sección
+
+Una entrada de `sections` puede definir `section_style` para personalizar sólo
+esa sección y sus capas:
+
+```jsonc
+{
+  "id": "eventos",
+  "nombre": "Eventos",
+  "section_style": {
+    "container": {
+      "backgroundColor": "#ffffff",
+      "backgroundImage": "linear-gradient(90deg, #75aadb, #ffffff)",
+      "padding": "5px",
+      "border": "1px solid #75aadb",
+      "borderRadius": "12px"
+    },
+    "header": {
+      "backgroundColor": "#202c5c",
+      "backgroundImage": "src/styles/images/banner.webp",
+      "backgroundGradient": "linear-gradient(90deg, rgba(0,0,0,.75), rgba(0,0,0,.25))",
+      "backgroundSize": "cover",
+      "backgroundPosition": "center",
+      "backgroundRepeat": "no-repeat",
+      "color": "#ffffff",
+      "fontFamily": "Encode Sans, sans-serif",
+      "fontSize": "20px",
+      "fontWeight": "600",
+      "fontStyle": "normal",
+      "textTransform": "none",
+      "letterSpacing": "0",
+      "lineHeight": "1.2",
+      "textDecoration": "none",
+      "borderRadius": "9px",
+      "icon": {
+        "type": "image",
+        "src": "src/styles/images/evento.png",
+        "alt": "Eventos",
+        "size": "24px"
+      }
+    },
+    "layers": {
+      "backgroundColor": "#ffffff",
+      "color": "#303030",
+      "fontFamily": "Encode Sans, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "fontStyle": "normal",
+      "textTransform": "none",
+      "letterSpacing": "0",
+      "lineHeight": "1.3",
+      "textDecoration": "none"
+    }
+  }
+}
+```
+
+El icono del encabezado también puede ser de Font Awesome, por ejemplo
+`{"type":"font-awesome","class":"fas fa-futbol"}`. En pantallas móviles la
+aplicación reduce los tamaños configurados cuando es necesario para mantener el
+menú legible y los controles táctiles accesibles.
+
 ### Definir un mapa base
 
 > [!TIP]
@@ -139,6 +242,8 @@ Dentro de "items", después del primer bloque que define los mapas base se puede
   "servicio": "wms", // Servicio.
   "version": "1.3.0", // Versión del servicio.
   "host": "https://geotematico01.conae.gov.ar/geoserver/Localidades/wms", // URL del servicio, no hace falta agregar los parámetros como 'request', 'service' ni 'version'.
+  "queryable": true, // Permite consultar las capas del servicio con clic izquierdo. Por defecto: true.
+  "queryActive": false, // Activa la consulta al iniciar la aplicación. Por defecto: false.
   "allowed_layers": [
     // Lista de las capas que se deben mostrar, las demás del servicio se ignoran. Deben incluirse los nombres de las capas como están en el doc. de capacidades del WMS.
     "Centro",
@@ -162,9 +267,144 @@ Dentro de "items", después del primer bloque que define los mapas base se puede
     "NOA": "src/config/default/styles/images/legends/satelite.svg",
     "PatagoniaNorte": "src/config/default/styles/images/legends/satelite.svg",
     "PatagoniaSur": "src/config/default/styles/images/legends/satelite.svg"
+  },
+  "customize_layers": {
+    "Centro": {
+      // Estas opciones sobrescriben las definidas para el servicio.
+      "queryable": true,
+      "queryActive": true
+    },
+    "Cuyo": {
+      "queryable": false
+    }
   }
 }
 ```
+
+Cuando una consulta WMS abre un popup, la vista conserva el nivel de zoom y se
+centra en el punto consultado. La navegación entre resultados mantiene ese
+centrado.
+
+### Capas cargadas desde archivo
+
+Las capas de archivo pueden cargarse al iniciar desde una URL local o remota.
+Se admiten los formatos que procesa `FileLayer` (`geojson`/`json`, `topojson`,
+`kml`, `gpx`, `wkt` y `zip` con Shapefile). El formato puede inferirse desde la
+extensión o indicarse explícitamente en `source.format`.
+
+```jsonc
+{
+  "type": "file",
+  "section": "eventos",
+  "titulo": "Sedes",
+  "isActive": true,
+  "zoomOnActivate": true,
+  "queryable": true,
+  "queryActive": true,
+  "allowedOptions": ["zoom", "query", "data", "download"],
+  "source": {
+    "url": "datos/sedes.geojson",
+    "format": "geojson",
+    "title": "Sedes del evento",
+    "description": "Ubicaciones confirmadas",
+    "icon": "src/styles/images/sede.png",
+    "style": {
+      "activeButtonColor": "#287bb5",
+      "marker": {
+        "iconUrl": "src/styles/images/sede.png",
+        "iconSize": [32, 32],
+        "iconAnchor": [16, 32],
+        "popupAnchor": [0, -32]
+      },
+      "point": {
+        "radius": 6,
+        "color": "#287bb5",
+        "weight": 2,
+        "opacity": 1,
+        "fillColor": "#ffffff",
+        "fillOpacity": 0.8
+      },
+      "line": {
+        "color": "#287bb5",
+        "weight": 3,
+        "opacity": 0.9
+      },
+      "polygon": {
+        "color": "#287bb5",
+        "weight": 2,
+        "opacity": 1,
+        "fillColor": "#75aadb",
+        "fillOpacity": 0.25
+      }
+    }
+  }
+}
+```
+
+Parámetros principales:
+
+- `isActive`: muestra la capa al iniciar. Por defecto es `false`.
+- `zoomOnActivate`: centra la extensión de la capa cuando se activa.
+- `queryable`: permite consultar sus entidades. Por defecto es `true`.
+- `queryActive`: deja la consulta habilitada al iniciar. Sólo tiene efecto si
+  `queryable` es `true`; por defecto es `false`.
+- `allowedOptions`: limita el submenú. Sus valores disponibles son `zoom`,
+  `query`, `data`, `download`, `rename` y `delete`. Si se omite, se muestran
+  todas las opciones aplicables.
+- `source.title`, `source.description` y `source.icon`: controlan el nombre,
+  ayuda e icono del botón.
+- `source.style.activeButtonColor`: cambia el fondo del botón activo.
+- `source.style.marker`, `point`, `line` y `polygon`: definen estilos por tipo
+  de geometría. También se procesan `MultiPoint`, `MultiLineString` y
+  `MultiPolygon`.
+
+`isActive` se define en el bloque de la capa. Las opciones de consulta,
+`allowedOptions` y `zoomOnActivate` pueden declararse allí o dentro de `source`;
+cuando existen en ambos lugares, los valores de `source` tienen prioridad.
+
+Para mostrar el botón **Activar/Desactivar consulta** en el submenú de opciones
+de una capa de archivo, se debe incluir `"query"` en `allowedOptions`. Si
+`allowedOptions` no está definido, el botón se muestra de manera predeterminada
+(excepto cuando `queryable` es `false`):
+
+```jsonc
+{
+  "type": "file",
+  "queryable": true,
+  "queryActive": false,
+  "allowedOptions": ["zoom", "query", "data", "download"]
+}
+```
+
+#### Contenido HTML en el popup de una capa de archivo
+
+Si una entidad GeoJSON contiene una propiedad llamada `html` (sin distinguir
+mayúsculas de minúsculas), su valor se inserta como HTML en una fila completa
+del popup. Los demás atributos se escapan y se muestran como texto:
+
+```jsonc
+{
+  "type": "Feature",
+  "properties": {
+    "nombre": "Sede principal",
+    "html": "<img src='https://ejemplo.gob.ar/imagen.jpg' alt='Sede'>"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-58.38, -34.6]
+  }
+}
+```
+
+> [!WARNING]
+> El contenido de `html` no se sanitiza porque permite incrustar marcado. Debe
+> proceder únicamente de archivos o servicios confiables.
+
+Los popups de archivo tienen ancho mínimo responsivo. Las imágenes y otros
+medios se limitan al espacio disponible y aproximadamente a la mitad de la
+pantalla en escritorio. Al abrir una consulta, el mapa conserva el zoom y
+centra el punto consultado. El submenú de opciones se abre hacia el lado con
+espacio disponible y permanece dentro del viewport, también en Android e iOS.
 
 ![secciones desplegables en el panel de capas](img/wms.png)
 
@@ -377,12 +617,28 @@ El archivo `preferences.json` es utilizado para configurar varios aspectos de la
   "mainPopup": {
     // Configura el popup de bienvenida mostrado al cargar la aplicación.
     "isActive": false, // Habilita o deshabilita el popup. Deshabilitado por defecto.
+    "version": 1, // Incrementar cuando cambia el contenido para volver a mostrarlo a quienes eligieron "No volver a mostrar".
     "welcomeSign": "",
     "image": "https://static.ign.gob.ar/img/logo.png", // URL de la imagen.
     "text": "¡Hola mundo! ¡Bienvenido a nuestro visor!" // Texto del popup.
   }
 }
 ```
+
+`mainPopup.version` identifica el contenido vigente. Cuando una persona marca
+**No volver a mostrar**, la aplicación guarda esa versión en `localStorage`.
+El popup vuelve a aparecer si el valor configurado cambia. Puede usarse un
+número, un timestamp o una fecha ISO legible:
+
+```jsonc
+"version": "2026-07-20T15:30:00-03:00"
+```
+
+La versión debe ser estable entre cargas y cambiarse sólo al publicar un nuevo
+mensaje. Si se genera un timestamp nuevo en cada carga, el popup aparecerá
+siempre. Si `version` se omite, se conserva el comportamiento anterior: la
+selección se aplica a cualquier contenido futuro hasta eliminar manualmente la
+entrada `mainPopup` de `localStorage`.
 
 ---
 

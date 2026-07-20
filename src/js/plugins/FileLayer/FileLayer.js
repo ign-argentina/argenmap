@@ -60,46 +60,42 @@ class FileLayer {
     return this.fileSize;
   }
 
-  handleFile(file) {
-    return new Promise((resolve, reject) => {
-      // Check file exists
-      if (file == undefined || file == null)
-        reject("Ningún archivo seleccionado");
+  async handleFile(file) {
+    if (file == undefined || file == null) {
+      throw new Error("Ningún archivo seleccionado");
+    }
 
+    const sourceUrl = URL.createObjectURL(file);
+    try {
       this.file = file;
-      this.fileName = file.name;
-      this.format = file.name.split(".").pop();
-      this.fileSize = file.size;
-      this.id = this.format + ("" + new Date().getTime()).substr(8);
-      // Fetch the file
-      fetch(URL.createObjectURL(file))
-        .then((response) => {
-          // Parse the response
-          let responseType = this.getResponseType();
-          // Parse the response to the required format ex: response.text(), response.json()
-          this.handleResponse(response, responseType)
-            .then((data) => {
-              // Converts using the libraries
-              this.getGeojson(data)
-                .then((result) => {
-                  this.layer = result;
-                  resolve();
-                })
-                .catch((error) => {
-                  console.error("error converting to geoJSON");
-                  reject(error);
-                });
-            })
-            .catch((error) => {
-              console.error("error reading the file");
-              reject(error);
-            });
-        })
-        .catch((error) => {
-          console.error("error getting the file");
-          reject(error);
-        });
-    });
+      return await this.handleUrl(
+        sourceUrl,
+        file.name,
+        file.name.split(".").pop(),
+        file.size,
+      );
+    } finally {
+      URL.revokeObjectURL(sourceUrl);
+    }
+  }
+
+  async handleUrl(url, fileName = null, format = null, fileSize = null) {
+    if (url == undefined || url == null || url === "") {
+      throw new Error("Ningún archivo seleccionado");
+    }
+
+    this.file = null;
+    this.fileName = fileName || this.getNameFromUrl(url);
+    this.format = (format || this.getFormatFromFileName(this.fileName || url)).toLowerCase();
+    this.fileSize = fileSize || null;
+    this.id = this.format + ("" + new Date().getTime()).substr(8);
+
+    const response = await fetch(url);
+    const responseType = this.getResponseType(this.format);
+    const data = await this.handleResponse(response, responseType);
+    const result = await this.getGeojson(data);
+    this.layer = result;
+    return result;
   }
 
   /**
@@ -109,6 +105,16 @@ class FileLayer {
    */
   getGeojson(data) {
     return new Promise((resolve, reject) => {
+      const leafletGlobal =
+        typeof window !== "undefined" && window.L ? window.L : typeof L !== "undefined" ? L : null;
+
+      if (!leafletGlobal) {
+        reject(
+          "Leaflet no está disponible para procesar este archivo. Revise la carga de la librería en la página.",
+        );
+        return;
+      }
+
       let layer = null;
       switch (this.format) {
         case "zip":
@@ -131,7 +137,7 @@ class FileLayer {
             layer = omnivore.topojson.parse(data);
           } else {
             this.layerType = "geoJSON";
-            layer = L.geoJSON(data);
+            layer = leafletGlobal.geoJSON(data);
           }
           break;
         case "kml":
@@ -195,7 +201,7 @@ class FileLayer {
     });
   }
 
-  getResponseType() {
+  getResponseType(format = this.format) {
     /**
      * An object to retrieve the type of response, it is used to parse the response of a fetch
      */
@@ -209,6 +215,28 @@ class FileLayer {
       zip: "arrayBuffer",
     };
 
-    return responseType[this.format];
+    return responseType[format];
+  }
+
+  getFormatFromFileName(fileNameOrUrl) {
+    if (!fileNameOrUrl) return null;
+
+    const sanitizedName = String(fileNameOrUrl).split("?")[0].split("#")[0];
+    const extension = sanitizedName.split(".").pop();
+    if (!extension) return null;
+
+    return extension.toLowerCase();
+  }
+
+  getNameFromUrl(url) {
+    if (!url) return null;
+
+    try {
+      const parsedUrl = new URL(url, window.location.href);
+      const endSegment = parsedUrl.pathname.split("/").filter(Boolean).pop();
+      return endSegment || parsedUrl.pathname || "archivo";
+    } catch (error) {
+      return String(url).split("/").filter(Boolean).pop() || "archivo";
+    }
   }
 }

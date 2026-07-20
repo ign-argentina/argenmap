@@ -67,6 +67,16 @@
   user-select: none;
   margin-bottom: -1px;
 }
+
+.file-layer-dropdown-menu-open {
+  display: block !important;
+  position: fixed;
+  right: auto;
+  z-index: 2000;
+  margin: 0;
+  max-width: calc(100vw - 16px);
+}
+
 .active > div > a {
   color: white;
 }
@@ -107,6 +117,43 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 56px;
+}
+
+@media (max-width: 600px) {
+  .file-layer {
+    align-items: center;
+    min-height: 44px;
+    padding: 7px 1px;
+  }
+
+  .file-layer > .btn-group {
+    display: flex;
+    min-width: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .file-layer > .btn-group > .dropdown-toggle {
+    padding: 10px 8px;
+  }
+
+  .file-layername {
+    max-height: 2.7em;
+  }
+
+  .file-layer-dropdown-menu {
+    min-width: min(11rem, calc(100vw - 16px));
+    font-size: 0.875rem;
+  }
+
+  .file-layer-dropdown-menu > li > a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    padding: 9px 14px;
+    line-height: 1.25;
+    white-space: normal;
+  }
 }
 #modalgeojson {
   position: absolute;
