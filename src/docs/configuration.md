@@ -464,7 +464,7 @@ El archivo `preferences.json` es utilizado para configurar varios aspectos de la
 
 ```jsonc
 {
-  "analytics_ids": ["X-XXXXXXXXXX"], // Contiene identificadores de seguimiento para herramientas de analíticas como Google Analytics. Dejar "" si no corresponde.
+  "analytics_ids": [], // Identificadores de Google Analytics. Usar [] cuando no corresponda; ejemplo: ["G-XXXXXXXXXX"].
   "charts": {
     "isActive": true // Habilita o deshabilita las funcionalidades de gráficos.
   },
@@ -624,6 +624,33 @@ El archivo `preferences.json` es utilizado para configurar varios aspectos de la
   }
 }
 ```
+
+### Google Analytics
+
+`analytics_ids` debe ser siempre un arreglo. Para una propiedad GA4 se utiliza
+el identificador que comienza con `G-`:
+
+```jsonc
+"analytics_ids": ["G-XXXXXXXXXX"]
+```
+
+También se admiten identificadores de Google tag (`GT-`), Google Ads (`AW-`) y
+Floodlight (`DC-`). La aplicación elimina duplicados, ignora entradas vacías o
+inválidas, carga `gtag.js` una sola vez y ejecuta un comando `config` por cada
+identificador. Cuando no se desea habilitar Analytics debe configurarse:
+
+```jsonc
+"analytics_ids": []
+```
+
+No debe colocarse `""` ni una cadena individual. Los bloqueadores de anuncios,
+la protección contra rastreo o una política CSP que no permita
+`googletagmanager.com`/`google-analytics.com` pueden impedir la medición; en ese
+caso la aplicación informa una advertencia en la consola sin detenerse. La
+carga puede verificarse con Tag Assistant o en la pestaña **Network** de las
+herramientas del navegador.
+
+### Versionado del popup de inicio
 
 `mainPopup.version` identifica el contenido vigente. Cuando una persona marca
 **No volver a mostrar**, la aplicación guarda esa versión en `localStorage`.

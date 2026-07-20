@@ -995,11 +995,9 @@ async function loadTemplate(data, isDefaultTemplate) {
     }
 
     //Add Analytics
-    if (app.analytics_ids) {
-      // Check to fix a bug with ad blockers
-      if (typeof addAnalytics === "function") {
-        addAnalytics(app.analytics_ids);
-      }
+    if (app.analytics_ids && typeof addAnalytics === "function") {
+      // Analytics loads asynchronously and must not block application startup.
+      void addAnalytics(app.analytics_ids);
     }
 
     app.addBasemaps();

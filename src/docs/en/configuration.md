@@ -286,6 +286,30 @@ inside the visual viewport on desktop, Android, and iOS.
 `preferences.json` controls the initial map position, toolbar, search, theme,
 logo, enabled extensions, and the startup notification.
 
+### Google Analytics
+
+`analytics_ids` must always be an array. Use a `G-` measurement ID for a GA4
+property:
+
+```jsonc
+"analytics_ids": ["G-XXXXXXXXXX"]
+```
+
+Google tag (`GT-`), Google Ads (`AW-`), and Floodlight (`DC-`) IDs are also
+accepted. The application removes duplicates, ignores empty or invalid values,
+loads `gtag.js` once, and sends one `config` command per ID. Disable Analytics
+with an empty array:
+
+```jsonc
+"analytics_ids": []
+```
+
+Do not use `""` or a single string. Ad blockers, tracking protection, or a CSP
+that disallows `googletagmanager.com`/`google-analytics.com` can prevent data
+collection; the application reports a console warning without blocking
+startup. Verify the installation with Tag Assistant or the browser's
+**Network** panel.
+
 ### Versioned startup popup
 
 ```jsonc
