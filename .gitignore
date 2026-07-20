@@ -24,3 +24,4 @@ coverage/
 *.tsbuildinfo
 package*.json
 biome.json
+.agents/agents/chatgpt.agent.md
