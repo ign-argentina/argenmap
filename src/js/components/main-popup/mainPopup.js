@@ -1,9 +1,18 @@
 mainPopup = function () {
   let isChecked = false;
+  const storageKey = "mainPopup";
+  const configuredVersion = app.mainPopup.version;
+  const popupVersion =
+    configuredVersion === undefined || configuredVersion === null
+      ? null
+      : String(configuredVersion);
+
   this.check = () => {
-    if ("mainPopup" in localStorage) {
-      isChecked = true;
-    }
+    const dismissedVersion = localStorage.getItem(storageKey);
+    // Preserve the previous boolean behaviour when no version is configured.
+    isChecked = popupVersion === null
+      ? dismissedVersion !== null
+      : dismissedVersion === popupVersion;
   };
 
   this._addPopupWrapper = (flag) => {
@@ -72,9 +81,9 @@ mainPopup = function () {
       let check = document.querySelector("input[name=popupCheckbox]");
       check.addEventListener("change", function () {
         if (this.checked) {
-          localStorage.setItem("mainPopup", true);
+          localStorage.setItem(storageKey, popupVersion ?? "true");
         } else {
-          localStorage.removeItem("mainPopup");
+          localStorage.removeItem(storageKey);
         }
       });
     }
