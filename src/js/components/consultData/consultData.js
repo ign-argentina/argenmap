@@ -51,7 +51,7 @@ function activateDataConsult() {
   // Toggle the active state for all editable layers
   Object.values(mapa.editableLayers).forEach((editLayer) => {
     editLayer.forEach((layer) => {
-      layer.activeData = !consultDataBtnClose;
+      layer.activeData = layer.queryable !== false && !consultDataBtnClose;
     });
   });
 
@@ -150,7 +150,11 @@ function toggleLayerPopup(item, isActive, lyrType) {
     createWmsLayer(item);
   }
 
-  overlayMaps[layerName]._source.options.identify = isActive;
+  const queryOptions = getLayerQueryOptions(
+    lyrType === "lyrJoin" ? item.capas[1] : item.capa,
+  );
+  overlayMaps[layerName]._source.options.identify =
+    queryOptions.queryable && isActive;
   overlayMaps[layerName].addTo(mapa);
 }
 
@@ -207,7 +211,9 @@ function createImportWmsLayer(layer) {
           this._map.openPopup(
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
+            { autoPan: false },
           ); // Display popup with paginated info
+          this._map.setView(latlng, this._map.getZoom(), { animate: false });
           popupInfoPage = 0;
         }
       } else {
@@ -304,7 +310,9 @@ function createWmsLayer(objLayer) {
           this._map.openPopup(
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
+            { autoPan: false },
           ); // Display popup with paginated info
+          this._map.setView(latlng, this._map.getZoom(), { animate: false });
           popupInfoPage = 0;
         }
       } else {
@@ -328,7 +336,9 @@ function createWmsLayer(objLayer) {
 
   // Add the layer to the overlay maps
   overlayMaps[layerSelected.nombre] = wmsSource.getLayer(layerSelected.nombre);
-  overlayMaps[layerSelected.nombre]._source.options.identify = true;
+  const queryOptions = getLayerQueryOptions(layerSelected);
+  overlayMaps[layerSelected.nombre]._source.options.identify =
+    queryOptions.queryActive;
 }
 
 /**
