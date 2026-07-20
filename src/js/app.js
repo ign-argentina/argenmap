@@ -320,8 +320,262 @@ const app = {
     gestorMenu.availableLayers = [];
   },
 
+  normalizeConfiguredFileLayer: function (item) {
+    if (item.enabled === false) {
+      return null;
+    }
+
+    const source = item.source || item.file || item.layer || null;
+    const type = item.type || source?.type || "";
+    if (type !== "file" && type !== "file-layer") {
+      return null;
+    }
+
+    const url = source?.url || source?.host || source?.path || source?.href || item.host || null;
+    if (!url) {
+      return null;
+    }
+
+    const defaultActive =
+      item.isActive ??
+      item.activeByDefault ??
+      item.active ??
+      item.visible ??
+      item.defaultVisible ??
+      item.defaultActive ??
+      false;
+
+    const fallbackIdParts = [
+      source?.id || item.id || item.nombre,
+      source?.title || item.titulo || item.nombre,
+      source?.url || item.host || url,
+    ].filter(Boolean);
+
+    return {
+      id: clearSpecialChars(fallbackIdParts.join("-")) || "capa-desde-archivo",
+      url,
+      format: (source?.format || source?.type || item.format || "").toLowerCase(),
+      title: source?.title || item.titulo || item.nombre || "Capa desde archivo",
+      description: source?.description || item.short_abstract || item.descripcion || "",
+      icon: source?.icon || item.icon || item.legendImg || null,
+      style: source?.style || item.style || null,
+      activeButtonColor:
+        source?.style?.activeButtonColor ||
+        source?.activeButtonColor ||
+        item.style?.activeButtonColor ||
+        item.activeButtonColor ||
+        null,
+      fileName: source?.fileName || source?.name || null,
+      allowedOptions: item.allowedOptions || source?.allowedOptions || null,
+      zoomOnActivate: Boolean(
+        source?.zoomOnActivate ?? item.zoomOnActivate ?? false,
+      ),
+      queryable: Boolean(source?.queryable ?? item.queryable ?? true),
+      queryActive: Boolean(
+        (source?.queryable ?? item.queryable ?? true) &&
+          (source?.queryActive ?? item.queryActive ?? false),
+      ),
+      isActive: Boolean(defaultActive),
+    };
+  },
+
+  getConfiguredLayerDefaultStyle: function (geometryType) {
+    const defaults = {
+      point: {
+        radius: 6,
+        color: "#3388ff",
+        weight: 2,
+        opacity: 1,
+        fillColor: "#3388ff",
+        fillOpacity: 0.6,
+      },
+      line: { color: "#3388ff", weight: 3, opacity: 1 },
+      polygon: {
+        color: "#3388ff",
+        weight: 3,
+        opacity: 1,
+        fillColor: "#3388ff",
+        fillOpacity: 0.2,
+      },
+      marker: {
+        iconUrl: "src/styles/images/logo-64x64.webp",
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+      },
+    };
+    return { ...(defaults[geometryType] || {}) };
+  },
+
+  applyConfiguredLayerStyle: function (geoJSON, style = {}) {
+    if (!geoJSON || typeof geoJSON !== "object") {
+      return geoJSON;
+    }
+    style = style || {};
+
+    if (geoJSON.type === "FeatureCollection") {
+      geoJSON.features.forEach((feature) => {
+        this.applyConfiguredLayerStyle(feature, style || {});
+      });
+      return geoJSON;
+    }
+
+    if (!geoJSON.geometry) return geoJSON;
+
+    if (!geoJSON.properties) {
+      geoJSON.properties = {};
+    }
+    if (!geoJSON._configuredFileProperties) {
+      geoJSON._configuredFileProperties = { ...geoJSON.properties };
+    }
+
+    const geometryType = String(geoJSON.geometry.type || "").toLowerCase();
+    const isPoint = geometryType === "point" || geometryType === "multipoint";
+    const isLine = geometryType === "linestring" || geometryType === "multilinestring";
+    const isPolygon = geometryType === "polygon" || geometryType === "multipolygon";
+    const hasGeometryStyles = ["point", "line", "polygon", "marker"].some(
+      (key) => style && typeof style[key] === "object",
+    );
+    const legacyStyle = hasGeometryStyles ? {} : style || {};
+    let styleType;
+
+    if (isPoint) {
+      const featureType = String(geoJSON.properties.type || "").toLowerCase();
+      const renderAsPoint = featureType === "circlemarker" || (style.point && !style.marker);
+      styleType = renderAsPoint ? "point" : "marker";
+      geoJSON.properties.type = renderAsPoint ? "circlemarker" : "marker";
+    } else if (isLine) {
+      styleType = "line";
+    } else if (isPolygon) {
+      styleType = "polygon";
+    }
+
+    const configuredStyle = styleType ? style?.[styleType] || legacyStyle : legacyStyle;
+    geoJSON.properties.styles = {
+      ...this.getConfiguredLayerDefaultStyle(styleType),
+      ...(geoJSON.properties.styles || {}),
+      ...(configuredStyle || {}),
+    };
+    return geoJSON;
+  },
+
+  loadConfiguredFileLayer: async function (item, retryCount = 0) {
+    const layerConfig = this.normalizeConfiguredFileLayer(item);
+    if (!layerConfig) {
+      return;
+    }
+
+    const leafletReady = typeof window !== "undefined" && typeof window.L !== "undefined";
+    const mapReady = typeof mapa !== "undefined" && typeof mapa.createLayerFromGeoJSON === "function";
+
+    if (!leafletReady || !mapReady) {
+      if (retryCount < 20) {
+        window.setTimeout(() => {
+          this.loadConfiguredFileLayer(item, retryCount + 1);
+        }, 250);
+        return;
+      }
+
+      console.error(
+        "Error loading configured file layer",
+        "Leaflet o el mapa no están listos aún.",
+      );
+      return;
+    }
+
+    try {
+      const fileLayer = new FileLayer();
+      await fileLayer.handleUrl(
+        layerConfig.url,
+        layerConfig.fileName || layerConfig.title,
+        layerConfig.format || null,
+      );
+
+      const geoJSON = fileLayer.getGeoJSON();
+      if (!geoJSON) {
+        throw new Error("No se pudo generar el GeoJSON desde la configuración.");
+      }
+
+      this.applyConfiguredLayerStyle(geoJSON, layerConfig.style);
+
+      // Use `nombre` as the visible label and `seccion` as the stable id.
+      const sectionLabel = item.nombre || item.titulo || item.seccion || "Archivos";
+      const sectionId = item.seccion || clearSpecialChars(item.nombre || item.titulo || "Archivos");
+      const baseLayerId = layerConfig.id || clearSpecialChars(layerConfig.title || fileLayer.getFileName() || "capa-desde-archivo");
+      const existingLayerIds = new Set([
+        ...addedLayers.map((layer) => layer.id),
+        ...configuredFileLayerRegistry.map((entry) => entry.id),
+      ]);
+      let layerId = baseLayerId;
+      let suffix = 2;
+      while (existingLayerIds.has(layerId)) {
+        layerId = `${baseLayerId}-${suffix}`;
+        suffix += 1;
+      }
+      const shouldBeActiveByDefault = Boolean(layerConfig.isActive);
+      const createdLayers = mapa.createLayerFromGeoJSON(geoJSON, layerId);
+      const configuredLeafletLayers = Array.isArray(createdLayers)
+        ? createdLayers
+        : [createdLayers];
+      configuredLeafletLayers.forEach((layer) => {
+        layer.queryable = layerConfig.queryable;
+        layer.activeData = layerConfig.queryActive;
+      });
+      addLayerToAllGroups(createdLayers, layerId, shouldBeActiveByDefault);
+
+      addedLayers.push({
+        id: layerId,
+        layer: geoJSON,
+        name: layerConfig.title,
+        file_name: fileLayer.getFileName() || layerConfig.fileName || layerConfig.url,
+        kb: fileLayer.getFileSize("kb") || 0,
+        isActive: shouldBeActiveByDefault,
+        type: "file",
+        zoomOnActivate: layerConfig.zoomOnActivate,
+        queryable: layerConfig.queryable,
+        queryActive: layerConfig.queryActive,
+        // store the visible label as section
+        section: sectionLabel,
+      });
+
+      if (shouldBeActiveByDefault && layerConfig.zoomOnActivate) {
+        mapa.centerLayer(geoJSON);
+      }
+
+      registerConfiguredFileLayerEntry({
+        id: layerId,
+        sectionId,
+        sectionLabel,
+        layerType: "file",
+        textName: layerConfig.title,
+        fileName: fileLayer.getFileName() || layerConfig.fileName || layerConfig.url,
+        isActive: shouldBeActiveByDefault,
+        icon: layerConfig.icon,
+        description: layerConfig.description,
+        allowedOptions: layerConfig.allowedOptions,
+        activeButtonColor: layerConfig.activeButtonColor,
+        fromConfig: true,
+      });
+      menu_ui.rebuildConfiguredFileLayers();
+      updateNumberofLayers(sectionLabel);
+      showTotalNumberofLayers();
+    } catch (error) {
+      console.error("Error loading configured file layer", error);
+      new UserMessage(
+        error.message || "No se pudo cargar la capa configurada.",
+        true,
+        "warning",
+      );
+    }
+  },
+
   addLayers: function () {
     app.items.forEach((element) => {
+      if (element.type === "file" || element.type === "file-layer") {
+        app.loadConfiguredFileLayer(element);
+        return;
+      }
+
       if (element.type !== "basemap") {
         const item = element;
         const tab = new Tab(item.tab);
@@ -535,6 +789,92 @@ function checkFileType(filePath, extension) {
   // check file extension using regex
 }
 
+function normalizeConfigSectionsAndLayers(data) {
+  if (!data || typeof data !== "object") {
+    return data;
+  }
+
+  if (!Array.isArray(data.sections) || !Array.isArray(data.layers)) {
+    return data;
+  }
+
+  const sectionMap = {};
+  app.sectionStyles = {};
+  data.sections.forEach((section) => {
+    if (!section || !section.id) {
+      return;
+    }
+    sectionMap[section.id] = section;
+    if (section.section_style) {
+      app.sectionStyles[section.id] = section.section_style;
+    }
+  });
+
+  const baseItems = Array.isArray(data.items)
+    ? data.items.filter((item) => item.type === "basemap")
+    : [];
+
+  const normalizedItems = [...baseItems];
+
+  data.layers.forEach((layer) => {
+    if (!layer || !layer.type) {
+      return;
+    }
+
+    const sectionId = layer.section || layer.seccion || layer.sectionId;
+    if (!sectionId) {
+      console.warn("Layer missing section reference", layer);
+      return;
+    }
+
+    const section = sectionMap[sectionId];
+    if (!section) {
+      console.warn(`Section not found for layer section='${sectionId}'`, layer);
+      return;
+    }
+
+    const item = {
+      ...section,
+      ...layer,
+      seccion: sectionId,
+      nombre: layer.nombre || layer.titulo || section.nombre || sectionId,
+    };
+
+    delete item.id;
+    delete item.section;
+    delete item.sectionId;
+
+    if (item.tab == null && section.tab != null) {
+      item.tab = section.tab;
+    }
+    if (item.short_abstract == null && section.short_abstract != null) {
+      item.short_abstract = section.short_abstract;
+    }
+    if (item.peso == null && section.peso != null) {
+      item.peso = section.peso;
+    }
+    if (item.class == null && section.class != null) {
+      item.class = section.class;
+    }
+    if (item.icons == null && section.icons != null) {
+      item.icons = section.icons;
+    }
+    if (item.customize_layers == null && section.customize_layers != null) {
+      item.customize_layers = section.customize_layers;
+    }
+    if (item.allowed_layers == null && section.allowed_layers != null) {
+      item.allowed_layers = section.allowed_layers;
+    }
+
+    normalizedItems.push(item);
+  });
+
+  data.items = normalizedItems;
+  data.configLayers = data.layers;
+  delete data.layers;
+  return data;
+}
+
 /**
  * This reads the configuration from two JSON files (app parameters and data references).
  * These files could be customized, if not the function parses and loads
@@ -599,6 +939,7 @@ async function getData(dataURL, load = false) {
   if (typeof data !== "object") {
     data = await getJson("src/config/default/data.json");
   }
+  data = normalizeConfigSectionsAndLayers(data);
   if (load) {
     loadTemplate(data); // moved into getConfig()
   }
