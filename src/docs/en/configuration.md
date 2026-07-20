@@ -1,56 +1,328 @@
-# Configuration
+# Argenmap configuration guide
 
-   > This section explains how layers, basemaps, visual appearance, extents, and map view can be configured.
+This guide describes the settings affected by `src/config/data.json` and
+`src/config/preferences.json`. Copy the files from `src/config/default/` when
+starting a new configuration and validate the JSON after each change.
 
-The basemaps and layers are defined in the file `src/config/data.json`, the initial location and zoom along with other options in`src/config/preferences.json`, both must be created otherwise the configuration is loaded by default in `src/config/default`.
+## Basemaps, sections, and layers (`data.json`)
 
-## Base maps and layers
----
+The legacy structure uses `items`: the first item contains the basemaps and
+each following item defines a WMS or WMTS section.
 
-The `data.json` file is made up of blocks called **items**, the first one groups the basemaps and the next the drop-down sections that group layers.
+```jsonc
+{
+  "items": [
+    { "capas": [/* basemaps */] },
+    { /* WMS or WMTS service */ }
+  ],
+  "layers_joins": [],
+  "template_feature_info_exception": ["gid"]
+}
+```
 
-Basemaps are included in a separate listing:
+### Basemap example
 
-![basemap selector](../img/mapabase.jpeg)
+```jsonc
+{
+  "titulo": "Argenmap",
+  "nombre": "argenmap",
+  "servicio": "tms",
+  "version": "1.0.0",
+  "attribution": "Instituto Geográfico Nacional + OpenStreetMap",
+  "host": "https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/capabaseargenmap@EPSG%3A3857@png/{z}/{x}/{-y}.png",
+  "legendImg": "src/styles/images/argenmap.png",
+  "peso": 10,
+  "selected": true,
+  "zoom": {
+    "min": 3,
+    "max": 19,
+    "nativeMin": 3,
+    "nativeMax": 21
+  }
+}
+```
 
-In the data file within the default configuration is added an example like the one in the following image.
+TMS sources may require `{-y}` instead of `{y}`.
 
-Green comments are added with the explanation of each attribute.
+### Separate `sections` and `layers` structure
 
-![basemap definition in data.json](../img/mapabasejson.png)
+Sections and layers can be declared separately. This is recommended when
+several layers share a heading, tab, description, or visual style:
 
-### Layers from WMS and WMTS
+```jsonc
+{
+  "items": [
+    { "capas": [/* basemaps */] }
+  ],
+  "sections": [
+    {
+      "id": "events",
+      "nombre": "Events",
+      "tab": {
+        "id": "IG",
+        "searcheable": true,
+        "content": "Geospatial information"
+      },
+      "short_abstract": "Event-related layers"
+    }
+  ],
+  "layers": [
+    {
+      "type": "file",
+      "section": "events",
+      "titulo": "Venues",
+      "source": {
+        "url": "data/venues.geojson",
+        "format": "geojson"
+      }
+    }
+  ]
+}
+```
 
-Inside the `data.json` file you can add WMS and WMTS services.
+Every layer must reference an existing section `id`. At startup, section and
+layer properties are merged; layer properties take precedence. Basemaps remain
+inside `items`.
 
-In "items" you can define services, each one within a block (enclosed in braces "{}"). Each block is used for the application to request the capabilities document from the WMS / WMTS service, this file contains a list of the layers it publishes. With this information, the application automatically generates a collapsible section in the layers panel or side menu that contains the layers of that service, as seen in the following image.
+### Section-specific styles
 
-![drop down sections in layers panel](../img/secciones.jpeg)
+Use `section_style` to customize only one section and its layer entries:
 
-Example with comments:
+```jsonc
+{
+  "id": "events",
+  "nombre": "Events",
+  "section_style": {
+    "container": {
+      "backgroundColor": "#ffffff",
+      "backgroundImage": "linear-gradient(90deg, #75aadb, #ffffff)",
+      "padding": "5px",
+      "border": "1px solid #75aadb",
+      "borderRadius": "12px"
+    },
+    "header": {
+      "backgroundColor": "#202c5c",
+      "backgroundImage": "src/styles/images/banner.webp",
+      "backgroundGradient": "linear-gradient(90deg, rgba(0,0,0,.75), rgba(0,0,0,.25))",
+      "backgroundSize": "cover",
+      "backgroundPosition": "center",
+      "backgroundRepeat": "no-repeat",
+      "color": "#ffffff",
+      "fontFamily": "Encode Sans, sans-serif",
+      "fontSize": "20px",
+      "fontWeight": "600",
+      "fontStyle": "normal",
+      "textTransform": "none",
+      "letterSpacing": "0",
+      "lineHeight": "1.2",
+      "textDecoration": "none",
+      "borderRadius": "9px",
+      "icon": {
+        "type": "image",
+        "src": "src/styles/images/event.png",
+        "alt": "Events",
+        "size": "24px"
+      }
+    },
+    "layers": {
+      "backgroundColor": "#ffffff",
+      "color": "#303030",
+      "fontFamily": "Encode Sans, sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "fontStyle": "normal",
+      "textTransform": "none",
+      "letterSpacing": "0",
+      "lineHeight": "1.3",
+      "textDecoration": "none"
+    }
+  }
+}
+```
 
-![sections definitions in data.json](../img/seccionjson.png)
+Header icons can also use Font Awesome, for example
+`{"type":"font-awesome","class":"fas fa-futbol"}`. On mobile screens,
+configured font sizes are reduced when necessary to keep the menu readable and
+touch targets usable.
 
-## Application parameters
----
+### WMS and WMTS query settings
 
-In the `preferences.json` file you can define application startup options such as extensions to exclude, map position and zoom, among others.
+```jsonc
+{
+  "type": "wms",
+  "nombre": "Satellite imagery",
+  "seccion": "satellite",
+  "servicio": "wms",
+  "version": "1.3.0",
+  "host": "https://example.gov/geoserver/service/wms",
+  "queryable": true,
+  "queryActive": false,
+  "allowed_layers": ["Center", "North"],
+  "customize_layers": {
+    "Center": {
+      "queryable": true,
+      "queryActive": true
+    },
+    "North": {
+      "queryable": false
+    }
+  }
+}
+```
 
-Example with comments:
+- `queryable` allows feature queries. It defaults to `true`.
+- `queryActive` enables querying at startup. It defaults to `false`.
+- Entries in `customize_layers` override the service defaults for a named
+  layer.
 
-![app startup parameters in preferences.json](../img/preferences.png)
+Query popups keep the current zoom and center the requested point.
+
+### File-backed layers
+
+File layers can be loaded at startup from local or remote URLs. Supported
+formats are those handled by `FileLayer`: `geojson`/`json`, `topojson`, `kml`,
+`gpx`, `wkt`, and zipped Shapefiles. The format may be inferred from the URL or
+set explicitly with `source.format`.
+
+```jsonc
+{
+  "type": "file",
+  "section": "events",
+  "titulo": "Venues",
+  "isActive": true,
+  "zoomOnActivate": true,
+  "queryable": true,
+  "queryActive": true,
+  "allowedOptions": ["zoom", "query", "data", "download"],
+  "source": {
+    "url": "data/venues.geojson",
+    "format": "geojson",
+    "title": "Event venues",
+    "description": "Confirmed locations",
+    "icon": "src/styles/images/venue.png",
+    "style": {
+      "activeButtonColor": "#287bb5",
+      "marker": {
+        "iconUrl": "src/styles/images/venue.png",
+        "iconSize": [32, 32],
+        "iconAnchor": [16, 32],
+        "popupAnchor": [0, -32]
+      },
+      "point": {
+        "radius": 6,
+        "color": "#287bb5",
+        "weight": 2,
+        "fillColor": "#ffffff",
+        "fillOpacity": 0.8
+      },
+      "line": {
+        "color": "#287bb5",
+        "weight": 3,
+        "opacity": 0.9
+      },
+      "polygon": {
+        "color": "#287bb5",
+        "weight": 2,
+        "fillColor": "#75aadb",
+        "fillOpacity": 0.25
+      }
+    }
+  }
+}
+```
+
+Main settings:
+
+- `isActive` displays the layer at startup; the default is `false`.
+- `zoomOnActivate` fits the layer when it is activated.
+- `queryable` allows entity queries; the default is `true`.
+- `queryActive` enables queries at startup when `queryable` is `true`; the
+  default is `false`.
+- `allowedOptions` limits the layer submenu. Available values are `zoom`,
+  `query`, `data`, `download`, `rename`, and `delete`. If omitted, every
+  applicable option is displayed.
+- `source.title`, `source.description`, and `source.icon` control the layer
+  button.
+- `source.style.activeButtonColor` controls the active button background.
+- `source.style.marker`, `point`, `line`, and `polygon` set styles by geometry
+  type. `MultiPoint`, `MultiLineString`, and `MultiPolygon` are also handled.
+
+`isActive` belongs on the layer object. Query settings, `allowedOptions`, and
+`zoomOnActivate` may be declared there or inside `source`; `source` values take
+precedence. Add `"query"` to `allowedOptions` to expose the
+**Enable/Disable query** command. It is omitted when `queryable` is `false`.
+
+#### HTML in file-layer popups
+
+A GeoJSON property named `html` (case-insensitive) is inserted as HTML in a
+full-width popup row. Other property values are escaped and rendered as text:
+
+```jsonc
+{
+  "type": "Feature",
+  "properties": {
+    "name": "Main venue",
+    "html": "<img src='https://example.gov/image.jpg' alt='Venue'>"
+  },
+  "geometry": {
+    "type": "Point",
+    "coordinates": [-58.38, -34.6]
+  }
+}
+```
+
+> [!WARNING]
+> The `html` value is intentionally not sanitized. Only use trusted files or
+> services.
+
+File popups have a responsive minimum width. Images and other embedded media
+are constrained to the available space and approximately half the screen on
+desktop. Opening a popup preserves the zoom and centers the queried point. The
+layer-options submenu automatically opens toward the available side and stays
+inside the visual viewport on desktop, Android, and iOS.
+
+## Application settings (`preferences.json`)
+
+`preferences.json` controls the initial map position, toolbar, search, theme,
+logo, enabled extensions, and the startup notification.
+
+### Versioned startup popup
+
+```jsonc
+{
+  "mainPopup": {
+    "isActive": true,
+    "version": "2026-07-20T15:30:00-03:00",
+    "welcomeSign": "What's new",
+    "image": "src/styles/images/news.webp",
+    "text": "New content is now available."
+  }
+}
+```
+
+When the user selects **Do not show again**, the application stores the current
+`mainPopup.version` in `localStorage`. Changing the value makes the new message
+appear again. The version may be a number, timestamp, ISO date, or descriptive
+string. It must remain stable between loads and change only when a new message
+is published; generating a new timestamp on every load would always display the
+popup.
+
+If `version` is omitted, legacy behavior is preserved: the stored preference
+hides all future content until the `mainPopup` local-storage entry is manually
+removed.
 
 ## Appearance
----
 
-To modify the visual appearance of the application, the following directories and files must be added in `src/config/styles`:
+Additional application-wide styles and images can be placed in:
 
-- `src/config/styles/css/main.css`: CSS style rules (original is in`src/styles/css`)
-- `src/config/styles/images`: logos and other images
-- `src/config/styles/images/legends`: the app searches by default in this location for images with the same name as the layers and adds them to layers buttons as a legend or preview
+- `src/config/styles/css/main.css`: custom CSS rules.
+- `src/config/styles/images`: logos and other images.
+- `src/config/styles/images/legends`: layer legend or preview images.
 
-## Possible problems
+## Validation and troubleshooting
 
-If the syntax of JSON files is incorrect, the application could stop running or be partially loaded.
-
-If the sections or WMS / WMTS data sources do not have the attributes indicated in this article, they could be left without loading in the panel, or with an incorrect order or data.
+- Validate JSON syntax before reloading the application.
+- Check that service, file, icon, and image URLs are accessible.
+- Ensure every `layers[].section` references an existing `sections[].id`.
+- Use unique section IDs and layer titles.
+- Reload the viewer after configuration changes.

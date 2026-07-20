@@ -209,7 +209,7 @@ function hideAddedLayers() {
         }
       } else {
         let aux = document.getElementById("flc-" + layer.id);
-        if (aux.className === "file-layer active") {
+        if (aux && aux.className === "file-layer active") {
           aux.className = "file-layer";
           mapa.hideGroupLayer(layer.id);
           gestorMenu.cleanAllLayers();
@@ -341,13 +341,10 @@ function loadWmsTplAux(objLayer) {
     delete overlayMaps[layer];
   } else {
     createWmsLayer(objLayer);
-    if (consultDataBtnClose == false) {
-      overlayMaps[layer]._source.options.identify = true;
-    } else if (consultDataBtnClose == true) {
-      overlayMaps[layer]._source.options.identify = false;
-    } else {
-      overlayMaps[layer]._source.options.identify = false;
-    }
+    const queryOptions = getLayerQueryOptions(objLayer.capa);
+    overlayMaps[layer]._source.options.identify =
+      queryOptions.queryable &&
+      (!consultDataBtnClose || queryOptions.queryActive);
     overlayMaps[layer].addTo(mapa);
   }
 }
@@ -846,21 +843,32 @@ let normalize = (function () {
 
 function clickGeometryLayer(layer) {
   let aux = document.getElementById("flc-" + layer);
+  const targetLayer = addedLayers.find((lyr) => lyr.id === layer);
 
-  addedLayers.forEach((lyr) => {
-    if (lyr.id === layer) {
-      if (aux.className === "file-layer active") {
-        aux.className = "file-layer";
-        mapa.hideGroupLayer(layer);
-        lyr.isActive = false;
-      } else {
-        aux.className = "file-layer active";
-        mapa.showGroupLayer(layer);
-        lyr.isActive = true;
-      }
-      updateNumberofLayers(lyr.section);
+  if (!targetLayer) {
+    return;
+  }
+
+  const isCurrentlyActive = aux?.classList?.contains("active") || aux?.className === "file-layer active";
+
+  if (isCurrentlyActive) {
+    if (aux) {
+      aux.className = "file-layer";
     }
-  });
+    mapa.hideGroupLayer(layer);
+    targetLayer.isActive = false;
+  } else {
+    if (aux) {
+      aux.className = "file-layer active";
+    }
+    mapa.showGroupLayer(layer);
+    targetLayer.isActive = true;
+    if (targetLayer.zoomOnActivate) {
+      mapa.centerLayer(targetLayer.layer);
+    }
+  }
+
+  updateNumberofLayers(targetLayer.section);
   showTotalNumberofLayers();
 }
 
@@ -1340,13 +1348,14 @@ function changeIsActive(id, isActive) {
   });
 }
 
-function addCounterForSection(groupnamev, layerType) {
+function addCounterForSection(groupname, layerType) {
   let counter = 0;
   addedLayers.forEach((lyr) => {
     if (lyr.isActive == true && lyr.type == layerType) {
       counter++;
     }
   });
+  const groupnamev = clearSpecialChars(groupname);
   if (counter > 0) {
     $("#" + groupnamev + "-a").html(
       groupnamev +
@@ -1362,8 +1371,8 @@ function addCounterForSection(groupnamev, layerType) {
 function updateNumberofLayers(layerSection) {
   let activeLayers = 0;
   let element;
-  if (layerSection && layerSection.includes(" ")) {
-    element = document.getElementById(layerSection.replace(/ /g, "_") + "-a");
+  if (layerSection) {
+    element = document.getElementById(clearSpecialChars(layerSection) + "-a");
   } else {
     element = document.getElementById(layerSection + "-a");
   }
@@ -1389,7 +1398,7 @@ function updateNumberofLayers(layerSection) {
 
 function hideAddedLayersCounter() {
   fileLayerGroup.forEach((lyr) => {
-    let element = document.getElementById(lyr + "-a");
+    let element = document.getElementById(clearSpecialChars(lyr) + "-a");
 
     if (element) {
       element.innerHTML = lyr;
@@ -1461,47 +1470,81 @@ function getAllActiveLayers() {
   return allActiveLayers;
 }
 
+/**
+ * Returns the query behaviour configured for a layer. OGC services can define
+ * defaults in the service block and override them for an individual layer in
+ * `customize_layers`.
+ */
+function getLayerQueryOptions(layer, config = null) {
+  let serviceConfig = config;
+  let layerConfig = null;
+
+  if (!serviceConfig && layer && typeof app !== "undefined") {
+    serviceConfig = (app.items || []).find((item) => {
+      if (!["wms", "wmts", "wmslayer", "wmslayer_mapserver"].includes(item.type)) {
+        return false;
+      }
+      return item.host === layer.host || item.host === layer.getHostWMS?.();
+    });
+  }
+
+  if (serviceConfig && layer) {
+    layerConfig = serviceConfig.customize_layers?.[layer.nombre] || null;
+  }
+
+  const queryable = layerConfig?.queryable ?? serviceConfig?.queryable ?? true;
+  const queryActive =
+    layerConfig?.queryActive ?? serviceConfig?.queryActive ?? false;
+
+  return {
+    queryable: Boolean(queryable),
+    queryActive: Boolean(queryable && queryActive),
+  };
+}
+
 function getVectorData(e) {
-  if (e.target.activeData === true) {
+  if (e.target.queryable !== false && e.target.activeData === true) {
     let layer = e.target;
     createPopupForVector(layer, e.latlng);
   }
 }
 
 function createPopupForVector(layer, clickLatlng) {
-  let id = layer.name[0].toUpperCase() + layer.name.slice(1).toLowerCase(),
-    popupName;
-  if (layer.data.geoJSON) {
-    popupName = layer.data.geoJSON.properties.objeto;
-    popupName ? (title = popupName) : (title = id);
-  } else {
+  const geoJSON = layer?.data?.geoJSON;
+  if (!geoJSON?.properties) {
     return;
   }
 
-  var infoAux = '<div class="featureInfo" id="featureInfoPopup' + id + '">';
-  infoAux += '<div class="featureGroup">';
-  infoAux += '<div style="/*padding:1em*/" class="individualFeature">';
-  infoAux +=
-    '<h4 style="border-top:1px solid gray;text-decoration:underline;margin:1em 0">' +
-    title +
-    "</h4>";
-  infoAux += "<ul>";
+  const layerName = layer.name || layer.id || "Capa";
+  const id = layerName[0].toUpperCase() + layerName.slice(1).toLowerCase();
+  const properties = geoJSON._configuredFileProperties || geoJSON.properties;
+  const hasHtmlProperty = Object.keys(properties).some(
+    (key) => String(key).toLowerCase() === "html",
+  );
 
-  Object.keys(layer.data.geoJSON.properties).forEach(function (k) {
-    let ignoredField = templateFeatureInfoFieldException.includes(k); // checks if field is defined in data.json to be ignored in the popup
-    if (k != "bbox" && !ignoredField && k != "objeto" && k != "styles") {
-      //ignore this rows
-      infoAux += "<li>";
-      infoAux += "<b>" + ucwords(k.replace(/_/g, " ")) + ":</b>";
-      if (layer.data.geoJSON.properties[k] != null) {
-        infoAux += " " + layer.data.geoJSON.properties[k];
-      }
-      infoAux += "<li>";
+  // Do not mix this feature with results left by a previous map query.
+  popupInfo = [];
+
+  var infoAux = '<div class="featureInfo" id="featureInfoPopup' + id + '">';
+  infoAux += `<table class="file-layer-feature-table${
+    hasHtmlProperty ? " file-layer-feature-table-has-html" : ""
+  }"><tbody>`;
+
+  Object.entries(properties).forEach(function ([key, value]) {
+    if (String(key).toLowerCase() === "html") {
+      infoAux += `<tr class="file-layer-html-row"><td colspan="2">${value ?? ""}</td></tr>`;
+      return;
     }
+
+    const formattedValue =
+      value && typeof value === "object" ? JSON.stringify(value) : value;
+    infoAux += "<tr>";
+    infoAux += `<th>${escapeFileLayerPopupValue(key)}</th>`;
+    infoAux += `<td>${escapeFileLayerPopupValue(formattedValue ?? "")}</td>`;
+    infoAux += "</tr>";
   });
 
-  infoAux += "</ul>";
-  infoAux += "</div></div></div>";
+  infoAux += "</tbody></table></div>";
   popupInfo.push(infoAux); //Add info for popup
 
   let center;
@@ -1510,7 +1553,33 @@ function createPopupForVector(layer, clickLatlng) {
   } else {
     center = clickLatlng;
   }
-  layer._map.openPopup(paginateFeatureInfo(popupInfo, 0, false, true), center); //Show info
+  const targetMap = layer._map || mapa;
+  const popupLatlng = center || targetMap.getCenter();
+  const mapWidth = targetMap.getSize().x;
+  const maxPopupWidth = Math.max(
+    160,
+    mapWidth <= 600 ? mapWidth - 80 : Math.floor(mapWidth / 2) - 40,
+  );
+  targetMap.openPopup(
+    paginateFeatureInfo(popupInfo, 0, false, true),
+    popupLatlng,
+    {
+      autoPan: false,
+      className: "file-layer-popup",
+      minWidth: Math.min(288, maxPopupWidth),
+      maxWidth: maxPopupWidth,
+    },
+  ); //Show info
+  targetMap.setView(popupLatlng, targetMap.getZoom(), { animate: false });
+}
+
+function escapeFileLayerPopupValue(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 /**
@@ -1618,7 +1687,7 @@ function createLayerByType(geoJSON, groupName) {
     layer = createLayerMultilinestring(geoJSON, groupName, layer);
   }
   if (type === "multipolygon") {
-    layer = createLayerMultilinestring(geoJSON, layer);
+    layer = createLayerMultipolygon(geoJSON, groupName, layer);
   }
   /* Guardar propiedades de editable label */
   /* console.log(geoJSON.properties.type) */
@@ -1629,10 +1698,16 @@ function createLayerByType(geoJSON, groupName) {
   return layer;
 }
 
-function createLayerMultilinestring(geoJSON, layer) {
-  const reversedCoords = reverseMultipleCoords(geoJSON.geometry.coordinates[0]);
-  layer = L.polygon(reversedCoords);
-  layer.type = "polygon";
+function createLayerMultipolygon(geoJSON, groupName, layer) {
+  geoJSON.geometry.coordinates.forEach((coordinates) => {
+    const polygon = {
+      type: "Feature",
+      geometry: { type: "Polygon", coordinates },
+      properties: geoJSON.properties,
+      _configuredFileProperties: geoJSON._configuredFileProperties,
+    };
+    layer = createLayerByType(polygon, groupName);
+  });
   return layer;
 }
 
@@ -1645,6 +1720,7 @@ function createLayerMultilinestring(geoJSON, groupName, layer) {
         coordinates: coords,
       },
       properties: geoJSON.properties,
+      _configuredFileProperties: geoJSON._configuredFileProperties,
     };
 
     layer = createLayerByType(lineString, groupName);
@@ -1661,6 +1737,7 @@ function createLayerMultipoint(geoJSON, groupName, layer) {
         coordinates: coords,
       },
       properties: geoJSON.properties,
+      _configuredFileProperties: geoJSON._configuredFileProperties,
     };
 
     layer = createLayerByType(point, groupName);
@@ -1765,7 +1842,7 @@ function createLayerForPoint(geoJSON, groupName, layer, options) {
       return layer;
     }
     if (geoJsonType === "marker") {
-      layer = L.marker(invertedCoords);
+      layer = createConfiguredMarker(invertedCoords, options);
       layer.type = "marker";
       setDefaultMarkerStyles(layer, geoJSON);
       return layer;
@@ -1784,15 +1861,32 @@ function createLayerForPoint(geoJSON, groupName, layer, options) {
       layer = mapa.editableLayers.label[mapa.editableLayers.label.length - 1];
       return layer;
     } else {
-      layer = L.marker(invertedCoords);
+      layer = createConfiguredMarker(invertedCoords, options);
       layer.type = "marker";
       return layer;
     }
   } else {
-    layer = L.marker(invertedCoords);
+    layer = createConfiguredMarker(invertedCoords, options);
     layer.type = "marker";
     return layer;
   }
+}
+
+function createConfiguredMarker(coordinates, options = {}) {
+  const iconUrl = options.iconUrl || options.marker;
+  if (!iconUrl) return L.marker(coordinates);
+
+  const iconOptions = {
+    iconUrl,
+    iconSize: options.iconSize || [32, 32],
+    iconAnchor: options.iconAnchor || [16, 32],
+    popupAnchor: options.popupAnchor || [0, -32],
+  };
+  if (options.shadowUrl) iconOptions.shadowUrl = options.shadowUrl;
+  if (options.shadowSize) iconOptions.shadowSize = options.shadowSize;
+  if (options.shadowAnchor) iconOptions.shadowAnchor = options.shadowAnchor;
+
+  return L.marker(coordinates, { icon: L.icon(iconOptions) });
 }
 
 function setDefaultMarkerStyles(layer, geoJSON) {
@@ -1855,23 +1949,25 @@ function setContourStyleOptions(geoJSON, options) {
   return options;
 }
 
-function addLayerToAllGroups(layer, groupName) {
+function addLayerToAllGroups(layer, groupName, addToMap = true) {
   if (layer.length) {
     if (layer.length <= 1) {
-      _addLayerToAllGroups(layer[0], groupName);
+      _addLayerToAllGroups(layer[0], groupName, addToMap);
     } else {
       layer.forEach((feature) => {
-        _addLayerToAllGroups(feature, groupName);
+        _addLayerToAllGroups(feature, groupName, addToMap);
       });
     }
   } else {
-    _addLayerToAllGroups(layer, groupName);
+    _addLayerToAllGroups(layer, groupName, addToMap);
   }
 }
 
-function _addLayerToAllGroups(layer, groupName) {
+function _addLayerToAllGroups(layer, groupName, addToMap = true) {
   let type = layer.type;
-  drawnItems.addLayer(layer);
+  if (addToMap) {
+    drawnItems.addLayer(layer);
+  }
 
   mapa.editableLayers[type].forEach((lyr) => {
     if (lyr.id !== layer.id) {

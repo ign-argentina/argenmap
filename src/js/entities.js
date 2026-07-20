@@ -434,14 +434,18 @@ class ImpresorGrupoHTML extends Impresor {
     var listaId = itemComposite.getId();
     var itemClass = "menu5";
     let seccion = itemComposite.seccion;
+    const sectionStyle =
+      itemComposite.sectionStyle || app.sectionStyles?.[seccion] || null;
+    const styleAttributes = this.getSectionStyleAttributes(sectionStyle);
+    const headerIcon = this.getHeaderIcon(sectionStyle?.header?.icon);
 
     var active = itemComposite.getActive() == true ? " in " : "";
 
     return `
-    <div id="${listaId}" class="${itemClass} panel-default">
+    <div id="${listaId}" class="${itemClass} panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
       <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}">
         <h4 class="panel-title">
-          <span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
+          ${headerIcon}<span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
           <div class='item-group-short-desc'>
             <span data-toggle='tooltip' title='${itemComposite.descripcion}'>${itemComposite.shortDesc}</span>
           </div>
@@ -454,6 +458,105 @@ class ImpresorGrupoHTML extends Impresor {
       </div>
     </div>
   `;
+  }
+
+  getSectionStyleAttributes(sectionStyle) {
+    if (!sectionStyle) return "";
+
+    const header = sectionStyle.header || {};
+    const layers = sectionStyle.layers || {};
+    const container = sectionStyle.container || {};
+    const variables = {
+      "--section-header-bg-color": header.backgroundColor,
+      "--section-header-bg-image": this.getHeaderBackgroundImage(header),
+      "--section-header-bg-size": header.backgroundSize,
+      "--section-header-bg-position": header.backgroundPosition,
+      "--section-header-bg-repeat": header.backgroundRepeat,
+      "--section-header-color": header.color,
+      "--section-header-font-family": header.fontFamily,
+      "--section-header-font-size": header.fontSize,
+      "--section-header-font-weight": header.fontWeight,
+      "--section-header-font-style": header.fontStyle,
+      "--section-header-text-transform": header.textTransform,
+      "--section-header-letter-spacing": header.letterSpacing,
+      "--section-header-line-height": header.lineHeight,
+      "--section-header-text-decoration": header.textDecoration,
+      "--section-header-text-align": header.textAlign,
+      "--section-header-border-radius": header.borderRadius,
+      "--section-header-icon-color": header.icon?.color,
+      "--section-header-icon-size": header.icon?.size,
+      "--section-layer-color": layers.color,
+      "--section-layer-bg-color": layers.backgroundColor,
+      "--section-layer-font-family": layers.fontFamily,
+      "--section-layer-font-size": layers.fontSize,
+      "--section-layer-font-weight": layers.fontWeight,
+      "--section-layer-font-style": layers.fontStyle,
+      "--section-layer-text-transform": layers.textTransform,
+      "--section-layer-letter-spacing": layers.letterSpacing,
+      "--section-layer-line-height": layers.lineHeight,
+      "--section-layer-text-decoration": layers.textDecoration,
+      "--section-container-bg-color": container.backgroundColor,
+      "--section-container-bg-image": this.normalizeBackgroundImage(container.backgroundImage),
+      "--section-container-padding": container.padding,
+      "--section-container-border": container.border,
+      "--section-container-border-radius": container.borderRadius,
+    };
+    const css = Object.entries(variables)
+      .filter(([, value]) => value !== undefined && value !== null && value !== "")
+      .map(([name, value]) => `${name}:${String(value).replace(/[\"<>]/g, "")}`)
+      .join(";");
+    return css ? ` style="${css}"` : "";
+  }
+
+  normalizeBackgroundImage(value) {
+    if (!value) return value;
+    return /^(url\(|linear-gradient\(|radial-gradient\()/i.test(value)
+      ? value
+      : `url('${String(value).replace(/['\"<>]/g, "")}')`;
+  }
+
+  getHeaderBackgroundImage(header) {
+    const image = this.normalizeBackgroundImage(header.backgroundImage);
+    const gradient =
+      header.backgroundGradient === true
+        ? "linear-gradient(90deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.38))"
+        : header.backgroundGradient;
+
+    if (gradient && image) return `${gradient}, ${image}`;
+    return gradient || image;
+  }
+
+  getHeaderIcon(icon) {
+    if (!icon) return "";
+
+    if (typeof icon === "string") {
+      icon = /^fa(?:s|r|b|l|d)?(?:-|\s)|^fa-solid\s|^fa-regular\s|^fa-brands\s/i.test(icon)
+        ? { type: "font-awesome", class: icon }
+        : { type: "file", src: icon };
+    }
+
+    const label = String(icon.alt || "").replace(/[\"<>]/g, "");
+    const iconClass = icon.class || icon.fontAwesome;
+    const imageSource = icon.src || icon.url;
+    const iconType = String(icon.type || "").toLowerCase();
+    const isFontAwesome =
+      iconType === "font-awesome" ||
+      iconType === "fontawesome" ||
+      (!iconType && iconClass);
+    const isImage =
+      iconType === "image" ||
+      iconType === "file" ||
+      (!iconType && imageSource);
+
+    if (isFontAwesome && iconClass) {
+      const className = String(iconClass).replace(/[^a-zA-Z0-9 _-]/g, "");
+      return `<i class="section-header-icon ${className}" aria-hidden="true"></i>`;
+    }
+    if (isImage && imageSource) {
+      const src = String(imageSource).replace(/[\"<>]/g, "");
+      return `<img class="section-header-icon" src="${src}" alt="${label}">`;
+    }
+    return "";
   }
 }
 
@@ -2678,12 +2781,27 @@ class GestorMenu {
 
   addItemGroup(itemGroup) {
     var itemAux;
+    const configuredSectionStyle =
+      itemGroup.sectionStyle ||
+      app.items?.find(
+        (item) => item.seccion === itemGroup.seccion && item.section_style,
+      )?.section_style ||
+      app.sectionStyles?.[itemGroup.seccion] ||
+      null;
+
+    if (configuredSectionStyle) {
+      itemGroup.sectionStyle = configuredSectionStyle;
+    }
+
     if (!this.items[itemGroup.seccion] || itemGroup.isBaseLayer()) {
       //itemGroup.isBaseLayer() avoid to repeat base layer into selector
       itemAux = itemGroup;
       this._existsIndexes[itemGroup.seccion] = 0;
     } else {
       itemAux = this.items[itemGroup.seccion];
+      if (configuredSectionStyle) {
+        itemAux.sectionStyle = configuredSectionStyle;
+      }
       this._existsIndexes[itemGroup.seccion] =
         Object.keys(itemAux.itemsComposite).length + 1; //Si ya existe el itemGroup pero se agregan datos de otras fuentes, esto evita que se repitan los ID
     }
@@ -3177,6 +3295,7 @@ class GestorMenu {
       this._printWithTabs();
     } else {
       this.getMenuDOM().html(this._printSearcher());
+      menu_ui.rebuildConfiguredFileLayers();
 
       var itemsAux = new Array();
       var itemsIterator = this._itemsGetter.get(this);
@@ -3604,20 +3723,31 @@ class Menu_UI {
     this.available_options = ["download", "filter", "trash"];
   }
 
-  addSection(name) {
-    let groupnamev = clearSpecialChars(name);
+  addSection(name, idOverride = null) {
+    // name: visible label, idOverride: optional stable identifier for HTML ids
+    let groupnamev = clearSpecialChars(idOverride || name);
+    const sectionStyle =
+      app.items?.find(
+        (item) => item.seccion === groupnamev && item.section_style,
+      )?.section_style ||
+      app.sectionStyles?.[groupnamev] ||
+      null;
+    const sectionPrinter = new ImpresorGrupoHTML();
+    const styleAttributes = sectionPrinter.getSectionStyleAttributes(sectionStyle);
+    const headerIcon = sectionPrinter.getHeaderIcon(sectionStyle?.header?.icon);
     let itemnew = document.createElement("div");
+    itemnew.className = "custom-file-layer-section";
     itemnew.innerHTML = `
-        <div id="lista-${groupnamev}" class="menu5 panel-default">
-        <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="false">
-            <h4 class="panel-title">
-            <a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
-            </h4>
-        </div>
-        <div id='${groupnamev}-content' class="panel-collapse collapse">
-            <div class="panel-body" id ="${groupnamev}-panel-body"></div>
-        </div>
-        </div>`;
+      <div id="lista-${groupnamev}" class="menu5 panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
+      <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="false">
+        <h4 class="panel-title">
+        ${headerIcon}<a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
+        </h4>
+      </div>
+      <div id='${groupnamev}-content' class="panel-collapse collapse">
+        <div class="panel-body" id ="${groupnamev}-panel-body"></div>
+      </div>
+      </div>`;
 
     let searchForm = document.getElementById("searchForm");
     searchForm.after(itemnew);
@@ -3678,10 +3808,57 @@ class Menu_UI {
     return layerOption;
   }
 
-  addFileLayer(groupname, layerType, textName, id, fileName, isActive) {
-    let groupnamev = clearSpecialChars(groupname);
-    if (!fileLayerGroup.includes(groupnamev)) {
-      fileLayerGroup.push(groupnamev);
+  rebuildConfiguredFileLayers() {
+    const sectionNodes = document.querySelectorAll(".custom-file-layer-section");
+    sectionNodes.forEach((sectionNode) => sectionNode.remove());
+
+    if (typeof configuredFileLayerRegistry === "undefined") {
+      return;
+    }
+
+    configuredFileLayerRegistry.forEach((entry) => {
+      this.addFileLayer(
+        entry.sectionLabel,
+        entry.layerType,
+        entry.textName,
+        entry.id,
+        entry.fileName,
+        entry.isActive,
+        entry.icon,
+        entry.description,
+        entry.allowedOptions,
+        entry.sectionId,
+        entry.activeButtonColor,
+      );
+    });
+  }
+
+  addFileLayer(
+    groupname,
+    layerType,
+    textName,
+    id,
+    fileName,
+    isActive,
+    icon = null,
+    description = "",
+    allowedOptions = null,
+    groupId = null,
+    activeButtonColor = null,
+  ) {
+    // groupname: visible label; groupId: optional stable identifier for HTML IDs
+    let groupnamev = clearSpecialChars(groupId || groupname);
+    const existingLayerNode = document.getElementById(`fl-${id}`);
+    if (existingLayerNode) {
+      return;
+    }
+
+    const activeAllowedOptions = Array.isArray(allowedOptions)
+      ? allowedOptions.map((option) => option.toLowerCase())
+      : ["zoom", "query", "data", "download", "rename", "delete"];
+
+    if (!fileLayerGroup.includes(groupname)) {
+      fileLayerGroup.push(groupname);
     }
     let main = document.getElementById("lista-" + groupnamev);
 
@@ -3695,7 +3872,7 @@ class Menu_UI {
     //si no existe contenedor
     let id_options_container = "opt-c-" + id;
     if (!main) {
-      this.addSection(groupnamev);
+      this.addSection(groupname, groupId || groupnamev);
     }
     let content = document.getElementById(groupnamev + "-panel-body");
     let layer_container = document.createElement("div");
@@ -3709,10 +3886,22 @@ class Menu_UI {
     } else if (!isActive) {
       layer_item.className = "file-layer";
     }
+    if (activeButtonColor) {
+      layer_item.style.setProperty(
+        "--file-layer-active-color",
+        activeButtonColor,
+      );
+    }
 
     let img_icon = document.createElement("div");
     img_icon.className = "file-img";
-    img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg">`;
+    if (icon && icon.includes("fa")) {
+      img_icon.innerHTML = `<i class="${icon}" aria-hidden="true" title="${description || textName}"></i>`;
+    } else if (icon) {
+      img_icon.innerHTML = `<img loading="lazy" src="${icon}" alt="${textName}">`;
+    } else {
+      img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg" alt="Capa">`;
+    }
     img_icon.onclick = function () {
       clickGeometryLayer(id);
     };
@@ -3720,7 +3909,7 @@ class Menu_UI {
     let layer_name = document.createElement("div");
     layer_name.className = "file-layername";
     layer_name.innerHTML = "<a>" + textName + "</a>";
-    layer_name.title = fileName;
+    layer_name.title = description || fileName;
     layer_name.onclick = function () {
       clickGeometryLayer(id);
     };
@@ -3742,9 +3931,50 @@ class Menu_UI {
     // fdiv.innerHTML = '<span class="caret"></span>'
 
     let mainul = document.createElement("ul");
-    mainul.className = "dropdown-menu";
-    mainul.style = "right:0px !important;left:auto !important;";
+    mainul.className = "dropdown-menu file-layer-dropdown-menu";
     mainul.id = "opt-c-" + id;
+
+    // Render the menu outside the layer sidebar while it is open. Several
+    // ancestors scroll or clip their contents, so z-index alone cannot make
+    // the dropdown extend over the map.
+    $(options)
+      .on("shown.bs.dropdown", function () {
+        const buttonBounds = fdiv.getBoundingClientRect();
+        document.body.appendChild(mainul);
+        mainul.classList.add("file-layer-dropdown-menu-open");
+        const viewport = window.visualViewport;
+        const viewportLeft = viewport?.offsetLeft || 0;
+        const viewportTop = viewport?.offsetTop || 0;
+        const viewportWidth = viewport?.width || document.documentElement.clientWidth;
+        const viewportHeight = viewport?.height || window.innerHeight;
+        const menuWidth = mainul.getBoundingClientRect().width;
+        const spaceOnRight = viewportLeft + viewportWidth - buttonBounds.right;
+        const preferredLeft =
+          spaceOnRight >= menuWidth + 8
+            ? buttonBounds.right
+            : buttonBounds.left - menuWidth;
+        const left = Math.min(
+          Math.max(viewportLeft + 8, preferredLeft),
+          viewportLeft + viewportWidth - menuWidth - 8,
+        );
+
+        mainul.style.left = `${left}px`;
+        mainul.style.top = `${buttonBounds.top}px`;
+
+        const bottomOverflow =
+          mainul.getBoundingClientRect().bottom - (viewportTop + viewportHeight);
+        if (bottomOverflow > 0) {
+          mainul.style.top = `${Math.max(
+            viewportTop + 8,
+            buttonBounds.top - bottomOverflow - 8,
+          )}px`;
+        }
+      })
+      .on("hidden.bs.dropdown", function () {
+        mainul.classList.remove("file-layer-dropdown-menu-open");
+        mainul.removeAttribute("style");
+        options.appendChild(mainul);
+      });
 
     let delete_opt = document.createElement("li");
     delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`;
@@ -3799,6 +4029,51 @@ class Menu_UI {
       });
     };
 
+    const addedLayer = addedLayers.find((layer) => layer.id === id);
+    let queryIsActive = Boolean(addedLayer?.queryActive);
+    const queryIsAvailable = addedLayer?.queryable !== false;
+    const query_opt = document.createElement("li");
+
+    const getQueryLayers = () => {
+      const layerNames = new Set(mapa.groupLayers[id] || []);
+      return Object.values(mapa.editableLayers)
+        .flat()
+        .filter((layer) => layerNames.has(layer.name));
+    };
+
+    const renderQueryOption = () => {
+      query_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa ${
+        queryIsActive ? "fa-toggle-on" : "fa-toggle-off"
+      }" aria-hidden="true" style="width:20px;"></i>${
+        queryIsActive ? "Desactivar consulta" : "Activar consulta"
+      }</a>`;
+    };
+
+    renderQueryOption();
+    query_opt.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const queryLayers = getQueryLayers();
+      queryIsActive = !queryLayers.some((layer) => layer.activeData === true);
+      queryLayers.forEach((layer) => {
+        layer.activeData = queryIsActive;
+      });
+
+      const layerEntry = addedLayers.find((layer) => layer.id === id);
+      if (layerEntry) {
+        layerEntry.queryActive = queryIsActive;
+      }
+      renderQueryOption();
+    };
+
+    fdiv.addEventListener("click", () => {
+      const queryLayers = getQueryLayers();
+      if (queryLayers.length > 0) {
+        queryIsActive = queryLayers.some((layer) => layer.activeData === true);
+      }
+      renderQueryOption();
+    });
+
     /* let query_opt = document.createElement("li")
             query_opt.innerHTML =`<a style="color:#474b4e;" href="#"><i class="far fa-question-circle" aria-hidden="true" style="width:20px;"></i>Ver datos</a>`
             query_opt.onclick = function(){
@@ -3830,15 +4105,28 @@ class Menu_UI {
                 console.log('add a popup here!');
             } */
 
-    mainul.append(zoom_layer_opt);
-    mainul.append(edit_name_opt);
-    mainul.append(edit_data_opt);
-    mainul.append(download_opt);
+    if (activeAllowedOptions.includes("zoom")) {
+      mainul.append(zoom_layer_opt);
+    }
+    if (activeAllowedOptions.includes("query") && queryIsAvailable) {
+      mainul.append(query_opt);
+    }
+    if (activeAllowedOptions.includes("rename")) {
+      mainul.append(edit_name_opt);
+    }
+    if (activeAllowedOptions.includes("data")) {
+      mainul.append(edit_data_opt);
+    }
+    if (activeAllowedOptions.includes("download")) {
+      mainul.append(download_opt);
+    }
+    if (activeAllowedOptions.includes("delete")) {
+      mainul.append(delete_opt);
+    }
     //mainul.append(query_opt)
     //mainul.append(copy_opt)
     //mainul.append(style_opt)
     //mainul.append(chart_opt)
-    mainul.append(delete_opt);
 
     options.append(fdiv);
     options.append(mainul);
@@ -3849,7 +4137,7 @@ class Menu_UI {
     layer_container.append(layer_item);
     content.appendChild(layer_container);
     showTotalNumberofLayers();
-    addCounterForSection(groupnamev, layerType);
+    addCounterForSection(groupname, layerType);
   }
 
   addLayerOptions(layer) {

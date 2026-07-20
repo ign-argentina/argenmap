@@ -1264,15 +1264,17 @@ $("body").on("pluginLoad", function (event, plugin) {
 
           mapa.addContextMenuToLayer = (layer) => {
             let contextPopup = null;
+            let contextLatLng = null;
 
             const contextMenu = new ContextMenu();
 
             contextMenu.createOption({
-              isDisabled: true,
+              isDisabled: !layer.data?.geoJSON?.properties,
               text: "Ver información",
               onclick: (option) => {
                 if (!option.disabled) {
                   mapa.closePopup(contextPopup);
+                  createPopupForVector(layer, contextLatLng);
                 }
               },
             });
@@ -1396,6 +1398,7 @@ $("body").on("pluginLoad", function (event, plugin) {
             });
 
             layer.on("contextmenu", (e) => {
+              contextLatLng = e.latlng;
               contextPopup = L.popup({
                 closeButton: false,
                 className: "context-popup",
@@ -3045,9 +3048,9 @@ $("body").on("pluginLoad", function (event, plugin) {
           function addInfoAndMethodsToLayer(layer) {
             let type = layer.type;
             layer.name = nameForLayer(type);
-            consultDataBtnClose
-              ? (layer.activeData = false)
-              : (layer.activeData = true);
+            layer.queryable = layer.queryable ?? true;
+            layer.activeData =
+              layer.queryable && (layer.activeData ?? !consultDataBtnClose);
 
             mapa.editableLayers[type].push(layer);
 
@@ -3657,6 +3660,7 @@ function loadWmsTpl(objLayer) {
       title: objLayer.titulo,
       format: "image/png",
       INFO_FORMAT: objLayer.capa.featureInfoFormat,
+      identify: getLayerQueryOptions(objLayer.capa).queryActive,
     });
     overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
   }
@@ -3786,7 +3790,9 @@ function changePopupPage(changeType) {
   mapa.openPopup(
     paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext),
     latlngTmp,
+    { autoPan: false },
   ); //Show all info
+  mapa.setView(latlngTmp, mapa.getZoom(), { animate: false });
 }
 
 function copytoClipboard(coords) {
