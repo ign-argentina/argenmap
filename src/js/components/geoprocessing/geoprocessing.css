@@ -16,6 +16,30 @@
     0 4px 20px 0 rgba(0, 0, 0, 0.19);
   z-index: 1200;
 }
+#mr.azimut-modal {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+#mr.azimut-modal .geoprocessing-form-container > .form:last-child {
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: max-content minmax(140px, 1fr);
+}
+#mr.azimut-modal .geoprocessing-form-container > .form:last-child label {
+  text-align: right;
+  white-space: nowrap;
+}
+#mr.azimut-modal .geoprocessing-form-container > .form:last-child .ag-btn,
+#mr.azimut-modal .azimut-status,
+#mr.azimut-modal .azimut-result {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+#mr.azimut-modal .geoprocessing-form-container > .form:last-child .ag-btn {
+  margin-left: 0;
+  margin-right: 0;
+}
 #geoprocesos-icon :hover {
   cursor: pointer;
 }
@@ -109,6 +133,13 @@
     left: 45px;
     max-width: 240px;
   }
+  #mr.azimut-modal .geoprocessing-form-container > .form:last-child {
+    display: flex;
+  }
+  #mr.azimut-modal .geoprocessing-form-container > .form:last-child label {
+    text-align: center;
+    white-space: normal;
+  }
 }
 @media (max-width: 360px) {
   #mr {
@@ -182,4 +213,35 @@
   color: var(--danger-color);
   font-weight: bolder;
   text-align: center;
+}
+.azimut-status {
+  color: #3f3f3f;
+  font-size: 13px;
+  margin: 8px 0;
+  max-width: 260px;
+  text-align: center;
+}
+.azimut-map-label {
+  color: #157db9;
+  font-weight: 700;
+}
+.azimut-result {
+  border-top: 1px solid #ced4da;
+  margin-top: 8px;
+  padding-top: 8px;
+  text-align: center;
+  user-select: text;
+  width: 100%;
+}
+.azimut-result strong {
+  color: #157db9;
+  font-size: 18px;
+}
+#copy-azimut-btn {
+  margin-top: 6px;
+  width: 100%;
+}
+#drawAzimutBtn,
+#ejec_gp {
+  margin-top: 6px;
 }
