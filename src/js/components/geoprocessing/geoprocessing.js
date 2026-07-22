@@ -287,11 +287,16 @@ class Geoprocessing {
 
           this.geoprocessing
             .execute(coords, height, "image/tiff", "#0368ff60", 1.0)
-            .then((result) => {
+            .then(async (result) => {
+              await this.validateWpsRasterResult(result);
               downloadBlob(result, title);
             })
-            .catch((ex) => {
-              console.log(ex.message);
+            .catch((error) => {
+              const message =
+                error?.message ||
+                "No se obtuvo resultado para el geoproceso Cota.";
+              console.error(message, error);
+              new UserMessage(message, false, "error");
             });
         };
 
@@ -1049,6 +1054,52 @@ class Geoprocessing {
   }
 
   /**
+   * Verifica que la respuesta de un proceso WPS sea un raster y no un
+   * ExecuteResponse XML con ProcessFailed. GeoServer puede devolver estos
+   * errores con estado HTTP 200, por lo que fetch() no rechaza la promesa.
+   *
+   * @param {Blob} result Respuesta devuelta por el ejecutor WPS.
+   * @returns {Promise<Blob>} El mismo blob cuando contiene un resultado válido.
+   * @throws {Error} Cuando no hay contenido o el servidor informa un error WPS.
+   */
+  async validateWpsRasterResult(result) {
+    const noResultMessage = "No se obtuvo resultado para el geoproceso Cota.";
+
+    if (!(result instanceof Blob) || result.size === 0) {
+      throw new Error(noResultMessage);
+    }
+
+    const preview = (await result.slice(0, 1024).text()).trimStart();
+    if (!preview.startsWith("<")) {
+      return result;
+    }
+
+    const responseText = await result.text();
+    const xml = new DOMParser().parseFromString(
+      responseText,
+      "application/xml",
+    );
+    const exceptionNode =
+      xml.getElementsByTagNameNS("*", "ExceptionText")[0] ||
+      xml.getElementsByTagName("ows:ExceptionText")[0];
+    const parserError = xml.getElementsByTagName("parsererror")[0];
+    const serverMessage = exceptionNode?.textContent
+      ?.replace(/\s+/g, " ")
+      .trim();
+
+    if (serverMessage) {
+      throw new Error(
+        `${noResultMessage} Mensaje del servidor: ${serverMessage}`,
+      );
+    }
+
+    const fallbackMessage = parserError
+      ? "El servidor devolvió una respuesta XML inválida."
+      : "El servidor devolvió una respuesta XML en lugar de la imagen esperada.";
+    throw new Error(`${noResultMessage} ${fallbackMessage}`);
+  }
+
+  /**
    * Ejecuta el geoproceso activo según this.geoprocessId.
    *
    * - contour: pasa (swLng, swLat, neLng, neLat) al executor; el plugin arma el XML WPS
@@ -1139,11 +1190,18 @@ class Geoprocessing {
       this.lastHeightProcessed = valueOfWaterRise;
       waterRise
         .execute(arrayWaterRise, valueOfWaterRise)
-        .then((result) => {
+        .then(async (result) => {
+          await this.validateWpsRasterResult(result);
           this.displayResult(result, selectedRectangle);
         })
         .catch((error) => {
-          new UserMessage(error.message, true, "error");
+          const message =
+            error?.message ||
+            "No se obtuvo resultado para el geoproceso Cota.";
+          console.error(message, error);
+          new UserMessage(message, false, "error");
+        })
+        .finally(() => {
           loadingBtn("off", "ejec_gp");
         });
     }

@@ -50,6 +50,14 @@ class IElevationProfile {
       }
     });
 
+    if (!layerSelected) {
+      return new UserMessage(
+        "Seleccione una línea para generar el perfil de elevación.",
+        true,
+        "error",
+      );
+    }
+
     if (layerSelected.getLatLngs().length > this.verticesLimit) {
       const tooMuchVertices = this.verticesLimitMsg + this.verticesLimit;
       return new UserMessage(tooMuchVertices, true, "error");
@@ -57,8 +65,8 @@ class IElevationProfile {
 
     loadingBtn("on", "ejec_gp");
     this._processLayer(layerSelected.getGeoJSON());
-    this._executeProcess();
     geoProcessingManager.geoprocessId = null;
+    return this._executeProcess(layerSelected);
   }
 
   _processLayer(geoJSON) {
@@ -73,16 +81,25 @@ class IElevationProfile {
     return this.values;
   }
 
-  _executeProcess() {
+  _executeProcess(polylineLayer) {
     this.data = [];
     let elevationProfile = new GeoserviceFactory.ElevationProfileGetFeatureInfo(
       this.serviceURL,
       this.serviceLayer,
     );
 
-    elevationProfile
+    return elevationProfile
       .execute(this.values)
       .then((result) => {
+        if (
+          !Array.isArray(result?.coordinates) ||
+          result.coordinates.length === 0
+        ) {
+          throw new Error(
+            "El servicio no devolvió datos de elevación para la línea seleccionada.",
+          );
+        }
+
         let altura;
         let distancia = 0.0;
         let desde = null;
@@ -116,13 +133,11 @@ class IElevationProfile {
         let layername = this.namePrefixElevProfile + counterElevProfile;
         counterElevProfile++;
         let dataForDisplay = this.data;
-        let selectedPolyline = (mapa.editableLayers.polyline.at(
-            -1,
-          ).idElevProfile = layername),
+        polylineLayer.idElevProfile = layername;
+        let selectedPolyline = layername,
           layerType = "geoprocess",
           sectionName = "Geoprocesos";
 
-        let polylineLayer = mapa.editableLayers.polyline.at(-1);
         polylineLayer._uneditable = true; //Aux to disallow editing/delete the polyline
 
         addedLayers.push({
@@ -150,8 +165,6 @@ class IElevationProfile {
         mapa.groupLayers[layername] = [polylineLayer.name];
 
         this._displayResult(dataForDisplay, selectedPolyline);
-        loadingBtn("off", "ejec_gp");
-
         document.getElementById("select-process").selectedIndex = 0;
         document.getElementsByClassName("form")[1].innerHTML = "";
         new UserMessage(
@@ -163,8 +176,15 @@ class IElevationProfile {
         removeGeometryFromDrawingsGroup(polylineLayer);
       })
       .catch((error) => {
-        console.log("Hay error: ", error);
-        new UserMessage(error, true, "error");
+        console.error("No se pudo generar el perfil de elevación:", error);
+        const message =
+          typeof error === "string"
+            ? error
+            : error?.message ||
+              "No se pudo generar el perfil de elevación. Intente nuevamente.";
+        new UserMessage(message, true, "error");
+      })
+      .finally(() => {
         loadingBtn("off", "ejec_gp");
       });
   }
@@ -311,7 +331,12 @@ class IElevationProfile {
       },
     });
 
-    $("#" + inner.id).highcharts({
+    const seriesColor = Highcharts.getOptions().colors?.[0] || polylineColor;
+    const transparentSeriesColor = Highcharts.Color.parse(seriesColor)
+      .setOpacity(0)
+      .get("rgba");
+
+    Highcharts.chart(inner, {
       chart: {
         zoomType: "x",
         backgroundColor: "rgba(255, 255, 255, 0.0)",
@@ -363,13 +388,8 @@ class IElevationProfile {
               y2: 1,
             },
             stops: [
-              [0, Highcharts.getOptions().colors[0]],
-              [
-                1,
-                new Highcharts.Color(Highcharts.getOptions().colors[0])
-                  .setOpacity(0)
-                  .get("rgba"),
-              ],
+              [0, seriesColor],
+              [1, transparentSeriesColor],
             ],
           },
           marker: {
