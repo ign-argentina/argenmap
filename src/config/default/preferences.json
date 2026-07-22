@@ -107,6 +107,11 @@
         "name": "Perfil de Elevación",
         "geoprocess": "elevationProfile",
         "namePrefix": "profile_"
+      },
+      {
+        "name": "Azimut",
+        "geoprocess": "azimut",
+        "namePrefix": "azimut_"
       }
     ]
   },

@@ -7,7 +7,8 @@ let isSelectionDrawingActive = false;
 let counterContour = 0,
   counterHeight = 0,
   counterBuffer = 0,
-  counterElevProfile = 0; //soon to be moved to their respective class
+  counterElevProfile = 0,
+  counterAzimut = 0; //soon to be moved to their respective class
 
 class Geoprocessing {
   formContainer = null;
@@ -19,11 +20,14 @@ class Geoprocessing {
   fieldsToReferenceLayers = [];
   editableLayer_name = null;
   _namePrefix = null;
+  azimutMarkers = [];
+  azimutMapClickHandler = null;
   GEOPROCESS = {
     contour: "curvas_de_nivel_",
     waterRise: "cota_",
     buffer: "area_de_influencia_",
     elevationProfile: "perfil_de_elevacion_",
+    azimut: "azimut_",
   };
 
   svgZoomStyle(zoom) {
@@ -68,6 +72,7 @@ class Geoprocessing {
   }
 
   closeModal() {
+    this.clearAzimutSelection();
     document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
       "";
     document.getElementsByClassName("leaflet-draw-draw-polyline")[0].style = "";
@@ -359,11 +364,68 @@ class Geoprocessing {
 
         break;
       }
+      case "azimut": {
+        btn_modal_loading = false;
+        const layername = this.namePrefix + counterAzimut;
+        counterAzimut++;
+
+        const resultLayers = mapa.createLayerFromGeoJSON(result, layername);
+        addLayerToAllGroups(resultLayers, layername);
+        resultLayers.forEach((layer) => {
+          layer._uneditable = true;
+          if (layer.type === "polyline") {
+            layer.bindTooltip(`${this.lastAzimut.toFixed(2)}°`, {
+              permanent: true,
+              direction: "center",
+              className: "azimut-map-label",
+            });
+          } else if (layer.type === "marker") {
+            const pointName = layer.data?.geoJSON?.properties?.punto;
+            if (pointName) {
+              layer.bindTooltip(pointName, {
+                permanent: true,
+                direction: "top",
+              });
+            }
+          }
+        });
+
+        addedLayers.push({
+          id: layername,
+          layer: result,
+          name: layername,
+          file_name: layername,
+          type: layerType,
+          isActive: true,
+          section: sectionName,
+        });
+        menu_ui.addFileLayer(
+          sectionName,
+          layerType,
+          layername,
+          layername,
+          layername,
+          true,
+        );
+        updateNumberofLayers(sectionName);
+        break;
+      }
     }
+
+    if (this.geoprocessId === "azimut") {
+      this.showAzimutResult();
+      new UserMessage(
+        `Azimut calculado: ${this.lastAzimut.toFixed(2)}°.`,
+        true,
+        "information",
+      );
+      return;
+    }
+
     this.resetHeightLayerColor();
     document.getElementById("select-process").selectedIndex = 0;
     document.getElementsByClassName("form")[1].innerHTML = "";
-    new UserMessage(`Geoproceso ejecutado exitosamente.`, true, "information");
+    new UserMessage("Geoproceso ejecutado exitosamente.", true, "information");
     geoProcessingManager.geoprocessId = null;
   }
 
@@ -984,6 +1046,275 @@ class Geoprocessing {
     this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
   }
 
+  buildAzimutForm() {
+    this.optionsForm.clearForm();
+    this.clearAzimutSelection();
+
+    const fields = [
+      ["Latitud punto A", "input-azimut-a-lat", -90, 90, 0],
+      ["Longitud punto A", "input-azimut-a-lng", -180, 180, 0],
+      ["Latitud punto B", "input-azimut-b-lat", -90, 90, 1],
+      ["Longitud punto B", "input-azimut-b-lng", -180, 180, 1],
+    ];
+
+    fields.forEach(([title, id, min, max, pointIndex]) => {
+      this.optionsForm.addElement("input", id, {
+        title,
+        extraProps: {
+          type: "number",
+          min,
+          max,
+          step: "any",
+          placeholder: title,
+        },
+        events: {
+          input: () => this.syncAzimutMarker(pointIndex),
+        },
+      });
+    });
+
+    this.optionsForm.addButton(
+      "Seleccionar puntos en el mapa",
+      () => this.startAzimutMapSelection(),
+      "drawAzimutBtn",
+    );
+
+    const status = document.createElement("div");
+    status.id = "azimut-status";
+    status.className = "azimut-status";
+    status.textContent =
+      "Ingresá las coordenadas o seleccioná el punto A y luego el B en el mapa.";
+    this.optionsForm.form.appendChild(status);
+
+    const result = document.createElement("div");
+    result.id = "azimut-result";
+    result.className = "azimut-result hidden";
+    result.innerHTML = `
+      <div>Azimut: <strong id="azimut-result-value"></strong></div>
+      <div>Distancia: <span id="azimut-distance-value"></span></div>
+      <button type="button" id="copy-azimut-btn" class="ag-btn ag-btn-primary">
+        Copiar azimut
+      </button>
+    `;
+    result.querySelector("#copy-azimut-btn").addEventListener("click", () => {
+      this.copyAzimutResult();
+    });
+    this.optionsForm.form.appendChild(result);
+
+    this.optionsForm.addButton(
+      "Ejecutar",
+      () => this.executeAzimut(),
+      "ejec_gp",
+    );
+    this.updateAzimutExecuteButton();
+  }
+
+  showAzimutResult() {
+    const result = document.getElementById("azimut-result");
+    if (!result) return;
+    document.getElementById("azimut-result-value").textContent =
+      `${this.lastAzimut.toFixed(2)}°`;
+    document.getElementById("azimut-distance-value").textContent =
+      `${this.lastAzimutDistance.toFixed(2)} km`;
+    result.classList.remove("hidden");
+    result.scrollIntoView({ block: "nearest" });
+  }
+
+  async copyAzimutResult() {
+    const value = `${this.lastAzimut.toFixed(2)}°`;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        textarea.remove();
+        if (!copied) throw new Error("Clipboard unavailable");
+      }
+      new UserMessage("Azimut copiado al portapapeles.", true, "information");
+    } catch (error) {
+      new UserMessage("No se pudo copiar el azimut.", true, "error");
+    }
+  }
+
+  getAzimutCoordinates(pointIndex) {
+    const point = pointIndex === 0 ? "a" : "b";
+    const lat = Number(
+      document.getElementById(`input-azimut-${point}-lat`)?.value,
+    );
+    const lng = Number(
+      document.getElementById(`input-azimut-${point}-lng`)?.value,
+    );
+    const latValue = document.getElementById(
+      `input-azimut-${point}-lat`,
+    )?.value;
+    const lngValue = document.getElementById(
+      `input-azimut-${point}-lng`,
+    )?.value;
+
+    if (
+      latValue === "" ||
+      lngValue === "" ||
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng) ||
+      lat < -90 ||
+      lat > 90 ||
+      lng < -180 ||
+      lng > 180
+    ) {
+      return null;
+    }
+    return { lat, lng };
+  }
+
+  syncAzimutMarker(pointIndex) {
+    const coordinates = this.getAzimutCoordinates(pointIndex);
+    if (!coordinates) {
+      if (this.azimutMarkers[pointIndex]) {
+        mapa.removeLayer(this.azimutMarkers[pointIndex]);
+        this.azimutMarkers[pointIndex] = null;
+      }
+      this.updateAzimutExecuteButton();
+      return;
+    }
+
+    let marker = this.azimutMarkers[pointIndex];
+    if (!marker) {
+      marker = L.marker(coordinates, { draggable: true }).addTo(mapa);
+      marker.bindTooltip(pointIndex === 0 ? "A" : "B", {
+        permanent: true,
+        direction: "top",
+      });
+      marker.on("dragend", () => {
+        const latlng = marker.getLatLng();
+        this.setAzimutInputs(pointIndex, latlng);
+      });
+      this.azimutMarkers[pointIndex] = marker;
+    } else {
+      marker.setLatLng(coordinates);
+    }
+    this.updateAzimutExecuteButton();
+  }
+
+  setAzimutInputs(pointIndex, latlng) {
+    const point = pointIndex === 0 ? "a" : "b";
+    document.getElementById(`input-azimut-${point}-lat`).value =
+      latlng.lat.toFixed(6);
+    document.getElementById(`input-azimut-${point}-lng`).value =
+      latlng.lng.toFixed(6);
+    this.syncAzimutMarker(pointIndex);
+  }
+
+  startAzimutMapSelection() {
+    this.clearAzimutSelection();
+    ["a", "b"].forEach((point) => {
+      document.getElementById(`input-azimut-${point}-lat`).value = "";
+      document.getElementById(`input-azimut-${point}-lng`).value = "";
+    });
+
+    let pointIndex = 0;
+    const status = document.getElementById("azimut-status");
+    status.textContent = "Seleccioná el punto A en el mapa.";
+    mapa.getContainer().style.cursor = "crosshair";
+
+    this.azimutMapClickHandler = (event) => {
+      this.setAzimutInputs(pointIndex, event.latlng);
+      pointIndex++;
+      if (pointIndex === 1) {
+        status.textContent = "Seleccioná el punto B en el mapa.";
+        return;
+      }
+      mapa.off("click", this.azimutMapClickHandler);
+      this.azimutMapClickHandler = null;
+      mapa.getContainer().style.cursor = "";
+      status.textContent =
+        "Podés arrastrar los puntos o modificar sus coordenadas.";
+    };
+    mapa.on("click", this.azimutMapClickHandler);
+    this.updateAzimutExecuteButton();
+  }
+
+  updateAzimutExecuteButton() {
+    const executeButton = document.getElementById("ejec_gp");
+    if (!executeButton) return;
+    const pointA = this.getAzimutCoordinates(0);
+    const pointB = this.getAzimutCoordinates(1);
+    const pointsAreDifferent =
+      pointA &&
+      pointB &&
+      (pointA.lat !== pointB.lat || pointA.lng !== pointB.lng);
+    executeButton.classList.toggle("ag-btn-disabled", !pointsAreDifferent);
+    document
+      .getElementById("azimut-status")
+      ?.classList.toggle("hidden", Boolean(pointsAreDifferent));
+  }
+
+  clearAzimutSelection() {
+    if (this.azimutMapClickHandler && typeof mapa !== "undefined") {
+      mapa.off("click", this.azimutMapClickHandler);
+      this.azimutMapClickHandler = null;
+    }
+    if (typeof mapa !== "undefined") {
+      this.azimutMarkers.forEach((marker) => {
+        if (marker && mapa.hasLayer(marker)) mapa.removeLayer(marker);
+      });
+      if (mapa.getContainer()) mapa.getContainer().style.cursor = "";
+    }
+    this.azimutMarkers = [];
+  }
+
+  executeAzimut() {
+    const pointA = this.getAzimutCoordinates(0);
+    const pointB = this.getAzimutCoordinates(1);
+    if (
+      !pointA ||
+      !pointB ||
+      (pointA.lat === pointB.lat && pointA.lng === pointB.lng)
+    ) {
+      new UserMessage(
+        "Ingresá dos puntos válidos y diferentes.",
+        true,
+        "error",
+      );
+      return;
+    }
+
+    const origin = turf.point([pointA.lng, pointA.lat]);
+    const destination = turf.point([pointB.lng, pointB.lat]);
+    this.lastAzimut = (turf.bearing(origin, destination) + 360) % 360;
+    const distance = turf.distance(origin, destination, { units: "kilometers" });
+    this.lastAzimutDistance = distance;
+    const properties = {
+      azimut: Number(this.lastAzimut.toFixed(6)),
+      distancia_km: Number(distance.toFixed(6)),
+      punto_origen: "A",
+      punto_destino: "B",
+    };
+    const result = turf.featureCollection([
+      turf.lineString(
+        [origin.geometry.coordinates, destination.geometry.coordinates],
+        {
+          ...properties,
+          styles: { color: "#157db9", weight: 3 },
+        },
+      ),
+      turf.point(origin.geometry.coordinates, {
+        punto: "A",
+        type: "marker",
+      }),
+      turf.point(destination.geometry.coordinates, {
+        punto: "B",
+        type: "marker",
+      }),
+    ]);
+
+    this.clearAzimutSelection();
+    this.displayResult(result);
+  }
+
   /**
    * Calcula el área de influencia (buffer) sobre el rectángulo dibujado.
    * Para capas locales usa turf.buffer(); para capas con host remoto, obtiene los features
@@ -1219,6 +1550,12 @@ class Geoprocessing {
       title: app.geoprocessing.dialogTitle,
       events: {
         change: (element) => {
+          document
+            .getElementById("mr")
+            ?.classList.toggle("azimut-modal", element.value === "azimut");
+          if (this.geoprocessId === "azimut") {
+            this.clearAzimutSelection();
+          }
           if (!element.value) {
             this.optionsForm.clearForm();
             this.resetHeightLayerColor();
@@ -1266,6 +1603,11 @@ class Geoprocessing {
           const item = this.geoprocessingConfig.availableProcesses.find(
             (e) => e.geoprocess === this.geoprocessId,
           );
+
+          if (this.geoprocessId === "azimut") {
+            this.buildAzimutForm();
+            return;
+          }
 
           this.process = {
             contour: GeoserviceFactory.Contour,
