@@ -2817,46 +2817,32 @@ class GestorMenu {
   }
 
   addPlugin(pluginName, url, callback) {
-    var pluginAux;
     if (!this.pluginExists(pluginName)) {
-      if (typeof callback === "function") {
-        // Create plugin with callback if need to
-        pluginAux = new Plugin(pluginName, url, callback);
-        this.plugins[pluginAux.name] = pluginAux;
-        this.pluginsCount++;
-        this.pluginsLoading++;
-        $.getScript(url, function (data, textStatus, jqxhr) {
-          if (textStatus == "success") {
-            pluginAux.setStatus("ready");
-            gestorMenu.pluginsLoading--;
-            pluginAux.triggerLoad();
+      const pluginAux = new Plugin(
+        pluginName,
+        url,
+        typeof callback === "function" ? callback : null,
+      );
+      this.plugins[pluginAux.name] = pluginAux;
+      this.pluginsCount++;
+      this.pluginsLoading++;
+
+      appDependencies.loadScript(url).then(
+        () => {
+          pluginAux.setStatus("ready");
+          this.pluginsLoading--;
+          pluginAux.triggerLoad();
+          if (pluginAux.callback) {
             pluginAux.callback();
           }
-        }).fail(function (jqxhr, settings, exception) {
+        },
+        (error) => {
           pluginAux.setStatus("fail");
-          console.log("Error: " + jqxhr.status);
-          gestorMenu.pluginsCount--;
-          gestorMenu.pluginsLoading--;
-        });
-      } else {
-        // Create a plugin with no callback
-        pluginAux = new Plugin(pluginName, url, null);
-        this.plugins[pluginAux.name] = pluginAux;
-        this.pluginsCount++;
-        this.pluginsLoading++;
-        $.getScript(url, function (data, textStatus, jqxhr) {
-          if (textStatus == "success") {
-            pluginAux.setStatus("ready");
-            gestorMenu.pluginsLoading--;
-            pluginAux.triggerLoad();
-          }
-        }).fail(function (jqxhr, settings, exception) {
-          pluginAux.setStatus("fail");
-          console.log("Error: " + jqxhr.status);
-          gestorMenu.pluginsCount--;
-          gestorMenu.pluginsLoading--;
-        });
-      }
+          this.pluginsCount--;
+          this.pluginsLoading--;
+          console.error(error);
+        },
+      );
     } else {
       return false;
     }

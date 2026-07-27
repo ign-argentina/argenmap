@@ -123,12 +123,10 @@ const app = {
     type = "application/javascript",
     inBody = true,
   ) {
-    const script = document.createElement("script");
-    script.src = scriptUrl;
-    script.type = type;
-    let target = null;
-    inBody ? (target = "body") : (target = "head");
-    document[target].appendChild(script);
+    return appDependencies.loadScript(scriptUrl, {
+      type,
+      target: inBody ? "body" : "head",
+    });
   },
 
   loading: function (placement = "") {
@@ -1010,26 +1008,31 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //if geocoder is active in menu.json
     if (loadGeocoder && !app.dependencies.geocoder) {
-      $.getScript("src/js/components/searchbar/searchbar.js").done(function () {
-        var searchBar_ui = new Searchbar_UI();
-        if (typeof searchBar_ui.create_sarchbar === "function") {
-          searchBar_ui.create_sarchbar();
-        } else if (typeof searchBar_ui.create_searchbar === "function") {
-          searchBar_ui.create_searchbar();
-        } else {
-          console.warn("No se encontró método de creación para Searchbar_UI");
-        }
-      });
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">',
-      );
+      appDependencies
+        .loadScript("src/js/components/searchbar/searchbar.js")
+        .then(() => {
+          var searchBar_ui = new Searchbar_UI();
+          if (typeof searchBar_ui.create_sarchbar === "function") {
+            searchBar_ui.create_sarchbar();
+          } else if (typeof searchBar_ui.create_searchbar === "function") {
+            searchBar_ui.create_searchbar();
+          } else {
+            console.warn("No se encontró método de creación para Searchbar_UI");
+          }
+        })
+        .catch((error) => console.error(error));
+      appDependencies
+        .loadStyle("src/js/components/searchbar/searchbar.css")
+        .catch((error) => console.error(error));
       app.dependencies.geocoder = true;
     }
 
     //Load dynamic mapa.js
     app.template_id = template;
     if (!app.dependencies.map) {
-      $.getScript(`src/js/map/map.js`, (res) => {});
+      appDependencies
+        .loadScript("src/js/map/map.js")
+        .catch((error) => console.error(error));
       app.dependencies.map = true;
     }
 
@@ -1114,30 +1117,35 @@ async function loadTemplate(data, isDefaultTemplate) {
   setTimeout(function () {
     //load loginatic
     if (loadLogin) {
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">',
-      );
-      $.getScript("src/js/components/cookies/cookies.js").done(() => {
-        $.getScript("src/js/components/login/loginatic.js").done(function () {
+      appDependencies
+        .loadStyle("src/js/components/login/loginatic.css")
+        .catch((error) => console.error(error));
+      appDependencies
+        .loadScript("src/js/components/cookies/cookies.js")
+        .then(() =>
+          appDependencies.loadScript("src/js/components/login/loginatic.js"),
+        )
+        .then(() => {
           loginatic = new loginatic();
           loginatic._addLoginWrapper();
           loginatic.init();
           loginatic.check();
-        });
-      });
+        })
+        .catch((error) => console.error(error));
     }
 
     if (mainPopup) {
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/main-popup/mainPopup.css">',
-      );
-      $.getScript("src/js/components/main-popup/mainPopup.js").done(
-        function () {
+      appDependencies
+        .loadStyle("src/js/components/main-popup/mainPopup.css")
+        .catch((error) => console.error(error));
+      appDependencies
+        .loadScript("src/js/components/main-popup/mainPopup.js")
+        .then(() => {
           mainPopup = new mainPopup();
           mainPopup.check();
           mainPopup._addPopupWrapper();
-        },
-      );
+        })
+        .catch((error) => console.error(error));
     }
 
   }, 1500);

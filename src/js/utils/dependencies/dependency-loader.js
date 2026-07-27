@@ -30,50 +30,47 @@ class AppDependencyLoader {
     await Promise.all((group.styles || []).map((url) => this.loadStyle(url)));
 
     for (const url of group.scripts || []) {
-      await (group.useScriptTags
-        ? this.loadScriptTag(url)
-        : this.loadScript(url));
+      await this.loadScript(url);
     }
   }
 
-  loadScript(url) {
-    if (this.scriptPromises.has(url)) {
-      return this.scriptPromises.get(url);
+  loadScript(url, options = {}) {
+    const normalizedUrl = new URL(url, document.baseURI).href;
+    if (this.scriptPromises.has(normalizedUrl)) {
+      return this.scriptPromises.get(normalizedUrl);
     }
 
-    const promise = new Promise((resolve, reject) => {
-      $.getScript(url)
-        .done(resolve)
-        .fail((_request, _settings, error) => {
-          reject(new Error(`Unable to load script "${url}": ${error}`));
-        });
-    }).catch((error) => {
-      this.scriptPromises.delete(url);
-      throw error;
-    });
-
-    this.scriptPromises.set(url, promise);
-    return promise;
-  }
-
-  loadScriptTag(url) {
-    if (this.scriptPromises.has(url)) {
-      return this.scriptPromises.get(url);
+    const existingScript = Array.from(document.scripts).find(
+      (script) => script.src === normalizedUrl,
+    );
+    if (existingScript) {
+      const promise = Promise.resolve(existingScript);
+      this.scriptPromises.set(normalizedUrl, promise);
+      return promise;
     }
 
     const promise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.src = url;
-      script.onload = resolve;
-      script.onerror = () =>
+      script.type = options.type || "application/javascript";
+      script.dataset.argenmapDependency = "true";
+      script.onload = () => resolve(script);
+      script.onerror = () => {
+        script.remove();
         reject(new Error(`Unable to load script "${url}".`));
-      document.head.appendChild(script);
+      };
+
+      const target =
+        options.target === "body" && document.body
+          ? document.body
+          : document.head;
+      target.appendChild(script);
     }).catch((error) => {
-      this.scriptPromises.delete(url);
+      this.scriptPromises.delete(normalizedUrl);
       throw error;
     });
 
-    this.scriptPromises.set(url, promise);
+    this.scriptPromises.set(normalizedUrl, promise);
     return promise;
   }
 
@@ -170,7 +167,6 @@ const appDependencies = new AppDependencyLoader({
     ],
   },
   highcharts: {
-    useScriptTags: true,
     scripts: [
       "https://cdn.jsdelivr.net/npm/highcharts@13.0.0/highcharts.js",
       "https://cdn.jsdelivr.net/npm/highcharts@13.0.0/modules/exporting.js",
