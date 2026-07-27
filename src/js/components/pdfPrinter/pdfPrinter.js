@@ -167,6 +167,8 @@ class PdfPrinter {
     try {
       this.state = "loading";
 
+      await appDependencies.load("pdfExport");
+
       // Verificar dependencias críticas
       const PDFClass = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
       if (

@@ -41,7 +41,16 @@ class IElevationProfile {
     return inputs;
   }
 
-  executeElevationProfile() {
+  async executeElevationProfile() {
+    try {
+      await Promise.all([
+        appDependencies.load("turf"),
+        appDependencies.load("highcharts"),
+      ]);
+    } catch (error) {
+      return new UserMessage(error.message, true, "error");
+    }
+
     let layerSelected;
     mapa.editableLayers.polyline.forEach((polyline) => {
       let selctedLayerName = document.getElementById("select-capa").value;

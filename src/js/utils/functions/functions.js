@@ -14,6 +14,13 @@ var loadAddLayer = false;
 var loadQueryLayer = true;
 var loadConfigTool = false;
 
+async function ensureTableDependencies() {
+  await appDependencies.load("table");
+  if (loadCharts) {
+    await appDependencies.load("charts");
+  }
+}
+
 function setAddLayer(cond) {
   loadAddLayer = cond;
 }

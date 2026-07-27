@@ -9,10 +9,14 @@ var mapa = "";
 let currentBaseMap = null;
 
 let countour_styles = false;
+const lazyPluginNames = new Set(["elevation", "turf"]);
 
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
   for (const plugin in PLUGINS) {
-      gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
+    if (lazyPluginNames.has(plugin)) {
+      continue;
+    }
+    gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
   }
 });
 
@@ -350,6 +354,32 @@ $("body").on("pluginLoad", function (event, plugin) {
             );
             screenShoterBtn.style.fontSize = "16px";
             screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
+            let loadingScreenshotDependencies = false;
+            screenShoterBtn.addEventListener(
+              "click",
+              async (event) => {
+                if (typeof window.html2canvas !== "undefined") {
+                  return;
+                }
+
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                if (loadingScreenshotDependencies) {
+                  return;
+                }
+
+                loadingScreenshotDependencies = true;
+                try {
+                  await appDependencies.load("html2canvas");
+                  screenShoterBtn.click();
+                } catch (error) {
+                  new UserMessage(error.message, true, "error");
+                } finally {
+                  loadingScreenshotDependencies = false;
+                }
+              },
+              true,
+            );
 
             gestorMenu.plugins["screenShoter"].setStatus("visible");
           }
@@ -568,41 +598,12 @@ $("body").on("pluginLoad", function (event, plugin) {
           break;
         case "geoprocessing":
           if (loadGeoprocessing) {
-            let HTMLhead = document.querySelector("head");
-            HTMLhead.insertAdjacentHTML(
-              "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">',
+            geoProcessingManager = new Geoprocessing();
+            geoProcessingManager.createIcon();
+            geoProcessingManager.setAvailableGeoprocessingConfig(
+              app.geoprocessing,
             );
-            HTMLhead.insertAdjacentHTML(
-              "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">',
-            );
-            HTMLhead.insertAdjacentHTML(
-              "beforeend",
-              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">',
-            );
-            $.getScript(
-              "src/js/plugins/geoprocess-executor/geoprocess-executor.js",
-            ).done(function () {
-              $.getScript(
-                "src/js/components/form-builder/form-builder.js",
-              ).done(function () {
-                geoProcessingManager = new Geoprocessing();
-                geoProcessingManager.createIcon();
-                geoProcessingManager.setAvailableGeoprocessingConfig(
-                  app.geoprocessing,
-                );
-                geoProcessingManager.getProcesses().forEach((process) => {
-                  if (process.geoprocess === "waterRise") {
-                    // script loading test without jQuery
-                    app._loadScript(
-                      "./src/js/components/geoprocessing/IHeight.js",
-                    );
-                  }
-                  geoProcessingManager.getNewProcessPrefix();
-                });
-              });
-            });
+            geoProcessingManager.getNewProcessPrefix();
           }
           break;
         case "pdfPrinter":
@@ -1244,7 +1245,7 @@ $("body").on("pluginLoad", function (event, plugin) {
            * @param {L.Layer|Object} layer - A Leaflet layer or GeoJSON object.
            * @returns {UserMessage|undefined} - Returns a UserMessage object with an error message if the layer is not available, otherwise returns undefined.
            */
-          mapa.centerLayer = (layer) => {
+          mapa.centerLayer = async (layer) => {
             if (!layer) {
               return new UserMessage(
                 "La capa ya no se encuentra disponible.",
@@ -1252,6 +1253,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 "error",
               );
             }
+            await appDependencies.load("turf");
             if (layer.hasOwnProperty("_leaflet_id")) {
               layer = layer.toGeoJSON();
             }
@@ -1418,7 +1420,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             }); */
           };
 
-          mapa.measurementsWrapper = (layer) => {
+          mapa.measurementsWrapper = async (layer) => {
+            await appDependencies.load("turf");
             if (document.getElementById("measurementWrapper")) {
               document.getElementById("measurementWrapper").remove();
             }
@@ -2491,7 +2494,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             return popUpDiv;
           };
 
-          mapa.showInfoLayer = (layerName, showLastSearch) => {
+          mapa.showInfoLayer = async (layerName, showLastSearch) => {
+            await ensureTableDependencies();
             const type = layerName.split("_")[0];
             const layer = mapa.editableLayers[type].find(
               (lyr) => lyr.name === layerName,
@@ -2535,7 +2539,11 @@ $("body").on("pluginLoad", function (event, plugin) {
               : null;
           };
 
-          mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
+          mapa.checkLayersInDrawedGeometry = async (layer, selectedLayers) => {
+            await Promise.all([
+              appDependencies.load("turf"),
+              ensureTableDependencies(),
+            ]);
             const filteredActiveLayers = getAllActiveLayers().filter(
               (activeLayer) => {
                 return selectedLayers.find(

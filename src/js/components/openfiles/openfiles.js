@@ -127,7 +127,7 @@ class UImf {
     main_inputfile.type = "file";
     main_inputfile.className = "file-input";
     main_inputfile.style = "opacity: 0.0;top: 0; left: 0; bottom: 0;right: 0;";
-    main_inputfile.addEventListener("change", function (e) {
+    main_inputfile.addEventListener("change", async function (e) {
       // Fix Chrome bug: change event fires on cancel when previous file was uploaded
       if (!e.target.files[0]) return;
 
@@ -135,6 +135,14 @@ class UImf {
 
       //FileReader.onload --->ui_upload.logoAnimation()
       ui_upload.logoAnimation();
+
+      try {
+        await appDependencies.load("fileLayer");
+      } catch (error) {
+        ui_upload.reload_logo();
+        new UserMessage(error.message, true, "error");
+        return;
+      }
 
       // Initialize File Layer
       let fileLayer = new FileLayer();

@@ -200,6 +200,14 @@ async function handleURLInput(e) {
   let url = document.getElementsByName("input-url")[0].value;
   document.getElementsByName("input-url")[0].value = "";
 
+  try {
+    await appDependencies.load("serviceLayers");
+  } catch (error) {
+    loadingBtn("off", "buttonConectar", "Conectar");
+    new UserMessage(error.message, true, "error");
+    return;
+  }
+
   const serviceLayer = new ServiceLayers();
 
   // check if the service was added

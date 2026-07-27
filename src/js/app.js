@@ -40,6 +40,10 @@ const app = {
       setCharts(app.charts.isActive);
     }
 
+    if (app.table?.isActive) {
+      await ensureTableDependencies();
+    }
+
     const geocoderEnabled =
       app?.geocoder?.enabled ??
       app?.geocoder?.isActive ??
@@ -484,6 +488,7 @@ const app = {
     }
 
     try {
+      await appDependencies.load("fileLayer");
       const fileLayer = new FileLayer();
       await fileLayer.handleUrl(
         layerConfig.url,
@@ -1003,16 +1008,6 @@ async function loadTemplate(data, isDefaultTemplate) {
     app.addBasemaps();
     app.addLayers();
 
-    //if charts is active in menu.json
-    if (loadCharts && !app.dependencies.d3) {
-      $.getScript("https://d3js.org/d3.v5.min.js");
-      $.getScript("src/js/components/charts/charts.js");
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">',
-      );
-      app.dependencies.d3 = true;
-    }
-
     //if geocoder is active in menu.json
     if (loadGeocoder && !app.dependencies.geocoder) {
       $.getScript("src/js/components/searchbar/searchbar.js").done(function () {
@@ -1145,21 +1140,6 @@ async function loadTemplate(data, isDefaultTemplate) {
       );
     }
 
-    //load elevationProfile
-    if (loadElevationProfile && !app.dependencies.highcharts) {
-      $.getScript("https://code.highcharts.com/highcharts.js").done(() => {
-        $.getScript("https://code.highcharts.com/highcharts-more.js");
-        $.getScript("https://code.highcharts.com/modules/windbarb.js");
-        $.getScript("https://code.highcharts.com/modules/funnel.js");
-        $.getScript("https://code.highcharts.com/modules/exporting.js");
-        $.getScript("https://code.highcharts.com/modules/timeline.js");
-        $.getScript("src/js/plugins/highcharts.theme.js");
-      });
-      app.dependencies.highcharts = true;
-
-      // TODO: replace script loads by ES modules architecture
-      $.getScript("src/js/components/elevation-profile/elevation-profile.js");
-    }
   }, 1500);
 }
 

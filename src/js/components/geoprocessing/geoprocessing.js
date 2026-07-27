@@ -59,10 +59,18 @@ class Geoprocessing {
     </svg>
     `;
 
-    btnElement.onclick = () => {
+    btnElement.onclick = async () => {
       if (g_modal_close) {
-        geoProcessingManager.createModal();
-        g_modal_close = false;
+        btnElement.disabled = true;
+        try {
+          await appDependencies.load("geoprocessingRuntime");
+          geoProcessingManager.createModal();
+          g_modal_close = false;
+        } catch (error) {
+          new UserMessage(error.message, true, "error");
+        } finally {
+          btnElement.disabled = false;
+        }
       } else {
         //Close geoprocess window and clear
         this.closeModal();
