@@ -30,7 +30,9 @@ class AppDependencyLoader {
     await Promise.all((group.styles || []).map((url) => this.loadStyle(url)));
 
     for (const url of group.scripts || []) {
-      await this.loadScript(url);
+      await (group.useScriptTags
+        ? this.loadScriptTag(url)
+        : this.loadScript(url));
     }
   }
 
@@ -45,6 +47,27 @@ class AppDependencyLoader {
         .fail((_request, _settings, error) => {
           reject(new Error(`Unable to load script "${url}": ${error}`));
         });
+    }).catch((error) => {
+      this.scriptPromises.delete(url);
+      throw error;
+    });
+
+    this.scriptPromises.set(url, promise);
+    return promise;
+  }
+
+  loadScriptTag(url) {
+    if (this.scriptPromises.has(url)) {
+      return this.scriptPromises.get(url);
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = url;
+      script.onload = resolve;
+      script.onerror = () =>
+        reject(new Error(`Unable to load script "${url}".`));
+      document.head.appendChild(script);
     }).catch((error) => {
       this.scriptPromises.delete(url);
       throw error;
@@ -147,13 +170,10 @@ const appDependencies = new AppDependencyLoader({
     ],
   },
   highcharts: {
+    useScriptTags: true,
     scripts: [
-      "https://code.highcharts.com/highcharts.js",
-      "https://code.highcharts.com/highcharts-more.js",
-      "https://code.highcharts.com/modules/windbarb.js",
-      "https://code.highcharts.com/modules/funnel.js",
-      "https://code.highcharts.com/modules/exporting.js",
-      "https://code.highcharts.com/modules/timeline.js",
+      "https://cdn.jsdelivr.net/npm/highcharts@13.0.0/highcharts.js",
+      "https://cdn.jsdelivr.net/npm/highcharts@13.0.0/modules/exporting.js",
       "src/js/plugins/highcharts.theme.js",
     ],
   },
