@@ -3674,13 +3674,19 @@ function loadWmsTpl(objLayer) {
   }
 
   function createWmtsLayer(objLayer) {
-    // tilematrix, style and format should be set by a method
     let wmts_maxZoom = app.hasOwnProperty("service")
       ? app.service.wmts.maxZoom
       : DEFAULT_WMTS_MAX_ZOOM_LEVEL;
-    let _style = "",
-      _tilematrixSet = "EPSG:3857",
-      _format = "image/png";
+    const defaultStyle =
+      objLayer.capa.styles.find((style) => style.isDefault) ||
+      objLayer.capa.styles[0];
+    const preferredTileMatrixSet =
+      objLayer.capa.tileMatrixSetLinks.find((link) =>
+        /(?:EPSG|WebMercator).*3857|3857/i.test(link.tileMatrixSet),
+      ) || objLayer.capa.tileMatrixSetLinks[0];
+    let _style = defaultStyle?.identifier || "",
+      _tilematrixSet = preferredTileMatrixSet?.tileMatrixSet || "EPSG:3857",
+      _format = objLayer.capa.formats[0] || "image/png";
     var wmtsSource = new L.TileLayer.WMTS(objLayer.capa.getHostWMS(), {
       layer: objLayer.capa.nombre,
       style: _style,

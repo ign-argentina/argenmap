@@ -36,6 +36,7 @@ class Capa {
     maxy,
     attribution,
     legendURL,
+    metadata,
   ) {
     this.nombre = nombre;
     this.titulo = titulo;
@@ -51,9 +52,25 @@ class Capa {
     this.maxy = maxy;
     this.attribution = attribution;
     this.legendURL = legendURL;
+    this.metadata = metadata || {};
+    this.abstract = this.metadata.abstract || null;
+    this.keywords = this.metadata.keywords || key || [];
+    this.boundingBoxes = this.metadata.boundingBoxes || [];
+    this.styles = this.metadata.styles || [];
+    this.dimensions = this.metadata.dimensions || [];
+    this.queryable = this.metadata.queryable ?? null;
+    this.opaque = this.metadata.opaque ?? null;
+    this.formats = this.metadata.formats || [];
+    this.infoFormats = this.metadata.infoFormats || [];
+    this.tileMatrixSetLinks = this.metadata.tileMatrixSetLinks || [];
+    this.resourceUrls = this.metadata.resourceUrls || [];
+    this.serviceMetadata = this.metadata.service || null;
   }
 
   getLegendURL() {
+    if (this.legendURL) {
+      return this.legendURL;
+    }
     if (this.host == null) {
       return "";
     }
@@ -67,6 +84,43 @@ class Capa {
       "format=image/png&layer=" +
       this.nombre
     );
+  }
+
+  getBounds() {
+    const values = [this.minx, this.miny, this.maxx, this.maxy].map(Number);
+    const coordinateTolerance = 0.000001;
+    if (
+      values.some((value) => !Number.isFinite(value)) ||
+      values[0] < -180 - coordinateTolerance ||
+      values[2] > 180 + coordinateTolerance ||
+      values[1] < -90 - coordinateTolerance ||
+      values[3] > 90 + coordinateTolerance
+    ) {
+      return null;
+    }
+    const webMercatorLatitudeLimit = 85.0511287798;
+    const normalized = [
+      Math.max(-180, Math.min(180, values[0])),
+      Math.max(
+        -webMercatorLatitudeLimit,
+        Math.min(webMercatorLatitudeLimit, values[1]),
+      ),
+      Math.max(-180, Math.min(180, values[2])),
+      Math.max(
+        -webMercatorLatitudeLimit,
+        Math.min(webMercatorLatitudeLimit, values[3]),
+      ),
+    ];
+    return [
+      [
+        Math.min(normalized[1], normalized[3]),
+        Math.min(normalized[0], normalized[2]),
+      ],
+      [
+        Math.max(normalized[1], normalized[3]),
+        Math.max(normalized[0], normalized[2]),
+      ],
+    ];
   }
 
   getHostWMS() {
@@ -622,14 +676,144 @@ class LayersInfo {
   }
 
   isAllowedLayer(layer_name) {
-    if (this.allowed_layers == null) {
-      return true;
+    if (this.allowed_layers != null) {
+      return this.allowed_layers.includes(layer_name);
     }
+    if (this.customized_layers != null) {
+      return Object.prototype.hasOwnProperty.call(
+        this.customized_layers,
+        layer_name,
+      );
+    }
+    return true;
+  }
 
-    for (var i = 0; i < this.allowed_layers.length; i++) {
-      if (this.allowed_layers[i] == layer_name) return true;
+  getDirectChildren(element, localName) {
+    if (!element) {
+      return [];
     }
-    return false;
+    const expectedName = localName.toLowerCase();
+    return Array.from(element.children || []).filter(
+      (child) => child.localName?.toLowerCase() === expectedName,
+    );
+  }
+
+  getDirectChild(element, localName) {
+    return this.getDirectChildren(element, localName)[0] || null;
+  }
+
+  getDescendants(element, localName) {
+    if (!element) {
+      return [];
+    }
+    const expectedName = localName.toLowerCase();
+    return Array.from(element.getElementsByTagName("*")).filter(
+      (child) => child.localName?.toLowerCase() === expectedName,
+    );
+  }
+
+  getFirstDescendant(element, localName) {
+    return this.getDescendants(element, localName)[0] || null;
+  }
+
+  getElementText(element) {
+    return element?.textContent?.trim() || "";
+  }
+
+  getElementAttributes(element) {
+    return Object.fromEntries(
+      Array.from(element?.attributes || []).map((attribute) => [
+        attribute.name,
+        attribute.value,
+      ]),
+    );
+  }
+
+  getOnlineResource(element) {
+    const elementHref =
+      element?.getAttributeNS(
+        "http://www.w3.org/1999/xlink",
+        "href",
+      ) ||
+      element?.getAttribute("xlink:href") ||
+      element?.getAttribute("href");
+    if (elementHref) {
+      return elementHref;
+    }
+    const resource = this.getFirstDescendant(element, "OnlineResource");
+    return (
+      resource?.getAttributeNS("http://www.w3.org/1999/xlink", "href") ||
+      resource?.getAttribute("xlink:href") ||
+      resource?.getAttribute("href") ||
+      null
+    );
+  }
+
+  parseXmlDocument(responseText) {
+    const xmlDoc = new DOMParser().parseFromString(responseText, "text/xml");
+    if (this.getFirstDescendant(xmlDoc, "parsererror")) {
+      throw new Error("Invalid GetCapabilities XML response");
+    }
+    return xmlDoc;
+  }
+
+  parseOwsServiceMetadata(xmlDoc) {
+    const identification =
+      this.getFirstDescendant(xmlDoc, "ServiceIdentification") ||
+      this.getFirstDescendant(xmlDoc, "Service");
+    const provider = this.getFirstDescendant(xmlDoc, "ServiceProvider");
+    const operationElements = this.getDescendants(xmlDoc, "Operation");
+    return {
+      attributes: this.getElementAttributes(identification),
+      title: this.getElementText(
+        this.getDirectChild(identification, "Title"),
+      ),
+      abstract: this.getElementText(
+        this.getDirectChild(identification, "Abstract"),
+      ),
+      keywords: this.getDescendants(
+        this.getDirectChild(identification, "Keywords") ||
+          this.getDirectChild(identification, "KeywordList"),
+        "Keyword",
+      ).map((keyword) => this.getElementText(keyword)),
+      serviceType: this.getElementText(
+        this.getDirectChild(identification, "ServiceType"),
+      ),
+      serviceTypeVersions: this.getDirectChildren(
+        identification,
+        "ServiceTypeVersion",
+      ).map((version) => this.getElementText(version)),
+      fees: this.getElementText(this.getDirectChild(identification, "Fees")),
+      accessConstraints: this.getDirectChildren(
+        identification,
+        "AccessConstraints",
+      ).map((constraint) => this.getElementText(constraint)),
+      provider: provider
+        ? {
+            name: this.getElementText(
+              this.getDirectChild(provider, "ProviderName"),
+            ),
+            site: this.getOnlineResource(
+              this.getDirectChild(provider, "ProviderSite"),
+            ),
+          }
+        : null,
+      operations: operationElements.map((operation) => ({
+        name: operation.getAttribute("name"),
+        endpoints: this.getDescendants(operation, "Get")
+          .concat(this.getDescendants(operation, "Post"))
+          .map(
+            (endpoint) =>
+              endpoint.getAttributeNS(
+                "http://www.w3.org/1999/xlink",
+                "href",
+              ) ||
+              endpoint.getAttribute("xlink:href") ||
+              endpoint.getAttribute("href"),
+          )
+          .filter(Boolean),
+      })),
+    };
   }
 
   get(_gestorMenu) {
@@ -703,101 +887,8 @@ class LayersInfoWMS extends LayersInfo {
   get(_gestorMenu) {
     if (this._executed == false) {
       this._executed = true; //Indicates that getCapabilities executed
-
-      //If lazyInit and have custimized layers, print layer after wms loaded (for searcher)
-      if (
-        _gestorMenu.getLazyInitialization() == true &&
-        this.customizedLayers != null
-      ) {
-        const impresorItem = new ImpresorItemHTML();
-        var itemGroup = _gestorMenu.getItemGroupById(
-          ItemGroupPrefix + this.section,
-        );
-        if (itemGroup != null) {
-          for (var key in this.customizedLayers) {
-            let title = this.customizedLayers[key]["new_title"] || null,
-              legend = this.customizedLayers[key]["legend"] || null,
-              keywords = this.customizedLayers[key]["new_keywords"] || null,
-              abstract = this.customizedLayers[key]["new_abstract"] || null;
-
-            if (this.type == "wmslayer_mapserver") {
-              var capa = new CapaMapserver(
-                key,
-                title,
-                null,
-                this.host,
-                this.service,
-                this.version,
-                this.feature_info_format,
-                null,
-                null,
-                null,
-                null,
-              );
-            } else {
-              var capa = new Capa(
-                key,
-                title,
-                this.srs,
-                this.host,
-                this.service,
-                this.version,
-                this.feature_info_format,
-                keywords,
-                this.minx,
-                this.maxx,
-                this.miny,
-                this.maxy,
-                this.attribution,
-                legend,
-              );
-              //var capa = new Capa(iName, iTitle, iSrs, thisObj.host, thisObj.service, thisObj.version, thisObj.feature_info_format, keywords, iMinX, iMaxX, iMinY, iMaxY, null, ilegendURL);
-            }
-            //Generate keyword array
-            var keywordsAux = [];
-            if (keywords != null && keywords != "") {
-              keywordsAux = keywords.split(",");
-              for (var keykeywordsAux in keywordsAux) {
-                keywordsAux[keykeywordsAux] =
-                  keywordsAux[keykeywordsAux].trim();
-              }
-            }
-
-            var item = new Item(
-              capa.nombre,
-              this.section + clearString(capa.nombre),
-              keywordsAux,
-              abstract,
-              capa.titulo,
-              capa,
-              this.getCallback(),
-              null,
-            );
-
-            gestorMenu.setAllLayersAreDeclaredInJson(true);
-            gestorMenu.setAvailableLayer(capa.nombre);
-            item.setImpresor(impresorItem);
-            if (itemGroup.getItemByName(this.section + capa.nombre) == null) {
-              itemGroup.setItem(item);
-            }
-          }
-        }
-        _gestorMenu.removeLazyInitLayerInfoCounter(
-          ItemGroupPrefix + this.section,
-        );
-        if (
-          _gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + this.section)
-        ) {
-          //Si ya cargó todas las capas solicitadas
-          _gestorMenu.printOnlySection(this.section);
-        }
-        this._loadPromise = Promise.resolve();
-      } else {
-        this._loadPromise = this._parseRequest(_gestorMenu);
-      }
+      this._loadPromise = this._parseRequest(_gestorMenu);
     }
-    bindZoomLayer();
-    bindLayerOptions();
     return this._loadPromise || Promise.resolve();
   }
 
@@ -855,38 +946,52 @@ class LayersInfoWMS extends LayersInfo {
     const hostUrl = `${this.getHostOWS()}${serviceParams}`;
 
     return fetch(hostUrl)
-      .then((response) => response.text())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `GetCapabilities request failed: ${response.status} ${response.statusText}`,
+          );
+        }
+        return response.text();
+      })
       .then((responseText) => {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(responseText, "text/xml");
+        const xmlDoc = this.parseXmlDocument(responseText);
+        const capability = this.getFirstDescendant(xmlDoc, "Capability");
+        const rootLayer = this.getDirectChild(capability, "Layer");
+        this.serviceMetadata = this._parseWmsServiceMetadata(
+          xmlDoc,
+          capability,
+          rootLayer,
+        );
 
-        // Extract metadata from capabilities XML
-        const capability = xmlDoc.querySelector("Capability");
-        const keyword = xmlDoc.querySelector("Keyword")?.textContent || "";
-        const abstract = xmlDoc.querySelector("Abstract")?.textContent || "";
-
-        // Extract layer information and filter layers
-        const capaInfoList = Array.from(
-          capability.querySelectorAll("Layer > Layer"),
-        )
+        const capaInfoList = this.getDescendants(rootLayer, "Layer")
           .filter((layer) => {
-            const hasNestedLayers = layer.querySelectorAll("Layer").length > 0;
+            const hasNestedLayers =
+              this.getDirectChildren(layer, "Layer").length > 0;
             if (hasNestedLayers) {
               return false;
             }
-            const iName = layer.querySelector("Name")?.textContent;
+            const iName = this.getElementText(
+              this.getDirectChild(layer, "Name"),
+            );
             return this.isAllowedLayer(iName);
           })
           .map((layer, index) =>
-            this._createMenuItem(layer, index, impresorItem, listType),
+            this._createMenuItem(
+              layer,
+              index,
+              impresorItem,
+              listType,
+              rootLayer,
+            ),
           )
           .filter((item) => item !== null);
 
         this._createAndAddItemGroup(
           gestorMenu,
           impresorGroup,
-          keyword,
-          abstract,
+          this.serviceMetadata.keywords[0] || "",
+          this.serviceMetadata.abstract || "",
           capaInfoList,
         );
       })
@@ -907,6 +1012,247 @@ class LayersInfoWMS extends LayersInfo {
       });
   }
 
+  _parseWmsServiceMetadata(xmlDoc, capability, rootLayer) {
+    const metadata = this.parseOwsServiceMetadata(xmlDoc);
+    const request = this.getDirectChild(capability, "Request");
+    const requestFormats = {};
+    for (const operation of Array.from(request?.children || [])) {
+      requestFormats[operation.localName] = this.getDirectChildren(
+        operation,
+        "Format",
+      ).map((format) => this.getElementText(format));
+    }
+    return {
+      ...metadata,
+      version: xmlDoc.documentElement.getAttribute("version") || this.version,
+      onlineResource: this.getOnlineResource(
+        this.getFirstDescendant(xmlDoc, "Service"),
+      ),
+      requestFormats,
+      geographicBoundingBox: this._getWmsGeographicBoundingBox(
+        rootLayer,
+        rootLayer,
+      ),
+    };
+  }
+
+  _getWmsLayerHierarchy(layer, rootLayer) {
+    const hierarchy = [];
+    let current = layer;
+    while (current) {
+      if (current.localName?.toLowerCase() === "layer") {
+        hierarchy.push(current);
+      }
+      if (current === rootLayer) {
+        break;
+      }
+      current = current.parentElement;
+    }
+    return hierarchy;
+  }
+
+  _parseWmsBoundingBoxes(layer, rootLayer) {
+    const boundingBoxes = [];
+    for (const current of this._getWmsLayerHierarchy(layer, rootLayer)) {
+      for (const boundingBox of this.getDirectChildren(
+        current,
+        "BoundingBox",
+      )) {
+        const parsed = {
+          crs:
+            boundingBox.getAttribute("CRS") ||
+            boundingBox.getAttribute("SRS") ||
+            null,
+          minx: Number(boundingBox.getAttribute("minx")),
+          miny: Number(boundingBox.getAttribute("miny")),
+          maxx: Number(boundingBox.getAttribute("maxx")),
+          maxy: Number(boundingBox.getAttribute("maxy")),
+          resx: Number(boundingBox.getAttribute("resx")) || null,
+          resy: Number(boundingBox.getAttribute("resy")) || null,
+        };
+        if (
+          [parsed.minx, parsed.miny, parsed.maxx, parsed.maxy].every(
+            Number.isFinite,
+          ) &&
+          !boundingBoxes.some(
+            (existing) =>
+              existing.crs === parsed.crs &&
+              existing.minx === parsed.minx &&
+              existing.miny === parsed.miny &&
+              existing.maxx === parsed.maxx &&
+              existing.maxy === parsed.maxy,
+          )
+        ) {
+          boundingBoxes.push(parsed);
+        }
+      }
+    }
+    return boundingBoxes;
+  }
+
+  _parseWmsGeographicElement(layer) {
+    const geographic = this.getDirectChild(layer, "EX_GeographicBoundingBox");
+    if (geographic) {
+      return {
+        west: Number(
+          this.getElementText(
+            this.getDirectChild(geographic, "westBoundLongitude"),
+          ),
+        ),
+        south: Number(
+          this.getElementText(
+            this.getDirectChild(geographic, "southBoundLatitude"),
+          ),
+        ),
+        east: Number(
+          this.getElementText(
+            this.getDirectChild(geographic, "eastBoundLongitude"),
+          ),
+        ),
+        north: Number(
+          this.getElementText(
+            this.getDirectChild(geographic, "northBoundLatitude"),
+          ),
+        ),
+        crs: "CRS:84",
+      };
+    }
+
+    const latLon = this.getDirectChild(layer, "LatLonBoundingBox");
+    if (latLon) {
+      return {
+        west: Number(latLon.getAttribute("minx")),
+        south: Number(latLon.getAttribute("miny")),
+        east: Number(latLon.getAttribute("maxx")),
+        north: Number(latLon.getAttribute("maxy")),
+        crs: "CRS:84",
+      };
+    }
+    return null;
+  }
+
+  _isValidGeographicBoundingBox(boundingBox) {
+    const coordinateTolerance = 0.000001;
+    return (
+      boundingBox != null &&
+      [
+        boundingBox.west,
+        boundingBox.south,
+        boundingBox.east,
+        boundingBox.north,
+      ].every(Number.isFinite) &&
+      boundingBox.west >= -180 - coordinateTolerance &&
+      boundingBox.east <= 180 + coordinateTolerance &&
+      boundingBox.south >= -90 - coordinateTolerance &&
+      boundingBox.north <= 90 + coordinateTolerance
+    );
+  }
+
+  _getWmsGeographicBoundingBox(layer, rootLayer) {
+    for (const current of this._getWmsLayerHierarchy(layer, rootLayer)) {
+      const geographic = this._parseWmsGeographicElement(current);
+      if (this._isValidGeographicBoundingBox(geographic)) {
+        return geographic;
+      }
+    }
+
+    const boundingBoxes = this._parseWmsBoundingBoxes(layer, rootLayer);
+    const crs84 = boundingBoxes.find(
+      (boundingBox) =>
+        String(boundingBox.crs).toUpperCase() === "CRS:84",
+    );
+    if (crs84) {
+      return {
+        west: Math.min(crs84.minx, crs84.maxx),
+        south: Math.min(crs84.miny, crs84.maxy),
+        east: Math.max(crs84.minx, crs84.maxx),
+        north: Math.max(crs84.miny, crs84.maxy),
+        crs: crs84.crs,
+      };
+    }
+
+    const epsg4326 = boundingBoxes.find(
+      (boundingBox) =>
+        String(boundingBox.crs).toUpperCase() === "EPSG:4326",
+    );
+    if (!epsg4326) {
+      return null;
+    }
+    const usesLatitudeFirst =
+      String(this.version || "").startsWith("1.3");
+    const geographic = usesLatitudeFirst
+      ? {
+          west: Math.min(epsg4326.miny, epsg4326.maxy),
+          south: Math.min(epsg4326.minx, epsg4326.maxx),
+          east: Math.max(epsg4326.miny, epsg4326.maxy),
+          north: Math.max(epsg4326.minx, epsg4326.maxx),
+          crs: epsg4326.crs,
+        }
+      : {
+          west: Math.min(epsg4326.minx, epsg4326.maxx),
+          south: Math.min(epsg4326.miny, epsg4326.maxy),
+          east: Math.max(epsg4326.minx, epsg4326.maxx),
+          north: Math.max(epsg4326.miny, epsg4326.maxy),
+          crs: epsg4326.crs,
+        };
+    return this._isValidGeographicBoundingBox(geographic)
+      ? geographic
+      : null;
+  }
+
+  _parseWmsStyles(layer, rootLayer) {
+    const styles = [];
+    for (const current of this._getWmsLayerHierarchy(layer, rootLayer)) {
+      for (const style of this.getDirectChildren(current, "Style")) {
+        const name = this.getElementText(this.getDirectChild(style, "Name"));
+        if (styles.some((existing) => existing.name === name)) {
+          continue;
+        }
+        const legend = this.getFirstDescendant(style, "LegendURL");
+        styles.push({
+          attributes: this.getElementAttributes(style),
+          name,
+          title: this.getElementText(this.getDirectChild(style, "Title")),
+          abstract: this.getElementText(
+            this.getDirectChild(style, "Abstract"),
+          ),
+          legendURL: this.getOnlineResource(legend),
+          legendFormat: this.getElementText(
+            this.getDirectChild(legend, "Format"),
+          ),
+          legendWidth: Number(legend?.getAttribute("width")) || null,
+          legendHeight: Number(legend?.getAttribute("height")) || null,
+        });
+      }
+    }
+    return styles;
+  }
+
+  _parseWmsDimensions(layer, rootLayer) {
+    const dimensions = [];
+    for (const current of this._getWmsLayerHierarchy(layer, rootLayer)) {
+      const currentDimensions = [
+        ...this.getDirectChildren(current, "Dimension"),
+        ...this.getDirectChildren(current, "Extent"),
+      ];
+      for (const dimension of currentDimensions) {
+        const name = dimension.getAttribute("name");
+        dimensions.push({
+          attributes: this.getElementAttributes(dimension),
+          name,
+          units: dimension.getAttribute("units"),
+          unitSymbol: dimension.getAttribute("unitSymbol"),
+          default: dimension.getAttribute("default"),
+          multipleValues: dimension.getAttribute("multipleValues") === "1",
+          nearestValue: dimension.getAttribute("nearestValue") === "1",
+          current: dimension.getAttribute("current") === "1",
+          values: this.getElementText(dimension),
+        });
+      }
+    }
+    return dimensions;
+  }
+
   /**
    * Creates a menu item from the layer information.
    *
@@ -916,42 +1262,129 @@ class LayersInfoWMS extends LayersInfo {
    * @param {string|null} listType - The type of the list.
    * @returns {Item|null} The created menu item or null if an error occurs.
    */
-  _createMenuItem(layer, index, impresorItem, listType) {
+  _createMenuItem(layer, index, impresorItem, listType, rootLayer) {
     try {
-      const iName = layer.querySelector("Name")?.textContent || "";
-      const iTitle = layer.querySelector("Title")?.textContent || "";
-      const iAbstract = layer.querySelector("Abstract")?.textContent || ""; // returns layer's abstract for tooltips
-
-      // Extract keywords
-      const keywords = Array.from(
-        layer.querySelectorAll("KeywordList > keyword"),
-      ).map((keyword) => keyword.textContent);
-
-      // Extract bounding box information
-      const boundingBox = layer.querySelector("BoundingBox");
-      const iSrs =
-        boundingBox?.getAttribute("srs") ||
-        boundingBox?.getAttribute("crs") ||
+      const iName = this.getElementText(this.getDirectChild(layer, "Name"));
+      const advertisedTitle = this.getElementText(
+        this.getDirectChild(layer, "Title"),
+      );
+      const advertisedAbstract = this.getElementText(
+        this.getDirectChild(layer, "Abstract"),
+      );
+      const iTitle = this.formatLayerTitle(iName, advertisedTitle);
+      const iAbstract = this.formatLayerAbstract(iName, advertisedAbstract);
+      const customizedLayer =
+        this.customized_layers?.[iName] ||
+        this.customizedLayers?.[iName] ||
         null;
-      const iMaxY = boundingBox?.getAttribute("maxy") || null;
-      const iMinY = boundingBox?.getAttribute("miny") || null;
-      const iMinX = boundingBox?.getAttribute("minx") || null;
-      const iMaxX = boundingBox?.getAttribute("maxx") || null;
-
-      // Extract legend URL
-      const legendURL = this.icons ? this.icons[iName] : null;
+      const advertisedKeywords = this.getDescendants(
+        this.getDirectChild(layer, "KeywordList"),
+        "Keyword",
+      ).map((keyword) => this.getElementText(keyword));
+      const keywords =
+        customizedLayer?.new_keywords
+          ?.split(",")
+          .map((keyword) => keyword.trim())
+          .filter(Boolean) || advertisedKeywords;
+      const boundingBoxes = this._parseWmsBoundingBoxes(layer, rootLayer);
+      const geographicBoundingBox = this._getWmsGeographicBoundingBox(
+        layer,
+        rootLayer,
+      );
+      const styles = this._parseWmsStyles(layer, rootLayer);
+      const legendURL =
+        this.icons?.[iName] ||
+        customizedLayer?.legend ||
+        styles.find((style) => style.legendURL)?.legendURL ||
+        null;
+      const crs = [
+        ...new Set(
+          this._getWmsLayerHierarchy(layer, rootLayer).flatMap((current) => [
+            ...this.getDirectChildren(current, "CRS"),
+            ...this.getDirectChildren(current, "SRS"),
+          ]),
+        ),
+      ]
+        .map((crsElement) => this.getElementText(crsElement))
+        .filter(Boolean);
+      const attributionElement = this._getWmsLayerHierarchy(
+        layer,
+        rootLayer,
+      )
+        .map((current) => this.getDirectChild(current, "Attribution"))
+        .find(Boolean);
+      const attribution = attributionElement
+        ? {
+            title: this.getElementText(
+              this.getDirectChild(attributionElement, "Title"),
+            ),
+            url: this.getOnlineResource(attributionElement),
+          }
+        : null;
+      const metadata = {
+        attributes: this.getElementAttributes(layer),
+        abstract: iAbstract,
+        advertisedTitle,
+        advertisedAbstract,
+        keywords,
+        crs,
+        boundingBoxes,
+        geographicBoundingBox,
+        styles,
+        dimensions: this._parseWmsDimensions(layer, rootLayer),
+        formats: this.serviceMetadata.requestFormats?.GetMap || [],
+        infoFormats:
+          this.serviceMetadata.requestFormats?.GetFeatureInfo || [],
+        queryable:
+          this._getWmsLayerHierarchy(layer, rootLayer)
+            .map((current) => current.getAttribute("queryable"))
+            .find((value) => value != null) === "1",
+        opaque:
+          this._getWmsLayerHierarchy(layer, rootLayer)
+            .map((current) => current.getAttribute("opaque"))
+            .find((value) => value != null) === "1",
+        cascaded: Number(layer.getAttribute("cascaded")) || 0,
+        noSubsets: layer.getAttribute("noSubsets") === "1",
+        fixedWidth: Number(layer.getAttribute("fixedWidth")) || null,
+        fixedHeight: Number(layer.getAttribute("fixedHeight")) || null,
+        minScaleDenominator:
+          Number(
+            this.getElementText(
+              this.getDirectChild(layer, "MinScaleDenominator"),
+            ),
+          ) || null,
+        maxScaleDenominator:
+          Number(
+            this.getElementText(
+              this.getDirectChild(layer, "MaxScaleDenominator"),
+            ),
+          ) || null,
+        attribution,
+        metadataUrls: this.getDirectChildren(layer, "MetadataURL").map(
+          (metadataUrl) => ({
+            type: metadataUrl.getAttribute("type"),
+            format: this.getElementText(
+              this.getDirectChild(metadataUrl, "Format"),
+            ),
+            url: this.getOnlineResource(metadataUrl),
+          }),
+        ),
+        service: this.serviceMetadata,
+      };
 
       // Create appropriate capa object based on type
       const capa = this._createCapaObject(
         iName,
         iTitle,
-        iSrs,
-        iMinX,
-        iMaxX,
-        iMinY,
-        iMaxY,
+        geographicBoundingBox?.crs || crs[0] || null,
+        geographicBoundingBox?.west ?? null,
+        geographicBoundingBox?.east ?? null,
+        geographicBoundingBox?.south ?? null,
+        geographicBoundingBox?.north ?? null,
         keywords,
+        attribution,
         legendURL,
+        metadata,
       );
 
       // Create and return menu item
@@ -963,6 +1396,8 @@ class LayersInfoWMS extends LayersInfo {
         capa.titulo,
         capa,
         this.getCallback(),
+        null,
+        legendURL,
         listType,
       );
       item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
@@ -1002,7 +1437,9 @@ class LayersInfoWMS extends LayersInfo {
     minY,
     maxY,
     keywords,
+    attribution,
     legendURL,
+    metadata,
   ) {
     if (this.type === "wmslayer_mapserver") {
       return new CapaMapserver(
@@ -1013,10 +1450,14 @@ class LayersInfoWMS extends LayersInfo {
         this.service,
         this.version,
         this.feature_info_format,
+        keywords,
         minX,
         maxX,
         minY,
         maxY,
+        attribution,
+        legendURL,
+        metadata,
       );
     } else {
       return new Capa(
@@ -1032,8 +1473,9 @@ class LayersInfoWMS extends LayersInfo {
         maxX,
         minY,
         maxY,
-        null,
+        attribution,
         legendURL,
+        metadata,
       );
     }
   }
@@ -1338,6 +1780,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
     short_abstract,
     feature_info_format,
     type,
+    icons,
     customizedLayers,
     itemGroupPrinter,
   ) {
@@ -1352,6 +1795,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
     this.short_abstract = short_abstract;
     this.feature_info_format = feature_info_format;
     this.type = type;
+    this.icons = icons || null;
     this.customizedLayers = customizedLayers == "" ? null : customizedLayers;
     this.itemGroupPrinter =
       itemGroupPrinter == "" ? new ImpresorGrupoHTML() : itemGroupPrinter;
@@ -1362,104 +1806,8 @@ class LayersInfoWMTS extends LayersInfoWMS {
   get(_gestorMenu) {
     if (this._executed == false) {
       this._executed = true; //Indicates that getCapabilities executed
-
-      //If lazyInit and have custimized layers, print layer after wms loaded (for searcher)
-      if (
-        _gestorMenu.getLazyInitialization() == true &&
-        this.customizedLayers != null
-      ) {
-        const impresorItem = new ImpresorItemHTML();
-        var itemGroup = _gestorMenu.getItemGroupById(
-          ItemGroupPrefix + this.section,
-        );
-        if (itemGroup != null) {
-          for (var key in this.customizedLayers) {
-            let title = this.customizedLayers[key]["new_title"] || this.title,
-              legend = this.customizedLayers[key]["legend"] || null,
-              keywords = this.customizedLayers[key]["new_keywords"],
-              abstract = this.customizedLayers[key]["new_abstract"];
-
-            if (this.type == "wmslayer_mapserver") {
-              var capa = new CapaMapserver(
-                key,
-                title,
-                null,
-                this.host,
-                this.service,
-                this.version,
-                this.feature_info_format,
-                null,
-                null,
-                null,
-                null,
-              );
-            } else {
-              var capa = new Capa(
-                key,
-                title,
-                this.srs,
-                this.host,
-                this.service,
-                this.version,
-                this.feature_info_format,
-                null,
-                this.minx,
-                this.maxx,
-                this.miny,
-                this.maxy,
-                this.attribution,
-                legend,
-              );
-            }
-
-            //Generate keyword array
-            var keywordsAux = [];
-            if (keywords != null && keywords != "") {
-              keywordsAux = keywords.split(",");
-              for (var keykeywordsAux in keywordsAux) {
-                keywordsAux[keykeywordsAux] =
-                  keywordsAux[keykeywordsAux].trim();
-              }
-            }
-
-            var item = new Item(
-              capa.nombre,
-              this.section + clearString(capa.nombre),
-              keywordsAux,
-              abstract,
-              capa.titulo,
-              capa,
-              this.getCallback(),
-              null,
-            );
-
-            gestorMenu.setAllLayersAreDeclaredInJson(true);
-            gestorMenu.setAvailableLayer(capa.nombre);
-            gestorMenu.setAvailableWmtsLayer(capa.nombre);
-
-            item.setImpresor(impresorItem);
-            if (itemGroup.getItemByName(this.section + capa.nombre) == null) {
-              itemGroup.setItem(item);
-            }
-          }
-        }
-        _gestorMenu.removeLazyInitLayerInfoCounter(
-          ItemGroupPrefix + this.section,
-        );
-        if (
-          _gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + this.section)
-        ) {
-          //Si ya cargó todas las capas solicitadas
-          _gestorMenu.printOnlySection(this.section);
-        }
-        this._loadPromise = Promise.resolve();
-      } else {
-        this._loadPromise = this._parseRequest(_gestorMenu);
-      }
+      this._loadPromise = this._parseRequest(_gestorMenu);
     }
-
-    bindZoomLayer();
-    bindLayerOptions();
     return this._loadPromise || Promise.resolve();
   }
 
@@ -1486,191 +1834,259 @@ class LayersInfoWMTS extends LayersInfoWMS {
   _parseRequest(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
     const impresorItem = new ImpresorItemHTML();
-
-    var thisObj = this;
-
-    if (!$("#temp-menu").hasClass("temp")) {
-      $("body").append(
-        '<div id="temp-menu" class="temp" style="display:none"></div>',
-      );
-    }
-
-    // Load geoserver Capabilities, if success Create menu and append to DOM
-    let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
-    let host = thisObj.getHost() + serviceParams;
-    return new Promise((resolve) => {
-      $("#temp-menu").load(host, function (_response, status, request) {
-        if (status === "error") {
-          console.error(
-            `Error loading capabilities: ${request.status} ${request.statusText}`,
+    const serviceParams = `?service=${this.service}&version=${this.version}&request=GetCapabilities`;
+    const host = this.getHost() + serviceParams;
+    return fetch(host)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `GetCapabilities request failed: ${response.status} ${response.statusText}`,
           );
-          if (_gestorMenu.getLazyInitialization()) {
-            _gestorMenu.removeLazyInitLayerInfoCounter(
-              ItemGroupPrefix + thisObj.section,
-            );
-            if (
-              _gestorMenu.finishLazyInitLayerInfo(
-                ItemGroupPrefix + thisObj.section,
-              )
-            ) {
-              _gestorMenu.printOnlySection(thisObj.section);
-            }
-          }
-          resolve();
-          return;
         }
-
-        var content = $("#temp-menu").find("contents");
-        var keywordHtml = $("#temp-menu").find("Keyword");
-        var keyword = "";
-        if (keywordHtml.length > 0) {
-          keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
-        }
-        var abstractHtml = $("#temp-menu").find("Abstract");
-        var abstract = "";
-        if (abstractHtml.length > 0) {
-          abstract = abstractHtml[0].innerText; // reads wms 1st abstract
-        }
-        var capas_layer = $("layer", content);
-        var items = new Array();
-
-        capas_layer.each(function (index, b) {
-          var i = $(this);
-
-          var iName = $("ows\\:identifier", i).html();
-          if (thisObj.isAllowedLayer(iName)) {
-            var iTitle = $("ows\\:title", i).html();
-            iTitle = thisObj.formatLayerTitle(iName, iTitle);
-            var iAbstract = $("ows\\:abstract", i).html();
-            iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
-            var keywordsHTMLList = $("keywordlist", i).find("keyword");
-            var keywords = [];
-            $.each(keywordsHTMLList, function (i, el) {
-              keywords.push(el.innerText);
-            });
-            let iBoundingBox = $("ows\\:wgs84boundingbox", i),
-              iSrs = null,
-              lowerCorner =
-                iBoundingBox[0].firstElementChild.innerText.split(" "),
-              upperCorner =
-                iBoundingBox[0].lastElementChild.innerText.split(" "),
-              iMaxY = lowerCorner[1],
-              iMaxX = lowerCorner[0],
-              iMinY = upperCorner[1],
-              iMinX = upperCorner[0];
-
-            if (thisObj.type == "wmslayer_mapserver") {
-              var capa = new CapaMapserver(
-                iName,
-                iTitle,
-                iSrs,
-                thisObj.host,
-                thisObj.service,
-                thisObj.version,
-                thisObj.feature_info_format,
-                iMinX,
-                iMaxX,
-                iMinY,
-                iMaxY,
-              );
-            } else {
-              var capa = new Capa(
-                iName,
-                iTitle,
-                iSrs,
-                thisObj.host,
-                thisObj.service,
-                thisObj.version,
-                thisObj.feature_info_format,
-                keywords,
-                iMinX,
-                iMaxX,
-                iMinY,
-                iMaxY,
-              );
-            }
-            var item = new Item(
-              capa.nombre,
-              thisObj.section + index,
-              keywords,
-              iAbstract,
-              capa.titulo,
-              capa,
-              thisObj.getCallback(),
-              null,
-            );
-            item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
-            item.setImpresor(impresorItem);
-            items.push(item);
-            gestorMenu.setAvailableLayer(iName);
-            gestorMenu.setAvailableWmtsLayer(iName);
-          }
-        });
-
-        var groupAux;
-        try {
-          var groupAux = new ItemGroup(
-            thisObj.tab,
-            thisObj.name,
-            thisObj.section,
-            thisObj.weight,
-            keyword,
-            abstract,
-            thisObj.short_abstract,
-          );
-          groupAux.setImpresor(impresorGroup);
-          groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-          for (var i = 0; i < items.length; i++) {
-            groupAux.setItem(items[i]);
-          }
-        } catch (err) {
-          if (err.name == "ReferenceError") {
-            var groupAux = new ItemGroup(
-              thisObj.tab,
-              thisObj.name,
-              thisObj.section,
-              thisObj.weight,
-              "",
-              "",
-              thisObj.short_abstract,
-            );
-            groupAux.setImpresor(impresorGroup);
-            groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-            for (var i = 0; i < items.length; i++) {
-              groupAux.setItem(items[i]);
-            }
-          }
-        }
-
-        _gestorMenu.addItemGroup(groupAux);
-
-        if (_gestorMenu.getLazyInitialization() == true) {
+        return response.text();
+      })
+      .then((responseText) => {
+        const xmlDoc = this.parseXmlDocument(responseText);
+        const contents = this.getFirstDescendant(xmlDoc, "Contents");
+        this.serviceMetadata = this.parseOwsServiceMetadata(xmlDoc);
+        this.serviceMetadata.version =
+          xmlDoc.documentElement.getAttribute("version") || this.version;
+        const items = this.getDirectChildren(contents, "Layer")
+          .map((layer, index) =>
+            this._createWmtsMenuItem(layer, index, impresorItem),
+          )
+          .filter(Boolean);
+        this._createAndAddItemGroup(
+          _gestorMenu,
+          impresorGroup,
+          this.serviceMetadata.keywords[0] || "",
+          this.serviceMetadata.abstract || "",
+          items,
+        );
+      })
+      .catch((error) => {
+        console.error("Error loading capabilities:", error);
+        if (_gestorMenu.getLazyInitialization()) {
           _gestorMenu.removeLazyInitLayerInfoCounter(
-            ItemGroupPrefix + thisObj.section,
+            ItemGroupPrefix + this.section,
           );
           if (
             _gestorMenu.finishLazyInitLayerInfo(
-              ItemGroupPrefix + thisObj.section,
+              ItemGroupPrefix + this.section,
             )
           ) {
-            //Si ya cargó todas las capas solicitadas
-            _gestorMenu.printOnlySection(thisObj.section);
-          }
-        } else {
-          _gestorMenu.addLayerInfoCounter();
-          if (_gestorMenu.finishLayerInfo()) {
-            //Si ya cargó todas las capas solicitadas
-            _gestorMenu.printMenu();
-
-            //
-            gestorMenu.allLayersAreLoaded = true;
+            _gestorMenu.printOnlySection(this.section);
           }
         }
-
-        resolve();
-        return;
       });
+  }
+
+  _createWmtsMenuItem(layer, index, impresorItem) {
+    const iName = this.getElementText(
+      this.getDirectChild(layer, "Identifier"),
+    );
+    if (!iName || !this.isAllowedLayer(iName)) {
+      return null;
+    }
+    const customizedLayer =
+      this.customized_layers?.[iName] ||
+      this.customizedLayers?.[iName] ||
+      null;
+    const advertisedTitle = this.getElementText(
+      this.getDirectChild(layer, "Title"),
+    );
+    const advertisedAbstract = this.getElementText(
+      this.getDirectChild(layer, "Abstract"),
+    );
+    const iTitle = this.formatLayerTitle(iName, advertisedTitle);
+    const iAbstract = this.formatLayerAbstract(iName, advertisedAbstract);
+    const advertisedKeywords = this.getDescendants(
+      this.getDirectChild(layer, "Keywords"),
+      "Keyword",
+    ).map((keyword) => this.getElementText(keyword));
+    const keywords =
+      customizedLayer?.new_keywords
+        ?.split(",")
+        .map((keyword) => keyword.trim())
+        .filter(Boolean) || advertisedKeywords;
+    const geographicBoundingBox = this._parseWmtsBoundingBox(
+      this.getDirectChild(layer, "WGS84BoundingBox"),
+    );
+    const boundingBoxes = this.getDirectChildren(layer, "BoundingBox")
+      .map((boundingBox) => this._parseWmtsBoundingBox(boundingBox))
+      .filter(Boolean);
+    if (geographicBoundingBox) {
+      boundingBoxes.unshift(geographicBoundingBox);
+    }
+    const styles = this.getDirectChildren(layer, "Style").map((style) => {
+      const legend = this.getDirectChild(style, "LegendURL");
+      return {
+        attributes: this.getElementAttributes(style),
+        identifier: this.getElementText(
+          this.getDirectChild(style, "Identifier"),
+        ),
+        title: this.getElementText(this.getDirectChild(style, "Title")),
+        abstract: this.getElementText(
+          this.getDirectChild(style, "Abstract"),
+        ),
+        isDefault: style.getAttribute("isDefault") === "true",
+        legendURL:
+          legend?.getAttributeNS(
+            "http://www.w3.org/1999/xlink",
+            "href",
+          ) ||
+          legend?.getAttribute("xlink:href") ||
+          legend?.getAttribute("href") ||
+          null,
+        legendFormat: legend?.getAttribute("format") || null,
+        minScaleDenominator:
+          Number(legend?.getAttribute("minScaleDenominator")) || null,
+        maxScaleDenominator:
+          Number(legend?.getAttribute("maxScaleDenominator")) || null,
+      };
     });
+    const legendURL =
+      this.icons?.[iName] ||
+      customizedLayer?.legend ||
+      styles.find((style) => style.isDefault && style.legendURL)?.legendURL ||
+      styles.find((style) => style.legendURL)?.legendURL ||
+      null;
+    const metadata = {
+      attributes: this.getElementAttributes(layer),
+      abstract: iAbstract,
+      advertisedTitle,
+      advertisedAbstract,
+      keywords,
+      geographicBoundingBox,
+      boundingBoxes,
+      styles,
+      formats: this.getDirectChildren(layer, "Format").map((format) =>
+        this.getElementText(format),
+      ),
+      infoFormats: this.getDirectChildren(layer, "InfoFormat").map((format) =>
+        this.getElementText(format),
+      ),
+      dimensions: this.getDirectChildren(layer, "Dimension").map(
+        (dimension) => ({
+          identifier: this.getElementText(
+            this.getDirectChild(dimension, "Identifier"),
+          ),
+          default: this.getElementText(
+            this.getDirectChild(dimension, "Default"),
+          ),
+          current: this.getElementText(
+            this.getDirectChild(dimension, "Current"),
+          ),
+          values: this.getDirectChildren(dimension, "Value").map((value) =>
+            this.getElementText(value),
+          ),
+        }),
+      ),
+      tileMatrixSetLinks: this.getDirectChildren(
+        layer,
+        "TileMatrixSetLink",
+      ).map((link) => ({
+        tileMatrixSet: this.getElementText(
+          this.getDirectChild(link, "TileMatrixSet"),
+        ),
+        limits: this.getDescendants(link, "TileMatrixLimits").map(
+          (limit) => ({
+            tileMatrix: this.getElementText(
+              this.getDirectChild(limit, "TileMatrix"),
+            ),
+            minTileRow: Number(
+              this.getElementText(this.getDirectChild(limit, "MinTileRow")),
+            ),
+            maxTileRow: Number(
+              this.getElementText(this.getDirectChild(limit, "MaxTileRow")),
+            ),
+            minTileCol: Number(
+              this.getElementText(this.getDirectChild(limit, "MinTileCol")),
+            ),
+            maxTileCol: Number(
+              this.getElementText(this.getDirectChild(limit, "MaxTileCol")),
+            ),
+          }),
+        ),
+      })),
+      resourceUrls: this.getDirectChildren(layer, "ResourceURL").map(
+        (resourceUrl) => ({
+          format: resourceUrl.getAttribute("format"),
+          resourceType: resourceUrl.getAttribute("resourceType"),
+          template: resourceUrl.getAttribute("template"),
+        }),
+      ),
+      service: this.serviceMetadata,
+    };
+    const capa = new Capa(
+      iName,
+      iTitle,
+      geographicBoundingBox?.crs || "CRS:84",
+      this.host,
+      this.service,
+      this.version,
+      this.feature_info_format,
+      keywords,
+      geographicBoundingBox?.west ?? null,
+      geographicBoundingBox?.east ?? null,
+      geographicBoundingBox?.south ?? null,
+      geographicBoundingBox?.north ?? null,
+      null,
+      legendURL,
+      metadata,
+    );
+    const item = new Item(
+      capa.nombre,
+      this.section + index,
+      keywords,
+      iAbstract,
+      capa.titulo,
+      capa,
+      this.getCallback(),
+      null,
+      legendURL,
+      this.tab.listType || null,
+    );
+    item.setLegendImgPreformatted(gestorMenu.getLegendImgPath());
+    item.setImpresor(impresorItem);
+    gestorMenu.setAvailableLayer(iName);
+    gestorMenu.setAvailableWmtsLayer(iName);
+    return item;
+  }
+
+  _parseWmtsBoundingBox(boundingBox) {
+    if (!boundingBox) {
+      return null;
+    }
+    const lowerCorner = this.getElementText(
+      this.getDirectChild(boundingBox, "LowerCorner"),
+    )
+      .split(/\s+/)
+      .map(Number);
+    const upperCorner = this.getElementText(
+      this.getDirectChild(boundingBox, "UpperCorner"),
+    )
+      .split(/\s+/)
+      .map(Number);
+    if (
+      lowerCorner.length < 2 ||
+      upperCorner.length < 2 ||
+      [...lowerCorner, ...upperCorner].some(
+        (coordinate) => !Number.isFinite(coordinate),
+      )
+    ) {
+      return null;
+    }
+    return {
+      west: Math.min(lowerCorner[0], upperCorner[0]),
+      south: Math.min(lowerCorner[1], upperCorner[1]),
+      east: Math.max(lowerCorner[0], upperCorner[0]),
+      north: Math.max(lowerCorner[1], upperCorner[1]),
+      crs:
+        boundingBox.getAttribute("crs") ||
+        boundingBox.getAttribute("CRS") ||
+        "CRS:84",
+    };
   }
 
   getHost() {
@@ -3630,6 +4046,8 @@ class GestorMenu {
     }
 
     this.getLoadingDOM().hide();
+    bindZoomLayer();
+    bindLayerOptions();
 
     //Call callback after print (if exists)
     if (this.printCallback != null) {
@@ -3772,6 +4190,8 @@ class GestorMenu {
       itemGroup.imprimir();
       $("#" + sectionId + " > div").html(itemGroup.itemsStr);
     }
+    bindZoomLayer();
+    bindLayerOptions();
   }
 
   muestraCapa(itemSeccion) {

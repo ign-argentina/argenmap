@@ -978,41 +978,102 @@ function zoomEditableLayers(layername) {
   }
 }
 
+function getOgcLayerBounds(layer) {
+  if (!layer) {
+    return null;
+  }
+  if (typeof layer.getBounds === "function") {
+    return layer.getBounds();
+  }
+  const values = [layer.minx, layer.miny, layer.maxx, layer.maxy].map(Number);
+  const coordinateTolerance = 0.000001;
+  if (
+    values.some((value) => !Number.isFinite(value)) ||
+    values[0] < -180 - coordinateTolerance ||
+    values[2] > 180 + coordinateTolerance ||
+    values[1] < -90 - coordinateTolerance ||
+    values[3] > 90 + coordinateTolerance
+  ) {
+    return null;
+  }
+  const webMercatorLatitudeLimit = 85.0511287798;
+  const normalized = [
+    Math.max(-180, Math.min(180, values[0])),
+    Math.max(
+      -webMercatorLatitudeLimit,
+      Math.min(webMercatorLatitudeLimit, values[1]),
+    ),
+    Math.max(-180, Math.min(180, values[2])),
+    Math.max(
+      -webMercatorLatitudeLimit,
+      Math.min(webMercatorLatitudeLimit, values[3]),
+    ),
+  ];
+  return [
+    [
+      Math.min(normalized[1], normalized[3]),
+      Math.min(normalized[0], normalized[2]),
+    ],
+    [
+      Math.max(normalized[1], normalized[3]),
+      Math.max(normalized[0], normalized[2]),
+    ],
+  ];
+}
+
+function getOgcLayerGroupBounds(layerEntry) {
+  const layers = layerEntry?.capas || [layerEntry?.capa].filter(Boolean);
+  const layerBounds = layers.map(getOgcLayerBounds).filter(Boolean);
+  if (layerBounds.length === 0) {
+    return null;
+  }
+  return layerBounds.reduce(
+    (combined, bounds) => [
+      [
+        Math.min(combined[0][0], bounds[0][0]),
+        Math.min(combined[0][1], bounds[0][1]),
+      ],
+      [
+        Math.max(combined[1][0], bounds[1][0]),
+        Math.max(combined[1][1], bounds[1][1]),
+      ],
+    ],
+    layerBounds[0],
+  );
+}
+
+function fitOgcLayerBounds(layerName) {
+  const bounds = getOgcLayerGroupBounds(app.layers[layerName]);
+  if (!bounds) {
+    return false;
+  }
+  mapa.fitBounds(bounds);
+  return true;
+}
+
+function setZoomLayerStatus(element, hasBounds) {
+  const icon = element.querySelector("i");
+  if (!icon) {
+    return;
+  }
+  icon.classList.toggle("fa-search-plus", hasBounds);
+  icon.classList.toggle("fa-exclamation-triangle", !hasBounds);
+  icon.setAttribute(
+    "title",
+    hasBounds ? "Zoom a capa" : STRINGS.no_bbox,
+  );
+}
+
 function bindZoomLayer() {
   let elements = document.getElementsByClassName("zoom-layer");
-  let zoomLayer = async function () {
+  let zoomLayer = function () {
     let layer_name = this.getAttribute("layername");
-    let layer = app.layers[layer_name].capa;
-
-    if (layer.servicio === "wms") {
-      await getWmsLyrParams(layer); // gets layer atribtutes from WMS
-    }
-
-    //console.log("layer: ", layer)
-    let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
-      noBbox = bbox.some((el) => {
-        return el === null || el === undefined;
-      });
-
-    //console.log("bbox: ", bbox)
-    if (noBbox) {
-      for (i = 0; i < this.childNodes.length; i++) {
-        if (this.childNodes[i].className == "fas fa-search-plus") {
-          this.childNodes[i].classList.remove("fa-search-plus");
-          this.childNodes[i].classList.add("fa-exclamation-triangle");
-          this.childNodes[i].setAttribute("title", STRINGS.no_bbox);
-          break;
-        }
-      }
-    } else {
-      for (i = 0; i < this.childNodes.length; i++) {
-        if (this.childNodes[i].className == "fas fa-exclamation-triangle") {
-          this.childNodes[i].classList.remove("fa-exclamation-triangle");
-          this.childNodes[i].classList.add("fa-search-plus");
-          this.childNodes[i].setAttribute("title", "Zoom a capa");
-          break;
-        }
-      }
+    const hasBounds = Boolean(
+      getOgcLayerGroupBounds(app.layers[layer_name]),
+    );
+    setZoomLayerStatus(this, hasBounds);
+    if (!hasBounds) {
+      return;
     }
 
     //si la capa no esta activa activar
@@ -1022,19 +1083,27 @@ function bindZoomLayer() {
       if (key === layer_name) active = true;
     });
     if (!active) gestorMenu.muestraCapa(app.layers[layer_name].childid);
-    let bounds = [
-      [layer.maxy, layer.maxx],
-      [layer.miny, layer.minx],
-    ];
     try {
-      mapa.fitBounds(bounds);
+      fitOgcLayerBounds(layer_name);
     } catch (error) {
       console.error(error);
     }
   };
 
   for (let i = 0; i < elements.length; i++) {
+    if (elements[i].dataset.zoomLayerBound === "true") {
+      continue;
+    }
+    setZoomLayerStatus(
+      elements[i],
+      Boolean(
+        getOgcLayerGroupBounds(
+          app.layers[elements[i].getAttribute("layername")],
+        ),
+      ),
+    );
     elements[i].addEventListener("click", zoomLayer, false);
+    elements[i].dataset.zoomLayerBound = "true";
   }
 }
 
@@ -1050,7 +1119,11 @@ function bindLayerOptions() {
   };
 
   for (let i = 0; i < elements.length; i++) {
+    if (elements[i].dataset.layerOptionsBound === "true") {
+      continue;
+    }
     elements[i].addEventListener("click", layerOptions, false);
+    elements[i].dataset.layerOptionsBound = "true";
   }
 }
 
@@ -1155,7 +1228,9 @@ function bindLayerOptionsIdera() {
 
 function zoomLayer(id_dom) {
   let nlayer = app.layerNameByDomId[id_dom];
-  let bbox = app.layers[nlayer].capa;
+  if (!nlayer || !getOgcLayerGroupBounds(app.layers[nlayer])) {
+    return;
+  }
   //solo sii la capa no esta activa activar
   let activas = gestorMenu.activeLayers;
   let active = false;
@@ -1164,12 +1239,8 @@ function zoomLayer(id_dom) {
   });
   if (!active) gestorMenu.muestraCapa(app.layers[nlayer].childid);
 
-  let bounds = [
-    [bbox.maxy, bbox.maxx],
-    [bbox.miny, bbox.minx],
-  ];
   try {
-    mapa.fitBounds(bounds);
+    fitOgcLayerBounds(nlayer);
   } catch (err) {
     console.error(err);
   }
@@ -1499,7 +1570,11 @@ function getLayerQueryOptions(layer, config = null) {
     layerConfig = serviceConfig.customize_layers?.[layer.nombre] || null;
   }
 
-  const queryable = layerConfig?.queryable ?? serviceConfig?.queryable ?? true;
+  const queryable =
+    layerConfig?.queryable ??
+    serviceConfig?.queryable ??
+    layer?.queryable ??
+    true;
   const queryActive =
     layerConfig?.queryActive ?? serviceConfig?.queryActive ?? false;
 
