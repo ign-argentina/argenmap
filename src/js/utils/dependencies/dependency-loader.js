@@ -27,10 +27,20 @@ class AppDependencyLoader {
   }
 
   async _loadGroup(group) {
-    await Promise.all((group.styles || []).map((url) => this.loadStyle(url)));
+    await Promise.all(
+      (group.styles || []).map((asset) =>
+        typeof asset === "string"
+          ? this.loadStyle(asset)
+          : this.loadStyle(asset.url, asset),
+      ),
+    );
 
-    for (const url of group.scripts || []) {
-      await this.loadScript(url);
+    for (const asset of group.scripts || []) {
+      if (typeof asset === "string") {
+        await this.loadScript(asset);
+      } else {
+        await this.loadScript(asset.url, asset);
+      }
     }
   }
 
@@ -53,6 +63,12 @@ class AppDependencyLoader {
       const script = document.createElement("script");
       script.src = url;
       script.type = options.type || "application/javascript";
+      if (options.integrity) {
+        script.integrity = options.integrity;
+      }
+      if (options.crossOrigin) {
+        script.crossOrigin = options.crossOrigin;
+      }
       script.dataset.argenmapDependency = "true";
       script.onload = () => resolve(script);
       script.onerror = () => {
@@ -74,15 +90,16 @@ class AppDependencyLoader {
     return promise;
   }
 
-  loadStyle(url) {
-    if (this.stylePromises.has(url)) {
-      return this.stylePromises.get(url);
+  loadStyle(url, options = {}) {
+    const normalizedUrl = new URL(url, document.baseURI).href;
+    if (this.stylePromises.has(normalizedUrl)) {
+      return this.stylePromises.get(normalizedUrl);
     }
 
     const promise = new Promise((resolve, reject) => {
       const existingStyle = Array.from(
         document.querySelectorAll('link[rel="stylesheet"]'),
-      ).find((link) => link.getAttribute("href") === url);
+      ).find((link) => link.href === normalizedUrl);
 
       if (existingStyle) {
         resolve();
@@ -92,21 +109,45 @@ class AppDependencyLoader {
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = url;
+      if (options.integrity) {
+        link.integrity = options.integrity;
+      }
+      if (options.crossOrigin) {
+        link.crossOrigin = options.crossOrigin;
+      }
       link.onload = resolve;
       link.onerror = () =>
         reject(new Error(`Unable to load stylesheet "${url}".`));
       document.head.appendChild(link);
     }).catch((error) => {
-      this.stylePromises.delete(url);
+      this.stylePromises.delete(normalizedUrl);
       throw error;
     });
 
-    this.stylePromises.set(url, promise);
+    this.stylePromises.set(normalizedUrl, promise);
     return promise;
   }
 }
 
 const appDependencies = new AppDependencyLoader({
+  fancybox: {
+    styles: [
+      {
+        url: "https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css",
+        integrity:
+          "sha384-Q8BgkilbsFGYNNiDqJm69hvDS7NCJWOodvfK/cwTyQD4VQA0qKzuPpvqNER1UC0F",
+        crossOrigin: "anonymous",
+      },
+    ],
+    scripts: [
+      {
+        url: "https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js",
+        integrity:
+          "sha384-Zm+UU4tdcfAm29vg+MTbfu//q5B/lInMbMCr4T8c9rQFyOv6PlfQYpB5wItcXWe7",
+        crossOrigin: "anonymous",
+      },
+    ],
+  },
   jqueryUi: {
     styles: ["src/js/plugins/jquery/ui/jquery-ui.min.css"],
     scripts: ["src/js/plugins/jquery/ui/jquery-ui.min.js"],

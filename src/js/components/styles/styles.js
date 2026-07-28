@@ -141,8 +141,8 @@ class StylesUI {
 
       let image = app.referencias.src ?? "";
 
-      toprightlogo.onclick = function () {
-        clickReferencias(image);
+      toprightlogo.onclick = function (event) {
+        clickReferencias(image, event);
       };
     }
     /* else {
@@ -213,11 +213,20 @@ class StylesUI {
   }
 }
 
-function clickReferencias(img) {
-  event.preventDefault();
-  $.fancybox.open({
-    src: img,
-    type: "image",
-    closeBtn: "true",
-  });
+async function clickReferencias(img, event) {
+  event?.preventDefault();
+
+  try {
+    await appDependencies.load("fancybox");
+    $.fancybox.open({
+      src: img,
+      type: "image",
+      closeBtn: "true",
+    });
+  } catch (error) {
+    console.error("Unable to open references image:", error);
+    if (typeof UserMessage === "function") {
+      new UserMessage(error.message, true, "error");
+    }
+  }
 }
