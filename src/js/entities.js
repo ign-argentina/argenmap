@@ -2571,6 +2571,139 @@ class GestorMenu {
       .replace(/^_+|_+$/g, "");
   }
 
+  _normalizeServiceHost(value) {
+    try {
+      const serviceUrl = new URL(value, document.baseURI);
+      const pathname = serviceUrl.pathname.replace(/\/+$/g, "");
+      return `${serviceUrl.origin.toLowerCase()}${pathname.toLowerCase()}`;
+    } catch (_error) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/[?#].*$/g, "")
+        .replace(/\/+$/g, "");
+    }
+  }
+
+  _normalizeServiceRoot(value) {
+    return this._normalizeServiceHost(value)
+      .replace(/\/gwc\/service\/wmts$/i, "")
+      .replace(/\/(?:ows|wms|wmts)$/i, "");
+  }
+
+  _getLayerInfoConfiguredLayers(layerInfo) {
+    return [
+      ...(layerInfo.allowed_layers || []),
+      ...Object.keys(layerInfo.customizedLayers || {}),
+      ...Object.keys(layerInfo.customized_layers || {}),
+    ];
+  }
+
+  _getLayerInfosForJoinMember(member) {
+    if (!member) {
+      return [];
+    }
+
+    const memberHost = this._normalizeServiceHost(member.host);
+    const memberSection = member.seccion || member.section;
+    let candidates = this.layersInfo.filter(
+      (layerInfo) =>
+        memberHost !== "" &&
+        this._normalizeServiceHost(layerInfo.host) === memberHost,
+    );
+
+    if (candidates.length === 0) {
+      const memberRoot = this._normalizeServiceRoot(member.host);
+      candidates = this.layersInfo.filter(
+        (layerInfo) =>
+          memberRoot !== "" &&
+          this._normalizeServiceRoot(layerInfo.host) === memberRoot,
+      );
+    }
+
+    if (candidates.length === 0) {
+      candidates = this.layersInfo.filter(
+        (layerInfo) =>
+          layerInfo.section === memberSection &&
+          this._getLayerInfoConfiguredLayers(layerInfo).includes(member.layer),
+      );
+    }
+
+    const sectionCandidates = candidates.filter(
+      (layerInfo) => layerInfo.section === memberSection,
+    );
+    if (sectionCandidates.length > 0) {
+      candidates = sectionCandidates;
+    }
+
+    const configuredCandidates = candidates.filter((layerInfo) =>
+      this._getLayerInfoConfiguredLayers(layerInfo).includes(member.layer),
+    );
+    if (configuredCandidates.length > 0) {
+      return configuredCandidates;
+    }
+
+    const unrestrictedCandidate = candidates.find(
+      (layerInfo) =>
+        layerInfo.allowed_layers == null &&
+        Object.keys(layerInfo.customizedLayers || {}).length === 0 &&
+        Object.keys(layerInfo.customized_layers || {}).length === 0,
+    );
+    return unrestrictedCandidate
+      ? [unrestrictedCandidate]
+      : candidates.slice(0, 1);
+  }
+
+  _getLayerJoinMembers(layerJoin) {
+    return [layerJoin, ...(layerJoin.joins || [])];
+  }
+
+  _layerMatchesJoinMember(item, member) {
+    return (
+      item.capa.nombre === member.layer &&
+      (this._normalizeServiceHost(item.capa.host) ===
+        this._normalizeServiceHost(member.host) ||
+        this._normalizeServiceRoot(item.capa.host) ===
+          this._normalizeServiceRoot(member.host))
+    );
+  }
+
+  _getLayerInfosForJoin(layerJoin) {
+    return [
+      ...new Set(
+        this._getLayerJoinMembers(layerJoin).flatMap((member) =>
+          this._getLayerInfosForJoinMember(member),
+        ),
+      ),
+    ];
+  }
+
+  _getLayerJoinsForSection(section) {
+    return (this._layersJoin || []).filter(
+      (layerJoin) =>
+        (layerJoin.seccion || layerJoin.section) === section ||
+        (layerJoin.joins || []).some(
+          (member) => (member.seccion || member.section) === section,
+        ),
+    );
+  }
+
+  _getLayerInfosForSection(section) {
+    const directLayerInfos = this.layersInfo.filter(
+      (layerInfo) => layerInfo.section === section,
+    );
+    const joinedLayerInfos = this._getLayerJoinsForSection(section).flatMap(
+      (layerJoin) => this._getLayerInfosForJoin(layerJoin),
+    );
+    return [...new Set([...directLayerInfos, ...joinedLayerInfos])];
+  }
+
+  _getLayerJoinsForRequestedLayers(requestedLayers) {
+    const requested = new Set(requestedLayers);
+    return (this._layersJoin || []).filter((layerJoin) =>
+      requested.has(layerJoin.layer),
+    );
+  }
+
   _getInitialLayerInfoScore(layerInfo, requestedLayers) {
     const requested = requestedLayers.map((layer) =>
       this._normalizeLayerHint(layer),
@@ -2628,7 +2761,30 @@ class GestorMenu {
     await layerInfo.get(this);
   }
 
+  async _loadLayerInfos(layerInfos) {
+    await Promise.all(
+      [...new Set(layerInfos)].map((layerInfo) =>
+        this._loadInitialLayerInfo(layerInfo),
+      ),
+    );
+  }
+
+  async loadSectionServices(section) {
+    await this._loadLayerInfos(this._getLayerInfosForSection(section));
+    this.printOnlySection(section);
+  }
+
   async loadInitialLayerServices(requestedLayers) {
+    const requestedLayerJoins =
+      this._getLayerJoinsForRequestedLayers(requestedLayers);
+    if (requestedLayerJoins.length > 0) {
+      await this._loadLayerInfos(
+        requestedLayerJoins.flatMap((layerJoin) =>
+          this._getLayerInfosForJoin(layerJoin),
+        ),
+      );
+    }
+
     const pendingLayers = new Set(
       requestedLayers.filter(
         (layer) =>
@@ -2671,6 +2827,7 @@ class GestorMenu {
   }
 
   _finishInitialLayers(urlInteraction, requestedLayers, unresolvedLayers = []) {
+    this.processLayersJoin();
     requestedLayers.forEach((layer) => {
       if (this.layerIsValid(layer) && !this.layerIsActive(layer)) {
         this.muestraCapa(this.getLayerIdByName(layer));
@@ -3053,17 +3210,12 @@ class GestorMenu {
                 '<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>',
               );
             }
-            for (var key in thisObj.layersInfo) {
-              if (
-                thisObj.layersInfo[key].section == showingId &&
-                !thisObj.layersInfo[key]._executed
-              ) {
-                thisObj.addLazyInitLayerInfoCounter(
-                  ItemGroupPrefix + showingId,
-                );
-                thisObj.layersInfo[key].get(thisObj);
-              }
-            }
+            void thisObj.loadSectionServices(showingId).catch((error) => {
+              console.error(
+                `Error loading services for section '${showingId}':`,
+                error,
+              );
+            });
           }
         });
       });
@@ -3095,10 +3247,10 @@ class GestorMenu {
         if (item) {
           for (var keyItem in item.itemsComposite) {
             if (
-              item.itemsComposite[keyItem].capa.host ==
-                this._layersJoin[keyJoin].host &&
-              item.itemsComposite[keyItem].capa.nombre ==
-                this._layersJoin[keyJoin].layer
+              this._layerMatchesJoinMember(
+                item.itemsComposite[keyItem],
+                this._layersJoin[keyJoin],
+              )
             ) {
               //Busca las capas a incluir
               for (var keyJoinInt in this._layersJoin[keyJoin].joins) {
@@ -3109,10 +3261,10 @@ class GestorMenu {
                 if (itemInt) {
                   for (var keyItemInt in itemInt.itemsComposite) {
                     if (
-                      itemInt.itemsComposite[keyItemInt].capa.host ==
-                        this._layersJoin[keyJoin].joins[keyJoinInt].host &&
-                      itemInt.itemsComposite[keyItemInt].capa.nombre ==
-                        this._layersJoin[keyJoin].joins[keyJoinInt].layer
+                      this._layerMatchesJoinMember(
+                        itemInt.itemsComposite[keyItemInt],
+                        this._layersJoin[keyJoin].joins[keyJoinInt],
+                      )
                     ) {
                       item.itemsComposite[keyItem].capas = item.itemsComposite[
                         keyItem
@@ -3609,6 +3761,7 @@ class GestorMenu {
 
   //Prints only one section (works on lazy initialization only)
   printOnlySection(sectionId) {
+    this.processLayersJoin();
     var itemGroup = this.items[sectionId];
     if (itemGroup.tab.listType == "combobox") {
       //Si es combobox
