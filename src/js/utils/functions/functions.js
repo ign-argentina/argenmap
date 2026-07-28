@@ -351,7 +351,7 @@ function loadWmsTplAux(objLayer) {
     const queryOptions = getLayerQueryOptions(objLayer.capa);
     overlayMaps[layer]._source.options.identify =
       queryOptions.queryable &&
-      (!consultDataBtnClose || queryOptions.queryActive);
+      (isDataConsultActive() || queryOptions.queryActive);
     overlayMaps[layer].addTo(mapa);
   }
 }
@@ -1582,6 +1582,13 @@ function getLayerQueryOptions(layer, config = null) {
     queryable: Boolean(queryable),
     queryActive: Boolean(queryable && queryActive),
   };
+}
+
+function isDataConsultActive() {
+  return (
+    typeof consultDataBtnClose !== "undefined" &&
+    consultDataBtnClose === false
+  );
 }
 
 function getVectorData(e) {

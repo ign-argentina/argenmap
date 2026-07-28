@@ -2834,17 +2834,10 @@ class GestorMenu {
   }
 
   getActiveLayersWithoutBasemap() {
-    // Filtrar capas activas excluyendo las base
     const activeLayers = this.activeLayers.filter((layer) => {
       return !this.availableBaseLayers.includes(layer);
     });
 
-    // Si no hay datos en layersDataForWfs, devolver vacío
-    if (Object.keys(this.layersDataForWfs).length === 0) {
-      return [];
-    }
-
-    // Buscar en this.items para obtener metadatos adicionales
     const metadataMap = new Map();
 
     for (const section in this.items) {
@@ -2853,50 +2846,44 @@ class GestorMenu {
         for (const key in sectionData.itemsComposite) {
           const item = sectionData.itemsComposite[key];
           if (item.nombre && item.capa) {
-            // Mapear por nombre de capa para acceso rápido
-            metadataMap.set(item.nombre, item.capa);
+            metadataMap.set(item.nombre, {
+              capa: item.capa,
+              section: sectionData.seccion,
+            });
           }
         }
       }
     }
 
-    // Construir resultado basado en layersDataForWfs, pero enriquecido
-    return activeLayers
-      .filter((layer) => {
-        // Solo incluir si existe en layersDataForWfs
-        return (
-          this.layersDataForWfs.hasOwnProperty(layer) &&
-          this.layersDataForWfs[layer]
-        );
-      })
-      .map((layer) => {
-        const baseData = this.layersDataForWfs[layer];
-        const extraMetadata = metadataMap.get(layer);
+    return activeLayers.map((layer) => {
+      const metadata = metadataMap.get(layer);
+      const capa = metadata?.capa;
+      const baseData = this.layersDataForWfs[layer] || {
+        name: layer,
+        section: metadata?.section || "",
+        host: capa?.host,
+      };
 
-        // Si hay metadatos adicionales, combinarlos con baseData
-        if (extraMetadata) {
-          return {
-            ...baseData, // datos originales (probablemente WFS)
-            // Añadir metadatos adicionales (WMS, etc.)
-            titulo: extraMetadata.titulo,
-            host: extraMetadata.host,
-            servicio: extraMetadata.servicio,
-            version: extraMetadata.version,
-            featureInfoFormat: extraMetadata.featureInfoFormat,
-            srs: extraMetadata.srs,
-            minx: extraMetadata.minx,
-            maxx: extraMetadata.maxx,
-            miny: extraMetadata.miny,
-            maxy: extraMetadata.maxy,
-            attribution: extraMetadata.attribution,
-            legendURL: extraMetadata.legendURL,
-            // Agrega más campos si son relevantes
-          };
-        }
-
-        // Si no hay metadatos adicionales, devuelve solo los datos de WFS
+      if (!capa) {
         return baseData;
-      });
+      }
+
+      return {
+        ...baseData,
+        titulo: capa.titulo,
+        host: capa.host,
+        servicio: capa.servicio,
+        version: capa.version,
+        featureInfoFormat: capa.featureInfoFormat,
+        srs: capa.srs,
+        minx: capa.minx,
+        maxx: capa.maxx,
+        miny: capa.miny,
+        maxy: capa.maxy,
+        attribution: capa.attribution,
+        legendURL: capa.legendURL,
+      };
+    });
   }
 
   /*   getActiveLayersWithoutBasemap() {

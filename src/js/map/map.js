@@ -3661,6 +3661,7 @@ function loadWmsTpl(objLayer) {
       },
     });
     //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+    const queryOptions = getLayerQueryOptions(objLayer.capa);
     var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
       transparent: true,
       tiled: true,
@@ -3668,7 +3669,9 @@ function loadWmsTpl(objLayer) {
       title: objLayer.titulo,
       format: "image/png",
       INFO_FORMAT: objLayer.capa.featureInfoFormat,
-      identify: getLayerQueryOptions(objLayer.capa).queryActive,
+      identify:
+        queryOptions.queryable &&
+        (isDataConsultActive() || queryOptions.queryActive),
     });
     overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
   }
