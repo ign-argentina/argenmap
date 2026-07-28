@@ -140,8 +140,10 @@ class Geoprocessing {
     document.getElementById("select-process").options[0].text =
       "Seleccione una Opción";
 
-    $("#mr").draggable({
-      containment: "body",
+    enableJqueryUiInteractions("#mr", {
+      draggable: {
+        containment: "body",
+      },
     });
 
     if (document.getElementById("mr")) {

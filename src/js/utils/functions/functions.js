@@ -1591,6 +1591,150 @@ function isDataConsultActive() {
   );
 }
 
+function normalizeAutocompleteValue(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase();
+}
+
+function bindLayerSearchAutocomplete(
+  input,
+  getSuggestions,
+  onSelect,
+  maxResults = 20,
+) {
+  if (!input || input.dataset.autocompleteBound === "true") {
+    return;
+  }
+
+  const container = input.parentElement;
+  const list = document.createElement("div");
+  list.id = `${input.id}-autocomplete-list`;
+  list.className = "argenmap-autocomplete";
+  list.setAttribute("role", "listbox");
+  list.hidden = true;
+  container.appendChild(list);
+
+  input.dataset.autocompleteBound = "true";
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-controls", list.id);
+  input.setAttribute("aria-expanded", "false");
+
+  let results = [];
+  let activeIndex = -1;
+
+  const closeList = () => {
+    list.hidden = true;
+    list.replaceChildren();
+    results = [];
+    activeIndex = -1;
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+  };
+
+  const selectResult = (index) => {
+    const result = results[index];
+    if (!result) {
+      return;
+    }
+    input.value = result.label;
+    closeList();
+    onSelect(result.label);
+  };
+
+  const setActiveResult = (index) => {
+    const options = Array.from(list.children);
+    options.forEach((option) => {
+      option.classList.remove("argenmap-autocomplete-active");
+      option.setAttribute("aria-selected", "false");
+    });
+    if (options.length === 0) {
+      activeIndex = -1;
+      return;
+    }
+    activeIndex = (index + options.length) % options.length;
+    const activeOption = options[activeIndex];
+    activeOption.classList.add("argenmap-autocomplete-active");
+    activeOption.setAttribute("aria-selected", "true");
+    input.setAttribute("aria-activedescendant", activeOption.id);
+    activeOption.scrollIntoView({ block: "nearest" });
+  };
+
+  const renderSuggestions = () => {
+    const query = normalizeAutocompleteValue(input.value.trim());
+    if (!query) {
+      closeList();
+      return;
+    }
+
+    const uniqueResults = new Map();
+    for (const suggestion of getSuggestions() || []) {
+      const label = String(
+        suggestion?.label ?? suggestion?.value ?? suggestion,
+      ).trim();
+      if (
+        label &&
+        normalizeAutocompleteValue(label).includes(query) &&
+        !uniqueResults.has(label)
+      ) {
+        uniqueResults.set(label, { label });
+      }
+      if (uniqueResults.size >= maxResults) {
+        break;
+      }
+    }
+    results = Array.from(uniqueResults.values());
+    activeIndex = -1;
+    list.replaceChildren();
+
+    results.forEach((result, index) => {
+      const option = document.createElement("button");
+      option.id = `${list.id}-option-${index}`;
+      option.className = "argenmap-autocomplete-option";
+      option.type = "button";
+      option.setAttribute("role", "option");
+      option.setAttribute("aria-selected", "false");
+      option.textContent = result.label;
+      option.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+      });
+      option.addEventListener("click", () => selectResult(index));
+      list.appendChild(option);
+    });
+
+    list.hidden = results.length === 0;
+    input.setAttribute("aria-expanded", String(results.length > 0));
+  };
+
+  input.addEventListener("input", renderSuggestions);
+  input.addEventListener("focus", renderSuggestions);
+  input.addEventListener("blur", () => {
+    window.setTimeout(closeList, 0);
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown" && results.length > 0) {
+      event.preventDefault();
+      setActiveResult(activeIndex + 1);
+    } else if (event.key === "ArrowUp" && results.length > 0) {
+      event.preventDefault();
+      setActiveResult(activeIndex - 1);
+    } else if (event.key === "Enter") {
+      if (activeIndex >= 0) {
+        event.preventDefault();
+        event.stopPropagation();
+        selectResult(activeIndex);
+      } else {
+        closeList();
+      }
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      closeList();
+    }
+  });
+}
+
 function getVectorData(e) {
   if (e.target.queryable !== false && e.target.activeData === true) {
     let layer = e.target;

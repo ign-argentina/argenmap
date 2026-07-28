@@ -1229,10 +1229,12 @@ $("body").on("pluginLoad", function (event, plugin) {
             wrapper.appendChild(esriInfo);
 
             document.body.appendChild(wrapper);
-            $("#esriwrapper").draggable({
-              scroll: false,
-              cancel: "#esriInfo",
-              containment: "body",
+            enableJqueryUiInteractions("#esriwrapper", {
+              draggable: {
+                scroll: false,
+                cancel: "#esriInfo",
+                containment: "body",
+              },
             });
           };
 
@@ -1304,9 +1306,11 @@ $("body").on("pluginLoad", function (event, plugin) {
                 wrapper.appendChild(btncloseWrapper);
                 wrapper.appendChild(mapa.createEditStylePopup(layer));
                 document.body.appendChild(wrapper);
-                $("#editContainer").draggable({
-                  scroll: false,
-                  containment: "#mapa",
+                enableJqueryUiInteractions("#editContainer", {
+                  draggable: {
+                    scroll: false,
+                    containment: "#mapa",
+                  },
                 });
               },
             });
@@ -1451,10 +1455,12 @@ $("body").on("pluginLoad", function (event, plugin) {
             wrapper.appendChild(measurement);
 
             document.body.appendChild(wrapper);
-            $("#measurementWrapper").draggable({
-              scroll: false,
-              cancel: "#measurementInfo",
-              containment: "body",
+            enableJqueryUiInteractions("#measurementWrapper", {
+              draggable: {
+                scroll: false,
+                cancel: "#measurementInfo",
+                containment: "body",
+              },
             });
 
             mapa.getMeasurementsInfo(layer);

@@ -107,6 +107,10 @@ class AppDependencyLoader {
 }
 
 const appDependencies = new AppDependencyLoader({
+  jqueryUi: {
+    styles: ["src/js/plugins/jquery/ui/jquery-ui.min.css"],
+    scripts: ["src/js/plugins/jquery/ui/jquery-ui.min.js"],
+  },
   table: {
     styles: [
       "src/js/plugins/tabulator/tabulator.min.css",
@@ -117,7 +121,6 @@ const appDependencies = new AppDependencyLoader({
       "src/js/components/table/Datatable.js",
       "src/js/components/table/UI.js",
       "src/js/components/table/table.js",
-      "src/js/components/table/TouchPunch.js",
     ],
   },
   charts: {
@@ -174,3 +177,36 @@ const appDependencies = new AppDependencyLoader({
     ],
   },
 });
+
+function ensureJqueryUi() {
+  if (
+    typeof jQuery !== "undefined" &&
+    jQuery.ui &&
+    typeof jQuery.fn.draggable === "function"
+  ) {
+    return Promise.resolve();
+  }
+  return appDependencies.load("jqueryUi");
+}
+
+function enableJqueryUiInteractions(
+  selector,
+  { draggable = null, resizable = null } = {},
+) {
+  return ensureJqueryUi()
+    .then(() => {
+      const element = jQuery(selector);
+      if (element.length === 0) {
+        return;
+      }
+      if (draggable !== null) {
+        element.draggable(draggable);
+      }
+      if (resizable !== null) {
+        element.resizable(resizable);
+      }
+    })
+    .catch((error) => {
+      console.error("Unable to enable UI interactions:", error);
+    });
+}

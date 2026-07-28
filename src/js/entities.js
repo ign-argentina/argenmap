@@ -4114,54 +4114,11 @@ class GestorMenu {
       searchFormElement.dataset.boundSubmit = "true";
     }
 
-    $("#q")
-      .off("keydown.searchSubmit")
-      .on("keydown.searchSubmit", function (event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          event.stopPropagation();
-          performSearch(this.value);
-        }
-      });
-
-    //Jquery autocomplete (begin)
-    var accentMap = {
-      á: "a",
-      é: "e",
-      í: "i",
-      ó: "o",
-      ú: "u",
-      ñ: "n",
-    };
-    var normalize = function (term) {
-      var ret = "";
-      for (var i = 0; i < term.length; i++) {
-        ret += accentMap[term.charAt(i)] || term.charAt(i);
-      }
-      return ret;
-    };
-
-    $("#q").autocomplete({
-      source: function (request, response) {
-        var matcher = new RegExp(
-          $.ui.autocomplete.escapeRegex(request.term),
-          "i",
-        );
-        response(
-          $.grep(gestorMenu.getAvailableTags(), function (value) {
-            value = value.label || value.value || value;
-            return matcher.test(value) || matcher.test(normalize(value));
-          }),
-        );
-      },
-      select: function (event, ui) {
-        event.preventDefault();
-        $("#q").val(ui.item.label);
-        performSearch(ui.item.label);
-        return false;
-      },
-    });
-    //Jquery autocomplete (end)
+    bindLayerSearchAutocomplete(
+      document.getElementById("q"),
+      () => gestorMenu.getAvailableTags(),
+      performSearch,
+    );
   }
 
   //Prints only one section (works on lazy initialization only)
@@ -5133,8 +5090,10 @@ class Menu_UI {
     modal.append(btn_container);
     document.body.appendChild(modal);
 
-    $("#modal_layer_del").draggable({
-      containment: "#mapa",
+    enableJqueryUiInteractions("#modal_layer_del", {
+      draggable: {
+        containment: "#mapa",
+      },
     });
   }
 

@@ -303,7 +303,9 @@ class IElevationProfile {
       document.getElementById("elevationProfile").append(mainIcons);
 
       document.getElementById("pt-wrapper").style.display = "flex";
-      $("#pt-wrapper").draggable({ containment: "body", scroll: false });
+      enableJqueryUiInteractions("#pt-wrapper", {
+        draggable: { containment: "body", scroll: false },
+      });
       $("#pt-wrapper").css("top", $("body").height() - 320);
     }
   }

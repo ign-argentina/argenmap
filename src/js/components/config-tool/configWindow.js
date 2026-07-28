@@ -65,10 +65,12 @@ class configWindow {
 
     document.body.appendChild(configWrapper);
 
-    $("#configWrapper").draggable({
-      scroll: false,
-      cancel: "#configWindow",
-      containment: "body",
+    enableJqueryUiInteractions("#configWrapper", {
+      draggable: {
+        scroll: false,
+        cancel: "#configWindow",
+        containment: "body",
+      },
     });
   }
 }
