@@ -697,6 +697,7 @@ class LayersInfoWMS extends LayersInfo {
       itemGroupPrinter == "" ? new ImpresorGrupoHTML() : itemGroupPrinter;
 
     this._executed = false;
+    this._loadPromise = null;
   }
 
   get(_gestorMenu) {
@@ -790,12 +791,14 @@ class LayersInfoWMS extends LayersInfo {
           //Si ya cargó todas las capas solicitadas
           _gestorMenu.printOnlySection(this.section);
         }
+        this._loadPromise = Promise.resolve();
       } else {
-        this._parseRequest(_gestorMenu);
+        this._loadPromise = this._parseRequest(_gestorMenu);
       }
     }
     bindZoomLayer();
     bindLayerOptions();
+    return this._loadPromise || Promise.resolve();
   }
 
   get_without_print(_gestorMenu) {
@@ -851,7 +854,7 @@ class LayersInfoWMS extends LayersInfo {
     const serviceParams = `?service=${service}&version=${version}&request=GetCapabilities`;
     const hostUrl = `${this.getHostOWS()}${serviceParams}`;
 
-    fetch(hostUrl)
+    return fetch(hostUrl)
       .then((response) => response.text())
       .then((responseText) => {
         const parser = new DOMParser();
@@ -889,6 +892,18 @@ class LayersInfoWMS extends LayersInfo {
       })
       .catch((error) => {
         console.error("Error loading capabilities:", error);
+        if (gestorMenu.getLazyInitialization()) {
+          gestorMenu.removeLazyInitLayerInfoCounter(
+            `${ItemGroupPrefix}${this.section}`,
+          );
+          if (
+            gestorMenu.finishLazyInitLayerInfo(
+              `${ItemGroupPrefix}${this.section}`,
+            )
+          ) {
+            gestorMenu.printOnlySection(this.section);
+          }
+        }
       });
   }
 
@@ -1072,7 +1087,6 @@ class LayersInfoWMS extends LayersInfo {
       ) {
         // If all requested layers have been loaded
         gestorMenu.printOnlySection(this.section);
-        gestorMenu.allLayersAreLoaded = true;
       }
     } else {
       gestorMenu.addLayerInfoCounter();
@@ -1270,9 +1284,6 @@ class LayersInfoWMS extends LayersInfo {
           ) {
             //Si ya cargó todas las capas solicitadas
             _gestorMenu.printOnlySection(thisObj.section);
-
-            //
-            gestorMenu.allLayersAreLoaded = true;
           }
         } else {
           _gestorMenu.addLayerInfoCounter();
@@ -1345,6 +1356,7 @@ class LayersInfoWMTS extends LayersInfoWMS {
     this.itemGroupPrinter =
       itemGroupPrinter == "" ? new ImpresorGrupoHTML() : itemGroupPrinter;
     this._executed = false;
+    this._loadPromise = null;
   }
 
   get(_gestorMenu) {
@@ -1440,13 +1452,15 @@ class LayersInfoWMTS extends LayersInfoWMS {
           //Si ya cargó todas las capas solicitadas
           _gestorMenu.printOnlySection(this.section);
         }
+        this._loadPromise = Promise.resolve();
       } else {
-        this._parseRequest(_gestorMenu);
+        this._loadPromise = this._parseRequest(_gestorMenu);
       }
     }
 
     bindZoomLayer();
     bindLayerOptions();
+    return this._loadPromise || Promise.resolve();
   }
 
   generateGroups(_gestorMenu) {
@@ -1484,118 +1498,124 @@ class LayersInfoWMTS extends LayersInfoWMS {
     // Load geoserver Capabilities, if success Create menu and append to DOM
     let serviceParams = `?service=${thisObj.service}&version=${thisObj.version}&request=GetCapabilities`;
     let host = thisObj.getHost() + serviceParams;
-    $("#temp-menu").load(host, function () {
-      var content = $("#temp-menu").find("contents");
-      var keywordHtml = $("#temp-menu").find("Keyword");
-      var keyword = "";
-      if (keywordHtml.length > 0) {
-        keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
-      }
-      var abstractHtml = $("#temp-menu").find("Abstract");
-      var abstract = "";
-      if (abstractHtml.length > 0) {
-        abstract = abstractHtml[0].innerText; // reads wms 1st abstract
-      }
-      var capas_layer = $("layer", content);
-      var items = new Array();
-
-      capas_layer.each(function (index, b) {
-        var i = $(this);
-
-        var iName = $("ows\\:identifier", i).html();
-        if (thisObj.isAllowedLayer(iName)) {
-          var iTitle = $("ows\\:title", i).html();
-          iTitle = thisObj.formatLayerTitle(iName, iTitle);
-          var iAbstract = $("ows\\:abstract", i).html();
-          iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
-          var keywordsHTMLList = $("keywordlist", i).find("keyword");
-          var keywords = [];
-          $.each(keywordsHTMLList, function (i, el) {
-            keywords.push(el.innerText);
-          });
-          let iBoundingBox = $("ows\\:wgs84boundingbox", i),
-            iSrs = null,
-            lowerCorner =
-              iBoundingBox[0].firstElementChild.innerText.split(" "),
-            upperCorner = iBoundingBox[0].lastElementChild.innerText.split(" "),
-            iMaxY = lowerCorner[1],
-            iMaxX = lowerCorner[0],
-            iMinY = upperCorner[1],
-            iMinX = upperCorner[0];
-
-          if (thisObj.type == "wmslayer_mapserver") {
-            var capa = new CapaMapserver(
-              iName,
-              iTitle,
-              iSrs,
-              thisObj.host,
-              thisObj.service,
-              thisObj.version,
-              thisObj.feature_info_format,
-              iMinX,
-              iMaxX,
-              iMinY,
-              iMaxY,
-            );
-          } else {
-            var capa = new Capa(
-              iName,
-              iTitle,
-              iSrs,
-              thisObj.host,
-              thisObj.service,
-              thisObj.version,
-              thisObj.feature_info_format,
-              keywords,
-              iMinX,
-              iMaxX,
-              iMinY,
-              iMaxY,
-            );
-          }
-          var item = new Item(
-            capa.nombre,
-            thisObj.section + index,
-            keywords,
-            iAbstract,
-            capa.titulo,
-            capa,
-            thisObj.getCallback(),
-            null,
+    return new Promise((resolve) => {
+      $("#temp-menu").load(host, function (_response, status, request) {
+        if (status === "error") {
+          console.error(
+            `Error loading capabilities: ${request.status} ${request.statusText}`,
           );
-          item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
-          item.setImpresor(impresorItem);
-          items.push(item);
-          gestorMenu.setAvailableLayer(iName);
-          gestorMenu.setAvailableWmtsLayer(iName);
+          if (_gestorMenu.getLazyInitialization()) {
+            _gestorMenu.removeLazyInitLayerInfoCounter(
+              ItemGroupPrefix + thisObj.section,
+            );
+            if (
+              _gestorMenu.finishLazyInitLayerInfo(
+                ItemGroupPrefix + thisObj.section,
+              )
+            ) {
+              _gestorMenu.printOnlySection(thisObj.section);
+            }
+          }
+          resolve();
+          return;
         }
-      });
 
-      var groupAux;
-      try {
-        var groupAux = new ItemGroup(
-          thisObj.tab,
-          thisObj.name,
-          thisObj.section,
-          thisObj.weight,
-          keyword,
-          abstract,
-          thisObj.short_abstract,
-        );
-        groupAux.setImpresor(impresorGroup);
-        groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
-        for (var i = 0; i < items.length; i++) {
-          groupAux.setItem(items[i]);
+        var content = $("#temp-menu").find("contents");
+        var keywordHtml = $("#temp-menu").find("Keyword");
+        var keyword = "";
+        if (keywordHtml.length > 0) {
+          keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
         }
-      } catch (err) {
-        if (err.name == "ReferenceError") {
+        var abstractHtml = $("#temp-menu").find("Abstract");
+        var abstract = "";
+        if (abstractHtml.length > 0) {
+          abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+        }
+        var capas_layer = $("layer", content);
+        var items = new Array();
+
+        capas_layer.each(function (index, b) {
+          var i = $(this);
+
+          var iName = $("ows\\:identifier", i).html();
+          if (thisObj.isAllowedLayer(iName)) {
+            var iTitle = $("ows\\:title", i).html();
+            iTitle = thisObj.formatLayerTitle(iName, iTitle);
+            var iAbstract = $("ows\\:abstract", i).html();
+            iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
+            var keywordsHTMLList = $("keywordlist", i).find("keyword");
+            var keywords = [];
+            $.each(keywordsHTMLList, function (i, el) {
+              keywords.push(el.innerText);
+            });
+            let iBoundingBox = $("ows\\:wgs84boundingbox", i),
+              iSrs = null,
+              lowerCorner =
+                iBoundingBox[0].firstElementChild.innerText.split(" "),
+              upperCorner =
+                iBoundingBox[0].lastElementChild.innerText.split(" "),
+              iMaxY = lowerCorner[1],
+              iMaxX = lowerCorner[0],
+              iMinY = upperCorner[1],
+              iMinX = upperCorner[0];
+
+            if (thisObj.type == "wmslayer_mapserver") {
+              var capa = new CapaMapserver(
+                iName,
+                iTitle,
+                iSrs,
+                thisObj.host,
+                thisObj.service,
+                thisObj.version,
+                thisObj.feature_info_format,
+                iMinX,
+                iMaxX,
+                iMinY,
+                iMaxY,
+              );
+            } else {
+              var capa = new Capa(
+                iName,
+                iTitle,
+                iSrs,
+                thisObj.host,
+                thisObj.service,
+                thisObj.version,
+                thisObj.feature_info_format,
+                keywords,
+                iMinX,
+                iMaxX,
+                iMinY,
+                iMaxY,
+              );
+            }
+            var item = new Item(
+              capa.nombre,
+              thisObj.section + index,
+              keywords,
+              iAbstract,
+              capa.titulo,
+              capa,
+              thisObj.getCallback(),
+              null,
+            );
+            item.setLegendImgPreformatted(_gestorMenu.getLegendImgPath());
+            item.setImpresor(impresorItem);
+            items.push(item);
+            gestorMenu.setAvailableLayer(iName);
+            gestorMenu.setAvailableWmtsLayer(iName);
+          }
+        });
+
+        var groupAux;
+        try {
           var groupAux = new ItemGroup(
             thisObj.tab,
             thisObj.name,
             thisObj.section,
             thisObj.weight,
-            "",
-            "",
+            keyword,
+            abstract,
             thisObj.short_abstract,
           );
           groupAux.setImpresor(impresorGroup);
@@ -1603,36 +1623,53 @@ class LayersInfoWMTS extends LayersInfoWMS {
           for (var i = 0; i < items.length; i++) {
             groupAux.setItem(items[i]);
           }
+        } catch (err) {
+          if (err.name == "ReferenceError") {
+            var groupAux = new ItemGroup(
+              thisObj.tab,
+              thisObj.name,
+              thisObj.section,
+              thisObj.weight,
+              "",
+              "",
+              thisObj.short_abstract,
+            );
+            groupAux.setImpresor(impresorGroup);
+            groupAux.setObjDom(_gestorMenu.getItemsGroupDOM());
+            for (var i = 0; i < items.length; i++) {
+              groupAux.setItem(items[i]);
+            }
+          }
         }
-      }
 
-      _gestorMenu.addItemGroup(groupAux);
+        _gestorMenu.addItemGroup(groupAux);
 
-      if (_gestorMenu.getLazyInitialization() == true) {
-        _gestorMenu.removeLazyInitLayerInfoCounter(
-          ItemGroupPrefix + thisObj.section,
-        );
-        if (
-          _gestorMenu.finishLazyInitLayerInfo(ItemGroupPrefix + thisObj.section)
-        ) {
-          //Si ya cargó todas las capas solicitadas
-          _gestorMenu.printOnlySection(thisObj.section);
+        if (_gestorMenu.getLazyInitialization() == true) {
+          _gestorMenu.removeLazyInitLayerInfoCounter(
+            ItemGroupPrefix + thisObj.section,
+          );
+          if (
+            _gestorMenu.finishLazyInitLayerInfo(
+              ItemGroupPrefix + thisObj.section,
+            )
+          ) {
+            //Si ya cargó todas las capas solicitadas
+            _gestorMenu.printOnlySection(thisObj.section);
+          }
+        } else {
+          _gestorMenu.addLayerInfoCounter();
+          if (_gestorMenu.finishLayerInfo()) {
+            //Si ya cargó todas las capas solicitadas
+            _gestorMenu.printMenu();
 
-          //
-          gestorMenu.allLayersAreLoaded = true;
+            //
+            gestorMenu.allLayersAreLoaded = true;
+          }
         }
-      } else {
-        _gestorMenu.addLayerInfoCounter();
-        if (_gestorMenu.finishLayerInfo()) {
-          //Si ya cargó todas las capas solicitadas
-          _gestorMenu.printMenu();
 
-          //
-          gestorMenu.allLayersAreLoaded = true;
-        }
-      }
-
-      return;
+        resolve();
+        return;
+      });
     });
   }
 
@@ -2525,20 +2562,150 @@ class GestorMenu {
     return false;
   }
 
-  loadInitialLayers(urlInteraction) {
+  _normalizeLayerHint(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+  }
+
+  _getInitialLayerInfoScore(layerInfo, requestedLayers) {
+    const requested = requestedLayers.map((layer) =>
+      this._normalizeLayerHint(layer),
+    );
+    const configuredLayers = [
+      ...Object.keys(layerInfo.customizedLayers || {}),
+      ...(layerInfo.allowed_layers || []),
+    ].map((layer) => this._normalizeLayerHint(layer));
+
+    if (requested.some((layer) => configuredLayers.includes(layer))) {
+      return 100;
+    }
+
+    const pathParts = new URL(layerInfo.host, document.baseURI).pathname
+      .split("/")
+      .map((part) => this._normalizeLayerHint(part))
+      .filter((part) => part.length > 2 && part !== "geoserver");
+    const serviceHints = [
+      this._normalizeLayerHint(layerInfo.section),
+      ...pathParts,
+    ];
+
+    if (
+      requested.some((layer) =>
+        serviceHints.some(
+          (hint) =>
+            layer === hint || layer.includes(hint) || hint.includes(layer),
+        ),
+      )
+    ) {
+      return 75;
+    }
+
+    const serviceTokens = serviceHints.flatMap((hint) => hint.split("_"));
+    if (
+      requested.some((layer) =>
+        layer
+          .split("_")
+          .filter((token) => token.length > 2)
+          .some((token) => serviceTokens.includes(token)),
+      )
+    ) {
+      return 50;
+    }
+
+    return 0;
+  }
+
+  async _loadInitialLayerInfo(layerInfo) {
+    if (!layerInfo._executed) {
+      this.addLazyInitLayerInfoCounter(
+        `${ItemGroupPrefix}${layerInfo.section}`,
+      );
+    }
+    await layerInfo.get(this);
+  }
+
+  async loadInitialLayerServices(requestedLayers) {
+    const pendingLayers = new Set(
+      requestedLayers.filter(
+        (layer) =>
+          !this.layerIsValid(layer) &&
+          !this.availableBaseLayers.includes(layer),
+      ),
+    );
+    if (pendingLayers.size === 0) {
+      return [];
+    }
+
+    const candidates = [...this.layersInfo];
+    const configurationOrder = new Map(
+      candidates.map((layerInfo, index) => [layerInfo, index]),
+    );
+
+    while (pendingLayers.size > 0 && candidates.length > 0) {
+      candidates.sort(
+        (first, second) =>
+          this._getInitialLayerInfoScore(second, [...pendingLayers]) -
+            this._getInitialLayerInfoScore(first, [...pendingLayers]) ||
+          configurationOrder.get(first) - configurationOrder.get(second),
+      );
+      const layerInfo = candidates.shift();
+
+      try {
+        await this._loadInitialLayerInfo(layerInfo);
+      } catch (error) {
+        console.error("Error loading initial layer service:", error);
+      }
+
+      for (const layer of pendingLayers) {
+        if (this.layerIsValid(layer)) {
+          pendingLayers.delete(layer);
+        }
+      }
+    }
+
+    return [...pendingLayers];
+  }
+
+  _finishInitialLayers(urlInteraction, requestedLayers, unresolvedLayers = []) {
+    requestedLayers.forEach((layer) => {
+      if (this.layerIsValid(layer) && !this.layerIsActive(layer)) {
+        this.muestraCapa(this.getLayerIdByName(layer));
+      }
+    });
+
+    urlInteraction.layers = this.getActiveLayers();
+    this.activeLayersHasBeenUpdated = () => {
+      urlInteraction.layers = this.getActiveLayers();
+    };
+    this.setLayersDataForWfs();
+    this.allLayersAreLoaded = true;
+
+    if (unresolvedLayers.length > 0) {
+      console.warn("Rejected layers: ", unresolvedLayers);
+    }
+  }
+
+  async loadInitialLayers(urlInteraction) {
     $("#" + this.basemapSelected).toggleClass("active");
 
+    if (this.getLazyInitialization()) {
+      const requestedLayers = [...urlInteraction.layers];
+      const unresolvedLayers =
+        await this.loadInitialLayerServices(requestedLayers);
+      this._finishInitialLayers(
+        urlInteraction,
+        requestedLayers,
+        unresolvedLayers,
+      );
+      return;
+    }
+
     if (this.allLayersAreDeclaredInJson) {
-      urlInteraction.layers.forEach((layer) => {
-        if (this.layerIsValid(layer)) {
-          this.muestraCapa(this.getLayerIdByName(layer));
-        }
-      });
-      urlInteraction.layers = this.getActiveLayers();
-      this.activeLayersHasBeenUpdated = () => {
-        urlInteraction.layers = this.getActiveLayers();
-      };
-      this.setLayersDataForWfs();
+      this._finishInitialLayers(urlInteraction, [...urlInteraction.layers]);
       return;
     }
 
@@ -2887,8 +3054,13 @@ class GestorMenu {
               );
             }
             for (var key in thisObj.layersInfo) {
-              if (thisObj.layersInfo[key].section == showingId) {
-                thisObj.addLazyInitLayerInfoCounter(showingId);
+              if (
+                thisObj.layersInfo[key].section == showingId &&
+                !thisObj.layersInfo[key]._executed
+              ) {
+                thisObj.addLazyInitLayerInfoCounter(
+                  ItemGroupPrefix + showingId,
+                );
                 thisObj.layersInfo[key].get(thisObj);
               }
             }
@@ -3307,20 +3479,6 @@ class GestorMenu {
 
     this.getLoadingDOM().hide();
 
-    //To print all items in background
-    // Solo cargar capas de geoservicios si NO hay búsqueda activa
-    // Cuando hay búsqueda, solo filtramos las capas ya cargadas
-    if (this.getQuerySearch() === "") {
-      for (var key in this.layersInfo) {
-        if (this.layersInfo[key].tab.listType != "combobox") {
-          this.addLazyInitLayerInfoCounter(
-            ItemGroupPrefix + this.layersInfo[key].section,
-          );
-          this.layersInfo[key].get(this);
-        }
-      }
-    }
-
     //Call callback after print (if exists)
     if (this.printCallback != null) {
       this.printCallback();
@@ -3581,7 +3739,10 @@ class GestorMenu {
 
     var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, "");
     for (var key in this.layersInfo) {
-      if (this.layersInfo[key].section == itemSeccionAux) {
+      if (
+        this.layersInfo[key].section == itemSeccionAux &&
+        !this.layersInfo[key]._executed
+      ) {
         this.addLazyInitLayerInfoCounter(itemSeccion);
         //nueva opcion crea un objeto para cada btn
         this.layersInfo[key].get_without_print(this);
