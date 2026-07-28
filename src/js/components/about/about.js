@@ -12,9 +12,11 @@ class DataGetter {
    * @returns {Promise<string>} - A promise that resolves with the selected text from the Markdown file.
    */
   loadMD(url, from, to) {
-    return fetch(url)
-      .then((response) => response.text())
-      .then((markdown) => {
+    return Promise.all([
+      fetch(url).then((response) => response.text()),
+      appDependencies.load("marked"),
+    ])
+      .then(([markdown]) => {
         const html = marked(markdown);
         const lines = html.split("\n");
         const selectedLines = lines.slice(from, to);
@@ -23,6 +25,19 @@ class DataGetter {
       })
       .catch((error) => {
         console.error("Error loading the Markdown file:", error);
+      });
+  }
+
+  /**
+   * Loads a text file without requiring the Markdown parser.
+   * @param {string} url - The URL of the text file.
+   * @returns {Promise<string>} - A promise that resolves with its raw content.
+   */
+  loadText(url) {
+    return fetch(url)
+      .then((response) => response.text())
+      .catch((error) => {
+        console.error("Error loading the text file:", error);
       });
   }
 
@@ -276,14 +291,15 @@ class AboutUs {
    */
   check() {
     this.dataGetter
-      .loadMD("src/docs/features.md", 2, Infinity)
-      .then((selectedText) => {
-        const lines = selectedText.split("\n");
-        const lastIndex = lines.length - 4;
+      .loadText("src/docs/features.md")
+      .then((markdown) => {
+        const featureCount = markdown
+          .split("\n")
+          .filter((line) => /^\s*-\s+\S/u.test(line)).length;
         const lastFunctionSeen = localStorage.getItem("lastFunctionSeen");
         const notificationDotShown =
           localStorage.getItem("notificationDotShown") === "true";
-        let newFunctionIndex = lastIndex;
+        const newFunctionIndex = featureCount - 1;
         // Si nunca se guardó lastFunctionSeen o hay una línea nueva
         if (
           lastFunctionSeen === null ||

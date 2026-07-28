@@ -158,6 +158,11 @@ const appDependencies = new AppDependencyLoader({
       },
     ],
   },
+  marked: {
+    scripts: [
+      "https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js",
+    ],
+  },
   jqueryUi: {
     styles: ["src/js/plugins/jquery/ui/jquery-ui.min.css"],
     scripts: ["src/js/plugins/jquery/ui/jquery-ui.min.js"],
