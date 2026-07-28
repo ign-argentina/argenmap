@@ -504,10 +504,9 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
     const layerName = window.encodeURI(layerData.name.replace(":", "/")); // if layer name includes the workspace name, replaces colon with a slash
     const capabilitiesUrl = `${host}/${layerName}/ows?service=wfs&request=GetCapabilities`;
 
-    let reprojectedCoords = [];
     // get the CRS, then defines a WFS request including coordinates in the layer's CRS
     getCRSByWFSCapabilities(capabilitiesUrl, layerData.name)
-      .then((crs) => {
+      .then(async (crs) => {
         let isWgs84 = crs === "4326" || crs === "84" || crs === null; // true if crs = wgs84 or null
         let url = host,
           paramsStr = [],
@@ -555,6 +554,9 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
           });
         }
         if (!isWgs84) {
+          await appDependencies.load("proj4");
+          coords = [];
+
           // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
           // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
           // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
@@ -604,8 +606,10 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
       })
       .catch((e) => {
         console.error(
-          "The host does not provide capabilities for the WFS service",
+          "Unable to prepare the WFS spatial query:",
+          e,
         );
+        resolve(null);
       });
   });
 }

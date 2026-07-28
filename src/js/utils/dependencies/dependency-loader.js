@@ -148,6 +148,16 @@ const appDependencies = new AppDependencyLoader({
       },
     ],
   },
+  proj4: {
+    scripts: [
+      {
+        url: "https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.7.5/proj4.js",
+        integrity:
+          "sha384-Zg0HdUmZ2bCzgG1aXkCKAM1eMsRebKIhcsT+PUUYheMfD9zI1W2y1crkhDmuG5MA",
+        crossOrigin: "anonymous",
+      },
+    ],
+  },
   jqueryUi: {
     styles: ["src/js/plugins/jquery/ui/jquery-ui.min.css"],
     scripts: ["src/js/plugins/jquery/ui/jquery-ui.min.js"],
