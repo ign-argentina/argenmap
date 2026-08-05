@@ -2634,8 +2634,11 @@ class Plugin {
         return false;
     }
   }
-  triggerLoad() {
-    $("body").trigger("pluginLoad", { pluginName: this.name });
+  triggerLoad(failed = false) {
+    $("body").trigger("pluginLoad", {
+      pluginName: this.name,
+      failed,
+    });
   }
 }
 
@@ -3567,6 +3570,7 @@ class GestorMenu {
           pluginAux.setStatus("fail");
           this.pluginsCount--;
           this.pluginsLoading--;
+          pluginAux.triggerLoad(true);
           console.error(error);
         },
       );

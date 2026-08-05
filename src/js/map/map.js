@@ -50,273 +50,100 @@ const isMobile = window.matchMedia(
 
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
-var unordered = "";
-var ordered = [
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
+let unordered = "";
+const orderedPluginNames = [
+  "ZoomHome",
+  "Measure",
+  "locate",
+  "graticula",
+  "FullScreen",
+  "Draw",
+  "betterScale",
+  "minimap",
+  "screenShoter",
+  "pdfPrinter",
+  "loadLayer",
+  "geoprocessing",
+  "consultData",
+  "helpTour",
+  "configTool",
+  "accessibility",
 ];
-var ordenZoomHome = 1;
-var ordenFullScreen = 5;
-var ordenMeasure = 2;
-var ordenGraticula = 4;
-var ordenLocate = 3;
-var ordenDraw = 6;
-var ordenBetterScale = 7;
-var ordenMinimap = 8;
-var ordenScreenShoter = 9;
-var ordenPrint = 10;
-var ordenPdfPriner = 11;
-var ordenLoadLayer = 12;
-var ordenGeoprocessing = 13;
-var ordenConsultData = 14;
-var ordenHelp = 15;
-var ordenConfig = 16;
-var ordenAccessibility = 17;
-var visiblesActivar = true;
-var visiblesActivar = true;
+let nextOrderedPluginIndex = 0;
+let initializeOrderedPlugin = null;
+let orderedInitializationTask = Promise.resolve();
+
+function scheduleOrderedPluginInitialization() {
+  orderedInitializationTask = orderedInitializationTask
+    .then(async () => {
+      if (
+        typeof initializeOrderedPlugin !== "function" ||
+        !gestorMenu.pluginExists("leaflet") ||
+        gestorMenu.plugins.leaflet.getStatus() !== "visible"
+      ) {
+        return;
+      }
+
+      while (nextOrderedPluginIndex < orderedPluginNames.length) {
+        const pluginName = orderedPluginNames[nextOrderedPluginIndex];
+        const managedPlugin = gestorMenu.plugins[pluginName];
+
+        if (!managedPlugin) {
+          nextOrderedPluginIndex++;
+          continue;
+        }
+
+        if (managedPlugin.getStatus() === "loading") {
+          return;
+        }
+
+        if (
+          managedPlugin.getStatus() === "fail" ||
+          managedPlugin.getStatus() === "visible"
+        ) {
+          nextOrderedPluginIndex++;
+          continue;
+        }
+
+        if (managedPlugin.getStatus() !== "ready") {
+          return;
+        }
+
+        nextOrderedPluginIndex++;
+        try {
+          await initializeOrderedPlugin(pluginName);
+        } catch (error) {
+          managedPlugin.setStatus("fail");
+          console.error(`Unable to initialize plugin "${pluginName}":`, error);
+        }
+      }
+    })
+    .catch((error) => {
+      console.error(
+        "Unable to continue ordered plugin initialization:",
+        error,
+      );
+    });
+}
+
 $("body").on("pluginLoad", function (event, plugin) {
   unordered = "";
-  visiblesActivar = true;
   switch (plugin.pluginName) {
-    // Add ordered plugins in order
     case "leaflet":
       unordered = plugin.pluginName;
       break;
     case "menuPrinter":
       showMainMenu();
       break;
-    case "ZoomHome":
-      ordered.splice(ordenZoomHome, 1, plugin.pluginName);
-      break;
-    case "locate":
-      ordered.splice(ordenLocate, 1, plugin.pluginName);
-      break;
-    case "Measure":
-      ordered.splice(ordenMeasure, 1, plugin.pluginName);
-      break;
-    case "graticula":
-      ordered.splice(ordenGraticula, 1, plugin.pluginName);
-      break;
-    case "FullScreen":
-      ordered.splice(ordenFullScreen, 1, plugin.pluginName);
-      break;
-    case "Draw":
-      ordered.splice(ordenDraw, 1, plugin.pluginName);
-      break;
-    case "betterScale":
-      ordered.splice(ordenBetterScale, 1, plugin.pluginName);
-      break;
-    case "minimap":
-      ordered.splice(ordenMinimap, 1, plugin.pluginName);
-      break;
-    case "screenShoter":
-      ordered.splice(ordenScreenShoter, 1, plugin.pluginName);
-      break;
-    case "geoprocessing":
-      ordered.splice(ordenGeoprocessing, 1, plugin.pluginName);
-      break;
-    case "loadLayer":
-      ordered.splice(ordenLoadLayer, 1, plugin.pluginName);
-      break;
-    case "pdfPrinter":
-      ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
-      break;
-    case "consultData":
-      ordered.splice(ordenConsultData, 1, plugin.pluginName);
-      break;
-    case "groupLayerSelector":
-      ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
-      break;
-    case "helpTour":
-      ordered.splice(ordenHelp, 1, plugin.pluginName);
-      break;
-    case "accessibility":
-      ordered.splice(ordenAccessibility, 1, plugin.pluginName);
-      break;
-    case "configTool":
-      ordered.splice(ordenConfig, 1, plugin.pluginName);
-      break;
     default:
-      // Add unordered plugins
-      unordered = plugin.pluginName;
+      if (!orderedPluginNames.includes(plugin.pluginName)) {
+        unordered = plugin.pluginName;
+      }
       break;
   }
-  // oredered plugins status chek
-  if (visiblesActivar && gestorMenu.pluginExists("leaflet")) {
-    if (gestorMenu.plugins["leaflet"].getStatus() != "visible") {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("ZoomHome")) {
-    if (
-      gestorMenu.plugins["ZoomHome"].getStatus() == "ready" ||
-      gestorMenu.plugins["ZoomHome"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("FullScreen")) {
-    if (
-      gestorMenu.plugins["FullScreen"].getStatus() == "ready" ||
-      gestorMenu.plugins["FullScreen"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("locate")) {
-    if (
-      gestorMenu.plugins["locate"].getStatus() == "ready" ||
-      gestorMenu.plugins["locate"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("graticula")) {
-    if (
-      gestorMenu.plugins["graticula"].getStatus() == "ready" ||
-      gestorMenu.plugins["graticula"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("Measure")) {
-    if (
-      gestorMenu.plugins["Measure"].getStatus() == "ready" ||
-      gestorMenu.plugins["Measure"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("pdfPrinter")) {
-    if (
-      gestorMenu.plugins["pdfPrinter"].getStatus() == "ready" ||
-      gestorMenu.plugins["pdfPrinter"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("consultData")) {
-    if (
-      gestorMenu.plugins["consultData"].getStatus() == "ready" ||
-      gestorMenu.plugins["consultData"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("groupLayerSelector")) {
-    if (
-      gestorMenu.plugins["groupLayerSelector"].getStatus() == "ready" ||
-      gestorMenu.plugins["groupLayerSelector"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("Draw")) {
-    if (
-      gestorMenu.plugins["Draw"].getStatus() == "ready" ||
-      gestorMenu.plugins["Draw"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("betterScale")) {
-    if (
-      gestorMenu.plugins["betterScale"].getStatus() == "ready" ||
-      gestorMenu.plugins["betterScale"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("minimap")) {
-    if (
-      gestorMenu.plugins["minimap"].getStatus() == "ready" ||
-      gestorMenu.plugins["minimap"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("screenShoter")) {
-    if (
-      gestorMenu.plugins["screenShoter"].getStatus() == "ready" ||
-      gestorMenu.plugins["screenShoter"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("geoprocessing")) {
-    if (
-      gestorMenu.plugins["geoprocessing"].getStatus() == "ready" ||
-      gestorMenu.plugins["geoprocessing"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("loadLayer")) {
-    if (
-      gestorMenu.plugins["loadLayer"].getStatus() == "ready" ||
-      gestorMenu.plugins["loadLayer"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("helpTour")) {
-    if (
-      gestorMenu.plugins["helpTour"].getStatus() == "ready" ||
-      gestorMenu.plugins["helpTour"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("accessibility")) {
-    if (
-      gestorMenu.plugins["accessibility"].getStatus() == "ready" ||
-      gestorMenu.plugins["accessibility"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("configTool")) {
-    if (
-      gestorMenu.plugins["configTool"].getStatus() == "ready" ||
-      gestorMenu.plugins["configTool"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar) {
-    ordered.forEach(async function (e) {
+  initializeOrderedPlugin =
+    initializeOrderedPlugin ||
+    (async function (e) {
       switch (e) {
         case "screenShoter":
           let isIdecom = window.location.origin.includes("idecom");
@@ -3090,7 +2917,12 @@ $("body").on("pluginLoad", function (event, plugin) {
           break;
       }
     });
+  scheduleOrderedPluginInitialization();
+
+  if (plugin.failed) {
+    return;
   }
+
   switch (unordered) {
     case "leaflet":
       if (selectedBasemap.hasOwnProperty("key")) {
