@@ -3546,7 +3546,7 @@ class GestorMenu {
     this.items[itemGroup.seccion] = itemAux;
   }
 
-  addPlugin(pluginName, url, callback) {
+  addPlugin(pluginName, url, callback, styles = []) {
     if (!this.pluginExists(pluginName)) {
       const pluginAux = new Plugin(
         pluginName,
@@ -3557,7 +3557,19 @@ class GestorMenu {
       this.pluginsCount++;
       this.pluginsLoading++;
 
-      appDependencies.loadScript(url).then(
+      const resources = [
+        appDependencies.loadScript(url),
+        ...styles.map((style) =>
+          (typeof style === "string"
+            ? appDependencies.loadStyle(style)
+            : appDependencies.loadStyle(style.url, style)
+          ).catch((error) => {
+            console.error(error);
+          }),
+        ),
+      ];
+
+      Promise.all(resources).then(
         () => {
           pluginAux.setStatus("ready");
           this.pluginsLoading--;

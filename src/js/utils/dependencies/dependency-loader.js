@@ -109,6 +109,7 @@ class AppDependencyLoader {
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = url;
+      link.dataset.argenmapDependency = "true";
       if (options.integrity) {
         link.integrity = options.integrity;
       }
@@ -162,6 +163,28 @@ const appDependencies = new AppDependencyLoader({
     scripts: [
       "https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.0/marked.min.js",
     ],
+  },
+  helpTourFeature: {
+    styles: [
+      "src/js/components/help/helpTour.css",
+      "src/js/components/help/tooltipTourMaker.css",
+    ],
+    scripts: [
+      "src/js/components/help/tooltipTourMaker.js",
+      "src/js/components/help/helpTour.js",
+    ],
+  },
+  accessibilityFeature: {
+    styles: ["src/js/components/accessibility/accessibility.css"],
+    scripts: ["src/js/components/accessibility/accessibility.js"],
+  },
+  loadLayerFeature: {
+    styles: ["src/js/components/loadLayersModal/loadLayersModal.css"],
+    scripts: ["src/js/components/loadLayersModal/loadLayersModal.js"],
+  },
+  configWindow: {
+    styles: ["src/js/components/config-tool/configTool.css"],
+    scripts: ["src/js/components/config-tool/configWindow.js"],
   },
   jqueryUi: {
     styles: ["src/js/plugins/jquery/ui/jquery-ui.min.css"],

@@ -96,6 +96,54 @@ const PLUGINS = {
   accessibility: "src/js/components/accessibility/accessibility.js",
 };
 
+const PLUGIN_STYLES = {
+  betterScale: [
+    {
+      url: "https://daniellsu.github.io/leaflet-betterscale/L.Control.BetterScale.css",
+      integrity:
+        "sha384-2KDD1OkPWCaNMKkFrolRvmL1nQcNLQsqSlOueaVJK4uqJrmUBnsRRT952dh/UEFU",
+      crossOrigin: "anonymous",
+    },
+  ],
+  AwesomeMarkers: [
+    {
+      url: "https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css",
+      integrity:
+        "sha384-AEGVifziKVWa9A1esNIKiYnrgmTqMcwVgTpjGTOm4i0uieet1Kc9jbOn/RCAc/zv",
+      crossOrigin: "anonymous",
+    },
+  ],
+  Draw: [
+    {
+      url: "https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css",
+      integrity:
+        "sha384-NZLkVuBRMEeB4VeZz27WwTRvlhec30biQ8Xx7zG7JJnkvEKRg5qi6BNbEXo9ydwv",
+      crossOrigin: "anonymous",
+    },
+  ],
+  ZoomHome: [
+    "src/js/map/plugins/leaflet/leaflet-zoomhome/dist/leaflet.zoomhome.css",
+  ],
+  locate: [
+    "src/js/map/plugins/leaflet/leaflet-locate/L.Control.Locate.css",
+  ],
+  MousePosition: [
+    "src/js/map/plugins/leaflet/leaflet-mouseposition/src/L.Control.MousePosition.css",
+  ],
+  Measure: [
+    "src/js/map/plugins/leaflet/leaflet-measure/leadflet-measure.css",
+  ],
+  minimap: [
+    "src/js/map/plugins/leaflet/leaflet-minimap/Control.MiniMap.css",
+  ],
+  graticula: [
+    "src/js/map/plugins/leaflet/leaflet-simplegraticule/L.SimpleGraticule.css",
+  ],
+  pdfPrinter: ["src/js/components/pdfPrinter/pdfPrinter.css"],
+  FullScreen: ["src/js/components/fullscreen/fullscreen.css"],
+  consultData: ["src/js/components/consultData/consultData.css"],
+};
+
 const MESSAGE_PROPERTIES = {
   information: {
     background: "rgba(0,141,201, 0.75)",

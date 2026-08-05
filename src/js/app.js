@@ -1114,7 +1114,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     }, 100);
   });
 
-  setTimeout(function () {
+  setTimeout(async function () {
     //load loginatic
     if (loadLogin) {
       appDependencies
@@ -1135,6 +1135,19 @@ async function loadTemplate(data, isDefaultTemplate) {
     }
 
     if (mainPopup) {
+      const mainPopupOpensHelpTour = app.mainPopup?.text?.includes(
+        "nav-help-btn",
+      );
+      if (
+        mainPopupOpensHelpTour &&
+        typeof window.ensureHelpTourFeature === "function"
+      ) {
+        try {
+          await window.ensureHelpTourFeature();
+        } catch (error) {
+          console.error("Unable to prepare the help tour:", error);
+        }
+      }
       appDependencies
         .loadStyle("src/js/components/main-popup/mainPopup.css")
         .catch((error) => console.error(error));

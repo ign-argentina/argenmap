@@ -9,14 +9,25 @@ var mapa = "";
 let currentBaseMap = null;
 
 let countour_styles = false;
-const lazyPluginNames = new Set(["elevation", "turf"]);
+const firstUsePluginNames = new Set([
+  "elevation",
+  "turf",
+  "helpTour",
+  "accessibility",
+  "loadLayer",
+]);
 
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
   for (const plugin in PLUGINS) {
-    if (lazyPluginNames.has(plugin)) {
+    if (firstUsePluginNames.has(plugin) || !shouldLoadPluginAtStartup(plugin)) {
       continue;
     }
-    gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
+    gestorMenu.addPlugin(
+      plugin,
+      PLUGINS[plugin],
+      null,
+      PLUGIN_STYLES[plugin] || [],
+    );
   }
 });
 
@@ -48,6 +59,120 @@ const isMobile = window.matchMedia(
   "only screen and (max-width: 760px)",
 ).matches;
 
+function isPluginExcluded(pluginName) {
+  return (app.excluded_plugins || []).some(
+    (excludedPlugin) =>
+      String(excludedPlugin).toLowerCase() === pluginName.toLowerCase(),
+  );
+}
+
+function shouldLoadPluginAtStartup(pluginName) {
+  if (isPluginExcluded(pluginName)) {
+    return false;
+  }
+
+  switch (pluginName) {
+    case "Measure":
+      return !isMobile;
+    case "screenShoter":
+      return L.Browser.webkit && !window.location.origin.includes("idecom");
+    case "pdfPrinter":
+      return !L.Browser.safari && window.innerWidth > 1150;
+    case "geoprocessing":
+      return loadGeoprocessing;
+    case "consultData":
+      return loadQueryLayer;
+    case "configTool":
+      return loadConfigTool;
+    default:
+      return true;
+  }
+}
+
+function createFeatureLoader(groupName, initialize) {
+  let featurePromise = null;
+
+  return function loadFeature() {
+    if (!featurePromise) {
+      featurePromise = appDependencies
+        .load(groupName)
+        .then(initialize)
+        .catch((error) => {
+          featurePromise = null;
+          throw error;
+        });
+    }
+    return featurePromise;
+  };
+}
+
+const ensureHelpTourFeature = createFeatureLoader(
+  "helpTourFeature",
+  async () => {
+    const help = new HelpTour();
+    const helpData = await help.fetchHelpTourData();
+    help.createComponent(helpData);
+  },
+);
+const ensureAccessibilityFeature = createFeatureLoader(
+  "accessibilityFeature",
+  () => {
+    const accessibility = new Accessibility();
+    accessibility.createComponent();
+  },
+);
+const ensureLoadLayerFeature = createFeatureLoader(
+  "loadLayerFeature",
+  () => {},
+);
+
+if (!isPluginExcluded("helpTour")) {
+  window.ensureHelpTourFeature = ensureHelpTourFeature;
+}
+
+function bindFeatureToFirstUse(triggerId, pluginName, loadFeature) {
+  const trigger = document.getElementById(triggerId);
+  if (!trigger) {
+    return;
+  }
+
+  if (isPluginExcluded(pluginName)) {
+    trigger.style.display = "none";
+    return;
+  }
+
+  trigger.addEventListener(
+    "click",
+    () => {
+      trigger.setAttribute("aria-busy", "true");
+      loadFeature()
+        .catch((error) => new UserMessage(error.message, true, "error"))
+        .finally(() => trigger.removeAttribute("aria-busy"));
+    },
+    true,
+  );
+}
+
+if (isMobile) {
+  document.getElementById("nav-help-btn").style.display = "none";
+} else {
+  bindFeatureToFirstUse(
+    "nav-help-btn",
+    "helpTour",
+    ensureHelpTourFeature,
+  );
+}
+bindFeatureToFirstUse(
+  "accessibility-btn",
+  "accessibility",
+  ensureAccessibilityFeature,
+);
+bindFeatureToFirstUse(
+  "load-layer-btn",
+  "loadLayer",
+  ensureLoadLayerFeature,
+);
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
 let unordered = "";
@@ -62,12 +187,9 @@ const orderedPluginNames = [
   "minimap",
   "screenShoter",
   "pdfPrinter",
-  "loadLayer",
   "geoprocessing",
   "consultData",
-  "helpTour",
   "configTool",
-  "accessibility",
 ];
 let nextOrderedPluginIndex = 0;
 let initializeOrderedPlugin = null;
@@ -442,6 +564,10 @@ $("body").on("pluginLoad", function (event, plugin) {
         case "consultData":
           const consultData = new ConsultData();
           consultData.createComponent();
+          break;
+        case "configTool":
+          const configTool = new ConfigTool();
+          configTool.createComponent();
           break;
         case "Draw":
           var orgReadbleDistance = L.GeometryUtil.readableArea;
