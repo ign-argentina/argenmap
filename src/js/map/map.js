@@ -72,8 +72,6 @@ function shouldLoadPluginAtStartup(pluginName) {
   }
 
   switch (pluginName) {
-    case "Measure":
-      return !isMobile;
     case "screenShoter":
       return L.Browser.webkit && !window.location.origin.includes("idecom");
     case "pdfPrinter":
@@ -87,6 +85,65 @@ function shouldLoadPluginAtStartup(pluginName) {
     default:
       return true;
   }
+}
+
+function adaptMeasureToggleForTouch(measureControl) {
+  const toggle = measureControl?.$toggle;
+  if (!L.Browser.touch || !toggle || toggle.dataset.touchMeasureReady) {
+    return;
+  }
+
+  let lastTouchActivation = Number.NEGATIVE_INFINITY;
+  let lastTouchPosition = null;
+  const syntheticClickWindow = 700;
+
+  const expandFromTouch = (event) => {
+    if (event.type === "pointerup" && event.pointerType === "mouse") {
+      return;
+    }
+
+    const now = performance.now();
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (now - lastTouchActivation < 50) {
+      return;
+    }
+
+    lastTouchActivation = now;
+    const touchPoint = event.changedTouches?.[0] || event;
+    lastTouchPosition = {
+      x: touchPoint.clientX,
+      y: touchPoint.clientY,
+    };
+    measureControl._expand();
+  };
+
+  const suppressSyntheticClick = (event) => {
+    const isRecent =
+      performance.now() - lastTouchActivation < syntheticClickWindow;
+    const isSamePosition =
+      lastTouchPosition &&
+      Math.abs(event.clientX - lastTouchPosition.x) < 10 &&
+      Math.abs(event.clientY - lastTouchPosition.y) < 10;
+    const isAnotherMeasureAction =
+      measureControl._container.contains(event.target) &&
+      event.target !== toggle;
+
+    if (!isRecent || !isSamePosition || isAnotherMeasureAction) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+
+  toggle.addEventListener("pointerup", expandFromTouch, { passive: false });
+  toggle.addEventListener("touchend", expandFromTouch, { passive: false });
+  measureControl._map
+    .getContainer()
+    .addEventListener("click", suppressSyntheticClick, true);
+  toggle.dataset.touchMeasureReady = "true";
 }
 
 function createFeatureLoader(groupName, initialize) {
@@ -549,22 +606,21 @@ $("body").on("pluginLoad", async function (event, plugin) {
         case "Measure":
           // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
           // set decimal and thousands dividers from local configuration
-          if (!isMobile) {
-            var measureControl = new L.Control.Measure({
-              position: "topleft",
-              primaryLengthUnit: "meters",
-              secondaryLengthUnit: "kilometers",
-              primaryAreaUnit: "sqmeters",
-              secondaryAreaUnit: "hectares",
-              collapsed: true,
-              decPoint: DECIMAL_SEPARATOR,
-              thousandsSep: THOUSANDS_SEPARATOR,
-              activeColor: "#157DB9",
-              completedColor: "#0db2e0",
-            });
-            measureControl.addTo(mapa);
-            gestorMenu.plugins["Measure"].setStatus("visible");
-          }
+          var measureControl = new L.Control.Measure({
+            position: "topleft",
+            primaryLengthUnit: "meters",
+            secondaryLengthUnit: "kilometers",
+            primaryAreaUnit: "sqmeters",
+            secondaryAreaUnit: "hectares",
+            collapsed: true,
+            decPoint: DECIMAL_SEPARATOR,
+            thousandsSep: THOUSANDS_SEPARATOR,
+            activeColor: "#157DB9",
+            completedColor: "#0db2e0",
+          });
+          measureControl.addTo(mapa);
+          adaptMeasureToggleForTouch(measureControl);
+          gestorMenu.plugins["Measure"].setStatus("visible");
           break;
         case "geoprocessing":
           if (loadGeoprocessing) {
