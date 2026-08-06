@@ -175,7 +175,6 @@ bindFeatureToFirstUse(
 
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
-let unordered = "";
 const orderedPluginNames = [
   "MousePosition",
   "ZoomHome",
@@ -249,18 +248,18 @@ function scheduleOrderedPluginInitialization() {
     });
 }
 
-$("body").on("pluginLoad", function (event, plugin) {
-  unordered = "";
+$("body").on("pluginLoad", async function (event, plugin) {
+  let unorderedPlugin = "";
   switch (plugin.pluginName) {
     case "leaflet":
-      unordered = plugin.pluginName;
+      unorderedPlugin = plugin.pluginName;
       break;
     case "menuPrinter":
       showMainMenu();
       break;
     default:
       if (!orderedPluginNames.includes(plugin.pluginName)) {
-        unordered = plugin.pluginName;
+        unorderedPlugin = plugin.pluginName;
       }
       break;
   }
@@ -2369,6 +2368,9 @@ $("body").on("pluginLoad", function (event, plugin) {
               showInfoBtn.classList.add("btn-disabled");
             }
           };
+          window.dispatchEvent(
+            new CustomEvent(ARGENMAP_EVENTS.ACTIVE_LAYER_HANDLER_READY),
+          );
 
           mapa.createPopUp = (layer) => {
             const popUpDiv = document.createElement("div");
@@ -3072,33 +3074,32 @@ $("body").on("pluginLoad", function (event, plugin) {
     return;
   }
 
-  switch (unordered) {
+  switch (unorderedPlugin) {
     case "leaflet":
       if (selectedBasemap.hasOwnProperty("key")) {
-        const interval = setInterval(() => {
-          if (L.tileLayer.bing) {
-            window.clearInterval(interval);
-            currentBaseMap = L.tileLayer
-              .bing({
-                bingMapsKey: selectedBasemap.key,
-                culture: "es_AR",
-                minZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.min
-                  : DEFAULT_MIN_ZOOM_LEVEL,
-                maxZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.max
-                  : DEFAULT_MAX_ZOOM_LEVEL,
-                minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.nativeMin
-                  : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
-                maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.nativeMax
-                  : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
-                attribution: selectedBasemap.attribution,
-              })
-              .addTo(mapa);
-          }
-        }, 100);
+        try {
+          await appDependencies.loadScript(PLUGINS.BingLayer);
+        } catch (error) {
+          console.error("Unable to load the configured Bing basemap:", error);
+          return;
+        }
+        currentBaseMap = L.tileLayer.bing({
+          bingMapsKey: selectedBasemap.key,
+          culture: "es_AR",
+          minZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.min
+            : DEFAULT_MIN_ZOOM_LEVEL,
+          maxZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.max
+            : DEFAULT_MAX_ZOOM_LEVEL,
+          minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.nativeMin
+            : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
+          maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.nativeMax
+            : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
+          attribution: selectedBasemap.attribution,
+        });
       } else {
         currentBaseMap = L.tileLayer(selectedBasemap.host, {
           minZoom: selectedBasemap.hasOwnProperty("zoom")
@@ -3166,6 +3167,11 @@ $("body").on("pluginLoad", function (event, plugin) {
       });
 
       showMainMenuTpl();
+      window.dispatchEvent(
+        new CustomEvent(ARGENMAP_EVENTS.MAP_READY, {
+          detail: { map: mapa },
+        }),
+      );
 
       break;
     case "BingLayer":

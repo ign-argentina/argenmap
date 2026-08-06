@@ -965,6 +965,24 @@ async function getConfig(preferencesURL, dataURL) {
 
 getConfig("./src/config/preferences.json", "./src/config/data.json");
 
+function whenMapIsReady() {
+  if (
+    typeof mapa !== "undefined" &&
+    mapa &&
+    mapa.hasOwnProperty("_leaflet_id")
+  ) {
+    return Promise.resolve(mapa);
+  }
+
+  return new Promise((resolve) => {
+    window.addEventListener(
+      ARGENMAP_EVENTS.MAP_READY,
+      (event) => resolve(event.detail.map),
+      { once: true },
+    );
+  });
+}
+
 async function loadTemplate(data, isDefaultTemplate) {
   $(document).ready(async function () {
     await app.init(data);
@@ -1032,96 +1050,89 @@ async function loadTemplate(data, isDefaultTemplate) {
 
     //Load dynamic mapa.js
     app.template_id = template;
+    const mapReadyPromise = whenMapIsReady();
     if (!app.dependencies.map) {
-      appDependencies
-        .loadScript("src/js/map/map.js")
-        .catch((error) => console.error(error));
-      app.dependencies.map = true;
+      try {
+        await appDependencies.loadScript("src/js/map/map.js");
+        app.dependencies.map = true;
+      } catch (error) {
+        console.error(error);
+        return;
+      }
     }
 
     template = "templates/" + template + "/main.html";
 
-    //Wait until global 'mapa' object is available.
-    const intervalID = setInterval(() => {
-      if (mapa && mapa.hasOwnProperty("_leaflet_id")) {
-        window.clearInterval(intervalID);
+    await mapReadyPromise;
 
-        if (urlInteraction.areParamsInUrl) {
-          mapa.setView(
-            L.latLng(
-              urlInteraction.center.latitude,
-              urlInteraction.center.longitude,
-            ),
-            urlInteraction.zoom,
-          );
-        }
+    if (urlInteraction.areParamsInUrl) {
+      mapa.setView(
+        L.latLng(
+          urlInteraction.center.latitude,
+          urlInteraction.center.longitude,
+        ),
+        urlInteraction.zoom,
+      );
+    }
 
-        //const zoomLevel = new ZoomLevel(mapa.getZoom());
-
+    urlInteraction.zoom = mapa.getZoom();
+    mapa.on("zoom", () => {
+      if (Number.isInteger(mapa.getZoom())) {
         urlInteraction.zoom = mapa.getZoom();
-        mapa.on("zoom", () => {
-          if (Number.isInteger(mapa.getZoom())) {
-            urlInteraction.zoom = mapa.getZoom();
-            //zoomLevel.zoom = mapa.getZoom();
-            if (geoProcessingManager) {
-              geoProcessingManager.svgZoomStyle(mapa.getZoom());
-            }
-          }
-        });
-
-        urlInteraction.center = mapa.getCenter();
-        mapa.on("moveend", () => {
-          urlInteraction.center = mapa.getCenter();
-        });
-
-        if (urlInteraction.markers.length > 0) {
-          urlInteraction.markers.forEach((marker) => {
-            L.marker([marker.latitude, marker.longitude]).addTo(mapa);
-          });
-        }
-        gestorMenu.loadInitialLayers(urlInteraction);
-
-        // Default values for showToolbar and showLayerMenu
-        let showToolbar = true;
-        let showLayerMenu = true;
-
-        // Check if app.onInit exists and assign values accordingly
-        if (app?.onInit) {
-          showToolbar = app.onInit.showToolbar ?? true;
-          showLayerMenu = app.onInit.showLayerMenu ?? true;
-        }
-
-        appDependencies
-          .load("mapControls")
-          .then(() => {
-            if (!app.dependencies.toolbarToggler) {
-              const toolbarVisibilityToggler =
-                new ToolbarVisibilityToggler();
-              toolbarVisibilityToggler.createComponent(showToolbar);
-              app.dependencies.toolbarToggler = true;
-            }
-
-            if (!app.dependencies.editableLabel) {
-              const editableLabel = new EditableLabel();
-              editableLabel.addTo(mapa);
-              app.dependencies.editableLabel = true;
-            }
-
-            normalizeLeafletControlOrder();
-          })
-          .catch((error) => console.error(error));
-
-        //consultar si el navegador es mobile
-        const isMobile = window.matchMedia(
-          "only screen and (max-width: 760px)",
-        ).matches;
-
-        // Show layer menu if showLayerMenu is true
-        if (showLayerMenu && !isMobile) {
-          document.getElementById("sidebar").style.display = "block";
+        if (geoProcessingManager) {
+          geoProcessingManager.svgZoomStyle(mapa.getZoom());
         }
       }
-    }, 100);
+    });
+
+    urlInteraction.center = mapa.getCenter();
+    mapa.on("moveend", () => {
+      urlInteraction.center = mapa.getCenter();
+    });
+
+    if (urlInteraction.markers.length > 0) {
+      urlInteraction.markers.forEach((marker) => {
+        L.marker([marker.latitude, marker.longitude]).addTo(mapa);
+      });
+    }
+    void gestorMenu
+      .loadInitialLayers(urlInteraction)
+      .catch((error) => console.error(error));
+
+    let showToolbar = true;
+    let showLayerMenu = true;
+
+    if (app?.onInit) {
+      showToolbar = app.onInit.showToolbar ?? true;
+      showLayerMenu = app.onInit.showLayerMenu ?? true;
+    }
+
+    appDependencies
+      .load("mapControls")
+      .then(() => {
+        if (!app.dependencies.toolbarToggler) {
+          const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
+          toolbarVisibilityToggler.createComponent(showToolbar);
+          app.dependencies.toolbarToggler = true;
+        }
+
+        if (!app.dependencies.editableLabel) {
+          const editableLabel = new EditableLabel();
+          editableLabel.addTo(mapa);
+          app.dependencies.editableLabel = true;
+        }
+
+        normalizeLeafletControlOrder();
+      })
+      .catch((error) => console.error(error));
+
+    const isMobile = window.matchMedia(
+      "only screen and (max-width: 760px)",
+    ).matches;
+
+    if (showLayerMenu && !isMobile) {
+      document.getElementById("sidebar").style.display = "block";
+    }
   });
 
   setTimeout(async function () {
@@ -1173,18 +1184,6 @@ async function loadTemplate(data, isDefaultTemplate) {
 
   }, 1500);
 }
-
-let conaeCheck = setInterval(() => {
-  // patch to force conae layers into menu
-  let conaeLayers = gestorMenu.items.conae;
-  if (conaeLayers) {
-    if (Object.entries(gestorMenu.items.conae.itemsComposite).length === 12) {
-      gestorMenu.printMenu();
-      //document.getElementById("temp-menu").remove();
-      clearInterval(conaeCheck);
-    }
-  }
-}, 1000);
 
 document.addEventListener("contextmenu", (e) => {
   let allowedInputs = ["text", "search", "number"];

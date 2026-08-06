@@ -1535,7 +1535,7 @@ class LayersInfoWMS extends LayersInfo {
       if (gestorMenu.finishLayerInfo()) {
         // If all requested layers have been loaded
         gestorMenu.printMenu();
-        gestorMenu.allLayersAreLoaded = true;
+        gestorMenu.markAllLayersAsLoaded();
       }
     }
   }
@@ -1733,7 +1733,7 @@ class LayersInfoWMS extends LayersInfo {
             //Si ya cargó todas las capas solicitadas
             _gestorMenu.printMenu();
 
-            gestorMenu.allLayersAreLoaded = true;
+            gestorMenu.markAllLayersAsLoaded();
           }
         }
 
@@ -2771,6 +2771,9 @@ class GestorMenu {
     this.baseMapDependencies = {};
 
     this.allLayersAreLoaded = false;
+    this._allLayersReadyPromise = new Promise((resolve) => {
+      this._resolveAllLayersReady = resolve;
+    });
     this.availableWmtsLayers = [];
     this.availableLayers = [];
     this.availableBaseLayers = [];
@@ -2813,6 +2816,22 @@ class GestorMenu {
 
   setAllLayersAreDeclaredInJson(value) {
     this.allLayersAreDeclaredInJson = value;
+  }
+
+  markAllLayersAsLoaded() {
+    if (this.allLayersAreLoaded) {
+      return;
+    }
+
+    this.allLayersAreLoaded = true;
+    this._resolveAllLayersReady();
+    this._resolveAllLayersReady = null;
+  }
+
+  whenAllLayersAreLoaded() {
+    return this.allLayersAreLoaded
+      ? Promise.resolve()
+      : this._allLayersReadyPromise;
   }
 
   getAvailableLayers() {
@@ -3245,7 +3264,7 @@ class GestorMenu {
       urlInteraction.layers = this.getActiveLayers();
     };
     this.setLayersDataForWfs();
-    this.allLayersAreLoaded = true;
+    this.markAllLayersAsLoaded();
 
     if (unresolvedLayers.length > 0) {
       console.warn("Rejected layers: ", unresolvedLayers);
@@ -3272,74 +3291,18 @@ class GestorMenu {
       return;
     }
 
-    const initialInterval = setInterval(() => {
-      if (this.allLayersAreLoaded) {
-        window.clearInterval(initialInterval);
+    await this.whenAllLayersAreLoaded();
 
-        let validLayersLoaded = 0;
-        let validLayers = [];
-        let rejectedLayers = [];
-        urlInteraction.layers.forEach((layer) => {
-          if (this.layerIsValid(layer)) {
-            validLayers.push(layer);
-          } else {
-            rejectedLayers.push(layer);
-          }
-        });
-
-        validLayers.forEach((layer) => {
-          const interval = setInterval(() => {
-            if (this.layerIsActive(layer)) {
-              window.clearInterval(interval);
-              validLayersLoaded++;
-            } else {
-              window.clearInterval(interval);
-              validLayersLoaded++;
-              this.muestraCapa(this.getLayerIdByName(layer));
-            }
-          }, 200);
-        });
-
-        const lastInterval = setInterval(() => {
-          if (validLayersLoaded === validLayers.length) {
-            urlInteraction.layers = this.getActiveLayers();
-            this.activeLayersHasBeenUpdated = () => {
-              urlInteraction.layers = this.getActiveLayers();
-            };
-            this.setLayersDataForWfs();
-            window.clearInterval(lastInterval);
-
-            this.printMenu();
-
-            //last chances to load layers
-            if (rejectedLayers.length > 0) {
-              let tryNumber = 0;
-              const intervalId = setInterval(() => {
-                if (rejectedLayers.length === 0 || tryNumber === 15) {
-                  window.clearInterval(intervalId);
-                  console.log("Rejected layers: ", rejectedLayers);
-                } else {
-                  tryNumber++;
-                  const validLayers = [];
-                  for (let i = 0; i < rejectedLayers.length; i++) {
-                    if (this.layerIsValid(rejectedLayers[i])) {
-                      validLayers.unshift(i);
-                      this.muestraCapa(
-                        this.getLayerIdByName(rejectedLayers[i]),
-                      );
-                    }
-                  }
-                  validLayers.forEach((vL) => {
-                    rejectedLayers.splice(vL, 1);
-                  });
-                }
-                this.printMenu();
-              }, 1000);
-            }
-          }
-        }, 100);
-      }
-    }, 500);
+    const requestedLayers = [...urlInteraction.layers];
+    const unresolvedLayers = requestedLayers.filter(
+      (layer) => !this.layerIsValid(layer),
+    );
+    this._finishInitialLayers(
+      urlInteraction,
+      requestedLayers,
+      unresolvedLayers,
+    );
+    this.printMenu();
   }
 
   cleanAllLayers() {
@@ -4156,12 +4119,11 @@ class GestorMenu {
 
   muestraCapa(itemSeccion) {
     if (!mapa.hasOwnProperty("activeLayerHasChanged")) {
-      const intervalId = setInterval(() => {
-        if (mapa.hasOwnProperty("activeLayerHasChanged")) {
-          window.clearInterval(intervalId);
-          gestorMenu.muestraCapa(itemSeccion);
-        }
-      }, 500);
+      window.addEventListener(
+        ARGENMAP_EVENTS.ACTIVE_LAYER_HANDLER_READY,
+        () => gestorMenu.muestraCapa(itemSeccion),
+        { once: true },
+      );
       return;
     }
 

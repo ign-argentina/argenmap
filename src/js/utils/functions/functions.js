@@ -853,13 +853,11 @@ function setProperStyleToCtrlBtns() {
     border_style = "2px solid rgba(0, 0, 0, 0.2)";
     size = "34px";
   }
-  const zoomhomeCtrlBtn = document.getElementsByClassName(
-    "leaflet-control-zoomhome-home",
-  );
-  const interval = setInterval(() => {
+  const applyControlStyles = () => {
+    const zoomhomeCtrlBtn = document.getElementsByClassName(
+      "leaflet-control-zoomhome-home",
+    );
     if (zoomhomeCtrlBtn.length > 0) {
-      window.clearInterval(interval);
-      //const width = zoomhomeCtrlBtn[0].offsetWidth;
       const btns = [];
       btns.push(zoomhomeCtrlBtn[0]);
 
@@ -891,14 +889,27 @@ function setProperStyleToCtrlBtns() {
       const modalLoadLayersCtrlBtn =
         document.getElementById("loadLayersButton");
       btns.push(modalLoadLayersCtrlBtn);
-      btns.forEach((btn) => {
+      btns.filter(Boolean).forEach((btn) => {
         btn.style.width = size;
         btn.style.height = size;
         btn.style.border = border_style;
         btn.style.boxShadow = shadow_style;
       });
+      return true;
     }
-  }, 100);
+    return false;
+  };
+
+  if (applyControlStyles()) {
+    return;
+  }
+
+  const observer = new MutationObserver(() => {
+    if (applyControlStyles()) {
+      observer.disconnect();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 let normalize = (function () {

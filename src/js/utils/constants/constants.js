@@ -56,6 +56,11 @@ const DEFAULT_MARKER_STYLES = {
 
 const DEFAULT_ZOOM_INFO_ICON_COLOR = "#FFF";
 
+const ARGENMAP_EVENTS = Object.freeze({
+  MAP_READY: "argenmap:map-ready",
+  ACTIVE_LAYER_HANDLER_READY: "argenmap:active-layer-handler-ready",
+});
+
 //Default Meta Tags Values
 const METATAG_TITLE = "Argenmap - Instituto Geográfico Nacional";
 const METATAG_DESCRIPTION = "Visualizador de mapas web";
