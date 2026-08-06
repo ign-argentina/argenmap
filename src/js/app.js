@@ -998,9 +998,12 @@ async function loadTemplate(data, isDefaultTemplate) {
     }
 
     //Add Analytics
-    if (app.analytics_ids && typeof addAnalytics === "function") {
+    if (app.analytics_ids?.length) {
       // Analytics loads asynchronously and must not block application startup.
-      void addAnalytics(app.analytics_ids);
+      void appDependencies
+        .load("analytics")
+        .then(() => addAnalytics(app.analytics_ids))
+        .catch((error) => console.warn(error));
     }
 
     app.addBasemaps();
@@ -1088,12 +1091,25 @@ async function loadTemplate(data, isDefaultTemplate) {
           showLayerMenu = app.onInit.showLayerMenu ?? true;
         }
 
-        if (!app.dependencies.toolbarToggler) {
-          // Initialize toolbar visibility toggler and create components
-          const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
-          toolbarVisibilityToggler.createComponent(showToolbar);
-          app.dependencies.toolbarToggler = true;
-        }
+        appDependencies
+          .load("mapControls")
+          .then(() => {
+            if (!app.dependencies.toolbarToggler) {
+              const toolbarVisibilityToggler =
+                new ToolbarVisibilityToggler();
+              toolbarVisibilityToggler.createComponent(showToolbar);
+              app.dependencies.toolbarToggler = true;
+            }
+
+            if (!app.dependencies.editableLabel) {
+              const editableLabel = new EditableLabel();
+              editableLabel.addTo(mapa);
+              app.dependencies.editableLabel = true;
+            }
+
+            normalizeLeafletControlOrder();
+          })
+          .catch((error) => console.error(error));
 
         //consultar si el navegador es mobile
         const isMobile = window.matchMedia(
@@ -1103,12 +1119,6 @@ async function loadTemplate(data, isDefaultTemplate) {
         // Show layer menu if showLayerMenu is true
         if (showLayerMenu && !isMobile) {
           document.getElementById("sidebar").style.display = "block";
-        }
-
-        if (!app.dependencies.editableLabel) {
-          const editableLabel = new EditableLabel();
-          editableLabel.addTo(mapa);
-          app.dependencies.editableLabel = true;
         }
       }
     }, 100);

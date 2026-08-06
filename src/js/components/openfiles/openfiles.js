@@ -1,41 +1,7 @@
 let upload_files = null;
 let currentLayers = [];
-let addedLayers = [];
-let fileLayerGroup = [];
-let configuredFileLayerRegistry = [];
 let open = false;
 let control_btn_add_layer = false;
-
-function registerConfiguredFileLayerEntry(entry) {
-  if (
-    !entry ||
-    !entry.id ||
-    (!entry.sectionName && !(entry.sectionId && entry.sectionLabel))
-  ) {
-    return;
-  }
-  // Accept either legacy sectionName or new sectionId + sectionLabel
-  const sectionId = entry.sectionId || entry.sectionName || clearSpecialChars(entry.sectionLabel || entry.sectionName || entry.id);
-  const sectionLabel = entry.sectionLabel || entry.sectionName || entry.sectionId || entry.id;
-
-  const exists = configuredFileLayerRegistry.some(
-    (item) => item.id === entry.id && item.sectionId === sectionId,
-  );
-
-  if (!exists) {
-    configuredFileLayerRegistry.push({
-      ...entry,
-      sectionId,
-      sectionLabel,
-      fromConfig: entry.fromConfig === true,
-      allowedOptions: Array.isArray(entry.allowedOptions)
-        ? entry.allowedOptions.map((opt) => opt.toLowerCase())
-        : entry.fromConfig
-        ? ["zoom", "query", "data", "download"]
-        : ["zoom", "query", "data", "download", "rename", "delete"],
-    });
-  }
-}
 
 class IconModalGeojson {
   // constructor() {

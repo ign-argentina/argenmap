@@ -102,14 +102,14 @@ Ejemplos:
      ==================================== */
   
   /* Tamaños base para desktop (fallback en px + rem) */
-  --group-title-fnt-size: 16px; /* fallback */
-  --group-title-fnt-size: 1rem; /* 16px */
+  --group-title-fnt-size: 15px; /* fallback */
+  --group-title-fnt-size: 0.9375rem; /* 15px */
   
-  --layer-cont-fnt-size: 12px; /* fallback */
-  --layer-cont-fnt-size: 0.75rem; /* 12px */
+  --layer-cont-fnt-size: 11px; /* fallback */
+  --layer-cont-fnt-size: 0.6875rem; /* 11px */
   
-  --popup-fnt-size: 14px; /* fallback */
-  --popup-fnt-size: 0.875rem; /* 14px */
+  --popup-fnt-size: 12px; /* fallback */
+  --popup-fnt-size: 0.75rem; /* 12px */
   
   --body-fnt-size: 14px; /* fallback */
   --body-fnt-size: 0.875rem; /* 14px */
@@ -120,8 +120,8 @@ Ejemplos:
   --btn-fnt-size: 16px; /* fallback */
   --btn-fnt-size: 1rem; /* 16px */
   
-  --heading-large-fnt-size: 20px; /* fallback */
-  --heading-large-fnt-size: 1.25rem; /* 20px */
+  --heading-large-fnt-size: 18px; /* fallback */
+  --heading-large-fnt-size: 1.125rem; /* 18px */
   
   --heading-xlarge-fnt-size: 24px; /* fallback */
   --heading-xlarge-fnt-size: 1.5rem; /* 24px */
@@ -2147,13 +2147,13 @@ input:checked.switch+label:after {
    Variables centralizadas en :root con fallbacks en px + rem:
    
    Desktop (por defecto):
-   - --group-title-fnt-size: 1rem (16px)
-   - --layer-cont-fnt-size: 0.75rem (12px)  
-   - --popup-fnt-size: 0.875rem (14px)
+   - --group-title-fnt-size: 0.9375rem (15px)
+   - --layer-cont-fnt-size: 0.6875rem (11px)
+   - --popup-fnt-size: 0.75rem (12px)
    - --body-fnt-size: 0.875rem (14px)
    - --input-fnt-size: 0.875rem (14px)
    - --btn-fnt-size: 1rem (16px)
-   - --heading-large-fnt-size: 1.25rem (20px)
+   - --heading-large-fnt-size: 1.125rem (18px)
    - --heading-xlarge-fnt-size: 1.5rem (24px)
    
    Mobile (max-width: 768px):

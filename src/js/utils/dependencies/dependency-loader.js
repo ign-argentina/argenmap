@@ -131,6 +131,9 @@ class AppDependencyLoader {
 }
 
 const appDependencies = new AppDependencyLoader({
+  analytics: {
+    scripts: ["src/js/utils/analytics/analytics.js"],
+  },
   fancybox: {
     styles: [
       {
@@ -179,8 +182,25 @@ const appDependencies = new AppDependencyLoader({
     scripts: ["src/js/components/accessibility/accessibility.js"],
   },
   loadLayerFeature: {
-    styles: ["src/js/components/loadLayersModal/loadLayersModal.css"],
-    scripts: ["src/js/components/loadLayersModal/loadLayersModal.js"],
+    styles: [
+      "src/js/components/openfiles/openfiles.css",
+      "src/js/components/loadServices/loadServices.css",
+      "src/js/components/loadLayersModal/loadLayersModal.css",
+    ],
+    scripts: [
+      "src/js/components/openfiles/openfiles.js",
+      "src/js/components/loadServices/loadServices.js",
+      "src/js/components/loadLayersModal/loadLayersModal.js",
+    ],
+  },
+  mapControls: {
+    styles: [
+      "src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.css",
+    ],
+    scripts: [
+      "src/js/components/toolbar/toolbar.js",
+      "src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.js",
+    ],
   },
   configWindow: {
     styles: ["src/js/components/config-tool/configTool.css"],

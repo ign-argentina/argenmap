@@ -13,6 +13,77 @@ var loadGeoprocessing = false;
 var loadAddLayer = false;
 var loadQueryLayer = true;
 var loadConfigTool = false;
+let addedLayers = [];
+let fileLayerGroup = [];
+let configuredFileLayerRegistry = [];
+
+function registerConfiguredFileLayerEntry(entry) {
+  if (
+    !entry ||
+    !entry.id ||
+    (!entry.sectionName && !(entry.sectionId && entry.sectionLabel))
+  ) {
+    return;
+  }
+
+  const sectionId =
+    entry.sectionId ||
+    entry.sectionName ||
+    clearSpecialChars(entry.sectionLabel || entry.sectionName || entry.id);
+  const sectionLabel =
+    entry.sectionLabel || entry.sectionName || entry.sectionId || entry.id;
+  const exists = configuredFileLayerRegistry.some(
+    (item) => item.id === entry.id && item.sectionId === sectionId,
+  );
+
+  if (!exists) {
+    configuredFileLayerRegistry.push({
+      ...entry,
+      sectionId,
+      sectionLabel,
+      fromConfig: entry.fromConfig === true,
+      allowedOptions: Array.isArray(entry.allowedOptions)
+        ? entry.allowedOptions.map((option) => option.toLowerCase())
+        : entry.fromConfig
+          ? ["zoom", "query", "data", "download"]
+          : ["zoom", "query", "data", "download", "rename", "delete"],
+    });
+  }
+}
+
+function normalizeLeafletControlOrder() {
+  const topRight = document.querySelector(".leaflet-top.leaflet-right");
+  if (topRight) {
+    const editableLabelControl = document
+      .querySelector("#editableLabelBtn")
+      ?.closest(".leaflet-control");
+    const orderedTopRightControls = [
+      document.getElementById("hideBtnLeft"),
+      document.getElementById("hideBtnRight"),
+      editableLabelControl,
+      topRight.querySelector(".leaflet-draw.leaflet-control"),
+    ];
+    orderedTopRightControls.forEach((control) => {
+      if (control) {
+        topRight.appendChild(control);
+      }
+    });
+  }
+
+  const bottomRight = document.querySelector(".leaflet-bottom.leaflet-right");
+  if (bottomRight) {
+    const orderedBottomRightControls = [
+      bottomRight.querySelector(".leaflet-control-zoomhome"),
+      bottomRight.querySelector(".leaflet-control-mouseposition"),
+      bottomRight.querySelector(".leaflet-control-attribution"),
+    ];
+    orderedBottomRightControls.forEach((control) => {
+      if (control) {
+        bottomRight.appendChild(control);
+      }
+    });
+  }
+}
 
 async function ensureTableDependencies() {
   await appDependencies.load("table");

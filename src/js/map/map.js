@@ -77,7 +77,7 @@ function shouldLoadPluginAtStartup(pluginName) {
     case "screenShoter":
       return L.Browser.webkit && !window.location.origin.includes("idecom");
     case "pdfPrinter":
-      return !L.Browser.safari && window.innerWidth > 1150;
+      return !L.Browser.safari;
     case "geoprocessing":
       return loadGeoprocessing;
     case "consultData":
@@ -177,6 +177,7 @@ bindFeatureToFirstUse(
 // Mapa base actual de ArgenMap (Geoserver)
 let unordered = "";
 const orderedPluginNames = [
+  "MousePosition",
   "ZoomHome",
   "Measure",
   "locate",
@@ -267,6 +268,26 @@ $("body").on("pluginLoad", function (event, plugin) {
     initializeOrderedPlugin ||
     (async function (e) {
       switch (e) {
+        case "MousePosition":
+          L.control
+            .mousePosition({
+              position: "bottomright",
+              separator: " , ",
+              emptyString: "&nbsp;",
+              numDigits: 10,
+              lngFormatter: function (num) {
+                const direction = num < 0 ? "O" : "E";
+                return deg_to_dms(Math.abs(num)) + direction;
+              },
+              latFormatter: function (num) {
+                const direction = num < 0 ? "S" : "N";
+                return deg_to_dms(Math.abs(num)) + direction;
+              },
+            })
+            .addTo(mapa);
+          gestorMenu.plugins["MousePosition"].setStatus("visible");
+          normalizeLeafletControlOrder();
+          break;
         case "screenShoter":
           let isIdecom = window.location.origin.includes("idecom");
           if (L.Browser.webkit && !isIdecom) {
@@ -367,6 +388,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           });
 
           gestorMenu.plugins["ZoomHome"].setStatus("visible");
+          normalizeLeafletControlOrder();
           break;
         case "FullScreen":
           const fs = new Fullscreen();
@@ -3038,6 +3060,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           }
 
           gestorMenu.plugins["Draw"].setStatus("visible");
+          normalizeLeafletControlOrder();
           break;
         default:
           break;
@@ -3144,27 +3167,6 @@ $("body").on("pluginLoad", function (event, plugin) {
 
       showMainMenuTpl();
 
-      break;
-    case "MousePosition":
-      // Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
-      L.control
-        .mousePosition({
-          position: "bottomright",
-          separator: " , ",
-          emptyString: "&nbsp;",
-          numDigits: 10,
-          lngFormatter: function (num) {
-            var direction = num < 0 ? "O" : "E";
-            return deg_to_dms(Math.abs(num)) + direction;
-          },
-          latFormatter: function (num) {
-            var direction = num < 0 ? "S" : "N";
-            return deg_to_dms(Math.abs(num)) + direction;
-          },
-        })
-        .addTo(mapa);
-      gestorMenu.plugins["MousePosition"].setStatus("visible");
-      // loadDeveloperLogo(); // move to bottomleft before scale
       break;
     case "BingLayer":
       if (

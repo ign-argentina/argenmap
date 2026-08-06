@@ -18,50 +18,51 @@
   <!-- Plugins -->
 
   <!-- jQuery -->
-  <script src="src/js/plugins/jquery/jquery-3.7.0.min.js"></script>
-  <script src="src/js/utils/dependencies/dependency-loader.js"></script>
+  <script defer src="src/js/plugins/jquery/jquery-3.7.0.min.js"></script>
+  <script defer src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script defer src="src/js/utils/dependencies/dependency-loader.js"></script>
 
   <!-- Leaflet -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css" crossorigin="anonymous" >
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.js" crossorigin="anonymous"></script>
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" >
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" >
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" onload="this.onload=null;this.rel='stylesheet'" >
+  <link rel="preload" as="style" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" onload="this.onload=null;this.rel='stylesheet'" >
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" >
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" >
+  </noscript>
 
   <!-- Main Styles -->
   <link rel="stylesheet" href="src/styles/css/main.css" >
   <link href="src/styles/css/dashboard.css" rel="stylesheet" >
   <!--   <link href="src/js/components/zoomLevel/ZoomLevel.css" rel="stylesheet"> -->
-  <link href="src/js/components/openfiles/openfiles.css" rel="stylesheet" >
-  <link href="src/js/components/loadServices/loadServices.css" rel="stylesheet" >
-  <link href="src/js/components/context-menu/context-menu.css" rel="stylesheet" >
-  <link href="src/js/components/user-message/user-message.css" rel="stylesheet" >
-  <link href="src/js/components/about/about.css" rel="stylesheet" >
-  <link href="src/js/components/login/login.css" rel="stylesheet" >
+  <link rel="preload" as="style" href="src/js/components/context-menu/context-menu.css" onload="this.onload=null;this.rel='stylesheet'" >
+  <link rel="preload" as="style" href="src/js/components/user-message/user-message.css" onload="this.onload=null;this.rel='stylesheet'" >
+  <link rel="preload" as="style" href="src/js/components/about/about.css" onload="this.onload=null;this.rel='stylesheet'" >
+  <link rel="preload" as="style" href="src/js/components/login/login.css" onload="this.onload=null;this.rel='stylesheet'" >
+  <noscript>
+    <link rel="stylesheet" href="src/js/components/context-menu/context-menu.css" >
+    <link rel="stylesheet" href="src/js/components/user-message/user-message.css" >
+    <link rel="stylesheet" href="src/js/components/about/about.css" >
+    <link rel="stylesheet" href="src/js/components/login/login.css" >
+  </noscript>
 
   <!-- Argenmap basic libraries  -->
-  <script src="src/js/utils/analytics/analytics.js"></script>
-  <script src="src/js/utils/constants/constants.js"></script>
-  <script src="src/js/entities.js"></script>
-  <script src="src/js/utils/functions/functions.js"></script>
-  <script src="src/js/components/url-interaction/URLInteraction.js"></script>
+  <script defer src="src/js/utils/constants/constants.js"></script>
+  <script defer src="src/js/entities.js"></script>
+  <script defer src="src/js/utils/functions/functions.js"></script>
+  <script defer src="src/js/components/url-interaction/URLInteraction.js"></script>
   <!--   <script src="src/js/components/zoomLevel/ZoomLevel.js"></script> -->
-  <script src="src/js/components/openfiles/openfiles.js"></script>
-  <script src="src/js/components/loadServices/loadServices.js"></script>
   <!--<script src="src/js/components/loadLayersModal/loadLayersModal.js"></script>-->
-  <script src="src/js/components/context-menu/context-menu.js"></script>
-  <script src="src/js/components/user-message/user-message.js"></script>
-  <script src="src/js/app.js"></script>
-  <script src="src/js/components/styles/styles.js"></script>
-  <script src="src/js/components/login/login.js"></script>
-  <script src="src/js/components/toolbar/toolbar.js"></script>
-  <script src="src/js/components/UI/UserInterface.js"></script>
-  <script src="src/js/components/about/about.js"></script>
-
-  <!-- Leaflet EditableLabel -->
-  <link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.css" >
-  <script src="src/js/map/plugins/leaflet/leaflet-editable-label/Leaflet.EditableLabel.js"></script>
+  <script defer src="src/js/components/context-menu/context-menu.js"></script>
+  <script defer src="src/js/components/user-message/user-message.js"></script>
+  <script defer src="src/js/app.js"></script>
+  <script defer src="src/js/components/styles/styles.js"></script>
+  <script defer src="src/js/components/login/login.js"></script>
+  <script defer src="src/js/components/UI/UserInterface.js"></script>
+  <script defer src="src/js/components/about/about.js"></script>
 
 </head>
 
@@ -126,8 +127,6 @@
   <div id="mapa" class="main"></div>
   <!-- LOGIN SCRIPT -->
   <div id="login-wrapper" class="justify-content-center"></div>
-  <!-- Bootstrap -->
-  <script src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 
 </html>
