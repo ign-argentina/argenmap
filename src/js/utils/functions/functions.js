@@ -17,6 +17,28 @@ let addedLayers = [];
 let fileLayerGroup = [];
 let configuredFileLayerRegistry = [];
 
+/**
+ * Returns the position of a generated, drawn or uploaded layer.
+ * Shared layer-menu actions must not depend on the lazy open-file feature.
+ */
+function getIndexFileLayerbyID(id) {
+  return addedLayers.findIndex((layer) => layer.id === id);
+}
+
+function delFileItembyID(id) {
+  const layerIndex = getIndexFileLayerbyID(id);
+  if (layerIndex >= 0) {
+    addedLayers.splice(layerIndex, 1);
+  }
+}
+
+function editDomNameofFileLayerbyID(id, name) {
+  const layerIndex = getIndexFileLayerbyID(id);
+  if (layerIndex >= 0) {
+    addedLayers[layerIndex].name = name;
+  }
+}
+
 function registerConfiguredFileLayerEntry(entry) {
   if (
     !entry ||

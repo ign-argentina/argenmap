@@ -4557,7 +4557,7 @@ class Menu_UI {
     };
 
     let options = document.createElement("div");
-    options.style = "width:10$;padding-right:5px;cursor:pointer;";
+    options.style = "width:10%;padding-right:5px;cursor:pointer;";
     options.className = "btn-group";
     options.role = "group";
     options.id = id_options_container;
@@ -5042,7 +5042,7 @@ class Menu_UI {
       $("#modal_layer_del").remove();
 
       //ElevationProfile
-      if (IElevationProfile) {
+      if (typeof IElevationProfile !== "undefined" && IElevationProfile) {
         let perfilDelete = new IElevationProfile();
         if (id.includes(perfilDelete.namePrefixElevProfile)) {
           perfilDelete.removeElevationProfile(id);

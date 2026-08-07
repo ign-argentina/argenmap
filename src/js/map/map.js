@@ -2862,21 +2862,18 @@ $("body").on("pluginLoad", async function (event, plugin) {
               jsonToDownload.features.push(geoJSON); // Add the GeoJSON data to the jsonToDownload object.
             }
             // An array of objects that define the geoprocessing types and their IDs.
-            const geoProcessingTypes = [
-              {
-                id: geoProcessingManager.GEOPROCESS.contour,
-                process: "contour",
-              },
-              {
-                id: geoProcessingManager.GEOPROCESS.waterRise,
-                process: "waterRise",
-              },
-              { id: geoProcessingManager.GEOPROCESS.buffer, process: "buffer" },
-              {
-                id: geoProcessingManager.GEOPROCESS.elevationProfile,
-                process: "elevationProfile",
-              },
-            ];
+            const geoprocessIds = geoProcessingManager?.GEOPROCESS;
+            const geoProcessingTypes = geoprocessIds
+              ? [
+                  { id: geoprocessIds.contour, process: "contour" },
+                  { id: geoprocessIds.waterRise, process: "waterRise" },
+                  { id: geoprocessIds.buffer, process: "buffer" },
+                  {
+                    id: geoprocessIds.elevationProfile,
+                    process: "elevationProfile",
+                  },
+                ]
+              : [];
 
             // Determine the geoprocessing type of the layer group, if it has one.
             const addedLayer = addedLayers.find((layer) => layer.id === id);
