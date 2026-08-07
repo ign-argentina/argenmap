@@ -1599,6 +1599,7 @@ a.leaflet-control-zoomhome-in, a.leaflet-control-zoomhome-out {
   top: 100px;
   left: 30%;
   position: absolute;
+  z-index: 2000;
   display: flex;
   width: 280px;
   background-color: var(--main-bg-color, white) !important;
