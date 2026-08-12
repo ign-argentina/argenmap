@@ -257,7 +257,10 @@ const appDependencies = new AppDependencyLoader({
     ],
   },
   wmsMapLayer: {
-    scripts: ["src/js/map/plugins/leaflet/leaflet-wms/leaflet.wms.js"],
+    scripts: [
+      "src/js/map/plugins/leaflet/leaflet-wms/leaflet.wms.js",
+      "src/js/components/consultData/consultData.js",
+    ],
   },
   wmtsMapLayer: {
     scripts: [
