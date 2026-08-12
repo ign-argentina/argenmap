@@ -1,4 +1,3 @@
-let consultDataBtnClose = true;
 let map = document.getElementById("mapa");
 class ConsultData {
   constructor() {

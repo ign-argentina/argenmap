@@ -242,6 +242,33 @@ const appDependencies = new AppDependencyLoader({
       "src/js/plugins/ServiceLayers/ServiceLayers.js",
     ],
   },
+  geoJsonMapLayer: {
+    styles: [
+      {
+        url: "https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.css",
+        integrity:
+          "sha384-AEGVifziKVWa9A1esNIKiYnrgmTqMcwVgTpjGTOm4i0uieet1Kc9jbOn/RCAc/zv",
+        crossOrigin: "anonymous",
+      },
+    ],
+    scripts: [
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.1/leaflet.awesome-markers.min.js",
+    ],
+  },
+  wmsMapLayer: {
+    scripts: ["src/js/map/plugins/leaflet/leaflet-wms/leaflet.wms.js"],
+  },
+  wmtsMapLayer: {
+    scripts: [
+      "src/js/map/plugins/leaflet/leaflet-wmts/leaflet-tilelayer-wmts.js",
+    ],
+  },
+  bingMapLayer: {
+    scripts: [
+      "src/js/map/plugins/leaflet/leaflet-bing-layer-gh-pages/leaflet-bing-layer.js",
+    ],
+  },
   html2canvas: {
     scripts: ["src/js/plugins/html2canvas/html2canvas.min.js"],
   },
@@ -261,6 +288,7 @@ const appDependencies = new AppDependencyLoader({
       "src/js/components/form-builder/form-builder.css",
     ],
     scripts: [
+      "src/js/map/plugins/leaflet/leaflet-textpath/leaflet-textpath.js",
       "src/js/plugins/turf/turf.min.js",
       "src/js/plugins/geoprocess-executor/geoprocess-executor.js",
       "src/js/components/form-builder/form-builder.js",

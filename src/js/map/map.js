@@ -10,7 +10,19 @@ let currentBaseMap = null;
 
 let countour_styles = false;
 const firstUsePluginNames = new Set([
+  "leafletAjax",
+  "betterScale",
+  "AwesomeMarkers",
+  "BingLayer",
+  "betterWMS",
+  "graticula",
+  "WMTS",
+  "screenShoter",
+  "pdfPrinter",
+  "FullScreen",
+  "consultData",
   "elevation",
+  "textpath",
   "turf",
   "helpTour",
   "accessibility",
@@ -163,6 +175,171 @@ function createFeatureLoader(groupName, initialize) {
   };
 }
 
+const firstUseMapPluginPromises = new Map();
+
+function loadFirstUseMapPluginResources(pluginName) {
+  if (firstUseMapPluginPromises.has(pluginName)) {
+    return firstUseMapPluginPromises.get(pluginName);
+  }
+
+  const promise = Promise.all([
+    appDependencies.loadScript(PLUGINS[pluginName]),
+    ...(PLUGIN_STYLES[pluginName] || []).map((style) =>
+      typeof style === "string"
+        ? appDependencies.loadStyle(style)
+        : appDependencies.loadStyle(style.url, style),
+    ),
+  ]).catch((error) => {
+    firstUseMapPluginPromises.delete(pluginName);
+    throw error;
+  });
+  firstUseMapPluginPromises.set(pluginName, promise);
+  return promise;
+}
+
+function preloadFirstUseMapPluginStyles(pluginName) {
+  (PLUGIN_STYLES[pluginName] || []).forEach((style) => {
+    const request =
+      typeof style === "string"
+        ? appDependencies.loadStyle(style)
+        : appDependencies.loadStyle(style.url, style);
+    request.catch((error) => console.error(error));
+  });
+}
+
+function bindFirstUseMapPluginControl(
+  element,
+  pluginName,
+  getActivatedElement,
+) {
+  let isLoading = false;
+
+  const activate = async (event) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (isLoading) {
+      return;
+    }
+
+    isLoading = true;
+    element.classList.add("leaflet-disabled");
+    element.setAttribute("aria-busy", "true");
+    const parent = element.parentElement;
+    const nextSibling = element.nextSibling;
+
+    try {
+      await loadFirstUseMapPluginResources(pluginName);
+      element.remove();
+      await initializeOrderedPlugin(pluginName);
+      const activatedElement = getActivatedElement();
+      if (!activatedElement) {
+        throw new Error(`Unable to initialize plugin "${pluginName}".`);
+      }
+
+      const control = activatedElement.closest(".leaflet-control") || activatedElement;
+      if (parent && control.parentElement === parent) {
+        parent.insertBefore(
+          control,
+          nextSibling?.parentElement === parent ? nextSibling : null,
+        );
+      }
+      normalizeLeafletControlOrder();
+      activatedElement.click();
+    } catch (error) {
+      if (!element.isConnected && parent) {
+        parent.insertBefore(
+          element,
+          nextSibling?.parentElement === parent ? nextSibling : null,
+        );
+      }
+      element.classList.remove("leaflet-disabled");
+      element.removeAttribute("aria-busy");
+      isLoading = false;
+      new UserMessage(error.message, true, "error");
+    }
+  };
+
+  element.addEventListener("click", activate);
+  element.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      activate(event);
+    }
+  });
+}
+
+function createFirstUseLeafletControl({
+  id,
+  pluginName,
+  title,
+  content,
+  getActivatedElement,
+}) {
+  const element = document.createElement("div");
+  element.className = "leaflet-bar leaflet-control";
+  element.id = id;
+  element.title = title;
+  element.tabIndex = 0;
+  element.setAttribute("role", "button");
+  element.innerHTML = content;
+  document.querySelector(".leaflet-top.leaflet-left").appendChild(element);
+  preloadFirstUseMapPluginStyles(pluginName);
+  bindFirstUseMapPluginControl(element, pluginName, getActivatedElement);
+}
+
+function createFirstUseMapPluginControls() {
+  const fullscreenSupported = Boolean(
+    document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullScreenEnabled ||
+      document.msFullscreenEnabled
+  );
+  if (fullscreenSupported) {
+    createFirstUseLeafletControl({
+      id: "fullscreen",
+      pluginName: "FullScreen",
+      title: "Pantalla Completa",
+      content:
+        '<a id="iconFS-container" aria-label="Pantalla completa"><i id="iconFS" class="fas fa-expand" aria-hidden="true"></i></a>',
+      getActivatedElement: () => document.getElementById("fullscreen"),
+    });
+  }
+
+  if (L.Browser.webkit && !window.location.origin.includes("idecom")) {
+    createFirstUseLeafletControl({
+      id: "screenShoter",
+      pluginName: "screenShoter",
+      title: "Captura de pantalla",
+      content:
+        '<a id="screenShoter-btn" aria-label="Captura de pantalla"><i class="fas fa-camera" aria-hidden="true"></i></a>',
+      getActivatedElement: () => document.getElementById("screenShoter-btn"),
+    });
+  }
+
+  if (!L.Browser.safari && window.innerWidth > 1150) {
+    createFirstUseLeafletControl({
+      id: "pdfPrinter",
+      pluginName: "pdfPrinter",
+      title: "Imprimir/ Guardar en PDF",
+      content:
+        '<a class="iconPDF-container" aria-label="Imprimir o guardar en PDF"><i id="iconPDF" class="fas fa-print" aria-hidden="true"></i></a>',
+      getActivatedElement: () =>
+        document.querySelector("#pdfPrinter .iconPDF-container"),
+    });
+  }
+
+  if (loadQueryLayer) {
+    createFirstUseLeafletControl({
+      id: "consultData",
+      pluginName: "consultData",
+      title: "Consultar Datos",
+      content:
+        '<div id="iconCD-container" class="leaflet-disabled"><a id="iconCD" aria-hidden="true"><img src="src/styles/images/cursorQuery.png" width="60%"></a></div>',
+      getActivatedElement: () => document.getElementById("consultData"),
+    });
+  }
+
+}
+
 const ensureHelpTourFeature = createFeatureLoader(
   "helpTourFeature",
   async () => {
@@ -237,10 +414,8 @@ const orderedPluginNames = [
   "ZoomHome",
   "Measure",
   "locate",
-  "graticula",
   "FullScreen",
   "Draw",
-  "betterScale",
   "minimap",
   "screenShoter",
   "pdfPrinter",
@@ -251,6 +426,22 @@ const orderedPluginNames = [
 let nextOrderedPluginIndex = 0;
 let initializeOrderedPlugin = null;
 let orderedInitializationTask = Promise.resolve();
+let firstUseMapControlsPromise = null;
+
+function initializeFirstUseMapControls() {
+  if (!firstUseMapControlsPromise) {
+    firstUseMapControlsPromise = Promise.resolve()
+      .then(() => initializeOrderedPlugin("betterScale"))
+      .then(() => appDependencies.loadStyle(PLUGIN_STYLES.graticula[0]))
+      .then(() => initializeOrderedPlugin("graticula"))
+      .then(() => createFirstUseMapPluginControls())
+      .catch((error) => {
+        firstUseMapControlsPromise = null;
+        console.error("Unable to initialize first-use map controls:", error);
+      });
+  }
+  return firstUseMapControlsPromise;
+}
 
 function scheduleOrderedPluginInitialization() {
   orderedInitializationTask = orderedInitializationTask
@@ -295,6 +486,10 @@ function scheduleOrderedPluginInitialization() {
           managedPlugin.setStatus("fail");
           console.error(`Unable to initialize plugin "${pluginName}":`, error);
         }
+      }
+
+      if (nextOrderedPluginIndex === orderedPluginNames.length) {
+        await initializeFirstUseMapControls();
       }
     })
     .catch((error) => {
@@ -407,7 +602,7 @@ $("body").on("pluginLoad", async function (event, plugin) {
               true,
             );
 
-            gestorMenu.plugins["screenShoter"].setStatus("visible");
+            gestorMenu.plugins["screenShoter"]?.setStatus("visible");
           }
           break;
         case "ZoomHome":
@@ -481,7 +676,7 @@ $("body").on("pluginLoad", async function (event, plugin) {
               imperial: false,
             })
             .addTo(mapa);
-          gestorMenu.plugins["betterScale"].setStatus("visible");
+          gestorMenu.plugins["betterScale"]?.setStatus("visible");
           loadDeveloperLogo();
           break;
         case "minimap":
@@ -565,8 +760,17 @@ $("body").on("pluginLoad", async function (event, plugin) {
               );
               container.appendChild(icon);
 
-              container.onclick = function () {
+              container.onclick = async function () {
                 if (customGraticule == null) {
+                  container.classList.add("leaflet-disabled");
+                  try {
+                    await appDependencies.loadScript(PLUGINS.graticula);
+                  } catch (error) {
+                    new UserMessage(error.message, true, "error");
+                    return;
+                  } finally {
+                    container.classList.remove("leaflet-disabled");
+                  }
                   //drawGrid(mapa.getZoom());
                   var options = {
                     interval: 10,
@@ -601,7 +805,7 @@ $("body").on("pluginLoad", async function (event, plugin) {
             return new L.Control.CustomGraticule(opts);
           };
           L.control.customgraticule({ position: "topleft" }).addTo(mapa);
-          gestorMenu.plugins["graticula"].setStatus("visible");
+          gestorMenu.plugins["graticula"]?.setStatus("visible");
           break;
         case "Measure":
           // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
@@ -3131,7 +3335,7 @@ $("body").on("pluginLoad", async function (event, plugin) {
     case "leaflet":
       if (selectedBasemap.hasOwnProperty("key")) {
         try {
-          await appDependencies.loadScript(PLUGINS.BingLayer);
+          await appDependencies.load("bingMapLayer");
         } catch (error) {
           console.error("Unable to load the configured Bing basemap:", error);
           return;

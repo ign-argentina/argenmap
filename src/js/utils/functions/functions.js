@@ -13,6 +13,7 @@ var loadGeoprocessing = false;
 var loadAddLayer = false;
 var loadQueryLayer = true;
 var loadConfigTool = false;
+let consultDataBtnClose = true;
 let addedLayers = [];
 let fileLayerGroup = [];
 let configuredFileLayerRegistry = [];
@@ -425,11 +426,16 @@ function clearSpecialChars(s) {
 }
 
 /****** Enveloped functions ******/
-function loadGeojson(url, layer) {
-  if (typeof loadGeojsonTpl === "function") {
-    return loadGeojsonTpl(wmsUrl, layer);
-  } else {
+async function loadGeojson(url, layer) {
+  try {
+    await appDependencies.load("geoJsonMapLayer");
+    if (typeof loadGeojsonTpl === "function") {
+      return loadGeojsonTpl(url, layer);
+    }
     console.warn("Function loadGeojsonTpl() do not exists. Please, define it.");
+  } catch (error) {
+    console.error("Unable to load the GeoJSON layer dependencies:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
@@ -453,23 +459,33 @@ function ucwords(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function loadWms(callbackFunction, objLayer) {
-  if (typeof callbackFunction === "function") {
-    return loadWmsTplAux(objLayer, null);
-  } else {
+async function loadWms(callbackFunction, objLayer) {
+  try {
+    await appDependencies.load("wmsMapLayer");
+    if (typeof callbackFunction === "function") {
+      return loadWmsTplAux(objLayer, null);
+    }
     console.warn(
       "Function " + callbackFunction + "() do not exists. Please, define it.",
     );
+  } catch (error) {
+    console.error("Unable to load the WMS layer dependencies:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
-function loadWmts(callbackFunction, objLayer) {
-  if (typeof callbackFunction === "function") {
-    return callbackFunction(objLayer);
-  } else {
+async function loadWmts(callbackFunction, objLayer) {
+  try {
+    await appDependencies.load("wmtsMapLayer");
+    if (typeof callbackFunction === "function") {
+      return callbackFunction(objLayer);
+    }
     console.warn(
       "Function " + callbackFunction + "() do not exists. Please, define it.",
     );
+  } catch (error) {
+    console.error("Unable to load the WMTS layer dependencies:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
@@ -717,13 +733,18 @@ function loadMapaBase(tmsUrl, layer, attribution) {
   }
 }
 
-function loadMapaBaseBing(bingKey, layer, attribution) {
-  if (typeof loadMapaBaseBingTpl === "function") {
-    return loadMapaBaseBingTpl(bingKey, layer, attribution);
-  } else {
+async function loadMapaBaseBing(bingKey, layer, attribution) {
+  try {
+    await appDependencies.load("bingMapLayer");
+    if (typeof loadMapaBaseBingTpl === "function") {
+      return loadMapaBaseBingTpl(bingKey, layer, attribution);
+    }
     console.warn(
       "Function loadMapaBaseBingTpl() do not exists. Please, define it.",
     );
+  } catch (error) {
+    console.error("Unable to load the Bing layer dependency:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
