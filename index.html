@@ -11,15 +11,16 @@
   <meta name="author" content="Instituto Geográfico Nacional">
   <title>Argenmap</title>
   <link rel="icon" href="src/styles/images/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous">
 
   <!-- Bootstrap core CSS -->
-  <link rel="stylesheet" href="https://getbootstrap.com/docs/3.3/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
   <!-- Plugins -->
 
   <!-- jQuery -->
   <script defer src="src/js/plugins/jquery/jquery-3.7.0.min.js"></script>
-  <script defer src="https://getbootstrap.com/docs/3.3/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script defer src="src/js/utils/dependencies/dependency-loader.js"></script>
 
   <!-- Leaflet -->
@@ -28,10 +29,8 @@
 
   <!-- Font Awesome -->
   <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" onload="this.onload=null;this.rel='stylesheet'" >
-  <link rel="preload" as="style" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" onload="this.onload=null;this.rel='stylesheet'" >
   <noscript>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" >
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" >
   </noscript>
 
   <!-- Main Styles -->
@@ -105,7 +104,7 @@
         <i class="fa-solid fa-map"></i>
       </button>
       <button type="button" class="ag-btn ag-btn-primary menu-section-btn" id="load-layer-btn" data-target="load-layer" title="Agregar capas" aria-label="Agregar capas">
-        <i class="bx bxs-layer-plus"></i>
+        <i class="fa-solid fa-file-circle-plus"></i>
       </button>
       <button type="button" class="ag-btn ag-btn-primary menu-section-btn" id="nav-help-btn" title="Ayuda" data-target="help-tour" aria-label="Ayuda">
         <i class="fa-solid fa-question"></i>

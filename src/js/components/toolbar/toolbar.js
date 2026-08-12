@@ -91,7 +91,7 @@ class ToolbarVisibilityToggler {
       "map-toolbar-icon-right",
       "hideBtnRight",
       "Esconder herramientas de dibujo",
-      "bx bxs-pencil",
+      "fa-solid fa-pencil",
     );
 
     // Use an arrow function to ensure the 'this' context is preserved

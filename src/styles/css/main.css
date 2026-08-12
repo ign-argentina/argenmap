@@ -73,11 +73,6 @@ Ejemplos:
 }
 
 @font-face {
-  font-family: "Font Awesome 6";
-  src: url("../../../dist/fonts/fa-solid-900.woff2");
-}
-
-@font-face {
   font-family: "FWC2026 UltraCondensed Bold";
   src: url("../../config/FWC2026-UltraCondensedBold.ttf") format("truetype");
   font-style: normal;
@@ -564,6 +559,7 @@ div.leaflet-top.leaflet-left {
 }
 
 .menu-section-btn .fa-layer-group,
+.menu-section-btn .fa-file-circle-plus,
 .menu-section-btn .fa-question,
 .menu-section-btn .fa-gear {
   font-size: var(--heading-large-fnt-size);
@@ -1890,7 +1886,8 @@ input:checked.switch+label:after {
 .basemap-selector .leaflet-control-layers-toggle::after {
   display: inline;
   content: "\f5fd";
-  font-family: "FontAwesome";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
   max-height: max-content;
   font-size: 1.3em;
   vertical-align: -webkit-baseline-middle;
@@ -2119,14 +2116,6 @@ input:checked.switch+label:after {
   padding: 0 0 0 10px;
 }
 
-.bx {
-  font-size: var(--heading-xlarge-fnt-size);
-}
-
-.bxs-pencil {
-  font-size: var(--btn-fnt-size);
-  line-height: inherit;
-}
 .fa-wrench {
   font-size: var(--btn-fnt-size);
   line-height: inherit;
@@ -2268,7 +2257,8 @@ input:checked.switch+label:after {
   }
 }
 .fa-earth-americas:hover::before {
-  font-family: "Font Awesome 6";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
   content    : "\f57d";
   animation  : spinning-globe 0.5s linear infinite alternate;
   opacity    : 0.95;
