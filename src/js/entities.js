@@ -17,6 +17,15 @@ function normalizeStr(s) {
   }
 }
 
+function appendRenderedContent(container, content) {
+  if (!container || content == null) return;
+  if (content instanceof Node) {
+    container.appendChild(content);
+    return;
+  }
+  container.insertAdjacentHTML("beforeend", String(content));
+}
+
 /******************************************
 Class Capa
 ******************************************/
@@ -628,7 +637,7 @@ class ImpresorCapasBaseHTML extends Impresor {
   imprimir(itemComposite) {
     var listaId = itemComposite.getId();
     // Only one basemap-selector
-    if ($("div#basemap-selector>ul").length === 0) {
+    if (!document.querySelector("div#basemap-selector > ul")) {
       const baseMapsMenu = document.createElement("a");
       baseMapsMenu.classList = "leaflet-control-layers-toggle";
       baseMapsMenu.title = itemComposite.nombre;
@@ -1540,7 +1549,7 @@ class LayersInfoWMS extends LayersInfo {
     }
   }
 
-  _parseRequest_without_print(_gestorMenu) {
+  async _parseRequest_without_print(_gestorMenu) {
     const impresorGroup = this.itemGroupPrinter;
     const impresorItem = new ImpresorItemHTML();
     const nuevo_impresor = new Menu_UI();
@@ -1552,58 +1561,77 @@ class LayersInfoWMS extends LayersInfo {
       ilistType = this.tab.listType;
     }
 
-    if (!$("#temp-menu").hasClass("temp")) {
-      $("body").append(
-        '<div id="temp-menu" class="temp" style="display:none"></div>',
-      );
+    let tempMenu = document.getElementById("temp-menu");
+    if (!tempMenu) {
+      tempMenu = document.createElement("div");
+      tempMenu.id = "temp-menu";
+      tempMenu.className = "temp";
+      tempMenu.style.display = "none";
+      document.body.appendChild(tempMenu);
     }
 
     // Load geoserver Capabilities, if success Create menu and append to DOM
-    $("#temp-menu").load(
-      thisObj.getHostOWS() +
+    try {
+      const response = await fetch(
+        thisObj.getHostOWS() +
         "?service=" +
         thisObj.service +
         "&version=" +
         thisObj.version +
         "&request=GetCapabilities",
-      function () {
-        var capability = $("#temp-menu").find("capability");
-        var keywordHtml = $("#temp-menu").find("Keyword");
+      );
+      if (!response.ok) {
+        throw new Error(`GetCapabilities returned HTTP ${response.status}`);
+      }
+      const capabilitiesDocument = new DOMParser().parseFromString(
+        await response.text(),
+        "application/xml",
+      );
+      if (capabilitiesDocument.querySelector("parsererror")) {
+        throw new Error("Invalid GetCapabilities XML response");
+      }
+      const elementsByName = (root, name) =>
+        Array.from(root?.getElementsByTagName("*") || []).filter(
+          (element) => element.localName.toLowerCase() === name.toLowerCase(),
+        );
+        var capability = elementsByName(capabilitiesDocument, "capability")[0];
+        var keywordHtml = elementsByName(capabilitiesDocument, "keyword");
         var keyword = "";
         if (keywordHtml.length > 0) {
-          keyword = keywordHtml[0].innerText; // reads 1st keyword for filtering sections if needed
+          keyword = keywordHtml[0].textContent; // reads 1st keyword for filtering sections if needed
         }
-        var abstractHtml = $("#temp-menu").find("Abstract");
+        var abstractHtml = elementsByName(capabilitiesDocument, "abstract");
         var abstract = "";
         if (abstractHtml.length > 0) {
-          abstract = abstractHtml[0].innerText; // reads wms 1st abstract
+          abstract = abstractHtml[0].textContent; // reads wms 1st abstract
         }
-        var capas_layer = $("layer", capability);
-        var capas_info = $("layer", capas_layer);
+        var capas_layer = elementsByName(capability, "layer");
+        var capas_info = capas_layer.slice(1);
 
         var items = new Array();
 
         // create an object with all layer info for each layer
-        capas_info.each(function (index, b) {
-          var i = $(this);
-          var iName = $("name", i).html();
+        capas_info.forEach(function (i, index) {
+          var iName = elementsByName(i, "name")[0]?.textContent;
           if (thisObj.isAllowedLayer(iName)) {
-            var iTitle = $("title", i).html();
+            var iTitle = elementsByName(i, "title")[0]?.textContent;
             iTitle = thisObj.formatLayerTitle(iName, iTitle);
-            var iAbstract = $("abstract", i).html();
+            var iAbstract = elementsByName(i, "abstract")[0]?.textContent;
             iAbstract = thisObj.formatLayerAbstract(iName, iAbstract);
-            var keywordsHTMLList = $("keywordlist", i).find("keyword");
-            var keywords = [];
-            $.each(keywordsHTMLList, function (i, el) {
-              keywords.push(el.innerText);
-            });
-            var iBoundingBox = $("boundingbox", i);
+            var keywords = elementsByName(i, "keyword").map(
+              (element) => element.textContent,
+            );
+            var iBoundingBox = elementsByName(i, "boundingbox");
+            const boundingBoxAttribute = (name) =>
+              Array.from(iBoundingBox[0]?.attributes || []).find(
+                (attribute) => attribute.name.toLowerCase() === name,
+              )?.value;
             var iSrs = null;
             var iMaxY = null;
             var iMinY = null;
             var iMinX = null;
             var iMaxX = null;
-            var ilegendURLaux = $("Style", i).html();
+            var ilegendURLaux = elementsByName(i, "style")[0]?.innerHTML || "";
             let divi = document.createElement("div");
             let aux = null;
             divi.innerHTML = ilegendURLaux;
@@ -1613,15 +1641,11 @@ class LayersInfoWMS extends LayersInfo {
             var ilegendURL = aux;
 
             if (iBoundingBox.length > 0) {
-              if (iBoundingBox[0].attributes.srs) {
-                var iSrs = iBoundingBox[0].attributes.srs.nodeValue;
-              } else {
-                var iSrs = iBoundingBox[0].attributes.crs.nodeValue;
-              }
-              var iMaxY = iBoundingBox[0].attributes.maxy.nodeValue;
-              var iMinY = iBoundingBox[0].attributes.miny.nodeValue;
-              var iMinX = iBoundingBox[0].attributes.minx.nodeValue;
-              var iMaxX = iBoundingBox[0].attributes.maxx.nodeValue;
+              var iSrs = boundingBoxAttribute("srs") || boundingBoxAttribute("crs");
+              var iMaxY = boundingBoxAttribute("maxy");
+              var iMinY = boundingBoxAttribute("miny");
+              var iMinX = boundingBoxAttribute("minx");
+              var iMaxX = boundingBoxAttribute("maxx");
             }
 
             if (thisObj.type == "wmslayer_mapserver") {
@@ -1738,10 +1762,11 @@ class LayersInfoWMS extends LayersInfo {
         }
 
         nuevo_impresor.addLayers_combobox(groupAux);
-        document.getElementById("temp-menu").innerHTML = "";
+        tempMenu.innerHTML = "";
         return;
-      },
-    );
+    } catch (error) {
+      console.error("Unable to load legacy service capabilities:", error);
+    }
   }
 
   getHostOWS() {
@@ -2188,7 +2213,9 @@ class ItemComposite {
   }
 
   getObjDom() {
-    return $(this.objDOM);
+    return typeof this.objDOM === "string"
+      ? document.querySelector(this.objDOM)
+      : this.objDOM;
   }
 
   isBaseLayer() {
@@ -2328,15 +2355,12 @@ class ItemGroup extends ItemComposite {
 
   muestraCantidadCapasVisibles() {
     var iCapasVisibles = this.getCantidadCapasVisibles();
+    const title = document.getElementById(this.getId() + "-a");
+    if (!title) return;
     if (iCapasVisibles > 0) {
-      $("#" + this.getId() + "-a").html(
-        this.nombre +
-          " <span class='active-layers-counter'>" +
-          iCapasVisibles +
-          "</span>",
-      );
+      title.innerHTML = `${this.nombre} <span class="active-layers-counter">${iCapasVisibles}</span>`;
     } else {
-      $("#" + this.getId() + "-a").html(this.nombre);
+      title.textContent = this.nombre;
     }
   }
 
@@ -2549,21 +2573,20 @@ class Item extends ItemComposite {
   }
 
   showHide() {
-    $("#" + this.getId()).toggleClass("active");
+    const optionsLayer = document.getElementById(this.getId());
+    optionsLayer.classList.toggle("active");
 
-    let options_layer = $("#" + this.getId());
-
-    if (options_layer[0].children[1] && options_layer.hasClass("active")) {
-      options_layer[0].children[1].style.display = "flex";
-    } else if (options_layer[0].children[1]) {
-      options_layer[0].children[1].style.display = "none";
+    if (optionsLayer.children[1]) {
+      optionsLayer.children[1].style.display = optionsLayer.classList.contains("active")
+        ? "flex"
+        : "none";
     }
 
     if (
       this.seccion.includes("mapasbase0") &&
-      !$("#" + this.getId()).hasClass("active")
+      !optionsLayer.classList.contains("active")
     ) {
-      $("#" + this.getId()).toggleClass("active");
+      optionsLayer.classList.toggle("active");
     } //fixes main mapabase active bug by asking if its not activated.
 
     if (typeof this.callback == "string") {
@@ -2635,10 +2658,11 @@ class Plugin {
     }
   }
   triggerLoad(failed = false) {
-    $("body").trigger("pluginLoad", {
-      pluginName: this.name,
-      failed,
-    });
+    document.body.dispatchEvent(
+      new CustomEvent("pluginLoad", {
+        detail: { pluginName: this.name, failed },
+      }),
+    );
   }
 }
 
@@ -3272,7 +3296,7 @@ class GestorMenu {
   }
 
   async loadInitialLayers(urlInteraction) {
-    $("#" + this.basemapSelected).toggleClass("active");
+    document.getElementById(this.basemapSelected)?.classList.toggle("active");
 
     if (this.getLazyInitialization()) {
       const requestedLayers = [...urlInteraction.layers];
@@ -3327,7 +3351,9 @@ class GestorMenu {
   }
 
   getMenuDOM() {
-    return $(this.menuDOM);
+    return typeof this.menuDOM === "string"
+      ? document.querySelector(this.menuDOM)
+      : this.menuDOM;
   }
 
   setLoadingDOM(loadingDOM) {
@@ -3335,7 +3361,9 @@ class GestorMenu {
   }
 
   getLoadingDOM() {
-    return $(this.loadingDOM);
+    return typeof this.loadingDOM === "string"
+      ? document.querySelector(this.loadingDOM)
+      : this.loadingDOM;
   }
 
   setLegendImgPath(legendImgPath) {
@@ -3582,23 +3610,20 @@ class GestorMenu {
 
       var thisObj = this;
 
-      //Capture show.bs.collapse menu event
-      $(function () {
-        $(".collapse").on("show.bs.collapse", function (e) {
-          if ($(this).is(e.target)) {
-            var showingId = this.id;
-            if ($("#" + showingId + " > div").html() == "") {
-              $("#" + showingId + " > div").html(
-                '<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>',
-              );
-            }
-            void thisObj.loadSectionServices(showingId).catch((error) => {
-              console.error(
-                `Error loading services for section '${showingId}':`,
-                error,
-              );
-            });
-          }
+      document.addEventListener("show.bs.collapse", function (event) {
+        const collapse = event.target;
+        if (!collapse.classList.contains("collapse")) return;
+        const showingId = collapse.id;
+        const content = collapse.querySelector(":scope > div");
+        if (content && content.innerHTML === "") {
+          content.innerHTML =
+            '<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>';
+        }
+        void thisObj.loadSectionServices(showingId).catch((error) => {
+          console.error(
+            `Error loading services for section '${showingId}':`,
+            error,
+          );
         });
       });
     } else {
@@ -3750,7 +3775,7 @@ class GestorMenu {
       sClassAux = "";
     }
 
-    this.getMenuDOM().html(sInitialHTML);
+    this.getMenuDOM().innerHTML = sInitialHTML;
 
     var itemsAux = new Array();
     var itemsIterator = this._itemsGetter.get(this);
@@ -3772,11 +3797,14 @@ class GestorMenu {
           itemComposite.imprimir(),
         );
       } else {
-        if ($("#" + itemComposite.seccion).length != 0) {
-          itemComposite.getObjDom().html("");
+        if (document.getElementById(itemComposite.seccion)) {
+          itemComposite.getObjDom().innerHTML = "";
         }
         itemComposite.setQuerySearch(this.getQuerySearch()); //Set query search for filtering items
-        itemComposite.getObjDom().append(itemComposite.imprimir());
+        appendRenderedContent(
+          itemComposite.getObjDom(),
+          itemComposite.imprimir(),
+        );
       }
     }
 
@@ -3816,7 +3844,7 @@ class GestorMenu {
 
     sInitialHTML += "</div>";
 
-    this.getMenuDOM().html(sInitialHTML);
+    this.getMenuDOM().innerHTML = sInitialHTML;
 
     let sidebar = document.getElementById("sidebar");
     const searcher = document.createElement("div");
@@ -3976,7 +4004,10 @@ class GestorMenu {
 
     itemsToPrint.sort(this.ordenaPorPeso);
     for (var key in itemsToPrint) {
-      itemsToPrint[key].getObjDom().append(itemsToPrint[key].imprimir());
+      appendRenderedContent(
+        itemsToPrint[key].getObjDom(),
+        itemsToPrint[key].imprimir(),
+      );
     }
   }
 
@@ -3986,7 +4017,7 @@ class GestorMenu {
     if (this._hasMoreTabsThanOne()) {
       this._printWithTabs();
     } else {
-      this.getMenuDOM().html(this._printSearcher());
+      this.getMenuDOM().innerHTML = this._printSearcher();
       menu_ui.rebuildConfiguredFileLayers();
 
       var itemsAux = new Array();
@@ -4001,8 +4032,8 @@ class GestorMenu {
         var itemComposite = itemsAux[key];
         itemComposite.setQuerySearch(this.getQuerySearch()); //Set query search for filtering items
 
-        if ($("#" + itemComposite.seccion).length != 0) {
-          itemComposite.getObjDom().html("");
+        if (document.getElementById(itemComposite.seccion)) {
+          itemComposite.getObjDom().innerHTML = "";
         }
 
         itemsAuxToFolders.push(itemComposite);
@@ -4011,7 +4042,8 @@ class GestorMenu {
       this.generateFolders(itemsAuxToFolders);
     }
 
-    this.getLoadingDOM().hide();
+    const loading = this.getLoadingDOM();
+    if (loading) loading.style.display = "none";
     bindZoomLayer();
     bindLayerOptions();
 
@@ -4027,52 +4059,55 @@ class GestorMenu {
     }
 
     //Tabs
-    $('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
-      var target = $(e.target).attr("href"); // activated tab object
+    document.querySelectorAll('a[data-toggle="tab"]').forEach((tab) => {
+      tab.addEventListener("shown.bs.tab", function (event) {
+      var target = event.target.getAttribute("href"); // activated tab object
       var activeTabId = target.replace("#main-menu-tab-", ""); // activated tab id
       gestorMenu.setSelectedTab(activeTabId);
       if (gestorMenu._selectedTab.isSearcheable == true) {
-        $("#searchForm").show();
-        $("#q").val(gestorMenu._selectedTab.getSearchQuery());
-        if (gestorMenu._selectedTab.getSearchQuery() == "") {
-          $("#q").trigger("propertychange");
-        }
-        $("#q").trigger("propertychange");
+        document.getElementById("searchForm").style.display = "";
+        const queryInput = document.getElementById("q");
+        queryInput.value = gestorMenu._selectedTab.getSearchQuery();
+        queryInput.dispatchEvent(new Event("input", { bubbles: true }));
       } else {
-        //$("#searchForm").hide();
       }
+      });
     });
     if (
       this._hasMoreTabsThanOne() == true &&
       this._selectedTab.isSearcheable == false
     ) {
       //Check if first active tab is searcheable
-      //$("#searchForm").hide();
     }
 
     //Searcher
-    $('.has-clear input[type="text"]')
-      .on("input propertychange", function () {
-        var $this = $(this);
-        var visible = Boolean($this.val());
-        $this.siblings(".form-control-clear").toggleClass("hidden", !visible);
-      })
-      .trigger("propertychange");
-    $(".form-control-clear").click(function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      $(this)
-        .siblings('input[type="text"]')
-        .val("")
-        .trigger("propertychange")
-        .focus();
+    document.querySelectorAll('.has-clear input[type="text"]').forEach((input) => {
+      const updateClearButton = () => {
+        input.parentElement
+          ?.querySelectorAll(":scope > .form-control-clear")
+          .forEach((button) => button.classList.toggle("hidden", !input.value));
+      };
+      input.addEventListener("input", updateClearButton);
+      updateClearButton();
+    });
+    document.querySelectorAll(".form-control-clear").forEach((button) => {
+      button.addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const input = this.parentElement?.querySelector(':scope > input[type="text"]');
+      if (input) {
+        input.value = "";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.focus();
+      }
       gestorMenu.setQuerySearch("");
       gestorMenu.printMenu();
+      });
     });
-    $("#searchclear").click(function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      $("#q").val("");
+    document.getElementById("searchclear")?.addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.getElementById("q").value = "";
       gestorMenu.setQuerySearch("");
       gestorMenu.printMenu();
     });
@@ -4107,11 +4142,12 @@ class GestorMenu {
     if (itemGroup.tab.listType == "combobox") {
       //Si es combobox
       itemGroup.imprimir();
-      $("#wms-combo-list").html(itemGroup.itemsStr);
+      document.getElementById("wms-combo-list").innerHTML = itemGroup.itemsStr;
     } else {
       //Si no es es combobox
       itemGroup.imprimir();
-      $("#" + sectionId + " > div").html(itemGroup.itemsStr);
+      document.querySelector(`#${CSS.escape(sectionId)} > div`).innerHTML =
+        itemGroup.itemsStr;
     }
     bindZoomLayer();
     bindLayerOptions();
@@ -4174,7 +4210,7 @@ class GestorMenu {
         } else {
           let id = item.getId();
           if (id === itemSeccion) {
-            if ($("#" + itemSeccion).hasClass("active")) {
+            if (document.getElementById(itemSeccion)?.classList.contains("active")) {
               this.removeActiveLayer(item.nombre);
               if (!isBaseLayer) mapa.activeLayerHasChanged(item.nombre, false);
               if (geoProcessingManager) {
@@ -4215,8 +4251,9 @@ class GestorMenu {
 
       for (let i = 0; i < this.availableBaseLayers.length; i++) {
         const id = "child-mapasbase" + i;
-        if (itemSeccion !== id && $("#" + id).hasClass("active")) {
-          $("#" + id).removeClass("active");
+        const element = document.getElementById(id);
+        if (itemSeccion !== id && element?.classList.contains("active")) {
+          element.classList.remove("active");
         }
       }
     }
@@ -4579,8 +4616,7 @@ class Menu_UI {
     // Render the menu outside the layer sidebar while it is open. Several
     // ancestors scroll or clip their contents, so z-index alone cannot make
     // the dropdown extend over the map.
-    $(options)
-      .on("shown.bs.dropdown", function () {
+    const openLayerOptions = () => {
         const buttonBounds = fdiv.getBoundingClientRect();
         document.body.appendChild(mainul);
         mainul.classList.add("file-layer-dropdown-menu-open");
@@ -4611,12 +4647,34 @@ class Menu_UI {
             buttonBounds.top - bottomOverflow - 8,
           )}px`;
         }
-      })
-      .on("hidden.bs.dropdown", function () {
+        options.classList.add("open");
+        fdiv.setAttribute("aria-expanded", "true");
+    };
+    const closeLayerOptions = () => {
         mainul.classList.remove("file-layer-dropdown-menu-open");
         mainul.removeAttribute("style");
         options.appendChild(mainul);
-      });
+        options.classList.remove("open");
+        fdiv.setAttribute("aria-expanded", "false");
+    };
+    fdiv.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (mainul.classList.contains("file-layer-dropdown-menu-open")) {
+        closeLayerOptions();
+      } else {
+        document
+          .querySelectorAll(".file-layer-dropdown-menu-open")
+          .forEach((menu) => menu.dispatchEvent(new CustomEvent("argenmap:close")));
+        openLayerOptions();
+      }
+    });
+    mainul.addEventListener("argenmap:close", closeLayerOptions);
+    mainul.addEventListener("click", (event) => {
+      event.stopPropagation();
+      queueMicrotask(closeLayerOptions);
+    });
+    document.addEventListener("click", closeLayerOptions);
 
     let delete_opt = document.createElement("li");
     delete_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i  class="fa fa-trash" aria-hidden="true" style="width:20px;"></i>Eliminar Capa</a>`;
@@ -4999,7 +5057,7 @@ class Menu_UI {
     let index_file = getIndexFileLayerbyID(id);
     let textname = addedLayers[index_file].name;
     let fileName = addedLayers[index_file].file_name;
-    $("#modal_layer_del").remove();
+    document.getElementById("modal_layer_del")?.remove();
     let modal = document.createElement("div");
     modal.id = "modal_layer_del";
     modal.className = "modal-file-delete";
@@ -5013,7 +5071,7 @@ class Menu_UI {
     c_close.innerHTML =
       '<i style="color:grey;font-size:16px" class="fa fa-times" aria-hidden="true"></i>';
     c_close.onclick = function () {
-      $("#modal_layer_del").remove();
+      document.getElementById("modal_layer_del")?.remove();
     };
     close_icon.append(c_empty);
     close_icon.append(c_close);
@@ -5039,7 +5097,7 @@ class Menu_UI {
       });
       delFileItembyID(id);
       deleteLayerGeometry(id);
-      $("#modal_layer_del").remove();
+      document.getElementById("modal_layer_del")?.remove();
 
       //ElevationProfile
       if (typeof IElevationProfile !== "undefined" && IElevationProfile) {
@@ -5057,7 +5115,7 @@ class Menu_UI {
     btn_no.className = "ag-btn ag-btn-primary";
     btn_no.innerHTML = "Cancelar";
     btn_no.onclick = function () {
-      $("#modal_layer_del").remove();
+      document.getElementById("modal_layer_del")?.remove();
     };
 
     btn_container.append(btn_si);
@@ -5068,7 +5126,7 @@ class Menu_UI {
     modal.append(btn_container);
     document.body.appendChild(modal);
 
-    enableJqueryUiInteractions("#modal_layer_del", {
+    enableNativeInteractions("#modal_layer_del", {
       draggable: {
         containment: "#mapa",
       },
@@ -5096,7 +5154,7 @@ class Menu_UI {
     input_name.style = "height:22px!important;";
     input_name.onblur = function (e) {
       if (!addedLayers[index].laodingname) {
-        $("#i-" + id).remove();
+        document.getElementById("i-" + id)?.remove();
         let a_new = document.createElement("div");
         a_new.className = "file-layername";
         a_new.innerHTML = `<a>${name}</a>`;
@@ -5107,7 +5165,7 @@ class Menu_UI {
     input_name.onkeyup = function (e) {
       if (e.key === "Enter" || e.keyCode === 13) {
         addedLayers[index].laodingname = true;
-        $("#i-" + id).remove();
+        document.getElementById("i-" + id)?.remove();
         let a_new = document.createElement("div");
         a_new.className = "file-layername";
         a_new.title = this.value;
@@ -5121,7 +5179,7 @@ class Menu_UI {
     };
 
     container.insertBefore(input_name, nodo_hijo);
-    $(`#i-${id}`).focus();
+    document.getElementById(`i-${id}`)?.focus();
   }
 
   editGroupName(id, oldName, newName) {
@@ -5294,7 +5352,8 @@ class Menu_UI {
 
     // Open the tab
 
-    if (serviceItems[id].layersInMenu == 1) $(`#${groupnamev}-a`).click();
+    if (serviceItems[id].layersInMenu == 1)
+      document.getElementById(`${groupnamev}-a`)?.click();
     addCounterForSection(groupname, layerType);
   }
 
@@ -5438,10 +5497,12 @@ class Fechaimagen {
     id = metadataIndex[this.zoom];
     esriUrl += `${id}/query?f=json&returnGeometry=false&spatialRel=esriSpatialRelIntersects&geometry=%7B%22xmin%22%3A${x}%2C%22ymin%22%3A${y}%2C%22xmax%22%3A${x}%2C%22ymax%22%3A${y}%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%2C%22latestWkid%22%3A3857%7D%7D&geometryType=esriGeometryEnvelope&inSR=102100&outFields=${outFields}&outSR=102100`;
 
-    $.get({
-      url: esriUrl,
-      async: false,
-      success: function (data) {
+    try {
+      const request = new XMLHttpRequest();
+      request.open("GET", esriUrl, false);
+      request.send();
+      if (request.status >= 200 && request.status < 300) {
+        const data = JSON.parse(request.responseText);
         let md = "";
         if (data.features && data.features.length) {
           md = data.features[0].attributes;
@@ -5471,8 +5532,10 @@ class Fechaimagen {
             maxZoom: md.MaxMapLevel,
           };
         }
-      },
-    });
+      }
+    } catch (error) {
+      console.warn("Unable to retrieve image metadata:", error);
+    }
 
     return picMdata;
   }

@@ -28,7 +28,7 @@ function createTabulator(tableD, layername) {
       ui.addTabs(layername);
 
       if (!ISCelular) {
-        enableJqueryUiInteractions("#ContainerTable", {
+        enableNativeInteractions("#ContainerTable", {
           draggable: {
             containment: "body",
             scroll: false,

@@ -351,15 +351,15 @@ function parseFeatureInfoHTML(info, idTxt) {
   let hasList = info.includes("<ul>");
   if (hasList) {
     // Process the list items
-    info = $(info)
-      .find("li")
-      .each(function () {
-        let [key, value] = $(this).text().split(":");
-        info = info.replace(
-          "<b>" + key + "</b>:",
-          "<b>" + ucwords(key.replace(/_/g, " ")) + ":</b>",
-        );
-      });
+    const parsedInfo = document.createElement("div");
+    parsedInfo.innerHTML = info;
+    parsedInfo.querySelectorAll("li").forEach((item) => {
+      const [key] = item.textContent.split(":");
+      info = info.replace(
+        "<b>" + key + "</b>:",
+        "<b>" + ucwords(key.replace(/_/g, " ")) + ":</b>",
+      );
+    });
 
     // Add an ID to the featureInfo class
     info = info.replace(

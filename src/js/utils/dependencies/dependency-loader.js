@@ -130,27 +130,17 @@ class AppDependencyLoader {
   }
 }
 
+function onDomReady(callback) {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", callback, { once: true });
+    return;
+  }
+  callback();
+}
+
 const appDependencies = new AppDependencyLoader({
   analytics: {
     scripts: ["src/js/utils/analytics/analytics.js"],
-  },
-  fancybox: {
-    styles: [
-      {
-        url: "https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css",
-        integrity:
-          "sha384-Q8BgkilbsFGYNNiDqJm69hvDS7NCJWOodvfK/cwTyQD4VQA0qKzuPpvqNER1UC0F",
-        crossOrigin: "anonymous",
-      },
-    ],
-    scripts: [
-      {
-        url: "https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js",
-        integrity:
-          "sha384-Zm+UU4tdcfAm29vg+MTbfu//q5B/lInMbMCr4T8c9rQFyOv6PlfQYpB5wItcXWe7",
-        crossOrigin: "anonymous",
-      },
-    ],
   },
   proj4: {
     scripts: [
@@ -205,10 +195,6 @@ const appDependencies = new AppDependencyLoader({
   configWindow: {
     styles: ["src/js/components/config-tool/configTool.css"],
     scripts: ["src/js/components/config-tool/configWindow.js"],
-  },
-  jqueryUi: {
-    styles: ["src/js/plugins/jquery/ui/jquery-ui.min.css"],
-    scripts: ["src/js/plugins/jquery/ui/jquery-ui.min.js"],
   },
   table: {
     styles: [
@@ -308,35 +294,122 @@ const appDependencies = new AppDependencyLoader({
   },
 });
 
-function ensureJqueryUi() {
-  if (
-    typeof jQuery !== "undefined" &&
-    jQuery.ui &&
-    typeof jQuery.fn.draggable === "function"
-  ) {
-    return Promise.resolve();
-  }
-  return appDependencies.load("jqueryUi");
-}
-
-function enableJqueryUiInteractions(
+function enableNativeInteractions(
   selector,
   { draggable = null, resizable = null } = {},
 ) {
-  return ensureJqueryUi()
-    .then(() => {
-      const element = jQuery(selector);
-      if (element.length === 0) {
-        return;
-      }
-      if (draggable !== null) {
-        element.draggable(draggable);
-      }
-      if (resizable !== null) {
-        element.resizable(resizable);
-      }
-    })
-    .catch((error) => {
-      console.error("Unable to enable UI interactions:", error);
+  const element = document.querySelector(selector);
+  if (!element) return;
+
+  if (draggable !== null && !element.dataset.nativeDraggable) {
+    element.dataset.nativeDraggable = "true";
+    element.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || event.target.closest(
+        draggable.cancel || "input, textarea, select, button, a",
+      )) return;
+
+      const startRect = element.getBoundingClientRect();
+      const containment = draggable.containment
+        ? document.querySelector(draggable.containment)
+        : null;
+      const bounds = containment?.getBoundingClientRect() || {
+        left: 0,
+        top: 0,
+        right: window.innerWidth,
+        bottom: window.innerHeight,
+      };
+      const startX = event.clientX;
+      const startY = event.clientY;
+      element.setPointerCapture(event.pointerId);
+
+      const move = (moveEvent) => {
+        const left = Math.min(
+          Math.max(bounds.left, startRect.left + moveEvent.clientX - startX),
+          bounds.right - startRect.width,
+        );
+        const top = Math.min(
+          Math.max(bounds.top, startRect.top + moveEvent.clientY - startY),
+          bounds.bottom - startRect.height,
+        );
+        element.style.position = "fixed";
+        element.style.left = `${left}px`;
+        element.style.top = `${top}px`;
+        element.style.right = "auto";
+        element.style.bottom = "auto";
+      };
+      const stop = () => {
+        element.removeEventListener("pointermove", move);
+        element.removeEventListener("pointerup", stop);
+        element.removeEventListener("pointercancel", stop);
+      };
+      element.addEventListener("pointermove", move);
+      element.addEventListener("pointerup", stop);
+      element.addEventListener("pointercancel", stop);
     });
+  }
+
+  if (resizable !== null && !element.dataset.nativeResizable) {
+    element.dataset.nativeResizable = "true";
+    if (getComputedStyle(element).position === "static") {
+      element.style.position = "relative";
+    }
+    const directions = (resizable.handles || "e, s, se")
+      .split(",")
+      .map((direction) => direction.trim());
+    directions.forEach((direction) => {
+      const handle = document.createElement("span");
+      handle.className = `argenmap-resize-handle argenmap-resize-${direction}`;
+      handle.dataset.direction = direction;
+      element.appendChild(handle);
+      handle.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const startRect = element.getBoundingClientRect();
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const containment = resizable.containment
+          ? document.querySelector(resizable.containment)
+          : null;
+        const bounds = containment?.getBoundingClientRect();
+        handle.setPointerCapture(event.pointerId);
+        const move = (moveEvent) => {
+          const deltaX = moveEvent.clientX - startX;
+          const deltaY = moveEvent.clientY - startY;
+          let width = startRect.width;
+          let height = startRect.height;
+          if (direction.includes("e")) width += deltaX;
+          if (direction.includes("w")) width -= deltaX;
+          if (direction.includes("s")) height += deltaY;
+          width = Math.max(resizable.minWidth || 0, width);
+          height = Math.max(resizable.minHeight || 0, height);
+          if (resizable.maxWidth) width = Math.min(resizable.maxWidth, width);
+          if (resizable.maxHeight) height = Math.min(resizable.maxHeight, height);
+          if (bounds) {
+            if (direction.includes("e")) {
+              width = Math.min(width, bounds.right - startRect.left);
+            }
+            if (direction.includes("w")) {
+              width = Math.min(width, startRect.right - bounds.left);
+            }
+            if (direction.includes("s")) {
+              height = Math.min(height, bounds.bottom - startRect.top);
+            }
+          }
+          element.style.width = `${width}px`;
+          element.style.height = `${height}px`;
+          if (direction.includes("w")) {
+            element.style.left = `${startRect.right - width}px`;
+          }
+        };
+        const stop = () => {
+          handle.removeEventListener("pointermove", move);
+          handle.removeEventListener("pointerup", stop);
+          handle.removeEventListener("pointercancel", stop);
+        };
+        handle.addEventListener("pointermove", move);
+        handle.addEventListener("pointerup", stop);
+        handle.addEventListener("pointercancel", stop);
+      });
+    });
+  }
 }

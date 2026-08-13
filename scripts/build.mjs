@@ -21,6 +21,7 @@ const outputDirectory = path.join(projectDirectory, "build");
 
 const initialScripts = [
   "src/js/utils/dependencies/dependency-loader.js",
+  "src/js/utils/bootstrap-native.js",
   "src/js/utils/constants/constants.js",
   "src/js/entities.js",
   "src/js/utils/functions/functions.js",
@@ -164,13 +165,17 @@ async function createProductionHtml(javaScriptBundle, cssBundle) {
     html,
     '  <script defer src="src/js/utils/dependencies/dependency-loader.js"></script>\n',
   );
+  html = removeTag(
+    html,
+    '  <script defer src="src/js/utils/bootstrap-native.js"></script>\n',
+  );
   html = replaceTag(
     html,
     '  <script defer src="src/js/utils/constants/constants.js"></script>',
     `  <script defer src="${javaScriptBundle}"></script>`,
   );
 
-  for (const script of initialScripts.slice(2)) {
+  for (const script of initialScripts.slice(3)) {
     html = removeTag(html, `  <script defer src="${script}"></script>\n`);
   }
 

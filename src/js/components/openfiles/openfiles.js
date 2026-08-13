@@ -221,8 +221,6 @@ class UImf {
 
     return mainContainerFile;
     // document.body.appendChild(divContainer);
-    // $( "#modalOpenFile" ).draggable({
-    //   containment: "#mapa"})
   }
 
   // addForm() {
@@ -389,7 +387,7 @@ class UImf {
     icon_file.innerHTML =
       '<i style="width: 10%;" title="eliminar archivo" class="fa fa-times-circle"></i>';
     icon_file.onclick = function () {
-      $("#" + id_item).remove();
+      document.getElementById(id_item)?.remove();
       currentLayers.splice(del_index, 1);
     };
 
@@ -420,8 +418,9 @@ class UImf {
     let btn = document.getElementById("btn-upload-agregar-capa");
     btn.className = "ag-btn ag-btn-primary";
 
-    $("#uploaded-area").bind("DOMSubtreeModified", function () {
-      let cont = document.getElementById("uploaded-area");
+    const uploadedArea = document.getElementById("uploaded-area");
+    const updateUploadButton = () => {
+      let cont = uploadedArea;
       let txt = document.getElementById("btn-upload-agregar-capa");
       if (cont.children.length > 1) {
         txt.innerHTML = "Agregar Capas";
@@ -429,12 +428,16 @@ class UImf {
         txt.innerHTML = "Agregar Capa";
       }
 
-      if ($("#uploaded-area")[0].childElementCount == 0) {
+      if (uploadedArea.childElementCount == 0) {
         control_btn_add_layer = false;
         let btn = document.getElementById("btn-upload-agregar-capa");
         btn.className = "ag-btn ag-btn-primary";
       }
+    };
+    new MutationObserver(updateUploadButton).observe(uploadedArea, {
+      childList: true,
     });
+    updateUploadButton();
   }
 }
 
@@ -499,7 +502,7 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
 
   menu_ui.addFileLayer(sectionName, typeName, nameId, nameId, nameId, true);
   updateNumberofLayers(sectionName);
-  $("#item_uf_" + nameId).remove();
+  document.getElementById("item_uf_" + nameId)?.remove();
 }
 
 function addLayersfromFiles() {
@@ -537,7 +540,7 @@ function addLayersfromFiles() {
       });
       menu_ui.rebuildConfiguredFileLayers();
       updateNumberofLayers(sectionName);
-      $("#item_uf_" + e.id).remove();
+      document.getElementById("item_uf_" + e.id)?.remove();
     }
   });
   currentLayers = [];

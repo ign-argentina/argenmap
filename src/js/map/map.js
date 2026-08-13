@@ -500,7 +500,8 @@ function scheduleOrderedPluginInitialization() {
     });
 }
 
-$("body").on("pluginLoad", async function (event, plugin) {
+document.body.addEventListener("pluginLoad", async function (event) {
+  const plugin = event.detail;
   let unorderedPlugin = "";
   switch (plugin.pluginName) {
     case "leaflet":
@@ -1234,28 +1235,34 @@ $("body").on("pluginLoad", async function (event, plugin) {
           mapa.on("zoomend", (e) => {
             let contextPopup = null;
             const contextMenu = new ContextMenu();
-            $(".context-quehay").slideUp();
+            document.querySelectorAll(".context-quehay").forEach((menu) => {
+              menu.style.display = "none";
+            });
           });
 
           mapa.on("dragend", (e) => {
             let contextPopup = null;
             const contextMenu = new ContextMenu();
-            $(".context-quehay").slideUp();
+            document.querySelectorAll(".context-quehay").forEach((menu) => {
+              menu.style.display = "none";
+            });
           });
 
           mapa.on("click", (e) => {
             let contextPopup = null;
             const contextMenu = new ContextMenu();
             mapa.closePopup(contextPopup);
-            $(".context-quehay").slideUp();
+            document.querySelectorAll(".context-quehay").forEach((menu) => {
+              menu.style.display = "none";
+            });
           });
 
           mapa.on("contextmenu", (e) => {
             var capa = "";
-            $.each(mapa._layers, function (ml) {
-              $.each(mapa._layers[ml], function (v) {
-                if (mapa._layers[ml]._url != undefined) {
-                  capa = mapa._layers[ml]._url;
+            Object.values(mapa._layers).forEach((mapLayer) => {
+              Object.values(mapLayer).forEach(() => {
+                if (mapLayer._url != undefined) {
+                  capa = mapLayer._url;
                 }
               });
             });
@@ -1264,8 +1271,8 @@ $("body").on("pluginLoad", async function (event, plugin) {
             var count = 0;
 
             var imagen = "";
-            $.each(e.target._zoomBoundLayers, function (clave, valor) {
-              $.each(valor._tiles, function (key, value) {
+            Object.values(e.target._zoomBoundLayers).forEach((valor) => {
+              Object.values(valor._tiles).forEach((value) => {
                 if (count == 0) {
                   imagen = value.el.currentSrc;
                 }
@@ -1293,9 +1300,9 @@ $("body").on("pluginLoad", async function (event, plugin) {
               text: "Mas información",
               onclick: (option) => {
                 mapa.closePopup(contextPopup);
-                $("#search_bar")
-                  .val(lat + "," + lng)
-                  .focus();
+                const searchBar = document.getElementById("search_bar");
+                searchBar.value = lat + "," + lng;
+                searchBar.focus();
               },
             });
 
@@ -1463,7 +1470,7 @@ $("body").on("pluginLoad", async function (event, plugin) {
             wrapper.appendChild(esriInfo);
 
             document.body.appendChild(wrapper);
-            enableJqueryUiInteractions("#esriwrapper", {
+            enableNativeInteractions("#esriwrapper", {
               draggable: {
                 scroll: false,
                 cancel: "#esriInfo",
@@ -1540,7 +1547,7 @@ $("body").on("pluginLoad", async function (event, plugin) {
                 wrapper.appendChild(btncloseWrapper);
                 wrapper.appendChild(mapa.createEditStylePopup(layer));
                 document.body.appendChild(wrapper);
-                enableJqueryUiInteractions("#editContainer", {
+                enableNativeInteractions("#editContainer", {
                   draggable: {
                     scroll: false,
                     containment: "#mapa",
@@ -1689,7 +1696,7 @@ $("body").on("pluginLoad", async function (event, plugin) {
             wrapper.appendChild(measurement);
 
             document.body.appendChild(wrapper);
-            enableJqueryUiInteractions("#measurementWrapper", {
+            enableNativeInteractions("#measurementWrapper", {
               draggable: {
                 scroll: false,
                 cancel: "#measurementInfo",
@@ -3539,7 +3546,7 @@ function getGeometryCoords(layer) {
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     var datos = new Array();
-    $.each(feature.properties, function (index, value) {
+    Object.entries(feature.properties).forEach(function ([index, value]) {
       if (value) {
         datos.push(index + ": " + value + "<br>");
       }
@@ -3570,12 +3577,7 @@ function pointToLayer(feature, latlng) {
 }
 
 function printFinished() {
-  //Agregar tooltip resumen
-  $("[data-toggle2='tooltip']").tooltip({
-    placement: "right",
-    trigger: "hover",
-    container: ".menu-container",
-  });
+  // Native title attributes provide the summary tooltip without Bootstrap JS.
 }
 
 function showMainMenuTpl() {
@@ -3679,8 +3681,8 @@ function getFeatureInfoAsCSV(info) {
   var lineAux = [];
   lineAux[0] = [];
   lineAux[1] = [];
-  $("#" + info + " li").each(function (index) {
-    let sAux = $(this).text();
+  document.querySelectorAll(`#${CSS.escape(info)} li`).forEach(function (item) {
+    let sAux = item.textContent;
     if (sAux != "") {
       aAux = sAux.split(":");
       lineAux[0].push(aAux[0].trim());
@@ -3702,8 +3704,8 @@ function getFeatureInfoAsXLS(info) {
   lineAux[1] = [];
   lineAux[0].push("<tr>");
   lineAux[1].push("<tr>");
-  $("#" + info + " li").each(function (index) {
-    let sAux = $(this).text();
+  document.querySelectorAll(`#${CSS.escape(info)} li`).forEach(function (item) {
+    let sAux = item.textContent;
     if (sAux != "") {
       aAux = sAux.split(":");
       lineAux[0].push("<td><b>" + aAux[0].trim() + "</b></td>");
@@ -3721,7 +3723,7 @@ function getFeatureInfoAsXLS(info) {
 
 /****** Misc functions ******/
 //Capture map click to clear popinfo array before fill it
-$("#mapa").on("click", function () {
+document.getElementById("mapa").addEventListener("click", function () {
   popupInfo = [];
 });
 
@@ -3780,10 +3782,10 @@ function loadWmsTpl(objLayer) {
     infoAux = info.search("<ul>"); // search if info has a list
     if (infoAux > 0) {
       // check if info has any content, if so shows popup
-      $(info)
-        .find("li")
-        .each(function (index) {
-          var aux = $(this).text().split(":");
+      const parsedInfo = document.createElement("div");
+      parsedInfo.innerHTML = info;
+      parsedInfo.querySelectorAll("li").forEach(function (item) {
+          var aux = item.textContent.split(":");
           info = info.replace(
             "<b>" + aux[0] + "</b>:",
             "<b>" + ucwords(aux[0].replace(/_/g, " ")) + ":</b>",
@@ -3874,7 +3876,6 @@ function loadWmsTpl(objLayer) {
         }
         if (infoParsed != "") {
           // check if info has any content, if so shows popup
-          var popupContent = $(".leaflet-popup").html();
           popupInfo.push(infoParsed); //First info for popup
         }
         if (popupInfo.length > 0) {

@@ -984,7 +984,7 @@ function whenMapIsReady() {
 }
 
 async function loadTemplate(data, isDefaultTemplate) {
-  $(document).ready(async function () {
+  onDomReady(async function () {
     await app.init(data);
 
     //Template

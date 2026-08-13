@@ -245,8 +245,9 @@ function showImageOnError(image) {
 
 function mainMenuSearch(e) {
   e.preventDefault();
-  if ($("#q").val().length != 0) {
-    gestorMenu.setQuerySearch($("#q").val());
+  const query = document.getElementById("q")?.value || "";
+  if (query.length != 0) {
+    gestorMenu.setQuerySearch(query);
     gestorMenu.printMenu();
     let tabs = document.getElementById("menuTabs");
     tabs ? (tabs.style.display = "none") : 0;
@@ -284,7 +285,7 @@ function hideAllElevationProfile() {
         }
       }
     });
-    $("#pt-wrapper").addClass("hidden");
+    document.getElementById("pt-wrapper").classList.add("hidden");
   }
 }
 
@@ -335,14 +336,14 @@ function showTotalNumberofLayers() {
   });
 
   if (activeLayers > 0) {
-    $("#cleanTrash").html(
+    document.getElementById("cleanTrash").innerHTML =
       "<div class='glyphicon glyphicon-refresh'></div>" +
         "<span class='total-active-layers-counter'>" +
         activeLayers +
-        "</span>",
-    );
+        "</span>";
   } else {
-    $("#cleanTrash").html("<span class='glyphicon glyphicon-refresh'></span>");
+    document.getElementById("cleanTrash").innerHTML =
+      "<span class='glyphicon glyphicon-refresh'></span>";
   }
 }
 
@@ -753,7 +754,10 @@ function loadTemplateStyleConfig(template, isDefaultTemplate) {
     const STYLE_PATH = isDefaultTemplate
       ? "src/config/default/styles/css/main.css"
       : "src/config/styles/css/main.css";
-    $("head").append(`<link rel="stylesheet" href=${STYLE_PATH}>`);
+    const style = document.createElement("link");
+    style.rel = "stylesheet";
+    style.href = STYLE_PATH;
+    document.head.appendChild(style);
   } catch (error) {
     console.error(error);
   }
@@ -1077,15 +1081,14 @@ function closeGeoprocessModal() {
 
 function deleteLayerGeometry(layer) {
   mapa.removeGroup(layer, true, layer);
-  let id = "#fl-" + layer;
-  let parent = $(id).parent()[0];
+  const element = document.getElementById("fl-" + layer);
+  let parent = element?.parentElement;
 
   if (parent && parent.childElementCount <= 1) {
     let index = parent.id.indexOf("-panel-body");
-    let lista = "#lista-" + parent.id.substr(0, index);
-    $(lista).remove();
+    document.getElementById("lista-" + parent.id.substr(0, index))?.remove();
   } else {
-    $(id).remove();
+    element?.remove();
   }
 }
 
@@ -1563,15 +1566,12 @@ function addCounterForSection(groupname, layerType) {
     }
   });
   const groupnamev = clearSpecialChars(groupname);
+  const sectionTitle = document.getElementById(groupnamev + "-a");
+  if (!sectionTitle) return;
   if (counter > 0) {
-    $("#" + groupnamev + "-a").html(
-      groupnamev +
-        " <span class='active-layers-counter'>" +
-        counter +
-        "</span>",
-    );
+    sectionTitle.innerHTML = `${groupnamev} <span class="active-layers-counter">${counter}</span>`;
   } else {
-    $("#" + groupnamev + "-a").html(groupnamev);
+    sectionTitle.textContent = groupnamev;
   }
 }
 
@@ -1634,15 +1634,15 @@ function loadingBtn(status, idBtn, btnName) {
   if (status === "on") {
     btn_ejecutar.innerHTML =
       '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    $("#ejec_gp").addClass("ag-btn-disabled");
-    $("#" + idBtn).addClass("ag-btn-disabled");
+    document.getElementById("ejec_gp")?.classList.add("ag-btn-disabled");
+    btn_ejecutar.classList.add("ag-btn-disabled");
   } else if (status === "off") {
     if (btnName) {
       btn_ejecutar.innerHTML = btnName;
     } else {
       btn_ejecutar.innerHTML = "Ejecutar";
     }
-    $("#" + idBtn).removeClass("ag-btn-disabled");
+    btn_ejecutar.classList.remove("ag-btn-disabled");
   }
 }
 
@@ -2367,10 +2367,10 @@ function removeLayerFromAllGroups(layer, groupName) {
   }
 }
 
-$(document).ready(function () {
-  $("#menu-toggle").click(function (e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("menuDisplayed");
+onDomReady(function () {
+  document.getElementById("menu-toggle")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    document.getElementById("wrapper")?.classList.toggle("menuDisplayed");
   });
 });
 

@@ -63,7 +63,7 @@ loginatic = function () {
 
       /* if (result.clave == pwd) { */
       if (result.clave) {
-        let recuerdame = $("#inp-recuerdame").prop("checked") ? 1 : 0;
+        let recuerdame = document.getElementById("inp-recuerdame").checked ? 1 : 0;
 
         this.currentLogin = result;
 
@@ -79,7 +79,7 @@ loginatic = function () {
         document.getElementById("login-wrapper").style.display = "none";
         logged = true;
 
-        if ($("#btn-logout").length == 0) {
+        if (!document.getElementById("btn-logout")) {
           this._addLogoutButton();
         }
 
@@ -158,7 +158,9 @@ loginatic = function () {
                 </div>
             </div>
         `;
-    $("#login-wrapper").append(wrapperHtml);
+    document
+      .getElementById("login-wrapper")
+      .insertAdjacentHTML("beforeend", wrapperHtml);
   };
 
   this._addLogoutButton = () => {

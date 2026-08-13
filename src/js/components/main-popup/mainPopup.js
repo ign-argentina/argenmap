@@ -30,7 +30,7 @@ mainPopup = function () {
       mainWrapper.style = "display: flex;align-items: center;";
       mainWrapper.classList =
         "container-fluid col-12 col-xs-12 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
-      $("#main-popup").append(mainWrapper);
+      mainPopup.appendChild(mainWrapper);
 
       const contentWrapper = document.createElement("div");
       contentWrapper.id = "contentWrapper";

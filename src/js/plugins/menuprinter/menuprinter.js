@@ -1,12 +1,9 @@
 function showMainMenu() {
   //Ocultar loading
-  $(".loading").hide();
-  //Imprimir menú
-  gestorMenu.imprimir($(".nav.nav-sidebar"));
-  //Agregar tooltip resumen
-  $("[data-toggle2='tooltip']").tooltip({
-    placement: "right",
-    trigger: "hover",
-    container: "body",
+  document.querySelectorAll(".loading").forEach((element) => {
+    element.style.display = "none";
   });
+  //Imprimir menú
+  gestorMenu.imprimir(document.querySelector(".nav.nav-sidebar"));
+  // Native title attributes provide tooltips without Bootstrap JS.
 }

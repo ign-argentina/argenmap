@@ -53,7 +53,7 @@ class Graphics {
     document.getElementById("icons-d3").append(select);
     document.getElementById("icons-d3").append(btnclose);
 
-    enableJqueryUiInteractions("#containergraphics", {
+    enableNativeInteractions("#containergraphics", {
       draggable: {
         containment: "#mapa",
         scroll: false,

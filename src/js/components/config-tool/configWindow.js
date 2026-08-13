@@ -65,7 +65,7 @@ class configWindow {
 
     document.body.appendChild(configWrapper);
 
-    enableJqueryUiInteractions("#configWrapper", {
+    enableNativeInteractions("#configWrapper", {
       draggable: {
         scroll: false,
         cancel: "#configWindow",

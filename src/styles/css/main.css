@@ -153,6 +153,67 @@ Ejemplos:
   --menu-text-color-hover: #202020;
 }
 
+.argenmap-resize-handle {
+  position: absolute;
+  z-index: 2;
+  touch-action: none;
+}
+
+.argenmap-resize-e,
+.argenmap-resize-w {
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: ew-resize;
+}
+
+.argenmap-resize-e { right: -5px; }
+.argenmap-resize-w { left: -5px; }
+
+.argenmap-resize-s {
+  right: 0;
+  bottom: -5px;
+  left: 0;
+  height: 10px;
+  cursor: ns-resize;
+}
+
+.argenmap-resize-se {
+  right: -5px;
+  bottom: -5px;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+}
+
+.argenmap-image-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.argenmap-image-preview img {
+  max-width: 95%;
+  max-height: 95%;
+  object-fit: contain;
+}
+
+.argenmap-image-preview-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
 /* ====================================
    MEDIA QUERIES - RESPONSIVE FONTS
    ==================================== */

@@ -213,20 +213,31 @@ class StylesUI {
   }
 }
 
-async function clickReferencias(img, event) {
+function clickReferencias(img, event) {
   event?.preventDefault();
-
-  try {
-    await appDependencies.load("fancybox");
-    $.fancybox.open({
-      src: img,
-      type: "image",
-      closeBtn: "true",
-    });
-  } catch (error) {
-    console.error("Unable to open references image:", error);
-    if (typeof UserMessage === "function") {
-      new UserMessage(error.message, true, "error");
-    }
-  }
+  document.getElementById("argenmap-image-preview")?.remove();
+  const preview = document.createElement("div");
+  preview.id = "argenmap-image-preview";
+  preview.className = "argenmap-image-preview";
+  preview.setAttribute("role", "dialog");
+  preview.setAttribute("aria-modal", "true");
+  preview.setAttribute("aria-label", "Vista ampliada");
+  preview.innerHTML = `
+    <button type="button" class="argenmap-image-preview-close" aria-label="Cerrar">&times;</button>
+    <img src="${String(img).replace(/["<>]/g, "")}" alt="Vista ampliada">
+  `;
+  const close = () => preview.remove();
+  preview.addEventListener("click", (clickEvent) => {
+    if (clickEvent.target === preview) close();
+  });
+  preview.querySelector("button").addEventListener("click", close);
+  document.addEventListener(
+    "keydown",
+    (keyEvent) => {
+      if (keyEvent.key === "Escape") close();
+    },
+    { once: true },
+  );
+  document.body.appendChild(preview);
+  preview.querySelector("button").focus();
 }

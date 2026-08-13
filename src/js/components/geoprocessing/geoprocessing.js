@@ -10,6 +10,20 @@ let counterContour = 0,
   counterElevProfile = 0,
   counterAzimut = 0; //soon to be moved to their respective class
 
+const gpElement = (selector) => document.querySelector(selector);
+const gpClass = (selector, className, enabled) =>
+  gpElement(selector)?.classList.toggle(className, enabled);
+const gpShow = (selector, visible) => {
+  const element = gpElement(selector);
+  if (element) element.style.display = visible ? "" : "none";
+};
+const gpSetValueAndChange = (selector, value) => {
+  const element = gpElement(selector);
+  if (!element) return;
+  element.value = value;
+  element.dispatchEvent(new Event("change", { bubbles: true }));
+};
+
 class Geoprocessing {
   formContainer = null;
   contour_result_active = false;
@@ -140,7 +154,7 @@ class Geoprocessing {
     document.getElementById("select-process").options[0].text =
       "Seleccione una Opción";
 
-    enableJqueryUiInteractions("#mr", {
+    enableNativeInteractions("#mr", {
       draggable: {
         containment: "body",
       },
@@ -532,7 +546,7 @@ class Geoprocessing {
   }
 
   setSliderHeight(sliderLayer) {
-    $("#ejec_gp").removeClass("ag-btn-disabled");
+    gpClass("#ejec_gp", "ag-btn-disabled", false);
 
     //Contains all unique values
     let arraySlider = []; //Array that contains all unique values
@@ -614,31 +628,31 @@ class Geoprocessing {
 
     if (event === "add-layer") {
       L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-        $("#ejec_gp").addClass("ag-btn-disabled");
+        gpClass("#ejec_gp", "ag-btn-disabled", true);
         rectPos = mapa.editableLayers.rectangle;
         formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
         _area = formattedArea + " km²";
 
         if (formattedArea > maxSize) {
           isValidRectangle = false;
-          $("#ejec_gp").addClass("ag-btn-disabled");
-          $("#invalidRect").removeClass("hidden");
+          gpClass("#ejec_gp", "ag-btn-disabled", true);
+          gpClass("#invalidRect", "hidden", false);
         } else if (formattedArea < maxSize) {
           isValidRectangle = true;
-          $("#msgRectangle").addClass("hidden");
-          $("#invalidRect").addClass("hidden");
+          gpClass("#msgRectangle", "hidden", true);
+          gpClass("#invalidRect", "hidden", true);
           if (
-            $("#input-equidistancia").val() >= 10 &&
-            $("#input-equidistancia").val() <= 10000
+            gpElement("#input-equidistancia").value >= 10 &&
+            gpElement("#input-equidistancia").value <= 10000
           ) {
-            $("#ejec_gp").removeClass("ag-btn-disabled");
+            gpClass("#ejec_gp", "ag-btn-disabled", false);
           }
         }
         contourRectangles = [];
         return _area;
       };
     } else if (event === "edit-layer") {
-      $("#ejec_gp").addClass("ag-btn-disabled");
+      gpClass("#ejec_gp", "ag-btn-disabled", true);
       rectPos = mapa.editableLayers.rectangle;
 
       contourRectangles.push(rectPos[rectPos.length - 1]);
@@ -652,17 +666,17 @@ class Geoprocessing {
 
       if (formattedArea > maxSize) {
         isValidRectangle = false;
-        $("#ejec_gp").addClass("ag-btn-disabled");
-        $("#invalidRect").removeClass("hidden");
+        gpClass("#ejec_gp", "ag-btn-disabled", true);
+        gpClass("#invalidRect", "hidden", false);
       } else if (formattedArea < maxSize) {
         isValidRectangle = true;
-        $("#msgRectangle").addClass("hidden");
-        $("#invalidRect").addClass("hidden");
+        gpClass("#msgRectangle", "hidden", true);
+        gpClass("#invalidRect", "hidden", true);
         if (
-          $("#input-equidistancia").val() >= 10 &&
-          $("#input-equidistancia").val() <= 10000
+          gpElement("#input-equidistancia").value >= 10 &&
+          gpElement("#input-equidistancia").value <= 10000
         ) {
-          $("#ejec_gp").removeClass("ag-btn-disabled");
+          gpClass("#ejec_gp", "ag-btn-disabled", false);
         }
       }
       contourRectangles = [];
@@ -681,10 +695,10 @@ class Geoprocessing {
 
       case "delete-layer":
         contourRectangles = [];
-        $("#invalidRect").addClass("hidden");
-        $("#ejec_gp").addClass("ag-btn-disabled");
-        $("#drawRectangleBtn").removeClass("ag-btn-disabled");
-        $("#msgRectangle").removeClass("hidden");
+        gpClass("#invalidRect", "hidden", true);
+        gpClass("#ejec_gp", "ag-btn-disabled", true);
+        gpClass("#drawRectangleBtn", "ag-btn-disabled", false);
+        gpClass("#msgRectangle", "hidden", false);
         break;
 
       default:
@@ -698,8 +712,8 @@ class Geoprocessing {
         mapa.editableLayers.polyline.forEach((layer) => {
           if (layer.name.includes("polyline")) {
             setTimeout(function () {
-              $("#select-capa").val(layer.name).change();
-              $("#ejec_gp").removeClass("ag-btn-disabled");
+              gpSetValueAndChange("#select-capa", layer.name);
+              gpClass("#ejec_gp", "ag-btn-disabled", false);
             }, 500);
           }
         });
@@ -707,9 +721,9 @@ class Geoprocessing {
 
       case "delete-layer":
         document.getElementById("select-capa").selectedIndex = 0;
-        $("#ejec_gp").addClass("ag-btn-disabled");
-        $("#drawBtn").removeClass("ag-btn-disabled");
-        $("#msgRectangle").removeClass("hidden");
+        gpClass("#ejec_gp", "ag-btn-disabled", true);
+        gpClass("#drawBtn", "ag-btn-disabled", false);
+        gpClass("#msgRectangle", "hidden", false);
         break;
 
       default:
@@ -730,10 +744,9 @@ class Geoprocessing {
       }
     });
     if (isBuffer) {
-      $("#msgNoLayer").addClass("hidden");
-      $("#msgRectangle").removeClass("hidden");
-      //$("#drawRectangleBtn").removeClass("disabledbutton");
-      $('label[for="input-equidistancia"]').show();
+      gpClass("#msgNoLayer", "hidden", true);
+      gpClass("#msgRectangle", "hidden", false);
+      gpShow('label[for="input-equidistancia"]', true);
       document.getElementById("input-equidistancia").classList.remove("hidden");
     }
   }
@@ -745,7 +758,7 @@ class Geoprocessing {
       "Se superó el limite. <br> Edite o elimine el rectángulo.";
     rectSizeMsg.id = "invalidRect";
     document.getElementsByClassName("form")[1].appendChild(rectSizeMsg);
-    $("#invalidRect").addClass("hidden");
+    gpClass("#invalidRect", "hidden", true);
 
     let layerMessage = document.createElement("div");
     layerMessage.id = "msgRectangle";
@@ -756,7 +769,7 @@ class Geoprocessing {
       document.getElementsByClassName("form")[1].appendChild(layerMessage);
 
       //Hide Capa for Contour Lines
-      $('label[for="select-capa"]').hide();
+      gpShow('label[for="select-capa"]', false);
       document.getElementById("select-capa").classList.add("hidden");
     }
 
@@ -770,11 +783,11 @@ class Geoprocessing {
       messageBuffer.id = "msgNoLayer";
       messageBuffer.style = "color: red; font-weight: bolder;";
       document.getElementsByClassName("form")[1].appendChild(messageBuffer);
-      $("#msgRectangle").addClass("hidden");
+      gpClass("#msgRectangle", "hidden", true);
 
-      $('label[for="select-capa"]').show();
-      $('label[for="input-equidistancia"]').hide();
-      $("#drawRectangleBtn").addClass("ag-btn-disabled");
+      gpShow('label[for="select-capa"]', true);
+      gpShow('label[for="input-equidistancia"]', false);
+      gpClass("#drawRectangleBtn", "ag-btn-disabled", true);
       document.getElementById("input-equidistancia").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
 
@@ -787,7 +800,7 @@ class Geoprocessing {
       message.innerHTML = "No hay Curvas de Nivel";
       message.id = "msgNoContour";
       document.getElementsByClassName("form")[1].appendChild(message);
-      $("#msgRectangle").addClass("hidden");
+      gpClass("#msgRectangle", "hidden", true);
 
       for (let polyline of mapa.editableLayers.polyline) {
         if (
@@ -795,12 +808,12 @@ class Geoprocessing {
           polyline.layer.includes(this.GEOPROCESS.contour)
         ) {
           this.setSliderHeight(sliderLayer);
-          $("#msgNoContour").addClass("hidden");
+          gpClass("#msgNoContour", "hidden", true);
           break;
         }
       }
 
-      $('label[for="select-capa"]').show();
+      gpShow('label[for="select-capa"]', true);
       document.getElementById("drawRectangleBtn").classList.add("hidden");
       document.getElementById("select-capa").classList.remove("hidden");
     }
@@ -906,7 +919,7 @@ class Geoprocessing {
                       document
                         .getElementById("sliderValue")
                         .classList.add("hidden");
-                      $("#ejec_gp").addClass("ag-btn-disabled");
+                      gpClass("#ejec_gp", "ag-btn-disabled", true);
                       return;
                     }
                     addedLayers.forEach((lyr) => {
@@ -918,19 +931,19 @@ class Geoprocessing {
 
                       sliderLayer = selectedLayer;
                       this.updateSliderHeight(sliderLayer);
-                      $("#ejec_gp").removeClass("ag-btn-disabled");
+                      gpClass("#ejec_gp", "ag-btn-disabled", false);
                     }
                   } else if (this.geoprocessId === "buffer") {
                     if (!element.value) {
-                      $("#drawRectangleBtn").addClass("ag-btn-disabled");
-                      $("#ejec_gp").addClass("ag-btn-disabled");
+                      gpClass("#drawRectangleBtn", "ag-btn-disabled", true);
+                      gpClass("#ejec_gp", "ag-btn-disabled", true);
                     } else {
                       this.checkLayersForBuffer();
-                      $("#drawRectangleBtn").removeClass("ag-btn-disabled");
+                      gpClass("#drawRectangleBtn", "ag-btn-disabled", false);
                     }
                   } else if (this.geoprocessId === "elevationProfile") {
                     if (!element.value) {
-                      $("#ejec_gp").addClass("ag-btn-disabled");
+                      gpClass("#ejec_gp", "ag-btn-disabled", true);
                       return;
                     }
                     let selectedLayer = "";
@@ -942,7 +955,7 @@ class Geoprocessing {
                           : null;
                       });
                       mapa.centerLayer(selectedLayer.getGeoJSON());
-                      $("#ejec_gp").removeClass("ag-btn-disabled");
+                      gpClass("#ejec_gp", "ag-btn-disabled", false);
                     }
                   }
                 },
@@ -975,12 +988,14 @@ class Geoprocessing {
             //Different inputs depending on active geoprocess
             if (this.geoprocessId == "contour") {
               inputDefault.value = 100;
-              $("label[for='input-equidistancia']").html("Equidistancia (m)");
+              gpElement("label[for='input-equidistancia']").textContent =
+                "Equidistancia (m)";
             } else if (this.geoprocessId == "buffer") {
               inputDefault.value = 1000;
-              $("label[for='input-equidistancia']").html("Distancia (m)");
+              gpElement("label[for='input-equidistancia']").textContent =
+                "Distancia (m)";
             } else if (this.geoprocessId == "waterRise") {
-              $("label[for='input-cota']").hide();
+              gpShow("label[for='input-cota']", false);
               document.getElementById("input-cota").classList.add("hidden");
             }
             formFields.push(input);
@@ -999,21 +1014,19 @@ class Geoprocessing {
     function checkExecuteBtn() {
       //Check to see if there is any text entered
       if (
-        $("#input-equidistancia").val() >= 10 &&
-        $("#input-equidistancia").val() <= 10000 &&
+        gpElement("#input-equidistancia").value >= 10 &&
+        gpElement("#input-equidistancia").value <= 10000 &&
         isValidRectangle == true
       ) {
-        $("#ejec_gp").removeClass("ag-btn-disabled");
+        gpClass("#ejec_gp", "ag-btn-disabled", false);
       } else if (
-        $("#input-equidistancia").val() < 10 ||
-        $("#input-equidistancia").val() > 10000
+        gpElement("#input-equidistancia").value < 10 ||
+        gpElement("#input-equidistancia").value > 10000
       ) {
-        $("#ejec_gp").addClass("ag-btn-disabled");
+        gpClass("#ejec_gp", "ag-btn-disabled", true);
       }
     }
-    $(document).ready(function () {
-      $("#input-equidistancia").keyup(checkExecuteBtn);
-    });
+    gpElement("#input-equidistancia")?.addEventListener("keyup", checkExecuteBtn);
 
     //Draw Rectangle Button
     let rectangleBtn;
@@ -1026,7 +1039,7 @@ class Geoprocessing {
       rectangleBtn,
       () => {
         let drawingRectangle = new L.Draw.Rectangle(mapa);
-        $("#drawRectangleBtn").addClass("ag-btn-disabled");
+        gpClass("#drawRectangleBtn", "ag-btn-disabled", true);
         drawingRectangle.enable();
         this.checkRectangleArea("add-layer");
         isSelectionDrawingActive = true;
@@ -1052,7 +1065,7 @@ class Geoprocessing {
       "ejec_gp",
     );
 
-    $("#ejec_gp").addClass("ag-btn-disabled"); //Execute Button disabled from the start
+    gpClass("#ejec_gp", "ag-btn-disabled", true); //Execute Button disabled from the start
     this.buildOptionFormMessages(sliderLayer); //Form Messages & Slider
   }
 
@@ -1579,18 +1592,13 @@ class Geoprocessing {
             addedLayers.forEach((layer) => {
               if (layer.id.includes(this.GEOPROCESS.contour)) {
                 setTimeout(function () {
-                  $("#select-capa").val(layer.id).change();
+                  gpSetValueAndChange("#select-capa", layer.id);
                 }, 500);
               }
             });
           }
           if (this.geoprocessId == "elevationProfile") {
             // mapa.editableLayers.polyline.forEach((layer) => {
-            //   if (layer.name.includes("polyline")) {
-            //     setTimeout(function () {
-            //       $("#select-capa").val(layer.name).change();
-            //     }, 500);
-            //   }
             // });
           }
           if (this.geoprocessId == "buffer") {
@@ -1601,8 +1609,8 @@ class Geoprocessing {
               gestorMenu.layerIsWmts(layerForBuffer.name) == false
             ) {
               setTimeout(function () {
-                $("#select-capa").val(layerForBuffer.name).change();
-                $("#drawRectangleBtn").removeClass("ag-btn-disabled");
+                gpSetValueAndChange("#select-capa", layerForBuffer.name);
+                gpClass("#drawRectangleBtn", "ag-btn-disabled", false);
               }, 500);
             }
           }
@@ -1692,8 +1700,8 @@ class Geoprocessing {
             select[i].remove();
           }
           if (!document.getElementById("select-capa")[1]) {
-            $("#drawRectangleBtn").addClass("ag-btn-disabled");
-            $("#ejec_gp").addClass("ag-btn-disabled");
+            gpClass("#drawRectangleBtn", "ag-btn-disabled", true);
+            gpClass("#ejec_gp", "ag-btn-disabled", true);
           }
         }
       }
@@ -1716,8 +1724,8 @@ class Geoprocessing {
             select[i].remove();
           }
           if (!document.getElementById("select-capa")[1]) {
-            $("#drawRectangleBtn").addClass("ag-btn-disabled");
-            $("#ejec_gp").addClass("ag-btn-disabled");
+            gpClass("#drawRectangleBtn", "ag-btn-disabled", true);
+            gpClass("#ejec_gp", "ag-btn-disabled", true);
           }
         }
       }
