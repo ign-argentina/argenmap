@@ -36,6 +36,8 @@ class Geoprocessing {
   _namePrefix = null;
   azimutMarkers = [];
   azimutMapClickHandler = null;
+  rectangleAreaFormatter = null;
+  rectangleDrawStopHandler = null;
   GEOPROCESS = {
     contour: "curvas_de_nivel_",
     waterRise: "cota_",
@@ -94,6 +96,7 @@ class Geoprocessing {
   }
 
   closeModal() {
+    this.restoreRectangleAreaFormatter();
     this.clearAzimutSelection();
     document.getElementsByClassName("leaflet-draw-draw-rectangle")[0].style =
       "";
@@ -619,77 +622,86 @@ class Geoprocessing {
   }
 
   calculateRectangleArea(event) {
-    let _area, rectPos, rectangleArea, formattedArea, maxSize;
+    let rectPos, rectangleArea;
+    const maxSize = this.getRectangleMaxSize();
+    if (maxSize === null) return;
+
+    rectPos = mapa.editableLayers.rectangle;
+    const rectangle = rectPos[rectPos.length - 1];
+    if (!rectangle) return;
+
+    rectangleArea = L.GeometryUtil.geodesicArea(rectangle.getLatLngs()[0]);
+    this.updateRectangleAreaValidity(rectangleArea, maxSize);
+    contourRectangles = [];
+  }
+
+  getRectangleMaxSize() {
     if (this.geoprocessId === "contour") {
-      maxSize = 100;
-    } else if (this.geoprocessId === "buffer") {
-      maxSize = 1000;
+      return 100;
     }
+    if (this.geoprocessId === "buffer") {
+      return 1000;
+    }
+    return null;
+  }
 
-    if (event === "add-layer") {
-      L.GeometryUtil.readableArea = function (area, isMetric, precision) {
-        gpClass("#ejec_gp", "ag-btn-disabled", true);
-        rectPos = mapa.editableLayers.rectangle;
-        formattedArea = L.GeometryUtil.formattedNumber(area / 1000000, 2);
-        _area = formattedArea + " km²";
+  updateRectangleAreaValidity(area, maxSize = this.getRectangleMaxSize()) {
+    if (maxSize === null) return;
 
-        if (formattedArea > maxSize) {
-          isValidRectangle = false;
-          gpClass("#ejec_gp", "ag-btn-disabled", true);
-          gpClass("#invalidRect", "hidden", false);
-        } else if (formattedArea < maxSize) {
-          isValidRectangle = true;
-          gpClass("#msgRectangle", "hidden", true);
-          gpClass("#invalidRect", "hidden", true);
-          if (
-            gpElement("#input-equidistancia").value >= 10 &&
-            gpElement("#input-equidistancia").value <= 10000
-          ) {
-            gpClass("#ejec_gp", "ag-btn-disabled", false);
-          }
-        }
-        contourRectangles = [];
-        return _area;
-      };
-    } else if (event === "edit-layer") {
-      gpClass("#ejec_gp", "ag-btn-disabled", true);
-      rectPos = mapa.editableLayers.rectangle;
+    const areaInSquareKilometers = area / 1000000;
+    const isWithinMaximum = areaInSquareKilometers <= maxSize;
+    const distanceInput = gpElement("#input-equidistancia");
 
-      contourRectangles.push(rectPos[rectPos.length - 1]);
-      rectangleArea = L.GeometryUtil.geodesicArea(
-        contourRectangles[contourRectangles.length - 1].getLatLngs()[0],
-      );
-      formattedArea = L.GeometryUtil.formattedNumber(
-        rectangleArea / 1000000,
-        2,
-      );
-
-      if (formattedArea > maxSize) {
-        isValidRectangle = false;
-        gpClass("#ejec_gp", "ag-btn-disabled", true);
-        gpClass("#invalidRect", "hidden", false);
-      } else if (formattedArea < maxSize) {
-        isValidRectangle = true;
-        gpClass("#msgRectangle", "hidden", true);
-        gpClass("#invalidRect", "hidden", true);
-        if (
-          gpElement("#input-equidistancia").value >= 10 &&
-          gpElement("#input-equidistancia").value <= 10000
-        ) {
-          gpClass("#ejec_gp", "ag-btn-disabled", false);
-        }
+    isValidRectangle = isWithinMaximum;
+    gpClass("#ejec_gp", "ag-btn-disabled", true);
+    gpClass("#invalidRect", "hidden", isWithinMaximum);
+    if (isWithinMaximum) {
+      gpClass("#msgRectangle", "hidden", true);
+      const distance = Number(distanceInput?.value);
+      if (distance >= 10 && distance <= 10000) {
+        gpClass("#ejec_gp", "ag-btn-disabled", false);
       }
-      contourRectangles = [];
     }
+  }
+
+  startRectangleAreaValidation() {
+    this.restoreRectangleAreaFormatter();
+    const maxSize = this.getRectangleMaxSize();
+    if (maxSize === null) return;
+
+    const originalFormatter = L.GeometryUtil.readableArea;
+    const manager = this;
+    const formatter = function (area, isMetric, precision) {
+      manager.updateRectangleAreaValidity(area, maxSize);
+      return originalFormatter.call(this, area, isMetric, precision);
+    };
+
+    this.rectangleAreaFormatter = { originalFormatter, formatter };
+    L.GeometryUtil.readableArea = formatter;
+    this.rectangleDrawStopHandler = () => this.restoreRectangleAreaFormatter();
+    mapa.once("draw:drawstop", this.rectangleDrawStopHandler);
+  }
+
+  restoreRectangleAreaFormatter() {
+    if (this.rectangleDrawStopHandler && mapa?.off) {
+      mapa.off("draw:drawstop", this.rectangleDrawStopHandler);
+    }
+    if (
+      this.rectangleAreaFormatter &&
+      L?.GeometryUtil?.readableArea === this.rectangleAreaFormatter.formatter
+    ) {
+      L.GeometryUtil.readableArea =
+        this.rectangleAreaFormatter.originalFormatter;
+    }
+    this.rectangleAreaFormatter = null;
+    this.rectangleDrawStopHandler = null;
   }
 
   checkRectangleArea(event) {
     switch (event) {
       case "add-layer":
-        this.calculateRectangleArea(event);
-        break;
-
       case "edit-layer":
+        gpClass("#ejec_gp", "ag-btn-disabled", true);
         this.calculateRectangleArea(event);
         break;
 
@@ -1040,8 +1052,8 @@ class Geoprocessing {
       () => {
         let drawingRectangle = new L.Draw.Rectangle(mapa);
         gpClass("#drawRectangleBtn", "ag-btn-disabled", true);
+        this.startRectangleAreaValidation();
         drawingRectangle.enable();
-        this.checkRectangleArea("add-layer");
         isSelectionDrawingActive = true;
       },
       "drawRectangleBtn",
