@@ -749,18 +749,28 @@ async function loadMapaBaseBing(bingKey, layer, attribution) {
   }
 }
 
-function loadTemplateStyleConfig(template, isDefaultTemplate) {
-  try {
-    const STYLE_PATH = isDefaultTemplate
-      ? "src/config/default/styles/css/main.css"
-      : "src/config/styles/css/main.css";
-    const style = document.createElement("link");
-    style.rel = "stylesheet";
-    style.href = STYLE_PATH;
-    document.head.appendChild(style);
-  } catch (error) {
-    console.error(error);
-  }
+async function loadTemplateStyleConfig(customStyles = []) {
+  const styles = Array.isArray(customStyles)
+    ? customStyles
+    : typeof customStyles === "string"
+      ? [customStyles]
+      : [];
+
+  const requests = styles
+    .map((style) =>
+      typeof style === "string" ? { url: style } : style,
+    )
+    .filter((style) => typeof style?.url === "string" && style.url.trim())
+    .map(({ url, ...options }) =>
+      appDependencies.loadStyle(url, { ...options, custom: true }),
+    );
+
+  const results = await Promise.allSettled(requests);
+  results.forEach((result) => {
+    if (result.status === "rejected") {
+      console.error("Unable to load a custom stylesheet:", result.reason);
+    }
+  });
 }
 
 function setBaseLayersInfo(layers) {

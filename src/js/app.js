@@ -954,8 +954,10 @@ async function getData(dataURL, load = false) {
  */
 async function getConfig(preferencesURL, dataURL) {
   try {
-    const preferences = await getPreferences(preferencesURL);
-    const data = await getData(dataURL);
+    const [preferences, data] = await Promise.all([
+      getPreferences(preferencesURL),
+      getData(dataURL),
+    ]);
     await loadTemplate({ ...data, ...preferences }, false);
     gestorMenu.setLegendImgPath("src/config/styles/images/legends/");
   } catch (error) {
@@ -993,7 +995,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     let stylesui = new StylesUI();
     stylesui.createstyles();
     //Load template config
-    loadTemplateStyleConfig(template, isDefaultTemplate);
+    await loadTemplateStyleConfig(app.customStyles);
 
     delete app["template"]; // delete template item from data
 

@@ -671,12 +671,40 @@ entrada `mainPopup` de `localStorage`.
 
 ## 4. Recomendaciones y validaciones
 
-Para modificar más el aspecto visual de la aplicación puede agregarse en `src/config/styles` los siguientes directorios y archivos:
+Para modificar el aspecto visual sin alterar los estilos principales de la
+aplicación, se puede declarar uno o más archivos CSS en `preferences.json`:
+
+```json
+"customStyles": [
+  "src/config/styles/css/theme.css"
+]
+```
+
+La propiedad es opcional. Si no se declara o contiene un arreglo vacío, la
+aplicación no solicita hojas de estilo personalizadas. Los archivos declarados
+se cargan en paralelo, después de los estilos principales, y conservan
+precedencia sobre los estilos de plugins que se carguen posteriormente. Cada
+archivo debería contener únicamente las reglas que se desean agregar o
+sobrescribir; no es necesario copiar `src/styles/css/main.css`.
+
+También se admite una única ruta como texto o entradas con opciones:
+
+```json
+"customStyles": [
+  {
+    "url": "src/config/styles/css/theme.css",
+    "media": "screen"
+  }
+]
+```
+
+Los recursos propios del despliegue pueden organizarse dentro de
+`src/config/styles` usando los siguientes directorios:
 
 > [!TIP]
 > se pueden copiar desde `src/config/default/styles`
 
-- `src/config/styles/css/main.css` : reglas de estilos CSS (el original está en `src/styles/css`)
+- `src/config/styles/css` : hojas de estilo declaradas mediante `customStyles`.
 - `src/config/styles/images` : logos y otras imágenes. Se pueden referenciar en los archivos JSON.
 - `src/config/styles/images/legends` : la aplicación busca por defecto en esta ubicación imágenes con el mismo nombre que las capas y las agrega al panel usándolas como leyenda o previsualización.
 

@@ -339,7 +339,22 @@ removed.
 
 Additional application-wide styles and images can be placed in:
 
-- `src/config/styles/css/main.css`: custom CSS rules.
+Custom styles can be added without changing the application's main stylesheet
+by declaring them in `preferences.json`:
+
+```json
+"customStyles": [
+  "src/config/styles/css/theme.css"
+]
+```
+
+This property is optional. When it is missing or empty, no custom stylesheet is
+requested. Declared stylesheets are loaded in parallel after the core styles
+and keep precedence over plugin styles loaded later. Each file should contain
+only the rules that need to be added or overridden; copying the complete core
+stylesheet is not required.
+
+- `src/config/styles/css`: stylesheets declared through `customStyles`.
 - `src/config/styles/images`: logos and other images.
 - `src/config/styles/images/legends`: layer legend or preview images.
 

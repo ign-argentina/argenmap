@@ -110,16 +110,29 @@ class AppDependencyLoader {
       link.rel = "stylesheet";
       link.href = url;
       link.dataset.argenmapDependency = "true";
+      if (options.custom) {
+        link.dataset.argenmapCustomStyle = "true";
+      }
       if (options.integrity) {
         link.integrity = options.integrity;
       }
       if (options.crossOrigin) {
         link.crossOrigin = options.crossOrigin;
       }
+      if (options.media) {
+        link.media = options.media;
+      }
       link.onload = resolve;
       link.onerror = () =>
         reject(new Error(`Unable to load stylesheet "${url}".`));
-      document.head.appendChild(link);
+      const firstCustomStyle = document.head.querySelector(
+        'link[data-argenmap-custom-style="true"]',
+      );
+      if (!options.custom && firstCustomStyle) {
+        document.head.insertBefore(link, firstCustomStyle);
+      } else {
+        document.head.appendChild(link);
+      }
     }).catch((error) => {
       this.stylePromises.delete(normalizedUrl);
       throw error;
