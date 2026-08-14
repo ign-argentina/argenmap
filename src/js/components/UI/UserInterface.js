@@ -17,8 +17,19 @@ class AboutUsModal {
     aboutHeader.className = "about-header";
 
     const aboutLogo = document.createElement("img");
-    aboutLogo.src = "src/styles/images/argenmap-banner.webp";
+    aboutLogo.src = new URL(
+      "src/styles/images/argenmap-banner.webp",
+      document.baseURI,
+    ).href;
     aboutLogo.className = "about-logo";
+    aboutLogo.alt = "Argenmap";
+    aboutLogo.addEventListener(
+      "error",
+      () => {
+        aboutLogo.src = APP_IMG;
+      },
+      { once: true },
+    );
 
     const aboutExitBtn = document.createElement("a");
     aboutExitBtn.id = "aboutExitBtn";

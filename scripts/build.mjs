@@ -268,6 +268,7 @@ async function build() {
   });
   await cp(fromProject("dist"), fromOutput("dist"), { recursive: true });
   await cp(fromProject("LICENSE"), fromOutput("LICENSE"));
+  await cp(fromProject("README.md"), fromOutput("README.md"));
 
   await ensureRuntimeConfiguration();
   await minifyApplicationAssets();
