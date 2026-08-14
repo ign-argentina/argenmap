@@ -159,15 +159,18 @@ const login = {
    * Load login components asynchronously and initialize event listeners.
    */
   load: async function () {
-    // Load navigation button component asynchronously and append it to the specified element
-    await login._append(
-      "src/js/components/login/navbtn.html",
-      "html",
-      "#geoserver-login-btn",
-    );
-
-    // Load login form component asynchronously and append it to the body
-    await login._append("src/js/components/login/form.html", "html", "body");
+    const styleRequest = appDependencies
+      .loadStyle("src/js/components/login/login.css")
+      .catch((error) => console.error(error));
+    await Promise.all([
+      styleRequest,
+      login._append(
+        "src/js/components/login/navbtn.html",
+        "html",
+        "#geoserver-login-btn",
+      ),
+      login._append("src/js/components/login/form.html", "html", "body"),
+    ]);
 
     // Initialize event listeners for user interactions
     login._listeners();

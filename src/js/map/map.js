@@ -197,16 +197,6 @@ function loadFirstUseMapPluginResources(pluginName) {
   return promise;
 }
 
-function preloadFirstUseMapPluginStyles(pluginName) {
-  (PLUGIN_STYLES[pluginName] || []).forEach((style) => {
-    const request =
-      typeof style === "string"
-        ? appDependencies.loadStyle(style)
-        : appDependencies.loadStyle(style.url, style);
-    request.catch((error) => console.error(error));
-  });
-}
-
 function bindFirstUseMapPluginControl(
   element,
   pluginName,
@@ -282,7 +272,6 @@ function createFirstUseLeafletControl({
   element.setAttribute("role", "button");
   element.innerHTML = content;
   document.querySelector(".leaflet-top.leaflet-left").appendChild(element);
-  preloadFirstUseMapPluginStyles(pluginName);
   bindFirstUseMapPluginControl(element, pluginName, getActivatedElement);
 }
 

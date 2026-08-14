@@ -1559,8 +1559,23 @@ function loadDeveloperLogo() {
       img.style.backgroundImage = `url('${devLogoUrl}')`;
       link.appendChild(img);
 
-      link.addEventListener("click", function () {
-        modalAboutUs.toggleOpen();
+      let isLoadingAboutStyles = false;
+      link.addEventListener("click", async function () {
+        if (isLoadingAboutStyles) return;
+
+        isLoadingAboutStyles = true;
+        link.setAttribute("aria-busy", "true");
+        try {
+          await appDependencies.loadStyle(
+            "src/js/components/about/about.css",
+          );
+          modalAboutUs.toggleOpen();
+        } catch (error) {
+          new UserMessage(error.message, true, "error");
+        } finally {
+          isLoadingAboutStyles = false;
+          link.removeAttribute("aria-busy");
+        }
       });
 
       return link;
