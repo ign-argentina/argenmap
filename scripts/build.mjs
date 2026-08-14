@@ -206,6 +206,38 @@ async function ensureRuntimeConfiguration() {
   }
 }
 
+async function ensureConfiguredFavicon() {
+  const preferencesPath = fromOutput("src/config/preferences.json");
+  const preferences = JSON.parse(await readFile(preferencesPath, "utf8"));
+  const favicon = preferences.favicon;
+
+  if (
+    typeof favicon !== "string" ||
+    favicon.trim() === "" ||
+    /^(?:[a-z]+:)?\/\//iu.test(favicon) ||
+    favicon.startsWith("data:")
+  ) {
+    return;
+  }
+
+  const relativeFavicon = favicon
+    .split(/[?#]/, 1)[0]
+    .replace(/^[/\\]+/u, "");
+  const faviconPath = path.resolve(outputDirectory, relativeFavicon);
+  if (!faviconPath.startsWith(`${outputDirectory}${path.sep}`)) {
+    throw new Error(`La ruta configurada para el favicon no es segura: ${favicon}`);
+  }
+  if (await exists(faviconPath)) {
+    return;
+  }
+
+  await mkdir(path.dirname(faviconPath), { recursive: true });
+  await cp(
+    fromOutput("src/styles/images/favicon.ico"),
+    faviconPath,
+  );
+}
+
 async function removeBundledSources() {
   for (const relativePath of [...initialScripts, ...initialStyles]) {
     const filePath = fromOutput(relativePath);
@@ -271,6 +303,7 @@ async function build() {
   await cp(fromProject("README.md"), fromOutput("README.md"));
 
   await ensureRuntimeConfiguration();
+  await ensureConfiguredFavicon();
   await minifyApplicationAssets();
   const [javaScriptBundle, cssBundle] = await Promise.all([
     createInitialJavaScriptBundle(),
