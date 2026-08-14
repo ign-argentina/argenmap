@@ -1,33 +1,126 @@
 #main-popup {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: RGBA(0, 0, 0, .6);
+  --main-popup-edge-gap: clamp(1rem, 4vmin, 2rem);
+  position: fixed;
+  inset: 0;
   z-index: 1050;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: var(--main-popup-edge-gap);
+  overflow: auto;
+  background: var(--main-popup-overlay-background, rgba(0, 0, 0, 0.6));
+}
+
+#mainWrapper {
+  position: relative;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(30rem, 72vw);
+  height: auto;
+  max-width: calc(100vw - (2 * var(--main-popup-edge-gap)));
+  max-height: calc(100vh - (2 * var(--main-popup-edge-gap)));
+  max-height: calc(100dvh - (2 * var(--main-popup-edge-gap)));
+  margin: auto;
+  padding: 0;
 }
+
 .mainPopup {
-  padding: 2rem;
-  background-color: var(--bg-color), opacity(0.2%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  box-sizing: border-box;
   width: 100%;
+  max-height: calc(100vh - (2 * var(--main-popup-edge-gap)));
+  max-height: calc(100dvh - (2 * var(--main-popup-edge-gap)));
+  padding: clamp(0.75rem, 2.5vmin, 1.25rem);
+  overflow: auto;
+  color: white;
+  background: var(--main-popup-background, transparent);
   border-radius: 10px;
-  /* -webkit-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.75); */
-  color: white;
 }
+
+#contentWrapperImg {
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+#contentWrapperImg img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: min(42vh, 22rem);
+  max-height: min(42dvh, 22rem);
+  object-fit: contain;
+}
+
+.main-popup-welcome-sign {
+  align-self: stretch;
+  margin: 0;
+  color: inherit;
+  font-size: clamp(0.8rem, 2.2vmin, 1rem);
+  line-height: 1.35;
+  text-align: center;
+}
+
+.main-popup-welcome-sign > :first-child {
+  margin-top: 0;
+}
+
+.main-popup-welcome-sign > :last-child {
+  margin-bottom: 0;
+}
+
+#contentWrapperTxt {
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 32vh;
+  max-height: 32dvh;
+  overflow: auto;
+}
+
 .exit-btn {
-  float: right;
+  position: absolute;
+  top: -1.5rem;
+  right: 0.35rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
   color: white;
-  border: none;
-  overflow-y: auto;
-  background-color: transparent;
+  border: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
 }
+
+.exit-btn:hover,
+.exit-btn:focus-visible {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
 .not-again-check {
+  align-self: center;
   font-weight: bold;
+  text-align: center;
 }
+
 .not-again-check input {
   margin-right: 5px;
+}
+
+@media (max-width: 37.5em) {
+  #mainWrapper {
+    width: min(22rem, 72vw);
+  }
+
+  .mainPopup {
+    gap: 0.5rem;
+  }
 }

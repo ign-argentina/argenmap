@@ -318,11 +318,34 @@ startup. Verify the installation with Tag Assistant or the browser's
     "isActive": true,
     "version": "2026-07-20T15:30:00-03:00",
     "welcomeSign": "What's new",
+    "welcomeSignStyle": {
+      "fontSize": "0.9rem",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "direction": "auto",
+      "position": "above"
+    },
     "image": "src/styles/images/news.webp",
-    "text": "New content is now available."
+    "text": "New content is now available.",
+    "background": "transparent",
+    "overlayBackground": "rgba(0, 0, 0, 0.6)"
   }
 }
 ```
+
+`mainPopup.background` accepts any valid CSS `background` value, including
+`"transparent"`, a solid color such as `"#13213c"`, or a gradient such as
+`"linear-gradient(135deg, #13213c, #157db9)"`. The card is transparent when the
+option is omitted. `mainPopup.overlayBackground` independently controls the
+background covering the application and keeps the semi-transparent shade when
+omitted.
+
+`mainPopup.welcomeSignStyle` customizes the welcome text without requiring a
+global stylesheet. By default the text is smaller, centered, and placed above
+the image. `fontSize` accepts a CSS size (`"14px"`, `"0.9rem"`, `"clamp(...)"`)
+or a number, which is interpreted as pixels. `position` accepts `"above"` or
+`"below"`, while `direction` accepts `"auto"`, `"ltr"`, or `"rtl"` for future
+language-specific content.
 
 When the user selects **Do not show again**, the application stores the current
 `mainPopup.version` in `localStorage`. Changing the value makes the new message

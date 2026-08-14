@@ -1955,7 +1955,9 @@ function createPopupForVector(layer, clickLatlng) {
 
   Object.entries(properties).forEach(function ([key, value]) {
     if (String(key).toLowerCase() === "html") {
-      infoAux += `<tr class="file-layer-html-row"><td colspan="2">${value ?? ""}</td></tr>`;
+      infoAux += `<tr class="file-layer-html-row"><td colspan="2">${prepareFileLayerPopupHtml(
+        value,
+      )}</td></tr>`;
       return;
     }
 
@@ -1983,17 +1985,16 @@ function createPopupForVector(layer, clickLatlng) {
     160,
     mapWidth <= 600 ? mapWidth - 80 : Math.floor(mapWidth / 2) - 40,
   );
-  targetMap.openPopup(
+  openLayerQueryPopup(
+    targetMap,
     paginateFeatureInfo(popupInfo, 0, false, true),
     popupLatlng,
     {
-      autoPan: false,
       className: "file-layer-popup",
       minWidth: Math.min(288, maxPopupWidth),
       maxWidth: maxPopupWidth,
     },
   ); //Show info
-  targetMap.setView(popupLatlng, targetMap.getZoom(), { animate: false });
 }
 
 function escapeFileLayerPopupValue(value) {
@@ -2003,6 +2004,112 @@ function escapeFileLayerPopupValue(value) {
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function prepareFileLayerPopupHtml(value) {
+  const template = document.createElement("template");
+  template.innerHTML = String(value ?? "");
+
+  template.content.querySelectorAll("img[src]").forEach((image) => {
+    try {
+      const imageUrl = new URL(image.getAttribute("src"), document.baseURI);
+      if (
+        (imageUrl.protocol === "http:" || imageUrl.protocol === "https:") &&
+        imageUrl.origin !== window.location.origin
+      ) {
+        image.referrerPolicy = "no-referrer";
+      }
+    } catch (error) {
+      // Leave malformed or non-standard sources untouched so the browser can
+      // handle them consistently with regular HTML content.
+    }
+  });
+
+  return template.innerHTML;
+}
+
+function openLayerQueryPopup(targetMap, content, latlng, options = {}) {
+  const popupOptions = getLayerQueryPopupOptions(options, targetMap);
+
+  targetMap.openPopup(content, latlng, popupOptions);
+  keepLayerQueryPopupInView(targetMap, targetMap._popup);
+  return targetMap._popup;
+}
+
+function getLayerQueryPopupOptions(options = {}, targetMap = null) {
+  const edgePadding = [16, 16];
+  const popupOptions = {
+    autoPan: true,
+    keepInView: true,
+    autoPanPaddingTopLeft: edgePadding,
+    autoPanPaddingBottomRight: edgePadding,
+    ...options,
+  };
+
+  if (targetMap?.getSize) {
+    const availableWidth = Math.max(160, targetMap.getSize().x - 80);
+    popupOptions.maxWidth = Math.min(
+      options.maxWidth ?? 300,
+      availableWidth,
+    );
+    if (options.minWidth) {
+      popupOptions.minWidth = Math.min(options.minWidth, popupOptions.maxWidth);
+    }
+  }
+
+  return popupOptions;
+}
+
+function keepLayerQueryPopupInView(targetMap, popup) {
+  if (!targetMap || !popup) {
+    return;
+  }
+
+  let updateFrame = null;
+  const updatePosition = () => {
+    if (updateFrame !== null) {
+      return;
+    }
+
+    updateFrame = window.requestAnimationFrame(() => {
+      updateFrame = null;
+      if (popup._map === targetMap) {
+        popup.update();
+      }
+    });
+  };
+
+  updatePosition();
+
+  const popupContent = popup.getElement()?.querySelector(".leaflet-popup-content");
+  if (popupContent && targetMap.getSize) {
+    popupContent.style.maxHeight = `${Math.max(80, targetMap.getSize().y - 80)}px`;
+    popupContent.style.overflowY = "auto";
+  }
+  let resizeObserver = null;
+  if (popupContent && typeof ResizeObserver !== "undefined") {
+    resizeObserver = new ResizeObserver(updatePosition);
+    resizeObserver.observe(popupContent);
+  } else {
+    popupContent?.querySelectorAll("img").forEach((image) => {
+      if (!image.complete) {
+        image.addEventListener("load", updatePosition, { once: true });
+        image.addEventListener("error", updatePosition, { once: true });
+      }
+    });
+  }
+
+  const stopTracking = (event) => {
+    if (event.popup !== popup) {
+      return;
+    }
+    if (updateFrame !== null) {
+      window.cancelAnimationFrame(updateFrame);
+    }
+    resizeObserver?.disconnect();
+    targetMap.off("popupclose", stopTracking);
+  };
+  targetMap.on("popupclose", stopTracking);
 }
 
 /**

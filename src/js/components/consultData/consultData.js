@@ -207,12 +207,11 @@ function createImportWmsLayer(layer) {
         if (popupInfo.length > 0) {
           popupInfoToPaginate = [...popupInfo]; // Clone array for pagination
           latlngTmp = latlng;
-          this._map.openPopup(
+          openLayerQueryPopup(
+            this._map,
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
-            { autoPan: false },
           ); // Display popup with paginated info
-          this._map.setView(latlng, this._map.getZoom(), { animate: false });
           popupInfoPage = 0;
         }
       } else {
@@ -306,12 +305,11 @@ function createWmsLayer(objLayer) {
         if (popupInfo.length > 0) {
           popupInfoToPaginate = [...popupInfo]; // Clone array for pagination
           latlngTmp = latlng;
-          this._map.openPopup(
+          openLayerQueryPopup(
+            this._map,
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
-            { autoPan: false },
           ); // Display popup with paginated info
-          this._map.setView(latlng, this._map.getZoom(), { animate: false });
           popupInfoPage = 0;
         }
       } else {

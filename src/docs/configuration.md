@@ -619,11 +619,34 @@ El archivo `preferences.json` es utilizado para configurar varios aspectos de la
     "isActive": false, // Habilita o deshabilita el popup. Deshabilitado por defecto.
     "version": 1, // Incrementar cuando cambia el contenido para volver a mostrarlo a quienes eligieron "No volver a mostrar".
     "welcomeSign": "",
+    "welcomeSignStyle": {
+      "fontSize": "0.9rem", // Acepta una medida CSS o un número interpretado como píxeles.
+      "color": "#ffffff",
+      "textAlign": "center", // left, center, right, start, end o justify.
+      "direction": "auto", // auto, ltr o rtl.
+      "position": "above" // above o below para ubicarlo respecto de la imagen.
+    },
     "image": "https://static.ign.gob.ar/img/logo.png", // URL de la imagen.
-    "text": "¡Hola mundo! ¡Bienvenido a nuestro visor!" // Texto del popup.
+    "text": "¡Hola mundo! ¡Bienvenido a nuestro visor!", // Texto del popup.
+    "background": "transparent", // Fondo de la tarjeta: color, gradiente o transparente.
+    "overlayBackground": "rgba(0, 0, 0, 0.6)" // Fondo que cubre la aplicación.
   }
 }
 ```
+
+`mainPopup.background` acepta cualquier valor CSS válido para `background`. Por
+ejemplo, puede configurarse como `"transparent"`, `"#13213c"` o
+`"linear-gradient(135deg, #13213c, #157db9)"`. Si se omite, la tarjeta es
+transparente. `mainPopup.overlayBackground` controla de manera independiente el
+fondo exterior; si se omite conserva el sombreado semitransparente.
+
+`mainPopup.welcomeSignStyle` permite personalizar el texto de bienvenida sin
+agregar estilos globales. El texto aparece centrado, con un tamaño reducido y
+arriba de la imagen cuando se omite esta configuración. `fontSize` acepta una
+medida CSS (`"14px"`, `"0.9rem"`, `"clamp(...)"`) o un número, que se interpreta
+en píxeles. `position` admite `"above"` y `"below"`; `direction` permite preparar
+el contenido para idiomas de izquierda a derecha, de derecha a izquierda o con
+dirección automática.
 
 ### Google Analytics
 

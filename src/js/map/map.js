@@ -3547,10 +3547,20 @@ function onEachFeature(feature, layer) {
     var datos = new Array();
     Object.entries(feature.properties).forEach(function ([index, value]) {
       if (value) {
-        datos.push(index + ": " + value + "<br>");
+        const popupValue =
+          String(index).toLowerCase() === "html"
+            ? prepareFileLayerPopupHtml(value)
+            : value;
+        datos.push(index + ": " + popupValue + "<br>");
       }
     });
-    layer.bindPopup(datos.toString().replace(",", ""));
+    layer.bindPopup(
+      datos.toString().replace(",", ""),
+      getLayerQueryPopupOptions({}, mapa),
+    );
+    layer.on("popupopen", (event) => {
+      keepLayerQueryPopupInView(layer._map, event.popup);
+    });
   }
 }
 
@@ -3880,7 +3890,8 @@ function loadWmsTpl(objLayer) {
         if (popupInfo.length > 0) {
           popupInfoToPaginate = popupInfo.slice();
           latlngTmp = latlng;
-          this._map.openPopup(
+          openLayerQueryPopup(
+            this._map,
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
           ); //Show all info
@@ -4033,12 +4044,11 @@ function changePopupPage(changeType) {
     hasNext = true;
   }
 
-  mapa.openPopup(
+  openLayerQueryPopup(
+    mapa,
     paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext),
     latlngTmp,
-    { autoPan: false },
   ); //Show all info
-  mapa.setView(latlngTmp, mapa.getZoom(), { animate: false });
 }
 
 function copytoClipboard(coords) {
