@@ -414,29 +414,24 @@ class UImf {
   }
 
   enabledbtnCapa() {
-    control_btn_add_layer = true;
-    let btn = document.getElementById("btn-upload-agregar-capa");
-    btn.className = "ag-btn ag-btn-primary";
-
     const uploadedArea = document.getElementById("uploaded-area");
     const updateUploadButton = () => {
-      let cont = uploadedArea;
-      let txt = document.getElementById("btn-upload-agregar-capa");
-      if (cont.children.length > 1) {
-        txt.innerHTML = "Agregar Capas";
-      } else {
-        txt.innerHTML = "Agregar Capa";
-      }
-
-      if (uploadedArea.childElementCount == 0) {
-        control_btn_add_layer = false;
-        let btn = document.getElementById("btn-upload-agregar-capa");
-        btn.className = "ag-btn ag-btn-primary";
-      }
+      const button = document.getElementById("btn-upload-agregar-capa");
+      if (!button) return;
+      const layerCount = uploadedArea.childElementCount;
+      control_btn_add_layer = layerCount > 0;
+      button.innerHTML = layerCount > 1 ? "Agregar Capas" : "Agregar Capa";
+      button.className = control_btn_add_layer
+        ? "ag-btn ag-btn-primary"
+        : "ag-btn ag-btn-disabled";
     };
-    new MutationObserver(updateUploadButton).observe(uploadedArea, {
-      childList: true,
-    });
+
+    if (!uploadedArea.dataset.uploadButtonObserver) {
+      uploadedArea.dataset.uploadButtonObserver = "true";
+      new MutationObserver(updateUploadButton).observe(uploadedArea, {
+        childList: true,
+      });
+    }
     updateUploadButton();
   }
 }

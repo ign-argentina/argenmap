@@ -375,16 +375,26 @@ function bindFeatureToFirstUse(triggerId, pluginName, loadFeature) {
     return;
   }
 
+  const startFeatureLoad = () => {
+    trigger.setAttribute("aria-busy", "true");
+    return loadFeature()
+      .catch((error) => new UserMessage(error.message, true, "error"))
+      .finally(() => trigger.removeAttribute("aria-busy"));
+  };
+
   trigger.addEventListener(
     "click",
-    () => {
-      trigger.setAttribute("aria-busy", "true");
-      loadFeature()
-        .catch((error) => new UserMessage(error.message, true, "error"))
-        .finally(() => trigger.removeAttribute("aria-busy"));
-    },
+    startFeatureLoad,
     true,
   );
+
+  const targetId = trigger.getAttribute("data-target");
+  const target = targetId ? document.getElementById(targetId) : null;
+  queueMicrotask(() => {
+    if (target && getComputedStyle(target).display !== "none") {
+      void startFeatureLoad();
+    }
+  });
 }
 
 if (isMobile) {

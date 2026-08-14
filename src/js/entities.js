@@ -3219,8 +3219,10 @@ class GestorMenu {
   }
 
   async loadSectionServices(section) {
-    await this._loadLayerInfos(this._getLayerInfosForSection(section));
-    this.printOnlySection(section);
+    const layerInfos = this._getLayerInfosForSection(section);
+    if (layerInfos.length === 0 || !this.items[section]) return;
+    await this._loadLayerInfos(layerInfos);
+    if (this.items[section]) this.printOnlySection(section);
   }
 
   async loadInitialLayerServices(requestedLayers) {
@@ -3614,6 +3616,7 @@ class GestorMenu {
         const collapse = event.target;
         if (!collapse.classList.contains("collapse")) return;
         const showingId = collapse.id;
+        if (thisObj._getLayerInfosForSection(showingId).length === 0) return;
         const content = collapse.querySelector(":scope > div");
         if (content && content.innerHTML === "") {
           content.innerHTML =

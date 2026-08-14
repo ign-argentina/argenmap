@@ -305,7 +305,7 @@ function enableNativeInteractions(
     element.dataset.nativeDraggable = "true";
     element.addEventListener("pointerdown", (event) => {
       if (event.button !== 0 || event.target.closest(
-        draggable.cancel || "input, textarea, select, button, a",
+        draggable.cancel || "input, textarea, select, button, a, .ag-btn",
       )) return;
 
       const startRect = element.getBoundingClientRect();

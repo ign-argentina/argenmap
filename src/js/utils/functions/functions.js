@@ -1012,60 +1012,94 @@ function clickGeometryLayer(layer) {
   showTotalNumberofLayers();
 }
 
-function clickWMSLayer(layer, layer_item, fileName) {
-  let sectionName;
-  if (layer_item.classList.value === "file-layer active" && layer.active) {
-    layer_item.classList.value = "file-layer";
+const importedWmsLayerTogglePromises = new WeakMap();
 
-    mapa.removeLayer(overlayMaps[layer.name]);
-    delete overlayMaps[layer.name];
-    layer.active = false;
-
-    addedLayers.forEach((lyr) => {
-      if (lyr.file_name == fileName) {
-        sectionName = lyr.section;
-        lyr.isActive = false;
-      }
-    });
-  } else if (layer_item.classList.value === "file-layer" && !layer.active) {
-    layer_item.classList.value = "file-layer active";
-    layer.active = true;
-
-    createImportWmsLayer(layer);
-
-    if (consultDataBtnClose == false) {
-      overlayMaps[layer.name]._source.options.identify = true;
-    } else if (consultDataBtnClose == true) {
-      overlayMaps[layer.name]._source.options.identify = false;
-    } else {
-      overlayMaps[layer.name]._source.options.identify = false;
-    }
-    overlayMaps[layer.name].addTo(mapa);
-
-    //Original
-    // layer.L_layer = L.tileLayer
-    //   .wms(layer.host, {
-    //     layers: layer.name,
-    //     format: "image/png",
-    //     transparent: true,
-    //   })
-    //   .addTo(mapa);
-    gestorMenu.layersDataForWfs[layer.name] = {
-      name: layer.name,
-      section: layer.title,
-      host: layer.host,
-    };
-
-    addedLayers.forEach((lyr) => {
-      if (lyr.file_name == fileName) {
-        sectionName = lyr.section;
-        lyr.isActive = true;
-      }
-    });
+async function clickWMSLayer(layer, layer_item, fileName) {
+  if (importedWmsLayerTogglePromises.has(layer)) {
+    return importedWmsLayerTogglePromises.get(layer);
   }
 
-  updateNumberofLayers(sectionName);
-  showTotalNumberofLayers();
+  const togglePromise = (async () => {
+    const addedLayer = addedLayers.find(
+      (lyr) => lyr.layer === layer || lyr.file_name == fileName,
+    );
+    const sectionName = addedLayer?.section;
+    const mapLayer = overlayMaps[layer.name];
+    const isActive = layer.active === true;
+
+    if (isActive) {
+      if (mapLayer) {
+        if (typeof mapa.hasLayer !== "function" || mapa.hasLayer(mapLayer)) {
+          mapa.removeLayer(mapLayer);
+        }
+        delete overlayMaps[layer.name];
+      }
+      layer.L_layer = null;
+      layer.active = false;
+      layer_item.classList.remove("active");
+      if (addedLayer) addedLayer.isActive = false;
+      updateNumberofLayers(sectionName);
+      showTotalNumberofLayers();
+      return false;
+    }
+
+    layer_item.setAttribute("aria-busy", "true");
+    try {
+      if (mapLayer) {
+        if (mapa.hasLayer?.(mapLayer)) mapa.removeLayer(mapLayer);
+        delete overlayMaps[layer.name];
+      }
+      await appDependencies.load("wmsMapLayer");
+      if (typeof createImportWmsLayer !== "function") {
+        throw new Error("No se pudo inicializar el soporte para capas WMS.");
+      }
+
+      createImportWmsLayer(layer);
+      const createdLayer = overlayMaps[layer.name];
+      if (!createdLayer) {
+        throw new Error(
+          `No se pudo crear la capa WMS "${layer.title || layer.name}".`,
+        );
+      }
+
+      if (createdLayer._source?.options) {
+        createdLayer._source.options.identify = consultDataBtnClose === false;
+      }
+      createdLayer.addTo(mapa);
+      layer.L_layer = createdLayer;
+      layer.active = true;
+      layer_item.classList.add("active");
+      if (addedLayer) addedLayer.isActive = true;
+
+      gestorMenu.layersDataForWfs[layer.name] = {
+        name: layer.name,
+        section: layer.title,
+        host: layer.host,
+      };
+
+      updateNumberofLayers(sectionName);
+      showTotalNumberofLayers();
+      return true;
+    } catch (error) {
+      const failedLayer = overlayMaps[layer.name];
+      if (failedLayer && mapa.hasLayer?.(failedLayer)) {
+        mapa.removeLayer(failedLayer);
+      }
+      delete overlayMaps[layer.name];
+      layer.L_layer = null;
+      layer.active = false;
+      layer_item.classList.remove("active");
+      if (addedLayer) addedLayer.isActive = false;
+      console.error("Unable to activate imported WMS layer:", error);
+      new UserMessage(error.message, true, "error");
+      return false;
+    } finally {
+      layer_item.removeAttribute("aria-busy");
+    }
+  })().finally(() => importedWmsLayerTogglePromises.delete(layer));
+
+  importedWmsLayerTogglePromises.set(layer, togglePromise);
+  return togglePromise;
 }
 
 function geoprocessModalIsOpen() {
@@ -1630,7 +1664,9 @@ function deleteAddedLayer(layer) {
 }
 
 function loadingBtn(status, idBtn, btnName) {
-  let btn_ejecutar = document.getElementById(idBtn);
+  const btn_ejecutar = document.getElementById(idBtn);
+  if (!btn_ejecutar) return;
+
   if (status === "on") {
     btn_ejecutar.innerHTML =
       '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
