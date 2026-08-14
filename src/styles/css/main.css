@@ -72,15 +72,6 @@ Ejemplos:
   src: url("../../../dist/fonts/EncodeSans-Bold.ttf");
 }
 
-@font-face {
-  font-family: "FWC2026 UltraCondensed Bold";
-  src: url("../../config/FWC2026-UltraCondensedBold.ttf") format("truetype");
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-}
-
-
 :root {
   --primary-color: #3a6ea7;
   --secondary-color: #0094d4;
