@@ -2697,6 +2697,10 @@ input:checked.switch+label:after {
     margin: 0;
   }
 
+  .menu-container.menu-panel-open {
+    z-index: 1100;
+  }
+
   #botonera {
     display: flex;
     width: 2.75rem;
@@ -2728,6 +2732,11 @@ input:checked.switch+label:after {
     width: 100%;
     min-width: 0;
     max-height: inherit;
+    pointer-events: none;
+  }
+
+  #menu-content > * {
+    pointer-events: auto;
   }
 
   #sidebar {
@@ -2736,6 +2745,9 @@ input:checked.switch+label:after {
     max-width: none;
     max-height: inherit;
     margin: 0;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    -webkit-overflow-scrolling: touch;
   }
 
   .searchFormBtn > .center-flex {
@@ -2763,5 +2775,19 @@ input:checked.switch+label:after {
     min-height: 2.75rem;
     padding: 0;
     margin: 0;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body.argenmap-menu-panel-open .leaflet-control-container {
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
   }
 }

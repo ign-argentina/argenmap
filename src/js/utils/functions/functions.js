@@ -3047,41 +3047,71 @@ onDomReady(function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  var menuContainer = document.querySelector(".menu-container");
-  var buttons = document.querySelectorAll(".menu-section-btn");
+  const menuContainer = document.querySelector(".menu-container");
+  const buttons = document.querySelectorAll(".menu-section-btn");
+
+  const setMenuSectionVisibility = (button, targetSection, isVisible) => {
+    targetSection.style.display = isVisible ? "block" : "none";
+    button.setAttribute("aria-expanded", String(isVisible));
+  };
+
+  const updateOpenMenuState = () => {
+    const hasOpenPanel = Array.from(buttons).some((button) => {
+      const targetSection = document.getElementById(
+        button.getAttribute("data-target"),
+      );
+      return targetSection && getComputedStyle(targetSection).display !== "none";
+    });
+    menuContainer.classList.toggle("menu-panel-open", hasOpenPanel);
+    document.body.classList.toggle("argenmap-menu-panel-open", hasOpenPanel);
+  };
+
+  const closeAllMenuSections = () => {
+    buttons.forEach((button) => {
+      const targetSection = document.getElementById(
+        button.getAttribute("data-target"),
+      );
+      if (targetSection) {
+        setMenuSectionVisibility(button, targetSection, false);
+      }
+    });
+    updateOpenMenuState();
+  };
 
   buttons.forEach(function (button) {
+    const targetId = button.getAttribute("data-target");
+    button.setAttribute("aria-controls", targetId);
+    button.setAttribute("aria-expanded", "false");
     button.addEventListener("click", function (event) {
-      var targetId = button.getAttribute("data-target");
-      var targetSection = document.getElementById(targetId);
+      const targetSection = document.getElementById(targetId);
+      const shouldOpen = getComputedStyle(targetSection).display === "none";
 
-      if (targetSection.style.display === "block") {
-        targetSection.style.display = "none";
-      } else {
-        // Oculta todas las secciones antes de mostrar la deseada
-        buttons.forEach(function (otherButton) {
-          var otherTargetId = otherButton.getAttribute("data-target");
-          var otherTargetSection = document.getElementById(otherTargetId);
-
-          if (otherTargetSection !== targetSection) {
-            otherTargetSection.style.display = "none";
-          }
-        });
-
-        targetSection.style.display = "block";
-      }
+      buttons.forEach(function (otherButton) {
+        const otherTargetSection = document.getElementById(
+          otherButton.getAttribute("data-target"),
+        );
+        setMenuSectionVisibility(
+          otherButton,
+          otherTargetSection,
+          shouldOpen && otherTargetSection === targetSection,
+        );
+      });
+      updateOpenMenuState();
       event.stopPropagation();
     });
   });
 
-  // Agrega un evento de clic al documento para ocultar los contenedores al hacer clic fuera de ellos
   document.addEventListener("click", function (event) {
-    if (!menuContainer.contains(event.target) && event.target.id === "mapa") {
-      buttons.forEach(function (button) {
-        var targetId = button.getAttribute("data-target");
-        var targetSection = document.getElementById(targetId);
-        targetSection.style.display = "none";
-      });
+    const map = document.getElementById("mapa");
+    if (!menuContainer.contains(event.target) && map?.contains(event.target)) {
+      closeAllMenuSections();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && menuContainer.classList.contains("menu-panel-open")) {
+      closeAllMenuSections();
+      document.getElementById("sidebar-btn")?.focus();
     }
   });
 });

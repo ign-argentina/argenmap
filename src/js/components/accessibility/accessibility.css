@@ -45,8 +45,12 @@
 }
 @media (max-width: 37.5em) {
   #accessibility {
-    max-width: 300px;
-    min-width: 300px;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    max-height: calc(100dvh - 4.75rem - env(safe-area-inset-bottom, 0px));
+    margin: 0;
+    overscroll-behavior: contain;
   }
   
   .accessibility-btn {
