@@ -517,6 +517,7 @@ function loadWmsTplAux(objLayer) {
     delete overlayMaps[layer];
   } else {
     createWmsLayer(objLayer);
+    overlayMaps[layer].setOpacity(objLayer.capa.opacity ?? 1);
     const queryOptions = getLayerQueryOptions(objLayer.capa);
     overlayMaps[layer]._source.options.identify =
       queryOptions.queryable &&
@@ -1148,6 +1149,7 @@ async function clickWMSLayer(layer, layer_item, fileName) {
         createdLayer._source.options.identify =
           consultDataBtnClose === false || addedLayer?.queryActive === true;
       }
+      createdLayer.setOpacity(addedLayer?.opacity ?? 1);
       createdLayer.addTo(mapa);
       layer.L_layer = createdLayer;
       layer.active = true;

@@ -75,6 +75,7 @@ class Capa {
     this.tileMatrixSetLinks = this.metadata.tileMatrixSetLinks || [];
     this.resourceUrls = this.metadata.resourceUrls || [];
     this.serviceMetadata = this.metadata.service || null;
+    this.opacity = 1;
   }
 
   getLegendURL() {
@@ -291,7 +292,7 @@ class ImpresorItemHTML extends Impresor {
     input_opacity.style = "width: auto; margin-left: 10px;";
     input_opacity.setAttribute(
       "onInput",
-      `overlayMaps['${item.nombre}'].setOpacity(this.value)`,
+      `gestorMenu.setLayerOpacity('${item.nombre}', this.value)`,
     );
 
     if (activated) {
@@ -2855,6 +2856,7 @@ class GestorMenu {
     this._sectionOptionsMenu = null;
     this._sectionOptionsToggle = null;
     this._pinnedSectionId = null;
+    this._sectionOpacity = {};
     document.addEventListener("click", () => this.closeSectionOptionsMenu());
     window.addEventListener("resize", () => this.closeSectionOptionsMenu());
   }
@@ -3126,6 +3128,60 @@ class GestorMenu {
     });
   }
 
+  _applyOpacityToMapLayer(layer, opacity) {
+    if (!layer) return;
+    if (typeof layer.setStyle === "function") {
+      layer.setStyle({ opacity, fillOpacity: opacity });
+    } else if (typeof layer.setOpacity === "function") {
+      layer.setOpacity(opacity);
+    } else if (typeof layer.eachLayer === "function") {
+      layer.eachLayer((childLayer) => {
+        this._applyOpacityToMapLayer(childLayer, opacity);
+      });
+    }
+  }
+
+  setLayerOpacity(itemName, opacityValue) {
+    const opacity = Math.max(0, Math.min(1, Number(opacityValue)));
+    if (!Number.isFinite(opacity)) return;
+
+    Object.values(this.items).forEach((itemGroup) => {
+      Object.values(itemGroup.itemsComposite || {}).forEach((item) => {
+        if (item.nombre !== itemName) return;
+        (item.capas || [item.capa]).forEach((layer) => {
+          layer.opacity = opacity;
+          this._applyOpacityToMapLayer(overlayMaps[layer.nombre], opacity);
+        });
+      });
+    });
+  }
+
+  setSectionOpacity(sectionId, opacityValue) {
+    const opacity = Math.max(0, Math.min(1, Number(opacityValue)));
+    if (!Number.isFinite(opacity)) return;
+    this._sectionOpacity[sectionId] = opacity;
+
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        this.setLayerOpacity(item.nombre, opacity);
+        const input = document.getElementById(`range-${item.nombre}`);
+        if (input) input.value = opacity;
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      entry.opacity = opacity;
+      getFileLayerFeatures(entry.id).forEach((layer) => {
+        this._applyOpacityToMapLayer(layer, opacity);
+      });
+      this._applyOpacityToMapLayer(
+        overlayMaps[entry.layer?.name || entry.name],
+        opacity,
+      );
+    });
+  }
+
   _appendSectionMenuAction(menu, iconClass, label, handler) {
     const option = document.createElement("li");
     option.setAttribute("role", "none");
@@ -3240,6 +3296,34 @@ class GestorMenu {
       queryButton.disabled = true;
       queryButton.title = "La sección no contiene capas consultables";
     }
+
+    const opacityOption = document.createElement("li");
+    opacityOption.setAttribute("role", "none");
+    const opacityControl = document.createElement("div");
+    opacityControl.className = "section-opacity-control";
+    const opacityValue = this._sectionOpacity[sectionId] ?? 1;
+    opacityControl.innerHTML = `
+      <div class="section-opacity-label">
+        <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+        <label for="section-opacity-${sectionId}">Opacidad de la sección</label>
+        <output>${Math.round(opacityValue * 100)}%</output>
+      </div>`;
+    const opacityInput = document.createElement("input");
+    opacityInput.id = `section-opacity-${sectionId}`;
+    opacityInput.type = "range";
+    opacityInput.min = "0";
+    opacityInput.max = "1";
+    opacityInput.step = "0.05";
+    opacityInput.value = opacityValue;
+    opacityInput.setAttribute("aria-label", "Opacidad de todas las capas");
+    opacityInput.addEventListener("input", () => {
+      this.setSectionOpacity(sectionId, opacityInput.value);
+      opacityControl.querySelector("output").textContent =
+        `${Math.round(Number(opacityInput.value) * 100)}%`;
+    });
+    opacityControl.appendChild(opacityInput);
+    opacityOption.appendChild(opacityControl);
+    menu.appendChild(opacityOption);
 
     document.body.appendChild(menu);
     this._sectionOptionsMenu = menu;

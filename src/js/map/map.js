@@ -4281,6 +4281,10 @@ function loadGeojsonTpl(url, layer) {
       onEachFeature: onEachFeature,
       pointToLayer: pointToLayer,
     });
+    overlayMaps[layer].setStyle({
+      opacity: app.layers[layer]?.capa?.opacity ?? 1,
+      fillOpacity: app.layers[layer]?.capa?.opacity ?? 1,
+    });
     overlayMaps[layer].addTo(mapa);
   }
 }
@@ -4308,6 +4312,7 @@ function loadWmsTpl(objLayer) {
     } else if (service == "wmts") {
       createWmtsLayer(objLayer);
     }
+    overlayMaps[layer].setOpacity(objLayer.capa.opacity ?? 1);
     overlayMaps[layer].addTo(mapa);
   }
 

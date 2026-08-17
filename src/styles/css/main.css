@@ -869,6 +869,34 @@ div.leaflet-top.leaflet-left {
   text-align: center;
 }
 
+.section-opacity-control {
+  padding: 8px 14px 10px;
+  color: #474b4e;
+}
+
+.section-opacity-label {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.section-opacity-label label {
+  margin: 0;
+  font-weight: 400;
+}
+
+.section-opacity-label output {
+  min-width: 3em;
+  text-align: right;
+}
+
+.section-opacity-control input[type="range"] {
+  width: 100%;
+  margin: 0;
+}
+
 .section-header-loading {
   position: absolute;
   top: 50%;
