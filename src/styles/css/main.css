@@ -2681,3 +2681,87 @@ input:checked.switch+label:after {
    - --heading-xlarge-fnt-size: 1.25rem (20px)
 
    ====================================== */
+
+/* Compact layer menu layout for phone-sized viewports. */
+@media (max-width: 37.5em) {
+  .menu-container.top-around-flex {
+    top: 4.25rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.25rem;
+    width: auto;
+    max-width: none;
+    max-height: calc(100dvh - 4.75rem - env(safe-area-inset-bottom, 0px));
+    margin: 0;
+  }
+
+  #botonera {
+    display: flex;
+    width: 2.75rem;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .menu-section-btn,
+  .menu-section-btn.ag-btn {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu-section-btn .fa-layer-group,
+  .menu-section-btn .fa-file-circle-plus,
+  .menu-section-btn .fa-question,
+  .menu-section-btn .fa-gear,
+  .menu-section-btn .fa-universal-access {
+    font-size: 1.25rem;
+  }
+
+  #menu-content {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    max-height: inherit;
+  }
+
+  #sidebar {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    max-height: inherit;
+    margin: 0;
+  }
+
+  .searchFormBtn > .center-flex {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 2.75rem);
+    gap: 0.125rem;
+    width: 100%;
+  }
+
+  .searchFormBtn .formBtns {
+    width: auto;
+    min-width: 0;
+  }
+
+  #q.ag-input-text {
+    width: 100%;
+    min-width: 0;
+    height: 2.75rem;
+  }
+
+  .searchFormBtn > .center-flex > .btn-search {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
+    margin: 0;
+  }
+}
