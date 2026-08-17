@@ -890,6 +890,9 @@ function adaptToImage(imgDiv) {
    */
   let img = imgDiv.childNodes[0],
     item = imgDiv.parentNode.parentNode;
+  if (img?.classList?.contains("layer-menu-icon")) {
+    return;
+  }
   if (img.naturalHeight > 24 || img.naturalWidth > 24) {
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";

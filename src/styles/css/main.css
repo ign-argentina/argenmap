@@ -1301,6 +1301,12 @@ a.item-group-title:hover {
   padding-right: 2px;
 }
 
+.legend-img.layer-menu-icon {
+  width: 20px !important;
+  height: 20px !important;
+  object-fit: contain;
+}
+
 .expand-legend-graphic {
   background-color: var(--map-btn-bg-color);
   border-left: var(--layer-border-color);

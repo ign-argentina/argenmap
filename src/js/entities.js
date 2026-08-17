@@ -2,6 +2,7 @@
 
 const EmptyTab = "main-menu-tab-";
 const ItemGroupPrefix = "lista-";
+const DEFAULT_JOINED_LAYER_ICON = "src/styles/images/layers-group.svg";
 
 function normalizeStr(s) {
   if (s == null) return "";
@@ -179,8 +180,9 @@ class Impresor {
 class ImpresorItemHTML extends Impresor {
   imprimir(item) {
     var childId = item.getId();
+    const menuIcon = item.getMenuIcon();
     let lyr = item.capa,
-      legend,
+      legend = menuIcon,
       legendParams =
         _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;",
       aux = {
@@ -192,26 +194,35 @@ class ImpresorItemHTML extends Impresor {
     app.setLayer(aux);
     app.layerNameByDomId[childId] = item.nombre;
 
-    if (
-      lyr.legendURL === null ||
-      typeof lyr.legendURL === "undefined" ||
-      lyr.legendURL === ""
-    ) {
-      if (lyr.servicio === "wms") {
-        lyr.legendURL =
-          lyr.host +
-          "?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=" +
-          lyr.nombre;
-      } else {
-        lyr.legendURL = item.legendImg || ERROR_IMG;
+    if (!legend) {
+      if (
+        lyr.legendURL === null ||
+        typeof lyr.legendURL === "undefined" ||
+        lyr.legendURL === ""
+      ) {
+        if (lyr.servicio === "wms") {
+          lyr.legendURL =
+            lyr.host +
+            "?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=" +
+            lyr.nombre;
+        } else {
+          lyr.legendURL = item.legendImg || ERROR_IMG;
+        }
       }
+      legend = lyr.legendURL;
     }
-    legend = lyr.legendURL.includes("GetLegendGraphic")
-      ? lyr.legendURL + legendParams
-      : lyr.legendURL;
+    legend = legend.includes("GetLegendGraphic")
+      ? legend + legendParams
+      : legend;
 
     // following line adds layer when click is made
-    let legendImg = `<div class='legend-layer'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
+    const legendClass = menuIcon
+      ? "legend-img layer-menu-icon"
+      : "legend-img";
+    const adaptLegend = menuIcon
+      ? ""
+      : " onload='adaptToImage(this.parentNode)'";
+    let legendImg = `<div class='legend-layer'><img class='${legendClass}' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);'${adaptLegend}></div>`;
     let activated = item.visible == true ? " active " : "",
       btnhtml = "";
 
@@ -2513,6 +2524,7 @@ class Item extends ItemComposite {
     this.visible = false;
     this.legendImg = legendImg;
     this.legend = legend;
+    this.menuIcon = null;
     this.callback = callback;
     this.listType = null;
   }
@@ -2546,6 +2558,14 @@ class Item extends ItemComposite {
 
   getLegendImg() {
     return this.legendImg;
+  }
+
+  setMenuIcon(icon) {
+    this.menuIcon = icon;
+  }
+
+  getMenuIcon() {
+    return this.menuIcon;
   }
 
   loadLayer(capa, key) {
@@ -3769,6 +3789,12 @@ class GestorMenu {
                 this._layersJoin[keyJoin],
               )
             ) {
+              const configuredIcon = this._layersJoin[keyJoin].icon;
+              item.itemsComposite[keyItem].setMenuIcon(
+                typeof configuredIcon === "string" && configuredIcon.trim()
+                  ? configuredIcon.trim()
+                  : DEFAULT_JOINED_LAYER_ICON,
+              );
               //Busca las capas a incluir
               for (var keyJoinInt in this._layersJoin[keyJoin].joins) {
                 var itemInt =

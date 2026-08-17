@@ -624,6 +624,7 @@ Dentro del bloque "layers_joins", agregar un bloque para unir dos capas.
   "seccion": "conae", // Sección desplegable en donde se incluye este botón.
   "host": "https://geotematico01.conae.gov.ar/geoserver/Localidades/wms", // URL del servicio de la capa que queda de fondo
   "layer": "PatagoniaSur", // Nombre de la capa que queda de fondo.
+  "icon": "src/config/styles/images/legends/patagonia-agrupada.svg", // Opcional. Icono del botón agrupado.
   "joins": [
     {
       "seccion": "conae", // Sección desplegable en donde se incluye este botón.
@@ -635,6 +636,13 @@ Dentro del bloque "layers_joins", agregar un bloque para unir dos capas.
 ```
 
 ➡️ Esto genera un botón único en menú que activa ambas capas simultáneamente.
+
+`icon` admite una ruta local o una URL y tiene prioridad sobre el icono o la
+leyenda informada por el servicio para el botón del menú. No modifica las
+leyendas OGC reutilizadas por otras herramientas, como la impresión. Si se
+omite, se muestra `src/styles/images/layers-group.svg` para identificar que el
+botón controla una agrupación. La ruta se configura explícitamente y no depende
+del título visible ni de sus espacios o caracteres especiales.
 
 ![secciones desplegables en el panel de capas](img/wms.png)
 

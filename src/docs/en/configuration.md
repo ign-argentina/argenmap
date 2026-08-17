@@ -44,6 +44,34 @@ each following item defines a WMS or WMTS section.
 
 TMS sources may require `{-y}` instead of `{y}`.
 
+### Group several layers under one button
+
+Use `layers_joins` to make one menu button control layers from one or more OGC
+services. The first layer identifies the button and every entry in `joins` is
+activated or deactivated with it:
+
+```jsonc
+{
+  "seccion": "imagery",
+  "host": "https://example.org/geoserver/imagery",
+  "layer": "aerial_mosaic",
+  "icon": "src/config/styles/images/legends/grouped-imagery.svg",
+  "joins": [
+    {
+      "seccion": "boundaries",
+      "host": "https://example.org/geoserver/boundaries/wms",
+      "layer": "flight_boundaries"
+    }
+  ]
+}
+```
+
+`icon` accepts a local path or URL and takes precedence over the primary
+layer's service icon or legend for the menu button only. It does not replace
+the OGC legend metadata used by other tools such as printing. When omitted,
+`src/styles/images/layers-group.svg` is used to make the grouping explicit.
+The icon path never depends on the visible title or its special characters.
+
 ### Separate `sections` and `layers` structure
 
 Sections and layers can be declared separately. This is recommended when
