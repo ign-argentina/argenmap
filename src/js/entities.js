@@ -502,11 +502,12 @@ class ImpresorGrupoHTML extends Impresor {
     const styleAttributes = this.getSectionStyleAttributes(sectionStyle);
     const headerIcon = this.getHeaderIcon(sectionStyle?.header?.icon);
 
-    var active = itemComposite.getActive() == true ? " in " : "";
+    const isExpanded = itemComposite.getActive() === true;
+    const active = isExpanded ? " in" : "";
 
     return `
     <div id="${listaId}" class="${itemClass} panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
-      <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}" aria-expanded="${isExpanded}">
         <h4 class="panel-title">
           ${headerIcon}<span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
           <div class='item-group-short-desc'>
@@ -514,7 +515,7 @@ class ImpresorGrupoHTML extends Impresor {
           </div>
         </h4>
       </div>
-      <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}'>
+      <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}' aria-expanded='${isExpanded}'>
         <div class="panel-body">
           ${itemComposite.itemsStr}
         </div>
@@ -3515,6 +3516,9 @@ class GestorMenu {
     if (configuredSectionStyle) {
       itemGroup.sectionStyle = configuredSectionStyle;
     }
+    if (app.sectionExpanded?.[itemGroup.seccion] === true) {
+      itemGroup.setActive(true);
+    }
 
     if (!this.items[itemGroup.seccion] || itemGroup.isBaseLayer()) {
       //itemGroup.isBaseLayer() avoid to repeat base layer into selector
@@ -3612,8 +3616,7 @@ class GestorMenu {
 
       var thisObj = this;
 
-      document.addEventListener("show.bs.collapse", function (event) {
-        const collapse = event.target;
+      const loadSectionOnExpand = (collapse) => {
         if (!collapse.classList.contains("collapse")) return;
         const showingId = collapse.id;
         if (thisObj._getLayerInfosForSection(showingId).length === 0) return;
@@ -3628,7 +3631,15 @@ class GestorMenu {
             error,
           );
         });
+      };
+
+      document.addEventListener("show.bs.collapse", function (event) {
+        loadSectionOnExpand(event.target);
       });
+
+      document
+        .querySelectorAll(".panel-collapse.collapse.in")
+        .forEach(loadSectionOnExpand);
     } else {
       for (var key in this.layersInfo) {
         this.layersInfo[key].get(this);
@@ -4417,16 +4428,17 @@ class Menu_UI {
     const sectionPrinter = new ImpresorGrupoHTML();
     const styleAttributes = sectionPrinter.getSectionStyleAttributes(sectionStyle);
     const headerIcon = sectionPrinter.getHeaderIcon(sectionStyle?.header?.icon);
+    const isExpanded = app.sectionExpanded?.[groupnamev] === true;
     let itemnew = document.createElement("div");
     itemnew.className = "custom-file-layer-section";
     itemnew.innerHTML = `
       <div id="lista-${groupnamev}" class="menu5 panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
-      <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="false">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="${isExpanded}">
         <h4 class="panel-title">
         ${headerIcon}<a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
         </h4>
       </div>
-      <div id='${groupnamev}-content' class="panel-collapse collapse">
+      <div id='${groupnamev}-content' class="panel-collapse collapse${isExpanded ? " in" : ""}" aria-expanded="${isExpanded}">
         <div class="panel-body" id ="${groupnamev}-panel-body"></div>
       </div>
       </div>`;

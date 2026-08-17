@@ -58,6 +58,7 @@ several layers share a heading, tab, description, or visual style:
     {
       "id": "events",
       "nombre": "Events",
+      "expanded": true,
       "tab": {
         "id": "IG",
         "searcheable": true,
@@ -86,7 +87,8 @@ Every layer must reference an existing section `id`. The two blocks have
 independent responsibilities and are not combined through property overrides:
 
 - `sections` exclusively defines menu headings and organization: `id`,
-  `nombre`, `tab`, `short_abstract`, `peso`, `class`, and `section_style`.
+  `nombre`, `expanded`, `tab`, `short_abstract`, `peso`, `class`, and
+  `section_style`.
 - `layers` exclusively defines each source or layer: `id`, `type`, `section`,
   `title`, `description`, `icon`, state, options, styles, and connection data.
 - Service options such as `host`, `icons`, `allowed_layers`, and
@@ -98,6 +100,11 @@ Changing `title`, `id`, or another layer property does not change its section
 heading or style. Basemaps remain inside `items`. Legacy configurations may
 still use `titulo` and visual properties inside `source`, but those aliases are
 not recommended in the separated schema.
+
+The boolean `expanded` property displays a section expanded when the
+application starts. It defaults to `false`. If the section contains lazily
+loaded OGC services, setting it to `true` starts loading those services so its
+content can be displayed.
 
 ### Section-specific styles
 
@@ -267,6 +274,8 @@ Main settings:
   part of the exported geometry style.
 - `style.marker`, `point`, `line`, and `polygon` set styles by geometry
   type. `MultiPoint`, `MultiLineString`, and `MultiPolygon` are also handled.
+- `style.label` defines an optional label from one or more feature properties
+  and applies to every geometry type in the layer.
 
 In the separated schema, presentation and behavior properties belong to the
 layer block. `source` contains the file location and format. Their previous
@@ -306,6 +315,83 @@ The precedence order is: application defaults, the layer's `style`, and the
 feature's `properties.styles`. Supported values include those saved by the
 editor, such as `color`, `weight`, `opacity`, `fillColor`, `fillOpacity`,
 `dashArray`, `radius`, and marker options.
+
+#### Geometry labels
+
+The `style.label` block builds a label by concatenating an ordered `parts`
+list. Each part uses `"type": "field"` to read a feature property or
+`"type": "text"` to insert its value literally:
+
+```jsonc
+{
+  "style": {
+    "line": {
+      "color": "#9e161a",
+      "weight": 4
+    },
+    "label": {
+      "enabled": true,
+      "parts": [
+        { "type": "field", "value": "column" },
+        { "type": "text", "value": " — " },
+        { "type": "field", "value": "commander" },
+        { "type": "text", "value": " (distance: " },
+        { "type": "field", "value": "distance_km" },
+        { "type": "text", "value": " km)" }
+      ],
+      "position": "above",
+      "color": "#421014",
+      "fontFamily": "Noto Sans, sans-serif",
+      "fontSize": 14,
+      "fontStyle": "italic",
+      "underline": false,
+      "uppercase": false,
+      "halo": true,
+      "haloColor": "#ffffff",
+      "haloWidth": 2,
+      "autoHide": true,
+      "minZoom": 7,
+      "maxZoom": 18
+    }
+  }
+}
+```
+
+Available positions depend on geometry type:
+
+- Points, markers, and circles: `top`, `bottom`, `left`, or `right`.
+- Lines: `above`, `on-line`, or `below`; the upper and lower variants keep a
+  fixed distance from the path.
+- Polygons and rectangles: `center`, `border`, or `parallel`.
+
+Labels on lines and borders are oriented automatically so text remains
+readable even when the path was drawn in the opposite direction. With
+`autoHide` enabled (the default), they are also hidden automatically when the
+text does not fit the visible path with a safe margin or when that portion of
+the path bends too sharply. This is recalculated after each zoom change, so a
+label reappears when zooming in provides enough room. Set `"autoHide": false`
+to disable this fit check.
+
+`minZoom` and `maxZoom` optionally limit the Leaflet zoom levels at which any
+label is displayed. Either value can be omitted to leave that end unbounded.
+
+`fontStyle` accepts `normal` or `italic`; `underline` and `uppercase` are
+booleans. `halo` enables a text outline controlled by `haloColor` and
+`haloWidth`. When a `label` block exists, it is enabled unless
+`"enabled": false` is set.
+
+The legacy `fields` and `separator` properties remain supported. Opening an
+older configuration in the editor converts it to ordered parts, which can then
+be combined with fixed strings, for example
+`[{"type":"field","value":"height"},{"type":"text","value":" m"}]`.
+
+The **Geometry label** section in **Edit styles** exposes the same options. It
+provides controls to add fields or text, reorder them, and remove them. The
+editor also exposes minimum and maximum zoom and whether automatic fitting
+should hide poorly distributed text. The configuration controls remain hidden
+until **Show label** is enabled. It works for file features, vector layers, and
+geometries made with the drawing tools. Changes are saved to
+`properties.styles.label` when the feature or layer is downloaded.
 
 When a layer is downloaded from its menu, each feature exports its current
 visual options in `styles`. Changes made with **Edit styles** therefore replace

@@ -56,6 +56,11 @@
         fillColor: "black",
         attributes: {},
         below: false,
+        minZoom: null,
+        maxZoom: null,
+        autoHide: true,
+        maxAngle: 25,
+        pathPadding: 12,
       };
       options = L.Util.extend(defaults, options);
 
@@ -99,7 +104,10 @@
       var textNode = L.SVG.create("text"),
         textPath = L.SVG.create("textPath");
 
-      var dy = options.offset || this._path.getAttribute("stroke-width");
+      var dy =
+        options.offset !== undefined
+          ? options.offset
+          : this._path.getAttribute("stroke-width");
 
       textPath.setAttributeNS(
         "http://www.w3.org/1999/xlink",
@@ -119,6 +127,12 @@
         svg.appendChild(textNode);
       }
 
+      if (!this._textFitsPath(textNode, options)) {
+        // Keep the SVG node measurable so orientation and centering can still
+        // be calculated. The node is recreated on every path/zoom redraw.
+        textNode.style.visibility = "hidden";
+      }
+
       /* Center text according to the path's bounding box */
       if (options.center) {
         var textLength = textNode.getComputedTextLength();
@@ -131,6 +145,22 @@
       if (options.orientation) {
         var rotateAngle = 0;
         switch (options.orientation) {
+          case "auto":
+            var pathLength = this._path.getTotalLength();
+            var sampleDistance = Math.min(2, pathLength / 4);
+            var pointBefore = this._path.getPointAtLength(
+              Math.max(0, pathLength / 2 - sampleDistance),
+            );
+            var pointAfter = this._path.getPointAtLength(
+              Math.min(pathLength, pathLength / 2 + sampleDistance),
+            );
+            var deltaX = pointAfter.x - pointBefore.x;
+            var deltaY = pointAfter.y - pointBefore.y;
+            rotateAngle =
+              deltaX < 0 || (Math.abs(deltaX) < 0.01 && deltaY < 0)
+                ? 180
+                : 0;
+            break;
           case "flip":
             rotateAngle = 180;
             break;
@@ -141,19 +171,22 @@
             rotateAngle = options.orientation;
         }
 
-        var rotatecenterX = textNode.getBBox().x + textNode.getBBox().width / 2;
-        var rotatecenterY =
-          textNode.getBBox().y + textNode.getBBox().height / 2;
-        textNode.setAttribute(
-          "transform",
-          "rotate(" +
-            rotateAngle +
-            " " +
-            rotatecenterX +
-            " " +
-            rotatecenterY +
-            ")",
-        );
+        if (rotateAngle !== 0) {
+          var rotatecenterX =
+            textNode.getBBox().x + textNode.getBBox().width / 2;
+          var rotatecenterY =
+            textNode.getBBox().y + textNode.getBBox().height / 2;
+          textNode.setAttribute(
+            "transform",
+            "rotate(" +
+              rotateAngle +
+              " " +
+              rotatecenterX +
+              " " +
+              rotatecenterY +
+              ")",
+          );
+        }
       }
 
       /* Initialize mouse events for the additional nodes */
@@ -177,6 +210,42 @@
       }
 
       return this;
+    },
+
+    _textFitsPath: function (textNode, options) {
+      var zoom = this._map && this._map.getZoom();
+      if (options.minZoom !== null && zoom < options.minZoom) return false;
+      if (options.maxZoom !== null && zoom > options.maxZoom) return false;
+      if (options.autoHide === false) return true;
+
+      var pathLength = this._path.getTotalLength();
+      var textLength = textNode.getComputedTextLength();
+      if (!pathLength || textLength + options.pathPadding * 2 > pathLength) {
+        return false;
+      }
+
+      var start = Math.max(0, pathLength / 2 - textLength / 2);
+      var end = Math.min(pathLength, pathLength / 2 + textLength / 2);
+      var samples = Math.max(3, Math.min(12, Math.ceil(textLength / 18)));
+      var previousAngle = null;
+      var accumulatedAngle = 0;
+      for (var index = 0; index < samples; index++) {
+        var from = this._path.getPointAtLength(
+          start + ((end - start) * index) / samples,
+        );
+        var to = this._path.getPointAtLength(
+          start + ((end - start) * (index + 1)) / samples,
+        );
+        var angle = Math.atan2(to.y - from.y, to.x - from.x) * (180 / Math.PI);
+        if (previousAngle !== null) {
+          var difference = Math.abs(angle - previousAngle);
+          difference = difference > 180 ? 360 - difference : difference;
+          if (difference > options.maxAngle) return false;
+          accumulatedAngle += difference;
+        }
+        previousAngle = angle;
+      }
+      return accumulatedAngle <= options.maxAngle * 2;
     },
   };
 

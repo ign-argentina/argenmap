@@ -2258,6 +2258,354 @@ function nameForLayer(type) {
   return name;
 }
 
+const DEFAULT_VECTOR_LABEL_STYLE = Object.freeze({
+  enabled: false,
+  fields: [],
+  parts: [],
+  separator: " ",
+  position: "top",
+  color: "#202020",
+  fontFamily: "sans-serif",
+  fontSize: 14,
+  fontStyle: "normal",
+  underline: false,
+  uppercase: false,
+  halo: false,
+  haloColor: "#ffffff",
+  haloWidth: 2,
+  minZoom: null,
+  maxZoom: null,
+  autoHide: true,
+});
+
+function getVectorLabelGeometryKind(layer) {
+  if (!layer) return null;
+  if (["marker", "circlemarker", "circle"].includes(layer.type)) {
+    return "point";
+  }
+  if (layer.type === "polyline") return "line";
+  if (["polygon", "rectangle"].includes(layer.type)) return "polygon";
+  return null;
+}
+
+function getVectorLabelProperties(layer) {
+  return (
+    layer?._vectorLabelProperties ||
+    layer?.data?.geoJSON?.properties ||
+    layer?.data?.properties ||
+    layer?.toGeoJSON?.().properties ||
+    {}
+  );
+}
+
+function getVectorLabelPropertyNames(layer) {
+  return Object.keys(getVectorLabelProperties(layer)).filter(
+    (key) => !["styles", "type"].includes(key.toLowerCase()),
+  );
+}
+
+function normalizeVectorLabelStyle(style, geometryKind) {
+  const hasStyle = style && typeof style === "object" && !Array.isArray(style);
+  const source = hasStyle ? style : {};
+  const fieldsSource = source.fields ?? source.attributes ?? source.field ?? [];
+  const fields = (Array.isArray(fieldsSource) ? fieldsSource : [fieldsSource])
+    .map((field) => String(field || "").trim())
+    .filter((field, index, allFields) => field && allFields.indexOf(field) === index);
+  const configuredParts = Array.isArray(source.parts)
+    ? source.parts
+        .map((part) => {
+          if (!part || typeof part !== "object") return null;
+          const type = part.type === "text" ? "text" : "field";
+          const value = String(part.value ?? part.field ?? part.text ?? "");
+          if (type === "field" && !value.trim()) return null;
+          if (type === "text" && value === "") return null;
+          return { type, value: type === "field" ? value.trim() : value };
+        })
+        .filter(Boolean)
+    : [];
+  const separator =
+    source.separator === undefined
+      ? DEFAULT_VECTOR_LABEL_STYLE.separator
+      : String(source.separator);
+  const legacyParts = fields.flatMap((field, index) => [
+    ...(index > 0 && separator ? [{ type: "text", value: separator }] : []),
+    { type: "field", value: field },
+  ]);
+  const parts = configuredParts.length > 0 ? configuredParts : legacyParts;
+  const partFields = [
+    ...new Set(
+      parts
+        .filter((part) => part.type === "field")
+        .map((part) => part.value),
+    ),
+  ];
+  const allowedPositions = {
+    point: ["top", "bottom", "left", "right"],
+    line: ["above", "on-line", "below"],
+    polygon: ["center", "border", "parallel"],
+  };
+  const defaultPosition = {
+    point: "top",
+    line: "on-line",
+    polygon: "center",
+  }[geometryKind] || DEFAULT_VECTOR_LABEL_STYLE.position;
+  const position = allowedPositions[geometryKind]?.includes(source.position)
+    ? source.position
+    : defaultPosition;
+  const parsedFontSize = Number.parseFloat(source.fontSize);
+  const parsedHaloWidth = Number.parseFloat(source.haloWidth);
+  const parsedMinZoom =
+    source.minZoom === null || source.minZoom === ""
+      ? NaN
+      : Number.parseFloat(source.minZoom);
+  const parsedMaxZoom =
+    source.maxZoom === null || source.maxZoom === ""
+      ? NaN
+      : Number.parseFloat(source.maxZoom);
+  let minZoom = Number.isFinite(parsedMinZoom)
+    ? Math.min(30, Math.max(0, Math.round(parsedMinZoom)))
+    : null;
+  let maxZoom = Number.isFinite(parsedMaxZoom)
+    ? Math.min(30, Math.max(0, Math.round(parsedMaxZoom)))
+    : null;
+  if (minZoom !== null && maxZoom !== null && minZoom > maxZoom) {
+    [minZoom, maxZoom] = [maxZoom, minZoom];
+  }
+
+  return {
+    enabled: hasStyle ? source.enabled !== false : false,
+    fields: partFields,
+    parts,
+    separator,
+    position,
+    color: String(source.color || DEFAULT_VECTOR_LABEL_STYLE.color),
+    fontFamily: String(
+      source.fontFamily || DEFAULT_VECTOR_LABEL_STYLE.fontFamily,
+    ),
+    fontSize: Number.isFinite(parsedFontSize)
+      ? Math.min(72, Math.max(8, parsedFontSize))
+      : DEFAULT_VECTOR_LABEL_STYLE.fontSize,
+    fontStyle:
+      source.fontStyle === "italic" || source.italic === true
+        ? "italic"
+        : "normal",
+    underline:
+      source.underline === true || source.textDecoration === "underline",
+    uppercase: source.uppercase === true,
+    halo: source.halo === true,
+    haloColor: String(
+      source.haloColor || DEFAULT_VECTOR_LABEL_STYLE.haloColor,
+    ),
+    haloWidth: Number.isFinite(parsedHaloWidth)
+      ? Math.min(8, Math.max(1, parsedHaloWidth))
+      : DEFAULT_VECTOR_LABEL_STYLE.haloWidth,
+    minZoom,
+    maxZoom,
+    autoHide: source.autoHide !== false,
+  };
+}
+
+function getVectorLabelText(properties, labelStyle) {
+  const text = labelStyle.parts
+    .map((part) => {
+      if (part.type === "text") return part.value;
+      const value = properties?.[part.value];
+      return value === undefined || value === null
+        ? ""
+        : formatFileLayerPopupValue(value);
+    })
+    .join("");
+  return labelStyle.uppercase ? text.toLocaleUpperCase() : text;
+}
+
+function removeVectorLabel(layer) {
+  layer._vectorLabelRenderVersion =
+    (layer._vectorLabelRenderVersion || 0) + 1;
+  if (
+    layer._vectorLabelTooltip &&
+    layer.getTooltip?.() === layer._vectorLabelTooltip
+  ) {
+    layer.unbindTooltip();
+  }
+  delete layer._vectorLabelTooltip;
+  if (layer._vectorLabelUsesTextPath && typeof layer.setText === "function") {
+    layer.setText(null);
+  }
+  layer._vectorLabelUsesTextPath = false;
+  layer._vectorLabelCleanup?.();
+  delete layer._vectorLabelCleanup;
+}
+
+function isVectorLabelWithinZoom(layer, style) {
+  const zoom = layer?._map?.getZoom?.();
+  if (!Number.isFinite(zoom)) return true;
+  if (style.minZoom !== null && zoom < style.minZoom) return false;
+  if (style.maxZoom !== null && zoom > style.maxZoom) return false;
+  return true;
+}
+
+function trackVectorLabelTooltipVisibility(layer, style) {
+  if (style.minZoom === null && style.maxZoom === null) {
+    if (layer._map) layer.openTooltip();
+    return;
+  }
+  let trackedMap = null;
+  const updateVisibility = () => {
+    if (!layer._map || !layer._vectorLabelTooltip) return;
+    if (isVectorLabelWithinZoom(layer, style)) {
+      layer.openTooltip();
+    } else {
+      layer.closeTooltip();
+    }
+  };
+  const stopTrackingMap = () => {
+    trackedMap?.off("zoomend", updateVisibility);
+    trackedMap = null;
+  };
+  const startTrackingMap = () => {
+    stopTrackingMap();
+    trackedMap = layer._map || null;
+    trackedMap?.on("zoomend", updateVisibility);
+    updateVisibility();
+  };
+  const onRemove = () => stopTrackingMap();
+  layer.on("add", startTrackingMap);
+  layer.on("remove", onRemove);
+  if (layer._map) startTrackingMap();
+  layer._vectorLabelCleanup = () => {
+    stopTrackingMap();
+    layer.off("add", startTrackingMap);
+    layer.off("remove", onRemove);
+  };
+}
+
+function createVectorLabelTextElement(text, style) {
+  const element = document.createElement("span");
+  element.className = "vector-feature-label-text";
+  element.textContent = text;
+  element.style.color = style.color;
+  element.style.fontFamily = style.fontFamily;
+  element.style.fontSize = `${style.fontSize}px`;
+  element.style.fontStyle = style.fontStyle;
+  element.style.textDecoration = style.underline ? "underline" : "none";
+  if (style.halo) {
+    element.style.webkitTextStroke = `${style.haloWidth}px ${style.haloColor}`;
+    element.style.paintOrder = "stroke fill";
+  }
+  return element;
+}
+
+function getVectorLabelTooltipOptions(kind, position) {
+  if (kind === "polygon" && position === "center") {
+    return { direction: "center", offset: [0, 0] };
+  }
+  const options = {
+    top: { direction: "top", offset: [0, -8] },
+    bottom: { direction: "bottom", offset: [0, 8] },
+    left: { direction: "left", offset: [-8, 0] },
+    right: { direction: "right", offset: [8, 0] },
+  };
+  return options[position] || options.top;
+}
+
+function getVectorLabelPathOffset(kind, position) {
+  if (kind === "line") {
+    if (position === "above") return -8;
+    if (position === "below") return 14;
+    return 0;
+  }
+  return position === "parallel" ? -8 : 0;
+}
+
+async function applyVectorLabelStyle(layer, properties, style) {
+  const kind = getVectorLabelGeometryKind(layer);
+  if (!kind) return;
+
+  const labelStyle = normalizeVectorLabelStyle(style, kind);
+  layer.options.label = {
+    ...labelStyle,
+    fields: [...labelStyle.fields],
+    parts: labelStyle.parts.map((part) => ({ ...part })),
+  };
+  const featureProperties = properties || getVectorLabelProperties(layer);
+  layer._vectorLabelProperties = featureProperties;
+  if (featureProperties && typeof featureProperties === "object") {
+    featureProperties.styles = {
+      ...(featureProperties.styles || {}),
+      label: {
+        ...labelStyle,
+        fields: [...labelStyle.fields],
+        parts: labelStyle.parts.map((part) => ({ ...part })),
+      },
+    };
+  }
+
+  removeVectorLabel(layer);
+  const renderVersion = layer._vectorLabelRenderVersion;
+  if (!labelStyle.enabled || labelStyle.parts.length === 0) return;
+
+  const text = getVectorLabelText(featureProperties, labelStyle);
+  if (!text) return;
+
+  const useTooltip = kind === "point" || labelStyle.position === "center";
+  if (useTooltip) {
+    const position = getVectorLabelTooltipOptions(kind, labelStyle.position);
+    layer.bindTooltip(createVectorLabelTextElement(text, labelStyle), {
+      permanent: true,
+      interactive: false,
+      opacity: 1,
+      className: "vector-feature-label",
+      direction: position.direction,
+      offset: position.offset,
+    });
+    layer._vectorLabelTooltip = layer.getTooltip();
+    trackVectorLabelTooltipVisibility(layer, labelStyle);
+    return;
+  }
+
+  if (typeof layer.setText !== "function") {
+    await appDependencies.load("vectorLabels");
+  }
+  if (
+    renderVersion !== layer._vectorLabelRenderVersion ||
+    typeof layer.setText !== "function"
+  ) {
+    return;
+  }
+
+  layer.setText(text, {
+    repeat: false,
+    center: true,
+    offset: getVectorLabelPathOffset(kind, labelStyle.position),
+    orientation: "auto",
+    minZoom: labelStyle.minZoom,
+    maxZoom: labelStyle.maxZoom,
+    autoHide: labelStyle.autoHide,
+    attributes: {
+      fill: labelStyle.color,
+      "font-family": labelStyle.fontFamily,
+      "font-size": `${labelStyle.fontSize}px`,
+      "font-style": labelStyle.fontStyle,
+      "text-decoration": labelStyle.underline ? "underline" : "none",
+      stroke: labelStyle.halo ? labelStyle.haloColor : "none",
+      "stroke-width": labelStyle.halo ? labelStyle.haloWidth : 0,
+      "stroke-linejoin": "round",
+      "paint-order": "stroke fill",
+      "pointer-events": "none",
+    },
+  });
+  layer._vectorLabelUsesTextPath = true;
+}
+
+function refreshVectorLabelStyle(layer) {
+  if (!layer?.options?.label) return;
+  void applyVectorLabelStyle(
+    layer,
+    getVectorLabelProperties(layer),
+    layer.options.label,
+  ).catch((error) => console.error("Unable to render vector label:", error));
+}
+
 function createLayerByType(geoJSON, groupName) {
   let layer = null,
     type = geoJSON.geometry.type.toLowerCase(),
@@ -2266,6 +2614,8 @@ function createLayerByType(geoJSON, groupName) {
   if (geoJSON.properties.hasOwnProperty("styles")) {
     options = { ...geoJSON.properties.styles };
   }
+  const vectorLabelStyle = options.label;
+  delete options.label;
 
   //check type
   if (type === "point") {
@@ -2291,6 +2641,15 @@ function createLayerByType(geoJSON, groupName) {
   if (geoJSON.properties.type !== "label") {
     layer.id = groupName;
     layer.data = { geoJSON };
+    if (vectorLabelStyle) {
+      void applyVectorLabelStyle(
+        layer,
+        geoJSON.properties,
+        vectorLabelStyle,
+      ).catch((error) =>
+        console.error("Unable to render configured vector label:", error),
+      );
+    }
   }
   return layer;
 }

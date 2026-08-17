@@ -1665,11 +1665,13 @@ a.leaflet-control-zoomhome-in, a.leaflet-control-zoomhome-out {
   position: absolute;
   z-index: 2000;
   display: flex;
-  width: 280px;
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   background-color: var(--main-bg-color, white) !important;
   border-radius: 0.375rem;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   padding: 7px;
   box-shadow: 0 3px 14px rgb(0 0 0 / 40%);
@@ -1736,6 +1738,115 @@ div.leaflet-popup.edit-style-popup.leaflet-zoom-animated {
   width: 95% !important;
   height: 22px;
   padding: 0;
+}
+
+.section-item-wide {
+  flex-basis: 100%;
+}
+
+.section-item-tall {
+  height: auto;
+  min-height: 82px;
+}
+
+.section-item-tall .section-item-input {
+  min-height: 54px;
+}
+
+.vector-label-style-section {
+  border-top: 1px solid rgb(0 0 0 / 12%);
+  padding-top: 8px;
+}
+
+.vector-label-configuration {
+  display: flex;
+  width: 100%;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vector-label-configuration[hidden] {
+  display: none;
+}
+
+.vector-label-composition-label {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.vector-label-parts {
+  display: flex;
+  width: 95%;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vector-label-parts-empty {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.vector-label-part-row {
+  display: grid;
+  width: 100%;
+  align-items: center;
+  gap: 4px;
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+}
+
+.vector-label-part-type {
+  color: #555;
+  font-size: 0.85em;
+  text-align: left;
+}
+
+.vector-label-part-value {
+  width: 100%;
+  min-width: 0;
+  height: 26px;
+}
+
+.vector-label-part-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.vector-label-part-actions button {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 5px;
+}
+
+.vector-label-add-part {
+  min-height: 28px;
+}
+
+.vector-feature-label {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.vector-feature-label::before {
+  display: none;
+}
+
+.vector-feature-label-text {
+  display: inline-block;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+@media (max-width: 37.5em) {
+  #editContainer {
+    top: 12px;
+    left: 12px;
+    max-height: calc(100vh - 24px);
+  }
 }
 
 .popup-parent {

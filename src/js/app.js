@@ -494,6 +494,9 @@ const app = {
     geoJSON.properties.styles = {
       ...this.getConfiguredLayerDefaultStyle(styleType),
       ...(configuredStyle || {}),
+      ...(style?.label && typeof style.label === "object"
+        ? { label: { ...style.label } }
+        : {}),
       // Styles saved by the application's vector style editor belong to the
       // individual feature and therefore override layer-wide defaults.
       ...featureStyle,
@@ -848,11 +851,13 @@ function normalizeConfigSectionsAndLayers(data) {
 
   const sectionMap = {};
   app.sectionStyles = {};
+  app.sectionExpanded = {};
   data.sections.forEach((section) => {
     if (!section || !section.id) {
       return;
     }
     sectionMap[section.id] = section;
+    app.sectionExpanded[section.id] = section.expanded === true;
     if (section.section_style) {
       app.sectionStyles[section.id] = section.section_style;
     }

@@ -284,6 +284,11 @@ const appDependencies = new AppDependencyLoader({
   turf: {
     scripts: ["src/js/plugins/turf/turf.min.js"],
   },
+  vectorLabels: {
+    scripts: [
+      "src/js/map/plugins/leaflet/leaflet-textpath/leaflet-textpath.js",
+    ],
+  },
   geoprocessingRuntime: {
     styles: [
       "src/js/components/geoprocessing/geoprocessing.css",

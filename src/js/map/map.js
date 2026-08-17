@@ -67,6 +67,494 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
   layer.options.fillColor = fillColor;
 };
 
+function getVectorLabelColorInputValue(value, fallback) {
+  const color = String(value || "").trim();
+  if (/^#[0-9a-f]{6}$/i.test(color)) return color;
+  if (/^#[0-9a-f]{3}$/i.test(color)) {
+    return `#${color
+      .slice(1)
+      .split("")
+      .map((character) => character.repeat(2))
+      .join("")}`;
+  }
+  return fallback;
+}
+
+function createVectorLabelControl(labelText, input, options = {}) {
+  const wrapper = document.createElement("div");
+  wrapper.className = `section-item${options.wide ? " section-item-wide" : ""}${
+    options.tall ? " section-item-tall" : ""
+  }`;
+  const label = document.createElement("label");
+  label.setAttribute("for", input.id);
+  label.textContent = labelText;
+  input.classList.add("section-item-input");
+  wrapper.append(label, input);
+  return wrapper;
+}
+
+function getVectorLabelPositionChoices(kind) {
+  if (kind === "line") {
+    return [
+      ["above", "Paralela, arriba"],
+      ["on-line", "Sobre la línea"],
+      ["below", "Paralela, abajo"],
+    ];
+  }
+  if (kind === "polygon") {
+    return [
+      ["center", "En el centro"],
+      ["border", "Sobre los bordes"],
+      ["parallel", "Paralela a los bordes"],
+    ];
+  }
+  return [
+    ["top", "Arriba"],
+    ["bottom", "Abajo"],
+    ["right", "A la derecha"],
+    ["left", "A la izquierda"],
+  ];
+}
+
+function createVectorLabelStyleSection(layer) {
+  const kind = getVectorLabelGeometryKind(layer);
+  if (!kind) return null;
+
+  const properties = getVectorLabelProperties(layer);
+  const configuredStyle =
+    layer.options.label || properties?.styles?.label || null;
+  const currentStyle = normalizeVectorLabelStyle(configuredStyle, kind);
+  const propertyNames = [
+    ...new Set([
+      ...getVectorLabelPropertyNames(layer),
+      ...currentStyle.fields,
+    ]),
+  ];
+  const section = document.createElement("div");
+  section.className = "section-popup vector-label-style-section";
+
+  const title = document.createElement("p");
+  title.className = "section-title non-selectable-text";
+  title.textContent = "Etiqueta de geometría";
+  section.appendChild(title);
+
+  const enabledInput = document.createElement("input");
+  enabledInput.id = "vector-label-enabled";
+  enabledInput.type = "checkbox";
+  enabledInput.checked = currentStyle.enabled;
+  section.appendChild(
+    createVectorLabelControl("Mostrar etiqueta", enabledInput),
+  );
+
+  const configurationContainer = document.createElement("div");
+  configurationContainer.className = "vector-label-configuration";
+  section.appendChild(configurationContainer);
+
+  let labelParts = currentStyle.parts.map((part) => ({ ...part }));
+  if (!configuredStyle && labelParts.length === 0 && propertyNames.length > 0) {
+    labelParts = [{ type: "field", value: propertyNames[0] }];
+  }
+
+  const compositionControl = document.createElement("div");
+  compositionControl.className = "section-item section-item-wide section-item-tall";
+  const compositionLabel = document.createElement("span");
+  compositionLabel.className = "vector-label-composition-label";
+  compositionLabel.textContent = "Composición y orden";
+  const partsList = document.createElement("div");
+  partsList.id = "vector-label-parts";
+  partsList.className = "vector-label-parts";
+  compositionControl.append(compositionLabel, partsList);
+  configurationContainer.appendChild(compositionControl);
+
+  const fieldPicker = document.createElement("select");
+  fieldPicker.id = "vector-label-field-picker";
+  propertyNames.forEach((propertyName) => {
+    const option = document.createElement("option");
+    option.value = propertyName;
+    option.textContent = propertyName.replace(/_+/g, " ");
+    fieldPicker.appendChild(option);
+  });
+  if (propertyNames.length === 0) {
+    const option = document.createElement("option");
+    option.textContent = "Sin atributos disponibles";
+    option.disabled = true;
+    fieldPicker.appendChild(option);
+  }
+  configurationContainer.appendChild(
+    createVectorLabelControl("Atributo", fieldPicker),
+  );
+
+  const addFieldButton = document.createElement("button");
+  addFieldButton.id = "vector-label-add-field";
+  addFieldButton.type = "button";
+  addFieldButton.className = "vector-label-add-part";
+  addFieldButton.textContent = "Agregar atributo";
+  addFieldButton.disabled = propertyNames.length === 0;
+  configurationContainer.appendChild(
+    createVectorLabelControl("", addFieldButton),
+  );
+
+  const literalInput = document.createElement("input");
+  literalInput.id = "vector-label-literal";
+  literalInput.type = "text";
+  literalInput.placeholder = "Ej.:  m";
+  literalInput.maxLength = 100;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Texto fijo", literalInput),
+  );
+
+  const addLiteralButton = document.createElement("button");
+  addLiteralButton.id = "vector-label-add-literal";
+  addLiteralButton.type = "button";
+  addLiteralButton.className = "vector-label-add-part";
+  addLiteralButton.textContent = "Agregar texto";
+  configurationContainer.appendChild(
+    createVectorLabelControl("", addLiteralButton),
+  );
+
+  const positionInput = document.createElement("select");
+  positionInput.id = "vector-label-position";
+  getVectorLabelPositionChoices(kind).forEach(([value, text]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = text;
+    option.selected = currentStyle.position === value;
+    positionInput.appendChild(option);
+  });
+  configurationContainer.appendChild(
+    createVectorLabelControl("Ubicación", positionInput),
+  );
+
+  const colorInput = document.createElement("input");
+  colorInput.id = "vector-label-color";
+  colorInput.type = "color";
+  colorInput.value = getVectorLabelColorInputValue(
+    currentStyle.color,
+    "#202020",
+  );
+  configurationContainer.appendChild(
+    createVectorLabelControl("Color", colorInput),
+  );
+
+  const fontFamilyInput = document.createElement("input");
+  fontFamilyInput.id = "vector-label-font-family";
+  fontFamilyInput.type = "text";
+  fontFamilyInput.value = currentStyle.fontFamily;
+  fontFamilyInput.setAttribute("list", "vector-label-font-families");
+  const fontFamilyList = document.createElement("datalist");
+  fontFamilyList.id = "vector-label-font-families";
+  [
+    "sans-serif",
+    "serif",
+    "monospace",
+    "Arial",
+    "Verdana",
+    "Georgia",
+    "Times New Roman",
+    "Noto Sans",
+    "Encode Sans",
+  ].forEach((fontFamily) => {
+    const option = document.createElement("option");
+    option.value = fontFamily;
+    fontFamilyList.appendChild(option);
+  });
+  configurationContainer.appendChild(
+    createVectorLabelControl("Tipografía", fontFamilyInput),
+  );
+  configurationContainer.appendChild(fontFamilyList);
+
+  const fontSizeInput = document.createElement("input");
+  fontSizeInput.id = "vector-label-font-size";
+  fontSizeInput.type = "number";
+  fontSizeInput.min = 8;
+  fontSizeInput.max = 72;
+  fontSizeInput.step = 1;
+  fontSizeInput.value = currentStyle.fontSize;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Tamaño (px)", fontSizeInput),
+  );
+
+  const italicInput = document.createElement("input");
+  italicInput.id = "vector-label-italic";
+  italicInput.type = "checkbox";
+  italicInput.checked = currentStyle.fontStyle === "italic";
+  configurationContainer.appendChild(
+    createVectorLabelControl("Itálica/cursiva", italicInput),
+  );
+
+  const underlineInput = document.createElement("input");
+  underlineInput.id = "vector-label-underline";
+  underlineInput.type = "checkbox";
+  underlineInput.checked = currentStyle.underline;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Subrayada", underlineInput),
+  );
+
+  const uppercaseInput = document.createElement("input");
+  uppercaseInput.id = "vector-label-uppercase";
+  uppercaseInput.type = "checkbox";
+  uppercaseInput.checked = currentStyle.uppercase;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Mayúsculas", uppercaseInput),
+  );
+
+  const haloInput = document.createElement("input");
+  haloInput.id = "vector-label-halo";
+  haloInput.type = "checkbox";
+  haloInput.checked = currentStyle.halo;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Halo", haloInput),
+  );
+
+  const haloColorInput = document.createElement("input");
+  haloColorInput.id = "vector-label-halo-color";
+  haloColorInput.type = "color";
+  haloColorInput.value = getVectorLabelColorInputValue(
+    currentStyle.haloColor,
+    "#ffffff",
+  );
+  configurationContainer.appendChild(
+    createVectorLabelControl("Color del halo", haloColorInput),
+  );
+
+  const haloWidthInput = document.createElement("input");
+  haloWidthInput.id = "vector-label-halo-width";
+  haloWidthInput.type = "number";
+  haloWidthInput.min = 1;
+  haloWidthInput.max = 8;
+  haloWidthInput.step = 1;
+  haloWidthInput.value = currentStyle.haloWidth;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Ancho del halo", haloWidthInput),
+  );
+
+  const autoHideInput = document.createElement("input");
+  autoHideInput.id = "vector-label-auto-hide";
+  autoHideInput.type = "checkbox";
+  autoHideInput.checked = currentStyle.autoHide;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Ocultar si no entra bien", autoHideInput),
+  );
+
+  const minZoomInput = document.createElement("input");
+  minZoomInput.id = "vector-label-min-zoom";
+  minZoomInput.type = "number";
+  minZoomInput.min = 0;
+  minZoomInput.max = 30;
+  minZoomInput.step = 1;
+  minZoomInput.placeholder = "Sin límite";
+  minZoomInput.value = currentStyle.minZoom ?? "";
+  configurationContainer.appendChild(
+    createVectorLabelControl("Zoom mínimo", minZoomInput),
+  );
+
+  const maxZoomInput = document.createElement("input");
+  maxZoomInput.id = "vector-label-max-zoom";
+  maxZoomInput.type = "number";
+  maxZoomInput.min = 0;
+  maxZoomInput.max = 30;
+  maxZoomInput.step = 1;
+  maxZoomInput.placeholder = "Sin límite";
+  maxZoomInput.value = currentStyle.maxZoom ?? "";
+  configurationContainer.appendChild(
+    createVectorLabelControl("Zoom máximo", maxZoomInput),
+  );
+
+  let updateLabel = () => {};
+  const renderLabelParts = () => {
+    partsList.replaceChildren();
+    if (labelParts.length === 0) {
+      const emptyMessage = document.createElement("span");
+      emptyMessage.className = "vector-label-parts-empty";
+      emptyMessage.textContent = "Agregá un atributo o texto fijo.";
+      partsList.appendChild(emptyMessage);
+      return;
+    }
+
+    labelParts.forEach((part, index) => {
+      const row = document.createElement("div");
+      row.className = "vector-label-part-row";
+      row.dataset.partType = part.type;
+
+      const typeLabel = document.createElement("span");
+      typeLabel.className = "vector-label-part-type";
+      typeLabel.textContent = part.type === "field" ? "Atributo" : "Texto";
+
+      let valueInput;
+      if (part.type === "field") {
+        valueInput = document.createElement("select");
+        const availableFields = propertyNames.includes(part.value)
+          ? propertyNames
+          : [...propertyNames, part.value];
+        availableFields.forEach((propertyName) => {
+          const option = document.createElement("option");
+          option.value = propertyName;
+          option.textContent = propertyName.replace(/_+/g, " ");
+          option.selected = propertyName === part.value;
+          valueInput.appendChild(option);
+        });
+      } else {
+        valueInput = document.createElement("input");
+        valueInput.type = "text";
+        valueInput.value = part.value;
+        valueInput.maxLength = 100;
+      }
+      valueInput.className = "vector-label-part-value";
+      valueInput.setAttribute("aria-label", `${typeLabel.textContent} ${index + 1}`);
+      valueInput.addEventListener(
+        part.type === "field" ? "change" : "input",
+        () => {
+          labelParts[index].value = valueInput.value;
+          updateLabel();
+        },
+      );
+
+      const actions = document.createElement("div");
+      actions.className = "vector-label-part-actions";
+      [
+        ["up", "↑", "Subir", index === 0],
+        ["down", "↓", "Bajar", index === labelParts.length - 1],
+        ["remove", "×", "Eliminar", false],
+      ].forEach(([action, text, label, disabled]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.action = action;
+        button.textContent = text;
+        button.title = label;
+        button.setAttribute("aria-label", `${label} parte ${index + 1}`);
+        button.disabled = disabled;
+        button.addEventListener("click", () => {
+          if (action === "remove") {
+            labelParts.splice(index, 1);
+          } else {
+            const targetIndex = action === "up" ? index - 1 : index + 1;
+            [labelParts[index], labelParts[targetIndex]] = [
+              labelParts[targetIndex],
+              labelParts[index],
+            ];
+          }
+          renderLabelParts();
+          updateLabel();
+        });
+        actions.appendChild(button);
+      });
+      row.append(typeLabel, valueInput, actions);
+      partsList.appendChild(row);
+    });
+  };
+
+  addFieldButton.addEventListener("click", () => {
+    if (!fieldPicker.value) return;
+    labelParts.push({ type: "field", value: fieldPicker.value });
+    renderLabelParts();
+    updateLabel();
+  });
+  const addLiteral = () => {
+    if (literalInput.value === "") return;
+    labelParts.push({ type: "text", value: literalInput.value });
+    literalInput.value = "";
+    renderLabelParts();
+    updateLabel();
+  };
+  addLiteralButton.addEventListener("click", addLiteral);
+  literalInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addLiteral();
+    }
+  });
+
+  const labelInputs = [
+    fieldPicker,
+    addFieldButton,
+    literalInput,
+    addLiteralButton,
+    positionInput,
+    colorInput,
+    fontFamilyInput,
+    fontSizeInput,
+    italicInput,
+    underlineInput,
+    uppercaseInput,
+    haloInput,
+    haloColorInput,
+    haloWidthInput,
+    autoHideInput,
+    minZoomInput,
+    maxZoomInput,
+  ];
+  const updateVisibility = () => {
+    configurationContainer.hidden = !enabledInput.checked;
+    labelInputs.forEach((input) => {
+      input.disabled = !enabledInput.checked;
+    });
+    fieldPicker.disabled = !enabledInput.checked || propertyNames.length === 0;
+    addFieldButton.disabled =
+      !enabledInput.checked || propertyNames.length === 0;
+    haloColorInput.disabled = !enabledInput.checked || !haloInput.checked;
+    haloWidthInput.disabled = !enabledInput.checked || !haloInput.checked;
+  };
+  updateLabel = () => {
+    const nextStyle = {
+      enabled: enabledInput.checked,
+      parts: labelParts.map((part) => ({ ...part })),
+      position: positionInput.value,
+      color: colorInput.value,
+      fontFamily: fontFamilyInput.value.trim() || "sans-serif",
+      fontSize: Number(fontSizeInput.value),
+      fontStyle: italicInput.checked ? "italic" : "normal",
+      underline: underlineInput.checked,
+      uppercase: uppercaseInput.checked,
+      halo: haloInput.checked,
+      haloColor: haloColorInput.value,
+      haloWidth: Number(haloWidthInput.value),
+      autoHide: autoHideInput.checked,
+      minZoom: minZoomInput.value === "" ? null : Number(minZoomInput.value),
+      maxZoom: maxZoomInput.value === "" ? null : Number(maxZoomInput.value),
+    };
+    void applyVectorLabelStyle(layer, properties, nextStyle).catch((error) =>
+      console.error("Unable to update vector label:", error),
+    );
+  };
+
+  enabledInput.addEventListener("change", () => {
+    if (
+      enabledInput.checked &&
+      labelParts.length === 0 &&
+      propertyNames.length > 0
+    ) {
+      labelParts.push({ type: "field", value: propertyNames[0] });
+      renderLabelParts();
+    }
+    updateVisibility();
+    updateLabel();
+  });
+  haloInput.addEventListener("change", () => {
+    updateVisibility();
+    updateLabel();
+  });
+  labelInputs
+    .filter(
+      (input) =>
+        ![
+          haloInput,
+          fieldPicker,
+          addFieldButton,
+          literalInput,
+          addLiteralButton,
+        ].includes(input),
+    )
+    .forEach((input) => {
+      const changeOnly =
+        input.tagName === "SELECT" ||
+        ["checkbox", "color"].includes(input.type);
+      input.addEventListener(changeOnly ? "change" : "input", updateLabel);
+    });
+  renderLabelParts();
+  updateVisibility();
+  return section;
+}
+
 const isMobile = window.matchMedia(
   "only screen and (max-width: 760px)",
 ).matches;
@@ -1167,6 +1655,7 @@ document.body.addEventListener("pluginLoad", async function (event) {
 
           mapa.on("draw:edited", (e) => {
             var layers = e.layers;
+            layers.eachLayer(refreshVectorLabelStyle);
             //Each layer recently edited..
             /* layers.eachLayer(function (layer) {
               mapa.checkLayersInDrawedGeometry(layer, layer.type);
@@ -2552,6 +3041,10 @@ document.body.addEventListener("pluginLoad", async function (event) {
                   container.appendChild(fillSection);
                 }
                 break;
+            }
+            const vectorLabelSection = createVectorLabelStyleSection(layer);
+            if (vectorLabelSection) {
+              container.appendChild(vectorLabelSection);
             }
             return container;
           };

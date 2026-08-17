@@ -91,6 +91,7 @@ opción recomendada cuando varias capas comparten encabezado, pestaña o estilo:
     {
       "id": "eventos",
       "nombre": "Eventos",
+      "expanded": true,
       "tab": {
         "id": "IG",
         "searcheable": true,
@@ -120,7 +121,8 @@ bloques tienen responsabilidades independientes y no se combinan por
 sobrescritura:
 
 - `sections` define exclusivamente el encabezado y la organización del menú:
-  `id`, `nombre`, `tab`, `short_abstract`, `peso`, `class` y `section_style`.
+  `id`, `nombre`, `expanded`, `tab`, `short_abstract`, `peso`, `class` y
+  `section_style`.
 - `layers` define exclusivamente cada fuente o capa: `id`, `type`, `section`,
   `title`, `description`, `icon`, estado, opciones, estilos y datos de conexión.
 - Las opciones de un servicio, como `host`, `icons`, `allowed_layers` y
@@ -133,6 +135,11 @@ nombre ni el estilo de su sección. Los mapas base permanecen dentro de `items`.
 Por compatibilidad se siguen aceptando `titulo` y propiedades visuales dentro
 de `source` en configuraciones anteriores, pero no se recomiendan en el esquema
 separado.
+
+El atributo booleano `expanded` permite mostrar una sección desplegada al
+iniciar la aplicación. Su valor predeterminado es `false`. Si la sección
+contiene servicios OGC con carga diferida, configurarla con `true` inicia la
+carga de esos servicios para poder mostrar su contenido.
 
 #### Estilos de una sección
 
@@ -379,6 +386,8 @@ Parámetros principales:
 - `style.marker`, `point`, `line` y `polygon`: definen estilos por tipo
   de geometría. También se procesan `MultiPoint`, `MultiLineString` y
   `MultiPolygon`.
+- `style.label`: define una etiqueta opcional a partir de una o más propiedades
+  de cada entidad. Se aplica a todos los tipos de geometría de la capa.
 
 En el esquema separado, los atributos de presentación y comportamiento se
 definen en el bloque de la capa. `source` contiene la ubicación y el formato del
@@ -432,6 +441,86 @@ aplicación, `style` de la capa y finalmente `properties.styles` de la entidad.
 Se admiten las opciones que guarda el editor, entre ellas `color`, `weight`,
 `opacity`, `fillColor`, `fillOpacity`, `dashArray`, `radius` y opciones de
 marcador.
+
+#### Etiquetas de geometrías
+
+El bloque `style.label` permite construir una etiqueta concatenando una lista
+ordenada de atributos y textos fijos mediante `parts`. Cada parte usa
+`"type": "field"` para leer una propiedad de la entidad o
+`"type": "text"` para insertar literalmente su valor:
+
+```jsonc
+{
+  "style": {
+    "line": {
+      "color": "#9e161a",
+      "weight": 4
+    },
+    "label": {
+      "enabled": true,
+      "parts": [
+        { "type": "field", "value": "columna" },
+        { "type": "text", "value": " — " },
+        { "type": "field", "value": "comandante" },
+        { "type": "text", "value": " (distancia: " },
+        { "type": "field", "value": "distancia_km" },
+        { "type": "text", "value": " km)" }
+      ],
+      "position": "above",
+      "color": "#421014",
+      "fontFamily": "Noto Sans, sans-serif",
+      "fontSize": 14,
+      "fontStyle": "italic",
+      "underline": false,
+      "uppercase": false,
+      "halo": true,
+      "haloColor": "#ffffff",
+      "haloWidth": 2,
+      "autoHide": true,
+      "minZoom": 7,
+      "maxZoom": 18
+    }
+  }
+}
+```
+
+Las ubicaciones disponibles dependen de la geometría:
+
+- Puntos, marcadores y círculos: `top`, `bottom`, `left` o `right`.
+- Líneas: `above`, `on-line` o `below`. Las opciones superior e inferior
+  mantienen una separación fija respecto del trazado.
+- Polígonos y rectángulos: `center`, `border` o `parallel`.
+
+Las etiquetas sobre líneas o bordes se orientan automáticamente para mantener
+el texto legible aunque el trazado haya sido dibujado en sentido inverso. Con
+`autoHide` activo (valor predeterminado), también se ocultan automáticamente
+cuando el texto no entra con un margen seguro en el tramo visible o cuando ese
+tramo tiene quiebres demasiado pronunciados. La condición se recalcula con
+cada cambio de zoom, por lo que vuelven a aparecer al acercar el mapa si hay
+espacio suficiente. Puede desactivarse esta validación con `"autoHide": false`.
+
+`minZoom` y `maxZoom` permiten limitar opcionalmente las escalas en las que se
+muestra cualquier etiqueta. Se expresan como niveles enteros de zoom de
+Leaflet; se puede omitir uno o ambos para dejar ese extremo sin límite.
+
+`fontStyle` admite `normal` o `italic`. `underline` y `uppercase` son valores
+booleanos. `halo` activa el contorno del texto; su color y ancho se controlan
+con `haloColor` y `haloWidth`. Si el bloque `label` existe, la etiqueta se
+considera habilitada salvo que se indique `"enabled": false`.
+
+Por compatibilidad se siguen admitiendo `fields` y `separator`. Al abrir el
+editor, esa configuración anterior se convierte en partes ordenadas y puede
+combinarse con textos fijos, por ejemplo
+`[{"type":"field","value":"altura"},{"type":"text","value":" m"}]`.
+
+La sección **Etiqueta de geometría** de **Editar estilos** ofrece las mismas
+opciones. Sus botones permiten agregar atributos o textos, cambiar su orden y
+eliminarlos. También permite definir el zoom mínimo y máximo y elegir si el
+ajuste automático debe ocultar textos que no se distribuyen bien. Los controles
+de configuración permanecen ocultos hasta activar **Mostrar etiqueta**.
+Funciona con entidades de archivos, capas vectoriales y geometrías creadas
+mediante las herramientas de dibujo. Los cambios quedan en
+`properties.styles.label` cuando se descarga la geometría o la capa.
 
 Al descargar una capa desde su menú, cada entidad exporta en `styles` las
 opciones visuales que tiene en ese momento. Por lo tanto, los cambios realizados
