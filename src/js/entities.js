@@ -3208,7 +3208,11 @@ class GestorMenu {
         `${ItemGroupPrefix}${layerInfo.section}`,
       );
     }
-    await layerInfo.get(this);
+    try {
+      await layerInfo.get(this);
+    } finally {
+      layerInfo._loadSettled = true;
+    }
   }
 
   async _loadLayerInfos(layerInfos) {
@@ -3615,26 +3619,74 @@ class GestorMenu {
       this.printMenu();
 
       var thisObj = this;
+      const sectionLoadPromises = new WeakMap();
+
+      const setSectionHeaderLoading = (collapse, isLoading) => {
+        const section = collapse.closest(".panel-default");
+        const header = section?.querySelector(":scope > .panel-heading");
+        if (!header) return;
+
+        header.classList.toggle("section-header-loading-active", isLoading);
+        header.setAttribute("aria-busy", String(isLoading));
+        collapse.setAttribute("aria-busy", String(isLoading));
+
+        let spinner = header.querySelector(":scope > .section-header-loading");
+        if (isLoading && !spinner) {
+          spinner = document.createElement("img");
+          spinner.className = "section-header-loading";
+          spinner.src = "src/styles/images/loading.svg";
+          spinner.alt = "";
+          spinner.setAttribute("aria-hidden", "true");
+          header.appendChild(spinner);
+        } else if (!isLoading) {
+          spinner?.remove();
+        }
+      };
 
       const loadSectionOnExpand = (collapse) => {
         if (!collapse.classList.contains("collapse")) return;
         const showingId = collapse.id;
-        if (thisObj._getLayerInfosForSection(showingId).length === 0) return;
-        const content = collapse.querySelector(":scope > div");
-        if (content && content.innerHTML === "") {
-          content.innerHTML =
-            '<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>';
+        const layerInfos = thisObj._getLayerInfosForSection(showingId);
+        if (layerInfos.length === 0) return;
+
+        const currentLoad = sectionLoadPromises.get(collapse);
+        if (currentLoad) {
+          setSectionHeaderLoading(collapse, true);
+          return currentLoad;
         }
-        void thisObj.loadSectionServices(showingId).catch((error) => {
-          console.error(
-            `Error loading services for section '${showingId}':`,
-            error,
-          );
-        });
+
+        const needsLoading = layerInfos.some(
+          (layerInfo) =>
+            !layerInfo._executed ||
+            (layerInfo._loadPromise && layerInfo._loadSettled !== true),
+        );
+        if (!needsLoading) return;
+
+        setSectionHeaderLoading(collapse, true);
+        const loadPromise = thisObj
+          .loadSectionServices(showingId)
+          .catch((error) => {
+            console.error(
+              `Error loading services for section '${showingId}':`,
+              error,
+            );
+          })
+          .finally(() => {
+            sectionLoadPromises.delete(collapse);
+            setSectionHeaderLoading(collapse, false);
+          });
+        sectionLoadPromises.set(collapse, loadPromise);
+        return loadPromise;
       };
 
       document.addEventListener("show.bs.collapse", function (event) {
         loadSectionOnExpand(event.target);
+      });
+
+      document.addEventListener("hidden.bs.collapse", function (event) {
+        if (event.target.classList.contains("panel-collapse")) {
+          setSectionHeaderLoading(event.target, false);
+        }
       });
 
       document
@@ -4454,10 +4506,10 @@ class Menu_UI {
     let parentItemnew = document.createElement("div");
     parentItemnew.innerHTML = `
       <div id="lista-${parentNamev}" class="menu5 panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${parentNamev}-content" data-parent="#accordion1" aria-expanded="false">
           <h4 class="panel-title">
               <i class="fa-solid fa-folder-tree"></i>
-              <a id="${parentNamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${parentNamev}-content" class="item-group-title">${parent}</a>
+              <a id="${parentNamev}-a" class="item-group-title">${parent}</a>
           </h4>
       </div>
       <div id='${parentNamev}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">
@@ -4468,10 +4520,10 @@ class Menu_UI {
     let subItemnew = document.createElement("div");
     subItemnew.innerHTML = `
       <div id="lista-${childName}" class="menu5 panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${childName}-content" data-parent="#accordion1" aria-expanded="false">
       <h4 class="panel-title">
       <i class="fa-regular fa-folder-open"></i>
-      <a id="${childName}-a" data-toggle="collapse" data-parent="#accordion1" href="#${childName}-content" class="item-group-title">${"hijo"}</a>
+      <a id="${childName}-a" class="item-group-title">${"hijo"}</a>
       </h4>
       </div>
       <div id='${childName}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">

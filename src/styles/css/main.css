@@ -781,9 +781,27 @@ div.leaflet-top.leaflet-left {
 }
 
 .panel-heading {
+  position: relative;
   border: none;
   border-radius: 0;
   border-top: 1px solid #f5f5f5 !important;
+}
+
+.panel-heading.section-header-loading-active {
+  padding-right: 36px;
+}
+
+.section-header-loading {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  transform: translateY(-50%);
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.75));
 }
 
 .panel-heading:hover .item-group-short-desc span {
