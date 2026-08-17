@@ -1785,7 +1785,7 @@ document.body.addEventListener("pluginLoad", async function (event) {
 
             contextMenu.createOption({
               isDisabled: false,
-              text: "Mas información",
+              text: "¿Qué hay aquí?",
               onclick: (option) => {
                 mapa.closePopup(contextPopup);
                 const searchBar = document.getElementById("search_bar");
