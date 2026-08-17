@@ -2972,6 +2972,93 @@ class GestorMenu {
     this.printMenu();
   }
 
+  _extendBoundsWithLayer(bounds, layer) {
+    if (!layer) return;
+
+    try {
+      if (typeof layer.getBounds === "function") {
+        const layerBounds = layer.getBounds();
+        if (layerBounds) bounds.extend(layerBounds);
+        return;
+      }
+      if (typeof layer.getLatLng === "function") {
+        bounds.extend(layer.getLatLng());
+        return;
+      }
+    } catch (error) {
+      console.warn("Unable to read layer bounds:", error);
+    }
+
+    const numericBounds = [layer.minx, layer.miny, layer.maxx, layer.maxy].map(
+      Number,
+    );
+    if (numericBounds.every(Number.isFinite)) {
+      bounds.extend([
+        [numericBounds[1], numericBounds[0]],
+        [numericBounds[3], numericBounds[2]],
+      ]);
+      return;
+    }
+
+    const boundingBox = layer.bounds || layer.bbox || layer.boundingBox;
+    if (Array.isArray(boundingBox) && boundingBox.length >= 4) {
+      const values = boundingBox.slice(0, 4).map(Number);
+      if (values.every(Number.isFinite)) {
+        bounds.extend([
+          [values[1], values[0]],
+          [values[3], values[2]],
+        ]);
+      }
+    }
+  }
+
+  async getSectionBounds(sectionId) {
+    if (this.items[sectionId]) {
+      await this.loadSectionServices(sectionId);
+    }
+
+    const bounds = L.latLngBounds([]);
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        (item.capas || [item.capa]).forEach((layer) => {
+          this._extendBoundsWithLayer(bounds, layer);
+        });
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      const featureLayers = getFileLayerFeatures(entry.id);
+      if (featureLayers.length > 0) {
+        featureLayers.forEach((layer) => {
+          this._extendBoundsWithLayer(bounds, layer);
+        });
+        return;
+      }
+
+      this._extendBoundsWithLayer(bounds, entry.layer);
+      if (entry.layer?.type && typeof L.geoJSON === "function") {
+        try {
+          this._extendBoundsWithLayer(bounds, L.geoJSON(entry.layer));
+        } catch (error) {
+          console.warn("Unable to calculate GeoJSON bounds:", error);
+        }
+      }
+    });
+
+    return bounds.isValid() ? bounds : null;
+  }
+
+  async zoomToSection(sectionId) {
+    const bounds = await this.getSectionBounds(sectionId);
+    if (!bounds) {
+      console.warn(`No bounds are available for section '${sectionId}'.`);
+      return false;
+    }
+    mapa.fitBounds(bounds);
+    return true;
+  }
+
   _appendSectionMenuAction(menu, iconClass, label, handler) {
     const option = document.createElement("li");
     option.setAttribute("role", "none");
@@ -3043,6 +3130,21 @@ class GestorMenu {
       () => {
         this.setPinnedSection(sectionId);
         this.closeSectionOptionsMenu();
+      },
+    );
+
+    const zoomButton = this._appendSectionMenuAction(
+      menu,
+      "fa fa-search-plus",
+      "Zoom a la sección",
+      async () => {
+        zoomButton.disabled = true;
+        menu.setAttribute("aria-busy", "true");
+        try {
+          await this.zoomToSection(sectionId);
+        } finally {
+          this.closeSectionOptionsMenu();
+        }
       },
     );
 
