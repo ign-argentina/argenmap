@@ -3789,12 +3789,6 @@ class GestorMenu {
                 this._layersJoin[keyJoin],
               )
             ) {
-              const configuredIcon = this._layersJoin[keyJoin].icon;
-              item.itemsComposite[keyItem].setMenuIcon(
-                typeof configuredIcon === "string" && configuredIcon.trim()
-                  ? configuredIcon.trim()
-                  : DEFAULT_JOINED_LAYER_ICON,
-              );
               //Busca las capas a incluir
               for (var keyJoinInt in this._layersJoin[keyJoin].joins) {
                 var itemInt =
@@ -3812,6 +3806,13 @@ class GestorMenu {
                       item.itemsComposite[keyItem].capas = item.itemsComposite[
                         keyItem
                       ].capas.concat(itemInt.itemsComposite[keyItemInt].capas);
+                      const configuredIcon = this._layersJoin[keyJoin].icon;
+                      item.itemsComposite[keyItem].setMenuIcon(
+                        typeof configuredIcon === "string" &&
+                          configuredIcon.trim()
+                          ? configuredIcon.trim()
+                          : DEFAULT_JOINED_LAYER_ICON,
+                      );
                       delete itemInt.itemsComposite[keyItemInt];
                       if (item.itemsComposite[keyItem].visible) {
                         if (!isNaN(keyItemInt)) {
