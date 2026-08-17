@@ -2219,6 +2219,59 @@ function keepLayerQueryPopupInView(targetMap, popup) {
     return;
   }
 
+  const popupElement = popup.getElement();
+  const popupContent = popupElement?.querySelector(".leaflet-popup-content");
+  const popupWrapper = popupElement?.querySelector(
+    ".leaflet-popup-content-wrapper",
+  );
+  const language = document.documentElement.lang?.toLowerCase().split("-")[0];
+  const moreContentLabel =
+    language === "es" ? "Mostrar más contenido" : "Show more content";
+  const moreContentButton = document.createElement("button");
+  moreContentButton.type = "button";
+  moreContentButton.className = "layer-query-popup-more";
+  moreContentButton.textContent = "↓";
+  moreContentButton.title = moreContentLabel;
+  moreContentButton.setAttribute("aria-label", moreContentLabel);
+  moreContentButton.hidden = true;
+  popupWrapper?.appendChild(moreContentButton);
+
+  const updateOverflowIndicator = () => {
+    if (!popupContent || !popupElement) {
+      return;
+    }
+
+    const overflowRemaining =
+      popupContent.scrollHeight -
+      popupContent.clientHeight -
+      popupContent.scrollTop;
+    const hasOverflow =
+      popupContent.scrollHeight - popupContent.clientHeight > 4;
+    const hasMoreContent = hasOverflow && overflowRemaining > 4;
+
+    popupElement.classList.toggle("has-overflowing-content", hasOverflow);
+    moreContentButton.hidden = !hasMoreContent;
+  };
+
+  const showMoreContent = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!popupContent) {
+      return;
+    }
+
+    popupContent.scrollTo({
+      top:
+        popupContent.scrollTop +
+        Math.max(80, Math.floor(popupContent.clientHeight * 0.75)),
+      behavior: "smooth",
+    });
+  };
+  moreContentButton.addEventListener("click", showMoreContent);
+  popupContent?.addEventListener("scroll", updateOverflowIndicator, {
+    passive: true,
+  });
+
   let updateFrame = null;
   const updatePosition = () => {
     if (updateFrame !== null) {
@@ -2229,11 +2282,11 @@ function keepLayerQueryPopupInView(targetMap, popup) {
       updateFrame = null;
       if (popup._map === targetMap) {
         popup.update();
+        updateOverflowIndicator();
       }
     });
   };
 
-  const popupContent = popup.getElement()?.querySelector(".leaflet-popup-content");
   const updateContentLimits = () => {
     if (!popupContent || !targetMap.getSize) {
       return;
@@ -2250,6 +2303,7 @@ function keepLayerQueryPopupInView(targetMap, popup) {
 
     popupContent.style.maxHeight = `${maxContentHeight}px`;
     popupContent.style.overflowY = "auto";
+    updateOverflowIndicator();
   };
 
   updateContentLimits();
@@ -2277,6 +2331,8 @@ function keepLayerQueryPopupInView(targetMap, popup) {
     if (updateFrame !== null) {
       window.cancelAnimationFrame(updateFrame);
     }
+    moreContentButton.removeEventListener("click", showMoreContent);
+    popupContent?.removeEventListener("scroll", updateOverflowIndicator);
     targetMap.off("resize", updateAfterMapResize);
     targetMap.off("popupclose", stopTracking);
   };
