@@ -10,9 +10,27 @@
 - Measure area and distance
 - Show grid
 - Filter the layer panel by a search box
+- Manage every layer in a section from its contextual menu
 - Show user location
 - Capture map image
 - Full screen view
 - Include in URL as paraeters the current map position, zoom and active layers for sharing
+
+## Layer section options
+
+Each section heading includes an options button at its right edge. Its menu can:
+
+- Enable every layer in the section, or disable them when they are all active.
+- Pin one section to the top of its container. Pinning another section restores
+  the configured order before moving the new one.
+- Fit the map to the combined bounds of every layer, including joined-layer
+  members and file geometries.
+- Enable or disable querying for every queryable layer.
+- Change the opacity of all layers with a live slider. The selected opacity is
+  retained when a layer is disabled and enabled again.
+
+Opening the options menu does not expand or collapse the section. For lazily
+loaded OGC sections, actions that need layer metadata wait for that service to
+load, without adding `GetCapabilities` requests to application startup.
 
 The changelog is at https://github.com/ign-argentina/argenmap/releases

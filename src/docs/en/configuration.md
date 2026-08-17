@@ -134,6 +134,13 @@ application starts. It defaults to `false`. If the section contains lazily
 loaded OGC services, setting it to `true` starts loading those services so its
 content can be displayed.
 
+The contextual menu at the right of every section heading needs no additional
+configuration. It can enable or disable all layers, pin the section to the top,
+fit the combined layer bounds, toggle querying, and change group opacity.
+Actions that depend on OGC metadata load that section's capabilities document
+on demand, as expanding the section does; unused section services are not
+requested during startup.
+
 ### Section-specific styles
 
 Use `section_style` to customize only one section and its layer entries:

@@ -141,6 +141,14 @@ iniciar la aplicación. Su valor predeterminado es `false`. Si la sección
 contiene servicios OGC con carga diferida, configurarla con `true` inicia la
 carga de esos servicios para poder mostrar su contenido.
 
+El menú contextual ubicado a la derecha de cada encabezado no requiere
+configuración adicional. Permite activar o desactivar todas las capas, fijar la
+sección arriba, hacer zoom a su encuadre conjunto, conmutar la consulta y
+cambiar la opacidad del grupo. Las acciones que dependen de metadatos OGC
+cargan el documento de capacidades de esa sección bajo demanda, igual que al
+expandirla; los servicios de secciones que no se utilizan permanecen sin
+solicitar durante el arranque.
+
 #### Estilos de una sección
 
 Una entrada de `sections` puede definir `section_style` para personalizar sólo
