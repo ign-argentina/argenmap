@@ -193,6 +193,7 @@ set explicitly with `source.format`.
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
+  "popupFormat": "table",
   "allowedOptions": ["zoom", "query", "data", "download"],
   "source": {
     "url": "data/venues.geojson",
@@ -238,6 +239,8 @@ Main settings:
 - `queryable` allows entity queries; the default is `true`.
 - `queryActive` enables queries at startup when `queryable` is `true`; the
   default is `false`.
+- `popupFormat` controls queried content rendering. It accepts `table`, `text`,
+  and `html`; when omitted, tables are used except for a sole `html` property.
 - `allowedOptions` limits the layer submenu. Available values are `zoom`,
   `query`, `data`, `download`, `rename`, and `delete`. If omitted, every
   applicable option is displayed.
@@ -247,21 +250,22 @@ Main settings:
 - `source.style.marker`, `point`, `line`, and `polygon` set styles by geometry
   type. `MultiPoint`, `MultiLineString`, and `MultiPolygon` are also handled.
 
-`isActive` belongs on the layer object. Query settings, `allowedOptions`, and
-`zoomOnActivate` may be declared there or inside `source`; `source` values take
-precedence. Add `"query"` to `allowedOptions` to expose the
+`isActive` belongs on the layer object. Query settings, `popupFormat`,
+`allowedOptions`, and `zoomOnActivate` may be declared there or inside `source`;
+`source` values take precedence. Add `"query"` to `allowedOptions` to expose the
 **Enable/Disable query** command. It is omitted when `queryable` is `false`.
 
-#### HTML in file-layer popups
+#### File-layer popup format
 
-A GeoJSON property named `html` (case-insensitive) is inserted as HTML in a
-full-width popup row. Other property values are escaped and rendered as text:
+The default `popupFormat` is `table`, with one row per property. `text` renders
+the same values as multiline text. When a GeoJSON feature has a single property
+named `html` (case-insensitive), its value is rendered as HTML automatically or
+when `"popupFormat": "html"` is configured:
 
 ```jsonc
 {
   "type": "Feature",
   "properties": {
-    "name": "Main venue",
     "html": "<img src='https://example.gov/image.jpg' alt='Venue'>"
   },
   "geometry": {
@@ -270,6 +274,10 @@ full-width popup row. Other property values are escaped and rendered as text:
   }
 }
 ```
+
+For safety, `html` is interpreted only when it is the sole property. Features
+with additional attributes fall back to a table and show the markup escaped.
+Explicitly selecting `table` or `text` also disables HTML interpretation.
 
 > [!WARNING]
 > The `html` value is intentionally not sanitized. Only use trusted files or

@@ -1095,10 +1095,9 @@ div.leaflet-top.leaflet-left {
   color: #222;
 }
 
-.file-layer-feature-table-has-html {
+.file-layer-feature-html {
   min-width: min(18rem, calc(100vw - 5rem));
   max-width: 100%;
-  table-layout: fixed;
 }
 
 .file-layer-feature-table tr:nth-child(odd) {
@@ -1122,28 +1121,31 @@ div.leaflet-top.leaflet-left {
   white-space: nowrap;
 }
 
-.file-layer-feature-table .file-layer-html-row td {
-  white-space: normal;
-  max-width: 100%;
-  overflow: hidden;
-}
-
 .file-layer-popup .leaflet-popup-content {
   max-width: calc(50vw - 40px);
   overflow: hidden;
 }
 
-.file-layer-feature-table .file-layer-html-row img,
-.file-layer-feature-table .file-layer-html-row video,
-.file-layer-feature-table .file-layer-html-row iframe,
-.file-layer-feature-table .file-layer-html-row svg,
-.file-layer-feature-table .file-layer-html-row canvas {
+.file-layer-feature-html img,
+.file-layer-feature-html video,
+.file-layer-feature-html iframe,
+.file-layer-feature-html svg,
+.file-layer-feature-html canvas {
   display: block;
   width: auto !important;
   max-width: 100% !important;
   max-height: calc(50vh - 40px) !important;
   height: auto !important;
   object-fit: contain;
+}
+
+.file-layer-feature-text {
+  margin: 0;
+  color: #222;
+  font: inherit;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 37.5em) {

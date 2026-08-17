@@ -352,6 +352,16 @@ const app = {
       source?.title || item.titulo || item.nombre,
       source?.url || item.host || url,
     ].filter(Boolean);
+    const configuredPopupFormat =
+      source?.popupFormat ??
+      source?.popup?.format ??
+      item.popupFormat ??
+      item.popup?.format ??
+      null;
+    const popupFormat =
+      typeof configuredPopupFormat === "string"
+        ? configuredPopupFormat.trim().toLowerCase()
+        : null;
 
     return {
       id: clearSpecialChars(fallbackIdParts.join("-")) || "capa-desde-archivo",
@@ -377,6 +387,9 @@ const app = {
         (source?.queryable ?? item.queryable ?? true) &&
           (source?.queryActive ?? item.queryActive ?? false),
       ),
+      popupFormat: ["table", "text", "html"].includes(popupFormat)
+        ? popupFormat
+        : null,
       isActive: Boolean(defaultActive),
     };
   },
@@ -523,6 +536,7 @@ const app = {
       configuredLeafletLayers.forEach((layer) => {
         layer.queryable = layerConfig.queryable;
         layer.activeData = layerConfig.queryActive;
+        layer.popupFormat = layerConfig.popupFormat;
       });
       addLayerToAllGroups(createdLayers, layerId, shouldBeActiveByDefault);
 
@@ -537,6 +551,7 @@ const app = {
         zoomOnActivate: layerConfig.zoomOnActivate,
         queryable: layerConfig.queryable,
         queryActive: layerConfig.queryActive,
+        popupFormat: layerConfig.popupFormat,
         // store the visible label as section
         section: sectionLabel,
       });

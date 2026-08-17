@@ -301,6 +301,7 @@ extensión o indicarse explícitamente en `source.format`.
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
+  "popupFormat": "table",
   "allowedOptions": ["zoom", "query", "data", "download"],
   "source": {
     "url": "datos/sedes.geojson",
@@ -348,6 +349,8 @@ Parámetros principales:
 - `queryable`: permite consultar sus entidades. Por defecto es `true`.
 - `queryActive`: deja la consulta habilitada al iniciar. Sólo tiene efecto si
   `queryable` es `true`; por defecto es `false`.
+- `popupFormat`: formato del contenido consultado. Admite `table`, `text` y
+  `html`; si se omite, utiliza tabla salvo para una única propiedad `html`.
 - `allowedOptions`: limita el submenú. Sus valores disponibles son `zoom`,
   `query`, `data`, `download`, `rename` y `delete`. Si se omite, se muestran
   todas las opciones aplicables.
@@ -359,8 +362,9 @@ Parámetros principales:
   `MultiPolygon`.
 
 `isActive` se define en el bloque de la capa. Las opciones de consulta,
-`allowedOptions` y `zoomOnActivate` pueden declararse allí o dentro de `source`;
-cuando existen en ambos lugares, los valores de `source` tienen prioridad.
+`popupFormat`, `allowedOptions` y `zoomOnActivate` pueden declararse allí o
+dentro de `source`; cuando existen en ambos lugares, los valores de `source`
+tienen prioridad.
 
 Para mostrar el botón **Activar/Desactivar consulta** en el submenú de opciones
 de una capa de archivo, se debe incluir `"query"` en `allowedOptions`. Si
@@ -376,17 +380,18 @@ de una capa de archivo, se debe incluir `"query"` en `allowedOptions`. Si
 }
 ```
 
-#### Contenido HTML en el popup de una capa de archivo
+#### Formato del popup de una capa de archivo
 
-Si una entidad GeoJSON contiene una propiedad llamada `html` (sin distinguir
-mayúsculas de minúsculas), su valor se inserta como HTML en una fila completa
-del popup. Los demás atributos se escapan y se muestran como texto:
+El valor predeterminado de `popupFormat` es `table`, que muestra una fila por
+propiedad. `text` muestra el mismo contenido como texto multilínea. Si una
+entidad GeoJSON tiene una única propiedad llamada `html` (sin distinguir
+mayúsculas de minúsculas), su valor se interpreta como HTML automáticamente o
+al configurar `"popupFormat": "html"`:
 
 ```jsonc
 {
   "type": "Feature",
   "properties": {
-    "nombre": "Sede principal",
     "html": "<img src='https://ejemplo.gob.ar/imagen.jpg' alt='Sede'>"
   },
   "geometry": {
@@ -395,6 +400,11 @@ del popup. Los demás atributos se escapan y se muestran como texto:
   }
 }
 ```
+
+Por seguridad, `html` sólo se interpreta cuando es la única propiedad. Si la
+entidad contiene otros atributos, el popup utiliza una tabla y el marcado se
+muestra escapado. Elegir `table` o `text` explícitamente también evita la
+interpretación del HTML.
 
 > [!WARNING]
 > El contenido de `html` no se sanitiza porque permite incrustar marcado. Debe

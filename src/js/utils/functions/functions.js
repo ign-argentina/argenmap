@@ -1927,7 +1927,18 @@ function bindLayerSearchAutocomplete(
 
 function getVectorData(e) {
   if (e.target.queryable !== false && e.target.activeData === true) {
+    if (e.originalEvent) {
+      L.DomEvent.stopPropagation(e.originalEvent);
+    }
     let layer = e.target;
+    const previousBubbling = layer.options.bubblingMouseEvents;
+    // Leaflet paths bubble clicks to the map, unlike markers. Temporarily use
+    // the public layer option so the map cannot close the popup opened by this
+    // same query event.
+    layer.options.bubblingMouseEvents = false;
+    window.setTimeout(() => {
+      layer.options.bubblingMouseEvents = previousBubbling;
+    }, 0);
     createPopupForVector(layer, e.latlng);
   }
 }
@@ -1941,35 +1952,14 @@ function createPopupForVector(layer, clickLatlng) {
   const layerName = layer.name || layer.id || "Capa";
   const id = layerName[0].toUpperCase() + layerName.slice(1).toLowerCase();
   const properties = geoJSON._configuredFileProperties || geoJSON.properties;
-  const hasHtmlProperty = Object.keys(properties).some(
-    (key) => String(key).toLowerCase() === "html",
-  );
+  const popupFormat = getFileLayerPopupFormat(layer.popupFormat, properties);
 
   // Do not mix this feature with results left by a previous map query.
   popupInfo = [];
 
   var infoAux = '<div class="featureInfo" id="featureInfoPopup' + id + '">';
-  infoAux += `<table class="file-layer-feature-table${
-    hasHtmlProperty ? " file-layer-feature-table-has-html" : ""
-  }"><tbody>`;
-
-  Object.entries(properties).forEach(function ([key, value]) {
-    if (String(key).toLowerCase() === "html") {
-      infoAux += `<tr class="file-layer-html-row"><td colspan="2">${prepareFileLayerPopupHtml(
-        value,
-      )}</td></tr>`;
-      return;
-    }
-
-    const formattedValue =
-      value && typeof value === "object" ? JSON.stringify(value) : value;
-    infoAux += "<tr>";
-    infoAux += `<th>${escapeFileLayerPopupValue(key)}</th>`;
-    infoAux += `<td>${escapeFileLayerPopupValue(formattedValue ?? "")}</td>`;
-    infoAux += "</tr>";
-  });
-
-  infoAux += "</tbody></table></div>";
+  infoAux += renderFileLayerPopupProperties(properties, popupFormat);
+  infoAux += "</div>";
   popupInfo.push(infoAux); //Add info for popup
 
   let center;
@@ -1995,6 +1985,56 @@ function createPopupForVector(layer, clickLatlng) {
       maxWidth: maxPopupWidth,
     },
   ); //Show info
+}
+
+function getFileLayerPopupFormat(configuredFormat, properties) {
+  const entries = Object.entries(properties || {});
+  const hasOnlyHtml =
+    entries.length === 1 && String(entries[0][0]).toLowerCase() === "html";
+  const normalizedFormat = String(configuredFormat || "")
+    .trim()
+    .toLowerCase();
+
+  if (normalizedFormat === "text") {
+    return "text";
+  }
+  if (normalizedFormat === "html") {
+    return hasOnlyHtml ? "html" : "table";
+  }
+  if (normalizedFormat === "table") {
+    return "table";
+  }
+  return hasOnlyHtml ? "html" : "table";
+}
+
+function renderFileLayerPopupProperties(properties, popupFormat) {
+  const entries = Object.entries(properties || {});
+
+  if (popupFormat === "html") {
+    return `<div class="file-layer-feature-html">${prepareFileLayerPopupHtml(
+      entries[0]?.[1],
+    )}</div>`;
+  }
+
+  if (popupFormat === "text") {
+    const text = entries
+      .map(([key, value]) => `${key}: ${formatFileLayerPopupValue(value)}`)
+      .join("\n");
+    return `<pre class="file-layer-feature-text">${escapeFileLayerPopupValue(text)}</pre>`;
+  }
+
+  let table = '<table class="file-layer-feature-table"><tbody>';
+  entries.forEach(([key, value]) => {
+    table += "<tr>";
+    table += `<th>${escapeFileLayerPopupValue(key)}</th>`;
+    table += `<td>${escapeFileLayerPopupValue(formatFileLayerPopupValue(value))}</td>`;
+    table += "</tr>";
+  });
+  return `${table}</tbody></table>`;
+}
+
+function formatFileLayerPopupValue(value) {
+  return value && typeof value === "object" ? JSON.stringify(value) : value ?? "";
 }
 
 function escapeFileLayerPopupValue(value) {
