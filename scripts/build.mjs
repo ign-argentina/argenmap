@@ -33,6 +33,7 @@ const initialScripts = [
   "src/js/components/login/login.js",
   "src/js/components/UI/UserInterface.js",
   "src/js/components/about/about.js",
+  "src/js/components/pwa/pwa.js",
 ];
 
 const initialStyles = [
@@ -171,6 +172,12 @@ function replaceTag(html, currentTag, replacementTag) {
 
 async function createProductionHtml(javaScriptBundle, cssBundle) {
   let html = await readFile(fromProject("index.html"), "utf8");
+
+  html = replaceTag(
+    html,
+    '  <meta name="argenmap-build" content="development">',
+    '  <meta name="argenmap-build" content="production">',
+  );
 
   html = removeTag(
     html,
