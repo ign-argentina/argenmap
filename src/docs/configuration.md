@@ -327,8 +327,9 @@ extensión o indicarse explícitamente en `source.format`.
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
+  "editable": true,
   "popupFormat": "table",
-  "allowedOptions": ["zoom", "query", "data", "download"],
+  "allowedOptions": ["zoom", "query", "edit", "data", "download"],
   "activeButtonColor": "#287bb5",
   "style": {
     "marker": {
@@ -376,11 +377,15 @@ Parámetros principales:
 - `queryable`: permite consultar sus entidades. Por defecto es `true`.
 - `queryActive`: deja la consulta habilitada al iniciar. Sólo tiene efecto si
   `queryable` es `true`; por defecto es `false`.
+- `editable`: determina el estado inicial de edición de estilos y geometrías.
+  Por defecto es `true`. Con `false`, **Editar estilos** queda deshabilitado y
+  Leaflet.Draw omite todas las geometrías de la capa hasta que se habilite la
+  edición desde su submenú.
 - `popupFormat`: formato del contenido consultado. Admite `table`, `text` y
   `html`; si se omite, utiliza tabla salvo para una única propiedad `html`.
 - `allowedOptions`: limita el submenú. Sus valores disponibles son `zoom`,
-  `query`, `data`, `download`, `rename` y `delete`. Si se omite, se muestran
-  todas las opciones aplicables.
+  `query`, `edit`, `data`, `download`, `rename` y `delete`. Si se omite, se
+  muestran todas las opciones aplicables.
 - `activeButtonColor`: cambia el fondo del botón activo sin formar parte del
   estilo geométrico exportado.
 - `style.marker`, `point`, `line` y `polygon`: definen estilos por tipo
@@ -406,6 +411,20 @@ de una capa de archivo, se debe incluir `"query"` en `allowedOptions`. Si
   "queryable": true,
   "queryActive": false,
   "allowedOptions": ["zoom", "query", "data", "download"]
+}
+```
+
+La opción `"edit"` agrega el comando **Activar/Desactivar edición** al mismo
+submenú. El cambio se aplica conjuntamente a todas las entidades de la capa y
+controla tanto **Editar estilos** como la selección de geometrías desde las
+herramientas de edición de Leaflet.Draw. Es un cambio de la sesión actual y no
+modifica `data.json`:
+
+```jsonc
+{
+  "type": "file",
+  "editable": false,
+  "allowedOptions": ["zoom", "query", "edit", "download"]
 }
 ```
 

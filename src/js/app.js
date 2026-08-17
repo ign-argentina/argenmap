@@ -391,6 +391,7 @@ const app = {
         null,
       fileName: source?.fileName || source?.name || null,
       allowedOptions: item.allowedOptions || source?.allowedOptions || null,
+      editable: Boolean(item.editable ?? source?.editable ?? true),
       zoomOnActivate: Boolean(
         item.zoomOnActivate ?? source?.zoomOnActivate ?? false,
       ),
@@ -570,6 +571,9 @@ const app = {
         layer.queryable = layerConfig.queryable;
         layer.activeData = layerConfig.queryActive;
         layer.popupFormat = layerConfig.popupFormat;
+        layer._uneditable = !layerConfig.editable;
+        layer._styleEditable = layerConfig.editable;
+        layer._configuredFileLayerId = layerId;
       });
       addLayerToAllGroups(createdLayers, layerId, shouldBeActiveByDefault);
 
@@ -584,6 +588,7 @@ const app = {
         zoomOnActivate: layerConfig.zoomOnActivate,
         queryable: layerConfig.queryable,
         queryActive: layerConfig.queryActive,
+        editable: layerConfig.editable,
         popupFormat: layerConfig.popupFormat,
         // store the visible label as section
         section: sectionLabel,
@@ -604,6 +609,7 @@ const app = {
         icon: layerConfig.icon,
         description: layerConfig.description,
         allowedOptions: layerConfig.allowedOptions,
+        editable: layerConfig.editable,
         activeButtonColor: layerConfig.activeButtonColor,
         fromConfig: true,
       });

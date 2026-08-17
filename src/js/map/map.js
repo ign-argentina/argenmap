@@ -2012,10 +2012,13 @@ document.body.addEventListener("pluginLoad", async function (event) {
               },
             });
 
-            contextMenu.createOption({
-              isDisabled: false,
+            const styleOption = contextMenu.createOption({
+              isDisabled: layer._styleEditable === false,
               text: "Editar estilos",
               onclick: (option) => {
+                if (option.disabled || layer._styleEditable === false) {
+                  return;
+                }
                 mapa.closePopup(contextPopup);
                 if (document.getElementById("editContainer")) {
                   document.getElementById("editContainer").remove();
@@ -2023,6 +2026,8 @@ document.body.addEventListener("pluginLoad", async function (event) {
 
                 const wrapper = document.createElement("div");
                 wrapper.id = "editContainer";
+                wrapper.dataset.fileLayerId =
+                  layer._configuredFileLayerId || layer.id || "";
 
                 let btncloseWrapper = document.createElement("a");
                 btncloseWrapper.id = "btnclose-wrapper";
@@ -2117,10 +2122,13 @@ document.body.addEventListener("pluginLoad", async function (event) {
               },
             });
 
-            contextMenu.createOption({
-              isDisabled: false,
+            const deleteGeometryOption = contextMenu.createOption({
+              isDisabled: layer._uneditable === true,
               text: STRINGS.delete_geometry,
               onclick: (option) => {
+                if (option.disabled) {
+                  return;
+                }
                 mapa.closePopup(contextPopup);
                 if (
                   typeof layer != "string" &&
@@ -2133,6 +2141,25 @@ document.body.addEventListener("pluginLoad", async function (event) {
             });
 
             layer.on("contextmenu", (e) => {
+              const updateContextOption = (option, isDisabled) => {
+                option.disabled = isDisabled;
+                option.classList.toggle(
+                  "context-menu-item-disabled",
+                  isDisabled,
+                );
+                option.classList.toggle(
+                  "context-menu-item-active",
+                  !isDisabled,
+                );
+              };
+              updateContextOption(
+                styleOption,
+                layer._styleEditable === false,
+              );
+              updateContextOption(
+                deleteGeometryOption,
+                layer._uneditable === true,
+              );
               contextLatLng = e.latlng;
               contextPopup = L.popup({
                 closeButton: false,

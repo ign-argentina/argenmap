@@ -68,10 +68,77 @@ function registerConfiguredFileLayerEntry(entry) {
       allowedOptions: Array.isArray(entry.allowedOptions)
         ? entry.allowedOptions.map((option) => option.toLowerCase())
         : entry.fromConfig
-          ? ["zoom", "query", "data", "download"]
-          : ["zoom", "query", "data", "download", "rename", "delete"],
+          ? ["zoom", "query", "edit", "data", "download"]
+          : [
+              "zoom",
+              "query",
+              "edit",
+              "data",
+              "download",
+              "rename",
+              "delete",
+            ],
     });
   }
+}
+
+function getFileLayerFeatures(id) {
+  const layerNames = new Set(mapa.groupLayers?.[id] || []);
+  return Object.values(mapa.editableLayers || {})
+    .flat()
+    .filter((layer) => layerNames.has(layer.name));
+}
+
+function setFileLayerEditable(id, editable) {
+  const nextEditable = editable !== false;
+  const features = getFileLayerFeatures(id);
+  const editHandler =
+    mapa.drawControl?._toolbars?.edit?._modes?.edit?.handler || null;
+
+  features.forEach((layer) => {
+    const participatesInActiveEdit =
+      editHandler?._enabled && editHandler._featureGroup?.hasLayer(layer);
+    // An already active Leaflet.Draw handler must release the geometry before
+    // it is marked as protected; its custom disable method skips protected
+    // layers intentionally.
+    if (!nextEditable && participatesInActiveEdit) {
+      editHandler._disableLayerEdit({ layer });
+    }
+
+    layer._uneditable = !nextEditable;
+    layer._styleEditable = nextEditable;
+
+    if (nextEditable && participatesInActiveEdit) {
+      editHandler._enableLayerEdit({ layer });
+    }
+  });
+
+  const layerEntry = addedLayers.find((layer) => layer.id === id);
+  if (layerEntry) {
+    layerEntry.editable = nextEditable;
+  }
+
+  const registryEntry = configuredFileLayerRegistry.find(
+    (layer) => layer.id === id,
+  );
+  if (registryEntry) {
+    registryEntry.editable = nextEditable;
+  }
+
+  document.getElementById(`flc-${id}`)?.dispatchEvent(
+    new CustomEvent("argenmap:editabilitychange", {
+      detail: { editable: nextEditable },
+    }),
+  );
+
+  if (!nextEditable) {
+    const openStyleEditor = document.getElementById("editContainer");
+    if (openStyleEditor?.dataset.fileLayerId === id) {
+      openStyleEditor.remove();
+    }
+  }
+
+  return nextEditable;
 }
 
 function normalizeLeafletControlOrder() {

@@ -4523,6 +4523,7 @@ class Menu_UI {
         entry.allowedOptions,
         entry.sectionId,
         entry.activeButtonColor,
+        entry.editable,
       );
     });
   }
@@ -4539,6 +4540,7 @@ class Menu_UI {
     allowedOptions = null,
     groupId = null,
     activeButtonColor = null,
+    editable = true,
   ) {
     // groupname: visible label; groupId: optional stable identifier for HTML IDs
     let groupnamev = clearSpecialChars(groupId || groupname);
@@ -4549,7 +4551,15 @@ class Menu_UI {
 
     const activeAllowedOptions = Array.isArray(allowedOptions)
       ? allowedOptions.map((option) => option.toLowerCase())
-      : ["zoom", "query", "data", "download", "rename", "delete"];
+      : [
+          "zoom",
+          "query",
+          "edit",
+          "data",
+          "download",
+          "rename",
+          "delete",
+        ];
 
     if (!fileLayerGroup.includes(groupname)) {
       fileLayerGroup.push(groupname);
@@ -4750,12 +4760,7 @@ class Menu_UI {
     const queryIsAvailable = addedLayer?.queryable !== false;
     const query_opt = document.createElement("li");
 
-    const getQueryLayers = () => {
-      const layerNames = new Set(mapa.groupLayers[id] || []);
-      return Object.values(mapa.editableLayers)
-        .flat()
-        .filter((layer) => layerNames.has(layer.name));
-    };
+    const getQueryLayers = () => getFileLayerFeatures(id);
 
     const renderQueryOption = () => {
       query_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa ${
@@ -4788,6 +4793,34 @@ class Menu_UI {
         queryIsActive = queryLayers.some((layer) => layer.activeData === true);
       }
       renderQueryOption();
+    });
+
+    let editIsActive = addedLayer?.editable ?? (editable !== false);
+    const edit_opt = document.createElement("li");
+    const renderEditOption = () => {
+      edit_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa ${
+        editIsActive ? "fa-lock" : "fa-unlock"
+      }" aria-hidden="true" style="width:20px;"></i>${
+        editIsActive ? "Desactivar edición" : "Activar edición"
+      }</a>`;
+    };
+
+    renderEditOption();
+    layer_item.addEventListener("argenmap:editabilitychange", (event) => {
+      editIsActive = event.detail?.editable !== false;
+      renderEditOption();
+    });
+    edit_opt.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      editIsActive = setFileLayerEditable(id, !editIsActive);
+      renderEditOption();
+    };
+
+    fdiv.addEventListener("click", () => {
+      const fileLayer = addedLayers.find((layer) => layer.id === id);
+      editIsActive = fileLayer?.editable ?? (editable !== false);
+      renderEditOption();
     });
 
     /* let query_opt = document.createElement("li")
@@ -4826,6 +4859,9 @@ class Menu_UI {
     }
     if (activeAllowedOptions.includes("query") && queryIsAvailable) {
       mainul.append(query_opt);
+    }
+    if (activeAllowedOptions.includes("edit")) {
+      mainul.append(edit_opt);
     }
     if (activeAllowedOptions.includes("rename")) {
       mainul.append(edit_name_opt);

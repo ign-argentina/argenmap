@@ -218,8 +218,9 @@ set explicitly with `source.format`.
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
+  "editable": true,
   "popupFormat": "table",
-  "allowedOptions": ["zoom", "query", "data", "download"],
+  "allowedOptions": ["zoom", "query", "edit", "data", "download"],
   "activeButtonColor": "#287bb5",
   "style": {
     "marker": {
@@ -265,11 +266,14 @@ Main settings:
 - `queryable` allows entity queries; the default is `true`.
 - `queryActive` enables queries at startup when `queryable` is `true`; the
   default is `false`.
+- `editable` sets the initial style and geometry editing state. It defaults to
+  `true`. When set to `false`, **Edit styles** is disabled and Leaflet.Draw
+  skips every feature in the layer until editing is enabled from its submenu.
 - `popupFormat` controls queried content rendering. It accepts `table`, `text`,
   and `html`; when omitted, tables are used except for a sole `html` property.
 - `allowedOptions` limits the layer submenu. Available values are `zoom`,
-  `query`, `data`, `download`, `rename`, and `delete`. If omitted, every
-  applicable option is displayed.
+  `query`, `edit`, `data`, `download`, `rename`, and `delete`. If omitted,
+  every applicable option is displayed.
 - `activeButtonColor` controls the active button background without becoming
   part of the exported geometry style.
 - `style.marker`, `point`, `line`, and `polygon` set styles by geometry
@@ -283,6 +287,19 @@ locations inside `source` remain compatibility fallbacks; when a property is
 also present on the layer, the layer value takes precedence. Add `"query"` to
 `allowedOptions` to expose the
 **Enable/Disable query** command. It is omitted when `queryable` is `false`.
+
+The `"edit"` option adds **Enable/Disable editing** to that same submenu. The
+change applies to every feature in the layer and controls both **Edit styles**
+and geometry selection by the Leaflet.Draw editing tools. It only affects the
+current session and does not rewrite `data.json`:
+
+```jsonc
+{
+  "type": "file",
+  "editable": false,
+  "allowedOptions": ["zoom", "query", "edit", "download"]
+}
+```
 
 #### Per-feature or per-geometry styles
 
