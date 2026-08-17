@@ -515,16 +515,22 @@ class ImpresorGrupoHTML extends Impresor {
 
     const isExpanded = itemComposite.getActive() === true;
     const active = isExpanded ? " in" : "";
+    const sectionOptions =
+      typeof gestorMenu !== "undefined" &&
+      gestorMenu.items?.[itemComposite.seccion] === itemComposite
+        ? this.getSectionOptionsButton(itemComposite.seccion)
+        : "";
 
     return `
     <div id="${listaId}" class="${itemClass} panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
-      <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}" aria-expanded="${isExpanded}">
+      <div class="panel-heading${sectionOptions ? " section-has-options" : ""}" data-toggle="collapse" data-target="#${itemComposite.seccion}" aria-expanded="${isExpanded}">
         <h4 class="panel-title">
           ${headerIcon}<span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
           <div class='item-group-short-desc'>
             <span data-toggle='tooltip' title='${itemComposite.descripcion}'>${itemComposite.shortDesc}</span>
           </div>
         </h4>
+        ${sectionOptions}
       </div>
       <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}' aria-expanded='${isExpanded}'>
         <div class="panel-body">
@@ -533,6 +539,17 @@ class ImpresorGrupoHTML extends Impresor {
       </div>
     </div>
   `;
+  }
+
+  getSectionOptionsButton(sectionId) {
+    return `
+      <button type="button" class="section-options-toggle" data-section-id="${sectionId}"
+        title="Opciones de la sección" aria-label="Opciones de la sección"
+        aria-haspopup="menu" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+        </svg>
+      </button>`;
   }
 
   getSectionStyleAttributes(sectionStyle) {
@@ -2835,6 +2852,166 @@ class GestorMenu {
     this._itemsGetter = new ItemsGetter();
     this._layersJoin = null;
     this._folders = {};
+    this._sectionOptionsMenu = null;
+    this._sectionOptionsToggle = null;
+    document.addEventListener("click", () => this.closeSectionOptionsMenu());
+    window.addEventListener("resize", () => this.closeSectionOptionsMenu());
+  }
+
+  getSectionAddedLayers(sectionId) {
+    const registeredIds = new Set(
+      configuredFileLayerRegistry
+        .filter((entry) => entry.sectionId === sectionId)
+        .map((entry) => entry.id),
+    );
+
+    return addedLayers.filter(
+      (layer) =>
+        registeredIds.has(layer.id) ||
+        clearSpecialChars(layer.section || "") === sectionId,
+    );
+  }
+
+  getSectionLayerState(sectionId) {
+    const itemGroup = this.items[sectionId];
+    const regularItems = itemGroup
+      ? Object.values(itemGroup.itemsComposite).filter(
+          (item) => typeof item.getVisible === "function",
+        )
+      : [];
+    const addedItems = this.getSectionAddedLayers(sectionId);
+    const activeCount =
+      regularItems.filter((item) => item.getVisible()).length +
+      addedItems.filter((item) => item.isActive === true).length;
+
+    return {
+      total: regularItems.length + addedItems.length,
+      active: activeCount,
+    };
+  }
+
+  async setSectionLayersVisibility(sectionId, visible) {
+    if (this.items[sectionId]) {
+      await this.loadSectionServices(sectionId);
+    }
+
+    const itemGroup = this.items[sectionId];
+    const regularItems = itemGroup
+      ? Object.values(itemGroup.itemsComposite).filter(
+          (item) => typeof item.getVisible === "function",
+        )
+      : [];
+
+    regularItems.forEach((item) => {
+      if (item.getVisible() !== visible) {
+        this.muestraCapa(item.getId());
+      }
+    });
+
+    for (const layer of this.getSectionAddedLayers(sectionId)) {
+      if (layer.isActive === visible) continue;
+
+      if (layer.type === "WMS") {
+        const layerElement = document.getElementById(
+          `srvcLyr-${layer.id}${layer.file_name}`,
+        );
+        if (layerElement) {
+          await clickWMSLayer(layer.layer, layerElement, layer.file_name);
+        }
+      } else {
+        clickGeometryLayer(layer.id);
+      }
+    }
+
+    this.updateLayerMenuControls();
+  }
+
+  closeSectionOptionsMenu() {
+    this._sectionOptionsMenu?.remove();
+    this._sectionOptionsToggle?.setAttribute("aria-expanded", "false");
+    this._sectionOptionsMenu = null;
+    this._sectionOptionsToggle = null;
+  }
+
+  _positionSectionOptionsMenu(menu, toggle) {
+    const buttonBounds = toggle.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const viewportLeft = viewport?.offsetLeft || 0;
+    const viewportTop = viewport?.offsetTop || 0;
+    const viewportWidth = viewport?.width || document.documentElement.clientWidth;
+    const viewportHeight = viewport?.height || window.innerHeight;
+    const menuBounds = menu.getBoundingClientRect();
+    const left = Math.min(
+      Math.max(viewportLeft + 8, buttonBounds.right - menuBounds.width),
+      viewportLeft + viewportWidth - menuBounds.width - 8,
+    );
+
+    menu.style.left = `${left}px`;
+    menu.style.top = `${buttonBounds.bottom + 2}px`;
+    const bottomOverflow =
+      menu.getBoundingClientRect().bottom - (viewportTop + viewportHeight);
+    if (bottomOverflow > 0) {
+      menu.style.top = `${Math.max(
+        viewportTop + 8,
+        buttonBounds.top - menuBounds.height - 2,
+      )}px`;
+    }
+  }
+
+  openSectionOptionsMenu(sectionId, toggle) {
+    this.closeSectionOptionsMenu();
+    const state = this.getSectionLayerState(sectionId);
+    const shouldActivate = state.total === 0 || state.active < state.total;
+    const menu = document.createElement("ul");
+    menu.className = "dropdown-menu section-options-menu section-options-menu-open";
+    menu.setAttribute("role", "menu");
+    menu.addEventListener("click", (event) => event.stopPropagation());
+
+    const visibilityOption = document.createElement("li");
+    visibilityOption.setAttribute("role", "none");
+    const visibilityButton = document.createElement("button");
+    visibilityButton.type = "button";
+    visibilityButton.className = "section-options-action";
+    visibilityButton.setAttribute("role", "menuitem");
+    visibilityButton.innerHTML = `<i class="fa ${
+      shouldActivate ? "fa-toggle-on" : "fa-toggle-off"
+    }" aria-hidden="true"></i><span>${
+      shouldActivate ? "Activar todas las capas" : "Desactivar todas las capas"
+    }</span>`;
+    visibilityButton.addEventListener("click", async () => {
+      visibilityButton.disabled = true;
+      menu.setAttribute("aria-busy", "true");
+      try {
+        await this.setSectionLayersVisibility(sectionId, shouldActivate);
+      } finally {
+        this.closeSectionOptionsMenu();
+      }
+    });
+    visibilityOption.appendChild(visibilityButton);
+    menu.appendChild(visibilityOption);
+
+    document.body.appendChild(menu);
+    this._sectionOptionsMenu = menu;
+    this._sectionOptionsToggle = toggle;
+    toggle.setAttribute("aria-expanded", "true");
+    this._positionSectionOptionsMenu(menu, toggle);
+  }
+
+  initializeSectionOptions() {
+    document.querySelectorAll(".section-options-toggle").forEach((toggle) => {
+      if (toggle.dataset.sectionOptionsBound === "true") return;
+      toggle.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const isOpen = this._sectionOptionsToggle === toggle;
+        if (isOpen) {
+          this.closeSectionOptionsMenu();
+        } else {
+          this.openSectionOptionsMenu(toggle.dataset.sectionId, toggle);
+        }
+      });
+      toggle.dataset.sectionOptionsBound = "true";
+    });
   }
 
   setBaseMapDependencies(baseLayers) {
@@ -4183,6 +4360,7 @@ class GestorMenu {
     if (loading) loading.style.display = "none";
     bindZoomLayer();
     bindLayerOptions();
+    this.initializeSectionOptions();
 
     //Call callback after print (if exists)
     if (this.printCallback != null) {
@@ -4289,6 +4467,7 @@ class GestorMenu {
     }
     bindZoomLayer();
     bindLayerOptions();
+    this.initializeSectionOptions();
     this.updateLayerMenuControls();
   }
 
@@ -4553,15 +4732,17 @@ class Menu_UI {
     const sectionPrinter = new ImpresorGrupoHTML();
     const styleAttributes = sectionPrinter.getSectionStyleAttributes(sectionStyle);
     const headerIcon = sectionPrinter.getHeaderIcon(sectionStyle?.header?.icon);
+    const sectionOptions = sectionPrinter.getSectionOptionsButton(groupnamev);
     const isExpanded = app.sectionExpanded?.[groupnamev] === true;
     let itemnew = document.createElement("div");
     itemnew.className = "custom-file-layer-section";
     itemnew.innerHTML = `
       <div id="lista-${groupnamev}" class="menu5 panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
-      <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="${isExpanded}">
+      <div class="panel-heading section-has-options" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="${isExpanded}">
         <h4 class="panel-title">
         ${headerIcon}<a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
         </h4>
+        ${sectionOptions}
       </div>
       <div id='${groupnamev}-content' class="panel-collapse collapse${isExpanded ? " in" : ""}" aria-expanded="${isExpanded}">
         <div class="panel-body" id ="${groupnamev}-panel-body"></div>
@@ -4570,6 +4751,7 @@ class Menu_UI {
 
     let searchForm = document.getElementById("searchForm");
     searchForm.after(itemnew);
+    gestorMenu.initializeSectionOptions();
   }
 
   addParentSection(parent, child) {

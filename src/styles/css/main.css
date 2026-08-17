@@ -797,6 +797,74 @@ div.leaflet-top.leaflet-left {
   padding-right: 36px;
 }
 
+.panel-heading.section-has-options.section-header-loading-active {
+  padding-right: 64px;
+}
+
+.panel-heading.section-has-options > .panel-title {
+  padding-right: 32px;
+}
+
+.section-options-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  color: inherit;
+  background: transparent;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.section-options-toggle:hover,
+.section-options-toggle:focus-visible,
+.section-options-toggle[aria-expanded="true"] {
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
+.section-options-menu-open {
+  display: block !important;
+  position: fixed;
+  right: auto;
+  z-index: 2000;
+  min-width: min(230px, calc(100vw - 16px));
+  margin: 0;
+}
+
+.section-options-action {
+  display: flex;
+  width: 100%;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 0;
+  color: #474b4e;
+  background: transparent;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.section-options-action:hover,
+.section-options-action:focus-visible {
+  color: #262829;
+  background: #f5f5f5;
+  outline: none;
+}
+
+.section-options-action > i {
+  width: 20px;
+  text-align: center;
+}
+
 .section-header-loading {
   position: absolute;
   top: 50%;
@@ -808,6 +876,10 @@ div.leaflet-top.leaflet-left {
   object-fit: contain;
   pointer-events: none;
   filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.75));
+}
+
+.panel-heading.section-has-options > .section-header-loading {
+  right: 38px;
 }
 
 .panel-heading:hover .item-group-short-desc span {
