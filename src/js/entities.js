@@ -2982,6 +2982,50 @@ class GestorMenu {
     return this.activeLayers;
   }
 
+  hasLoadedSearchableLayers() {
+    const hasServiceLayers = Object.values(this.items).some(
+      (itemGroup) =>
+        !itemGroup.isBaseLayer() &&
+        Object.values(itemGroup.itemsComposite || {}).some(
+          (item) => item?.capa,
+        ),
+    );
+    const hasAddedLayers =
+      typeof addedLayers !== "undefined" && addedLayers.length > 0;
+
+    return hasServiceLayers || hasAddedLayers;
+  }
+
+  updateLayerMenuControls(activeLayerCount = null) {
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("q");
+    const searchButton = searchForm?.querySelector(".layer-search-submit");
+    const clearButton = searchForm?.querySelector(".btn-reset-layers");
+    const searchIsAvailable = this.hasLoadedSearchableLayers();
+
+    searchForm?.classList.toggle("layer-search-disabled", !searchIsAvailable);
+    searchForm?.setAttribute("aria-disabled", String(!searchIsAvailable));
+    [searchInput, searchButton, clearButton].forEach((control) => {
+      if (control) control.disabled = !searchIsAvailable;
+    });
+
+    const cleanButton = document.getElementById("cleanTrash");
+    if (!cleanButton) return;
+
+    const resolvedActiveLayerCount =
+      activeLayerCount == null
+        ? this.getActiveLayersWithoutBasemap().length +
+          (typeof addedLayers === "undefined"
+            ? 0
+            : addedLayers.filter((layer) => layer.isActive === true).length)
+        : activeLayerCount;
+    const cleanIsAvailable =
+      searchIsAvailable && resolvedActiveLayerCount > 0;
+
+    cleanButton.disabled = !cleanIsAvailable;
+    cleanButton.setAttribute("aria-disabled", String(!cleanIsAvailable));
+  }
+
   getLayerIdByName(layerName) {
     for (const section in this.items) {
       if (this.items[section].hasOwnProperty("itemsComposite")) {
@@ -3779,7 +3823,7 @@ class GestorMenu {
               <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa' autocomplete='off'>
               <button type='button' class='ag-btn ag-btn-secondary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
-            <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
+            <button class='ag-btn ag-btn-secondary btn-search layer-search-submit' type='submit' title='Buscar capas'>
             <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
             </button>
             <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar capas'></button>
@@ -4199,6 +4243,7 @@ class GestorMenu {
       () => gestorMenu.getAvailableTags(),
       performSearch,
     );
+    this.updateLayerMenuControls();
   }
 
   //Prints only one section (works on lazy initialization only)
@@ -4217,6 +4262,7 @@ class GestorMenu {
     }
     bindZoomLayer();
     bindLayerOptions();
+    this.updateLayerMenuControls();
   }
 
   muestraCapa(itemSeccion) {
@@ -5458,6 +5504,7 @@ class Menu_UI {
     if (serviceItems[id].layersInMenu == 1)
       document.getElementById(`${groupnamev}-a`)?.click();
     addCounterForSection(groupname, layerType);
+    showTotalNumberofLayers();
   }
 
   addButton({

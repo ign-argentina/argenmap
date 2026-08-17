@@ -402,16 +402,18 @@ function showTotalNumberofLayers() {
     }
   });
 
-  if (activeLayers > 0) {
-    document.getElementById("cleanTrash").innerHTML =
+  const cleanTrash = document.getElementById("cleanTrash");
+  if (cleanTrash && activeLayers > 0) {
+    cleanTrash.innerHTML =
       "<div class='glyphicon glyphicon-refresh'></div>" +
         "<span class='total-active-layers-counter'>" +
         activeLayers +
         "</span>";
-  } else {
-    document.getElementById("cleanTrash").innerHTML =
-      "<span class='glyphicon glyphicon-refresh'></span>";
+  } else if (cleanTrash) {
+    cleanTrash.innerHTML = "<span class='glyphicon glyphicon-refresh'></span>";
   }
+
+  gestorMenu.updateLayerMenuControls(activeLayers);
 }
 
 function recoverSections() {

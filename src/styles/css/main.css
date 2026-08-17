@@ -551,6 +551,12 @@ div.leaflet-top.leaflet-left {
   color: var(--btn-disabled-color);
 }
 
+.searchFormBtn input:disabled,
+.searchFormBtn button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .ag-btn-confirm {
   border-color: var(--btn-confirm-color);
   background-color: var(--btn-confirm-color);
