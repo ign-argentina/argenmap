@@ -15,6 +15,9 @@
 - Capture map image
 - Full screen view
 - Include in URL as paraeters the current map position, zoom and active layers for sharing
+- Install the production build as a PWA and restore its interface and previously
+  cached local resources offline. Remote maps, layers and processes still require
+  connectivity.
 
 ## Layer section options
 

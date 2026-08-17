@@ -26,7 +26,46 @@ The base maps and layers can be defined in the `data.json` and the app configura
 
 This step is detailed in the **[Configuration](configuration.md)** article.
 
-### 3rd step: publish 
+### 3rd step: create and publish a production build
+
+Node.js 20 or newer is required to create the optimized, installable PWA build:
+
+```bash
+npm ci
+npm run build
+```
+
+Publish the **contents of `build/`** as the viewer root. The directory includes
+the Web App Manifest, versioned bundles and generated service worker. Do not edit
+it manually because every build recreates it.
+
+Production must be served over HTTPS; `localhost` is the only exception intended
+for local testing. The source development page does not register a service
+worker, so cached production resources cannot interfere with debugging.
+
+The PWA caches the application shell, local configuration and static resources
+that have been used. Remote map tiles, WMS/WMTS requests, `GetCapabilities`,
+`GetFeatureInfo`, authentication and geoprocesses remain network-only. Installing
+the PWA therefore does not turn remote maps into offline map packages.
+
+After deploying a new build, Argenmap presents an update notice and activates the
+new service worker only when the user chooses **Update**.
+
+Configure the web server with equivalent cache headers:
+
+```text
+/service-worker.js                 Cache-Control: no-cache
+/index.html                        Cache-Control: no-cache
+/manifest.webmanifest              Cache-Control: no-cache
+/src/config/*.json                 Cache-Control: no-cache
+/assets/js/*.[hash].min.js         Cache-Control: public, max-age=31536000, immutable
+/src/styles/css/*.[hash].min.css   Cache-Control: public, max-age=31536000, immutable
+```
+
+Deploy all files in `build/` atomically. Every build derives its PWA cache version
+from the full published contents, including configuration and deferred plugins.
+
+### Development publication
 
 Publish this repository with a web server or a debug tool as LiveServer in Visual Studio Code, etc.
 

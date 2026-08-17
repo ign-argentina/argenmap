@@ -467,7 +467,16 @@ async function createProductionServiceWorker(javaScriptBundle, cssBundle) {
     }
   }
 
-  const version = await hashOutputFiles(precacheFiles);
+  const releaseFiles = (await listFiles(outputDirectory))
+    .map((filePath) =>
+      path.relative(outputDirectory, filePath).split(path.sep).join("/"),
+    )
+    .filter(
+      (relativePath) =>
+        relativePath !== "service-worker.js" &&
+        relativePath !== "build-manifest.json",
+    );
+  const version = await hashOutputFiles(releaseFiles);
   await writeFile(
     fromOutput("service-worker.js"),
     createServiceWorkerSource(version, precacheFiles),

@@ -19,6 +19,9 @@
 - Panel de ayuda con guia rápida
 - Panel de accesibilidad
 - Descargar una captura el mapa en formato PDF junto con la escala, orientacion y leyendas
+- Instalar el build de producción como PWA y recuperar sin conexión la interfaz
+  y los recursos locales ya almacenados. Los mapas, capas y procesos remotos
+  continúan necesitando conectividad.
 
 ## Opciones de una sección de capas
 
