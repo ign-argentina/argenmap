@@ -2064,7 +2064,6 @@ function createPopupForVector(layer, clickLatlng) {
     popupLatlng,
     {
       className: "file-layer-popup",
-      minWidth: Math.min(288, maxPopupWidth),
       maxWidth: maxPopupWidth,
     },
   ); //Show info
@@ -2182,17 +2181,27 @@ function openLayerQueryPopup(targetMap, content, latlng, options = {}) {
 }
 
 function getLayerQueryPopupOptions(options = {}, targetMap = null) {
-  const edgePadding = [16, 16];
+  const mapSize = targetMap?.getSize?.();
+  const isCompactViewport =
+    mapSize && (mapSize.x <= 600 || mapSize.y <= 500);
+  const classNames = new Set([
+    "layer-query-popup",
+    ...String(options.className || "")
+      .split(/\s+/u)
+      .filter(Boolean),
+  ]);
   const popupOptions = {
     autoPan: true,
-    keepInView: true,
-    autoPanPaddingTopLeft: edgePadding,
-    autoPanPaddingBottomRight: edgePadding,
+    // Pan once when opening, but allow the user to move the map afterwards.
+    keepInView: false,
+    autoPanPaddingTopLeft: [16, isCompactViewport ? 88 : 16],
+    autoPanPaddingBottomRight: [16, 16],
     ...options,
+    className: Array.from(classNames).join(" "),
   };
 
-  if (targetMap?.getSize) {
-    const availableWidth = Math.max(160, targetMap.getSize().x - 80);
+  if (mapSize) {
+    const availableWidth = Math.max(160, mapSize.x - 80);
     popupOptions.maxWidth = Math.min(
       options.maxWidth ?? 300,
       availableWidth,
@@ -2224,25 +2233,42 @@ function keepLayerQueryPopupInView(targetMap, popup) {
     });
   };
 
+  const popupContent = popup.getElement()?.querySelector(".leaflet-popup-content");
+  const updateContentLimits = () => {
+    if (!popupContent || !targetMap.getSize) {
+      return;
+    }
+
+    const mapSize = targetMap.getSize();
+    const isCompactViewport = mapSize.x <= 600 || mapSize.y <= 500;
+    const maxContentHeight = isCompactViewport
+      ? Math.max(
+          80,
+          Math.min(Math.floor(mapSize.y * 0.5), mapSize.y - 160),
+        )
+      : Math.max(80, mapSize.y - 80);
+
+    popupContent.style.maxHeight = `${maxContentHeight}px`;
+    popupContent.style.overflowY = "auto";
+  };
+
+  updateContentLimits();
   updatePosition();
 
-  const popupContent = popup.getElement()?.querySelector(".leaflet-popup-content");
-  if (popupContent && targetMap.getSize) {
-    popupContent.style.maxHeight = `${Math.max(80, targetMap.getSize().y - 80)}px`;
-    popupContent.style.overflowY = "auto";
-  }
-  let resizeObserver = null;
-  if (popupContent && typeof ResizeObserver !== "undefined") {
-    resizeObserver = new ResizeObserver(updatePosition);
-    resizeObserver.observe(popupContent);
-  } else {
-    popupContent?.querySelectorAll("img").forEach((image) => {
-      if (!image.complete) {
-        image.addEventListener("load", updatePosition, { once: true });
-        image.addEventListener("error", updatePosition, { once: true });
-      }
-    });
-  }
+  popupContent?.querySelectorAll("img, iframe, video").forEach((media) => {
+    const isLoadedImage = media.tagName === "IMG" && media.complete;
+    if (!isLoadedImage) {
+      media.addEventListener("load", updatePosition, { once: true });
+      media.addEventListener("error", updatePosition, { once: true });
+      media.addEventListener("loadedmetadata", updatePosition, { once: true });
+    }
+  });
+
+  const updateAfterMapResize = () => {
+    updateContentLimits();
+    updatePosition();
+  };
+  targetMap.on("resize", updateAfterMapResize);
 
   const stopTracking = (event) => {
     if (event.popup !== popup) {
@@ -2251,7 +2277,7 @@ function keepLayerQueryPopupInView(targetMap, popup) {
     if (updateFrame !== null) {
       window.cancelAnimationFrame(updateFrame);
     }
-    resizeObserver?.disconnect();
+    targetMap.off("resize", updateAfterMapResize);
     targetMap.off("popupclose", stopTracking);
   };
   targetMap.on("popupclose", stopTracking);

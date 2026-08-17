@@ -215,7 +215,7 @@
         } else {
           this._map.openPopup(info, latlng, {
             autoPan: true,
-            keepInView: true,
+            keepInView: false,
           });
         }
       }

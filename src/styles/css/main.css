@@ -1245,7 +1245,6 @@ div.leaflet-top.leaflet-left {
 }
 
 .file-layer-feature-html {
-  min-width: min(18rem, calc(100vw - 5rem));
   max-width: 100%;
 }
 
@@ -1273,6 +1272,21 @@ div.leaflet-top.leaflet-left {
 .file-layer-popup .leaflet-popup-content {
   max-width: calc(50vw - 40px);
   overflow: hidden;
+}
+
+.layer-query-popup .leaflet-popup-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.layer-query-popup .leaflet-popup-content img,
+.layer-query-popup .leaflet-popup-content video,
+.layer-query-popup .leaflet-popup-content iframe,
+.layer-query-popup .leaflet-popup-content svg,
+.layer-query-popup .leaflet-popup-content canvas {
+  max-width: 100% !important;
 }
 
 .file-layer-feature-html img,
@@ -1314,6 +1328,31 @@ div.leaflet-top.leaflet-left {
 @media (max-width: 37.5em) {
   .file-layer-popup .leaflet-popup-content {
     max-width: calc(100vw - 80px);
+  }
+
+  .layer-query-popup .leaflet-popup-content-wrapper {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .layer-query-popup .leaflet-popup-content {
+    min-width: 0 !important;
+    max-width: calc(100vw - 4rem) !important;
+    margin: 2.75rem 1rem 1rem;
+  }
+
+}
+
+@media (max-width: 37.5em), (max-height: 31.25em), (pointer: coarse) {
+  .layer-query-popup .leaflet-popup-content {
+    margin-top: 2.75rem;
+  }
+
+  .leaflet-container .layer-query-popup a.leaflet-popup-close-button {
+    z-index: 1;
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.5rem;
+    line-height: 2.5rem;
   }
 }
 
