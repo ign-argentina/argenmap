@@ -446,8 +446,10 @@ contenido de los popups de consulta.
 #### Formato del popup de una capa de archivo
 
 El valor predeterminado de `popupFormat` es `table`, que muestra una fila por
-propiedad. `text` muestra el mismo contenido como texto multilínea. Si una
-entidad GeoJSON tiene una única propiedad llamada `html` (sin distinguir
+propiedad. `text` muestra el mismo contenido sin tabla ni recuadro: cada nombre
+aparece en negrita, con inicial mayúscula y los guiones bajos reemplazados por
+espacios, seguido por su valor con peso normal. Si una entidad GeoJSON tiene una
+única propiedad llamada `html` (sin distinguir
 mayúsculas de minúsculas), su valor se interpreta como HTML automáticamente o
 al configurar `"popupFormat": "html"`:
 

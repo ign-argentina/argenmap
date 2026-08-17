@@ -2031,10 +2031,15 @@ function renderFileLayerPopupProperties(properties, popupFormat) {
   }
 
   if (popupFormat === "text") {
-    const text = entries
-      .map(([key, value]) => `${key}: ${formatFileLayerPopupValue(value)}`)
-      .join("\n");
-    return `<pre class="file-layer-feature-text">${escapeFileLayerPopupValue(text)}</pre>`;
+    const lines = entries.map(([key, value]) => {
+      const label = formatFileLayerPopupLabel(key);
+      return `<div class="file-layer-feature-text-line"><strong class="file-layer-feature-text-label">${escapeFileLayerPopupValue(
+        label,
+      )}:</strong> <span class="file-layer-feature-text-value">${escapeFileLayerPopupValue(
+        formatFileLayerPopupValue(value),
+      )}</span></div>`;
+    });
+    return `<div class="file-layer-feature-text">${lines.join("")}</div>`;
   }
 
   let table = '<table class="file-layer-feature-table"><tbody>';
@@ -2049,6 +2054,14 @@ function renderFileLayerPopupProperties(properties, popupFormat) {
 
 function formatFileLayerPopupValue(value) {
   return value && typeof value === "object" ? JSON.stringify(value) : value ?? "";
+}
+
+function formatFileLayerPopupLabel(key) {
+  const label = String(key || "")
+    .trim()
+    .replace(/_+/g, " ")
+    .replace(/\s+/g, " ");
+  return label ? label[0].toLocaleUpperCase() + label.slice(1) : "";
 }
 
 function escapeFileLayerPopupValue(value) {

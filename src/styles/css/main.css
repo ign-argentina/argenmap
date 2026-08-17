@@ -1141,11 +1141,25 @@ div.leaflet-top.leaflet-left {
 
 .file-layer-feature-text {
   margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: #222;
   font: inherit;
   line-height: 1.5;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.file-layer-feature-text-line + .file-layer-feature-text-line {
+  margin-top: 0.15em;
+}
+
+.file-layer-feature-text-label {
+  font-weight: 600;
+}
+
+.file-layer-feature-text-value {
+  font-weight: 400;
 }
 
 @media (max-width: 37.5em) {

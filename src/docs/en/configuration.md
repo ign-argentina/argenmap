@@ -319,9 +319,11 @@ query popup content.
 #### File-layer popup format
 
 The default `popupFormat` is `table`, with one row per property. `text` renders
-the same values as multiline text. When a GeoJSON feature has a single property
-named `html` (case-insensitive), its value is rendered as HTML automatically or
-when `"popupFormat": "html"` is configured:
+the same values without a table or surrounding box: each property name is bold,
+starts with an uppercase letter, and uses spaces instead of underscores,
+followed by its normal-weight value. When a GeoJSON feature has a single
+property named `html` (case-insensitive), its value is rendered as HTML
+automatically or when `"popupFormat": "html"` is configured:
 
 ```jsonc
 {
