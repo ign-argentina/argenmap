@@ -897,6 +897,27 @@ div.leaflet-top.leaflet-left {
   margin: 0;
 }
 
+@media (max-width: 600px) {
+  .panel-heading.section-has-options > .panel-title {
+    padding-right: 44px;
+  }
+
+  .section-options-toggle {
+    right: 0;
+    width: 44px;
+    height: 44px;
+  }
+
+  .panel-heading.section-has-options > .section-header-loading {
+    right: 46px;
+  }
+
+  .section-options-action {
+    min-height: 44px;
+    white-space: normal;
+  }
+}
+
 .section-header-loading {
   position: absolute;
   top: 50%;

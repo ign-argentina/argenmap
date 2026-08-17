@@ -4281,10 +4281,12 @@ function loadGeojsonTpl(url, layer) {
       onEachFeature: onEachFeature,
       pointToLayer: pointToLayer,
     });
-    overlayMaps[layer].setStyle({
-      opacity: app.layers[layer]?.capa?.opacity ?? 1,
-      fillOpacity: app.layers[layer]?.capa?.opacity ?? 1,
-    });
+    const applyConfiguredOpacity = () => {
+      const opacity = app.layers[layer]?.capa?.opacity ?? 1;
+      overlayMaps[layer]?.setStyle({ opacity, fillOpacity: opacity });
+    };
+    applyConfiguredOpacity();
+    overlayMaps[layer].once("data:loaded", applyConfiguredOpacity);
     overlayMaps[layer].addTo(mapa);
   }
 }

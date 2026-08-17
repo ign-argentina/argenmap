@@ -75,7 +75,7 @@ class Capa {
     this.tileMatrixSetLinks = this.metadata.tileMatrixSetLinks || [];
     this.resourceUrls = this.metadata.resourceUrls || [];
     this.serviceMetadata = this.metadata.service || null;
-    this.opacity = 1;
+    this.opacity = this.metadata.opacity ?? 1;
   }
 
   getLegendURL() {
@@ -288,7 +288,7 @@ class ImpresorItemHTML extends Impresor {
     input_opacity.min = "0";
     input_opacity.max = "1";
     input_opacity.step = "0.05";
-    input_opacity.defaultValue = "1";
+    input_opacity.defaultValue = String(item.capa.opacity ?? 1);
     input_opacity.style = "width: auto; margin-left: 10px;";
     input_opacity.setAttribute(
       "onInput",
@@ -2911,20 +2911,22 @@ class GestorMenu {
       }
     });
 
-    for (const layer of this.getSectionAddedLayers(sectionId)) {
-      if (layer.isActive === visible) continue;
+    await Promise.all(
+      this.getSectionAddedLayers(sectionId).map((layer) => {
+        if (layer.isActive === visible) return Promise.resolve();
 
-      if (layer.type === "WMS") {
-        const layerElement = document.getElementById(
-          `srvcLyr-${layer.id}${layer.file_name}`,
-        );
-        if (layerElement) {
-          await clickWMSLayer(layer.layer, layerElement, layer.file_name);
+        if (layer.type === "WMS") {
+          const layerElement = document.getElementById(
+            `srvcLyr-${layer.id}${layer.file_name}`,
+          );
+          return layerElement
+            ? clickWMSLayer(layer.layer, layerElement, layer.file_name)
+            : Promise.resolve();
         }
-      } else {
         clickGeometryLayer(layer.id);
-      }
-    }
+        return Promise.resolve();
+      }),
+    );
 
     this.updateLayerMenuControls();
   }
@@ -3055,6 +3057,11 @@ class GestorMenu {
     const bounds = await this.getSectionBounds(sectionId);
     if (!bounds) {
       console.warn(`No bounds are available for section '${sectionId}'.`);
+      new UserMessage(
+        "No hay un encuadre disponible para las capas de esta sección.",
+        true,
+        "warning",
+      );
       return false;
     }
     mapa.fitBounds(bounds);
