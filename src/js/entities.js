@@ -3059,6 +3059,73 @@ class GestorMenu {
     return true;
   }
 
+  getSectionQueryState(sectionId) {
+    const states = [];
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        (item.capas || [item.capa]).forEach((layer) => {
+          const options = getLayerQueryOptions(layer);
+          if (!options.queryable) return;
+          const mapLayer = overlayMaps[layer.nombre];
+          states.push(
+            mapLayer?._source?.options?.identify ?? options.queryActive,
+          );
+        });
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      if (entry.queryable === false || entry.layer?.queryable === false) return;
+      const featureLayers = getFileLayerFeatures(entry.id);
+      if (featureLayers.length > 0) {
+        states.push(featureLayers.some((layer) => layer.activeData === true));
+        return;
+      }
+      const mapLayer = overlayMaps[entry.layer?.name || entry.name];
+      states.push(
+        mapLayer?._source?.options?.identify ?? entry.queryActive === true,
+      );
+    });
+
+    return {
+      total: states.length,
+      active: states.filter(Boolean).length,
+    };
+  }
+
+  async setSectionQueryState(sectionId, queryActive) {
+    if (this.items[sectionId]) {
+      await this.loadSectionServices(sectionId);
+    }
+
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        (item.capas || [item.capa]).forEach((layer) => {
+          if (!getLayerQueryOptions(layer).queryable) return;
+          layer.queryActive = queryActive;
+          const mapLayer = overlayMaps[layer.nombre];
+          if (mapLayer?._source?.options) {
+            mapLayer._source.options.identify = queryActive;
+          }
+        });
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      if (entry.queryable === false || entry.layer?.queryable === false) return;
+      entry.queryActive = queryActive;
+      getFileLayerFeatures(entry.id).forEach((layer) => {
+        layer.activeData = queryActive;
+      });
+      const mapLayer = overlayMaps[entry.layer?.name || entry.name];
+      if (mapLayer?._source?.options) {
+        mapLayer._source.options.identify = queryActive;
+      }
+    });
+  }
+
   _appendSectionMenuAction(menu, iconClass, label, handler) {
     const option = document.createElement("li");
     option.setAttribute("role", "none");
@@ -3147,6 +3214,32 @@ class GestorMenu {
         }
       },
     );
+
+    const queryState = this.getSectionQueryState(sectionId);
+    const shouldEnableQuery =
+      queryState.total === 0 || queryState.active < queryState.total;
+    const queryButton = this._appendSectionMenuAction(
+      menu,
+      `fa ${shouldEnableQuery ? "fa-toggle-on" : "fa-toggle-off"}`,
+      shouldEnableQuery
+        ? "Activar consulta de la sección"
+        : "Desactivar consulta de la sección",
+      async () => {
+        queryButton.disabled = true;
+        menu.setAttribute("aria-busy", "true");
+        try {
+          await this.setSectionQueryState(sectionId, shouldEnableQuery);
+        } finally {
+          this.closeSectionOptionsMenu();
+        }
+      },
+    );
+    const hasPendingServiceLayers =
+      this._getLayerInfosForSection(sectionId).length > 0;
+    if (queryState.total === 0 && !hasPendingServiceLayers) {
+      queryButton.disabled = true;
+      queryButton.title = "La sección no contiene capas consultables";
+    }
 
     document.body.appendChild(menu);
     this._sectionOptionsMenu = menu;

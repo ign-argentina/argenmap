@@ -1145,7 +1145,8 @@ async function clickWMSLayer(layer, layer_item, fileName) {
       }
 
       if (createdLayer._source?.options) {
-        createdLayer._source.options.identify = consultDataBtnClose === false;
+        createdLayer._source.options.identify =
+          consultDataBtnClose === false || addedLayer?.queryActive === true;
       }
       createdLayer.addTo(mapa);
       layer.L_layer = createdLayer;
@@ -1838,7 +1839,10 @@ function getLayerQueryOptions(layer, config = null) {
     layer?.queryable ??
     true;
   const queryActive =
-    layerConfig?.queryActive ?? serviceConfig?.queryActive ?? false;
+    layer?.queryActive ??
+    layerConfig?.queryActive ??
+    serviceConfig?.queryActive ??
+    false;
 
   return {
     queryable: Boolean(queryable),
