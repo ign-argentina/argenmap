@@ -38,6 +38,19 @@ El botón de opciones no despliega ni contrae la sección. En las secciones OGC
 con carga diferida, las acciones que necesitan conocer las capas esperan la
 carga del servicio; no agregan solicitudes `GetCapabilities` al arranque.
 
+## Diseño adaptable en dispositivos móviles
+
+En pantallas de hasta 600 px el menú principal reserva un área táctil de 44 px
+para cada botón y asigna el ancho restante al panel activo. El buscador de
+capas se adapta a ese ancho sin desbordar el viewport y el desplazamiento queda
+contenido dentro del panel.
+
+Mientras un panel lateral está abierto, las herramientas Leaflet que podrían
+quedar debajo se ocultan y deshabilitan temporalmente. Se restauran al cerrar
+el panel, al tocar el mapa o al presionar `Escape`. En dispositivos táctiles se
+mantienen áreas interactivas de al menos 44 px también en orientación
+horizontal.
+
 La lista de cambios está en [GitHub][]
 
 [GitHub]: https://github.com/ign-argentina/argenmap/releases

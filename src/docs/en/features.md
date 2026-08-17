@@ -33,4 +33,15 @@ Opening the options menu does not expand or collapse the section. For lazily
 loaded OGC sections, actions that need layer metadata wait for that service to
 load, without adding `GetCapabilities` requests to application startup.
 
+## Responsive design on mobile devices
+
+On screens up to 600 px wide, every main-menu button keeps a 44 px touch area
+and the active panel receives the remaining viewport width. The layer search
+fits that space without overflowing, while scrolling stays inside the panel.
+
+While a side panel is open, potentially overlapping Leaflet controls are
+temporarily hidden and disabled. They return when the panel is closed, the map
+is tapped, or `Escape` is pressed. Touch devices retain targets of at least
+44 px in landscape orientation as well.
+
 The changelog is at https://github.com/ign-argentina/argenmap/releases

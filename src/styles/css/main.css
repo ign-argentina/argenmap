@@ -2707,6 +2707,14 @@ input:checked.switch+label:after {
     min-width: 0;
     flex-direction: column;
     gap: 0.25rem;
+    max-height: inherit;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+
+  #botonera::-webkit-scrollbar {
+    display: none;
   }
 
   .menu-section-btn,
@@ -2789,5 +2797,30 @@ input:checked.switch+label:after {
     visibility: hidden;
     pointer-events: none;
     opacity: 0;
+  }
+}
+
+/* Preserve accessible hit areas on touch devices in landscape orientation. */
+@media (pointer: coarse) {
+  .menu-section-btn,
+  .menu-section-btn.ag-btn {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0;
+  }
+
+  .menu-section-btn .fa-layer-group,
+  .menu-section-btn .fa-file-circle-plus,
+  .menu-section-btn .fa-question,
+  .menu-section-btn .fa-gear,
+  .menu-section-btn .fa-universal-access {
+    font-size: 1.25rem;
+  }
+
+  #q.ag-input-text,
+  .searchFormBtn > .center-flex > .btn-search {
+    min-height: 2.75rem;
   }
 }
