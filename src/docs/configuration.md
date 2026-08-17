@@ -101,9 +101,11 @@ opción recomendada cuando varias capas comparten encabezado, pestaña o estilo:
   ],
   "layers": [
     {
+      "id": "sedes-evento",
       "type": "file",
       "section": "eventos",
-      "titulo": "Sedes",
+      "title": "Sedes",
+      "description": "Ubicaciones confirmadas",
       "source": {
         "url": "datos/sedes.geojson",
         "format": "geojson"
@@ -113,10 +115,24 @@ opción recomendada cuando varias capas comparten encabezado, pestaña o estilo:
 }
 ```
 
-Cada capa debe indicar en `section` el `id` de una sección existente. Durante
-la carga, la aplicación combina los datos de la sección con los de la capa. La
-definición de la capa tiene prioridad cuando un atributo aparece en ambos
-bloques. Los mapas base permanecen dentro de `items`.
+Cada capa debe indicar en `section` el `id` de una sección existente. Ambos
+bloques tienen responsabilidades independientes y no se combinan por
+sobrescritura:
+
+- `sections` define exclusivamente el encabezado y la organización del menú:
+  `id`, `nombre`, `tab`, `short_abstract`, `peso`, `class` y `section_style`.
+- `layers` define exclusivamente cada fuente o capa: `id`, `type`, `section`,
+  `title`, `description`, `icon`, estado, opciones, estilos y datos de conexión.
+- Las opciones de un servicio, como `host`, `icons`, `allowed_layers` y
+  `customize_layers`, pertenecen a su entrada en `layers`, no a la sección.
+- En una capa de archivo, `source` describe sólo el recurso que se lee, por
+  ejemplo `url` y `format`; su presentación se configura en la capa.
+
+Cambiar `title`, `id` o cualquier otro atributo de una capa no modifica el
+nombre ni el estilo de su sección. Los mapas base permanecen dentro de `items`.
+Por compatibilidad se siguen aceptando `titulo` y propiedades visuales dentro
+de `source` en configuraciones anteriores, pero no se recomiendan en el esquema
+separado.
 
 #### Estilos de una sección
 
@@ -294,56 +310,60 @@ extensión o indicarse explícitamente en `source.format`.
 
 ```jsonc
 {
+  "id": "sedes-evento",
   "type": "file",
   "section": "eventos",
-  "titulo": "Sedes",
+  "title": "Sedes del evento",
+  "description": "Ubicaciones confirmadas",
+  "icon": "src/styles/images/sede.png",
   "isActive": true,
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
   "popupFormat": "table",
   "allowedOptions": ["zoom", "query", "data", "download"],
+  "activeButtonColor": "#287bb5",
+  "style": {
+    "marker": {
+      "iconUrl": "src/styles/images/sede.png",
+      "iconSize": [32, 32],
+      "iconAnchor": [16, 32],
+      "popupAnchor": [0, -32]
+    },
+    "point": {
+      "radius": 6,
+      "color": "#287bb5",
+      "weight": 2,
+      "opacity": 1,
+      "fillColor": "#ffffff",
+      "fillOpacity": 0.8
+    },
+    "line": {
+      "color": "#287bb5",
+      "weight": 3,
+      "opacity": 0.9
+    },
+    "polygon": {
+      "color": "#287bb5",
+      "weight": 2,
+      "opacity": 1,
+      "fillColor": "#75aadb",
+      "fillOpacity": 0.25
+    }
+  },
   "source": {
     "url": "datos/sedes.geojson",
-    "format": "geojson",
-    "title": "Sedes del evento",
-    "description": "Ubicaciones confirmadas",
-    "icon": "src/styles/images/sede.png",
-    "style": {
-      "activeButtonColor": "#287bb5",
-      "marker": {
-        "iconUrl": "src/styles/images/sede.png",
-        "iconSize": [32, 32],
-        "iconAnchor": [16, 32],
-        "popupAnchor": [0, -32]
-      },
-      "point": {
-        "radius": 6,
-        "color": "#287bb5",
-        "weight": 2,
-        "opacity": 1,
-        "fillColor": "#ffffff",
-        "fillOpacity": 0.8
-      },
-      "line": {
-        "color": "#287bb5",
-        "weight": 3,
-        "opacity": 0.9
-      },
-      "polygon": {
-        "color": "#287bb5",
-        "weight": 2,
-        "opacity": 1,
-        "fillColor": "#75aadb",
-        "fillOpacity": 0.25
-      }
-    }
+    "format": "geojson"
   }
 }
 ```
 
 Parámetros principales:
 
+- `id`: identificador estable y único de la capa.
+- `section`: referencia al `id` de la sección; no define su texto visible.
+- `title`, `description` e `icon`: controlan el nombre, ayuda e icono del botón
+  de la capa, sin afectar el encabezado de la sección.
 - `isActive`: muestra la capa al iniciar. Por defecto es `false`.
 - `zoomOnActivate`: centra la extensión de la capa cuando se activa.
 - `queryable`: permite consultar sus entidades. Por defecto es `true`.
@@ -354,17 +374,17 @@ Parámetros principales:
 - `allowedOptions`: limita el submenú. Sus valores disponibles son `zoom`,
   `query`, `data`, `download`, `rename` y `delete`. Si se omite, se muestran
   todas las opciones aplicables.
-- `source.title`, `source.description` y `source.icon`: controlan el nombre,
-  ayuda e icono del botón.
-- `source.style.activeButtonColor`: cambia el fondo del botón activo.
-- `source.style.marker`, `point`, `line` y `polygon`: definen estilos por tipo
+- `activeButtonColor`: cambia el fondo del botón activo sin formar parte del
+  estilo geométrico exportado.
+- `style.marker`, `point`, `line` y `polygon`: definen estilos por tipo
   de geometría. También se procesan `MultiPoint`, `MultiLineString` y
   `MultiPolygon`.
 
-`isActive` se define en el bloque de la capa. Las opciones de consulta,
-`popupFormat`, `allowedOptions` y `zoomOnActivate` pueden declararse allí o
-dentro de `source`; cuando existen en ambos lugares, los valores de `source`
-tienen prioridad.
+En el esquema separado, los atributos de presentación y comportamiento se
+definen en el bloque de la capa. `source` contiene la ubicación y el formato del
+archivo. Las ubicaciones anteriores dentro de `source` continúan funcionando
+como fallback de compatibilidad; si un atributo también está en la capa, tiene
+prioridad el valor de la capa.
 
 Para mostrar el botón **Activar/Desactivar consulta** en el submenú de opciones
 de una capa de archivo, se debe incluir `"query"` en `allowedOptions`. Si
@@ -379,6 +399,49 @@ de una capa de archivo, se debe incluir `"query"` en `allowedOptions`. Si
   "allowedOptions": ["zoom", "query", "data", "download"]
 }
 ```
+
+#### Estilos por entidad o geometría
+
+Cada `Feature` de un archivo GeoJSON puede definir su propio estilo mediante
+`properties.styles`. Es el mismo objeto que genera la opción **Editar estilos**
+del menú contextual y se aplica también a archivos abiertos manualmente:
+
+```jsonc
+{
+  "type": "Feature",
+  "properties": {
+    "nombre": "Ruta norte",
+    "type": "polyline",
+    "styles": {
+      "color": "#9e161a",
+      "weight": 5,
+      "opacity": 0.9,
+      "dashArray": 8
+    }
+  },
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [[-69.8, -32.9], [-70.1, -33.2]]
+  }
+}
+```
+
+Los valores de `styles` se aplican sólo a esa entidad y tienen prioridad sobre
+el estilo general de la capa. El orden es: estilo predeterminado de la
+aplicación, `style` de la capa y finalmente `properties.styles` de la entidad.
+Se admiten las opciones que guarda el editor, entre ellas `color`, `weight`,
+`opacity`, `fillColor`, `fillOpacity`, `dashArray`, `radius` y opciones de
+marcador.
+
+Al descargar una capa desde su menú, cada entidad exporta en `styles` las
+opciones visuales que tiene en ese momento. Por lo tanto, los cambios realizados
+con **Editar estilos** reemplazan en el archivo descargado al estilo con el que
+la entidad fue cargada originalmente.
+
+La propiedad interna `type` conserva el subtipo creado por la aplicación, por
+ejemplo `marker`, `circle`, `circlemarker`, `rectangle` o `label`. Tanto `type`
+como `styles` se usan para reconstruir la geometría, pero se omiten siempre del
+contenido de los popups de consulta.
 
 #### Formato del popup de una capa de archivo
 
@@ -404,7 +467,8 @@ al configurar `"popupFormat": "html"`:
 Por seguridad, `html` sólo se interpreta cuando es la única propiedad. Si la
 entidad contiene otros atributos, el popup utiliza una tabla y el marcado se
 muestra escapado. Elegir `table` o `text` explícitamente también evita la
-interpretación del HTML.
+interpretación del HTML. Los metadatos reservados `styles` y `type` no se
+consideran atributos visibles para esta regla porque nunca se muestran.
 
 > [!WARNING]
 > El contenido de `html` no se sanitiza porque permite incrustar marcado. Debe

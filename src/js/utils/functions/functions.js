@@ -1951,7 +1951,12 @@ function createPopupForVector(layer, clickLatlng) {
 
   const layerName = layer.name || layer.id || "Capa";
   const id = layerName[0].toUpperCase() + layerName.slice(1).toLowerCase();
-  const properties = geoJSON._configuredFileProperties || geoJSON.properties;
+  const properties = getFileLayerPopupProperties(
+    geoJSON._configuredFileProperties || geoJSON.properties,
+  );
+  if (Object.keys(properties).length === 0) {
+    return;
+  }
   const popupFormat = getFileLayerPopupFormat(layer.popupFormat, properties);
 
   // Do not mix this feature with results left by a previous map query.
@@ -1985,6 +1990,15 @@ function createPopupForVector(layer, clickLatlng) {
       maxWidth: maxPopupWidth,
     },
   ); //Show info
+}
+
+function getFileLayerPopupProperties(properties) {
+  return Object.fromEntries(
+    Object.entries(properties || {}).filter(([key]) => {
+      const normalizedKey = String(key).trim().toLowerCase();
+      return normalizedKey !== "styles" && normalizedKey !== "type";
+    }),
+  );
 }
 
 function getFileLayerPopupFormat(configuredFormat, properties) {

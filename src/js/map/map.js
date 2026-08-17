@@ -3055,20 +3055,30 @@ document.body.addEventListener("pluginLoad", async function (event) {
               // Add the layer options to the GeoJSON properties.
               const addedLayer = addedLayers.find((layer) => layer.id === id);
               if (addedLayer) {
-                geoJSON.properties.styles = { ...layer.options };
-                geoJSON.properties.type = layer.type;
-                if (layer.value) geoJSON.properties.value = layer.value;
+                const sourceFeature = Array.isArray(addedLayer.layer?.features)
+                  ? addedLayer.layer.features[cont]
+                  : addedLayer.layer;
                 geoJSON.properties = {
-                  ...geoJSON.properties,
-                  ...addedLayer.layer.features[cont].properties,
+                  ...(sourceFeature?.properties ||
+                    layer.data?.geoJSON?.properties ||
+                    {}),
+                  ...(geoJSON.properties || {}),
+                  // Export the current Leaflet options last. Context-menu
+                  // style edits update layer.options and must override the
+                  // styles originally loaded from the source file.
+                  styles: { ...layer.options },
+                  type: layer.type,
                 };
+                if (layer.value !== undefined) {
+                  geoJSON.properties.value = layer.value;
+                }
                 if (layer.type === "label") {
                   geoJSON.properties.styles.icon.options.html =
                     layer.options.icon.options.html.outerHTML;
                   geoJSON.properties.text = layer.data.properties.text;
                 }
-                cont++;
               }
+              cont++;
               jsonToDownload.features.push(geoJSON); // Add the GeoJSON data to the jsonToDownload object.
             }
             // An array of objects that define the geoprocessing types and their IDs.

@@ -347,16 +347,16 @@ const app = {
       item.defaultActive ??
       false;
 
+    const configuredId = item.id || source?.id || null;
     const fallbackIdParts = [
-      source?.id || item.id || item.nombre,
-      source?.title || item.titulo || item.nombre,
+      item.title || item.titulo || source?.title || item.nombre,
       source?.url || item.host || url,
     ].filter(Boolean);
     const configuredPopupFormat =
-      source?.popupFormat ??
-      source?.popup?.format ??
       item.popupFormat ??
       item.popup?.format ??
+      source?.popupFormat ??
+      source?.popup?.format ??
       null;
     const popupFormat =
       typeof configuredPopupFormat === "string"
@@ -364,28 +364,40 @@ const app = {
         : null;
 
     return {
-      id: clearSpecialChars(fallbackIdParts.join("-")) || "capa-desde-archivo",
+      id:
+        clearSpecialChars(configuredId || fallbackIdParts.join("-")) ||
+        "capa-desde-archivo",
       url,
       format: (source?.format || source?.type || item.format || "").toLowerCase(),
-      title: source?.title || item.titulo || item.nombre || "Capa desde archivo",
-      description: source?.description || item.short_abstract || item.descripcion || "",
-      icon: source?.icon || item.icon || item.legendImg || null,
-      style: source?.style || item.style || null,
+      title:
+        item.title ||
+        item.titulo ||
+        source?.title ||
+        item.nombre ||
+        "Capa desde archivo",
+      description:
+        item.description ||
+        item.descripcion ||
+        source?.description ||
+        item.short_abstract ||
+        "",
+      icon: item.icon || item.legendImg || source?.icon || null,
+      style: item.style || source?.style || null,
       activeButtonColor:
-        source?.style?.activeButtonColor ||
-        source?.activeButtonColor ||
-        item.style?.activeButtonColor ||
         item.activeButtonColor ||
+        item.style?.activeButtonColor ||
+        source?.activeButtonColor ||
+        source?.style?.activeButtonColor ||
         null,
       fileName: source?.fileName || source?.name || null,
       allowedOptions: item.allowedOptions || source?.allowedOptions || null,
       zoomOnActivate: Boolean(
-        source?.zoomOnActivate ?? item.zoomOnActivate ?? false,
+        item.zoomOnActivate ?? source?.zoomOnActivate ?? false,
       ),
-      queryable: Boolean(source?.queryable ?? item.queryable ?? true),
+      queryable: Boolean(item.queryable ?? source?.queryable ?? true),
       queryActive: Boolean(
-        (source?.queryable ?? item.queryable ?? true) &&
-          (source?.queryActive ?? item.queryActive ?? false),
+        (item.queryable ?? source?.queryable ?? true) &&
+          (item.queryActive ?? source?.queryActive ?? false),
       ),
       popupFormat: ["table", "text", "html"].includes(popupFormat)
         ? popupFormat
@@ -448,17 +460,30 @@ const app = {
     const isPoint = geometryType === "point" || geometryType === "multipoint";
     const isLine = geometryType === "linestring" || geometryType === "multilinestring";
     const isPolygon = geometryType === "polygon" || geometryType === "multipolygon";
+    const featureStyle =
+      geoJSON.properties.styles &&
+      typeof geoJSON.properties.styles === "object" &&
+      !Array.isArray(geoJSON.properties.styles)
+        ? geoJSON.properties.styles
+        : {};
     const hasGeometryStyles = ["point", "line", "polygon", "marker"].some(
       (key) => style && typeof style[key] === "object",
     );
-    const legacyStyle = hasGeometryStyles ? {} : style || {};
+    const { activeButtonColor: _activeButtonColor, ...legacyGeometryStyle } =
+      style;
+    const legacyStyle = hasGeometryStyles ? {} : legacyGeometryStyle;
     let styleType;
 
     if (isPoint) {
       const featureType = String(geoJSON.properties.type || "").toLowerCase();
-      const renderAsPoint = featureType === "circlemarker" || (style.point && !style.marker);
-      styleType = renderAsPoint ? "point" : "marker";
-      geoJSON.properties.type = renderAsPoint ? "circlemarker" : "marker";
+      const renderAsPoint =
+        featureType === "circle" ||
+        featureType === "circlemarker" ||
+        (!featureType && style.point && !style.marker);
+      styleType = featureType === "label" ? null : renderAsPoint ? "point" : "marker";
+      if (!featureType) {
+        geoJSON.properties.type = renderAsPoint ? "circlemarker" : "marker";
+      }
     } else if (isLine) {
       styleType = "line";
     } else if (isPolygon) {
@@ -468,8 +493,10 @@ const app = {
     const configuredStyle = styleType ? style?.[styleType] || legacyStyle : legacyStyle;
     geoJSON.properties.styles = {
       ...this.getConfiguredLayerDefaultStyle(styleType),
-      ...(geoJSON.properties.styles || {}),
       ...(configuredStyle || {}),
+      // Styles saved by the application's vector style editor belong to the
+      // individual feature and therefore override layer-wide defaults.
+      ...featureStyle,
     };
     return geoJSON;
   },
@@ -514,9 +541,12 @@ const app = {
 
       this.applyConfiguredLayerStyle(geoJSON, layerConfig.style);
 
-      // Use `nombre` as the visible label and `seccion` as the stable id.
-      const sectionLabel = item.nombre || item.titulo || item.seccion || "Archivos";
-      const sectionId = item.seccion || clearSpecialChars(item.nombre || item.titulo || "Archivos");
+      // Section identity is resolved independently from layer metadata. In the
+      // separated schema `sectionName` comes exclusively from `sections`.
+      const sectionLabel =
+        item.sectionName || item.nombre || item.seccion || "Archivos";
+      const sectionId =
+        item.seccion || clearSpecialChars(item.sectionName || item.nombre || "Archivos");
       const baseLayerId = layerConfig.id || clearSpecialChars(layerConfig.title || fileLayer.getFileName() || "capa-desde-archivo");
       const existingLayerIds = new Set([
         ...addedLayers.map((layer) => layer.id),
@@ -851,38 +881,25 @@ function normalizeConfigSectionsAndLayers(data) {
       return;
     }
 
+    // Keep both configurations independent. Only the fields required by the
+    // legacy menu API are projected from the section; every other property
+    // continues to belong to the layer/service definition.
+    const sectionName = section.nombre || section.title || sectionId;
     const item = {
-      ...section,
       ...layer,
       seccion: sectionId,
-      nombre: layer.nombre || layer.titulo || section.nombre || sectionId,
+      sectionName,
+      nombre: sectionName,
+      tab: section.tab ?? "",
+      short_abstract:
+        section.short_abstract ?? section.description ?? "",
+      peso: section.peso ?? section.weight ?? null,
+      class: section.class ?? "",
+      section_style: section.section_style ?? null,
     };
 
-    delete item.id;
     delete item.section;
     delete item.sectionId;
-
-    if (item.tab == null && section.tab != null) {
-      item.tab = section.tab;
-    }
-    if (item.short_abstract == null && section.short_abstract != null) {
-      item.short_abstract = section.short_abstract;
-    }
-    if (item.peso == null && section.peso != null) {
-      item.peso = section.peso;
-    }
-    if (item.class == null && section.class != null) {
-      item.class = section.class;
-    }
-    if (item.icons == null && section.icons != null) {
-      item.icons = section.icons;
-    }
-    if (item.customize_layers == null && section.customize_layers != null) {
-      item.customize_layers = section.customize_layers;
-    }
-    if (item.allowed_layers == null && section.allowed_layers != null) {
-      item.allowed_layers = section.allowed_layers;
-    }
 
     normalizedItems.push(item);
   });

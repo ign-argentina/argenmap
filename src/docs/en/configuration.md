@@ -68,9 +68,11 @@ several layers share a heading, tab, description, or visual style:
   ],
   "layers": [
     {
+      "id": "event-venues",
       "type": "file",
       "section": "events",
-      "titulo": "Venues",
+      "title": "Venues",
+      "description": "Confirmed locations",
       "source": {
         "url": "data/venues.geojson",
         "format": "geojson"
@@ -80,9 +82,22 @@ several layers share a heading, tab, description, or visual style:
 }
 ```
 
-Every layer must reference an existing section `id`. At startup, section and
-layer properties are merged; layer properties take precedence. Basemaps remain
-inside `items`.
+Every layer must reference an existing section `id`. The two blocks have
+independent responsibilities and are not combined through property overrides:
+
+- `sections` exclusively defines menu headings and organization: `id`,
+  `nombre`, `tab`, `short_abstract`, `peso`, `class`, and `section_style`.
+- `layers` exclusively defines each source or layer: `id`, `type`, `section`,
+  `title`, `description`, `icon`, state, options, styles, and connection data.
+- Service options such as `host`, `icons`, `allowed_layers`, and
+  `customize_layers` belong to their `layers` entry, not to the section.
+- For a file-backed layer, `source` only describes the resource being read,
+  such as `url` and `format`; presentation belongs to the layer.
+
+Changing `title`, `id`, or another layer property does not change its section
+heading or style. Basemaps remain inside `items`. Legacy configurations may
+still use `titulo` and visual properties inside `source`, but those aliases are
+not recommended in the separated schema.
 
 ### Section-specific styles
 
@@ -186,54 +201,58 @@ set explicitly with `source.format`.
 
 ```jsonc
 {
+  "id": "event-venues",
   "type": "file",
   "section": "events",
-  "titulo": "Venues",
+  "title": "Event venues",
+  "description": "Confirmed locations",
+  "icon": "src/styles/images/venue.png",
   "isActive": true,
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
   "popupFormat": "table",
   "allowedOptions": ["zoom", "query", "data", "download"],
+  "activeButtonColor": "#287bb5",
+  "style": {
+    "marker": {
+      "iconUrl": "src/styles/images/venue.png",
+      "iconSize": [32, 32],
+      "iconAnchor": [16, 32],
+      "popupAnchor": [0, -32]
+    },
+    "point": {
+      "radius": 6,
+      "color": "#287bb5",
+      "weight": 2,
+      "fillColor": "#ffffff",
+      "fillOpacity": 0.8
+    },
+    "line": {
+      "color": "#287bb5",
+      "weight": 3,
+      "opacity": 0.9
+    },
+    "polygon": {
+      "color": "#287bb5",
+      "weight": 2,
+      "fillColor": "#75aadb",
+      "fillOpacity": 0.25
+    }
+  },
   "source": {
     "url": "data/venues.geojson",
-    "format": "geojson",
-    "title": "Event venues",
-    "description": "Confirmed locations",
-    "icon": "src/styles/images/venue.png",
-    "style": {
-      "activeButtonColor": "#287bb5",
-      "marker": {
-        "iconUrl": "src/styles/images/venue.png",
-        "iconSize": [32, 32],
-        "iconAnchor": [16, 32],
-        "popupAnchor": [0, -32]
-      },
-      "point": {
-        "radius": 6,
-        "color": "#287bb5",
-        "weight": 2,
-        "fillColor": "#ffffff",
-        "fillOpacity": 0.8
-      },
-      "line": {
-        "color": "#287bb5",
-        "weight": 3,
-        "opacity": 0.9
-      },
-      "polygon": {
-        "color": "#287bb5",
-        "weight": 2,
-        "fillColor": "#75aadb",
-        "fillOpacity": 0.25
-      }
-    }
+    "format": "geojson"
   }
 }
 ```
 
 Main settings:
 
+- `id` is the layer's stable unique identifier.
+- `section` references a section `id`; it does not define the visible heading.
+- `title`, `description`, and `icon` control the layer button without changing
+  the section heading.
 - `isActive` displays the layer at startup; the default is `false`.
 - `zoomOnActivate` fits the layer when it is activated.
 - `queryable` allows entity queries; the default is `true`.
@@ -244,16 +263,58 @@ Main settings:
 - `allowedOptions` limits the layer submenu. Available values are `zoom`,
   `query`, `data`, `download`, `rename`, and `delete`. If omitted, every
   applicable option is displayed.
-- `source.title`, `source.description`, and `source.icon` control the layer
-  button.
-- `source.style.activeButtonColor` controls the active button background.
-- `source.style.marker`, `point`, `line`, and `polygon` set styles by geometry
+- `activeButtonColor` controls the active button background without becoming
+  part of the exported geometry style.
+- `style.marker`, `point`, `line`, and `polygon` set styles by geometry
   type. `MultiPoint`, `MultiLineString`, and `MultiPolygon` are also handled.
 
-`isActive` belongs on the layer object. Query settings, `popupFormat`,
-`allowedOptions`, and `zoomOnActivate` may be declared there or inside `source`;
-`source` values take precedence. Add `"query"` to `allowedOptions` to expose the
+In the separated schema, presentation and behavior properties belong to the
+layer block. `source` contains the file location and format. Their previous
+locations inside `source` remain compatibility fallbacks; when a property is
+also present on the layer, the layer value takes precedence. Add `"query"` to
+`allowedOptions` to expose the
 **Enable/Disable query** command. It is omitted when `queryable` is `false`.
+
+#### Per-feature or per-geometry styles
+
+Each GeoJSON `Feature` may define its own style through `properties.styles`.
+This is the same object generated by the context menu's **Edit styles** command,
+and it is also applied to files opened manually:
+
+```jsonc
+{
+  "type": "Feature",
+  "properties": {
+    "name": "Northern route",
+    "type": "polyline",
+    "styles": {
+      "color": "#9e161a",
+      "weight": 5,
+      "opacity": 0.9,
+      "dashArray": 8
+    }
+  },
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [[-69.8, -32.9], [-70.1, -33.2]]
+  }
+}
+```
+
+`styles` values apply only to that feature and override the layer-wide style.
+The precedence order is: application defaults, the layer's `style`, and the
+feature's `properties.styles`. Supported values include those saved by the
+editor, such as `color`, `weight`, `opacity`, `fillColor`, `fillOpacity`,
+`dashArray`, `radius`, and marker options.
+
+When a layer is downloaded from its menu, each feature exports its current
+visual options in `styles`. Changes made with **Edit styles** therefore replace
+the style with which that feature was originally loaded in the downloaded file.
+
+The internal `type` property preserves the subtype created by the application,
+such as `marker`, `circle`, `circlemarker`, `rectangle`, or `label`. Both `type`
+and `styles` are used to reconstruct the geometry but are always omitted from
+query popup content.
 
 #### File-layer popup format
 
@@ -277,7 +338,9 @@ when `"popupFormat": "html"` is configured:
 
 For safety, `html` is interpreted only when it is the sole property. Features
 with additional attributes fall back to a table and show the markup escaped.
-Explicitly selecting `table` or `text` also disables HTML interpretation.
+Explicitly selecting `table` or `text` also disables HTML interpretation. The
+reserved `styles` and `type` metadata do not count as visible attributes for
+this rule because they are never displayed.
 
 > [!WARNING]
 > The `html` value is intentionally not sanitized. Only use trusted files or
