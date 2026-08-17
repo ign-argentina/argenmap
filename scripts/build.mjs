@@ -52,6 +52,17 @@ function shortHash(content) {
   return createHash("sha256").update(content).digest("hex").slice(0, 12);
 }
 
+async function hashOutputFiles(relativePaths) {
+  const hash = createHash("sha256");
+
+  for (const relativePath of [...relativePaths].sort()) {
+    hash.update(relativePath);
+    hash.update(await readFile(fromOutput(relativePath)));
+  }
+
+  return hash.digest("hex").slice(0, 12);
+}
+
 async function exists(filePath) {
   try {
     await access(filePath);
@@ -269,6 +280,195 @@ async function verifyLocalHtmlAssets() {
   }
 }
 
+function createServiceWorkerSource(version, precacheFiles) {
+  return `"use strict";
+
+const VERSION = ${JSON.stringify(version)};
+const CACHE_PREFIX = "argenmap-pwa-";
+const APP_CACHE = \`${"${CACHE_PREFIX}"}app-\${VERSION}\`;
+const RUNTIME_CACHE = \`${"${CACHE_PREFIX}"}runtime-\${VERSION}\`;
+const PRECACHE_URLS = ${JSON.stringify(precacheFiles.map((file) => `./${file}`), null, 2)};
+const PRECACHE_URLS_ABSOLUTE = new Set(
+  PRECACHE_URLS.map((url) => new URL(url, self.registration.scope).href),
+);
+const CONFIGURATION_PATHS = new Set([
+  new URL("./src/config/data.json", self.registration.scope).pathname,
+  new URL("./src/config/preferences.json", self.registration.scope).pathname,
+]);
+const TRUSTED_STATIC_CDNS = new Set([
+  "cdnjs.cloudflare.com",
+  "cdn.jsdelivr.net",
+  "fonts.googleapis.com",
+  "fonts.gstatic.com",
+]);
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(APP_CACHE).then((cache) => cache.addAll(PRECACHE_URLS)),
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (key) =>
+                key.startsWith(CACHE_PREFIX) &&
+                key !== APP_CACHE &&
+                key !== RUNTIME_CACHE,
+            )
+            .map((key) => caches.delete(key)),
+        ),
+      )
+      .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request, { ignoreSearch: false });
+  return cached || fetch(request);
+}
+
+async function networkFirst(request) {
+  const cache = await caches.open(RUNTIME_CACHE);
+
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      await cache.put(request, response.clone());
+    }
+    return response;
+  } catch (error) {
+    const cached = await caches.match(request);
+    if (cached) {
+      return cached;
+    }
+    throw error;
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(RUNTIME_CACHE);
+  const cached = await cache.match(request);
+  const update = fetch(request).then((response) => {
+    if (response.ok || response.type === "opaque") {
+      cache.put(request, response.clone());
+    }
+    return response;
+  });
+
+  if (cached) {
+    update.catch(() => undefined);
+    return cached;
+  }
+
+  return update;
+}
+
+async function navigationNetworkFirst(request) {
+  try {
+    return await fetch(request);
+  } catch (error) {
+    const cache = await caches.open(APP_CACHE);
+    const shell = await cache.match("./index.html");
+    if (shell) {
+      return shell;
+    }
+    throw error;
+  }
+}
+
+function isLocalStaticAsset(url) {
+  return /\\.(?:css|js|mjs|png|jpe?g|gif|webp|avif|svg|ico|woff2?|ttf|otf)$/iu.test(
+    url.pathname,
+  );
+}
+
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  if (request.method !== "GET") {
+    return;
+  }
+
+  const url = new URL(request.url);
+
+  if (request.mode === "navigate") {
+    event.respondWith(navigationNetworkFirst(request));
+    return;
+  }
+
+  if (url.origin === self.location.origin) {
+    if (CONFIGURATION_PATHS.has(url.pathname)) {
+      event.respondWith(networkFirst(request));
+      return;
+    }
+
+    if (PRECACHE_URLS_ABSOLUTE.has(url.href)) {
+      event.respondWith(cacheFirst(request));
+      return;
+    }
+
+    if (isLocalStaticAsset(url)) {
+      event.respondWith(staleWhileRevalidate(request));
+    }
+    return;
+  }
+
+  if (
+    TRUSTED_STATIC_CDNS.has(url.hostname) &&
+    ["font", "image", "script", "style"].includes(request.destination)
+  ) {
+    event.respondWith(staleWhileRevalidate(request));
+  }
+});
+`;
+}
+
+async function createProductionServiceWorker(javaScriptBundle, cssBundle) {
+  const candidates = [
+    "index.html",
+    "manifest.webmanifest",
+    javaScriptBundle,
+    cssBundle,
+    "src/config/data.json",
+    "src/config/preferences.json",
+    "src/js/components/context-menu/context-menu.css",
+    "src/js/components/user-message/user-message.css",
+    "src/styles/images/favicon.ico",
+    "src/styles/images/loading.svg",
+    "src/styles/images/noimage.webp",
+    "src/styles/images/pwa/icon-192.png",
+    "src/styles/images/pwa/icon-512.png",
+    "src/styles/images/pwa/icon-maskable-192.png",
+    "src/styles/images/pwa/icon-maskable-512.png",
+  ];
+  const precacheFiles = [];
+
+  for (const relativePath of candidates) {
+    if (await exists(fromOutput(relativePath))) {
+      precacheFiles.push(relativePath);
+    }
+  }
+
+  const version = await hashOutputFiles(precacheFiles);
+  await writeFile(
+    fromOutput("service-worker.js"),
+    createServiceWorkerSource(version, precacheFiles),
+  );
+
+  return { version, precacheFiles };
+}
+
 async function directorySize(directory) {
   const files = await listFiles(directory);
   const sizes = await Promise.all(files.map((file) => stat(file)));
@@ -316,12 +516,19 @@ async function build() {
   await createProductionHtml(javaScriptBundle, cssBundle);
   await removeBundledSources();
   await verifyLocalHtmlAssets();
+  const pwa = await createProductionServiceWorker(javaScriptBundle, cssBundle);
 
   const manifest = {
     entrypoint: "index.html",
     assets: {
       javascript: javaScriptBundle,
       css: cssBundle,
+    },
+    pwa: {
+      manifest: "manifest.webmanifest",
+      serviceWorker: "service-worker.js",
+      cacheVersion: pwa.version,
+      precache: pwa.precacheFiles,
     },
   };
   await writeFile(
