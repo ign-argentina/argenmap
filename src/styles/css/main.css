@@ -2686,11 +2686,11 @@ input:checked.switch+label:after {
 @media (max-width: 37.5em) {
   .menu-container.top-around-flex {
     top: 4.25rem;
-    right: 0.5rem;
+    right: auto;
     left: 0.5rem;
     display: grid;
-    grid-template-columns: 2.75rem minmax(0, 1fr);
-    gap: 0.25rem;
+    grid-template-columns: 2.75rem;
+    gap: 0;
     width: auto;
     max-width: none;
     max-height: calc(100dvh - 4.75rem - env(safe-area-inset-bottom, 0px));
@@ -2698,7 +2698,14 @@ input:checked.switch+label:after {
   }
 
   .menu-container.menu-panel-open {
+    right: 0.5rem;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.25rem;
     z-index: 1100;
+  }
+
+  .menu-container:not(.menu-panel-open) #menu-content {
+    display: none !important;
   }
 
   #botonera {
