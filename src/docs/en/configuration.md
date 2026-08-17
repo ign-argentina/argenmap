@@ -58,6 +58,7 @@ several layers share a heading, tab, description, or visual style:
     {
       "id": "events",
       "nombre": "Events",
+      "expanded": true,
       "tab": {
         "id": "IG",
         "searcheable": true,
@@ -68,9 +69,11 @@ several layers share a heading, tab, description, or visual style:
   ],
   "layers": [
     {
+      "id": "event-venues",
       "type": "file",
       "section": "events",
-      "titulo": "Venues",
+      "title": "Venues",
+      "description": "Confirmed locations",
       "source": {
         "url": "data/venues.geojson",
         "format": "geojson"
@@ -80,9 +83,28 @@ several layers share a heading, tab, description, or visual style:
 }
 ```
 
-Every layer must reference an existing section `id`. At startup, section and
-layer properties are merged; layer properties take precedence. Basemaps remain
-inside `items`.
+Every layer must reference an existing section `id`. The two blocks have
+independent responsibilities and are not combined through property overrides:
+
+- `sections` exclusively defines menu headings and organization: `id`,
+  `nombre`, `expanded`, `tab`, `short_abstract`, `peso`, `class`, and
+  `section_style`.
+- `layers` exclusively defines each source or layer: `id`, `type`, `section`,
+  `title`, `description`, `icon`, state, options, styles, and connection data.
+- Service options such as `host`, `icons`, `allowed_layers`, and
+  `customize_layers` belong to their `layers` entry, not to the section.
+- For a file-backed layer, `source` only describes the resource being read,
+  such as `url` and `format`; presentation belongs to the layer.
+
+Changing `title`, `id`, or another layer property does not change its section
+heading or style. Basemaps remain inside `items`. Legacy configurations may
+still use `titulo` and visual properties inside `source`, but those aliases are
+not recommended in the separated schema.
+
+The boolean `expanded` property displays a section expanded when the
+application starts. It defaults to `false`. If the section contains lazily
+loaded OGC services, setting it to `true` starts loading those services so its
+content can be displayed.
 
 ### Section-specific styles
 
@@ -186,82 +208,213 @@ set explicitly with `source.format`.
 
 ```jsonc
 {
+  "id": "event-venues",
   "type": "file",
   "section": "events",
-  "titulo": "Venues",
+  "title": "Event venues",
+  "description": "Confirmed locations",
+  "icon": "src/styles/images/venue.png",
   "isActive": true,
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
+  "popupFormat": "table",
   "allowedOptions": ["zoom", "query", "data", "download"],
+  "activeButtonColor": "#287bb5",
+  "style": {
+    "marker": {
+      "iconUrl": "src/styles/images/venue.png",
+      "iconSize": [32, 32],
+      "iconAnchor": [16, 32],
+      "popupAnchor": [0, -32]
+    },
+    "point": {
+      "radius": 6,
+      "color": "#287bb5",
+      "weight": 2,
+      "fillColor": "#ffffff",
+      "fillOpacity": 0.8
+    },
+    "line": {
+      "color": "#287bb5",
+      "weight": 3,
+      "opacity": 0.9
+    },
+    "polygon": {
+      "color": "#287bb5",
+      "weight": 2,
+      "fillColor": "#75aadb",
+      "fillOpacity": 0.25
+    }
+  },
   "source": {
     "url": "data/venues.geojson",
-    "format": "geojson",
-    "title": "Event venues",
-    "description": "Confirmed locations",
-    "icon": "src/styles/images/venue.png",
-    "style": {
-      "activeButtonColor": "#287bb5",
-      "marker": {
-        "iconUrl": "src/styles/images/venue.png",
-        "iconSize": [32, 32],
-        "iconAnchor": [16, 32],
-        "popupAnchor": [0, -32]
-      },
-      "point": {
-        "radius": 6,
-        "color": "#287bb5",
-        "weight": 2,
-        "fillColor": "#ffffff",
-        "fillOpacity": 0.8
-      },
-      "line": {
-        "color": "#287bb5",
-        "weight": 3,
-        "opacity": 0.9
-      },
-      "polygon": {
-        "color": "#287bb5",
-        "weight": 2,
-        "fillColor": "#75aadb",
-        "fillOpacity": 0.25
-      }
-    }
+    "format": "geojson"
   }
 }
 ```
 
 Main settings:
 
+- `id` is the layer's stable unique identifier.
+- `section` references a section `id`; it does not define the visible heading.
+- `title`, `description`, and `icon` control the layer button without changing
+  the section heading.
 - `isActive` displays the layer at startup; the default is `false`.
 - `zoomOnActivate` fits the layer when it is activated.
 - `queryable` allows entity queries; the default is `true`.
 - `queryActive` enables queries at startup when `queryable` is `true`; the
   default is `false`.
+- `popupFormat` controls queried content rendering. It accepts `table`, `text`,
+  and `html`; when omitted, tables are used except for a sole `html` property.
 - `allowedOptions` limits the layer submenu. Available values are `zoom`,
   `query`, `data`, `download`, `rename`, and `delete`. If omitted, every
   applicable option is displayed.
-- `source.title`, `source.description`, and `source.icon` control the layer
-  button.
-- `source.style.activeButtonColor` controls the active button background.
-- `source.style.marker`, `point`, `line`, and `polygon` set styles by geometry
+- `activeButtonColor` controls the active button background without becoming
+  part of the exported geometry style.
+- `style.marker`, `point`, `line`, and `polygon` set styles by geometry
   type. `MultiPoint`, `MultiLineString`, and `MultiPolygon` are also handled.
+- `style.label` defines an optional label from one or more feature properties
+  and applies to every geometry type in the layer.
 
-`isActive` belongs on the layer object. Query settings, `allowedOptions`, and
-`zoomOnActivate` may be declared there or inside `source`; `source` values take
-precedence. Add `"query"` to `allowedOptions` to expose the
+In the separated schema, presentation and behavior properties belong to the
+layer block. `source` contains the file location and format. Their previous
+locations inside `source` remain compatibility fallbacks; when a property is
+also present on the layer, the layer value takes precedence. Add `"query"` to
+`allowedOptions` to expose the
 **Enable/Disable query** command. It is omitted when `queryable` is `false`.
 
-#### HTML in file-layer popups
+#### Per-feature or per-geometry styles
 
-A GeoJSON property named `html` (case-insensitive) is inserted as HTML in a
-full-width popup row. Other property values are escaped and rendered as text:
+Each GeoJSON `Feature` may define its own style through `properties.styles`.
+This is the same object generated by the context menu's **Edit styles** command,
+and it is also applied to files opened manually:
 
 ```jsonc
 {
   "type": "Feature",
   "properties": {
-    "name": "Main venue",
+    "name": "Northern route",
+    "type": "polyline",
+    "styles": {
+      "color": "#9e161a",
+      "weight": 5,
+      "opacity": 0.9,
+      "dashArray": 8
+    }
+  },
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [[-69.8, -32.9], [-70.1, -33.2]]
+  }
+}
+```
+
+`styles` values apply only to that feature and override the layer-wide style.
+The precedence order is: application defaults, the layer's `style`, and the
+feature's `properties.styles`. Supported values include those saved by the
+editor, such as `color`, `weight`, `opacity`, `fillColor`, `fillOpacity`,
+`dashArray`, `radius`, and marker options.
+
+#### Geometry labels
+
+The `style.label` block builds a label by concatenating an ordered `parts`
+list. Each part uses `"type": "field"` to read a feature property or
+`"type": "text"` to insert its value literally:
+
+```jsonc
+{
+  "style": {
+    "line": {
+      "color": "#9e161a",
+      "weight": 4
+    },
+    "label": {
+      "enabled": true,
+      "parts": [
+        { "type": "field", "value": "column" },
+        { "type": "text", "value": " — " },
+        { "type": "field", "value": "commander" },
+        { "type": "text", "value": " (distance: " },
+        { "type": "field", "value": "distance_km" },
+        { "type": "text", "value": " km)" }
+      ],
+      "position": "above",
+      "color": "#421014",
+      "fontFamily": "Noto Sans, sans-serif",
+      "fontSize": 14,
+      "fontStyle": "italic",
+      "underline": false,
+      "uppercase": false,
+      "halo": true,
+      "haloColor": "#ffffff",
+      "haloWidth": 2,
+      "autoHide": true,
+      "minZoom": 7,
+      "maxZoom": 18
+    }
+  }
+}
+```
+
+Available positions depend on geometry type:
+
+- Points, markers, and circles: `top`, `bottom`, `left`, or `right`.
+- Lines: `above`, `on-line`, or `below`; the upper and lower variants keep a
+  fixed distance from the path.
+- Polygons and rectangles: `center`, `border`, or `parallel`.
+
+Labels on lines and borders are oriented automatically so text remains
+readable even when the path was drawn in the opposite direction. With
+`autoHide` enabled (the default), they are also hidden automatically when the
+text does not fit the visible path with a safe margin or when that portion of
+the path bends too sharply. This is recalculated after each zoom change, so a
+label reappears when zooming in provides enough room. Set `"autoHide": false`
+to disable this fit check.
+
+`minZoom` and `maxZoom` optionally limit the Leaflet zoom levels at which any
+label is displayed. Either value can be omitted to leave that end unbounded.
+
+`fontStyle` accepts `normal` or `italic`; `underline` and `uppercase` are
+booleans. `halo` enables a text outline controlled by `haloColor` and
+`haloWidth`. When a `label` block exists, it is enabled unless
+`"enabled": false` is set.
+
+The legacy `fields` and `separator` properties remain supported. Opening an
+older configuration in the editor converts it to ordered parts, which can then
+be combined with fixed strings, for example
+`[{"type":"field","value":"height"},{"type":"text","value":" m"}]`.
+
+The **Geometry label** section in **Edit styles** exposes the same options. It
+provides controls to add fields or text, reorder them, and remove them. The
+editor also exposes minimum and maximum zoom and whether automatic fitting
+should hide poorly distributed text. The configuration controls remain hidden
+until **Show label** is enabled. It works for file features, vector layers, and
+geometries made with the drawing tools. Changes are saved to
+`properties.styles.label` when the feature or layer is downloaded.
+
+When a layer is downloaded from its menu, each feature exports its current
+visual options in `styles`. Changes made with **Edit styles** therefore replace
+the style with which that feature was originally loaded in the downloaded file.
+
+The internal `type` property preserves the subtype created by the application,
+such as `marker`, `circle`, `circlemarker`, `rectangle`, or `label`. Both `type`
+and `styles` are used to reconstruct the geometry but are always omitted from
+query popup content.
+
+#### File-layer popup format
+
+The default `popupFormat` is `table`, with one row per property. `text` renders
+the same values without a table or surrounding box: each property name is bold,
+starts with an uppercase letter, and uses spaces instead of underscores,
+followed by its normal-weight value. When a GeoJSON feature has a single
+property named `html` (case-insensitive), its value is rendered as HTML
+automatically or when `"popupFormat": "html"` is configured:
+
+```jsonc
+{
+  "type": "Feature",
+  "properties": {
     "html": "<img src='https://example.gov/image.jpg' alt='Venue'>"
   },
   "geometry": {
@@ -270,6 +423,12 @@ full-width popup row. Other property values are escaped and rendered as text:
   }
 }
 ```
+
+For safety, `html` is interpreted only when it is the sole property. Features
+with additional attributes fall back to a table and show the markup escaped.
+Explicitly selecting `table` or `text` also disables HTML interpretation. The
+reserved `styles` and `type` metadata do not count as visible attributes for
+this rule because they are never displayed.
 
 > [!WARNING]
 > The `html` value is intentionally not sanitized. Only use trusted files or
@@ -318,11 +477,34 @@ startup. Verify the installation with Tag Assistant or the browser's
     "isActive": true,
     "version": "2026-07-20T15:30:00-03:00",
     "welcomeSign": "What's new",
+    "welcomeSignStyle": {
+      "fontSize": "0.9rem",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "direction": "auto",
+      "position": "above"
+    },
     "image": "src/styles/images/news.webp",
-    "text": "New content is now available."
+    "text": "New content is now available.",
+    "background": "transparent",
+    "overlayBackground": "rgba(0, 0, 0, 0.6)"
   }
 }
 ```
+
+`mainPopup.background` accepts any valid CSS `background` value, including
+`"transparent"`, a solid color such as `"#13213c"`, or a gradient such as
+`"linear-gradient(135deg, #13213c, #157db9)"`. The card is transparent when the
+option is omitted. `mainPopup.overlayBackground` independently controls the
+background covering the application and keeps the semi-transparent shade when
+omitted.
+
+`mainPopup.welcomeSignStyle` customizes the welcome text without requiring a
+global stylesheet. By default the text is smaller, centered, and placed above
+the image. `fontSize` accepts a CSS size (`"14px"`, `"0.9rem"`, `"clamp(...)"`)
+or a number, which is interpreted as pixels. `position` accepts `"above"` or
+`"below"`, while `direction` accepts `"auto"`, `"ltr"`, or `"rtl"` for future
+language-specific content.
 
 When the user selects **Do not show again**, the application stores the current
 `mainPopup.version` in `localStorage`. Changing the value makes the new message
@@ -339,7 +521,22 @@ removed.
 
 Additional application-wide styles and images can be placed in:
 
-- `src/config/styles/css/main.css`: custom CSS rules.
+Custom styles can be added without changing the application's main stylesheet
+by declaring them in `preferences.json`:
+
+```json
+"customStyles": [
+  "src/config/styles/css/theme.css"
+]
+```
+
+This property is optional. When it is missing or empty, no custom stylesheet is
+requested. Declared stylesheets are loaded in parallel after the core styles
+and keep precedence over plugin styles loaded later. Each file should contain
+only the rules that need to be added or overridden; copying the complete core
+stylesheet is not required.
+
+- `src/config/styles/css`: stylesheets declared through `customStyles`.
 - `src/config/styles/images`: logos and other images.
 - `src/config/styles/images/legends`: layer legend or preview images.
 

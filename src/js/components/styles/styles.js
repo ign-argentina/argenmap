@@ -141,8 +141,8 @@ class StylesUI {
 
       let image = app.referencias.src ?? "";
 
-      toprightlogo.onclick = function () {
-        clickReferencias(image);
+      toprightlogo.onclick = function (event) {
+        clickReferencias(image, event);
       };
     }
     /* else {
@@ -213,11 +213,31 @@ class StylesUI {
   }
 }
 
-function clickReferencias(img) {
-  event.preventDefault();
-  $.fancybox.open({
-    src: img,
-    type: "image",
-    closeBtn: "true",
+function clickReferencias(img, event) {
+  event?.preventDefault();
+  document.getElementById("argenmap-image-preview")?.remove();
+  const preview = document.createElement("div");
+  preview.id = "argenmap-image-preview";
+  preview.className = "argenmap-image-preview";
+  preview.setAttribute("role", "dialog");
+  preview.setAttribute("aria-modal", "true");
+  preview.setAttribute("aria-label", "Vista ampliada");
+  preview.innerHTML = `
+    <button type="button" class="argenmap-image-preview-close" aria-label="Cerrar">&times;</button>
+    <img src="${String(img).replace(/["<>]/g, "")}" alt="Vista ampliada">
+  `;
+  const close = () => preview.remove();
+  preview.addEventListener("click", (clickEvent) => {
+    if (clickEvent.target === preview) close();
   });
+  preview.querySelector("button").addEventListener("click", close);
+  document.addEventListener(
+    "keydown",
+    (keyEvent) => {
+      if (keyEvent.key === "Escape") close();
+    },
+    { once: true },
+  );
+  document.body.appendChild(preview);
+  preview.querySelector("button").focus();
 }

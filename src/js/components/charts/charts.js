@@ -53,16 +53,18 @@ class Graphics {
     document.getElementById("icons-d3").append(select);
     document.getElementById("icons-d3").append(btnclose);
 
-    $("#containergraphics").draggable({
-      containment: "#mapa",
-      scroll: false,
-    });
-    $("#containergraphics").resizable({
-      containment: "#mapa",
-      minHeight: 150,
-      minWidth: 250,
-      handles: "e, w",
-      scroll: true,
+    enableNativeInteractions("#containergraphics", {
+      draggable: {
+        containment: "#mapa",
+        scroll: false,
+      },
+      resizable: {
+        containment: "#mapa",
+        minHeight: 150,
+        minWidth: 250,
+        handles: "e, w",
+        scroll: true,
+      },
     });
   }
 

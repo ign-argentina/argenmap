@@ -9,13 +9,21 @@ class ConfigTool {
 
     btnElement.setAttribute("aria-hidden", "true");
 
-    btnElement.addEventListener("click", (event) => {
+    btnElement.addEventListener("click", async () => {
       const existingConfigWrapper = document.querySelector("#configWrapper");
       if (existingConfigWrapper) {
         existingConfigWrapper.remove();
       } else {
-        const configuration = new configWindow();
-        configuration.createComponent();
+        btnElement.disabled = true;
+        try {
+          await appDependencies.load("configWindow");
+          const configuration = new configWindow();
+          configuration.createComponent();
+        } catch (error) {
+          new UserMessage(error.message, true, "error");
+        } finally {
+          btnElement.disabled = false;
+        }
       }
     });
 

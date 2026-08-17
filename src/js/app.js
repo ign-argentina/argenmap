@@ -40,6 +40,10 @@ const app = {
       setCharts(app.charts.isActive);
     }
 
+    if (app.table?.isActive) {
+      await ensureTableDependencies();
+    }
+
     const geocoderEnabled =
       app?.geocoder?.enabled ??
       app?.geocoder?.isActive ??
@@ -119,12 +123,10 @@ const app = {
     type = "application/javascript",
     inBody = true,
   ) {
-    const script = document.createElement("script");
-    script.src = scriptUrl;
-    script.type = type;
-    let target = null;
-    inBody ? (target = "body") : (target = "head");
-    document[target].appendChild(script);
+    return appDependencies.loadScript(scriptUrl, {
+      type,
+      target: inBody ? "body" : "head",
+    });
   },
 
   loading: function (placement = "") {
@@ -345,36 +347,61 @@ const app = {
       item.defaultActive ??
       false;
 
+    const configuredId = item.id || source?.id || null;
     const fallbackIdParts = [
-      source?.id || item.id || item.nombre,
-      source?.title || item.titulo || item.nombre,
+      item.title || item.titulo || source?.title || item.nombre,
       source?.url || item.host || url,
     ].filter(Boolean);
+    const configuredPopupFormat =
+      item.popupFormat ??
+      item.popup?.format ??
+      source?.popupFormat ??
+      source?.popup?.format ??
+      null;
+    const popupFormat =
+      typeof configuredPopupFormat === "string"
+        ? configuredPopupFormat.trim().toLowerCase()
+        : null;
 
     return {
-      id: clearSpecialChars(fallbackIdParts.join("-")) || "capa-desde-archivo",
+      id:
+        clearSpecialChars(configuredId || fallbackIdParts.join("-")) ||
+        "capa-desde-archivo",
       url,
       format: (source?.format || source?.type || item.format || "").toLowerCase(),
-      title: source?.title || item.titulo || item.nombre || "Capa desde archivo",
-      description: source?.description || item.short_abstract || item.descripcion || "",
-      icon: source?.icon || item.icon || item.legendImg || null,
-      style: source?.style || item.style || null,
+      title:
+        item.title ||
+        item.titulo ||
+        source?.title ||
+        item.nombre ||
+        "Capa desde archivo",
+      description:
+        item.description ||
+        item.descripcion ||
+        source?.description ||
+        item.short_abstract ||
+        "",
+      icon: item.icon || item.legendImg || source?.icon || null,
+      style: item.style || source?.style || null,
       activeButtonColor:
-        source?.style?.activeButtonColor ||
-        source?.activeButtonColor ||
-        item.style?.activeButtonColor ||
         item.activeButtonColor ||
+        item.style?.activeButtonColor ||
+        source?.activeButtonColor ||
+        source?.style?.activeButtonColor ||
         null,
       fileName: source?.fileName || source?.name || null,
       allowedOptions: item.allowedOptions || source?.allowedOptions || null,
       zoomOnActivate: Boolean(
-        source?.zoomOnActivate ?? item.zoomOnActivate ?? false,
+        item.zoomOnActivate ?? source?.zoomOnActivate ?? false,
       ),
-      queryable: Boolean(source?.queryable ?? item.queryable ?? true),
+      queryable: Boolean(item.queryable ?? source?.queryable ?? true),
       queryActive: Boolean(
-        (source?.queryable ?? item.queryable ?? true) &&
-          (source?.queryActive ?? item.queryActive ?? false),
+        (item.queryable ?? source?.queryable ?? true) &&
+          (item.queryActive ?? source?.queryActive ?? false),
       ),
+      popupFormat: ["table", "text", "html"].includes(popupFormat)
+        ? popupFormat
+        : null,
       isActive: Boolean(defaultActive),
     };
   },
@@ -433,17 +460,30 @@ const app = {
     const isPoint = geometryType === "point" || geometryType === "multipoint";
     const isLine = geometryType === "linestring" || geometryType === "multilinestring";
     const isPolygon = geometryType === "polygon" || geometryType === "multipolygon";
+    const featureStyle =
+      geoJSON.properties.styles &&
+      typeof geoJSON.properties.styles === "object" &&
+      !Array.isArray(geoJSON.properties.styles)
+        ? geoJSON.properties.styles
+        : {};
     const hasGeometryStyles = ["point", "line", "polygon", "marker"].some(
       (key) => style && typeof style[key] === "object",
     );
-    const legacyStyle = hasGeometryStyles ? {} : style || {};
+    const { activeButtonColor: _activeButtonColor, ...legacyGeometryStyle } =
+      style;
+    const legacyStyle = hasGeometryStyles ? {} : legacyGeometryStyle;
     let styleType;
 
     if (isPoint) {
       const featureType = String(geoJSON.properties.type || "").toLowerCase();
-      const renderAsPoint = featureType === "circlemarker" || (style.point && !style.marker);
-      styleType = renderAsPoint ? "point" : "marker";
-      geoJSON.properties.type = renderAsPoint ? "circlemarker" : "marker";
+      const renderAsPoint =
+        featureType === "circle" ||
+        featureType === "circlemarker" ||
+        (!featureType && style.point && !style.marker);
+      styleType = featureType === "label" ? null : renderAsPoint ? "point" : "marker";
+      if (!featureType) {
+        geoJSON.properties.type = renderAsPoint ? "circlemarker" : "marker";
+      }
     } else if (isLine) {
       styleType = "line";
     } else if (isPolygon) {
@@ -453,8 +493,13 @@ const app = {
     const configuredStyle = styleType ? style?.[styleType] || legacyStyle : legacyStyle;
     geoJSON.properties.styles = {
       ...this.getConfiguredLayerDefaultStyle(styleType),
-      ...(geoJSON.properties.styles || {}),
       ...(configuredStyle || {}),
+      ...(style?.label && typeof style.label === "object"
+        ? { label: { ...style.label } }
+        : {}),
+      // Styles saved by the application's vector style editor belong to the
+      // individual feature and therefore override layer-wide defaults.
+      ...featureStyle,
     };
     return geoJSON;
   },
@@ -484,6 +529,7 @@ const app = {
     }
 
     try {
+      await appDependencies.load("fileLayer");
       const fileLayer = new FileLayer();
       await fileLayer.handleUrl(
         layerConfig.url,
@@ -498,9 +544,12 @@ const app = {
 
       this.applyConfiguredLayerStyle(geoJSON, layerConfig.style);
 
-      // Use `nombre` as the visible label and `seccion` as the stable id.
-      const sectionLabel = item.nombre || item.titulo || item.seccion || "Archivos";
-      const sectionId = item.seccion || clearSpecialChars(item.nombre || item.titulo || "Archivos");
+      // Section identity is resolved independently from layer metadata. In the
+      // separated schema `sectionName` comes exclusively from `sections`.
+      const sectionLabel =
+        item.sectionName || item.nombre || item.seccion || "Archivos";
+      const sectionId =
+        item.seccion || clearSpecialChars(item.sectionName || item.nombre || "Archivos");
       const baseLayerId = layerConfig.id || clearSpecialChars(layerConfig.title || fileLayer.getFileName() || "capa-desde-archivo");
       const existingLayerIds = new Set([
         ...addedLayers.map((layer) => layer.id),
@@ -520,6 +569,7 @@ const app = {
       configuredLeafletLayers.forEach((layer) => {
         layer.queryable = layerConfig.queryable;
         layer.activeData = layerConfig.queryActive;
+        layer.popupFormat = layerConfig.popupFormat;
       });
       addLayerToAllGroups(createdLayers, layerId, shouldBeActiveByDefault);
 
@@ -534,6 +584,7 @@ const app = {
         zoomOnActivate: layerConfig.zoomOnActivate,
         queryable: layerConfig.queryable,
         queryActive: layerConfig.queryActive,
+        popupFormat: layerConfig.popupFormat,
         // store the visible label as section
         section: sectionLabel,
       });
@@ -800,11 +851,13 @@ function normalizeConfigSectionsAndLayers(data) {
 
   const sectionMap = {};
   app.sectionStyles = {};
+  app.sectionExpanded = {};
   data.sections.forEach((section) => {
     if (!section || !section.id) {
       return;
     }
     sectionMap[section.id] = section;
+    app.sectionExpanded[section.id] = section.expanded === true;
     if (section.section_style) {
       app.sectionStyles[section.id] = section.section_style;
     }
@@ -833,38 +886,25 @@ function normalizeConfigSectionsAndLayers(data) {
       return;
     }
 
+    // Keep both configurations independent. Only the fields required by the
+    // legacy menu API are projected from the section; every other property
+    // continues to belong to the layer/service definition.
+    const sectionName = section.nombre || section.title || sectionId;
     const item = {
-      ...section,
       ...layer,
       seccion: sectionId,
-      nombre: layer.nombre || layer.titulo || section.nombre || sectionId,
+      sectionName,
+      nombre: sectionName,
+      tab: section.tab ?? "",
+      short_abstract:
+        section.short_abstract ?? section.description ?? "",
+      peso: section.peso ?? section.weight ?? null,
+      class: section.class ?? "",
+      section_style: section.section_style ?? null,
     };
 
-    delete item.id;
     delete item.section;
     delete item.sectionId;
-
-    if (item.tab == null && section.tab != null) {
-      item.tab = section.tab;
-    }
-    if (item.short_abstract == null && section.short_abstract != null) {
-      item.short_abstract = section.short_abstract;
-    }
-    if (item.peso == null && section.peso != null) {
-      item.peso = section.peso;
-    }
-    if (item.class == null && section.class != null) {
-      item.class = section.class;
-    }
-    if (item.icons == null && section.icons != null) {
-      item.icons = section.icons;
-    }
-    if (item.customize_layers == null && section.customize_layers != null) {
-      item.customize_layers = section.customize_layers;
-    }
-    if (item.allowed_layers == null && section.allowed_layers != null) {
-      item.allowed_layers = section.allowed_layers;
-    }
 
     normalizedItems.push(item);
   });
@@ -951,8 +991,10 @@ async function getData(dataURL, load = false) {
  */
 async function getConfig(preferencesURL, dataURL) {
   try {
-    const preferences = await getPreferences(preferencesURL);
-    const data = await getData(dataURL);
+    const [preferences, data] = await Promise.all([
+      getPreferences(preferencesURL),
+      getData(dataURL),
+    ]);
     await loadTemplate({ ...data, ...preferences }, false);
     gestorMenu.setLegendImgPath("src/config/styles/images/legends/");
   } catch (error) {
@@ -962,8 +1004,26 @@ async function getConfig(preferencesURL, dataURL) {
 
 getConfig("./src/config/preferences.json", "./src/config/data.json");
 
+function whenMapIsReady() {
+  if (
+    typeof mapa !== "undefined" &&
+    mapa &&
+    mapa.hasOwnProperty("_leaflet_id")
+  ) {
+    return Promise.resolve(mapa);
+  }
+
+  return new Promise((resolve) => {
+    window.addEventListener(
+      ARGENMAP_EVENTS.MAP_READY,
+      (event) => resolve(event.detail.map),
+      { once: true },
+    );
+  });
+}
+
 async function loadTemplate(data, isDefaultTemplate) {
-  $(document).ready(async function () {
+  onDomReady(async function () {
     await app.init(data);
 
     //Template
@@ -972,7 +1032,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     let stylesui = new StylesUI();
     stylesui.createstyles();
     //Load template config
-    loadTemplateStyleConfig(template, isDefaultTemplate);
+    await loadTemplateStyleConfig(app.customStyles);
 
     delete app["template"]; // delete template item from data
 
@@ -995,116 +1055,104 @@ async function loadTemplate(data, isDefaultTemplate) {
     }
 
     //Add Analytics
-    if (app.analytics_ids && typeof addAnalytics === "function") {
+    if (app.analytics_ids?.length) {
       // Analytics loads asynchronously and must not block application startup.
-      void addAnalytics(app.analytics_ids);
+      void appDependencies
+        .load("analytics")
+        .then(() => addAnalytics(app.analytics_ids))
+        .catch((error) => console.warn(error));
     }
 
     app.addBasemaps();
     app.addLayers();
 
-    //if charts is active in menu.json
-    if (loadCharts && !app.dependencies.d3) {
-      $.getScript("https://d3js.org/d3.v5.min.js");
-      $.getScript("src/js/components/charts/charts.js");
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/charts/charts.css">',
-      );
-      app.dependencies.d3 = true;
-    }
-
     //if geocoder is active in menu.json
     if (loadGeocoder && !app.dependencies.geocoder) {
-      $.getScript("src/js/components/searchbar/searchbar.js").done(function () {
-        var searchBar_ui = new Searchbar_UI();
-        if (typeof searchBar_ui.create_sarchbar === "function") {
-          searchBar_ui.create_sarchbar();
-        } else if (typeof searchBar_ui.create_searchbar === "function") {
-          searchBar_ui.create_searchbar();
-        } else {
-          console.warn("No se encontró método de creación para Searchbar_UI");
-        }
-      });
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/searchbar/searchbar.css">',
-      );
+      appDependencies
+        .loadScript("src/js/components/searchbar/searchbar.js")
+        .then(() => {
+          var searchBar_ui = new Searchbar_UI();
+          if (typeof searchBar_ui.create_sarchbar === "function") {
+            searchBar_ui.create_sarchbar();
+          } else if (typeof searchBar_ui.create_searchbar === "function") {
+            searchBar_ui.create_searchbar();
+          } else {
+            console.warn("No se encontró método de creación para Searchbar_UI");
+          }
+        })
+        .catch((error) => console.error(error));
+      appDependencies
+        .loadStyle("src/js/components/searchbar/searchbar.css")
+        .catch((error) => console.error(error));
       app.dependencies.geocoder = true;
     }
 
     //Load dynamic mapa.js
     app.template_id = template;
+    const mapReadyPromise = whenMapIsReady();
     if (!app.dependencies.map) {
-      $.getScript(`src/js/map/map.js`, (res) => {});
-      app.dependencies.map = true;
+      try {
+        await appDependencies.loadScript("src/js/map/map.js");
+        app.dependencies.map = true;
+      } catch (error) {
+        console.error(error);
+        return;
+      }
     }
 
     template = "templates/" + template + "/main.html";
 
-    //Wait until global 'mapa' object is available.
-    const intervalID = setInterval(() => {
-      if (mapa && mapa.hasOwnProperty("_leaflet_id")) {
-        window.clearInterval(intervalID);
+    await mapReadyPromise;
 
-        if (urlInteraction.areParamsInUrl) {
-          mapa.setView(
-            L.latLng(
-              urlInteraction.center.latitude,
-              urlInteraction.center.longitude,
-            ),
-            urlInteraction.zoom,
-          );
-        }
+    if (urlInteraction.areParamsInUrl) {
+      mapa.setView(
+        L.latLng(
+          urlInteraction.center.latitude,
+          urlInteraction.center.longitude,
+        ),
+        urlInteraction.zoom,
+      );
+    }
 
-        //const zoomLevel = new ZoomLevel(mapa.getZoom());
-
+    urlInteraction.zoom = mapa.getZoom();
+    mapa.on("zoom", () => {
+      if (Number.isInteger(mapa.getZoom())) {
         urlInteraction.zoom = mapa.getZoom();
-        mapa.on("zoom", () => {
-          if (Number.isInteger(mapa.getZoom())) {
-            urlInteraction.zoom = mapa.getZoom();
-            //zoomLevel.zoom = mapa.getZoom();
-            if (geoProcessingManager) {
-              geoProcessingManager.svgZoomStyle(mapa.getZoom());
-            }
-          }
-        });
-
-        urlInteraction.center = mapa.getCenter();
-        mapa.on("moveend", () => {
-          urlInteraction.center = mapa.getCenter();
-        });
-
-        if (urlInteraction.markers.length > 0) {
-          urlInteraction.markers.forEach((marker) => {
-            L.marker([marker.latitude, marker.longitude]).addTo(mapa);
-          });
+        if (geoProcessingManager) {
+          geoProcessingManager.svgZoomStyle(mapa.getZoom());
         }
-        gestorMenu.loadInitialLayers(urlInteraction);
+      }
+    });
 
-        // Default values for showToolbar and showLayerMenu
-        let showToolbar = true;
-        let showLayerMenu = true;
+    urlInteraction.center = mapa.getCenter();
+    mapa.on("moveend", () => {
+      urlInteraction.center = mapa.getCenter();
+    });
 
-        // Check if app.onInit exists and assign values accordingly
-        if (app?.onInit) {
-          showToolbar = app.onInit.showToolbar ?? true;
-          showLayerMenu = app.onInit.showLayerMenu ?? true;
-        }
+    if (urlInteraction.markers.length > 0) {
+      urlInteraction.markers.forEach((marker) => {
+        L.marker([marker.latitude, marker.longitude]).addTo(mapa);
+      });
+    }
+    void gestorMenu
+      .loadInitialLayers(urlInteraction)
+      .catch((error) => console.error(error));
 
+    let showToolbar = true;
+    let showLayerMenu = true;
+
+    if (app?.onInit) {
+      showToolbar = app.onInit.showToolbar ?? true;
+      showLayerMenu = app.onInit.showLayerMenu ?? true;
+    }
+
+    appDependencies
+      .load("mapControls")
+      .then(() => {
         if (!app.dependencies.toolbarToggler) {
-          // Initialize toolbar visibility toggler and create components
           const toolbarVisibilityToggler = new ToolbarVisibilityToggler();
           toolbarVisibilityToggler.createComponent(showToolbar);
           app.dependencies.toolbarToggler = true;
-        }
-
-        //consultar si el navegador es mobile
-        const isMobile = window.matchMedia(
-          "only screen and (max-width: 760px)",
-        ).matches;
-
-        // Show layer menu if showLayerMenu is true
-        if (showLayerMenu && !isMobile) {
-          document.getElementById("sidebar").style.display = "block";
         }
 
         if (!app.dependencies.editableLabel) {
@@ -1112,68 +1160,69 @@ async function loadTemplate(data, isDefaultTemplate) {
           editableLabel.addTo(mapa);
           app.dependencies.editableLabel = true;
         }
-      }
-    }, 100);
+
+        normalizeLeafletControlOrder();
+      })
+      .catch((error) => console.error(error));
+
+    const isMobile = window.matchMedia(
+      "only screen and (max-width: 760px)",
+    ).matches;
+
+    if (showLayerMenu && !isMobile) {
+      document.getElementById("sidebar").style.display = "block";
+    }
   });
 
-  setTimeout(function () {
+  setTimeout(async function () {
     //load loginatic
     if (loadLogin) {
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/login/loginatic.css">',
-      );
-      $.getScript("src/js/components/cookies/cookies.js").done(() => {
-        $.getScript("src/js/components/login/loginatic.js").done(function () {
+      appDependencies
+        .loadStyle("src/js/components/login/loginatic.css")
+        .catch((error) => console.error(error));
+      appDependencies
+        .loadScript("src/js/components/cookies/cookies.js")
+        .then(() =>
+          appDependencies.loadScript("src/js/components/login/loginatic.js"),
+        )
+        .then(() => {
           loginatic = new loginatic();
           loginatic._addLoginWrapper();
           loginatic.init();
           loginatic.check();
-        });
-      });
+        })
+        .catch((error) => console.error(error));
     }
 
     if (mainPopup) {
-      $("head").append(
-        '<link rel="stylesheet" type="text/css" href="src/js/components/main-popup/mainPopup.css">',
+      const mainPopupOpensHelpTour = app.mainPopup?.text?.includes(
+        "nav-help-btn",
       );
-      $.getScript("src/js/components/main-popup/mainPopup.js").done(
-        function () {
+      if (
+        mainPopupOpensHelpTour &&
+        typeof window.ensureHelpTourFeature === "function"
+      ) {
+        try {
+          await window.ensureHelpTourFeature();
+        } catch (error) {
+          console.error("Unable to prepare the help tour:", error);
+        }
+      }
+      appDependencies
+        .loadStyle("src/js/components/main-popup/mainPopup.css")
+        .catch((error) => console.error(error));
+      appDependencies
+        .loadScript("src/js/components/main-popup/mainPopup.js")
+        .then(() => {
           mainPopup = new mainPopup();
           mainPopup.check();
           mainPopup._addPopupWrapper();
-        },
-      );
+        })
+        .catch((error) => console.error(error));
     }
 
-    //load elevationProfile
-    if (loadElevationProfile && !app.dependencies.highcharts) {
-      $.getScript("https://code.highcharts.com/highcharts.js").done(() => {
-        $.getScript("https://code.highcharts.com/highcharts-more.js");
-        $.getScript("https://code.highcharts.com/modules/windbarb.js");
-        $.getScript("https://code.highcharts.com/modules/funnel.js");
-        $.getScript("https://code.highcharts.com/modules/exporting.js");
-        $.getScript("https://code.highcharts.com/modules/timeline.js");
-        $.getScript("src/js/plugins/highcharts.theme.js");
-      });
-      app.dependencies.highcharts = true;
-
-      // TODO: replace script loads by ES modules architecture
-      $.getScript("src/js/components/elevation-profile/elevation-profile.js");
-    }
   }, 1500);
 }
-
-let conaeCheck = setInterval(() => {
-  // patch to force conae layers into menu
-  let conaeLayers = gestorMenu.items.conae;
-  if (conaeLayers) {
-    if (Object.entries(gestorMenu.items.conae.itemsComposite).length === 12) {
-      gestorMenu.printMenu();
-      //document.getElementById("temp-menu").remove();
-      clearInterval(conaeCheck);
-    }
-  }
-}, 1000);
 
 document.addEventListener("contextmenu", (e) => {
   let allowedInputs = ["text", "search", "number"];

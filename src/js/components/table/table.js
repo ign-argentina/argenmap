@@ -28,17 +28,18 @@ function createTabulator(tableD, layername) {
       ui.addTabs(layername);
 
       if (!ISCelular) {
-        $("#ContainerTable").draggable({
-          containment: "body",
-          scroll: false,
-        });
-
-        $("#ContainerTable").resizable({
-          containment: "body",
-          minHeight: 65,
-          maxHeight: 475,
-          minWidth: 450,
-          scroll: true,
+        enableNativeInteractions("#ContainerTable", {
+          draggable: {
+            containment: "body",
+            scroll: false,
+          },
+          resizable: {
+            containment: "body",
+            minHeight: 65,
+            maxHeight: 475,
+            minWidth: 450,
+            scroll: true,
+          },
         });
       }
     }

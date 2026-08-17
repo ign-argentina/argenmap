@@ -16,8 +16,8 @@ class IElevationProfile {
     const drawPolyline = new L.Draw.Polyline(mapa, {
       shapeOptions: { color: polylineColor, opacity: 0.8 },
     });
-    $("#drawBtn").addClass("ag-btn-disabled");
-    $("#msgRectangle").addClass("hidden");
+    document.getElementById("drawBtn")?.classList.add("ag-btn-disabled");
+    document.getElementById("msgRectangle")?.classList.add("hidden");
     drawPolyline.enable();
   }
 
@@ -41,7 +41,16 @@ class IElevationProfile {
     return inputs;
   }
 
-  executeElevationProfile() {
+  async executeElevationProfile() {
+    try {
+      await Promise.all([
+        appDependencies.load("turf"),
+        appDependencies.load("highcharts"),
+      ]);
+    } catch (error) {
+      return new UserMessage(error.message, true, "error");
+    }
+
     let layerSelected;
     mapa.editableLayers.polyline.forEach((polyline) => {
       let selctedLayerName = document.getElementById("select-capa").value;
@@ -253,7 +262,7 @@ class IElevationProfile {
 
       document.body.appendChild(wrapper);
 
-      $("#pt-wrapper").append(`
+      document.getElementById("pt-wrapper").insertAdjacentHTML("beforeend", `
                 <div class="pt" id="elevationProfile" style="overflow-y: auto; height: 250px; padding: 5px 7px;">
                 </div>
             `);
@@ -294,8 +303,11 @@ class IElevationProfile {
       document.getElementById("elevationProfile").append(mainIcons);
 
       document.getElementById("pt-wrapper").style.display = "flex";
-      $("#pt-wrapper").draggable({ containment: "body", scroll: false });
-      $("#pt-wrapper").css("top", $("body").height() - 320);
+      enableNativeInteractions("#pt-wrapper", {
+        draggable: { containment: "body", scroll: false },
+      });
+      document.getElementById("pt-wrapper").style.top =
+        `${document.body.getBoundingClientRect().height - 320}px`;
     }
   }
 
@@ -518,7 +530,7 @@ class IElevationProfile {
     input_name.style = "height:22px!important;";
     input_name.onblur = function (e) {
       if (!addedLayers[index].laodingname) {
-        $("#i-" + id).remove();
+        document.getElementById("i-" + id)?.remove();
         let a_new = document.createElement("div");
         a_new.className = "file-layername";
         a_new.innerHTML = `<a>${name}</a>`;
@@ -529,7 +541,7 @@ class IElevationProfile {
     input_name.onkeyup = function (e) {
       if (e.key === "Enter" || e.keyCode === 13) {
         addedLayers[index].laodingname = true;
-        $("#i-" + id).remove();
+        document.getElementById("i-" + id)?.remove();
         let a_new = document.createElement("div");
         a_new.className = "file-layername";
         a_new.title = this.value;
@@ -544,7 +556,7 @@ class IElevationProfile {
     };
 
     container.insertBefore(input_name, nodo_hijo);
-    $(`#i-${id}`).focus();
+    document.getElementById(`i-${id}`)?.focus();
   }
 
   /**

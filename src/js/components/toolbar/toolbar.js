@@ -91,11 +91,11 @@ class ToolbarVisibilityToggler {
       "map-toolbar-icon-right",
       "hideBtnRight",
       "Esconder herramientas de dibujo",
-      "bx bxs-pencil",
+      "fa-solid fa-pencil",
     );
 
     // Use an arrow function to ensure the 'this' context is preserved
-    window.onload = () => {
+    const applyInitialVisibility = () => {
       // Set the initial visibility of the toolbars based on the showToolbar parameter
       const rightToolbar = document.querySelector(".leaflet-top.leaflet-right");
       const leftToolbar = document.querySelector(".leaflet-top.leaflet-left");
@@ -103,5 +103,11 @@ class ToolbarVisibilityToggler {
       this.hideToolbar(rightToolbar, showToolbar);
       this.hideToolbar(leftToolbar, showToolbar);
     };
+
+    if (document.readyState === "complete") {
+      applyInitialVisibility();
+    } else {
+      window.addEventListener("load", applyInitialVisibility, { once: true });
+    }
   }
 }

@@ -81,10 +81,6 @@ class PdfPrinter {
    * Crea y agrega el componente al mapa.
    */
   createComponent() {
-    // Solo mostrar si la pantalla es mayor a 1150px
-    if (window.innerWidth <= 1150) {
-      return;
-    }
     try {
       // Verificar si ya existe el componente
       if (this.elem) {
@@ -166,6 +162,8 @@ class PdfPrinter {
 
     try {
       this.state = "loading";
+
+      await appDependencies.load("pdfExport");
 
       // Verificar dependencias críticas
       const PDFClass = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;

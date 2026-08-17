@@ -7,7 +7,6 @@ const login = {
    * @param {function} callback - Callback function to handle the response.
    */
   _ajax: function (data, callback) {
-    // In case there isn't jQuery, fetch may be an option
     let xhr = new XMLHttpRequest();
 
     // Define the callback for handling the  response
@@ -51,21 +50,22 @@ const login = {
    * @param {string} name - User name.
    * @param {string} pwd - User password.
    */
-  _geoserver: function (name, pwd) {
+  _geoserver: async function (name, pwd) {
     // GeoServer servlet URL
     let url = `${window.location.origin}/geoserver/j_spring_security_check`;
     // Parameters for login
-    let contentType = "application/x-www-form-urlencoded";
-    //Initialize the Ajax request
-    let ajax = $.ajax({
-      type: "POST",
-      data: {
-        username: name,
-        password: pwd,
-      },
-      contentType: contentType,
-      url: url,
-      success: function (data, request) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          username: name,
+          password: pwd,
+        }),
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.text();
         // Check if a specific location is mentioned in the response body, if not the login process failed
         let isLogged = data.includes("../j_spring_security_logout");
         if (isLogged) {
@@ -73,7 +73,7 @@ const login = {
           app.changeProfile("logged");
 
           // Hide the login modal
-          $("#loginModal").modal("hide");
+          hideBootstrapModal(document.getElementById("loginModal"));
 
           // Update button visibility
           let loginBtn = document.getElementById("loginBtn");
@@ -90,11 +90,9 @@ const login = {
             "error",
           );
         }
-      },
-      error: function (error) {
-        new UserMessage("Error: " + error, true, "error");
-      },
-    });
+    } catch (error) {
+      new UserMessage("Error: " + error.message, true, "error");
+    }
   },
 
   /**
@@ -161,15 +159,18 @@ const login = {
    * Load login components asynchronously and initialize event listeners.
    */
   load: async function () {
-    // Load navigation button component asynchronously and append it to the specified element
-    await login._append(
-      "src/js/components/login/navbtn.html",
-      "html",
-      "#geoserver-login-btn",
-    );
-
-    // Load login form component asynchronously and append it to the body
-    await login._append("src/js/components/login/form.html", "html", "body");
+    const styleRequest = appDependencies
+      .loadStyle("src/js/components/login/login.css")
+      .catch((error) => console.error(error));
+    await Promise.all([
+      styleRequest,
+      login._append(
+        "src/js/components/login/navbtn.html",
+        "html",
+        "#geoserver-login-btn",
+      ),
+      login._append("src/js/components/login/form.html", "html", "body"),
+    ]);
 
     // Initialize event listeners for user interactions
     login._listeners();
@@ -283,7 +284,7 @@ const login = {
       // Log server response and status
       console.info(`Server response: ${res.response}, Status: ${res.status}`);
       // Hide the login modal
-      $("#loginModal").modal("hide");
+      hideBootstrapModal(document.getElementById("loginModal"));
     });
   },
   /**

@@ -22,33 +22,52 @@ mainPopup = function () {
     if (!isChecked) {
       const mainPopup = document.createElement("div");
       mainPopup.id = "main-popup";
-      mainPopup.classList = "justify-content-center";
+      setConfiguredBackground(
+        mainPopup,
+        "--main-popup-overlay-background",
+        app.mainPopup.overlayBackground,
+      );
       document.body.append(mainPopup);
 
       const mainWrapper = document.createElement("div");
       mainWrapper.id = "mainWrapper";
-      mainWrapper.style = "display: flex;align-items: center;";
-      mainWrapper.classList =
-        "container-fluid col-12 col-xs-12 col-sm-8 col-md-6 col-lg-5 mt-5 text-center";
-      $("#main-popup").append(mainWrapper);
+      mainWrapper.classList = "main-popup-wrapper";
+      mainPopup.appendChild(mainWrapper);
 
       const contentWrapper = document.createElement("div");
       contentWrapper.id = "contentWrapper";
       contentWrapper.classList = "mainPopup";
       contentWrapper.style = "font-size: 18px";
-      //let welcomeSign = "¡Bienvenidos a Argenmap!";
-      if (app.mainPopup.welcomeSign) {
-        welcomeSign = app.mainPopup.welcomeSign;
-        contentWrapper.innerHTML = `${welcomeSign}<hr>`;
-      }
+      setConfiguredBackground(
+        contentWrapper,
+        "--main-popup-background",
+        app.mainPopup.background,
+      );
       mainWrapper.appendChild(contentWrapper);
+
+      const welcomeSign = createWelcomeSign(
+        app.mainPopup.welcomeSign,
+        app.mainPopup.welcomeSignStyle,
+      );
+      const welcomeSignBelowImage = isWelcomeSignBelowImage(
+        app.mainPopup.welcomeSignStyle,
+      );
+      if (welcomeSign && !welcomeSignBelowImage) {
+        contentWrapper.appendChild(welcomeSign);
+      }
+
       //Image
       if (app.mainPopup.image) {
         const contentImg = document.createElement("div");
         contentImg.id = "contentWrapperImg";
-        let image = app.mainPopup.image;
-        contentImg.innerHTML = `<h4></h4><img src='${image}' width="100%">`;
+        const image = document.createElement("img");
+        image.src = app.mainPopup.image;
+        image.alt = app.mainPopup.welcomeSign || "";
+        contentImg.appendChild(image);
         contentWrapper.appendChild(contentImg);
+      }
+      if (welcomeSign && welcomeSignBelowImage) {
+        contentWrapper.appendChild(welcomeSign);
       }
       //Text
       if (app.mainPopup.text) {
@@ -68,10 +87,10 @@ mainPopup = function () {
         mainWrapper.remove();
         document.getElementById("main-popup").remove();
       };
-      contentWrapper.insertBefore(popupExitBtn, contentWrapper.firstChild);
+      mainWrapper.appendChild(popupExitBtn);
       //Checkbox
       let checkbox = document.createElement("div");
-      checkbox.id = "contentWrapper";
+      checkbox.id = "contentWrapperCheckbox";
       checkbox.classList = "not-again-check";
       checkbox.innerHTML =
         '<label><input type="checkbox" id="popupCheckbox" name="popupCheckbox">No volver a mostrar</label>';
@@ -88,4 +107,68 @@ mainPopup = function () {
       });
     }
   };
+
+  function setConfiguredBackground(element, property, background) {
+    if (
+      typeof background === "string" &&
+      background.trim() !== "" &&
+      (typeof CSS === "undefined" || CSS.supports("background", background))
+    ) {
+      element.style.setProperty(property, background);
+    }
+  }
+
+  function createWelcomeSign(content, configuredStyle = {}) {
+    if (!content) {
+      return null;
+    }
+
+    const style =
+      configuredStyle && typeof configuredStyle === "object"
+        ? configuredStyle
+        : {};
+    const welcomeSign = document.createElement("div");
+    welcomeSign.classList.add("main-popup-welcome-sign");
+    welcomeSign.innerHTML = content;
+
+    setConfiguredCssValue(
+      welcomeSign,
+      "font-size",
+      normalizeCssSize(style.fontSize),
+    );
+    setConfiguredCssValue(welcomeSign, "color", style.color);
+    setConfiguredCssValue(
+      welcomeSign,
+      "text-align",
+      style.textAlign,
+    );
+
+    const direction = String(style.direction || "").toLowerCase();
+    if (direction === "auto") {
+      welcomeSign.dir = "auto";
+    } else {
+      setConfiguredCssValue(welcomeSign, "direction", direction);
+    }
+
+    return welcomeSign;
+  }
+
+  function isWelcomeSignBelowImage(configuredStyle = {}) {
+    const position = String(configuredStyle?.position || "above").toLowerCase();
+    return position === "below" || position === "bottom";
+  }
+
+  function normalizeCssSize(value) {
+    return typeof value === "number" ? `${value}px` : value;
+  }
+
+  function setConfiguredCssValue(element, property, value) {
+    if (
+      typeof value === "string" &&
+      value.trim() !== "" &&
+      (typeof CSS === "undefined" || CSS.supports(property, value))
+    ) {
+      element.style.setProperty(property, value);
+    }
+  }
 };

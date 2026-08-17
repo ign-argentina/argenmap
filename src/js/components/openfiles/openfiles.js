@@ -1,41 +1,7 @@
 let upload_files = null;
 let currentLayers = [];
-let addedLayers = [];
-let fileLayerGroup = [];
-let configuredFileLayerRegistry = [];
 let open = false;
 let control_btn_add_layer = false;
-
-function registerConfiguredFileLayerEntry(entry) {
-  if (
-    !entry ||
-    !entry.id ||
-    (!entry.sectionName && !(entry.sectionId && entry.sectionLabel))
-  ) {
-    return;
-  }
-  // Accept either legacy sectionName or new sectionId + sectionLabel
-  const sectionId = entry.sectionId || entry.sectionName || clearSpecialChars(entry.sectionLabel || entry.sectionName || entry.id);
-  const sectionLabel = entry.sectionLabel || entry.sectionName || entry.sectionId || entry.id;
-
-  const exists = configuredFileLayerRegistry.some(
-    (item) => item.id === entry.id && item.sectionId === sectionId,
-  );
-
-  if (!exists) {
-    configuredFileLayerRegistry.push({
-      ...entry,
-      sectionId,
-      sectionLabel,
-      fromConfig: entry.fromConfig === true,
-      allowedOptions: Array.isArray(entry.allowedOptions)
-        ? entry.allowedOptions.map((opt) => opt.toLowerCase())
-        : entry.fromConfig
-        ? ["zoom", "query", "data", "download"]
-        : ["zoom", "query", "data", "download", "rename", "delete"],
-    });
-  }
-}
 
 class IconModalGeojson {
   // constructor() {
@@ -127,7 +93,7 @@ class UImf {
     main_inputfile.type = "file";
     main_inputfile.className = "file-input";
     main_inputfile.style = "opacity: 0.0;top: 0; left: 0; bottom: 0;right: 0;";
-    main_inputfile.addEventListener("change", function (e) {
+    main_inputfile.addEventListener("change", async function (e) {
       // Fix Chrome bug: change event fires on cancel when previous file was uploaded
       if (!e.target.files[0]) return;
 
@@ -135,6 +101,14 @@ class UImf {
 
       //FileReader.onload --->ui_upload.logoAnimation()
       ui_upload.logoAnimation();
+
+      try {
+        await appDependencies.load("fileLayer");
+      } catch (error) {
+        ui_upload.reload_logo();
+        new UserMessage(error.message, true, "error");
+        return;
+      }
 
       // Initialize File Layer
       let fileLayer = new FileLayer();
@@ -247,8 +221,6 @@ class UImf {
 
     return mainContainerFile;
     // document.body.appendChild(divContainer);
-    // $( "#modalOpenFile" ).draggable({
-    //   containment: "#mapa"})
   }
 
   // addForm() {
@@ -415,7 +387,7 @@ class UImf {
     icon_file.innerHTML =
       '<i style="width: 10%;" title="eliminar archivo" class="fa fa-times-circle"></i>';
     icon_file.onclick = function () {
-      $("#" + id_item).remove();
+      document.getElementById(id_item)?.remove();
       currentLayers.splice(del_index, 1);
     };
 
@@ -442,25 +414,25 @@ class UImf {
   }
 
   enabledbtnCapa() {
-    control_btn_add_layer = true;
-    let btn = document.getElementById("btn-upload-agregar-capa");
-    btn.className = "ag-btn ag-btn-primary";
+    const uploadedArea = document.getElementById("uploaded-area");
+    const updateUploadButton = () => {
+      const button = document.getElementById("btn-upload-agregar-capa");
+      if (!button) return;
+      const layerCount = uploadedArea.childElementCount;
+      control_btn_add_layer = layerCount > 0;
+      button.innerHTML = layerCount > 1 ? "Agregar Capas" : "Agregar Capa";
+      button.className = control_btn_add_layer
+        ? "ag-btn ag-btn-primary"
+        : "ag-btn ag-btn-disabled";
+    };
 
-    $("#uploaded-area").bind("DOMSubtreeModified", function () {
-      let cont = document.getElementById("uploaded-area");
-      let txt = document.getElementById("btn-upload-agregar-capa");
-      if (cont.children.length > 1) {
-        txt.innerHTML = "Agregar Capas";
-      } else {
-        txt.innerHTML = "Agregar Capa";
-      }
-
-      if ($("#uploaded-area")[0].childElementCount == 0) {
-        control_btn_add_layer = false;
-        let btn = document.getElementById("btn-upload-agregar-capa");
-        btn.className = "ag-btn ag-btn-primary";
-      }
-    });
+    if (!uploadedArea.dataset.uploadButtonObserver) {
+      uploadedArea.dataset.uploadButtonObserver = "true";
+      new MutationObserver(updateUploadButton).observe(uploadedArea, {
+        childList: true,
+      });
+    }
+    updateUploadButton();
   }
 }
 
@@ -525,7 +497,7 @@ function addProcessfromFiles(e, sectionName, typeName, counter) {
 
   menu_ui.addFileLayer(sectionName, typeName, nameId, nameId, nameId, true);
   updateNumberofLayers(sectionName);
-  $("#item_uf_" + nameId).remove();
+  document.getElementById("item_uf_" + nameId)?.remove();
 }
 
 function addLayersfromFiles() {
@@ -563,42 +535,11 @@ function addLayersfromFiles() {
       });
       menu_ui.rebuildConfiguredFileLayers();
       updateNumberofLayers(sectionName);
-      $("#item_uf_" + e.id).remove();
+      document.getElementById("item_uf_" + e.id)?.remove();
     }
   });
   currentLayers = [];
   showTotalNumberofLayers();
-}
-
-/**
- * Removes an item from the `addedLayers` array based on its ID.
- *
- * @param {string} id - The ID of the item to be removed.
- */
-function delFileItembyID(id) {
-  // Find the index of the item to be removed in the `addedLayers` array
-  const indexToDelete = addedLayers.findIndex((e) => e.id === id);
-
-  // If the item is found, remove it from the array
-  if (indexToDelete !== -1) {
-    addedLayers.splice(indexToDelete, 1); // Remove the item from the array using splice
-  }
-}
-
-function editDomNameofFileLayerbyID(id, name) {
-  let edit_index = null;
-  addedLayers.forEach((e, i) => {
-    if (e.id === id) edit_index = i;
-  });
-  addedLayers[edit_index].name = name;
-}
-
-function getIndexFileLayerbyID(id) {
-  let edit_index = null;
-  addedLayers.forEach((e, i) => {
-    if (e.id === id) edit_index = i;
-  });
-  return edit_index;
 }
 
 function getIndexCurrentFileLayerbyID(id) {

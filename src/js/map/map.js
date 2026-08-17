@@ -9,10 +9,37 @@ var mapa = "";
 let currentBaseMap = null;
 
 let countour_styles = false;
+const firstUsePluginNames = new Set([
+  "leafletAjax",
+  "betterScale",
+  "AwesomeMarkers",
+  "BingLayer",
+  "betterWMS",
+  "graticula",
+  "WMTS",
+  "screenShoter",
+  "pdfPrinter",
+  "FullScreen",
+  "consultData",
+  "elevation",
+  "textpath",
+  "turf",
+  "helpTour",
+  "accessibility",
+  "loadLayer",
+]);
 
 gestorMenu.addPlugin("leaflet", PLUGINS.leaflet, function () {
   for (const plugin in PLUGINS) {
-      gestorMenu.addPlugin(plugin, PLUGINS[plugin]);
+    if (firstUsePluginNames.has(plugin) || !shouldLoadPluginAtStartup(plugin)) {
+      continue;
+    }
+    gestorMenu.addPlugin(
+      plugin,
+      PLUGINS[plugin],
+      null,
+      PLUGIN_STYLES[plugin] || [],
+    );
   }
 });
 
@@ -40,280 +67,966 @@ const changeMarkerStyles = (layer, borderWidth, borderColor, fillColor) => {
   layer.options.fillColor = fillColor;
 };
 
+function getVectorLabelColorInputValue(value, fallback) {
+  const color = String(value || "").trim();
+  if (/^#[0-9a-f]{6}$/i.test(color)) return color;
+  if (/^#[0-9a-f]{3}$/i.test(color)) {
+    return `#${color
+      .slice(1)
+      .split("")
+      .map((character) => character.repeat(2))
+      .join("")}`;
+  }
+  return fallback;
+}
+
+function createVectorLabelControl(labelText, input, options = {}) {
+  const wrapper = document.createElement("div");
+  wrapper.className = `section-item${options.wide ? " section-item-wide" : ""}${
+    options.tall ? " section-item-tall" : ""
+  }`;
+  const label = document.createElement("label");
+  label.setAttribute("for", input.id);
+  label.textContent = labelText;
+  input.classList.add("section-item-input");
+  wrapper.append(label, input);
+  return wrapper;
+}
+
+function getVectorLabelPositionChoices(kind) {
+  if (kind === "line") {
+    return [
+      ["above", "Paralela, arriba"],
+      ["on-line", "Sobre la línea"],
+      ["below", "Paralela, abajo"],
+    ];
+  }
+  if (kind === "polygon") {
+    return [
+      ["center", "En el centro"],
+      ["border", "Sobre los bordes"],
+      ["parallel", "Paralela a los bordes"],
+    ];
+  }
+  return [
+    ["top", "Arriba"],
+    ["bottom", "Abajo"],
+    ["right", "A la derecha"],
+    ["left", "A la izquierda"],
+  ];
+}
+
+function createVectorLabelStyleSection(layer) {
+  const kind = getVectorLabelGeometryKind(layer);
+  if (!kind) return null;
+
+  const properties = getVectorLabelProperties(layer);
+  const configuredStyle =
+    layer.options.label || properties?.styles?.label || null;
+  const currentStyle = normalizeVectorLabelStyle(configuredStyle, kind);
+  const propertyNames = [
+    ...new Set([
+      ...getVectorLabelPropertyNames(layer),
+      ...currentStyle.fields,
+    ]),
+  ];
+  const section = document.createElement("div");
+  section.className = "section-popup vector-label-style-section";
+
+  const title = document.createElement("p");
+  title.className = "section-title non-selectable-text";
+  title.textContent = "Etiqueta de geometría";
+  section.appendChild(title);
+
+  const enabledInput = document.createElement("input");
+  enabledInput.id = "vector-label-enabled";
+  enabledInput.type = "checkbox";
+  enabledInput.checked = currentStyle.enabled;
+  section.appendChild(
+    createVectorLabelControl("Mostrar etiqueta", enabledInput),
+  );
+
+  const configurationContainer = document.createElement("div");
+  configurationContainer.className = "vector-label-configuration";
+  section.appendChild(configurationContainer);
+
+  let labelParts = currentStyle.parts.map((part) => ({ ...part }));
+  if (!configuredStyle && labelParts.length === 0 && propertyNames.length > 0) {
+    labelParts = [{ type: "field", value: propertyNames[0] }];
+  }
+
+  const compositionControl = document.createElement("div");
+  compositionControl.className = "section-item section-item-wide section-item-tall";
+  const compositionLabel = document.createElement("span");
+  compositionLabel.className = "vector-label-composition-label";
+  compositionLabel.textContent = "Composición y orden";
+  const partsList = document.createElement("div");
+  partsList.id = "vector-label-parts";
+  partsList.className = "vector-label-parts";
+  compositionControl.append(compositionLabel, partsList);
+  configurationContainer.appendChild(compositionControl);
+
+  const fieldPicker = document.createElement("select");
+  fieldPicker.id = "vector-label-field-picker";
+  propertyNames.forEach((propertyName) => {
+    const option = document.createElement("option");
+    option.value = propertyName;
+    option.textContent = propertyName.replace(/_+/g, " ");
+    fieldPicker.appendChild(option);
+  });
+  if (propertyNames.length === 0) {
+    const option = document.createElement("option");
+    option.textContent = "Sin atributos disponibles";
+    option.disabled = true;
+    fieldPicker.appendChild(option);
+  }
+  configurationContainer.appendChild(
+    createVectorLabelControl("Atributo", fieldPicker),
+  );
+
+  const addFieldButton = document.createElement("button");
+  addFieldButton.id = "vector-label-add-field";
+  addFieldButton.type = "button";
+  addFieldButton.className = "vector-label-add-part";
+  addFieldButton.textContent = "Agregar atributo";
+  addFieldButton.disabled = propertyNames.length === 0;
+  configurationContainer.appendChild(
+    createVectorLabelControl("", addFieldButton),
+  );
+
+  const literalInput = document.createElement("input");
+  literalInput.id = "vector-label-literal";
+  literalInput.type = "text";
+  literalInput.placeholder = "Ej.:  m";
+  literalInput.maxLength = 100;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Texto fijo", literalInput),
+  );
+
+  const addLiteralButton = document.createElement("button");
+  addLiteralButton.id = "vector-label-add-literal";
+  addLiteralButton.type = "button";
+  addLiteralButton.className = "vector-label-add-part";
+  addLiteralButton.textContent = "Agregar texto";
+  configurationContainer.appendChild(
+    createVectorLabelControl("", addLiteralButton),
+  );
+
+  const positionInput = document.createElement("select");
+  positionInput.id = "vector-label-position";
+  getVectorLabelPositionChoices(kind).forEach(([value, text]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = text;
+    option.selected = currentStyle.position === value;
+    positionInput.appendChild(option);
+  });
+  configurationContainer.appendChild(
+    createVectorLabelControl("Ubicación", positionInput),
+  );
+
+  const colorInput = document.createElement("input");
+  colorInput.id = "vector-label-color";
+  colorInput.type = "color";
+  colorInput.value = getVectorLabelColorInputValue(
+    currentStyle.color,
+    "#202020",
+  );
+  configurationContainer.appendChild(
+    createVectorLabelControl("Color", colorInput),
+  );
+
+  const fontFamilyInput = document.createElement("input");
+  fontFamilyInput.id = "vector-label-font-family";
+  fontFamilyInput.type = "text";
+  fontFamilyInput.value = currentStyle.fontFamily;
+  fontFamilyInput.setAttribute("list", "vector-label-font-families");
+  const fontFamilyList = document.createElement("datalist");
+  fontFamilyList.id = "vector-label-font-families";
+  [
+    "sans-serif",
+    "serif",
+    "monospace",
+    "Arial",
+    "Verdana",
+    "Georgia",
+    "Times New Roman",
+    "Noto Sans",
+    "Encode Sans",
+  ].forEach((fontFamily) => {
+    const option = document.createElement("option");
+    option.value = fontFamily;
+    fontFamilyList.appendChild(option);
+  });
+  configurationContainer.appendChild(
+    createVectorLabelControl("Tipografía", fontFamilyInput),
+  );
+  configurationContainer.appendChild(fontFamilyList);
+
+  const fontSizeInput = document.createElement("input");
+  fontSizeInput.id = "vector-label-font-size";
+  fontSizeInput.type = "number";
+  fontSizeInput.min = 8;
+  fontSizeInput.max = 72;
+  fontSizeInput.step = 1;
+  fontSizeInput.value = currentStyle.fontSize;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Tamaño (px)", fontSizeInput),
+  );
+
+  const italicInput = document.createElement("input");
+  italicInput.id = "vector-label-italic";
+  italicInput.type = "checkbox";
+  italicInput.checked = currentStyle.fontStyle === "italic";
+  configurationContainer.appendChild(
+    createVectorLabelControl("Itálica/cursiva", italicInput),
+  );
+
+  const underlineInput = document.createElement("input");
+  underlineInput.id = "vector-label-underline";
+  underlineInput.type = "checkbox";
+  underlineInput.checked = currentStyle.underline;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Subrayada", underlineInput),
+  );
+
+  const uppercaseInput = document.createElement("input");
+  uppercaseInput.id = "vector-label-uppercase";
+  uppercaseInput.type = "checkbox";
+  uppercaseInput.checked = currentStyle.uppercase;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Mayúsculas", uppercaseInput),
+  );
+
+  const haloInput = document.createElement("input");
+  haloInput.id = "vector-label-halo";
+  haloInput.type = "checkbox";
+  haloInput.checked = currentStyle.halo;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Halo", haloInput),
+  );
+
+  const haloColorInput = document.createElement("input");
+  haloColorInput.id = "vector-label-halo-color";
+  haloColorInput.type = "color";
+  haloColorInput.value = getVectorLabelColorInputValue(
+    currentStyle.haloColor,
+    "#ffffff",
+  );
+  configurationContainer.appendChild(
+    createVectorLabelControl("Color del halo", haloColorInput),
+  );
+
+  const haloWidthInput = document.createElement("input");
+  haloWidthInput.id = "vector-label-halo-width";
+  haloWidthInput.type = "number";
+  haloWidthInput.min = 1;
+  haloWidthInput.max = 8;
+  haloWidthInput.step = 1;
+  haloWidthInput.value = currentStyle.haloWidth;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Ancho del halo", haloWidthInput),
+  );
+
+  const autoHideInput = document.createElement("input");
+  autoHideInput.id = "vector-label-auto-hide";
+  autoHideInput.type = "checkbox";
+  autoHideInput.checked = currentStyle.autoHide;
+  configurationContainer.appendChild(
+    createVectorLabelControl("Ocultar si no entra bien", autoHideInput),
+  );
+
+  const minZoomInput = document.createElement("input");
+  minZoomInput.id = "vector-label-min-zoom";
+  minZoomInput.type = "number";
+  minZoomInput.min = 0;
+  minZoomInput.max = 30;
+  minZoomInput.step = 1;
+  minZoomInput.placeholder = "Sin límite";
+  minZoomInput.value = currentStyle.minZoom ?? "";
+  configurationContainer.appendChild(
+    createVectorLabelControl("Zoom mínimo", minZoomInput),
+  );
+
+  const maxZoomInput = document.createElement("input");
+  maxZoomInput.id = "vector-label-max-zoom";
+  maxZoomInput.type = "number";
+  maxZoomInput.min = 0;
+  maxZoomInput.max = 30;
+  maxZoomInput.step = 1;
+  maxZoomInput.placeholder = "Sin límite";
+  maxZoomInput.value = currentStyle.maxZoom ?? "";
+  configurationContainer.appendChild(
+    createVectorLabelControl("Zoom máximo", maxZoomInput),
+  );
+
+  let updateLabel = () => {};
+  const renderLabelParts = () => {
+    partsList.replaceChildren();
+    if (labelParts.length === 0) {
+      const emptyMessage = document.createElement("span");
+      emptyMessage.className = "vector-label-parts-empty";
+      emptyMessage.textContent = "Agregá un atributo o texto fijo.";
+      partsList.appendChild(emptyMessage);
+      return;
+    }
+
+    labelParts.forEach((part, index) => {
+      const row = document.createElement("div");
+      row.className = "vector-label-part-row";
+      row.dataset.partType = part.type;
+
+      const typeLabel = document.createElement("span");
+      typeLabel.className = "vector-label-part-type";
+      typeLabel.textContent = part.type === "field" ? "Atributo" : "Texto";
+
+      let valueInput;
+      if (part.type === "field") {
+        valueInput = document.createElement("select");
+        const availableFields = propertyNames.includes(part.value)
+          ? propertyNames
+          : [...propertyNames, part.value];
+        availableFields.forEach((propertyName) => {
+          const option = document.createElement("option");
+          option.value = propertyName;
+          option.textContent = propertyName.replace(/_+/g, " ");
+          option.selected = propertyName === part.value;
+          valueInput.appendChild(option);
+        });
+      } else {
+        valueInput = document.createElement("input");
+        valueInput.type = "text";
+        valueInput.value = part.value;
+        valueInput.maxLength = 100;
+      }
+      valueInput.className = "vector-label-part-value";
+      valueInput.setAttribute("aria-label", `${typeLabel.textContent} ${index + 1}`);
+      valueInput.addEventListener(
+        part.type === "field" ? "change" : "input",
+        () => {
+          labelParts[index].value = valueInput.value;
+          updateLabel();
+        },
+      );
+
+      const actions = document.createElement("div");
+      actions.className = "vector-label-part-actions";
+      [
+        ["up", "↑", "Subir", index === 0],
+        ["down", "↓", "Bajar", index === labelParts.length - 1],
+        ["remove", "×", "Eliminar", false],
+      ].forEach(([action, text, label, disabled]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.action = action;
+        button.textContent = text;
+        button.title = label;
+        button.setAttribute("aria-label", `${label} parte ${index + 1}`);
+        button.disabled = disabled;
+        button.addEventListener("click", () => {
+          if (action === "remove") {
+            labelParts.splice(index, 1);
+          } else {
+            const targetIndex = action === "up" ? index - 1 : index + 1;
+            [labelParts[index], labelParts[targetIndex]] = [
+              labelParts[targetIndex],
+              labelParts[index],
+            ];
+          }
+          renderLabelParts();
+          updateLabel();
+        });
+        actions.appendChild(button);
+      });
+      row.append(typeLabel, valueInput, actions);
+      partsList.appendChild(row);
+    });
+  };
+
+  addFieldButton.addEventListener("click", () => {
+    if (!fieldPicker.value) return;
+    labelParts.push({ type: "field", value: fieldPicker.value });
+    renderLabelParts();
+    updateLabel();
+  });
+  const addLiteral = () => {
+    if (literalInput.value === "") return;
+    labelParts.push({ type: "text", value: literalInput.value });
+    literalInput.value = "";
+    renderLabelParts();
+    updateLabel();
+  };
+  addLiteralButton.addEventListener("click", addLiteral);
+  literalInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addLiteral();
+    }
+  });
+
+  const labelInputs = [
+    fieldPicker,
+    addFieldButton,
+    literalInput,
+    addLiteralButton,
+    positionInput,
+    colorInput,
+    fontFamilyInput,
+    fontSizeInput,
+    italicInput,
+    underlineInput,
+    uppercaseInput,
+    haloInput,
+    haloColorInput,
+    haloWidthInput,
+    autoHideInput,
+    minZoomInput,
+    maxZoomInput,
+  ];
+  const updateVisibility = () => {
+    configurationContainer.hidden = !enabledInput.checked;
+    labelInputs.forEach((input) => {
+      input.disabled = !enabledInput.checked;
+    });
+    fieldPicker.disabled = !enabledInput.checked || propertyNames.length === 0;
+    addFieldButton.disabled =
+      !enabledInput.checked || propertyNames.length === 0;
+    haloColorInput.disabled = !enabledInput.checked || !haloInput.checked;
+    haloWidthInput.disabled = !enabledInput.checked || !haloInput.checked;
+  };
+  updateLabel = () => {
+    const nextStyle = {
+      enabled: enabledInput.checked,
+      parts: labelParts.map((part) => ({ ...part })),
+      position: positionInput.value,
+      color: colorInput.value,
+      fontFamily: fontFamilyInput.value.trim() || "sans-serif",
+      fontSize: Number(fontSizeInput.value),
+      fontStyle: italicInput.checked ? "italic" : "normal",
+      underline: underlineInput.checked,
+      uppercase: uppercaseInput.checked,
+      halo: haloInput.checked,
+      haloColor: haloColorInput.value,
+      haloWidth: Number(haloWidthInput.value),
+      autoHide: autoHideInput.checked,
+      minZoom: minZoomInput.value === "" ? null : Number(minZoomInput.value),
+      maxZoom: maxZoomInput.value === "" ? null : Number(maxZoomInput.value),
+    };
+    void applyVectorLabelStyle(layer, properties, nextStyle).catch((error) =>
+      console.error("Unable to update vector label:", error),
+    );
+  };
+
+  enabledInput.addEventListener("change", () => {
+    if (
+      enabledInput.checked &&
+      labelParts.length === 0 &&
+      propertyNames.length > 0
+    ) {
+      labelParts.push({ type: "field", value: propertyNames[0] });
+      renderLabelParts();
+    }
+    updateVisibility();
+    updateLabel();
+  });
+  haloInput.addEventListener("change", () => {
+    updateVisibility();
+    updateLabel();
+  });
+  labelInputs
+    .filter(
+      (input) =>
+        ![
+          haloInput,
+          fieldPicker,
+          addFieldButton,
+          literalInput,
+          addLiteralButton,
+        ].includes(input),
+    )
+    .forEach((input) => {
+      const changeOnly =
+        input.tagName === "SELECT" ||
+        ["checkbox", "color"].includes(input.type);
+      input.addEventListener(changeOnly ? "change" : "input", updateLabel);
+    });
+  renderLabelParts();
+  updateVisibility();
+  return section;
+}
+
 const isMobile = window.matchMedia(
   "only screen and (max-width: 760px)",
 ).matches;
 
+function isPluginExcluded(pluginName) {
+  return (app.excluded_plugins || []).some(
+    (excludedPlugin) =>
+      String(excludedPlugin).toLowerCase() === pluginName.toLowerCase(),
+  );
+}
+
+function shouldLoadPluginAtStartup(pluginName) {
+  if (isPluginExcluded(pluginName)) {
+    return false;
+  }
+
+  switch (pluginName) {
+    case "screenShoter":
+      return L.Browser.webkit && !window.location.origin.includes("idecom");
+    case "pdfPrinter":
+      return !L.Browser.safari;
+    case "geoprocessing":
+      return loadGeoprocessing;
+    case "consultData":
+      return loadQueryLayer;
+    case "configTool":
+      return loadConfigTool;
+    default:
+      return true;
+  }
+}
+
+function adaptMeasureToggleForTouch(measureControl) {
+  const toggle = measureControl?.$toggle;
+  if (!L.Browser.touch || !toggle || toggle.dataset.touchMeasureReady) {
+    return;
+  }
+
+  let lastTouchActivation = Number.NEGATIVE_INFINITY;
+  let lastTouchPosition = null;
+  const syntheticClickWindow = 700;
+
+  const expandFromTouch = (event) => {
+    if (event.type === "pointerup" && event.pointerType === "mouse") {
+      return;
+    }
+
+    const now = performance.now();
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (now - lastTouchActivation < 50) {
+      return;
+    }
+
+    lastTouchActivation = now;
+    const touchPoint = event.changedTouches?.[0] || event;
+    lastTouchPosition = {
+      x: touchPoint.clientX,
+      y: touchPoint.clientY,
+    };
+    measureControl._expand();
+  };
+
+  const suppressSyntheticClick = (event) => {
+    const isRecent =
+      performance.now() - lastTouchActivation < syntheticClickWindow;
+    const isSamePosition =
+      lastTouchPosition &&
+      Math.abs(event.clientX - lastTouchPosition.x) < 10 &&
+      Math.abs(event.clientY - lastTouchPosition.y) < 10;
+    const isAnotherMeasureAction =
+      measureControl._container.contains(event.target) &&
+      event.target !== toggle;
+
+    if (!isRecent || !isSamePosition || isAnotherMeasureAction) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+
+  toggle.addEventListener("pointerup", expandFromTouch, { passive: false });
+  toggle.addEventListener("touchend", expandFromTouch, { passive: false });
+  measureControl._map
+    .getContainer()
+    .addEventListener("click", suppressSyntheticClick, true);
+  toggle.dataset.touchMeasureReady = "true";
+}
+
+function createFeatureLoader(groupName, initialize) {
+  let featurePromise = null;
+
+  return function loadFeature() {
+    if (!featurePromise) {
+      featurePromise = appDependencies
+        .load(groupName)
+        .then(initialize)
+        .catch((error) => {
+          featurePromise = null;
+          throw error;
+        });
+    }
+    return featurePromise;
+  };
+}
+
+const firstUseMapPluginPromises = new Map();
+
+function loadFirstUseMapPluginResources(pluginName) {
+  if (firstUseMapPluginPromises.has(pluginName)) {
+    return firstUseMapPluginPromises.get(pluginName);
+  }
+
+  const promise = Promise.all([
+    appDependencies.loadScript(PLUGINS[pluginName]),
+    ...(PLUGIN_STYLES[pluginName] || []).map((style) =>
+      typeof style === "string"
+        ? appDependencies.loadStyle(style)
+        : appDependencies.loadStyle(style.url, style),
+    ),
+  ]).catch((error) => {
+    firstUseMapPluginPromises.delete(pluginName);
+    throw error;
+  });
+  firstUseMapPluginPromises.set(pluginName, promise);
+  return promise;
+}
+
+function bindFirstUseMapPluginControl(
+  element,
+  pluginName,
+  getActivatedElement,
+) {
+  let isLoading = false;
+
+  const activate = async (event) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (isLoading) {
+      return;
+    }
+
+    isLoading = true;
+    element.classList.add("leaflet-disabled");
+    element.setAttribute("aria-busy", "true");
+    const parent = element.parentElement;
+    const nextSibling = element.nextSibling;
+
+    try {
+      await loadFirstUseMapPluginResources(pluginName);
+      element.remove();
+      await initializeOrderedPlugin(pluginName);
+      const activatedElement = getActivatedElement();
+      if (!activatedElement) {
+        throw new Error(`Unable to initialize plugin "${pluginName}".`);
+      }
+
+      const control = activatedElement.closest(".leaflet-control") || activatedElement;
+      if (parent && control.parentElement === parent) {
+        parent.insertBefore(
+          control,
+          nextSibling?.parentElement === parent ? nextSibling : null,
+        );
+      }
+      normalizeLeafletControlOrder();
+      activatedElement.click();
+    } catch (error) {
+      if (!element.isConnected && parent) {
+        parent.insertBefore(
+          element,
+          nextSibling?.parentElement === parent ? nextSibling : null,
+        );
+      }
+      element.classList.remove("leaflet-disabled");
+      element.removeAttribute("aria-busy");
+      isLoading = false;
+      new UserMessage(error.message, true, "error");
+    }
+  };
+
+  element.addEventListener("click", activate);
+  element.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      activate(event);
+    }
+  });
+}
+
+function createFirstUseLeafletControl({
+  id,
+  pluginName,
+  title,
+  content,
+  getActivatedElement,
+}) {
+  const element = document.createElement("div");
+  element.className = "leaflet-bar leaflet-control";
+  element.id = id;
+  element.title = title;
+  element.tabIndex = 0;
+  element.setAttribute("role", "button");
+  element.innerHTML = content;
+  document.querySelector(".leaflet-top.leaflet-left").appendChild(element);
+  bindFirstUseMapPluginControl(element, pluginName, getActivatedElement);
+}
+
+function createFirstUseMapPluginControls() {
+  const fullscreenSupported = Boolean(
+    document.fullscreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.mozFullScreenEnabled ||
+      document.msFullscreenEnabled
+  );
+  if (fullscreenSupported) {
+    createFirstUseLeafletControl({
+      id: "fullscreen",
+      pluginName: "FullScreen",
+      title: "Pantalla Completa",
+      content:
+        '<a id="iconFS-container" aria-label="Pantalla completa"><i id="iconFS" class="fas fa-expand" aria-hidden="true"></i></a>',
+      getActivatedElement: () => document.getElementById("fullscreen"),
+    });
+  }
+
+  if (L.Browser.webkit && !window.location.origin.includes("idecom")) {
+    createFirstUseLeafletControl({
+      id: "screenShoter",
+      pluginName: "screenShoter",
+      title: "Captura de pantalla",
+      content:
+        '<a id="screenShoter-btn" aria-label="Captura de pantalla"><i class="fas fa-camera" aria-hidden="true"></i></a>',
+      getActivatedElement: () => document.getElementById("screenShoter-btn"),
+    });
+  }
+
+  if (!L.Browser.safari && window.innerWidth > 1150) {
+    createFirstUseLeafletControl({
+      id: "pdfPrinter",
+      pluginName: "pdfPrinter",
+      title: "Imprimir/ Guardar en PDF",
+      content:
+        '<a class="iconPDF-container" aria-label="Imprimir o guardar en PDF"><i id="iconPDF" class="fas fa-print" aria-hidden="true"></i></a>',
+      getActivatedElement: () =>
+        document.querySelector("#pdfPrinter .iconPDF-container"),
+    });
+  }
+
+  if (loadQueryLayer) {
+    createFirstUseLeafletControl({
+      id: "consultData",
+      pluginName: "consultData",
+      title: "Consultar Datos",
+      content:
+        '<div id="iconCD-container" class="leaflet-disabled"><a id="iconCD" aria-hidden="true"><img src="src/styles/images/cursorQuery.png" width="60%"></a></div>',
+      getActivatedElement: () => document.getElementById("consultData"),
+    });
+  }
+
+}
+
+const ensureHelpTourFeature = createFeatureLoader(
+  "helpTourFeature",
+  async () => {
+    const help = new HelpTour();
+    const helpData = await help.fetchHelpTourData();
+    help.createComponent(helpData);
+  },
+);
+const ensureAccessibilityFeature = createFeatureLoader(
+  "accessibilityFeature",
+  () => {
+    const accessibility = new Accessibility();
+    accessibility.createComponent();
+  },
+);
+const ensureLoadLayerFeature = createFeatureLoader(
+  "loadLayerFeature",
+  () => {},
+);
+
+if (!isPluginExcluded("helpTour")) {
+  window.ensureHelpTourFeature = ensureHelpTourFeature;
+}
+
+function bindFeatureToFirstUse(triggerId, pluginName, loadFeature) {
+  const trigger = document.getElementById(triggerId);
+  if (!trigger) {
+    return;
+  }
+
+  if (isPluginExcluded(pluginName)) {
+    trigger.style.display = "none";
+    return;
+  }
+
+  const startFeatureLoad = () => {
+    trigger.setAttribute("aria-busy", "true");
+    return loadFeature()
+      .catch((error) => new UserMessage(error.message, true, "error"))
+      .finally(() => trigger.removeAttribute("aria-busy"));
+  };
+
+  trigger.addEventListener(
+    "click",
+    startFeatureLoad,
+    true,
+  );
+
+  const targetId = trigger.getAttribute("data-target");
+  const target = targetId ? document.getElementById(targetId) : null;
+  queueMicrotask(() => {
+    if (target && getComputedStyle(target).display !== "none") {
+      void startFeatureLoad();
+    }
+  });
+}
+
+if (isMobile) {
+  document.getElementById("nav-help-btn").style.display = "none";
+} else {
+  bindFeatureToFirstUse(
+    "nav-help-btn",
+    "helpTour",
+    ensureHelpTourFeature,
+  );
+}
+bindFeatureToFirstUse(
+  "accessibility-btn",
+  "accessibility",
+  ensureAccessibilityFeature,
+);
+bindFeatureToFirstUse(
+  "load-layer-btn",
+  "loadLayer",
+  ensureLoadLayerFeature,
+);
+
 // Add plugins to map when (and if) avaiable
 // Mapa base actual de ArgenMap (Geoserver)
-var unordered = "";
-var ordered = [
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
+const orderedPluginNames = [
+  "MousePosition",
+  "ZoomHome",
+  "Measure",
+  "locate",
+  "FullScreen",
+  "Draw",
+  "minimap",
+  "screenShoter",
+  "pdfPrinter",
+  "geoprocessing",
+  "consultData",
+  "configTool",
 ];
-var ordenZoomHome = 1;
-var ordenFullScreen = 5;
-var ordenMeasure = 2;
-var ordenGraticula = 4;
-var ordenLocate = 3;
-var ordenDraw = 6;
-var ordenBetterScale = 7;
-var ordenMinimap = 8;
-var ordenScreenShoter = 9;
-var ordenPrint = 10;
-var ordenPdfPriner = 11;
-var ordenLoadLayer = 12;
-var ordenGeoprocessing = 13;
-var ordenConsultData = 14;
-var ordenHelp = 15;
-var ordenConfig = 16;
-var ordenAccessibility = 17;
-var visiblesActivar = true;
-var visiblesActivar = true;
-$("body").on("pluginLoad", function (event, plugin) {
-  unordered = "";
-  visiblesActivar = true;
+let nextOrderedPluginIndex = 0;
+let initializeOrderedPlugin = null;
+let orderedInitializationTask = Promise.resolve();
+let firstUseMapControlsPromise = null;
+
+function initializeFirstUseMapControls() {
+  if (!firstUseMapControlsPromise) {
+    firstUseMapControlsPromise = Promise.resolve()
+      .then(() => initializeOrderedPlugin("betterScale"))
+      .then(() => appDependencies.loadStyle(PLUGIN_STYLES.graticula[0]))
+      .then(() => initializeOrderedPlugin("graticula"))
+      .then(() => createFirstUseMapPluginControls())
+      .catch((error) => {
+        firstUseMapControlsPromise = null;
+        console.error("Unable to initialize first-use map controls:", error);
+      });
+  }
+  return firstUseMapControlsPromise;
+}
+
+function scheduleOrderedPluginInitialization() {
+  orderedInitializationTask = orderedInitializationTask
+    .then(async () => {
+      if (
+        typeof initializeOrderedPlugin !== "function" ||
+        !gestorMenu.pluginExists("leaflet") ||
+        gestorMenu.plugins.leaflet.getStatus() !== "visible"
+      ) {
+        return;
+      }
+
+      while (nextOrderedPluginIndex < orderedPluginNames.length) {
+        const pluginName = orderedPluginNames[nextOrderedPluginIndex];
+        const managedPlugin = gestorMenu.plugins[pluginName];
+
+        if (!managedPlugin) {
+          nextOrderedPluginIndex++;
+          continue;
+        }
+
+        if (managedPlugin.getStatus() === "loading") {
+          return;
+        }
+
+        if (
+          managedPlugin.getStatus() === "fail" ||
+          managedPlugin.getStatus() === "visible"
+        ) {
+          nextOrderedPluginIndex++;
+          continue;
+        }
+
+        if (managedPlugin.getStatus() !== "ready") {
+          return;
+        }
+
+        nextOrderedPluginIndex++;
+        try {
+          await initializeOrderedPlugin(pluginName);
+        } catch (error) {
+          managedPlugin.setStatus("fail");
+          console.error(`Unable to initialize plugin "${pluginName}":`, error);
+        }
+      }
+
+      if (nextOrderedPluginIndex === orderedPluginNames.length) {
+        await initializeFirstUseMapControls();
+      }
+    })
+    .catch((error) => {
+      console.error(
+        "Unable to continue ordered plugin initialization:",
+        error,
+      );
+    });
+}
+
+document.body.addEventListener("pluginLoad", async function (event) {
+  const plugin = event.detail;
+  let unorderedPlugin = "";
   switch (plugin.pluginName) {
-    // Add ordered plugins in order
     case "leaflet":
-      unordered = plugin.pluginName;
+      unorderedPlugin = plugin.pluginName;
       break;
     case "menuPrinter":
       showMainMenu();
       break;
-    case "ZoomHome":
-      ordered.splice(ordenZoomHome, 1, plugin.pluginName);
-      break;
-    case "locate":
-      ordered.splice(ordenLocate, 1, plugin.pluginName);
-      break;
-    case "Measure":
-      ordered.splice(ordenMeasure, 1, plugin.pluginName);
-      break;
-    case "graticula":
-      ordered.splice(ordenGraticula, 1, plugin.pluginName);
-      break;
-    case "FullScreen":
-      ordered.splice(ordenFullScreen, 1, plugin.pluginName);
-      break;
-    case "Draw":
-      ordered.splice(ordenDraw, 1, plugin.pluginName);
-      break;
-    case "betterScale":
-      ordered.splice(ordenBetterScale, 1, plugin.pluginName);
-      break;
-    case "minimap":
-      ordered.splice(ordenMinimap, 1, plugin.pluginName);
-      break;
-    case "screenShoter":
-      ordered.splice(ordenScreenShoter, 1, plugin.pluginName);
-      break;
-    case "geoprocessing":
-      ordered.splice(ordenGeoprocessing, 1, plugin.pluginName);
-      break;
-    case "loadLayer":
-      ordered.splice(ordenLoadLayer, 1, plugin.pluginName);
-      break;
-    case "pdfPrinter":
-      ordered.splice(ordenPdfPriner, 1, plugin.pluginName);
-      break;
-    case "consultData":
-      ordered.splice(ordenConsultData, 1, plugin.pluginName);
-      break;
-    case "groupLayerSelector":
-      ordered.splice(ordenGroupLayerSelector, 1, plugin.pluginName);
-      break;
-    case "helpTour":
-      ordered.splice(ordenHelp, 1, plugin.pluginName);
-      break;
-    case "accessibility":
-      ordered.splice(ordenAccessibility, 1, plugin.pluginName);
-      break;
-    case "configTool":
-      ordered.splice(ordenConfig, 1, plugin.pluginName);
-      break;
     default:
-      // Add unordered plugins
-      unordered = plugin.pluginName;
+      if (!orderedPluginNames.includes(plugin.pluginName)) {
+        unorderedPlugin = plugin.pluginName;
+      }
       break;
   }
-  // oredered plugins status chek
-  if (visiblesActivar && gestorMenu.pluginExists("leaflet")) {
-    if (gestorMenu.plugins["leaflet"].getStatus() != "visible") {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("ZoomHome")) {
-    if (
-      gestorMenu.plugins["ZoomHome"].getStatus() == "ready" ||
-      gestorMenu.plugins["ZoomHome"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("FullScreen")) {
-    if (
-      gestorMenu.plugins["FullScreen"].getStatus() == "ready" ||
-      gestorMenu.plugins["FullScreen"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("locate")) {
-    if (
-      gestorMenu.plugins["locate"].getStatus() == "ready" ||
-      gestorMenu.plugins["locate"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("graticula")) {
-    if (
-      gestorMenu.plugins["graticula"].getStatus() == "ready" ||
-      gestorMenu.plugins["graticula"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("Measure")) {
-    if (
-      gestorMenu.plugins["Measure"].getStatus() == "ready" ||
-      gestorMenu.plugins["Measure"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("pdfPrinter")) {
-    if (
-      gestorMenu.plugins["pdfPrinter"].getStatus() == "ready" ||
-      gestorMenu.plugins["pdfPrinter"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("consultData")) {
-    if (
-      gestorMenu.plugins["consultData"].getStatus() == "ready" ||
-      gestorMenu.plugins["consultData"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("groupLayerSelector")) {
-    if (
-      gestorMenu.plugins["groupLayerSelector"].getStatus() == "ready" ||
-      gestorMenu.plugins["groupLayerSelector"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("Draw")) {
-    if (
-      gestorMenu.plugins["Draw"].getStatus() == "ready" ||
-      gestorMenu.plugins["Draw"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("betterScale")) {
-    if (
-      gestorMenu.plugins["betterScale"].getStatus() == "ready" ||
-      gestorMenu.plugins["betterScale"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("minimap")) {
-    if (
-      gestorMenu.plugins["minimap"].getStatus() == "ready" ||
-      gestorMenu.plugins["minimap"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("screenShoter")) {
-    if (
-      gestorMenu.plugins["screenShoter"].getStatus() == "ready" ||
-      gestorMenu.plugins["screenShoter"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("geoprocessing")) {
-    if (
-      gestorMenu.plugins["geoprocessing"].getStatus() == "ready" ||
-      gestorMenu.plugins["geoprocessing"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("loadLayer")) {
-    if (
-      gestorMenu.plugins["loadLayer"].getStatus() == "ready" ||
-      gestorMenu.plugins["loadLayer"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("helpTour")) {
-    if (
-      gestorMenu.plugins["helpTour"].getStatus() == "ready" ||
-      gestorMenu.plugins["helpTour"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("accessibility")) {
-    if (
-      gestorMenu.plugins["accessibility"].getStatus() == "ready" ||
-      gestorMenu.plugins["accessibility"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar && gestorMenu.pluginExists("configTool")) {
-    if (
-      gestorMenu.plugins["configTool"].getStatus() == "ready" ||
-      gestorMenu.plugins["configTool"].getStatus() == "fail"
-    ) {
-    } else {
-      visiblesActivar = false;
-    }
-  }
-  if (visiblesActivar) {
-    ordered.forEach(async function (e) {
+  initializeOrderedPlugin =
+    initializeOrderedPlugin ||
+    (async function (e) {
       switch (e) {
+        case "MousePosition":
+          L.control
+            .mousePosition({
+              position: "bottomright",
+              separator: " , ",
+              emptyString: "&nbsp;",
+              numDigits: 10,
+              lngFormatter: function (num) {
+                const direction = num < 0 ? "O" : "E";
+                return deg_to_dms(Math.abs(num)) + direction;
+              },
+              latFormatter: function (num) {
+                const direction = num < 0 ? "S" : "N";
+                return deg_to_dms(Math.abs(num)) + direction;
+              },
+            })
+            .addTo(mapa);
+          gestorMenu.plugins["MousePosition"].setStatus("visible");
+          normalizeLeafletControlOrder();
+          break;
         case "screenShoter":
           let isIdecom = window.location.origin.includes("idecom");
           if (L.Browser.webkit && !isIdecom) {
@@ -350,8 +1063,34 @@ $("body").on("pluginLoad", function (event, plugin) {
             );
             screenShoterBtn.style.fontSize = "16px";
             screenShoterBtn.innerHTML = '<i class="fas fa-camera"></i>';
+            let loadingScreenshotDependencies = false;
+            screenShoterBtn.addEventListener(
+              "click",
+              async (event) => {
+                if (typeof window.html2canvas !== "undefined") {
+                  return;
+                }
 
-            gestorMenu.plugins["screenShoter"].setStatus("visible");
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                if (loadingScreenshotDependencies) {
+                  return;
+                }
+
+                loadingScreenshotDependencies = true;
+                try {
+                  await appDependencies.load("html2canvas");
+                  screenShoterBtn.click();
+                } catch (error) {
+                  new UserMessage(error.message, true, "error");
+                } finally {
+                  loadingScreenshotDependencies = false;
+                }
+              },
+              true,
+            );
+
+            gestorMenu.plugins["screenShoter"]?.setStatus("visible");
           }
           break;
         case "ZoomHome":
@@ -388,6 +1127,7 @@ $("body").on("pluginLoad", function (event, plugin) {
           });
 
           gestorMenu.plugins["ZoomHome"].setStatus("visible");
+          normalizeLeafletControlOrder();
           break;
         case "FullScreen":
           const fs = new Fullscreen();
@@ -424,7 +1164,7 @@ $("body").on("pluginLoad", function (event, plugin) {
               imperial: false,
             })
             .addTo(mapa);
-          gestorMenu.plugins["betterScale"].setStatus("visible");
+          gestorMenu.plugins["betterScale"]?.setStatus("visible");
           loadDeveloperLogo();
           break;
         case "minimap":
@@ -508,8 +1248,17 @@ $("body").on("pluginLoad", function (event, plugin) {
               );
               container.appendChild(icon);
 
-              container.onclick = function () {
+              container.onclick = async function () {
                 if (customGraticule == null) {
+                  container.classList.add("leaflet-disabled");
+                  try {
+                    await appDependencies.loadScript(PLUGINS.graticula);
+                  } catch (error) {
+                    new UserMessage(error.message, true, "error");
+                    return;
+                  } finally {
+                    container.classList.remove("leaflet-disabled");
+                  }
                   //drawGrid(mapa.getZoom());
                   var options = {
                     interval: 10,
@@ -544,65 +1293,35 @@ $("body").on("pluginLoad", function (event, plugin) {
             return new L.Control.CustomGraticule(opts);
           };
           L.control.customgraticule({ position: "topleft" }).addTo(mapa);
-          gestorMenu.plugins["graticula"].setStatus("visible");
+          gestorMenu.plugins["graticula"]?.setStatus("visible");
           break;
         case "Measure":
           // Leaflet-Measure plugin https://github.com/ljagis/leaflet-measure
           // set decimal and thousands dividers from local configuration
-          if (!isMobile) {
-            var measureControl = new L.Control.Measure({
-              position: "topleft",
-              primaryLengthUnit: "meters",
-              secondaryLengthUnit: "kilometers",
-              primaryAreaUnit: "sqmeters",
-              secondaryAreaUnit: "hectares",
-              collapsed: true,
-              decPoint: DECIMAL_SEPARATOR,
-              thousandsSep: THOUSANDS_SEPARATOR,
-              activeColor: "#157DB9",
-              completedColor: "#0db2e0",
-            });
-            measureControl.addTo(mapa);
-            gestorMenu.plugins["Measure"].setStatus("visible");
-          }
+          var measureControl = new L.Control.Measure({
+            position: "topleft",
+            primaryLengthUnit: "meters",
+            secondaryLengthUnit: "kilometers",
+            primaryAreaUnit: "sqmeters",
+            secondaryAreaUnit: "hectares",
+            collapsed: true,
+            decPoint: DECIMAL_SEPARATOR,
+            thousandsSep: THOUSANDS_SEPARATOR,
+            activeColor: "#157DB9",
+            completedColor: "#0db2e0",
+          });
+          measureControl.addTo(mapa);
+          adaptMeasureToggleForTouch(measureControl);
+          gestorMenu.plugins["Measure"].setStatus("visible");
           break;
         case "geoprocessing":
           if (loadGeoprocessing) {
-            let HTMLhead = document.querySelector("head");
-            HTMLhead.insertAdjacentHTML(
-              "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/geoprocessing/geoprocessing.css">',
+            geoProcessingManager = new Geoprocessing();
+            geoProcessingManager.createIcon();
+            geoProcessingManager.setAvailableGeoprocessingConfig(
+              app.geoprocessing,
             );
-            HTMLhead.insertAdjacentHTML(
-              "beforeend",
-              '<link rel="stylesheet" type="text/css" href="src/js/components/form-builder/form-builder.css">',
-            );
-            HTMLhead.insertAdjacentHTML(
-              "beforeend",
-              '<link rel="stylesheet" href="src/js/map/plugins/leaflet/leaflet-elevation/leaflet-elevation.css">',
-            );
-            $.getScript(
-              "src/js/plugins/geoprocess-executor/geoprocess-executor.js",
-            ).done(function () {
-              $.getScript(
-                "src/js/components/form-builder/form-builder.js",
-              ).done(function () {
-                geoProcessingManager = new Geoprocessing();
-                geoProcessingManager.createIcon();
-                geoProcessingManager.setAvailableGeoprocessingConfig(
-                  app.geoprocessing,
-                );
-                geoProcessingManager.getProcesses().forEach((process) => {
-                  if (process.geoprocess === "waterRise") {
-                    // script loading test without jQuery
-                    app._loadScript(
-                      "./src/js/components/geoprocessing/IHeight.js",
-                    );
-                  }
-                  geoProcessingManager.getNewProcessPrefix();
-                });
-              });
-            });
+            geoProcessingManager.getNewProcessPrefix();
           }
           break;
         case "pdfPrinter":
@@ -614,6 +1333,10 @@ $("body").on("pluginLoad", function (event, plugin) {
         case "consultData":
           const consultData = new ConsultData();
           consultData.createComponent();
+          break;
+        case "configTool":
+          const configTool = new ConfigTool();
+          configTool.createComponent();
           break;
         case "Draw":
           var orgReadbleDistance = L.GeometryUtil.readableArea;
@@ -932,6 +1655,7 @@ $("body").on("pluginLoad", function (event, plugin) {
 
           mapa.on("draw:edited", (e) => {
             var layers = e.layers;
+            layers.eachLayer(refreshVectorLabelStyle);
             //Each layer recently edited..
             /* layers.eachLayer(function (layer) {
               mapa.checkLayersInDrawedGeometry(layer, layer.type);
@@ -999,28 +1723,34 @@ $("body").on("pluginLoad", function (event, plugin) {
           mapa.on("zoomend", (e) => {
             let contextPopup = null;
             const contextMenu = new ContextMenu();
-            $(".context-quehay").slideUp();
+            document.querySelectorAll(".context-quehay").forEach((menu) => {
+              menu.style.display = "none";
+            });
           });
 
           mapa.on("dragend", (e) => {
             let contextPopup = null;
             const contextMenu = new ContextMenu();
-            $(".context-quehay").slideUp();
+            document.querySelectorAll(".context-quehay").forEach((menu) => {
+              menu.style.display = "none";
+            });
           });
 
           mapa.on("click", (e) => {
             let contextPopup = null;
             const contextMenu = new ContextMenu();
             mapa.closePopup(contextPopup);
-            $(".context-quehay").slideUp();
+            document.querySelectorAll(".context-quehay").forEach((menu) => {
+              menu.style.display = "none";
+            });
           });
 
           mapa.on("contextmenu", (e) => {
             var capa = "";
-            $.each(mapa._layers, function (ml) {
-              $.each(mapa._layers[ml], function (v) {
-                if (mapa._layers[ml]._url != undefined) {
-                  capa = mapa._layers[ml]._url;
+            Object.values(mapa._layers).forEach((mapLayer) => {
+              Object.values(mapLayer).forEach(() => {
+                if (mapLayer._url != undefined) {
+                  capa = mapLayer._url;
                 }
               });
             });
@@ -1029,8 +1759,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             var count = 0;
 
             var imagen = "";
-            $.each(e.target._zoomBoundLayers, function (clave, valor) {
-              $.each(valor._tiles, function (key, value) {
+            Object.values(e.target._zoomBoundLayers).forEach((valor) => {
+              Object.values(valor._tiles).forEach((value) => {
                 if (count == 0) {
                   imagen = value.el.currentSrc;
                 }
@@ -1058,9 +1788,9 @@ $("body").on("pluginLoad", function (event, plugin) {
               text: "Mas información",
               onclick: (option) => {
                 mapa.closePopup(contextPopup);
-                $("#search_bar")
-                  .val(lat + "," + lng)
-                  .focus();
+                const searchBar = document.getElementById("search_bar");
+                searchBar.value = lat + "," + lng;
+                searchBar.focus();
               },
             });
 
@@ -1228,10 +1958,12 @@ $("body").on("pluginLoad", function (event, plugin) {
             wrapper.appendChild(esriInfo);
 
             document.body.appendChild(wrapper);
-            $("#esriwrapper").draggable({
-              scroll: false,
-              cancel: "#esriInfo",
-              containment: "body",
+            enableNativeInteractions("#esriwrapper", {
+              draggable: {
+                scroll: false,
+                cancel: "#esriInfo",
+                containment: "body",
+              },
             });
           };
 
@@ -1244,7 +1976,7 @@ $("body").on("pluginLoad", function (event, plugin) {
            * @param {L.Layer|Object} layer - A Leaflet layer or GeoJSON object.
            * @returns {UserMessage|undefined} - Returns a UserMessage object with an error message if the layer is not available, otherwise returns undefined.
            */
-          mapa.centerLayer = (layer) => {
+          mapa.centerLayer = async (layer) => {
             if (!layer) {
               return new UserMessage(
                 "La capa ya no se encuentra disponible.",
@@ -1252,6 +1984,7 @@ $("body").on("pluginLoad", function (event, plugin) {
                 "error",
               );
             }
+            await appDependencies.load("turf");
             if (layer.hasOwnProperty("_leaflet_id")) {
               layer = layer.toGeoJSON();
             }
@@ -1302,9 +2035,11 @@ $("body").on("pluginLoad", function (event, plugin) {
                 wrapper.appendChild(btncloseWrapper);
                 wrapper.appendChild(mapa.createEditStylePopup(layer));
                 document.body.appendChild(wrapper);
-                $("#editContainer").draggable({
-                  scroll: false,
-                  containment: "#mapa",
+                enableNativeInteractions("#editContainer", {
+                  draggable: {
+                    scroll: false,
+                    containment: "#mapa",
+                  },
                 });
               },
             });
@@ -1418,7 +2153,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             }); */
           };
 
-          mapa.measurementsWrapper = (layer) => {
+          mapa.measurementsWrapper = async (layer) => {
+            await appDependencies.load("turf");
             if (document.getElementById("measurementWrapper")) {
               document.getElementById("measurementWrapper").remove();
             }
@@ -1448,10 +2184,12 @@ $("body").on("pluginLoad", function (event, plugin) {
             wrapper.appendChild(measurement);
 
             document.body.appendChild(wrapper);
-            $("#measurementWrapper").draggable({
-              scroll: false,
-              cancel: "#measurementInfo",
-              containment: "body",
+            enableNativeInteractions("#measurementWrapper", {
+              draggable: {
+                scroll: false,
+                cancel: "#measurementInfo",
+                containment: "body",
+              },
             });
 
             mapa.getMeasurementsInfo(layer);
@@ -2304,6 +3042,10 @@ $("body").on("pluginLoad", function (event, plugin) {
                 }
                 break;
             }
+            const vectorLabelSection = createVectorLabelStyleSection(layer);
+            if (vectorLabelSection) {
+              container.appendChild(vectorLabelSection);
+            }
             return container;
           };
 
@@ -2385,6 +3127,9 @@ $("body").on("pluginLoad", function (event, plugin) {
               showInfoBtn.classList.add("btn-disabled");
             }
           };
+          window.dispatchEvent(
+            new CustomEvent(ARGENMAP_EVENTS.ACTIVE_LAYER_HANDLER_READY),
+          );
 
           mapa.createPopUp = (layer) => {
             const popUpDiv = document.createElement("div");
@@ -2491,7 +3236,8 @@ $("body").on("pluginLoad", function (event, plugin) {
             return popUpDiv;
           };
 
-          mapa.showInfoLayer = (layerName, showLastSearch) => {
+          mapa.showInfoLayer = async (layerName, showLastSearch) => {
+            await ensureTableDependencies();
             const type = layerName.split("_")[0];
             const layer = mapa.editableLayers[type].find(
               (lyr) => lyr.name === layerName,
@@ -2535,7 +3281,11 @@ $("body").on("pluginLoad", function (event, plugin) {
               : null;
           };
 
-          mapa.checkLayersInDrawedGeometry = (layer, selectedLayers) => {
+          mapa.checkLayersInDrawedGeometry = async (layer, selectedLayers) => {
+            await Promise.all([
+              appDependencies.load("turf"),
+              ensureTableDependencies(),
+            ]);
             const filteredActiveLayers = getAllActiveLayers().filter(
               (activeLayer) => {
                 return selectedLayers.find(
@@ -2798,38 +3548,45 @@ $("body").on("pluginLoad", function (event, plugin) {
               // Add the layer options to the GeoJSON properties.
               const addedLayer = addedLayers.find((layer) => layer.id === id);
               if (addedLayer) {
-                geoJSON.properties.styles = { ...layer.options };
-                geoJSON.properties.type = layer.type;
-                if (layer.value) geoJSON.properties.value = layer.value;
+                const sourceFeature = Array.isArray(addedLayer.layer?.features)
+                  ? addedLayer.layer.features[cont]
+                  : addedLayer.layer;
                 geoJSON.properties = {
-                  ...geoJSON.properties,
-                  ...addedLayer.layer.features[cont].properties,
+                  ...(sourceFeature?.properties ||
+                    layer.data?.geoJSON?.properties ||
+                    {}),
+                  ...(geoJSON.properties || {}),
+                  // Export the current Leaflet options last. Context-menu
+                  // style edits update layer.options and must override the
+                  // styles originally loaded from the source file.
+                  styles: { ...layer.options },
+                  type: layer.type,
                 };
+                if (layer.value !== undefined) {
+                  geoJSON.properties.value = layer.value;
+                }
                 if (layer.type === "label") {
                   geoJSON.properties.styles.icon.options.html =
                     layer.options.icon.options.html.outerHTML;
                   geoJSON.properties.text = layer.data.properties.text;
                 }
-                cont++;
               }
+              cont++;
               jsonToDownload.features.push(geoJSON); // Add the GeoJSON data to the jsonToDownload object.
             }
             // An array of objects that define the geoprocessing types and their IDs.
-            const geoProcessingTypes = [
-              {
-                id: geoProcessingManager.GEOPROCESS.contour,
-                process: "contour",
-              },
-              {
-                id: geoProcessingManager.GEOPROCESS.waterRise,
-                process: "waterRise",
-              },
-              { id: geoProcessingManager.GEOPROCESS.buffer, process: "buffer" },
-              {
-                id: geoProcessingManager.GEOPROCESS.elevationProfile,
-                process: "elevationProfile",
-              },
-            ];
+            const geoprocessIds = geoProcessingManager?.GEOPROCESS;
+            const geoProcessingTypes = geoprocessIds
+              ? [
+                  { id: geoprocessIds.contour, process: "contour" },
+                  { id: geoprocessIds.waterRise, process: "waterRise" },
+                  { id: geoprocessIds.buffer, process: "buffer" },
+                  {
+                    id: geoprocessIds.elevationProfile,
+                    process: "elevationProfile",
+                  },
+                ]
+              : [];
 
             // Determine the geoprocessing type of the layer group, if it has one.
             const addedLayer = addedLayers.find((layer) => layer.id === id);
@@ -3071,39 +3828,44 @@ $("body").on("pluginLoad", function (event, plugin) {
           }
 
           gestorMenu.plugins["Draw"].setStatus("visible");
+          normalizeLeafletControlOrder();
           break;
         default:
           break;
       }
     });
+  scheduleOrderedPluginInitialization();
+
+  if (plugin.failed) {
+    return;
   }
-  switch (unordered) {
+
+  switch (unorderedPlugin) {
     case "leaflet":
       if (selectedBasemap.hasOwnProperty("key")) {
-        const interval = setInterval(() => {
-          if (L.tileLayer.bing) {
-            window.clearInterval(interval);
-            currentBaseMap = L.tileLayer
-              .bing({
-                bingMapsKey: selectedBasemap.key,
-                culture: "es_AR",
-                minZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.min
-                  : DEFAULT_MIN_ZOOM_LEVEL,
-                maxZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.max
-                  : DEFAULT_MAX_ZOOM_LEVEL,
-                minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.nativeMin
-                  : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
-                maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
-                  ? selectedBasemap.zoom.nativeMax
-                  : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
-                attribution: selectedBasemap.attribution,
-              })
-              .addTo(mapa);
-          }
-        }, 100);
+        try {
+          await appDependencies.load("bingMapLayer");
+        } catch (error) {
+          console.error("Unable to load the configured Bing basemap:", error);
+          return;
+        }
+        currentBaseMap = L.tileLayer.bing({
+          bingMapsKey: selectedBasemap.key,
+          culture: "es_AR",
+          minZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.min
+            : DEFAULT_MIN_ZOOM_LEVEL,
+          maxZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.max
+            : DEFAULT_MAX_ZOOM_LEVEL,
+          minNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.nativeMin
+            : DEFAULT_MIN_NATIVE_ZOOM_LEVEL,
+          maxNativeZoom: selectedBasemap.hasOwnProperty("zoom")
+            ? selectedBasemap.zoom.nativeMax
+            : DEFAULT_MAX_NATIVE_ZOOM_LEVEL,
+          attribution: selectedBasemap.attribution,
+        });
       } else {
         currentBaseMap = L.tileLayer(selectedBasemap.host, {
           minZoom: selectedBasemap.hasOwnProperty("zoom")
@@ -3171,28 +3933,12 @@ $("body").on("pluginLoad", function (event, plugin) {
       });
 
       showMainMenuTpl();
+      window.dispatchEvent(
+        new CustomEvent(ARGENMAP_EVENTS.MAP_READY, {
+          detail: { map: mapa },
+        }),
+      );
 
-      break;
-    case "MousePosition":
-      // Leaflet-MousePosition plugin https://github.com/ardhi/Leaflet.MousePosition
-      L.control
-        .mousePosition({
-          position: "bottomright",
-          separator: " , ",
-          emptyString: "&nbsp;",
-          numDigits: 10,
-          lngFormatter: function (num) {
-            var direction = num < 0 ? "O" : "E";
-            return deg_to_dms(Math.abs(num)) + direction;
-          },
-          latFormatter: function (num) {
-            var direction = num < 0 ? "S" : "N";
-            return deg_to_dms(Math.abs(num)) + direction;
-          },
-        })
-        .addTo(mapa);
-      gestorMenu.plugins["MousePosition"].setStatus("visible");
-      // loadDeveloperLogo(); // move to bottomleft before scale
       break;
     case "BingLayer":
       if (
@@ -3302,12 +4048,22 @@ function getGeometryCoords(layer) {
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     var datos = new Array();
-    $.each(feature.properties, function (index, value) {
+    Object.entries(feature.properties).forEach(function ([index, value]) {
       if (value) {
-        datos.push(index + ": " + value + "<br>");
+        const popupValue =
+          String(index).toLowerCase() === "html"
+            ? prepareFileLayerPopupHtml(value)
+            : value;
+        datos.push(index + ": " + popupValue + "<br>");
       }
     });
-    layer.bindPopup(datos.toString().replace(",", ""));
+    layer.bindPopup(
+      datos.toString().replace(",", ""),
+      getLayerQueryPopupOptions({}, mapa),
+    );
+    layer.on("popupopen", (event) => {
+      keepLayerQueryPopupInView(layer._map, event.popup);
+    });
   }
 }
 
@@ -3333,12 +4089,7 @@ function pointToLayer(feature, latlng) {
 }
 
 function printFinished() {
-  //Agregar tooltip resumen
-  $("[data-toggle2='tooltip']").tooltip({
-    placement: "right",
-    trigger: "hover",
-    container: ".menu-container",
-  });
+  // Native title attributes provide the summary tooltip without Bootstrap JS.
 }
 
 function showMainMenuTpl() {
@@ -3442,8 +4193,8 @@ function getFeatureInfoAsCSV(info) {
   var lineAux = [];
   lineAux[0] = [];
   lineAux[1] = [];
-  $("#" + info + " li").each(function (index) {
-    let sAux = $(this).text();
+  document.querySelectorAll(`#${CSS.escape(info)} li`).forEach(function (item) {
+    let sAux = item.textContent;
     if (sAux != "") {
       aAux = sAux.split(":");
       lineAux[0].push(aAux[0].trim());
@@ -3465,8 +4216,8 @@ function getFeatureInfoAsXLS(info) {
   lineAux[1] = [];
   lineAux[0].push("<tr>");
   lineAux[1].push("<tr>");
-  $("#" + info + " li").each(function (index) {
-    let sAux = $(this).text();
+  document.querySelectorAll(`#${CSS.escape(info)} li`).forEach(function (item) {
+    let sAux = item.textContent;
     if (sAux != "") {
       aAux = sAux.split(":");
       lineAux[0].push("<td><b>" + aAux[0].trim() + "</b></td>");
@@ -3484,7 +4235,7 @@ function getFeatureInfoAsXLS(info) {
 
 /****** Misc functions ******/
 //Capture map click to clear popinfo array before fill it
-$("#mapa").on("click", function () {
+document.getElementById("mapa").addEventListener("click", function () {
   popupInfo = [];
 });
 
@@ -3543,10 +4294,10 @@ function loadWmsTpl(objLayer) {
     infoAux = info.search("<ul>"); // search if info has a list
     if (infoAux > 0) {
       // check if info has any content, if so shows popup
-      $(info)
-        .find("li")
-        .each(function (index) {
-          var aux = $(this).text().split(":");
+      const parsedInfo = document.createElement("div");
+      parsedInfo.innerHTML = info;
+      parsedInfo.querySelectorAll("li").forEach(function (item) {
+          var aux = item.textContent.split(":");
           info = info.replace(
             "<b>" + aux[0] + "</b>:",
             "<b>" + ucwords(aux[0].replace(/_/g, " ")) + ":</b>",
@@ -3637,13 +4388,13 @@ function loadWmsTpl(objLayer) {
         }
         if (infoParsed != "") {
           // check if info has any content, if so shows popup
-          var popupContent = $(".leaflet-popup").html();
           popupInfo.push(infoParsed); //First info for popup
         }
         if (popupInfo.length > 0) {
           popupInfoToPaginate = popupInfo.slice();
           latlngTmp = latlng;
-          this._map.openPopup(
+          openLayerQueryPopup(
+            this._map,
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
           ); //Show all info
@@ -3653,6 +4404,7 @@ function loadWmsTpl(objLayer) {
       },
     });
     //var wmsSource = new L.WMS.source(wmsUrl + "/wms?", {
+    const queryOptions = getLayerQueryOptions(objLayer.capa);
     var wmsSource = new MySource(objLayer.capa.getHostWMS(), {
       transparent: true,
       tiled: true,
@@ -3660,19 +4412,27 @@ function loadWmsTpl(objLayer) {
       title: objLayer.titulo,
       format: "image/png",
       INFO_FORMAT: objLayer.capa.featureInfoFormat,
-      identify: getLayerQueryOptions(objLayer.capa).queryActive,
+      identify:
+        queryOptions.queryable &&
+        (isDataConsultActive() || queryOptions.queryActive),
     });
     overlayMaps[objLayer.nombre] = wmsSource.getLayer(objLayer.capa.nombre);
   }
 
   function createWmtsLayer(objLayer) {
-    // tilematrix, style and format should be set by a method
     let wmts_maxZoom = app.hasOwnProperty("service")
       ? app.service.wmts.maxZoom
       : DEFAULT_WMTS_MAX_ZOOM_LEVEL;
-    let _style = "",
-      _tilematrixSet = "EPSG:3857",
-      _format = "image/png";
+    const defaultStyle =
+      objLayer.capa.styles.find((style) => style.isDefault) ||
+      objLayer.capa.styles[0];
+    const preferredTileMatrixSet =
+      objLayer.capa.tileMatrixSetLinks.find((link) =>
+        /(?:EPSG|WebMercator).*3857|3857/i.test(link.tileMatrixSet),
+      ) || objLayer.capa.tileMatrixSetLinks[0];
+    let _style = defaultStyle?.identifier || "",
+      _tilematrixSet = preferredTileMatrixSet?.tileMatrixSet || "EPSG:3857",
+      _format = objLayer.capa.formats[0] || "image/png";
     var wmtsSource = new L.TileLayer.WMTS(objLayer.capa.getHostWMS(), {
       layer: objLayer.capa.nombre,
       style: _style,
@@ -3787,12 +4547,11 @@ function changePopupPage(changeType) {
     hasNext = true;
   }
 
-  mapa.openPopup(
+  openLayerQueryPopup(
+    mapa,
     paginateFeatureInfo(popupInfoToPaginate, popupInfoPage, hasPrev, hasNext),
     latlngTmp,
-    { autoPan: false },
   ); //Show all info
-  mapa.setView(latlngTmp, mapa.getZoom(), { animate: false });
 }
 
 function copytoClipboard(coords) {

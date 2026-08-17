@@ -86,7 +86,7 @@ class Searchbar_UI {
     });
 
     search_input.onkeyup = async (e) => {
-      let items = $(".list-group-item-gc");
+      let items = document.querySelectorAll(".list-group-item-gc");
       let q = e.target.value;
       q = q.trim();
       q = q.toLowerCase();
@@ -174,8 +174,8 @@ class Searchbar_UI {
     };
 
     /* ACTIVACION AUTOMATICA DE RESULTADO */
-    $("#search_bar").focusin(function (e) {
-      let items = $(".list-group-item-gc");
+    document.getElementById("search_bar").addEventListener("focusin", function (e) {
+      let items = document.querySelectorAll(".list-group-item-gc");
       let q = e.target.value;
       q = q.trim();
       q = q.toLowerCase();
@@ -483,7 +483,7 @@ function isCoordinates(string) {
 
 function selectorItems(key) {
   let ul = document.getElementById("ul-results").getElementsByTagName("li");
-  let items = $(".list-group-item-gc");
+  let items = document.querySelectorAll(".list-group-item-gc");
   let selected = null;
   let txt_search_bar = document.getElementById("search_bar");
   let up = false;

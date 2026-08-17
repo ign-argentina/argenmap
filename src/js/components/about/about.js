@@ -11,19 +11,72 @@ class DataGetter {
    * @param {number} to - The index of the last line to select.
    * @returns {Promise<string>} - A promise that resolves with the selected text from the Markdown file.
    */
-  loadMD(url, from, to) {
-    return fetch(url)
-      .then((response) => response.text())
-      .then((markdown) => {
-        const html = marked(markdown);
-        const lines = html.split("\n");
-        const selectedLines = lines.slice(from, to);
-        const selectedText = selectedLines.join("\n");
-        return selectedText;
-      })
-      .catch((error) => {
-        console.error("Error loading the Markdown file:", error);
-      });
+  async loadMD(url, from, to) {
+    const markdown = await this.loadText(url);
+
+    try {
+      await appDependencies.load("marked");
+      const markedApi = window.marked;
+      const parseMarkdown =
+        typeof markedApi === "function" ? markedApi : markedApi?.parse;
+      if (typeof parseMarkdown !== "function") {
+        throw new Error("The Markdown parser is unavailable.");
+      }
+
+      const html = parseMarkdown(markdown);
+      return html.split("\n").slice(from, to).join("\n");
+    } catch (error) {
+      console.warn(
+        "Unable to load the Markdown parser; using plain content:",
+        error,
+      );
+      return this.renderBasicMarkdown(markdown, to - from);
+    }
+  }
+
+  renderBasicMarkdown(markdown, limit = Infinity) {
+    const escapeHtml = (value) =>
+      value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    return markdown
+      .split(/\n{2,}/)
+      .map((block) => block.trim())
+      .filter(
+        (block) =>
+          block &&
+          !/^\[[^\]]+\]:\s+\S+/u.test(block) &&
+          !block.startsWith("<img") &&
+          !block.startsWith("---") &&
+          !block.startsWith("#") &&
+          !block.startsWith("[English"),
+      )
+      .slice(0, limit)
+      .map((block) =>
+        block
+          .replace(/\[([^\]]+)\]\[\]/g, "$1")
+          .replace(/\[([^\]]+)\]\[[^\]]+\]/g, "$1")
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1"),
+      )
+      .map((block) => `<p>${escapeHtml(block.replace(/\n/g, " "))}</p>`)
+      .join("\n");
+  }
+
+  /**
+   * Loads a text file without requiring the Markdown parser.
+   * @param {string} url - The URL of the text file.
+   * @returns {Promise<string>} - A promise that resolves with its raw content.
+   */
+  async loadText(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Unable to load "${url}": HTTP ${response.status}.`);
+    }
+    return response.text();
   }
 
   /**
@@ -125,17 +178,18 @@ class AboutUs {
    */
   addFunctionsContent() {
     this.dataGetter
-      .loadMD("src/docs/features.md", 2, Infinity)
-      .then((selectedText) => {
-        const lines = selectedText.split("\n");
-        const lastIndex = lines.length - 4; // Index of the antepenultimate line
+      .loadText("src/docs/features.md")
+      .then((markdown) => {
+        const lines = markdown
+          .split("\n")
+          .map((line) => line.match(/^\s*-\s+(.+)/u)?.[1])
+          .filter(Boolean);
+        const functionsContainer = document.getElementById(
+          "functions-container",
+        );
+        if (!functionsContainer) return;
 
         lines.forEach((line, i) => {
-          if (i > lastIndex) {
-            localStorage.setItem("lastFunctionSeen", i - 3);
-            return; // Ignore lines after the antepenultimate line
-          }
-
           const divFuncion = document.createElement("div");
           divFuncion.classList.add("all-function-div");
 
@@ -144,18 +198,21 @@ class AboutUs {
           }
 
           if (this.getExited != null && parseInt(this.getExited) < i) {
-            divFuncion.innerHTML = `<strong>¡Nuevo! &nbsp;</strong> ${line}`;
+            const indicator = document.createElement("strong");
+            indicator.innerHTML = "¡Nuevo! &nbsp;";
+            divFuncion.append(indicator, line);
             divFuncion.classList.add("new-function");
             this.waitForElementAndAddNoti("load-functions");
           } else {
-            divFuncion.innerHTML = line;
+            divFuncion.textContent = line;
           }
 
-          const functionsContainer = document.getElementById(
-            "functions-container",
-          );
           functionsContainer.prepend(divFuncion);
         });
+        localStorage.setItem("lastFunctionSeen", lines.length - 1);
+      })
+      .catch((error) => {
+        console.error("Error loading the functions list:", error);
       });
   }
 
@@ -167,13 +224,14 @@ class AboutUs {
     innerReadmeText.style.margin = "10px";
 
     this.dataGetter
-      .loadMD(
-        `${window.location.origin + window.location.pathname}/README.md`,
-        4,
-        7,
-      )
+      .loadMD(new URL("README.md", document.baseURI).href, 4, 7)
       .then((selectedText) => {
         innerReadmeText.innerHTML = selectedText;
+      })
+      .catch((error) => {
+        console.error("Error loading the About text:", error);
+        innerReadmeText.textContent =
+          "No se pudo cargar la descripción de Argenmap.";
       });
 
     let readmeContainer = document.getElementById("readme-container");
@@ -276,14 +334,15 @@ class AboutUs {
    */
   check() {
     this.dataGetter
-      .loadMD("src/docs/features.md", 2, Infinity)
-      .then((selectedText) => {
-        const lines = selectedText.split("\n");
-        const lastIndex = lines.length - 4;
+      .loadText("src/docs/features.md")
+      .then((markdown) => {
+        const featureCount = markdown
+          .split("\n")
+          .filter((line) => /^\s*-\s+\S/u.test(line)).length;
         const lastFunctionSeen = localStorage.getItem("lastFunctionSeen");
         const notificationDotShown =
           localStorage.getItem("notificationDotShown") === "true";
-        let newFunctionIndex = lastIndex;
+        const newFunctionIndex = featureCount - 1;
         // Si nunca se guardó lastFunctionSeen o hay una línea nueva
         if (
           lastFunctionSeen === null ||
@@ -299,6 +358,9 @@ class AboutUs {
             localStorage.setItem("notificationDotShown", "true");
           }
         }
+      })
+      .catch((error) => {
+        console.error("Error checking the functions list:", error);
       });
   }
 }

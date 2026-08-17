@@ -210,7 +210,14 @@
       infoHtml = info.search("<ul>"); // search if info has a list
       if (infoHtml > 0) {
         // check if info has any content, if so shows popup
-        this._map.openPopup(info, latlng);
+        if (typeof openLayerQueryPopup === "function") {
+          openLayerQueryPopup(this._map, info, latlng);
+        } else {
+          this._map.openPopup(info, latlng, {
+            autoPan: true,
+            keepInView: true,
+          });
+        }
       }
     },
 

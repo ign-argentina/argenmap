@@ -72,6 +72,31 @@ cp -r src/config/default/* src/config/
 
 ## 3. Publicar el visor en un servidor web
 
+### Build de producción (recomendado)
+
+Para generar una versión optimizada se requiere Node.js 20 o posterior. Desde la
+raíz del proyecto ejecuta:
+
+```bash
+npm ci
+npm run build
+```
+
+El comando crea la carpeta `build/`, lista para publicar. Esta versión:
+
+* combina y minifica el JavaScript y CSS necesarios para el arranque;
+* mantiene separados los plugins que se cargan únicamente al utilizarlos;
+* agrega un hash al nombre de los recursos críticos para poder cachearlos de
+  forma segura;
+* copia la configuración de `src/config`; si no hay una configuración local,
+  utiliza los archivos de `src/config/default`.
+
+Publica **el contenido de `build/`** como raíz del visor. La carpeta se regenera
+por completo cada vez que se ejecuta el comando, por lo que no debe editarse
+manualmente.
+
+### Publicar el código fuente (desarrollo)
+
 **Opción 1: Usando Live Server en Visual Studio Code**
 
 1. Instala la extensión "Live Server".

@@ -13,6 +13,107 @@ var loadGeoprocessing = false;
 var loadAddLayer = false;
 var loadQueryLayer = true;
 var loadConfigTool = false;
+let consultDataBtnClose = true;
+let addedLayers = [];
+let fileLayerGroup = [];
+let configuredFileLayerRegistry = [];
+
+/**
+ * Returns the position of a generated, drawn or uploaded layer.
+ * Shared layer-menu actions must not depend on the lazy open-file feature.
+ */
+function getIndexFileLayerbyID(id) {
+  return addedLayers.findIndex((layer) => layer.id === id);
+}
+
+function delFileItembyID(id) {
+  const layerIndex = getIndexFileLayerbyID(id);
+  if (layerIndex >= 0) {
+    addedLayers.splice(layerIndex, 1);
+  }
+}
+
+function editDomNameofFileLayerbyID(id, name) {
+  const layerIndex = getIndexFileLayerbyID(id);
+  if (layerIndex >= 0) {
+    addedLayers[layerIndex].name = name;
+  }
+}
+
+function registerConfiguredFileLayerEntry(entry) {
+  if (
+    !entry ||
+    !entry.id ||
+    (!entry.sectionName && !(entry.sectionId && entry.sectionLabel))
+  ) {
+    return;
+  }
+
+  const sectionId =
+    entry.sectionId ||
+    entry.sectionName ||
+    clearSpecialChars(entry.sectionLabel || entry.sectionName || entry.id);
+  const sectionLabel =
+    entry.sectionLabel || entry.sectionName || entry.sectionId || entry.id;
+  const exists = configuredFileLayerRegistry.some(
+    (item) => item.id === entry.id && item.sectionId === sectionId,
+  );
+
+  if (!exists) {
+    configuredFileLayerRegistry.push({
+      ...entry,
+      sectionId,
+      sectionLabel,
+      fromConfig: entry.fromConfig === true,
+      allowedOptions: Array.isArray(entry.allowedOptions)
+        ? entry.allowedOptions.map((option) => option.toLowerCase())
+        : entry.fromConfig
+          ? ["zoom", "query", "data", "download"]
+          : ["zoom", "query", "data", "download", "rename", "delete"],
+    });
+  }
+}
+
+function normalizeLeafletControlOrder() {
+  const topRight = document.querySelector(".leaflet-top.leaflet-right");
+  if (topRight) {
+    const editableLabelControl = document
+      .querySelector("#editableLabelBtn")
+      ?.closest(".leaflet-control");
+    const orderedTopRightControls = [
+      document.getElementById("hideBtnLeft"),
+      document.getElementById("hideBtnRight"),
+      editableLabelControl,
+      topRight.querySelector(".leaflet-draw.leaflet-control"),
+    ];
+    orderedTopRightControls.forEach((control) => {
+      if (control) {
+        topRight.appendChild(control);
+      }
+    });
+  }
+
+  const bottomRight = document.querySelector(".leaflet-bottom.leaflet-right");
+  if (bottomRight) {
+    const orderedBottomRightControls = [
+      bottomRight.querySelector(".leaflet-control-zoomhome"),
+      bottomRight.querySelector(".leaflet-control-mouseposition"),
+      bottomRight.querySelector(".leaflet-control-attribution"),
+    ];
+    orderedBottomRightControls.forEach((control) => {
+      if (control) {
+        bottomRight.appendChild(control);
+      }
+    });
+  }
+}
+
+async function ensureTableDependencies() {
+  await appDependencies.load("table");
+  if (loadCharts) {
+    await appDependencies.load("charts");
+  }
+}
 
 function setAddLayer(cond) {
   loadAddLayer = cond;
@@ -144,8 +245,9 @@ function showImageOnError(image) {
 
 function mainMenuSearch(e) {
   e.preventDefault();
-  if ($("#q").val().length != 0) {
-    gestorMenu.setQuerySearch($("#q").val());
+  const query = document.getElementById("q")?.value || "";
+  if (query.length != 0) {
+    gestorMenu.setQuerySearch(query);
     gestorMenu.printMenu();
     let tabs = document.getElementById("menuTabs");
     tabs ? (tabs.style.display = "none") : 0;
@@ -183,7 +285,7 @@ function hideAllElevationProfile() {
         }
       }
     });
-    $("#pt-wrapper").addClass("hidden");
+    document.getElementById("pt-wrapper").classList.add("hidden");
   }
 }
 
@@ -234,14 +336,14 @@ function showTotalNumberofLayers() {
   });
 
   if (activeLayers > 0) {
-    $("#cleanTrash").html(
+    document.getElementById("cleanTrash").innerHTML =
       "<div class='glyphicon glyphicon-refresh'></div>" +
         "<span class='total-active-layers-counter'>" +
         activeLayers +
-        "</span>",
-    );
+        "</span>";
   } else {
-    $("#cleanTrash").html("<span class='glyphicon glyphicon-refresh'></span>");
+    document.getElementById("cleanTrash").innerHTML =
+      "<span class='glyphicon glyphicon-refresh'></span>";
   }
 }
 
@@ -325,11 +427,16 @@ function clearSpecialChars(s) {
 }
 
 /****** Enveloped functions ******/
-function loadGeojson(url, layer) {
-  if (typeof loadGeojsonTpl === "function") {
-    return loadGeojsonTpl(wmsUrl, layer);
-  } else {
+async function loadGeojson(url, layer) {
+  try {
+    await appDependencies.load("geoJsonMapLayer");
+    if (typeof loadGeojsonTpl === "function") {
+      return loadGeojsonTpl(url, layer);
+    }
     console.warn("Function loadGeojsonTpl() do not exists. Please, define it.");
+  } catch (error) {
+    console.error("Unable to load the GeoJSON layer dependencies:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
@@ -344,7 +451,7 @@ function loadWmsTplAux(objLayer) {
     const queryOptions = getLayerQueryOptions(objLayer.capa);
     overlayMaps[layer]._source.options.identify =
       queryOptions.queryable &&
-      (!consultDataBtnClose || queryOptions.queryActive);
+      (isDataConsultActive() || queryOptions.queryActive);
     overlayMaps[layer].addTo(mapa);
   }
 }
@@ -353,23 +460,33 @@ function ucwords(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function loadWms(callbackFunction, objLayer) {
-  if (typeof callbackFunction === "function") {
-    return loadWmsTplAux(objLayer, null);
-  } else {
+async function loadWms(callbackFunction, objLayer) {
+  try {
+    await appDependencies.load("wmsMapLayer");
+    if (typeof callbackFunction === "function") {
+      return loadWmsTplAux(objLayer, null);
+    }
     console.warn(
       "Function " + callbackFunction + "() do not exists. Please, define it.",
     );
+  } catch (error) {
+    console.error("Unable to load the WMS layer dependencies:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
-function loadWmts(callbackFunction, objLayer) {
-  if (typeof callbackFunction === "function") {
-    return callbackFunction(objLayer);
-  } else {
+async function loadWmts(callbackFunction, objLayer) {
+  try {
+    await appDependencies.load("wmtsMapLayer");
+    if (typeof callbackFunction === "function") {
+      return callbackFunction(objLayer);
+    }
     console.warn(
       "Function " + callbackFunction + "() do not exists. Please, define it.",
     );
+  } catch (error) {
+    console.error("Unable to load the WMTS layer dependencies:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
@@ -497,10 +614,9 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
     const layerName = window.encodeURI(layerData.name.replace(":", "/")); // if layer name includes the workspace name, replaces colon with a slash
     const capabilitiesUrl = `${host}/${layerName}/ows?service=wfs&request=GetCapabilities`;
 
-    let reprojectedCoords = [];
     // get the CRS, then defines a WFS request including coordinates in the layer's CRS
     getCRSByWFSCapabilities(capabilitiesUrl, layerData.name)
-      .then((crs) => {
+      .then(async (crs) => {
         let isWgs84 = crs === "4326" || crs === "84" || crs === null; // true if crs = wgs84 or null
         let url = host,
           paramsStr = [],
@@ -548,6 +664,9 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
           });
         }
         if (!isWgs84) {
+          await appDependencies.load("proj4");
+          coords = [];
+
           // const wgs84 = "+proj=longlat +datum=WGS84 +no_defs";
           // // const epsg3857 = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs";
           // const posgar94 = "+proj=tmerc +lat_0=-90 +lon_0=-66 +k=1 +x_0=3500000 +y_0=0 +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs";
@@ -597,8 +716,10 @@ function getLayerDataByWFS(filterCoords, type, layerData) {
       })
       .catch((e) => {
         console.error(
-          "The host does not provide capabilities for the WFS service",
+          "Unable to prepare the WFS spatial query:",
+          e,
         );
+        resolve(null);
       });
   });
 }
@@ -613,25 +734,43 @@ function loadMapaBase(tmsUrl, layer, attribution) {
   }
 }
 
-function loadMapaBaseBing(bingKey, layer, attribution) {
-  if (typeof loadMapaBaseBingTpl === "function") {
-    return loadMapaBaseBingTpl(bingKey, layer, attribution);
-  } else {
+async function loadMapaBaseBing(bingKey, layer, attribution) {
+  try {
+    await appDependencies.load("bingMapLayer");
+    if (typeof loadMapaBaseBingTpl === "function") {
+      return loadMapaBaseBingTpl(bingKey, layer, attribution);
+    }
     console.warn(
       "Function loadMapaBaseBingTpl() do not exists. Please, define it.",
     );
+  } catch (error) {
+    console.error("Unable to load the Bing layer dependency:", error);
+    new UserMessage(error.message, true, "error");
   }
 }
 
-function loadTemplateStyleConfig(template, isDefaultTemplate) {
-  try {
-    const STYLE_PATH = isDefaultTemplate
-      ? "src/config/default/styles/css/main.css"
-      : "src/config/styles/css/main.css";
-    $("head").append(`<link rel="stylesheet" href=${STYLE_PATH}>`);
-  } catch (error) {
-    console.error(error);
-  }
+async function loadTemplateStyleConfig(customStyles = []) {
+  const styles = Array.isArray(customStyles)
+    ? customStyles
+    : typeof customStyles === "string"
+      ? [customStyles]
+      : [];
+
+  const requests = styles
+    .map((style) =>
+      typeof style === "string" ? { url: style } : style,
+    )
+    .filter((style) => typeof style?.url === "string" && style.url.trim())
+    .map(({ url, ...options }) =>
+      appDependencies.loadStyle(url, { ...options, custom: true }),
+    );
+
+  const results = await Promise.allSettled(requests);
+  results.forEach((result) => {
+    if (result.status === "rejected") {
+      console.error("Unable to load a custom stylesheet:", result.reason);
+    }
+  });
 }
 
 function setBaseLayersInfo(layers) {
@@ -771,13 +910,11 @@ function setProperStyleToCtrlBtns() {
     border_style = "2px solid rgba(0, 0, 0, 0.2)";
     size = "34px";
   }
-  const zoomhomeCtrlBtn = document.getElementsByClassName(
-    "leaflet-control-zoomhome-home",
-  );
-  const interval = setInterval(() => {
+  const applyControlStyles = () => {
+    const zoomhomeCtrlBtn = document.getElementsByClassName(
+      "leaflet-control-zoomhome-home",
+    );
     if (zoomhomeCtrlBtn.length > 0) {
-      window.clearInterval(interval);
-      //const width = zoomhomeCtrlBtn[0].offsetWidth;
       const btns = [];
       btns.push(zoomhomeCtrlBtn[0]);
 
@@ -809,14 +946,27 @@ function setProperStyleToCtrlBtns() {
       const modalLoadLayersCtrlBtn =
         document.getElementById("loadLayersButton");
       btns.push(modalLoadLayersCtrlBtn);
-      btns.forEach((btn) => {
+      btns.filter(Boolean).forEach((btn) => {
         btn.style.width = size;
         btn.style.height = size;
         btn.style.border = border_style;
         btn.style.boxShadow = shadow_style;
       });
+      return true;
     }
-  }, 100);
+    return false;
+  };
+
+  if (applyControlStyles()) {
+    return;
+  }
+
+  const observer = new MutationObserver(() => {
+    if (applyControlStyles()) {
+      observer.disconnect();
+    }
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 let normalize = (function () {
@@ -872,60 +1022,94 @@ function clickGeometryLayer(layer) {
   showTotalNumberofLayers();
 }
 
-function clickWMSLayer(layer, layer_item, fileName) {
-  let sectionName;
-  if (layer_item.classList.value === "file-layer active" && layer.active) {
-    layer_item.classList.value = "file-layer";
+const importedWmsLayerTogglePromises = new WeakMap();
 
-    mapa.removeLayer(overlayMaps[layer.name]);
-    delete overlayMaps[layer.name];
-    layer.active = false;
-
-    addedLayers.forEach((lyr) => {
-      if (lyr.file_name == fileName) {
-        sectionName = lyr.section;
-        lyr.isActive = false;
-      }
-    });
-  } else if (layer_item.classList.value === "file-layer" && !layer.active) {
-    layer_item.classList.value = "file-layer active";
-    layer.active = true;
-
-    createImportWmsLayer(layer);
-
-    if (consultDataBtnClose == false) {
-      overlayMaps[layer.name]._source.options.identify = true;
-    } else if (consultDataBtnClose == true) {
-      overlayMaps[layer.name]._source.options.identify = false;
-    } else {
-      overlayMaps[layer.name]._source.options.identify = false;
-    }
-    overlayMaps[layer.name].addTo(mapa);
-
-    //Original
-    // layer.L_layer = L.tileLayer
-    //   .wms(layer.host, {
-    //     layers: layer.name,
-    //     format: "image/png",
-    //     transparent: true,
-    //   })
-    //   .addTo(mapa);
-    gestorMenu.layersDataForWfs[layer.name] = {
-      name: layer.name,
-      section: layer.title,
-      host: layer.host,
-    };
-
-    addedLayers.forEach((lyr) => {
-      if (lyr.file_name == fileName) {
-        sectionName = lyr.section;
-        lyr.isActive = true;
-      }
-    });
+async function clickWMSLayer(layer, layer_item, fileName) {
+  if (importedWmsLayerTogglePromises.has(layer)) {
+    return importedWmsLayerTogglePromises.get(layer);
   }
 
-  updateNumberofLayers(sectionName);
-  showTotalNumberofLayers();
+  const togglePromise = (async () => {
+    const addedLayer = addedLayers.find(
+      (lyr) => lyr.layer === layer || lyr.file_name == fileName,
+    );
+    const sectionName = addedLayer?.section;
+    const mapLayer = overlayMaps[layer.name];
+    const isActive = layer.active === true;
+
+    if (isActive) {
+      if (mapLayer) {
+        if (typeof mapa.hasLayer !== "function" || mapa.hasLayer(mapLayer)) {
+          mapa.removeLayer(mapLayer);
+        }
+        delete overlayMaps[layer.name];
+      }
+      layer.L_layer = null;
+      layer.active = false;
+      layer_item.classList.remove("active");
+      if (addedLayer) addedLayer.isActive = false;
+      updateNumberofLayers(sectionName);
+      showTotalNumberofLayers();
+      return false;
+    }
+
+    layer_item.setAttribute("aria-busy", "true");
+    try {
+      if (mapLayer) {
+        if (mapa.hasLayer?.(mapLayer)) mapa.removeLayer(mapLayer);
+        delete overlayMaps[layer.name];
+      }
+      await appDependencies.load("wmsMapLayer");
+      if (typeof createImportWmsLayer !== "function") {
+        throw new Error("No se pudo inicializar el soporte para capas WMS.");
+      }
+
+      createImportWmsLayer(layer);
+      const createdLayer = overlayMaps[layer.name];
+      if (!createdLayer) {
+        throw new Error(
+          `No se pudo crear la capa WMS "${layer.title || layer.name}".`,
+        );
+      }
+
+      if (createdLayer._source?.options) {
+        createdLayer._source.options.identify = consultDataBtnClose === false;
+      }
+      createdLayer.addTo(mapa);
+      layer.L_layer = createdLayer;
+      layer.active = true;
+      layer_item.classList.add("active");
+      if (addedLayer) addedLayer.isActive = true;
+
+      gestorMenu.layersDataForWfs[layer.name] = {
+        name: layer.name,
+        section: layer.title,
+        host: layer.host,
+      };
+
+      updateNumberofLayers(sectionName);
+      showTotalNumberofLayers();
+      return true;
+    } catch (error) {
+      const failedLayer = overlayMaps[layer.name];
+      if (failedLayer && mapa.hasLayer?.(failedLayer)) {
+        mapa.removeLayer(failedLayer);
+      }
+      delete overlayMaps[layer.name];
+      layer.L_layer = null;
+      layer.active = false;
+      layer_item.classList.remove("active");
+      if (addedLayer) addedLayer.isActive = false;
+      console.error("Unable to activate imported WMS layer:", error);
+      new UserMessage(error.message, true, "error");
+      return false;
+    } finally {
+      layer_item.removeAttribute("aria-busy");
+    }
+  })().finally(() => importedWmsLayerTogglePromises.delete(layer));
+
+  importedWmsLayerTogglePromises.set(layer, togglePromise);
+  return togglePromise;
 }
 
 function geoprocessModalIsOpen() {
@@ -941,15 +1125,14 @@ function closeGeoprocessModal() {
 
 function deleteLayerGeometry(layer) {
   mapa.removeGroup(layer, true, layer);
-  let id = "#fl-" + layer;
-  let parent = $(id).parent()[0];
+  const element = document.getElementById("fl-" + layer);
+  let parent = element?.parentElement;
 
   if (parent && parent.childElementCount <= 1) {
     let index = parent.id.indexOf("-panel-body");
-    let lista = "#lista-" + parent.id.substr(0, index);
-    $(lista).remove();
+    document.getElementById("lista-" + parent.id.substr(0, index))?.remove();
   } else {
-    $(id).remove();
+    element?.remove();
   }
 }
 
@@ -971,41 +1154,102 @@ function zoomEditableLayers(layername) {
   }
 }
 
+function getOgcLayerBounds(layer) {
+  if (!layer) {
+    return null;
+  }
+  if (typeof layer.getBounds === "function") {
+    return layer.getBounds();
+  }
+  const values = [layer.minx, layer.miny, layer.maxx, layer.maxy].map(Number);
+  const coordinateTolerance = 0.000001;
+  if (
+    values.some((value) => !Number.isFinite(value)) ||
+    values[0] < -180 - coordinateTolerance ||
+    values[2] > 180 + coordinateTolerance ||
+    values[1] < -90 - coordinateTolerance ||
+    values[3] > 90 + coordinateTolerance
+  ) {
+    return null;
+  }
+  const webMercatorLatitudeLimit = 85.0511287798;
+  const normalized = [
+    Math.max(-180, Math.min(180, values[0])),
+    Math.max(
+      -webMercatorLatitudeLimit,
+      Math.min(webMercatorLatitudeLimit, values[1]),
+    ),
+    Math.max(-180, Math.min(180, values[2])),
+    Math.max(
+      -webMercatorLatitudeLimit,
+      Math.min(webMercatorLatitudeLimit, values[3]),
+    ),
+  ];
+  return [
+    [
+      Math.min(normalized[1], normalized[3]),
+      Math.min(normalized[0], normalized[2]),
+    ],
+    [
+      Math.max(normalized[1], normalized[3]),
+      Math.max(normalized[0], normalized[2]),
+    ],
+  ];
+}
+
+function getOgcLayerGroupBounds(layerEntry) {
+  const layers = layerEntry?.capas || [layerEntry?.capa].filter(Boolean);
+  const layerBounds = layers.map(getOgcLayerBounds).filter(Boolean);
+  if (layerBounds.length === 0) {
+    return null;
+  }
+  return layerBounds.reduce(
+    (combined, bounds) => [
+      [
+        Math.min(combined[0][0], bounds[0][0]),
+        Math.min(combined[0][1], bounds[0][1]),
+      ],
+      [
+        Math.max(combined[1][0], bounds[1][0]),
+        Math.max(combined[1][1], bounds[1][1]),
+      ],
+    ],
+    layerBounds[0],
+  );
+}
+
+function fitOgcLayerBounds(layerName) {
+  const bounds = getOgcLayerGroupBounds(app.layers[layerName]);
+  if (!bounds) {
+    return false;
+  }
+  mapa.fitBounds(bounds);
+  return true;
+}
+
+function setZoomLayerStatus(element, hasBounds) {
+  const icon = element.querySelector("i");
+  if (!icon) {
+    return;
+  }
+  icon.classList.toggle("fa-search-plus", hasBounds);
+  icon.classList.toggle("fa-exclamation-triangle", !hasBounds);
+  icon.setAttribute(
+    "title",
+    hasBounds ? "Zoom a capa" : STRINGS.no_bbox,
+  );
+}
+
 function bindZoomLayer() {
   let elements = document.getElementsByClassName("zoom-layer");
-  let zoomLayer = async function () {
+  let zoomLayer = function () {
     let layer_name = this.getAttribute("layername");
-    let layer = app.layers[layer_name].capa;
-
-    if (layer.servicio === "wms") {
-      await getWmsLyrParams(layer); // gets layer atribtutes from WMS
-    }
-
-    //console.log("layer: ", layer)
-    let bbox = [layer.minx, layer.miny, layer.maxx, layer.maxy],
-      noBbox = bbox.some((el) => {
-        return el === null || el === undefined;
-      });
-
-    //console.log("bbox: ", bbox)
-    if (noBbox) {
-      for (i = 0; i < this.childNodes.length; i++) {
-        if (this.childNodes[i].className == "fas fa-search-plus") {
-          this.childNodes[i].classList.remove("fa-search-plus");
-          this.childNodes[i].classList.add("fa-exclamation-triangle");
-          this.childNodes[i].setAttribute("title", STRINGS.no_bbox);
-          break;
-        }
-      }
-    } else {
-      for (i = 0; i < this.childNodes.length; i++) {
-        if (this.childNodes[i].className == "fas fa-exclamation-triangle") {
-          this.childNodes[i].classList.remove("fa-exclamation-triangle");
-          this.childNodes[i].classList.add("fa-search-plus");
-          this.childNodes[i].setAttribute("title", "Zoom a capa");
-          break;
-        }
-      }
+    const hasBounds = Boolean(
+      getOgcLayerGroupBounds(app.layers[layer_name]),
+    );
+    setZoomLayerStatus(this, hasBounds);
+    if (!hasBounds) {
+      return;
     }
 
     //si la capa no esta activa activar
@@ -1015,19 +1259,27 @@ function bindZoomLayer() {
       if (key === layer_name) active = true;
     });
     if (!active) gestorMenu.muestraCapa(app.layers[layer_name].childid);
-    let bounds = [
-      [layer.maxy, layer.maxx],
-      [layer.miny, layer.minx],
-    ];
     try {
-      mapa.fitBounds(bounds);
+      fitOgcLayerBounds(layer_name);
     } catch (error) {
       console.error(error);
     }
   };
 
   for (let i = 0; i < elements.length; i++) {
+    if (elements[i].dataset.zoomLayerBound === "true") {
+      continue;
+    }
+    setZoomLayerStatus(
+      elements[i],
+      Boolean(
+        getOgcLayerGroupBounds(
+          app.layers[elements[i].getAttribute("layername")],
+        ),
+      ),
+    );
     elements[i].addEventListener("click", zoomLayer, false);
+    elements[i].dataset.zoomLayerBound = "true";
   }
 }
 
@@ -1043,7 +1295,11 @@ function bindLayerOptions() {
   };
 
   for (let i = 0; i < elements.length; i++) {
+    if (elements[i].dataset.layerOptionsBound === "true") {
+      continue;
+    }
     elements[i].addEventListener("click", layerOptions, false);
+    elements[i].dataset.layerOptionsBound = "true";
   }
 }
 
@@ -1148,7 +1404,9 @@ function bindLayerOptionsIdera() {
 
 function zoomLayer(id_dom) {
   let nlayer = app.layerNameByDomId[id_dom];
-  let bbox = app.layers[nlayer].capa;
+  if (!nlayer || !getOgcLayerGroupBounds(app.layers[nlayer])) {
+    return;
+  }
   //solo sii la capa no esta activa activar
   let activas = gestorMenu.activeLayers;
   let active = false;
@@ -1157,12 +1415,8 @@ function zoomLayer(id_dom) {
   });
   if (!active) gestorMenu.muestraCapa(app.layers[nlayer].childid);
 
-  let bounds = [
-    [bbox.maxy, bbox.maxx],
-    [bbox.miny, bbox.minx],
-  ];
   try {
-    mapa.fitBounds(bounds);
+    fitOgcLayerBounds(nlayer);
   } catch (err) {
     console.error(err);
   }
@@ -1305,8 +1559,23 @@ function loadDeveloperLogo() {
       img.style.backgroundImage = `url('${devLogoUrl}')`;
       link.appendChild(img);
 
-      link.addEventListener("click", function () {
-        modalAboutUs.toggleOpen();
+      let isLoadingAboutStyles = false;
+      link.addEventListener("click", async function () {
+        if (isLoadingAboutStyles) return;
+
+        isLoadingAboutStyles = true;
+        link.setAttribute("aria-busy", "true");
+        try {
+          await appDependencies.loadStyle(
+            "src/js/components/about/about.css",
+          );
+          modalAboutUs.toggleOpen();
+        } catch (error) {
+          new UserMessage(error.message, true, "error");
+        } finally {
+          isLoadingAboutStyles = false;
+          link.removeAttribute("aria-busy");
+        }
       });
 
       return link;
@@ -1356,15 +1625,12 @@ function addCounterForSection(groupname, layerType) {
     }
   });
   const groupnamev = clearSpecialChars(groupname);
+  const sectionTitle = document.getElementById(groupnamev + "-a");
+  if (!sectionTitle) return;
   if (counter > 0) {
-    $("#" + groupnamev + "-a").html(
-      groupnamev +
-        " <span class='active-layers-counter'>" +
-        counter +
-        "</span>",
-    );
+    sectionTitle.innerHTML = `${groupnamev} <span class="active-layers-counter">${counter}</span>`;
   } else {
-    $("#" + groupnamev + "-a").html(groupnamev);
+    sectionTitle.textContent = groupnamev;
   }
 }
 
@@ -1423,19 +1689,21 @@ function deleteAddedLayer(layer) {
 }
 
 function loadingBtn(status, idBtn, btnName) {
-  let btn_ejecutar = document.getElementById(idBtn);
+  const btn_ejecutar = document.getElementById(idBtn);
+  if (!btn_ejecutar) return;
+
   if (status === "on") {
     btn_ejecutar.innerHTML =
       '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i>';
-    $("#ejec_gp").addClass("ag-btn-disabled");
-    $("#" + idBtn).addClass("ag-btn-disabled");
+    document.getElementById("ejec_gp")?.classList.add("ag-btn-disabled");
+    btn_ejecutar.classList.add("ag-btn-disabled");
   } else if (status === "off") {
     if (btnName) {
       btn_ejecutar.innerHTML = btnName;
     } else {
       btn_ejecutar.innerHTML = "Ejecutar";
     }
-    $("#" + idBtn).removeClass("ag-btn-disabled");
+    btn_ejecutar.classList.remove("ag-btn-disabled");
   }
 }
 
@@ -1492,7 +1760,11 @@ function getLayerQueryOptions(layer, config = null) {
     layerConfig = serviceConfig.customize_layers?.[layer.nombre] || null;
   }
 
-  const queryable = layerConfig?.queryable ?? serviceConfig?.queryable ?? true;
+  const queryable =
+    layerConfig?.queryable ??
+    serviceConfig?.queryable ??
+    layer?.queryable ??
+    true;
   const queryActive =
     layerConfig?.queryActive ?? serviceConfig?.queryActive ?? false;
 
@@ -1502,9 +1774,171 @@ function getLayerQueryOptions(layer, config = null) {
   };
 }
 
+function isDataConsultActive() {
+  return (
+    typeof consultDataBtnClose !== "undefined" &&
+    consultDataBtnClose === false
+  );
+}
+
+function normalizeAutocompleteValue(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase();
+}
+
+function bindLayerSearchAutocomplete(
+  input,
+  getSuggestions,
+  onSelect,
+  maxResults = 20,
+) {
+  if (!input || input.dataset.autocompleteBound === "true") {
+    return;
+  }
+
+  const container = input.parentElement;
+  const list = document.createElement("div");
+  list.id = `${input.id}-autocomplete-list`;
+  list.className = "argenmap-autocomplete";
+  list.setAttribute("role", "listbox");
+  list.hidden = true;
+  container.appendChild(list);
+
+  input.dataset.autocompleteBound = "true";
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-controls", list.id);
+  input.setAttribute("aria-expanded", "false");
+
+  let results = [];
+  let activeIndex = -1;
+
+  const closeList = () => {
+    list.hidden = true;
+    list.replaceChildren();
+    results = [];
+    activeIndex = -1;
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+  };
+
+  const selectResult = (index) => {
+    const result = results[index];
+    if (!result) {
+      return;
+    }
+    input.value = result.label;
+    closeList();
+    onSelect(result.label);
+  };
+
+  const setActiveResult = (index) => {
+    const options = Array.from(list.children);
+    options.forEach((option) => {
+      option.classList.remove("argenmap-autocomplete-active");
+      option.setAttribute("aria-selected", "false");
+    });
+    if (options.length === 0) {
+      activeIndex = -1;
+      return;
+    }
+    activeIndex = (index + options.length) % options.length;
+    const activeOption = options[activeIndex];
+    activeOption.classList.add("argenmap-autocomplete-active");
+    activeOption.setAttribute("aria-selected", "true");
+    input.setAttribute("aria-activedescendant", activeOption.id);
+    activeOption.scrollIntoView({ block: "nearest" });
+  };
+
+  const renderSuggestions = () => {
+    const query = normalizeAutocompleteValue(input.value.trim());
+    if (!query) {
+      closeList();
+      return;
+    }
+
+    const uniqueResults = new Map();
+    for (const suggestion of getSuggestions() || []) {
+      const label = String(
+        suggestion?.label ?? suggestion?.value ?? suggestion,
+      ).trim();
+      if (
+        label &&
+        normalizeAutocompleteValue(label).includes(query) &&
+        !uniqueResults.has(label)
+      ) {
+        uniqueResults.set(label, { label });
+      }
+      if (uniqueResults.size >= maxResults) {
+        break;
+      }
+    }
+    results = Array.from(uniqueResults.values());
+    activeIndex = -1;
+    list.replaceChildren();
+
+    results.forEach((result, index) => {
+      const option = document.createElement("button");
+      option.id = `${list.id}-option-${index}`;
+      option.className = "argenmap-autocomplete-option";
+      option.type = "button";
+      option.setAttribute("role", "option");
+      option.setAttribute("aria-selected", "false");
+      option.textContent = result.label;
+      option.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+      });
+      option.addEventListener("click", () => selectResult(index));
+      list.appendChild(option);
+    });
+
+    list.hidden = results.length === 0;
+    input.setAttribute("aria-expanded", String(results.length > 0));
+  };
+
+  input.addEventListener("input", renderSuggestions);
+  input.addEventListener("focus", renderSuggestions);
+  input.addEventListener("blur", () => {
+    window.setTimeout(closeList, 0);
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown" && results.length > 0) {
+      event.preventDefault();
+      setActiveResult(activeIndex + 1);
+    } else if (event.key === "ArrowUp" && results.length > 0) {
+      event.preventDefault();
+      setActiveResult(activeIndex - 1);
+    } else if (event.key === "Enter") {
+      if (activeIndex >= 0) {
+        event.preventDefault();
+        event.stopPropagation();
+        selectResult(activeIndex);
+      } else {
+        closeList();
+      }
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      closeList();
+    }
+  });
+}
+
 function getVectorData(e) {
   if (e.target.queryable !== false && e.target.activeData === true) {
+    if (e.originalEvent) {
+      L.DomEvent.stopPropagation(e.originalEvent);
+    }
     let layer = e.target;
+    const previousBubbling = layer.options.bubblingMouseEvents;
+    // Leaflet paths bubble clicks to the map, unlike markers. Temporarily use
+    // the public layer option so the map cannot close the popup opened by this
+    // same query event.
+    layer.options.bubblingMouseEvents = false;
+    window.setTimeout(() => {
+      layer.options.bubblingMouseEvents = previousBubbling;
+    }, 0);
     createPopupForVector(layer, e.latlng);
   }
 }
@@ -1517,34 +1951,20 @@ function createPopupForVector(layer, clickLatlng) {
 
   const layerName = layer.name || layer.id || "Capa";
   const id = layerName[0].toUpperCase() + layerName.slice(1).toLowerCase();
-  const properties = geoJSON._configuredFileProperties || geoJSON.properties;
-  const hasHtmlProperty = Object.keys(properties).some(
-    (key) => String(key).toLowerCase() === "html",
+  const properties = getFileLayerPopupProperties(
+    geoJSON._configuredFileProperties || geoJSON.properties,
   );
+  if (Object.keys(properties).length === 0) {
+    return;
+  }
+  const popupFormat = getFileLayerPopupFormat(layer.popupFormat, properties);
 
   // Do not mix this feature with results left by a previous map query.
   popupInfo = [];
 
   var infoAux = '<div class="featureInfo" id="featureInfoPopup' + id + '">';
-  infoAux += `<table class="file-layer-feature-table${
-    hasHtmlProperty ? " file-layer-feature-table-has-html" : ""
-  }"><tbody>`;
-
-  Object.entries(properties).forEach(function ([key, value]) {
-    if (String(key).toLowerCase() === "html") {
-      infoAux += `<tr class="file-layer-html-row"><td colspan="2">${value ?? ""}</td></tr>`;
-      return;
-    }
-
-    const formattedValue =
-      value && typeof value === "object" ? JSON.stringify(value) : value;
-    infoAux += "<tr>";
-    infoAux += `<th>${escapeFileLayerPopupValue(key)}</th>`;
-    infoAux += `<td>${escapeFileLayerPopupValue(formattedValue ?? "")}</td>`;
-    infoAux += "</tr>";
-  });
-
-  infoAux += "</tbody></table></div>";
+  infoAux += renderFileLayerPopupProperties(properties, popupFormat);
+  infoAux += "</div>";
   popupInfo.push(infoAux); //Add info for popup
 
   let center;
@@ -1560,17 +1980,88 @@ function createPopupForVector(layer, clickLatlng) {
     160,
     mapWidth <= 600 ? mapWidth - 80 : Math.floor(mapWidth / 2) - 40,
   );
-  targetMap.openPopup(
+  openLayerQueryPopup(
+    targetMap,
     paginateFeatureInfo(popupInfo, 0, false, true),
     popupLatlng,
     {
-      autoPan: false,
       className: "file-layer-popup",
       minWidth: Math.min(288, maxPopupWidth),
       maxWidth: maxPopupWidth,
     },
   ); //Show info
-  targetMap.setView(popupLatlng, targetMap.getZoom(), { animate: false });
+}
+
+function getFileLayerPopupProperties(properties) {
+  return Object.fromEntries(
+    Object.entries(properties || {}).filter(([key]) => {
+      const normalizedKey = String(key).trim().toLowerCase();
+      return normalizedKey !== "styles" && normalizedKey !== "type";
+    }),
+  );
+}
+
+function getFileLayerPopupFormat(configuredFormat, properties) {
+  const entries = Object.entries(properties || {});
+  const hasOnlyHtml =
+    entries.length === 1 && String(entries[0][0]).toLowerCase() === "html";
+  const normalizedFormat = String(configuredFormat || "")
+    .trim()
+    .toLowerCase();
+
+  if (normalizedFormat === "text") {
+    return "text";
+  }
+  if (normalizedFormat === "html") {
+    return hasOnlyHtml ? "html" : "table";
+  }
+  if (normalizedFormat === "table") {
+    return "table";
+  }
+  return hasOnlyHtml ? "html" : "table";
+}
+
+function renderFileLayerPopupProperties(properties, popupFormat) {
+  const entries = Object.entries(properties || {});
+
+  if (popupFormat === "html") {
+    return `<div class="file-layer-feature-html">${prepareFileLayerPopupHtml(
+      entries[0]?.[1],
+    )}</div>`;
+  }
+
+  if (popupFormat === "text") {
+    const lines = entries.map(([key, value]) => {
+      const label = formatFileLayerPopupLabel(key);
+      return `<div class="file-layer-feature-text-line"><strong class="file-layer-feature-text-label">${escapeFileLayerPopupValue(
+        label,
+      )}:</strong> <span class="file-layer-feature-text-value">${escapeFileLayerPopupValue(
+        formatFileLayerPopupValue(value),
+      )}</span></div>`;
+    });
+    return `<div class="file-layer-feature-text">${lines.join("")}</div>`;
+  }
+
+  let table = '<table class="file-layer-feature-table"><tbody>';
+  entries.forEach(([key, value]) => {
+    table += "<tr>";
+    table += `<th>${escapeFileLayerPopupValue(key)}</th>`;
+    table += `<td>${escapeFileLayerPopupValue(formatFileLayerPopupValue(value))}</td>`;
+    table += "</tr>";
+  });
+  return `${table}</tbody></table>`;
+}
+
+function formatFileLayerPopupValue(value) {
+  return value && typeof value === "object" ? JSON.stringify(value) : value ?? "";
+}
+
+function formatFileLayerPopupLabel(key) {
+  const label = String(key || "")
+    .trim()
+    .replace(/_+/g, " ")
+    .replace(/\s+/g, " ");
+  return label ? label[0].toLocaleUpperCase() + label.slice(1) : "";
 }
 
 function escapeFileLayerPopupValue(value) {
@@ -1580,6 +2071,112 @@ function escapeFileLayerPopupValue(value) {
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function prepareFileLayerPopupHtml(value) {
+  const template = document.createElement("template");
+  template.innerHTML = String(value ?? "");
+
+  template.content.querySelectorAll("img[src]").forEach((image) => {
+    try {
+      const imageUrl = new URL(image.getAttribute("src"), document.baseURI);
+      if (
+        (imageUrl.protocol === "http:" || imageUrl.protocol === "https:") &&
+        imageUrl.origin !== window.location.origin
+      ) {
+        image.referrerPolicy = "no-referrer";
+      }
+    } catch (error) {
+      // Leave malformed or non-standard sources untouched so the browser can
+      // handle them consistently with regular HTML content.
+    }
+  });
+
+  return template.innerHTML;
+}
+
+function openLayerQueryPopup(targetMap, content, latlng, options = {}) {
+  const popupOptions = getLayerQueryPopupOptions(options, targetMap);
+
+  targetMap.openPopup(content, latlng, popupOptions);
+  keepLayerQueryPopupInView(targetMap, targetMap._popup);
+  return targetMap._popup;
+}
+
+function getLayerQueryPopupOptions(options = {}, targetMap = null) {
+  const edgePadding = [16, 16];
+  const popupOptions = {
+    autoPan: true,
+    keepInView: true,
+    autoPanPaddingTopLeft: edgePadding,
+    autoPanPaddingBottomRight: edgePadding,
+    ...options,
+  };
+
+  if (targetMap?.getSize) {
+    const availableWidth = Math.max(160, targetMap.getSize().x - 80);
+    popupOptions.maxWidth = Math.min(
+      options.maxWidth ?? 300,
+      availableWidth,
+    );
+    if (options.minWidth) {
+      popupOptions.minWidth = Math.min(options.minWidth, popupOptions.maxWidth);
+    }
+  }
+
+  return popupOptions;
+}
+
+function keepLayerQueryPopupInView(targetMap, popup) {
+  if (!targetMap || !popup) {
+    return;
+  }
+
+  let updateFrame = null;
+  const updatePosition = () => {
+    if (updateFrame !== null) {
+      return;
+    }
+
+    updateFrame = window.requestAnimationFrame(() => {
+      updateFrame = null;
+      if (popup._map === targetMap) {
+        popup.update();
+      }
+    });
+  };
+
+  updatePosition();
+
+  const popupContent = popup.getElement()?.querySelector(".leaflet-popup-content");
+  if (popupContent && targetMap.getSize) {
+    popupContent.style.maxHeight = `${Math.max(80, targetMap.getSize().y - 80)}px`;
+    popupContent.style.overflowY = "auto";
+  }
+  let resizeObserver = null;
+  if (popupContent && typeof ResizeObserver !== "undefined") {
+    resizeObserver = new ResizeObserver(updatePosition);
+    resizeObserver.observe(popupContent);
+  } else {
+    popupContent?.querySelectorAll("img").forEach((image) => {
+      if (!image.complete) {
+        image.addEventListener("load", updatePosition, { once: true });
+        image.addEventListener("error", updatePosition, { once: true });
+      }
+    });
+  }
+
+  const stopTracking = (event) => {
+    if (event.popup !== popup) {
+      return;
+    }
+    if (updateFrame !== null) {
+      window.cancelAnimationFrame(updateFrame);
+    }
+    resizeObserver?.disconnect();
+    targetMap.off("popupclose", stopTracking);
+  };
+  targetMap.on("popupclose", stopTracking);
 }
 
 /**
@@ -1661,6 +2258,354 @@ function nameForLayer(type) {
   return name;
 }
 
+const DEFAULT_VECTOR_LABEL_STYLE = Object.freeze({
+  enabled: false,
+  fields: [],
+  parts: [],
+  separator: " ",
+  position: "top",
+  color: "#202020",
+  fontFamily: "sans-serif",
+  fontSize: 14,
+  fontStyle: "normal",
+  underline: false,
+  uppercase: false,
+  halo: false,
+  haloColor: "#ffffff",
+  haloWidth: 2,
+  minZoom: null,
+  maxZoom: null,
+  autoHide: true,
+});
+
+function getVectorLabelGeometryKind(layer) {
+  if (!layer) return null;
+  if (["marker", "circlemarker", "circle"].includes(layer.type)) {
+    return "point";
+  }
+  if (layer.type === "polyline") return "line";
+  if (["polygon", "rectangle"].includes(layer.type)) return "polygon";
+  return null;
+}
+
+function getVectorLabelProperties(layer) {
+  return (
+    layer?._vectorLabelProperties ||
+    layer?.data?.geoJSON?.properties ||
+    layer?.data?.properties ||
+    layer?.toGeoJSON?.().properties ||
+    {}
+  );
+}
+
+function getVectorLabelPropertyNames(layer) {
+  return Object.keys(getVectorLabelProperties(layer)).filter(
+    (key) => !["styles", "type"].includes(key.toLowerCase()),
+  );
+}
+
+function normalizeVectorLabelStyle(style, geometryKind) {
+  const hasStyle = style && typeof style === "object" && !Array.isArray(style);
+  const source = hasStyle ? style : {};
+  const fieldsSource = source.fields ?? source.attributes ?? source.field ?? [];
+  const fields = (Array.isArray(fieldsSource) ? fieldsSource : [fieldsSource])
+    .map((field) => String(field || "").trim())
+    .filter((field, index, allFields) => field && allFields.indexOf(field) === index);
+  const configuredParts = Array.isArray(source.parts)
+    ? source.parts
+        .map((part) => {
+          if (!part || typeof part !== "object") return null;
+          const type = part.type === "text" ? "text" : "field";
+          const value = String(part.value ?? part.field ?? part.text ?? "");
+          if (type === "field" && !value.trim()) return null;
+          if (type === "text" && value === "") return null;
+          return { type, value: type === "field" ? value.trim() : value };
+        })
+        .filter(Boolean)
+    : [];
+  const separator =
+    source.separator === undefined
+      ? DEFAULT_VECTOR_LABEL_STYLE.separator
+      : String(source.separator);
+  const legacyParts = fields.flatMap((field, index) => [
+    ...(index > 0 && separator ? [{ type: "text", value: separator }] : []),
+    { type: "field", value: field },
+  ]);
+  const parts = configuredParts.length > 0 ? configuredParts : legacyParts;
+  const partFields = [
+    ...new Set(
+      parts
+        .filter((part) => part.type === "field")
+        .map((part) => part.value),
+    ),
+  ];
+  const allowedPositions = {
+    point: ["top", "bottom", "left", "right"],
+    line: ["above", "on-line", "below"],
+    polygon: ["center", "border", "parallel"],
+  };
+  const defaultPosition = {
+    point: "top",
+    line: "on-line",
+    polygon: "center",
+  }[geometryKind] || DEFAULT_VECTOR_LABEL_STYLE.position;
+  const position = allowedPositions[geometryKind]?.includes(source.position)
+    ? source.position
+    : defaultPosition;
+  const parsedFontSize = Number.parseFloat(source.fontSize);
+  const parsedHaloWidth = Number.parseFloat(source.haloWidth);
+  const parsedMinZoom =
+    source.minZoom === null || source.minZoom === ""
+      ? NaN
+      : Number.parseFloat(source.minZoom);
+  const parsedMaxZoom =
+    source.maxZoom === null || source.maxZoom === ""
+      ? NaN
+      : Number.parseFloat(source.maxZoom);
+  let minZoom = Number.isFinite(parsedMinZoom)
+    ? Math.min(30, Math.max(0, Math.round(parsedMinZoom)))
+    : null;
+  let maxZoom = Number.isFinite(parsedMaxZoom)
+    ? Math.min(30, Math.max(0, Math.round(parsedMaxZoom)))
+    : null;
+  if (minZoom !== null && maxZoom !== null && minZoom > maxZoom) {
+    [minZoom, maxZoom] = [maxZoom, minZoom];
+  }
+
+  return {
+    enabled: hasStyle ? source.enabled !== false : false,
+    fields: partFields,
+    parts,
+    separator,
+    position,
+    color: String(source.color || DEFAULT_VECTOR_LABEL_STYLE.color),
+    fontFamily: String(
+      source.fontFamily || DEFAULT_VECTOR_LABEL_STYLE.fontFamily,
+    ),
+    fontSize: Number.isFinite(parsedFontSize)
+      ? Math.min(72, Math.max(8, parsedFontSize))
+      : DEFAULT_VECTOR_LABEL_STYLE.fontSize,
+    fontStyle:
+      source.fontStyle === "italic" || source.italic === true
+        ? "italic"
+        : "normal",
+    underline:
+      source.underline === true || source.textDecoration === "underline",
+    uppercase: source.uppercase === true,
+    halo: source.halo === true,
+    haloColor: String(
+      source.haloColor || DEFAULT_VECTOR_LABEL_STYLE.haloColor,
+    ),
+    haloWidth: Number.isFinite(parsedHaloWidth)
+      ? Math.min(8, Math.max(1, parsedHaloWidth))
+      : DEFAULT_VECTOR_LABEL_STYLE.haloWidth,
+    minZoom,
+    maxZoom,
+    autoHide: source.autoHide !== false,
+  };
+}
+
+function getVectorLabelText(properties, labelStyle) {
+  const text = labelStyle.parts
+    .map((part) => {
+      if (part.type === "text") return part.value;
+      const value = properties?.[part.value];
+      return value === undefined || value === null
+        ? ""
+        : formatFileLayerPopupValue(value);
+    })
+    .join("");
+  return labelStyle.uppercase ? text.toLocaleUpperCase() : text;
+}
+
+function removeVectorLabel(layer) {
+  layer._vectorLabelRenderVersion =
+    (layer._vectorLabelRenderVersion || 0) + 1;
+  if (
+    layer._vectorLabelTooltip &&
+    layer.getTooltip?.() === layer._vectorLabelTooltip
+  ) {
+    layer.unbindTooltip();
+  }
+  delete layer._vectorLabelTooltip;
+  if (layer._vectorLabelUsesTextPath && typeof layer.setText === "function") {
+    layer.setText(null);
+  }
+  layer._vectorLabelUsesTextPath = false;
+  layer._vectorLabelCleanup?.();
+  delete layer._vectorLabelCleanup;
+}
+
+function isVectorLabelWithinZoom(layer, style) {
+  const zoom = layer?._map?.getZoom?.();
+  if (!Number.isFinite(zoom)) return true;
+  if (style.minZoom !== null && zoom < style.minZoom) return false;
+  if (style.maxZoom !== null && zoom > style.maxZoom) return false;
+  return true;
+}
+
+function trackVectorLabelTooltipVisibility(layer, style) {
+  if (style.minZoom === null && style.maxZoom === null) {
+    if (layer._map) layer.openTooltip();
+    return;
+  }
+  let trackedMap = null;
+  const updateVisibility = () => {
+    if (!layer._map || !layer._vectorLabelTooltip) return;
+    if (isVectorLabelWithinZoom(layer, style)) {
+      layer.openTooltip();
+    } else {
+      layer.closeTooltip();
+    }
+  };
+  const stopTrackingMap = () => {
+    trackedMap?.off("zoomend", updateVisibility);
+    trackedMap = null;
+  };
+  const startTrackingMap = () => {
+    stopTrackingMap();
+    trackedMap = layer._map || null;
+    trackedMap?.on("zoomend", updateVisibility);
+    updateVisibility();
+  };
+  const onRemove = () => stopTrackingMap();
+  layer.on("add", startTrackingMap);
+  layer.on("remove", onRemove);
+  if (layer._map) startTrackingMap();
+  layer._vectorLabelCleanup = () => {
+    stopTrackingMap();
+    layer.off("add", startTrackingMap);
+    layer.off("remove", onRemove);
+  };
+}
+
+function createVectorLabelTextElement(text, style) {
+  const element = document.createElement("span");
+  element.className = "vector-feature-label-text";
+  element.textContent = text;
+  element.style.color = style.color;
+  element.style.fontFamily = style.fontFamily;
+  element.style.fontSize = `${style.fontSize}px`;
+  element.style.fontStyle = style.fontStyle;
+  element.style.textDecoration = style.underline ? "underline" : "none";
+  if (style.halo) {
+    element.style.webkitTextStroke = `${style.haloWidth}px ${style.haloColor}`;
+    element.style.paintOrder = "stroke fill";
+  }
+  return element;
+}
+
+function getVectorLabelTooltipOptions(kind, position) {
+  if (kind === "polygon" && position === "center") {
+    return { direction: "center", offset: [0, 0] };
+  }
+  const options = {
+    top: { direction: "top", offset: [0, -8] },
+    bottom: { direction: "bottom", offset: [0, 8] },
+    left: { direction: "left", offset: [-8, 0] },
+    right: { direction: "right", offset: [8, 0] },
+  };
+  return options[position] || options.top;
+}
+
+function getVectorLabelPathOffset(kind, position) {
+  if (kind === "line") {
+    if (position === "above") return -8;
+    if (position === "below") return 14;
+    return 0;
+  }
+  return position === "parallel" ? -8 : 0;
+}
+
+async function applyVectorLabelStyle(layer, properties, style) {
+  const kind = getVectorLabelGeometryKind(layer);
+  if (!kind) return;
+
+  const labelStyle = normalizeVectorLabelStyle(style, kind);
+  layer.options.label = {
+    ...labelStyle,
+    fields: [...labelStyle.fields],
+    parts: labelStyle.parts.map((part) => ({ ...part })),
+  };
+  const featureProperties = properties || getVectorLabelProperties(layer);
+  layer._vectorLabelProperties = featureProperties;
+  if (featureProperties && typeof featureProperties === "object") {
+    featureProperties.styles = {
+      ...(featureProperties.styles || {}),
+      label: {
+        ...labelStyle,
+        fields: [...labelStyle.fields],
+        parts: labelStyle.parts.map((part) => ({ ...part })),
+      },
+    };
+  }
+
+  removeVectorLabel(layer);
+  const renderVersion = layer._vectorLabelRenderVersion;
+  if (!labelStyle.enabled || labelStyle.parts.length === 0) return;
+
+  const text = getVectorLabelText(featureProperties, labelStyle);
+  if (!text) return;
+
+  const useTooltip = kind === "point" || labelStyle.position === "center";
+  if (useTooltip) {
+    const position = getVectorLabelTooltipOptions(kind, labelStyle.position);
+    layer.bindTooltip(createVectorLabelTextElement(text, labelStyle), {
+      permanent: true,
+      interactive: false,
+      opacity: 1,
+      className: "vector-feature-label",
+      direction: position.direction,
+      offset: position.offset,
+    });
+    layer._vectorLabelTooltip = layer.getTooltip();
+    trackVectorLabelTooltipVisibility(layer, labelStyle);
+    return;
+  }
+
+  if (typeof layer.setText !== "function") {
+    await appDependencies.load("vectorLabels");
+  }
+  if (
+    renderVersion !== layer._vectorLabelRenderVersion ||
+    typeof layer.setText !== "function"
+  ) {
+    return;
+  }
+
+  layer.setText(text, {
+    repeat: false,
+    center: true,
+    offset: getVectorLabelPathOffset(kind, labelStyle.position),
+    orientation: "auto",
+    minZoom: labelStyle.minZoom,
+    maxZoom: labelStyle.maxZoom,
+    autoHide: labelStyle.autoHide,
+    attributes: {
+      fill: labelStyle.color,
+      "font-family": labelStyle.fontFamily,
+      "font-size": `${labelStyle.fontSize}px`,
+      "font-style": labelStyle.fontStyle,
+      "text-decoration": labelStyle.underline ? "underline" : "none",
+      stroke: labelStyle.halo ? labelStyle.haloColor : "none",
+      "stroke-width": labelStyle.halo ? labelStyle.haloWidth : 0,
+      "stroke-linejoin": "round",
+      "paint-order": "stroke fill",
+      "pointer-events": "none",
+    },
+  });
+  layer._vectorLabelUsesTextPath = true;
+}
+
+function refreshVectorLabelStyle(layer) {
+  if (!layer?.options?.label) return;
+  void applyVectorLabelStyle(
+    layer,
+    getVectorLabelProperties(layer),
+    layer.options.label,
+  ).catch((error) => console.error("Unable to render vector label:", error));
+}
+
 function createLayerByType(geoJSON, groupName) {
   let layer = null,
     type = geoJSON.geometry.type.toLowerCase(),
@@ -1669,6 +2614,8 @@ function createLayerByType(geoJSON, groupName) {
   if (geoJSON.properties.hasOwnProperty("styles")) {
     options = { ...geoJSON.properties.styles };
   }
+  const vectorLabelStyle = options.label;
+  delete options.label;
 
   //check type
   if (type === "point") {
@@ -1694,6 +2641,15 @@ function createLayerByType(geoJSON, groupName) {
   if (geoJSON.properties.type !== "label") {
     layer.id = groupName;
     layer.data = { geoJSON };
+    if (vectorLabelStyle) {
+      void applyVectorLabelStyle(
+        layer,
+        geoJSON.properties,
+        vectorLabelStyle,
+      ).catch((error) =>
+        console.error("Unable to render configured vector label:", error),
+      );
+    }
   }
   return layer;
 }
@@ -2005,10 +2961,10 @@ function removeLayerFromAllGroups(layer, groupName) {
   }
 }
 
-$(document).ready(function () {
-  $("#menu-toggle").click(function (e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("menuDisplayed");
+onDomReady(function () {
+  document.getElementById("menu-toggle")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    document.getElementById("wrapper")?.classList.toggle("menuDisplayed");
   });
 });
 

@@ -67,6 +67,7 @@
   "title": "Argenmap",
   "website": "https://github.com/ign-argentina/argenmap",
   "favicon": "src/styles/images/favicon.ico",
+  "customStyles": [],
   "geoprocessing": {
     "isActive": true,
     "buttonTitle": "Geoprocesos",

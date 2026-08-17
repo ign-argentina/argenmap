@@ -1,4 +1,3 @@
-let consultDataBtnClose = true;
 let map = document.getElementById("mapa");
 class ConsultData {
   constructor() {
@@ -208,12 +207,11 @@ function createImportWmsLayer(layer) {
         if (popupInfo.length > 0) {
           popupInfoToPaginate = [...popupInfo]; // Clone array for pagination
           latlngTmp = latlng;
-          this._map.openPopup(
+          openLayerQueryPopup(
+            this._map,
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
-            { autoPan: false },
           ); // Display popup with paginated info
-          this._map.setView(latlng, this._map.getZoom(), { animate: false });
           popupInfoPage = 0;
         }
       } else {
@@ -307,12 +305,11 @@ function createWmsLayer(objLayer) {
         if (popupInfo.length > 0) {
           popupInfoToPaginate = [...popupInfo]; // Clone array for pagination
           latlngTmp = latlng;
-          this._map.openPopup(
+          openLayerQueryPopup(
+            this._map,
             paginateFeatureInfo(popupInfo, 0, false, true),
             latlng,
-            { autoPan: false },
           ); // Display popup with paginated info
-          this._map.setView(latlng, this._map.getZoom(), { animate: false });
           popupInfoPage = 0;
         }
       } else {
@@ -352,15 +349,15 @@ function parseFeatureInfoHTML(info, idTxt) {
   let hasList = info.includes("<ul>");
   if (hasList) {
     // Process the list items
-    info = $(info)
-      .find("li")
-      .each(function () {
-        let [key, value] = $(this).text().split(":");
-        info = info.replace(
-          "<b>" + key + "</b>:",
-          "<b>" + ucwords(key.replace(/_/g, " ")) + ":</b>",
-        );
-      });
+    const parsedInfo = document.createElement("div");
+    parsedInfo.innerHTML = info;
+    parsedInfo.querySelectorAll("li").forEach((item) => {
+      const [key] = item.textContent.split(":");
+      info = info.replace(
+        "<b>" + key + "</b>:",
+        "<b>" + ucwords(key.replace(/_/g, " ")) + ":</b>",
+      );
+    });
 
     // Add an ID to the featureInfo class
     info = info.replace(
