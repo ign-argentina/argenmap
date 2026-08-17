@@ -830,6 +830,10 @@ div.leaflet-top.leaflet-left {
   outline: none;
 }
 
+.panel-default.section-pinned > .panel-heading {
+  box-shadow: inset 3px 0 0 currentColor;
+}
+
 .section-options-menu-open {
   display: block !important;
   position: fixed;

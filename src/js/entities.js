@@ -2854,6 +2854,7 @@ class GestorMenu {
     this._folders = {};
     this._sectionOptionsMenu = null;
     this._sectionOptionsToggle = null;
+    this._pinnedSectionId = null;
     document.addEventListener("click", () => this.closeSectionOptionsMenu());
     window.addEventListener("resize", () => this.closeSectionOptionsMenu());
   }
@@ -2933,6 +2934,58 @@ class GestorMenu {
     this._sectionOptionsToggle = null;
   }
 
+  _getSectionContainer(sectionId) {
+    const panel = document.getElementById(`${ItemGroupPrefix}${sectionId}`);
+    return panel?.closest(".custom-file-layer-section") || panel;
+  }
+
+  applyPinnedSectionOrder() {
+    document
+      .querySelectorAll(".panel-default.section-pinned")
+      .forEach((panel) => panel.classList.remove("section-pinned"));
+    if (!this._pinnedSectionId) return;
+
+    const container = this._getSectionContainer(this._pinnedSectionId);
+    const panel = document.getElementById(
+      `${ItemGroupPrefix}${this._pinnedSectionId}`,
+    );
+    const parent = container?.parentElement;
+    if (!container || !panel || !parent) return;
+
+    const firstSection = Array.from(parent.children).find(
+      (child) =>
+        child !== container &&
+        (child.matches(".panel-default") ||
+          child.matches(".custom-file-layer-section")),
+    );
+    if (firstSection) {
+      parent.insertBefore(container, firstSection);
+    } else {
+      parent.appendChild(container);
+    }
+    panel.classList.add("section-pinned");
+  }
+
+  setPinnedSection(sectionId) {
+    this._pinnedSectionId =
+      this._pinnedSectionId === sectionId ? null : sectionId;
+    this.printMenu();
+  }
+
+  _appendSectionMenuAction(menu, iconClass, label, handler) {
+    const option = document.createElement("li");
+    option.setAttribute("role", "none");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "section-options-action";
+    button.setAttribute("role", "menuitem");
+    button.innerHTML = `<i class="${iconClass}" aria-hidden="true"></i><span>${label}</span>`;
+    button.addEventListener("click", handler);
+    option.appendChild(button);
+    menu.appendChild(option);
+    return button;
+  }
+
   _positionSectionOptionsMenu(menu, toggle) {
     const buttonBounds = toggle.getBoundingClientRect();
     const viewport = window.visualViewport;
@@ -2967,28 +3020,31 @@ class GestorMenu {
     menu.setAttribute("role", "menu");
     menu.addEventListener("click", (event) => event.stopPropagation());
 
-    const visibilityOption = document.createElement("li");
-    visibilityOption.setAttribute("role", "none");
-    const visibilityButton = document.createElement("button");
-    visibilityButton.type = "button";
-    visibilityButton.className = "section-options-action";
-    visibilityButton.setAttribute("role", "menuitem");
-    visibilityButton.innerHTML = `<i class="fa ${
-      shouldActivate ? "fa-toggle-on" : "fa-toggle-off"
-    }" aria-hidden="true"></i><span>${
-      shouldActivate ? "Activar todas las capas" : "Desactivar todas las capas"
-    }</span>`;
-    visibilityButton.addEventListener("click", async () => {
-      visibilityButton.disabled = true;
-      menu.setAttribute("aria-busy", "true");
-      try {
-        await this.setSectionLayersVisibility(sectionId, shouldActivate);
-      } finally {
+    const visibilityButton = this._appendSectionMenuAction(
+      menu,
+      `fa ${shouldActivate ? "fa-toggle-on" : "fa-toggle-off"}`,
+      shouldActivate ? "Activar todas las capas" : "Desactivar todas las capas",
+      async () => {
+        visibilityButton.disabled = true;
+        menu.setAttribute("aria-busy", "true");
+        try {
+          await this.setSectionLayersVisibility(sectionId, shouldActivate);
+        } finally {
+          this.closeSectionOptionsMenu();
+        }
+      },
+    );
+
+    const isPinned = this._pinnedSectionId === sectionId;
+    this._appendSectionMenuAction(
+      menu,
+      "fa fa-thumbtack",
+      isPinned ? "Desfijar sección" : "Fijar sección arriba",
+      () => {
+        this.setPinnedSection(sectionId);
         this.closeSectionOptionsMenu();
-      }
-    });
-    visibilityOption.appendChild(visibilityButton);
-    menu.appendChild(visibilityOption);
+      },
+    );
 
     document.body.appendChild(menu);
     this._sectionOptionsMenu = menu;
@@ -4361,6 +4417,7 @@ class GestorMenu {
     bindZoomLayer();
     bindLayerOptions();
     this.initializeSectionOptions();
+    this.applyPinnedSectionOrder();
 
     //Call callback after print (if exists)
     if (this.printCallback != null) {
@@ -4468,6 +4525,7 @@ class GestorMenu {
     bindZoomLayer();
     bindLayerOptions();
     this.initializeSectionOptions();
+    this.applyPinnedSectionOrder();
     this.updateLayerMenuControls();
   }
 
@@ -4752,6 +4810,7 @@ class Menu_UI {
     let searchForm = document.getElementById("searchForm");
     searchForm.after(itemnew);
     gestorMenu.initializeSectionOptions();
+    gestorMenu.applyPinnedSectionOrder();
   }
 
   addParentSection(parent, child) {
