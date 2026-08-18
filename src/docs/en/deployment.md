@@ -35,6 +35,23 @@ npm ci
 npm run build
 ```
 
+The release version can be set explicitly with `ARGENMAP_VERSION`. For a
+release associated with a `master` tag:
+
+```bash
+ARGENMAP_VERSION=v1.2.3 npm run build
+```
+
+For a development build, include the branch and commit:
+
+```bash
+ARGENMAP_VERSION=develop-$(git rev-parse --short HEAD) npm run build
+```
+
+CI also detects GitLab tags and GitHub/GitLab branch names combined with their
+short commit, such as `develop-a1b2c3d4e5f6`. If no version is provided, it is
+derived from the published contents.
+
 Publish the **contents of `build/`** as the viewer root. The directory includes
 the Web App Manifest, versioned bundles and generated service worker. Do not edit
 it manually because every build recreates it.
@@ -70,6 +87,8 @@ Configure the web server with equivalent cache headers:
 /src/config/*.json                 Cache-Control: no-cache
 /assets/js/*.[hash].min.js         Cache-Control: public, max-age=31536000, immutable
 /src/styles/css/*.[hash].min.css   Cache-Control: public, max-age=31536000, immutable
+/src/js/**/*.js?v=*                Cache-Control: public, max-age=31536000, immutable
+/src/js/**/*.css?v=*               Cache-Control: public, max-age=31536000, immutable
 ```
 
 Deploy all files in `build/` atomically. Every build derives its PWA cache version

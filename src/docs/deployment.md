@@ -82,12 +82,30 @@ npm ci
 npm run build
 ```
 
+La versión se puede indicar explícitamente mediante `ARGENMAP_VERSION`. Para
+una publicación asociada a un tag de `master`, por ejemplo:
+
+```bash
+ARGENMAP_VERSION=v1.2.3 npm run build
+```
+
+Para una build de desarrollo conviene incluir la rama y el commit:
+
+```bash
+ARGENMAP_VERSION=develop-$(git rev-parse --short HEAD) npm run build
+```
+
+En CI también se aceptan automáticamente los tags de `CI_COMMIT_TAG` y las
+ramas de GitHub/GitLab combinadas con su commit corto, por ejemplo
+`develop-a1b2c3d4e5f6`. Si no se proporciona ninguna, se genera una versión a
+partir del contenido publicado.
+
 El comando crea la carpeta `build/`, lista para publicar. Esta versión:
 
 * combina y minifica el JavaScript y CSS necesarios para el arranque;
 * mantiene separados los plugins que se cargan únicamente al utilizarlos;
-* agrega un hash al nombre de los recursos críticos para poder cachearlos de
-  forma segura;
+* agrega un hash al nombre de los recursos críticos y una versión a todos los
+  recursos locales diferidos para poder cachearlos de forma segura;
 * copia la configuración de `src/config`; si no hay una configuración local,
   utiliza los archivos de `src/config/default`.
 * genera el manifiesto y el service worker necesarios para instalar Argenmap
@@ -153,6 +171,8 @@ operación y configura encabezados equivalentes a estos:
 /src/config/*.json                 Cache-Control: no-cache
 /assets/js/*.[hash].min.js         Cache-Control: public, max-age=31536000, immutable
 /src/styles/css/*.[hash].min.css   Cache-Control: public, max-age=31536000, immutable
+/src/js/**/*.js?v=*                Cache-Control: public, max-age=31536000, immutable
+/src/js/**/*.css?v=*               Cache-Control: public, max-age=31536000, immutable
 ```
 
 No cambies manualmente el nombre ni el contenido de `service-worker.js`. Si una

@@ -170,13 +170,47 @@ function replaceTag(html, currentTag, replacementTag) {
   return html.replace(currentTag, replacementTag);
 }
 
-async function createProductionHtml(javaScriptBundle, cssBundle) {
+function configuredReleaseVersion() {
+  const explicitVersion = process.env.ARGENMAP_VERSION?.trim();
+  if (explicitVersion) {
+    return explicitVersion;
+  }
+
+  const tag = process.env.CI_COMMIT_TAG?.trim();
+  if (tag) {
+    return tag;
+  }
+
+  const githubRef = process.env.GITHUB_REF_NAME?.trim();
+  const githubSha = process.env.GITHUB_SHA?.trim().slice(0, 12);
+  if (githubRef && process.env.GITHUB_REF_TYPE !== "tag" && githubSha) {
+    return `${githubRef}-${githubSha}`;
+  }
+
+  const ciRef = process.env.CI_COMMIT_REF_NAME?.trim();
+  const ciSha = process.env.CI_COMMIT_SHA?.trim().slice(0, 12);
+  if (ciRef && ciSha) {
+    return `${ciRef}-${ciSha}`;
+  }
+
+  return githubSha || ciSha || null;
+}
+
+function normalizeReleaseVersion(version) {
+  return version.replace(/[^a-z0-9._-]/giu, "-");
+}
+
+async function createProductionHtml(javaScriptBundle, cssBundle, version) {
   let html = await readFile(fromProject("index.html"), "utf8");
 
   html = replaceTag(
     html,
     '  <meta name="argenmap-build" content="development">',
     '  <meta name="argenmap-build" content="production">',
+  );
+  html = html.replace(
+    '  <meta name="argenmap-build" content="production">',
+    `  <meta name="argenmap-build" content="production">\n  <meta name="argenmap-version" content="${version}">`,
   );
 
   html = removeTag(
@@ -435,7 +469,11 @@ self.addEventListener("fetch", (event) => {
 `;
 }
 
-async function createProductionServiceWorker(javaScriptBundle, cssBundle) {
+async function createProductionServiceWorker(
+  javaScriptBundle,
+  cssBundle,
+  version,
+) {
   const candidates = [
     "index.html",
     "manifest.webmanifest",
@@ -461,16 +499,6 @@ async function createProductionServiceWorker(javaScriptBundle, cssBundle) {
     }
   }
 
-  const releaseFiles = (await listFiles(outputDirectory))
-    .map((filePath) =>
-      path.relative(outputDirectory, filePath).split(path.sep).join("/"),
-    )
-    .filter(
-      (relativePath) =>
-        relativePath !== "service-worker.js" &&
-        relativePath !== "build-manifest.json",
-    );
-  const version = await hashOutputFiles(releaseFiles);
   await writeFile(
     fromOutput("service-worker.js"),
     createServiceWorkerSource(version, precacheFiles),
@@ -523,10 +551,23 @@ async function build() {
     createInitialJavaScriptBundle(),
     createInitialCssBundle(),
   ]);
-  await createProductionHtml(javaScriptBundle, cssBundle);
+  const filesForContentVersion = (await listFiles(outputDirectory))
+    .map((filePath) =>
+      path.relative(outputDirectory, filePath).split(path.sep).join("/"),
+    )
+    .filter((relativePath) => relativePath !== "service-worker.js");
+  const version = normalizeReleaseVersion(
+    configuredReleaseVersion() ||
+      `content-${await hashOutputFiles(filesForContentVersion)}`,
+  );
+  await createProductionHtml(javaScriptBundle, cssBundle, version);
   await removeBundledSources();
   await verifyLocalHtmlAssets();
-  const pwa = await createProductionServiceWorker(javaScriptBundle, cssBundle);
+  const pwa = await createProductionServiceWorker(
+    javaScriptBundle,
+    cssBundle,
+    version,
+  );
 
   const manifest = {
     entrypoint: "index.html",
@@ -538,6 +579,7 @@ async function build() {
       manifest: "manifest.webmanifest",
       serviceWorker: "service-worker.js",
       cacheVersion: pwa.version,
+      releaseVersion: version,
       precache: pwa.precacheFiles,
     },
   };
