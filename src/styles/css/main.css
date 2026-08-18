@@ -2916,6 +2916,16 @@ input:checked.switch+label:after {
   }
 }
 
+/* Keep every Leaflet.Draw action reachable on short touch landscapes. */
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 31.25em) {
+  .leaflet-top.leaflet-right .leaflet-draw.leaflet-control {
+    position: absolute;
+    top: 2.25rem;
+    right: 2.5rem;
+    margin: 0 !important;
+  }
+}
+
 .pwa-notice {
   position: fixed;
   z-index: 20000;
