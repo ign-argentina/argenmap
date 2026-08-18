@@ -129,6 +129,15 @@ Cuando se publica una versión nueva, Argenmap muestra un aviso. La nueva versi�
 queda en espera hasta que la persona elige **Actualizar**, evitando reemplazar
 archivos mientras está usando el mapa.
 
+Cuando el navegador ofrece una solicitud de instalación, aparece el botón
+**Instalar Argenmap** al final de la barra lateral. En navegadores Chromium abre
+el diálogo nativo. En iPhone/iPad y navegadores móviles que no exponen ese
+diálogo, el botón explica cómo instalar desde **Compartir** o desde el menú del
+navegador. El control se oculta al ejecutar la aplicación ya instalada.
+
+La validación en teléfonos y tabletas se describe en la guía de
+[pruebas PWA en dispositivos reales](pwa-testing.md).
+
 ### Encabezados HTTP e invalidación de caché
 
 Cada ejecución de `npm run build` calcula la versión PWA a partir de todo el

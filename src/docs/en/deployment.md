@@ -51,6 +51,14 @@ the PWA therefore does not turn remote maps into offline map packages.
 After deploying a new build, Argenmap presents an update notice and activates the
 new service worker only when the user chooses **Update**.
 
+When the browser offers installation, an **Install Argenmap** button appears at
+the end of the side toolbar. Chromium browsers open their native prompt. On
+iPhone/iPad and mobile browsers without that API, the button provides Share or
+browser-menu instructions. It is hidden while the installed app runs.
+
+See [PWA tests on real devices](pwa-testing.md) for the Android/iOS validation
+matrix.
+
 Configure the web server with equivalent cache headers:
 
 ```text

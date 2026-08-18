@@ -22,6 +22,8 @@
 - Instalar el build de producción como PWA y recuperar sin conexión la interfaz
   y los recursos locales ya almacenados. Los mapas, capas y procesos remotos
   continúan necesitando conectividad.
+- Iniciar la instalación desde el botón propio de Argenmap o mostrar las
+  instrucciones específicas del navegador cuando no existe un diálogo nativo.
 
 ## Opciones de una sección de capas
 

@@ -18,6 +18,8 @@
 - Install the production build as a PWA and restore its interface and previously
   cached local resources offline. Remote maps, layers and processes still require
   connectivity.
+- Start installation from Argenmap's own button, or show browser-specific
+  instructions when a native prompt is not available.
 
 ## Layer section options
 
