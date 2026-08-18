@@ -110,9 +110,10 @@ deben quedar bajo la misma raíz pública.
 
 La estrategia de caché distingue cada tipo de recurso:
 
-* Los bundles con hash y el shell mínimo se sirven primero desde caché.
-* `index.html`, `data.json` y `preferences.json` intentan obtener siempre la
-  versión de red y recurren a la copia local si no hay conexión.
+* Los bundles con hash y `index.html` se sirven desde la caché de la versión
+  activa, para no mezclar archivos de dos publicaciones antes de actualizar.
+* `data.json` y `preferences.json` intentan obtener siempre la versión de red y
+  recurren a la copia local si no hay conexión.
 * Los plugins y recursos estáticos locales se actualizan en segundo plano
   después de haber sido utilizados.
 * Sólo se almacenan recursos estáticos de los CDN expresamente permitidos.

@@ -43,8 +43,10 @@ Production must be served over HTTPS; `localhost` is the only exception intended
 for local testing. The source development page does not register a service
 worker, so cached production resources cannot interfere with debugging.
 
-The PWA caches the application shell, local configuration and static resources
-that have been used. Remote map tiles, WMS/WMTS requests, `GetCapabilities`,
+The PWA serves `index.html` and its hashed bundles from the active version cache
+so files from two releases are not mixed before an accepted update. Local
+configuration is network-first with an offline fallback, while other static
+resources are cached after use. Remote map tiles, WMS/WMTS requests, `GetCapabilities`,
 `GetFeatureInfo`, authentication and geoprocesses remain network-only. Installing
 the PWA therefore does not turn remote maps into offline map packages.
 

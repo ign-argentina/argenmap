@@ -382,17 +382,11 @@ async function staleWhileRevalidate(request) {
   return update;
 }
 
-async function navigationNetworkFirst(request) {
-  try {
-    return await fetch(request);
-  } catch (error) {
-    const cache = await caches.open(APP_CACHE);
-    const shell = await cache.match("./index.html");
-    if (shell) {
-      return shell;
-    }
-    throw error;
-  }
+async function navigationFromActiveVersion(request) {
+  const cache = await caches.open(APP_CACHE);
+  const shell = await cache.match("./index.html");
+
+  return shell || fetch(request);
 }
 
 function isLocalStaticAsset(url) {
@@ -410,7 +404,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   if (request.mode === "navigate") {
-    event.respondWith(navigationNetworkFirst(request));
+    event.respondWith(navigationFromActiveVersion(request));
     return;
   }
 
