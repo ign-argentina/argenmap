@@ -2935,6 +2935,26 @@ input:checked.switch+label:after {
   line-height: 1.4;
 }
 
+.pwa-install-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  margin: 0.35rem;
+}
+
+.pwa-install-button[hidden] {
+  display: none !important;
+}
+
+.pwa-install-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  pointer-events: none;
+}
+
 .pwa-notice-action,
 .pwa-notice-dismiss {
   flex: 0 0 auto;
@@ -2970,5 +2990,27 @@ input:checked.switch+label:after {
     bottom: max(0.5rem, env(safe-area-inset-bottom));
     left: 0.5rem;
     max-width: none;
+  }
+
+  .pwa-install-button {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
+    margin: 0;
+  }
+
+  .pwa-install-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+@media (pointer: coarse) {
+  .pwa-install-button {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
   }
 }
