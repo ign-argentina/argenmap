@@ -35,6 +35,22 @@ npm ci
 npm run build
 ```
 
+To resolve the version automatically from the branch, run:
+
+```bash
+npm run build:versioned
+```
+
+On `develop` and other non-release branches it generates a
+`develop-<commit>` version. On `master`, `hotfix` and `release`, it first looks
+for a semantic tag (`vMAJOR.MINOR.PATCH`) on the current commit. If none
+exists, it asks for `major`, `minor` or `patch`, calculates the next tag using
+`git tag -l --sort=-v:refname`, creates it and builds with that version. Push a
+created tag explicitly, for example `git push origin v1.27.1`.
+
+The basic `npm run build` command remains available when `ARGENMAP_VERSION`
+needs to be provided manually.
+
 The release version can be set explicitly with `ARGENMAP_VERSION`. For a
 release associated with a `master` tag:
 
@@ -51,6 +67,40 @@ ARGENMAP_VERSION=develop-$(git rev-parse --short HEAD) npm run build
 CI also detects GitLab tags and GitHub/GitLab branch names combined with their
 short commit, such as `develop-a1b2c3d4e5f6`. If no version is provided, it is
 derived from the published contents.
+
+### Result by branch
+
+| Branch | Command | Resulting version | Creates a tag? |
+| --- | --- | --- | --- |
+| `master` | `npm run build:versioned` | `vMAJOR.MINOR.PATCH` | Yes, if `HEAD` has no semantic tag |
+| `hotfix/*` | `npm run build:versioned` | Next `vMAJOR.MINOR.PATCH` | Yes, if `HEAD` has no semantic tag |
+| `release/*` | `npm run build:versioned` | Next `vMAJOR.MINOR.PATCH` | Yes, if `HEAD` has no semantic tag |
+| `develop` | `npm run build:versioned` | `develop-<commit>` | No |
+| Branch derived from `develop` | `npm run build:versioned` | `develop-<commit>` | No |
+| Any branch | `npm run build` | Explicit, CI, or `content-<hash>` version | No |
+
+On release branches, if the current commit has no tag, the command asks for
+`major`, `minor` or `patch`, creates the tag locally, and continues the build.
+Push the tag after checking the result:
+
+```bash
+git push origin v1.27.4
+```
+
+To deploy the result:
+
+1. Run the selected command from the repository root.
+2. Check `build/build-manifest.json` and confirm the version in
+	`build/index.html`.
+3. Publish **all contents of `build/`** as the site root, replacing the
+	previous publication in one operation.
+4. Ensure `index.html`, `service-worker.js`, `manifest.webmanifest` and
+	configuration files do not have persistent HTTP caching.
+5. Open the site online and accept **Update** when a new-version notice appears.
+
+Do not publish only the bundle or only the service worker: they must come from
+the same build to prevent code, styles and plugins from different releases from
+being mixed.
 
 Publish the **contents of `build/`** as the viewer root. The directory includes
 the Web App Manifest, versioned bundles and generated service worker. Do not edit

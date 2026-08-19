@@ -82,6 +82,22 @@ npm ci
 npm run build
 ```
 
+Para resolver automáticamente la versión según la rama, se puede usar:
+
+```bash
+npm run build:versioned
+```
+
+En `develop` y en las demás ramas que no sean de publicación genera una
+versión `develop-<commit>`. En `master`, `hotfix` y `release`, busca primero un
+tag semántico (`vMAJOR.MINOR.PATCH`) en el commit actual. Si no existe, solicita
+`major`, `minor` o `patch`, calcula el siguiente tag usando
+`git tag -l --sort=-v:refname`, lo crea y compila con esa versión. El tag creado
+debe publicarse explícitamente, por ejemplo `git push origin v1.27.1`.
+
+El comando básico `npm run build` continúa disponible para casos en los que se
+quiera indicar manualmente `ARGENMAP_VERSION`.
+
 La versión se puede indicar explícitamente mediante `ARGENMAP_VERSION`. Para
 una publicación asociada a un tag de `master`, por ejemplo:
 
@@ -99,6 +115,40 @@ En CI también se aceptan automáticamente los tags de `CI_COMMIT_TAG` y las
 ramas de GitHub/GitLab combinadas con su commit corto, por ejemplo
 `develop-a1b2c3d4e5f6`. Si no se proporciona ninguna, se genera una versión a
 partir del contenido publicado.
+
+### Resultado según la rama
+
+| Rama | Comando | Versión resultante | ¿Crea tag? |
+| --- | --- | --- | --- |
+| `master` | `npm run build:versioned` | `vMAJOR.MINOR.PATCH` | Sí, si el `HEAD` no tiene tag semántico |
+| `hotfix/*` | `npm run build:versioned` | Siguiente `vMAJOR.MINOR.PATCH` | Sí, si el `HEAD` no tiene tag semántico |
+| `release/*` | `npm run build:versioned` | Siguiente `vMAJOR.MINOR.PATCH` | Sí, si el `HEAD` no tiene tag semántico |
+| `develop` | `npm run build:versioned` | `develop-<commit>` | No |
+| Rama derivada de `develop` | `npm run build:versioned` | `develop-<commit>` | No |
+| Cualquier rama | `npm run build` | Versión explícita, CI o `content-<hash>` | No |
+
+En las ramas de publicación, si el commit actual no tiene tag, el comando
+solicita `major`, `minor` o `patch`, crea el tag local y continúa con el build.
+Publica ese tag después de verificar el resultado:
+
+```bash
+git push origin v1.27.4
+```
+
+Para desplegar el resultado:
+
+1. Ejecuta el comando elegido desde la raíz del repositorio.
+2. Revisa `build/build-manifest.json` y confirma la versión en
+  `build/index.html`.
+3. Publica **todo el contenido de `build/`** como raíz del sitio, reemplazando
+  la publicación anterior en una única operación.
+4. Verifica que `index.html`, `service-worker.js`, `manifest.webmanifest` y la
+  configuración no tengan caché HTTP persistente.
+5. Abre el sitio con conexión y acepta el aviso **Actualizar** cuando aparezca
+  una nueva versión.
+
+No publiques solo el bundle o solo el service worker: deben pertenecer al mismo
+build para evitar mezclar código, estilos y plugins de distintas versiones.
 
 El comando crea la carpeta `build/`, lista para publicar. Esta versión:
 

@@ -4,7 +4,8 @@
   "private": true,
   "description": "Visor de mapas del Instituto Geografico Nacional",
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "build:versioned": "node scripts/versioned-build.mjs"
   },
   "devDependencies": {
     "esbuild": "0.25.8"
