@@ -5,7 +5,8 @@
   "description": "Visor de mapas del Instituto Geografico Nacional",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "build:versioned": "node scripts/versioned-build.mjs"
+    "build:versioned": "node scripts/versioned-build.mjs",
+    "test": "node scripts/test-layer-groups.mjs"
   },
   "devDependencies": {
     "esbuild": "0.25.8"

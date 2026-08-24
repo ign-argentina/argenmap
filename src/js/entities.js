@@ -534,7 +534,7 @@ class ImpresorGrupoHTML extends Impresor {
         ${sectionOptions}
       </div>
       <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}' aria-expanded='${isExpanded}'>
-        <div class="panel-body">
+        <div class="panel-body" id="${itemComposite.seccion}-panel-body">
           ${itemComposite.itemsStr}
         </div>
       </div>
@@ -652,6 +652,9 @@ class ImpresorGrupoHTML extends Impresor {
     return "";
   }
 }
+
+/** Strategy pattern: canonical renderer for a LayerGroup model. */
+class LayerGroupRenderer extends ImpresorGrupoHTML {}
 
 class ImpresorGroupWMSSelector extends Impresor {
   imprimir(itemComposite) {
@@ -936,24 +939,16 @@ class LayersInfoWMS extends LayersInfo {
   }
 
   generateGroups(_gestorMenu) {
-    const impresorGroup = this.itemGroupPrinter;
-    const impresorItem = new ImpresorItemHTML();
-
-    var thisObj = this;
-
-    //Instance an empty ItemGroup (without items)
-    var groupAux = new ItemGroup(
-      thisObj.tab,
-      thisObj.name,
-      thisObj.section,
-      thisObj.weight,
-      "",
-      "",
-      thisObj.short_abstract,
+    _gestorMenu.ensureLayerGroup(
+      {
+        id: this.section,
+        title: this.name,
+        weight: this.weight,
+        tab: this.tab,
+        shortDescription: this.short_abstract,
+      },
+      this.itemGroupPrinter,
     );
-    groupAux.setImpresor(impresorGroup);
-    groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
-    _gestorMenu.addItemGroup(groupAux);
   }
 
   /**
@@ -1867,23 +1862,16 @@ class LayersInfoWMTS extends LayersInfoWMS {
   }
 
   generateGroups(_gestorMenu) {
-    const impresorGroup = this.itemGroupPrinter;
-    const impresorItem = new ImpresorItemHTML();
-
-    var thisObj = this;
-
-    var groupAux = new ItemGroup(
-      thisObj.tab,
-      thisObj.name,
-      thisObj.section,
-      thisObj.weight,
-      "",
-      "",
-      thisObj.short_abstract,
+    _gestorMenu.ensureLayerGroup(
+      {
+        id: this.section,
+        title: this.name,
+        weight: this.weight,
+        tab: this.tab,
+        shortDescription: this.short_abstract,
+      },
+      this.itemGroupPrinter,
     );
-    groupAux.setImpresor(impresorGroup);
-    groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
-    _gestorMenu.addItemGroup(groupAux);
   }
 
   _parseRequest(_gestorMenu) {
@@ -2416,6 +2404,60 @@ class ItemGroup extends ItemComposite {
   }
 }
 
+/**
+ * Canonical layer-group model.
+ *
+ * Adapter pattern: the English API is canonical while the inherited aliases
+ * keep legacy menu collaborators working during the schema-v2 migration.
+ */
+class LayerGroup extends ItemGroup {
+  constructor({
+    id,
+    title,
+    weight = 0,
+    tab = new Tab(""),
+    keywords = "",
+    description = "",
+    shortDescription = "",
+    expanded = false,
+    style = null,
+    cssClass = "",
+  }) {
+    super(tab, title, id, weight, keywords, description, shortDescription);
+    this.id = id;
+    this.title = title;
+    this.weight = Number.isFinite(Number(weight)) ? Number(weight) : 0;
+    this.keywords = keywords;
+    this.description = description;
+    this.shortDescription = shortDescription;
+    this.expanded = expanded === true;
+    this.style = style;
+    this.cssClass = cssClass;
+
+    // Transitional aliases. New code uses the English properties above.
+    this.peso = this.weight;
+    this.sectionStyle = style;
+    this.setActive(this.expanded);
+  }
+
+  addLayerMenuItem(item) {
+    this.setItem(item);
+  }
+}
+
+/** Factory pattern: centralizes construction of every menu layer group. */
+class LayerGroupFactory {
+  static create(definition, target = null) {
+    const tab = definition.tab instanceof Tab
+      ? definition.tab
+      : new Tab(definition.tab || "");
+    const group = new LayerGroup({ ...definition, tab });
+    group.setImpresor(new LayerGroupRenderer());
+    if (target) group.setObjDom(target);
+    return group;
+  }
+}
+
 class ItemGroupBaseMap extends ItemGroup {
   isBaseLayer() {
     return true;
@@ -2816,7 +2858,7 @@ class ItemsGetterSearcherWithTabs extends ItemsGetter {
 /******************************************
 Gestor de menu
 ******************************************/
-class GestorMenu {
+class LayerMenuManager {
   constructor() {
     this.items = {};
     this.plugins = {};
@@ -3938,6 +3980,12 @@ class GestorMenu {
 
   setMenuDOM(menuDOM) {
     this.menuDOM = menuDOM;
+    // Groups may be registered before the map template mounts the menu. Keep
+    // the domain registry independent from DOM timing and bind render targets
+    // only when the UI becomes available.
+    Object.values(this.items).forEach((group) => {
+      group.setObjDom(this.getItemsGroupDOM());
+    });
   }
 
   getMenuDOM() {
@@ -4088,6 +4136,23 @@ class GestorMenu {
     }
 
     return null;
+  }
+
+  /** Registry pattern: one model instance exists for each layer-group id. */
+  ensureLayerGroup(definition, renderer = null) {
+    const existing = this.items[definition.id];
+    if (existing) return existing;
+
+    const group = LayerGroupFactory.create(definition, this.getItemsGroupDOM());
+    if (renderer) group.setImpresor(renderer);
+    this.addTab(group.getTab());
+    this.addItemGroup(group);
+    return group;
+  }
+
+  registerLayerGroup(group) {
+    this.addItemGroup(group);
+    return this.items[group.id || group.seccion];
   }
 
   addItemGroup(itemGroup) {
@@ -4674,7 +4739,6 @@ class GestorMenu {
       this._printWithTabs();
     } else {
       this.getMenuDOM().innerHTML = this._printSearcher();
-      menu_ui.rebuildConfiguredFileLayers();
 
       var itemsAux = new Array();
       var itemsIterator = this._itemsGetter.get(this);
@@ -4697,6 +4761,10 @@ class GestorMenu {
       //Generate logical folders
       this.generateFolders(itemsAuxToFolders);
     }
+
+    // File and OGC menu items now share the groups rendered above. This UI
+    // pass runs after group rendering to avoid parallel DOM-only sections.
+    menu_ui.rebuildConfiguredFileLayers();
 
     const loading = this.getLoadingDOM();
     if (loading) loading.style.display = "none";
@@ -4988,6 +5056,9 @@ class GestorMenu {
   }
 }
 
+// Backward-compatible name for plugins that still instantiate the old API.
+const GestorMenu = LayerMenuManager;
+
 /******************************************
 Tabs menu class
 ******************************************/
@@ -5004,13 +5075,20 @@ class Tab {
       if (tab.searcheable != undefined) {
         this.isSearcheable = tab.searcheable;
       }
+      if (tab.searchable != undefined) {
+        this.isSearcheable = tab.searchable;
+      }
       if (tab.content != undefined) {
         this.content = tab.content;
       }
       if (tab.list_type != undefined) {
         this.listType = tab.list_type;
       }
+      if (tab.listType != undefined) {
+        this.listType = tab.listType;
+      }
     }
+    this.isSearchable = this.isSearcheable;
   }
 
   getId() {
@@ -5065,36 +5143,25 @@ class Menu_UI {
   }
 
   addSection(name, idOverride = null) {
-    // name: visible label, idOverride: optional stable identifier for HTML ids
-    let groupnamev = clearSpecialChars(idOverride || name);
-    const sectionStyle =
-      app.items?.find(
-        (item) => item.seccion === groupnamev && item.section_style,
-      )?.section_style ||
-      app.sectionStyles?.[groupnamev] ||
-      null;
-    const sectionPrinter = new ImpresorGrupoHTML();
-    const styleAttributes = sectionPrinter.getSectionStyleAttributes(sectionStyle);
-    const headerIcon = sectionPrinter.getHeaderIcon(sectionStyle?.header?.icon);
-    const sectionOptions = sectionPrinter.getSectionOptionsButton(groupnamev);
-    const isExpanded = app.sectionExpanded?.[groupnamev] === true;
-    let itemnew = document.createElement("div");
-    itemnew.className = "custom-file-layer-section";
-    itemnew.innerHTML = `
-      <div id="lista-${groupnamev}" class="menu5 panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
-      <div class="panel-heading section-has-options" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="${isExpanded}">
-        <h4 class="panel-title">
-        ${headerIcon}<a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
-        </h4>
-        ${sectionOptions}
-      </div>
-      <div id='${groupnamev}-content' class="panel-collapse collapse${isExpanded ? " in" : ""}" aria-expanded="${isExpanded}">
-        <div class="panel-body" id ="${groupnamev}-panel-body"></div>
-      </div>
-      </div>`;
+    const groupId = clearSpecialChars(idOverride || name);
+    const configuredGroup = app.layerGroups?.find((group) => group.id === groupId);
+    const group = gestorMenu.ensureLayerGroup({
+      id: groupId,
+      title: configuredGroup?.title || name,
+      weight: configuredGroup?.weight ?? Number.MAX_SAFE_INTEGER,
+      tab: configuredGroup?.tab || new Tab(""),
+      description: configuredGroup?.description || "",
+      shortDescription: configuredGroup?.shortDescription || "",
+      expanded: configuredGroup?.expanded === true,
+      style: configuredGroup?.style || null,
+    });
 
-    let searchForm = document.getElementById("searchForm");
-    searchForm.after(itemnew);
+    // Renderer strategy: Menu_UI only mounts the rendered model; it no longer
+    // owns a second HTML implementation for file-backed groups.
+    const mount = document.createElement("div");
+    mount.innerHTML = group.imprimir();
+    const searchForm = document.getElementById("searchForm");
+    searchForm.after(mount.firstElementChild);
     gestorMenu.initializeSectionOptions();
     gestorMenu.applyPinnedSectionOrder();
   }
@@ -5157,14 +5224,27 @@ class Menu_UI {
   rebuildConfiguredFileLayers() {
     const sectionNodes = document.querySelectorAll(".custom-file-layer-section");
     sectionNodes.forEach((sectionNode) => sectionNode.remove());
+    document
+      .querySelectorAll(".file-layer-container")
+      .forEach((layerNode) => layerNode.remove());
 
     if (typeof configuredFileLayerRegistry === "undefined") {
       return;
     }
 
-    configuredFileLayerRegistry.forEach((entry) => {
+    const entries = [...configuredFileLayerRegistry].sort((left, right) => {
+      const leftGroup = gestorMenu.items[left.layerGroupId];
+      const rightGroup = gestorMenu.items[right.layerGroupId];
+      const groupDifference =
+        (leftGroup?.weight ?? leftGroup?.peso ?? left.groupWeight ?? 0) -
+        (rightGroup?.weight ?? rightGroup?.peso ?? right.groupWeight ?? 0);
+      if (groupDifference !== 0) return groupDifference;
+      return (left.weight ?? 0) - (right.weight ?? 0);
+    });
+
+    entries.forEach((entry) => {
       this.addFileLayer(
-        entry.sectionLabel,
+        entry.layerGroupTitle,
         entry.layerType,
         entry.textName,
         entry.id,
@@ -5173,7 +5253,7 @@ class Menu_UI {
         entry.icon,
         entry.description,
         entry.allowedOptions,
-        entry.sectionId,
+        entry.layerGroupId,
         entry.activeButtonColor,
         entry.editable,
       );

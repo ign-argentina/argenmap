@@ -31,6 +31,10 @@ function delFileItembyID(id) {
   if (layerIndex >= 0) {
     addedLayers.splice(layerIndex, 1);
   }
+  const menuIndex = configuredFileLayerRegistry.findIndex(
+    (entry) => entry.id === id,
+  );
+  if (menuIndex >= 0) configuredFileLayerRegistry.splice(menuIndex, 1);
 }
 
 function editDomNameofFileLayerbyID(id, name) {
@@ -38,32 +42,49 @@ function editDomNameofFileLayerbyID(id, name) {
   if (layerIndex >= 0) {
     addedLayers[layerIndex].name = name;
   }
+  const menuEntry = configuredFileLayerRegistry.find((entry) => entry.id === id);
+  if (menuEntry) menuEntry.textName = name;
 }
 
 function registerConfiguredFileLayerEntry(entry) {
   if (
     !entry ||
     !entry.id ||
-    (!entry.sectionName && !(entry.sectionId && entry.sectionLabel))
+    (!entry.layerGroupTitle &&
+      !entry.sectionName &&
+      !(entry.layerGroupId || (entry.sectionId && entry.sectionLabel)))
   ) {
     return;
   }
 
-  const sectionId =
+  const layerGroupId =
+    entry.layerGroupId ||
     entry.sectionId ||
     entry.sectionName ||
-    clearSpecialChars(entry.sectionLabel || entry.sectionName || entry.id);
-  const sectionLabel =
-    entry.sectionLabel || entry.sectionName || entry.sectionId || entry.id;
+    clearSpecialChars(
+      entry.layerGroupTitle || entry.sectionLabel || entry.sectionName || entry.id,
+    );
+  const layerGroupTitle =
+    entry.layerGroupTitle ||
+    entry.sectionLabel ||
+    entry.sectionName ||
+    entry.layerGroupId ||
+    entry.sectionId ||
+    entry.id;
   const exists = configuredFileLayerRegistry.some(
-    (item) => item.id === entry.id && item.sectionId === sectionId,
+    (item) => item.id === entry.id && item.layerGroupId === layerGroupId,
   );
 
   if (!exists) {
     configuredFileLayerRegistry.push({
       ...entry,
-      sectionId,
-      sectionLabel,
+      layerGroupId,
+      layerGroupTitle,
+      // Compatibility aliases consumed by layer actions not migrated yet.
+      sectionId: layerGroupId,
+      sectionLabel: layerGroupTitle,
+      groupWeight: Number(entry.groupWeight ?? 0),
+      weight: Number(entry.weight ?? 0),
       fromConfig: entry.fromConfig === true,
       allowedOptions: Array.isArray(entry.allowedOptions)
         ? entry.allowedOptions.map((option) => option.toLowerCase())
@@ -81,6 +102,8 @@ function registerConfiguredFileLayerEntry(entry) {
     });
   }
 }
+
+const registerFileLayerMenuEntry = registerConfiguredFileLayerEntry;
 
 function getFileLayerFeatures(id) {
   const layerNames = new Set(mapa.groupLayers?.[id] || []);
@@ -1091,6 +1114,11 @@ function clickGeometryLayer(layer) {
     }
   }
 
+  const menuEntry = configuredFileLayerRegistry.find(
+    (entry) => entry.id === layer,
+  );
+  if (menuEntry) menuEntry.isActive = targetLayer.isActive;
+
   updateNumberofLayers(targetLayer.section);
   showTotalNumberofLayers();
 }
@@ -1690,6 +1718,9 @@ function changeIsActive(id, isActive) {
       if (isActive == false) lyr.isActive = true;
     }
   });
+  const menuEntry = configuredFileLayerRegistry.find((entry) => entry.id === id);
+  const layerEntry = addedLayers.find((entry) => entry.id === id);
+  if (menuEntry && layerEntry) menuEntry.isActive = layerEntry.isActive;
 }
 
 function addCounterForSection(groupname, layerType) {
