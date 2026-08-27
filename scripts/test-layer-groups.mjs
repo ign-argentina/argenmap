@@ -10,6 +10,11 @@ const dependencyLoaderSource = fs.readFileSync(
   "src/js/utils/dependencies/dependency-loader.js",
   "utf8",
 );
+const apacheConfig = fs.readFileSync("deploy/apache/.htaccess", "utf8");
+const nginxConfig = fs.readFileSync(
+  "deploy/nginx/argenmap.conf.example",
+  "utf8",
+);
 const adapterStart = appSource.indexOf("const CURRENT_CONFIG_SCHEMA_VERSION");
 const adapterEnd = appSource.indexOf("function normalizeConfigSectionsAndLayers");
 assert.ok(adapterStart >= 0 && adapterEnd > adapterStart, "configuration adapter exists");
@@ -109,6 +114,20 @@ assert.match(
   /javascript: javaScriptChunks/,
   "the build manifest exposes every critical JavaScript chunk",
 );
+assert.match(
+  buildSource,
+  /createCompressedAssets\(\[[\s\S]*\.\.\.javaScriptChunks,[\s\S]*cssBundle/,
+  "the build precompresses hashed startup assets",
+);
+for (const [serverName, config] of [
+  ["Apache", apacheConfig],
+  ["Nginx", nginxConfig],
+]) {
+  assert.match(config, /immutable/, `${serverName} caches hashed assets immutably`);
+  assert.match(config, /no-cache/, `${serverName} revalidates mutable entrypoints`);
+}
+assert.match(apacheConfig, /BROTLI_COMPRESS/, "Apache enables Brotli when available");
+assert.match(nginxConfig, /gzip_static on/, "Nginx serves precompressed gzip assets");
 for (const moduleName of ["login", "about", "pwa"]) {
   assert.doesNotMatch(
     initialScriptsSource,

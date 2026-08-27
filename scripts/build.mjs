@@ -12,12 +12,20 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
+import {
+  brotliCompress,
+  constants as zlibConstants,
+  gzip,
+} from "node:zlib";
 
 import { transform } from "esbuild";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
 const outputDirectory = path.join(projectDirectory, "build");
+const gzipAsync = promisify(gzip);
+const brotliCompressAsync = promisify(brotliCompress);
 
 const initialScripts = [
   "src/js/utils/dependencies/dependency-loader.js",
@@ -176,6 +184,37 @@ async function createInitialCssBundle() {
 
   await writeFile(fromOutput(relativePath), result.code);
   return relativePath;
+}
+
+async function createCompressedAssets(relativePaths) {
+  const entries = await Promise.all(
+    relativePaths.map(async (relativePath) => {
+      const source = await readFile(fromOutput(relativePath));
+      const [gzipContent, brotliContent] = await Promise.all([
+        gzipAsync(source, { level: 9 }),
+        brotliCompressAsync(source, {
+          params: {
+            [zlibConstants.BROTLI_PARAM_QUALITY]: 10,
+          },
+        }),
+      ]);
+      const gzipPath = `${relativePath}.gz`;
+      const brotliPath = `${relativePath}.br`;
+      await Promise.all([
+        writeFile(fromOutput(gzipPath), gzipContent),
+        writeFile(fromOutput(brotliPath), brotliContent),
+      ]);
+      return [
+        relativePath,
+        {
+          gzip: gzipPath,
+          brotli: brotliPath,
+        },
+      ];
+    }),
+  );
+
+  return Object.fromEntries(entries);
 }
 
 function removeTag(html, tag) {
@@ -605,6 +644,10 @@ async function build() {
     fromProject("manifest.webmanifest"),
     fromOutput("manifest.webmanifest"),
   );
+  await cp(
+    fromProject("deploy/apache/.htaccess"),
+    fromOutput(".htaccess"),
+  );
 
   await ensureRuntimeConfiguration();
   await ensureConfiguredFavicon();
@@ -612,6 +655,10 @@ async function build() {
   const [javaScriptChunks, cssBundle] = await Promise.all([
     createInitialJavaScriptChunks(),
     createInitialCssBundle(),
+  ]);
+  const compressedAssets = await createCompressedAssets([
+    ...javaScriptChunks,
+    cssBundle,
   ]);
   const filesForContentVersion = (await listFiles(outputDirectory))
     .map((filePath) =>
@@ -636,6 +683,7 @@ async function build() {
     assets: {
       javascript: javaScriptChunks,
       css: cssBundle,
+      encodings: compressedAssets,
     },
     pwa: {
       manifest: "manifest.webmanifest",

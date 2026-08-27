@@ -144,6 +144,39 @@ Configure the web server with equivalent cache headers:
 /src/js/**/*.css?v=*               Cache-Control: public, max-age=31536000, immutable
 ```
 
+The build generates `.br` and `.gz` versions of every startup JavaScript chunk
+and the main CSS file. They are listed under `assets.encodings` in
+`build-manifest.json`, allowing the server to send precompressed content without
+spending CPU on each request.
+
+For **Apache**, the build copies a ready-to-use `.htaccess` to its root. It
+requires Apache 2.4 with `AllowOverride FileInfo`, uses Brotli when `mod_brotli`
+is enabled, and falls back to gzip through `mod_deflate`. It also applies the
+`no-cache` and `immutable` policies above.
+
+For **Nginx**, use
+[`deploy/nginx/argenmap.conf.example`](../../../deploy/nginx/argenmap.conf.example)
+as a template, adjust `server_name` and `root`, then validate before reloading:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+The template enables `gzip_static` for the generated `.gz` files. If the Nginx
+Brotli module is installed, uncomment its four directives to prefer `.br`.
+
+After deployment, test one path listed in `assets.javascript` inside
+`build-manifest.json`:
+
+```bash
+curl -I -H 'Accept-Encoding: br, gzip' https://example/argenmap/assets/js/argenmap-runtime.HASH.min.js
+```
+
+The response should include `Content-Encoding: br` or `gzip`, `Vary:
+Accept-Encoding`, and `Cache-Control: public, max-age=31536000, immutable` for
+the hashed asset.
+
 Deploy all files in `build/` atomically. Every build derives its PWA cache version
 from the full published contents, including configuration and deferred plugins.
 

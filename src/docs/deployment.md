@@ -230,6 +230,39 @@ operación y configura encabezados equivalentes a estos:
 /src/js/**/*.css?v=*               Cache-Control: public, max-age=31536000, immutable
 ```
 
+El build genera versiones `.br` y `.gz` de cada chunk JavaScript y del CSS
+principal, y las declara en `build-manifest.json` dentro de `assets.encodings`.
+Esto permite servir los archivos ya comprimidos sin consumir CPU del servidor.
+
+Para **Apache**, el build copia una `.htaccess` preparada a su raíz. Requiere
+Apache 2.4 con `AllowOverride FileInfo`; utiliza Brotli si está habilitado
+`mod_brotli` y recurre a `mod_deflate` para gzip. También configura los
+encabezados `no-cache` e `immutable` anteriores.
+
+Para **Nginx**, utiliza
+[`deploy/nginx/argenmap.conf.example`](../../deploy/nginx/argenmap.conf.example)
+como plantilla, ajusta `server_name` y `root`, y valida antes de recargar:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+La plantilla habilita `gzip_static` para aprovechar los `.gz`. Si Nginx tiene
+instalado el módulo Brotli, descomenta sus cuatro directivas para priorizar los
+`.br`.
+
+Después de publicar, verifica una ruta listada en `assets.javascript` dentro de
+`build-manifest.json`:
+
+```bash
+curl -I -H 'Accept-Encoding: br, gzip' https://ejemplo/argenmap/assets/js/argenmap-runtime.HASH.min.js
+```
+
+La respuesta debe incluir `Content-Encoding: br` o `gzip`, `Vary:
+Accept-Encoding` y, para el archivo con hash, `Cache-Control: public,
+max-age=31536000, immutable`.
+
 No cambies manualmente el nombre ni el contenido de `service-worker.js`. Si una
 publicación debe revertirse, vuelve a generar y desplegar el build de la versión
 anterior: su contenido producirá otra versión de caché. Para resolver una
