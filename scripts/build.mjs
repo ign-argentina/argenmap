@@ -30,8 +30,11 @@ const initialScripts = [
   "src/js/components/user-message/user-message.js",
   "src/js/app.js",
   "src/js/components/styles/styles.js",
-  "src/js/components/login/login.js",
   "src/js/components/UI/UserInterface.js",
+];
+
+const secondaryScripts = [
+  "src/js/components/login/login.js",
   "src/js/components/about/about.js",
   "src/js/components/pwa/pwa.js",
 ];
@@ -228,6 +231,9 @@ async function createProductionHtml(javaScriptBundle, cssBundle, version) {
   );
 
   for (const script of initialScripts.slice(3)) {
+    html = removeTag(html, `  <script defer src="${script}"></script>\n`);
+  }
+  for (const script of secondaryScripts) {
     html = removeTag(html, `  <script defer src="${script}"></script>\n`);
   }
 

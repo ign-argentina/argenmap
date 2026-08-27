@@ -3960,6 +3960,7 @@ document.body.addEventListener("pluginLoad", async function (event) {
       });
 
       showMainMenuTpl();
+      document.documentElement.dataset.argenmapMapReady = "true";
       window.dispatchEvent(
         new CustomEvent(ARGENMAP_EVENTS.MAP_READY, {
           detail: { map: mapa },

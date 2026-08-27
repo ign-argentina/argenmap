@@ -171,6 +171,12 @@ function onDomReady(callback) {
 }
 
 const appDependencies = new AppDependencyLoader({
+  secondaryStartup: {
+    scripts: [
+      "src/js/components/about/about.js",
+      "src/js/components/pwa/pwa.js",
+    ],
+  },
   analytics: {
     scripts: ["src/js/utils/analytics/analytics.js"],
   },

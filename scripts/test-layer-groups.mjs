@@ -5,6 +5,11 @@ import vm from "node:vm";
 const appSource = fs.readFileSync("src/js/app.js", "utf8");
 const entitiesSource = fs.readFileSync("src/js/entities.js", "utf8");
 const pwaSource = fs.readFileSync("src/js/components/pwa/pwa.js", "utf8");
+const buildSource = fs.readFileSync("scripts/build.mjs", "utf8");
+const dependencyLoaderSource = fs.readFileSync(
+  "src/js/utils/dependencies/dependency-loader.js",
+  "utf8",
+);
 const adapterStart = appSource.indexOf("const CURRENT_CONFIG_SCHEMA_VERSION");
 const adapterEnd = appSource.indexOf("function normalizeConfigSectionsAndLayers");
 assert.ok(adapterStart >= 0 && adapterEnd > adapterStart, "configuration adapter exists");
@@ -49,6 +54,42 @@ assert.match(
   pwaSource,
   /serviceWorkerFallbackDelay/,
   "service worker registration has a fallback when map startup fails",
+);
+assert.match(
+  pwaSource,
+  /dataset\.argenmapMapReady === "true"/,
+  "a PWA module loaded after map startup registers without the fallback delay",
+);
+
+const initialScriptsSource = buildSource.match(
+  /const initialScripts = \[([\s\S]*?)\n\];/,
+)?.[1];
+const secondaryScriptsSource = buildSource.match(
+  /const secondaryScripts = \[([\s\S]*?)\n\];/,
+)?.[1];
+assert.ok(initialScriptsSource, "initial build scripts are declared");
+assert.ok(secondaryScriptsSource, "secondary build scripts are declared");
+for (const moduleName of ["login", "about", "pwa"]) {
+  assert.doesNotMatch(
+    initialScriptsSource,
+    new RegExp(`/components/${moduleName}/${moduleName}\\.js`),
+    `${moduleName} is excluded from the critical bundle`,
+  );
+  assert.match(
+    secondaryScriptsSource,
+    new RegExp(`/components/${moduleName}/${moduleName}\\.js`),
+    `${moduleName} remains available as a secondary module`,
+  );
+}
+assert.match(
+  dependencyLoaderSource,
+  /secondaryStartup:[\s\S]*about\/about\.js[\s\S]*pwa\/pwa\.js/,
+  "About and PWA are grouped for post-map loading",
+);
+assert.match(
+  appSource,
+  /case "login":[\s\S]*loadScript\([\s\S]*login\/login\.js[\s\S]*await login\.load\(\)/,
+  "login is loaded only when its profile module is enabled",
 );
 
 const legacy = adapter.adaptData({

@@ -292,6 +292,10 @@
       }
     };
 
+    if (document.documentElement.dataset.argenmapMapReady === "true") {
+      registerWhenIdle();
+      return;
+    }
     window.addEventListener(ARGENMAP_EVENTS.MAP_READY, registerWhenIdle, {
       once: true,
     });
