@@ -4,7 +4,16 @@ This guide describes the settings affected by `src/config/data.json` and
 `src/config/preferences.json`. Copy the files from `src/config/default/` when
 starting a new configuration and validate the JSON after each change.
 
-## Basemaps, sections, and layers (`data.json`)
+## Basemaps, layer groups, and layers (`data.json`)
+
+Both configuration files declare `"schemaVersion": "2.0.0"`. A `data.json`
+without a version is treated as schema 1.x and adapted before the menu model is
+created. Schema 2.0 uses `baseMapGroups`, `layerGroups`, `dataSources`, `layers`,
+and `compositeLayers`. The former `items`, `sections`, `peso`, `nombre`,
+`seccion`, `capas`, `host`, and `layers_joins` names remain input-only aliases
+for backward compatibility.
+
+### Schema 1.x (backward compatibility)
 
 The legacy structure uses `items`: the first item contains the basemaps and
 each following item defines a WMS or WMTS section.
@@ -72,7 +81,7 @@ the OGC legend metadata used by other tools such as printing. When omitted,
 `src/styles/images/layers-group.svg` is used to make the grouping explicit.
 The icon path never depends on the visible title or its special characters.
 
-### Separate `sections` and `layers` structure
+### Legacy separate `sections` and `layers` structure
 
 Sections and layers can be declared separately. This is recommended when
 several layers share a heading, tab, description, or visual style:

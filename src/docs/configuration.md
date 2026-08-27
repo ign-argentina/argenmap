@@ -38,47 +38,81 @@ src/config/data.json           → Mapas base, capas, agrupaciones.
 
 ## 2. Configuración de mapas base y capas (`data.json`)
 
-### Estructura básica
+### Esquema 2.0 y nomenclatura
 
-El archivo `data.json` se compone de bloques llamados **items**, el primero agrupa los mapas base y los siguientes las secciones desplegables que agrupan capas.
+Ambos archivos de configuración declaran `"schemaVersion": "2.0.0"`. Cuando
+`data.json` no declara versión, la aplicación lo considera esquema 1.x y un
+adaptador lo convierte al modelo actual antes de crear el menú.
+
+El esquema 2.0 utiliza estos conceptos:
+
+- `layerGroups`: grupos abstractos representados como desplegables del menú.
+- `compositeLayers`: varias capas manejadas como una sola.
+- `layers`: entidades de datos individuales.
+- `dataSources`: archivos o servicios OGC desde los que se obtienen capas.
+- `baseMapGroups`: grupos de mapas base.
 
 > [!NOTE]
 > Llamamos bloque a lo que está entre dos llaves `{ }`
 
 ```jsonc
 {
-  "items": [
+  "schemaVersion": "2.0.0",
+  "baseMapGroups": [
     {
-      "capas": [
+      "id": "base-maps",
+      "title": "Mapas base",
+      "weight": 1,
+      "layers": [
         {
-          // Mapa base.
-        },
-        {
-          // Otros mapas base.
+          "id": "argenmap",
+          "title": "Argenmap",
+          "service": "tms",
+          "url": "https://example.org/{z}/{x}/{y}.png",
+          "weight": 10
         }
       ]
-    },
-    {
-      // Fuente de capas desde WMS o WMTS.
-    },
-    {
-      // Otra fuente de capas desde WMS o WMTS.
     }
   ],
-  "layers_joins": [
+  "layerGroups": [
     {
-      // Fusión de dos capas en un sólo botón del menú (opcional).
+      "id": "events",
+      "title": "Eventos",
+      "description": "Capas relacionadas con eventos",
+      "weight": 90
     }
   ],
-  "template": "", // Obsoleto. Puede ser necesario por compatibiliad.
-  "template_feature_info_exception": [
-    // Lista de nombres de atributos de las capas WMS que serán ignorados en las consultas.
+  "dataSources": [
+    {
+      "id": "events-file",
+      "type": "file",
+      "url": "data/events.geojson",
+      "format": "geojson"
+    }
+  ],
+  "layers": [
+    {
+      "id": "events",
+      "title": "Eventos",
+      "layerGroupId": "events",
+      "sourceId": "events-file",
+      "weight": 10
+    }
   ]
 }
 ```
 
-También se admite una estructura separada con `sections` y `layers`. Es la
-opción recomendada cuando varias capas comparten encabezado, pestaña o estilo:
+Los nombres anteriores (`sections`, `items`, `peso`, `nombre`, `seccion`,
+`capas`, `host`, `servicio` y `layers_joins`) sólo pertenecen al esquema 1.x.
+Siguen siendo aceptados cuando falta `schemaVersion`, pero no deben utilizarse
+en configuraciones nuevas.
+
+### Esquema 1.x (retrocompatibilidad)
+
+Las instalaciones existentes también pueden proporcionar la estructura
+anterior con `items`, o la variante separada con `sections` y `layers`. El
+adaptador la conserva para evitar migraciones obligatorias, pero el esquema no
+debe usarse como base de configuraciones nuevas:
 
 ```jsonc
 {

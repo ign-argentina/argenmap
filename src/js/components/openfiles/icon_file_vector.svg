@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">Capa vectorial desde archivo</title>
+  <path fill="#105c97" d="M5 1h15l7 7v23H5zm2 2v26h18V10h-7V3zm13 .8V8h4.2z"/>
+  <path fill="none" stroke="#105c97" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m10 23 3-8 8 3-2 7z"/>
+  <g fill="#105c97">
+    <circle cx="10" cy="23" r="2"/>
+    <circle cx="13" cy="15" r="2"/>
+    <circle cx="21" cy="18" r="2"/>
+    <circle cx="19" cy="25" r="2"/>
+  </g>
+</svg>
