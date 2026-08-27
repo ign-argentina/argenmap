@@ -23,6 +23,7 @@ class ContextMenu {
       optionData.onclick(option);
     };
     this.menu.appendChild(option);
+    return option;
   }
 
   createSelect(optionData) {

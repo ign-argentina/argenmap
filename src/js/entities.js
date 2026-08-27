@@ -2,6 +2,7 @@
 
 const EmptyTab = "main-menu-tab-";
 const ItemGroupPrefix = "lista-";
+const DEFAULT_JOINED_LAYER_ICON = "src/styles/images/layers-group.svg";
 
 function normalizeStr(s) {
   if (s == null) return "";
@@ -74,6 +75,7 @@ class Capa {
     this.tileMatrixSetLinks = this.metadata.tileMatrixSetLinks || [];
     this.resourceUrls = this.metadata.resourceUrls || [];
     this.serviceMetadata = this.metadata.service || null;
+    this.opacity = this.metadata.opacity ?? 1;
   }
 
   getLegendURL() {
@@ -179,8 +181,9 @@ class Impresor {
 class ImpresorItemHTML extends Impresor {
   imprimir(item) {
     var childId = item.getId();
+    const menuIcon = item.getMenuIcon();
     let lyr = item.capa,
-      legend,
+      legend = menuIcon,
       legendParams =
         _LEGEND_PARAMS + _LEGEND_OPTIONS + "forceTitles:off;forceLabels:off;",
       aux = {
@@ -192,26 +195,35 @@ class ImpresorItemHTML extends Impresor {
     app.setLayer(aux);
     app.layerNameByDomId[childId] = item.nombre;
 
-    if (
-      lyr.legendURL === null ||
-      typeof lyr.legendURL === "undefined" ||
-      lyr.legendURL === ""
-    ) {
-      if (lyr.servicio === "wms") {
-        lyr.legendURL =
-          lyr.host +
-          "?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=" +
-          lyr.nombre;
-      } else {
-        lyr.legendURL = item.legendImg || ERROR_IMG;
+    if (!legend) {
+      if (
+        lyr.legendURL === null ||
+        typeof lyr.legendURL === "undefined" ||
+        lyr.legendURL === ""
+      ) {
+        if (lyr.servicio === "wms") {
+          lyr.legendURL =
+            lyr.host +
+            "?service=WMS&request=GetLegendGraphic&format=image%2Fpng&version=1.1.1&layer=" +
+            lyr.nombre;
+        } else {
+          lyr.legendURL = item.legendImg || ERROR_IMG;
+        }
       }
+      legend = lyr.legendURL;
     }
-    legend = lyr.legendURL.includes("GetLegendGraphic")
-      ? lyr.legendURL + legendParams
-      : lyr.legendURL;
+    legend = legend.includes("GetLegendGraphic")
+      ? legend + legendParams
+      : legend;
 
     // following line adds layer when click is made
-    let legendImg = `<div class='legend-layer'><img class='legend-img' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);' onload='adaptToImage(this.parentNode)'></div>`;
+    const legendClass = menuIcon
+      ? "legend-img layer-menu-icon"
+      : "legend-img";
+    const adaptLegend = menuIcon
+      ? ""
+      : " onload='adaptToImage(this.parentNode)'";
+    let legendImg = `<div class='legend-layer'><img class='${legendClass}' style='width:20px;height:20px' loading='lazy' src='${legend}' onerror='showImageOnError(this);'${adaptLegend}></div>`;
     let activated = item.visible == true ? " active " : "",
       btnhtml = "";
 
@@ -276,11 +288,11 @@ class ImpresorItemHTML extends Impresor {
     input_opacity.min = "0";
     input_opacity.max = "1";
     input_opacity.step = "0.05";
-    input_opacity.defaultValue = "1";
+    input_opacity.defaultValue = String(item.capa.opacity ?? 1);
     input_opacity.style = "width: auto; margin-left: 10px;";
     input_opacity.setAttribute(
       "onInput",
-      `overlayMaps['${item.nombre}'].setOpacity(this.value)`,
+      `gestorMenu.setLayerOpacity('${item.nombre}', this.value)`,
     );
 
     if (activated) {
@@ -504,24 +516,41 @@ class ImpresorGrupoHTML extends Impresor {
 
     const isExpanded = itemComposite.getActive() === true;
     const active = isExpanded ? " in" : "";
+    const sectionOptions =
+      typeof gestorMenu !== "undefined" &&
+      gestorMenu.items?.[itemComposite.seccion] === itemComposite
+        ? this.getSectionOptionsButton(itemComposite.seccion)
+        : "";
 
     return `
     <div id="${listaId}" class="${itemClass} panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
-      <div class="panel-heading" data-toggle="collapse" data-target="#${itemComposite.seccion}" aria-expanded="${isExpanded}">
+      <div class="panel-heading${sectionOptions ? " section-has-options" : ""}" data-toggle="collapse" data-target="#${itemComposite.seccion}" aria-expanded="${isExpanded}">
         <h4 class="panel-title">
           ${headerIcon}<span id="${listaId}-a" class="item-group-title">${itemComposite.nombre}</span>
           <div class='item-group-short-desc'>
             <span data-toggle='tooltip' title='${itemComposite.descripcion}'>${itemComposite.shortDesc}</span>
           </div>
         </h4>
+        ${sectionOptions}
       </div>
       <div id='${itemComposite.seccion}' class='panel-collapse collapse${active}' aria-expanded='${isExpanded}'>
-        <div class="panel-body">
+        <div class="panel-body" id="${itemComposite.seccion}-panel-body">
           ${itemComposite.itemsStr}
         </div>
       </div>
     </div>
   `;
+  }
+
+  getSectionOptionsButton(sectionId) {
+    return `
+      <button type="button" class="section-options-toggle" data-section-id="${sectionId}"
+        title="Opciones de la sección" aria-label="Opciones de la sección"
+        aria-haspopup="menu" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+        </svg>
+      </button>`;
   }
 
   getSectionStyleAttributes(sectionStyle) {
@@ -623,6 +652,9 @@ class ImpresorGrupoHTML extends Impresor {
     return "";
   }
 }
+
+/** Strategy pattern: canonical renderer for a LayerGroup model. */
+class LayerGroupRenderer extends ImpresorGrupoHTML {}
 
 class ImpresorGroupWMSSelector extends Impresor {
   imprimir(itemComposite) {
@@ -907,24 +939,16 @@ class LayersInfoWMS extends LayersInfo {
   }
 
   generateGroups(_gestorMenu) {
-    const impresorGroup = this.itemGroupPrinter;
-    const impresorItem = new ImpresorItemHTML();
-
-    var thisObj = this;
-
-    //Instance an empty ItemGroup (without items)
-    var groupAux = new ItemGroup(
-      thisObj.tab,
-      thisObj.name,
-      thisObj.section,
-      thisObj.weight,
-      "",
-      "",
-      thisObj.short_abstract,
+    _gestorMenu.ensureLayerGroup(
+      {
+        id: this.section,
+        title: this.name,
+        weight: this.weight,
+        tab: this.tab,
+        shortDescription: this.short_abstract,
+      },
+      this.itemGroupPrinter,
     );
-    groupAux.setImpresor(impresorGroup);
-    groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
-    _gestorMenu.addItemGroup(groupAux);
   }
 
   /**
@@ -1838,23 +1862,16 @@ class LayersInfoWMTS extends LayersInfoWMS {
   }
 
   generateGroups(_gestorMenu) {
-    const impresorGroup = this.itemGroupPrinter;
-    const impresorItem = new ImpresorItemHTML();
-
-    var thisObj = this;
-
-    var groupAux = new ItemGroup(
-      thisObj.tab,
-      thisObj.name,
-      thisObj.section,
-      thisObj.weight,
-      "",
-      "",
-      thisObj.short_abstract,
+    _gestorMenu.ensureLayerGroup(
+      {
+        id: this.section,
+        title: this.name,
+        weight: this.weight,
+        tab: this.tab,
+        shortDescription: this.short_abstract,
+      },
+      this.itemGroupPrinter,
     );
-    groupAux.setImpresor(impresorGroup);
-    groupAux.setObjDom(gestorMenu.getItemsGroupDOM());
-    _gestorMenu.addItemGroup(groupAux);
   }
 
   _parseRequest(_gestorMenu) {
@@ -2387,6 +2404,60 @@ class ItemGroup extends ItemComposite {
   }
 }
 
+/**
+ * Canonical layer-group model.
+ *
+ * Adapter pattern: the English API is canonical while the inherited aliases
+ * keep legacy menu collaborators working during the schema-v2 migration.
+ */
+class LayerGroup extends ItemGroup {
+  constructor({
+    id,
+    title,
+    weight = 0,
+    tab = new Tab(""),
+    keywords = "",
+    description = "",
+    shortDescription = "",
+    expanded = false,
+    style = null,
+    cssClass = "",
+  }) {
+    super(tab, title, id, weight, keywords, description, shortDescription);
+    this.id = id;
+    this.title = title;
+    this.weight = Number.isFinite(Number(weight)) ? Number(weight) : 0;
+    this.keywords = keywords;
+    this.description = description;
+    this.shortDescription = shortDescription;
+    this.expanded = expanded === true;
+    this.style = style;
+    this.cssClass = cssClass;
+
+    // Transitional aliases. New code uses the English properties above.
+    this.peso = this.weight;
+    this.sectionStyle = style;
+    this.setActive(this.expanded);
+  }
+
+  addLayerMenuItem(item) {
+    this.setItem(item);
+  }
+}
+
+/** Factory pattern: centralizes construction of every menu layer group. */
+class LayerGroupFactory {
+  static create(definition, target = null) {
+    const tab = definition.tab instanceof Tab
+      ? definition.tab
+      : new Tab(definition.tab || "");
+    const group = new LayerGroup({ ...definition, tab });
+    group.setImpresor(new LayerGroupRenderer());
+    if (target) group.setObjDom(target);
+    return group;
+  }
+}
+
 class ItemGroupBaseMap extends ItemGroup {
   isBaseLayer() {
     return true;
@@ -2513,6 +2584,7 @@ class Item extends ItemComposite {
     this.visible = false;
     this.legendImg = legendImg;
     this.legend = legend;
+    this.menuIcon = null;
     this.callback = callback;
     this.listType = null;
   }
@@ -2546,6 +2618,14 @@ class Item extends ItemComposite {
 
   getLegendImg() {
     return this.legendImg;
+  }
+
+  setMenuIcon(icon) {
+    this.menuIcon = icon;
+  }
+
+  getMenuIcon() {
+    return this.menuIcon;
   }
 
   loadLayer(capa, key) {
@@ -2778,7 +2858,7 @@ class ItemsGetterSearcherWithTabs extends ItemsGetter {
 /******************************************
 Gestor de menu
 ******************************************/
-class GestorMenu {
+class LayerMenuManager {
   constructor() {
     this.items = {};
     this.plugins = {};
@@ -2815,6 +2895,507 @@ class GestorMenu {
     this._itemsGetter = new ItemsGetter();
     this._layersJoin = null;
     this._folders = {};
+    this._sectionOptionsMenu = null;
+    this._sectionOptionsToggle = null;
+    this._pinnedSectionId = null;
+    this._sectionOpacity = {};
+    document.addEventListener("click", () => this.closeSectionOptionsMenu());
+    window.addEventListener("resize", () => this.closeSectionOptionsMenu());
+  }
+
+  getSectionAddedLayers(sectionId) {
+    const registeredIds = new Set(
+      configuredFileLayerRegistry
+        .filter((entry) => entry.sectionId === sectionId)
+        .map((entry) => entry.id),
+    );
+
+    return addedLayers.filter(
+      (layer) =>
+        registeredIds.has(layer.id) ||
+        clearSpecialChars(layer.section || "") === sectionId,
+    );
+  }
+
+  getSectionLayerState(sectionId) {
+    const itemGroup = this.items[sectionId];
+    const regularItems = itemGroup
+      ? Object.values(itemGroup.itemsComposite).filter(
+          (item) => typeof item.getVisible === "function",
+        )
+      : [];
+    const addedItems = this.getSectionAddedLayers(sectionId);
+    const activeCount =
+      regularItems.filter((item) => item.getVisible()).length +
+      addedItems.filter((item) => item.isActive === true).length;
+
+    return {
+      total: regularItems.length + addedItems.length,
+      active: activeCount,
+    };
+  }
+
+  async setSectionLayersVisibility(sectionId, visible) {
+    if (this.items[sectionId]) {
+      await this.loadSectionServices(sectionId);
+    }
+
+    const itemGroup = this.items[sectionId];
+    const regularItems = itemGroup
+      ? Object.values(itemGroup.itemsComposite).filter(
+          (item) => typeof item.getVisible === "function",
+        )
+      : [];
+
+    regularItems.forEach((item) => {
+      if (item.getVisible() !== visible) {
+        this.muestraCapa(item.getId());
+      }
+    });
+
+    await Promise.all(
+      this.getSectionAddedLayers(sectionId).map((layer) => {
+        if (layer.isActive === visible) return Promise.resolve();
+
+        if (layer.type === "WMS") {
+          const layerElement = document.getElementById(
+            `srvcLyr-${layer.id}${layer.file_name}`,
+          );
+          return layerElement
+            ? clickWMSLayer(layer.layer, layerElement, layer.file_name)
+            : Promise.resolve();
+        }
+        clickGeometryLayer(layer.id);
+        return Promise.resolve();
+      }),
+    );
+
+    this.updateLayerMenuControls();
+  }
+
+  closeSectionOptionsMenu() {
+    this._sectionOptionsMenu?.remove();
+    this._sectionOptionsToggle?.setAttribute("aria-expanded", "false");
+    this._sectionOptionsMenu = null;
+    this._sectionOptionsToggle = null;
+  }
+
+  _getSectionContainer(sectionId) {
+    const panel = document.getElementById(`${ItemGroupPrefix}${sectionId}`);
+    return panel?.closest(".custom-file-layer-section") || panel;
+  }
+
+  applyPinnedSectionOrder() {
+    document
+      .querySelectorAll(".panel-default.section-pinned")
+      .forEach((panel) => panel.classList.remove("section-pinned"));
+    if (!this._pinnedSectionId) return;
+
+    const container = this._getSectionContainer(this._pinnedSectionId);
+    const panel = document.getElementById(
+      `${ItemGroupPrefix}${this._pinnedSectionId}`,
+    );
+    const parent = container?.parentElement;
+    if (!container || !panel || !parent) return;
+
+    const firstSection = Array.from(parent.children).find(
+      (child) =>
+        child !== container &&
+        (child.matches(".panel-default") ||
+          child.matches(".custom-file-layer-section")),
+    );
+    if (firstSection) {
+      parent.insertBefore(container, firstSection);
+    } else {
+      parent.appendChild(container);
+    }
+    panel.classList.add("section-pinned");
+  }
+
+  setPinnedSection(sectionId) {
+    this._pinnedSectionId =
+      this._pinnedSectionId === sectionId ? null : sectionId;
+    this.printMenu();
+  }
+
+  _extendBoundsWithLayer(bounds, layer) {
+    if (!layer) return;
+
+    try {
+      if (typeof layer.getBounds === "function") {
+        const layerBounds = layer.getBounds();
+        if (layerBounds) bounds.extend(layerBounds);
+        return;
+      }
+      if (typeof layer.getLatLng === "function") {
+        bounds.extend(layer.getLatLng());
+        return;
+      }
+    } catch (error) {
+      console.warn("Unable to read layer bounds:", error);
+    }
+
+    const numericBounds = [layer.minx, layer.miny, layer.maxx, layer.maxy].map(
+      Number,
+    );
+    if (numericBounds.every(Number.isFinite)) {
+      bounds.extend([
+        [numericBounds[1], numericBounds[0]],
+        [numericBounds[3], numericBounds[2]],
+      ]);
+      return;
+    }
+
+    const boundingBox = layer.bounds || layer.bbox || layer.boundingBox;
+    if (Array.isArray(boundingBox) && boundingBox.length >= 4) {
+      const values = boundingBox.slice(0, 4).map(Number);
+      if (values.every(Number.isFinite)) {
+        bounds.extend([
+          [values[1], values[0]],
+          [values[3], values[2]],
+        ]);
+      }
+    }
+  }
+
+  async getSectionBounds(sectionId) {
+    if (this.items[sectionId]) {
+      await this.loadSectionServices(sectionId);
+    }
+
+    const bounds = L.latLngBounds([]);
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        (item.capas || [item.capa]).forEach((layer) => {
+          this._extendBoundsWithLayer(bounds, layer);
+        });
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      const featureLayers = getFileLayerFeatures(entry.id);
+      if (featureLayers.length > 0) {
+        featureLayers.forEach((layer) => {
+          this._extendBoundsWithLayer(bounds, layer);
+        });
+        return;
+      }
+
+      this._extendBoundsWithLayer(bounds, entry.layer);
+      if (entry.layer?.type && typeof L.geoJSON === "function") {
+        try {
+          this._extendBoundsWithLayer(bounds, L.geoJSON(entry.layer));
+        } catch (error) {
+          console.warn("Unable to calculate GeoJSON bounds:", error);
+        }
+      }
+    });
+
+    return bounds.isValid() ? bounds : null;
+  }
+
+  async zoomToSection(sectionId) {
+    const bounds = await this.getSectionBounds(sectionId);
+    if (!bounds) {
+      console.warn(`No bounds are available for section '${sectionId}'.`);
+      new UserMessage(
+        "No hay un encuadre disponible para las capas de esta sección.",
+        true,
+        "warning",
+      );
+      return false;
+    }
+    mapa.fitBounds(bounds);
+    return true;
+  }
+
+  getSectionQueryState(sectionId) {
+    const states = [];
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        (item.capas || [item.capa]).forEach((layer) => {
+          const options = getLayerQueryOptions(layer);
+          if (!options.queryable) return;
+          const mapLayer = overlayMaps[layer.nombre];
+          states.push(
+            mapLayer?._source?.options?.identify ?? options.queryActive,
+          );
+        });
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      if (entry.queryable === false || entry.layer?.queryable === false) return;
+      const featureLayers = getFileLayerFeatures(entry.id);
+      if (featureLayers.length > 0) {
+        states.push(featureLayers.some((layer) => layer.activeData === true));
+        return;
+      }
+      const mapLayer = overlayMaps[entry.layer?.name || entry.name];
+      states.push(
+        mapLayer?._source?.options?.identify ?? entry.queryActive === true,
+      );
+    });
+
+    return {
+      total: states.length,
+      active: states.filter(Boolean).length,
+    };
+  }
+
+  async setSectionQueryState(sectionId, queryActive) {
+    if (this.items[sectionId]) {
+      await this.loadSectionServices(sectionId);
+    }
+
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        (item.capas || [item.capa]).forEach((layer) => {
+          if (!getLayerQueryOptions(layer).queryable) return;
+          layer.queryActive = queryActive;
+          const mapLayer = overlayMaps[layer.nombre];
+          if (mapLayer?._source?.options) {
+            mapLayer._source.options.identify = queryActive;
+          }
+        });
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      if (entry.queryable === false || entry.layer?.queryable === false) return;
+      entry.queryActive = queryActive;
+      getFileLayerFeatures(entry.id).forEach((layer) => {
+        layer.activeData = queryActive;
+      });
+      const mapLayer = overlayMaps[entry.layer?.name || entry.name];
+      if (mapLayer?._source?.options) {
+        mapLayer._source.options.identify = queryActive;
+      }
+    });
+  }
+
+  _applyOpacityToMapLayer(layer, opacity) {
+    if (!layer) return;
+    if (typeof layer.setStyle === "function") {
+      layer.setStyle({ opacity, fillOpacity: opacity });
+    } else if (typeof layer.setOpacity === "function") {
+      layer.setOpacity(opacity);
+    } else if (typeof layer.eachLayer === "function") {
+      layer.eachLayer((childLayer) => {
+        this._applyOpacityToMapLayer(childLayer, opacity);
+      });
+    }
+  }
+
+  setLayerOpacity(itemName, opacityValue) {
+    const opacity = Math.max(0, Math.min(1, Number(opacityValue)));
+    if (!Number.isFinite(opacity)) return;
+
+    Object.values(this.items).forEach((itemGroup) => {
+      Object.values(itemGroup.itemsComposite || {}).forEach((item) => {
+        if (item.nombre !== itemName) return;
+        (item.capas || [item.capa]).forEach((layer) => {
+          layer.opacity = opacity;
+          this._applyOpacityToMapLayer(overlayMaps[layer.nombre], opacity);
+        });
+      });
+    });
+  }
+
+  setSectionOpacity(sectionId, opacityValue) {
+    const opacity = Math.max(0, Math.min(1, Number(opacityValue)));
+    if (!Number.isFinite(opacity)) return;
+    this._sectionOpacity[sectionId] = opacity;
+
+    const itemGroup = this.items[sectionId];
+    if (itemGroup) {
+      Object.values(itemGroup.itemsComposite).forEach((item) => {
+        this.setLayerOpacity(item.nombre, opacity);
+        const input = document.getElementById(`range-${item.nombre}`);
+        if (input) input.value = opacity;
+      });
+    }
+
+    this.getSectionAddedLayers(sectionId).forEach((entry) => {
+      entry.opacity = opacity;
+      getFileLayerFeatures(entry.id).forEach((layer) => {
+        this._applyOpacityToMapLayer(layer, opacity);
+      });
+      this._applyOpacityToMapLayer(
+        overlayMaps[entry.layer?.name || entry.name],
+        opacity,
+      );
+    });
+  }
+
+  _appendSectionMenuAction(menu, iconClass, label, handler) {
+    const option = document.createElement("li");
+    option.setAttribute("role", "none");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "section-options-action";
+    button.setAttribute("role", "menuitem");
+    button.innerHTML = `<i class="${iconClass}" aria-hidden="true"></i><span>${label}</span>`;
+    button.addEventListener("click", handler);
+    option.appendChild(button);
+    menu.appendChild(option);
+    return button;
+  }
+
+  _positionSectionOptionsMenu(menu, toggle) {
+    const buttonBounds = toggle.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const viewportLeft = viewport?.offsetLeft || 0;
+    const viewportTop = viewport?.offsetTop || 0;
+    const viewportWidth = viewport?.width || document.documentElement.clientWidth;
+    const viewportHeight = viewport?.height || window.innerHeight;
+    const menuBounds = menu.getBoundingClientRect();
+    const left = Math.min(
+      Math.max(viewportLeft + 8, buttonBounds.right - menuBounds.width),
+      viewportLeft + viewportWidth - menuBounds.width - 8,
+    );
+
+    menu.style.left = `${left}px`;
+    menu.style.top = `${buttonBounds.bottom + 2}px`;
+    const bottomOverflow =
+      menu.getBoundingClientRect().bottom - (viewportTop + viewportHeight);
+    if (bottomOverflow > 0) {
+      menu.style.top = `${Math.max(
+        viewportTop + 8,
+        buttonBounds.top - menuBounds.height - 2,
+      )}px`;
+    }
+  }
+
+  openSectionOptionsMenu(sectionId, toggle) {
+    this.closeSectionOptionsMenu();
+    const state = this.getSectionLayerState(sectionId);
+    const shouldActivate = state.total === 0 || state.active < state.total;
+    const menu = document.createElement("ul");
+    menu.className = "dropdown-menu section-options-menu section-options-menu-open";
+    menu.setAttribute("role", "menu");
+    menu.addEventListener("click", (event) => event.stopPropagation());
+
+    const visibilityButton = this._appendSectionMenuAction(
+      menu,
+      `fa ${shouldActivate ? "fa-toggle-on" : "fa-toggle-off"}`,
+      shouldActivate ? "Activar todas las capas" : "Desactivar todas las capas",
+      async () => {
+        visibilityButton.disabled = true;
+        menu.setAttribute("aria-busy", "true");
+        try {
+          await this.setSectionLayersVisibility(sectionId, shouldActivate);
+        } finally {
+          this.closeSectionOptionsMenu();
+        }
+      },
+    );
+
+    const isPinned = this._pinnedSectionId === sectionId;
+    this._appendSectionMenuAction(
+      menu,
+      "fa fa-thumbtack",
+      isPinned ? "Desfijar sección" : "Fijar sección arriba",
+      () => {
+        this.setPinnedSection(sectionId);
+        this.closeSectionOptionsMenu();
+      },
+    );
+
+    const zoomButton = this._appendSectionMenuAction(
+      menu,
+      "fa fa-search-plus",
+      "Zoom a la sección",
+      async () => {
+        zoomButton.disabled = true;
+        menu.setAttribute("aria-busy", "true");
+        try {
+          await this.zoomToSection(sectionId);
+        } finally {
+          this.closeSectionOptionsMenu();
+        }
+      },
+    );
+
+    const queryState = this.getSectionQueryState(sectionId);
+    const shouldEnableQuery =
+      queryState.total === 0 || queryState.active < queryState.total;
+    const queryButton = this._appendSectionMenuAction(
+      menu,
+      `fa ${shouldEnableQuery ? "fa-toggle-on" : "fa-toggle-off"}`,
+      shouldEnableQuery
+        ? "Activar consulta de la sección"
+        : "Desactivar consulta de la sección",
+      async () => {
+        queryButton.disabled = true;
+        menu.setAttribute("aria-busy", "true");
+        try {
+          await this.setSectionQueryState(sectionId, shouldEnableQuery);
+        } finally {
+          this.closeSectionOptionsMenu();
+        }
+      },
+    );
+    const hasPendingServiceLayers =
+      this._getLayerInfosForSection(sectionId).length > 0;
+    if (queryState.total === 0 && !hasPendingServiceLayers) {
+      queryButton.disabled = true;
+      queryButton.title = "La sección no contiene capas consultables";
+    }
+
+    const opacityOption = document.createElement("li");
+    opacityOption.setAttribute("role", "none");
+    const opacityControl = document.createElement("div");
+    opacityControl.className = "section-opacity-control";
+    const opacityValue = this._sectionOpacity[sectionId] ?? 1;
+    opacityControl.innerHTML = `
+      <div class="section-opacity-label">
+        <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+        <label for="section-opacity-${sectionId}">Opacidad de la sección</label>
+        <output>${Math.round(opacityValue * 100)}%</output>
+      </div>`;
+    const opacityInput = document.createElement("input");
+    opacityInput.id = `section-opacity-${sectionId}`;
+    opacityInput.type = "range";
+    opacityInput.min = "0";
+    opacityInput.max = "1";
+    opacityInput.step = "0.05";
+    opacityInput.value = opacityValue;
+    opacityInput.setAttribute("aria-label", "Opacidad de todas las capas");
+    opacityInput.addEventListener("input", () => {
+      this.setSectionOpacity(sectionId, opacityInput.value);
+      opacityControl.querySelector("output").textContent =
+        `${Math.round(Number(opacityInput.value) * 100)}%`;
+    });
+    opacityControl.appendChild(opacityInput);
+    opacityOption.appendChild(opacityControl);
+    menu.appendChild(opacityOption);
+
+    document.body.appendChild(menu);
+    this._sectionOptionsMenu = menu;
+    this._sectionOptionsToggle = toggle;
+    toggle.setAttribute("aria-expanded", "true");
+    this._positionSectionOptionsMenu(menu, toggle);
+  }
+
+  initializeSectionOptions() {
+    document.querySelectorAll(".section-options-toggle").forEach((toggle) => {
+      if (toggle.dataset.sectionOptionsBound === "true") return;
+      toggle.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const isOpen = this._sectionOptionsToggle === toggle;
+        if (isOpen) {
+          this.closeSectionOptionsMenu();
+        } else {
+          this.openSectionOptionsMenu(toggle.dataset.sectionId, toggle);
+        }
+      });
+      toggle.dataset.sectionOptionsBound = "true";
+    });
   }
 
   setBaseMapDependencies(baseLayers) {
@@ -2980,6 +3561,50 @@ class GestorMenu {
 
   getActiveLayers() {
     return this.activeLayers;
+  }
+
+  hasLoadedSearchableLayers() {
+    const hasServiceLayers = Object.values(this.items).some(
+      (itemGroup) =>
+        !itemGroup.isBaseLayer() &&
+        Object.values(itemGroup.itemsComposite || {}).some(
+          (item) => item?.capa,
+        ),
+    );
+    const hasAddedLayers =
+      typeof addedLayers !== "undefined" && addedLayers.length > 0;
+
+    return hasServiceLayers || hasAddedLayers;
+  }
+
+  updateLayerMenuControls(activeLayerCount = null) {
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("q");
+    const searchButton = searchForm?.querySelector(".layer-search-submit");
+    const clearButton = searchForm?.querySelector(".btn-reset-layers");
+    const searchIsAvailable = this.hasLoadedSearchableLayers();
+
+    searchForm?.classList.toggle("layer-search-disabled", !searchIsAvailable);
+    searchForm?.setAttribute("aria-disabled", String(!searchIsAvailable));
+    [searchInput, searchButton, clearButton].forEach((control) => {
+      if (control) control.disabled = !searchIsAvailable;
+    });
+
+    const cleanButton = document.getElementById("cleanTrash");
+    if (!cleanButton) return;
+
+    const resolvedActiveLayerCount =
+      activeLayerCount == null
+        ? this.getActiveLayersWithoutBasemap().length +
+          (typeof addedLayers === "undefined"
+            ? 0
+            : addedLayers.filter((layer) => layer.isActive === true).length)
+        : activeLayerCount;
+    const cleanIsAvailable =
+      searchIsAvailable && resolvedActiveLayerCount > 0;
+
+    cleanButton.disabled = !cleanIsAvailable;
+    cleanButton.setAttribute("aria-disabled", String(!cleanIsAvailable));
   }
 
   getLayerIdByName(layerName) {
@@ -3208,7 +3833,11 @@ class GestorMenu {
         `${ItemGroupPrefix}${layerInfo.section}`,
       );
     }
-    await layerInfo.get(this);
+    try {
+      await layerInfo.get(this);
+    } finally {
+      layerInfo._loadSettled = true;
+    }
   }
 
   async _loadLayerInfos(layerInfos) {
@@ -3351,6 +3980,16 @@ class GestorMenu {
 
   setMenuDOM(menuDOM) {
     this.menuDOM = menuDOM;
+    // Groups may be registered before the map template mounts the menu. Keep
+    // the domain registry independent from DOM timing and bind render targets
+    // only when the UI becomes available.
+    Object.values(this.items).forEach((group) => {
+      // Basemap groups own a dedicated menu target configured by app.addBasemaps.
+      // Rebinding them here would render #collapseBaseMapLayers in the sidebar.
+      if (!group.isBaseLayer()) {
+        group.setObjDom(this.getItemsGroupDOM());
+      }
+    });
   }
 
   getMenuDOM() {
@@ -3503,6 +4142,23 @@ class GestorMenu {
     return null;
   }
 
+  /** Registry pattern: one model instance exists for each layer-group id. */
+  ensureLayerGroup(definition, renderer = null) {
+    const existing = this.items[definition.id];
+    if (existing) return existing;
+
+    const group = LayerGroupFactory.create(definition, this.getItemsGroupDOM());
+    if (renderer) group.setImpresor(renderer);
+    this.addTab(group.getTab());
+    this.addItemGroup(group);
+    return group;
+  }
+
+  registerLayerGroup(group) {
+    this.addItemGroup(group);
+    return this.items[group.id || group.seccion];
+  }
+
   addItemGroup(itemGroup) {
     var itemAux;
     const configuredSectionStyle =
@@ -3615,26 +4271,74 @@ class GestorMenu {
       this.printMenu();
 
       var thisObj = this;
+      const sectionLoadPromises = new WeakMap();
+
+      const setSectionHeaderLoading = (collapse, isLoading) => {
+        const section = collapse.closest(".panel-default");
+        const header = section?.querySelector(":scope > .panel-heading");
+        if (!header) return;
+
+        header.classList.toggle("section-header-loading-active", isLoading);
+        header.setAttribute("aria-busy", String(isLoading));
+        collapse.setAttribute("aria-busy", String(isLoading));
+
+        let spinner = header.querySelector(":scope > .section-header-loading");
+        if (isLoading && !spinner) {
+          spinner = document.createElement("img");
+          spinner.className = "section-header-loading";
+          spinner.src = "src/styles/images/loading.svg";
+          spinner.alt = "";
+          spinner.setAttribute("aria-hidden", "true");
+          header.appendChild(spinner);
+        } else if (!isLoading) {
+          spinner?.remove();
+        }
+      };
 
       const loadSectionOnExpand = (collapse) => {
         if (!collapse.classList.contains("collapse")) return;
         const showingId = collapse.id;
-        if (thisObj._getLayerInfosForSection(showingId).length === 0) return;
-        const content = collapse.querySelector(":scope > div");
-        if (content && content.innerHTML === "") {
-          content.innerHTML =
-            '<div class="loading"><img src="src/styles/images/loading.svg" style="width:35px"></div>';
+        const layerInfos = thisObj._getLayerInfosForSection(showingId);
+        if (layerInfos.length === 0) return;
+
+        const currentLoad = sectionLoadPromises.get(collapse);
+        if (currentLoad) {
+          setSectionHeaderLoading(collapse, true);
+          return currentLoad;
         }
-        void thisObj.loadSectionServices(showingId).catch((error) => {
-          console.error(
-            `Error loading services for section '${showingId}':`,
-            error,
-          );
-        });
+
+        const needsLoading = layerInfos.some(
+          (layerInfo) =>
+            !layerInfo._executed ||
+            (layerInfo._loadPromise && layerInfo._loadSettled !== true),
+        );
+        if (!needsLoading) return;
+
+        setSectionHeaderLoading(collapse, true);
+        const loadPromise = thisObj
+          .loadSectionServices(showingId)
+          .catch((error) => {
+            console.error(
+              `Error loading services for section '${showingId}':`,
+              error,
+            );
+          })
+          .finally(() => {
+            sectionLoadPromises.delete(collapse);
+            setSectionHeaderLoading(collapse, false);
+          });
+        sectionLoadPromises.set(collapse, loadPromise);
+        return loadPromise;
       };
 
       document.addEventListener("show.bs.collapse", function (event) {
         loadSectionOnExpand(event.target);
+      });
+
+      document.addEventListener("hidden.bs.collapse", function (event) {
+        if (event.target.classList.contains("panel-collapse")) {
+          setSectionHeaderLoading(event.target, false);
+        }
       });
 
       document
@@ -3690,6 +4394,13 @@ class GestorMenu {
                       item.itemsComposite[keyItem].capas = item.itemsComposite[
                         keyItem
                       ].capas.concat(itemInt.itemsComposite[keyItemInt].capas);
+                      const configuredIcon = this._layersJoin[keyJoin].icon;
+                      item.itemsComposite[keyItem].setMenuIcon(
+                        typeof configuredIcon === "string" &&
+                          configuredIcon.trim()
+                          ? configuredIcon.trim()
+                          : DEFAULT_JOINED_LAYER_ICON,
+                      );
                       delete itemInt.itemsComposite[keyItemInt];
                       if (item.itemsComposite[keyItem].visible) {
                         if (!isNaN(keyItemInt)) {
@@ -3727,7 +4438,7 @@ class GestorMenu {
               <input type='text' class='form-control ag-input-text' id='q' name='q' value='${this.getQuerySearch()}' placeholder='Buscar capa' autocomplete='off'>
               <button type='button' class='ag-btn ag-btn-secondary btn-reset-layers form-control-clear glyphicon glyphicon-remove-circle form-control-feedback hidden'></button>
             </div>
-            <button class='ag-btn ag-btn-secondary btn-search' type='submit'>
+            <button class='ag-btn ag-btn-secondary btn-search layer-search-submit' type='submit' title='Buscar capas'>
             <span class='glyphicon glyphicon-search' aria-hidden='true'></span>
             </button>
             <button class='ag-btn ag-btn-secondary btn-search' id='cleanTrash' type='button' onClick='gestorMenu.cleanAllLayers()' title='Desactivar capas'></button>
@@ -4032,7 +4743,6 @@ class GestorMenu {
       this._printWithTabs();
     } else {
       this.getMenuDOM().innerHTML = this._printSearcher();
-      menu_ui.rebuildConfiguredFileLayers();
 
       var itemsAux = new Array();
       var itemsIterator = this._itemsGetter.get(this);
@@ -4056,10 +4766,16 @@ class GestorMenu {
       this.generateFolders(itemsAuxToFolders);
     }
 
+    // File and OGC menu items now share the groups rendered above. This UI
+    // pass runs after group rendering to avoid parallel DOM-only sections.
+    menu_ui.rebuildConfiguredFileLayers();
+
     const loading = this.getLoadingDOM();
     if (loading) loading.style.display = "none";
     bindZoomLayer();
     bindLayerOptions();
+    this.initializeSectionOptions();
+    this.applyPinnedSectionOrder();
 
     //Call callback after print (if exists)
     if (this.printCallback != null) {
@@ -4147,6 +4863,7 @@ class GestorMenu {
       () => gestorMenu.getAvailableTags(),
       performSearch,
     );
+    this.updateLayerMenuControls();
   }
 
   //Prints only one section (works on lazy initialization only)
@@ -4165,6 +4882,9 @@ class GestorMenu {
     }
     bindZoomLayer();
     bindLayerOptions();
+    this.initializeSectionOptions();
+    this.applyPinnedSectionOrder();
+    this.updateLayerMenuControls();
   }
 
   muestraCapa(itemSeccion) {
@@ -4340,6 +5060,9 @@ class GestorMenu {
   }
 }
 
+// Backward-compatible name for plugins that still instantiate the old API.
+const GestorMenu = LayerMenuManager;
+
 /******************************************
 Tabs menu class
 ******************************************/
@@ -4356,13 +5079,20 @@ class Tab {
       if (tab.searcheable != undefined) {
         this.isSearcheable = tab.searcheable;
       }
+      if (tab.searchable != undefined) {
+        this.isSearcheable = tab.searchable;
+      }
       if (tab.content != undefined) {
         this.content = tab.content;
       }
       if (tab.list_type != undefined) {
         this.listType = tab.list_type;
       }
+      if (tab.listType != undefined) {
+        this.listType = tab.listType;
+      }
     }
+    this.isSearchable = this.isSearcheable;
   }
 
   getId() {
@@ -4407,6 +5137,35 @@ class Tab {
 }
 
 var serviceItems = [];
+
+function getDefaultFileLayerIcon(layerType) {
+  const normalizedType = String(layerType || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  const rasterTypes = new Set([
+    "raster",
+    "rasterfile",
+    "georaster",
+    "geotiff",
+    "tif",
+    "tiff",
+    "image",
+    "imagery",
+    "coverage",
+  ]);
+  const isRaster = rasterTypes.has(normalizedType);
+
+  return {
+    src: isRaster
+      ? "src/js/components/openfiles/icon_file_raster.svg"
+      : "src/js/components/openfiles/icon_file_vector.svg",
+    alt: isRaster
+      ? "Capa ráster desde archivo"
+      : "Capa vectorial desde archivo",
+  };
+}
+
 /******************************************
 Menu_UI
 ******************************************/
@@ -4417,34 +5176,27 @@ class Menu_UI {
   }
 
   addSection(name, idOverride = null) {
-    // name: visible label, idOverride: optional stable identifier for HTML ids
-    let groupnamev = clearSpecialChars(idOverride || name);
-    const sectionStyle =
-      app.items?.find(
-        (item) => item.seccion === groupnamev && item.section_style,
-      )?.section_style ||
-      app.sectionStyles?.[groupnamev] ||
-      null;
-    const sectionPrinter = new ImpresorGrupoHTML();
-    const styleAttributes = sectionPrinter.getSectionStyleAttributes(sectionStyle);
-    const headerIcon = sectionPrinter.getHeaderIcon(sectionStyle?.header?.icon);
-    const isExpanded = app.sectionExpanded?.[groupnamev] === true;
-    let itemnew = document.createElement("div");
-    itemnew.className = "custom-file-layer-section";
-    itemnew.innerHTML = `
-      <div id="lista-${groupnamev}" class="menu5 panel-default${sectionStyle ? " section-custom-style" : ""}"${styleAttributes}>
-      <div class="panel-heading" data-toggle="collapse" data-target="#${groupnamev}-content" aria-expanded="${isExpanded}">
-        <h4 class="panel-title">
-        ${headerIcon}<a id="${groupnamev}-a" data-parent="#accordion1" class="item-group-title">${name}</a>
-        </h4>
-      </div>
-      <div id='${groupnamev}-content' class="panel-collapse collapse${isExpanded ? " in" : ""}" aria-expanded="${isExpanded}">
-        <div class="panel-body" id ="${groupnamev}-panel-body"></div>
-      </div>
-      </div>`;
+    const groupId = clearSpecialChars(idOverride || name);
+    const configuredGroup = app.layerGroups?.find((group) => group.id === groupId);
+    const group = gestorMenu.ensureLayerGroup({
+      id: groupId,
+      title: configuredGroup?.title || name,
+      weight: configuredGroup?.weight ?? Number.MAX_SAFE_INTEGER,
+      tab: configuredGroup?.tab || new Tab(""),
+      description: configuredGroup?.description || "",
+      shortDescription: configuredGroup?.shortDescription || "",
+      expanded: configuredGroup?.expanded === true,
+      style: configuredGroup?.style || null,
+    });
 
-    let searchForm = document.getElementById("searchForm");
-    searchForm.after(itemnew);
+    // Renderer strategy: Menu_UI only mounts the rendered model; it no longer
+    // owns a second HTML implementation for file-backed groups.
+    const mount = document.createElement("div");
+    mount.innerHTML = group.imprimir();
+    const searchForm = document.getElementById("searchForm");
+    searchForm.after(mount.firstElementChild);
+    gestorMenu.initializeSectionOptions();
+    gestorMenu.applyPinnedSectionOrder();
   }
 
   addParentSection(parent, child) {
@@ -4454,10 +5206,10 @@ class Menu_UI {
     let parentItemnew = document.createElement("div");
     parentItemnew.innerHTML = `
       <div id="lista-${parentNamev}" class="menu5 panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${parentNamev}-content" data-parent="#accordion1" aria-expanded="false">
           <h4 class="panel-title">
               <i class="fa-solid fa-folder-tree"></i>
-              <a id="${parentNamev}-a" data-toggle="collapse" data-parent="#accordion1" href="#${parentNamev}-content" class="item-group-title">${parent}</a>
+              <a id="${parentNamev}-a" class="item-group-title">${parent}</a>
           </h4>
       </div>
       <div id='${parentNamev}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">
@@ -4468,10 +5220,10 @@ class Menu_UI {
     let subItemnew = document.createElement("div");
     subItemnew.innerHTML = `
       <div id="lista-${childName}" class="menu5 panel-default">
-      <div class="panel-heading">
+      <div class="panel-heading" data-toggle="collapse" data-target="#${childName}-content" data-parent="#accordion1" aria-expanded="false">
       <h4 class="panel-title">
       <i class="fa-regular fa-folder-open"></i>
-      <a id="${childName}-a" data-toggle="collapse" data-parent="#accordion1" href="#${childName}-content" class="item-group-title">${"hijo"}</a>
+      <a id="${childName}-a" class="item-group-title">${"hijo"}</a>
       </h4>
       </div>
       <div id='${childName}-content' class="panel-collapse collapse" style="width: 90%; margin-left: auto;">
@@ -4505,14 +5257,27 @@ class Menu_UI {
   rebuildConfiguredFileLayers() {
     const sectionNodes = document.querySelectorAll(".custom-file-layer-section");
     sectionNodes.forEach((sectionNode) => sectionNode.remove());
+    document
+      .querySelectorAll(".file-layer-container")
+      .forEach((layerNode) => layerNode.remove());
 
     if (typeof configuredFileLayerRegistry === "undefined") {
       return;
     }
 
-    configuredFileLayerRegistry.forEach((entry) => {
+    const entries = [...configuredFileLayerRegistry].sort((left, right) => {
+      const leftGroup = gestorMenu.items[left.layerGroupId];
+      const rightGroup = gestorMenu.items[right.layerGroupId];
+      const groupDifference =
+        (leftGroup?.weight ?? leftGroup?.peso ?? left.groupWeight ?? 0) -
+        (rightGroup?.weight ?? rightGroup?.peso ?? right.groupWeight ?? 0);
+      if (groupDifference !== 0) return groupDifference;
+      return (left.weight ?? 0) - (right.weight ?? 0);
+    });
+
+    entries.forEach((entry) => {
       this.addFileLayer(
-        entry.sectionLabel,
+        entry.layerGroupTitle,
         entry.layerType,
         entry.textName,
         entry.id,
@@ -4521,8 +5286,9 @@ class Menu_UI {
         entry.icon,
         entry.description,
         entry.allowedOptions,
-        entry.sectionId,
+        entry.layerGroupId,
         entry.activeButtonColor,
+        entry.editable,
       );
     });
   }
@@ -4539,6 +5305,7 @@ class Menu_UI {
     allowedOptions = null,
     groupId = null,
     activeButtonColor = null,
+    editable = true,
   ) {
     // groupname: visible label; groupId: optional stable identifier for HTML IDs
     let groupnamev = clearSpecialChars(groupId || groupname);
@@ -4549,7 +5316,15 @@ class Menu_UI {
 
     const activeAllowedOptions = Array.isArray(allowedOptions)
       ? allowedOptions.map((option) => option.toLowerCase())
-      : ["zoom", "query", "data", "download", "rename", "delete"];
+      : [
+          "zoom",
+          "query",
+          "edit",
+          "data",
+          "download",
+          "rename",
+          "delete",
+        ];
 
     if (!fileLayerGroup.includes(groupname)) {
       fileLayerGroup.push(groupname);
@@ -4594,7 +5369,8 @@ class Menu_UI {
     } else if (icon) {
       img_icon.innerHTML = `<img loading="lazy" src="${icon}" alt="${textName}">`;
     } else {
-      img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg" alt="Capa">`;
+      const defaultIcon = getDefaultFileLayerIcon(layerType);
+      img_icon.innerHTML = `<img loading="lazy" src="${defaultIcon.src}" alt="${defaultIcon.alt}" title="${defaultIcon.alt}">`;
     }
     img_icon.onclick = function () {
       clickGeometryLayer(id);
@@ -4750,12 +5526,7 @@ class Menu_UI {
     const queryIsAvailable = addedLayer?.queryable !== false;
     const query_opt = document.createElement("li");
 
-    const getQueryLayers = () => {
-      const layerNames = new Set(mapa.groupLayers[id] || []);
-      return Object.values(mapa.editableLayers)
-        .flat()
-        .filter((layer) => layerNames.has(layer.name));
-    };
+    const getQueryLayers = () => getFileLayerFeatures(id);
 
     const renderQueryOption = () => {
       query_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa ${
@@ -4788,6 +5559,34 @@ class Menu_UI {
         queryIsActive = queryLayers.some((layer) => layer.activeData === true);
       }
       renderQueryOption();
+    });
+
+    let editIsActive = addedLayer?.editable ?? (editable !== false);
+    const edit_opt = document.createElement("li");
+    const renderEditOption = () => {
+      edit_opt.innerHTML = `<a style="color:#474b4e;" href="#"><i class="fa ${
+        editIsActive ? "fa-lock" : "fa-unlock"
+      }" aria-hidden="true" style="width:20px;"></i>${
+        editIsActive ? "Desactivar edición" : "Activar edición"
+      }</a>`;
+    };
+
+    renderEditOption();
+    layer_item.addEventListener("argenmap:editabilitychange", (event) => {
+      editIsActive = event.detail?.editable !== false;
+      renderEditOption();
+    });
+    edit_opt.onclick = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      editIsActive = setFileLayerEditable(id, !editIsActive);
+      renderEditOption();
+    };
+
+    fdiv.addEventListener("click", () => {
+      const fileLayer = addedLayers.find((layer) => layer.id === id);
+      editIsActive = fileLayer?.editable ?? (editable !== false);
+      renderEditOption();
     });
 
     /* let query_opt = document.createElement("li")
@@ -4826,6 +5625,9 @@ class Menu_UI {
     }
     if (activeAllowedOptions.includes("query") && queryIsAvailable) {
       mainul.append(query_opt);
+    }
+    if (activeAllowedOptions.includes("edit")) {
+      mainul.append(edit_opt);
     }
     if (activeAllowedOptions.includes("rename")) {
       mainul.append(edit_name_opt);
@@ -5370,6 +6172,7 @@ class Menu_UI {
     if (serviceItems[id].layersInMenu == 1)
       document.getElementById(`${groupnamev}-a`)?.click();
     addCounterForSection(groupname, layerType);
+    showTotalNumberofLayers();
   }
 
   addButton({

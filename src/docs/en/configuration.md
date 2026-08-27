@@ -4,7 +4,16 @@ This guide describes the settings affected by `src/config/data.json` and
 `src/config/preferences.json`. Copy the files from `src/config/default/` when
 starting a new configuration and validate the JSON after each change.
 
-## Basemaps, sections, and layers (`data.json`)
+## Basemaps, layer groups, and layers (`data.json`)
+
+Both configuration files declare `"schemaVersion": "2.0.0"`. A `data.json`
+without a version is treated as schema 1.x and adapted before the menu model is
+created. Schema 2.0 uses `baseMapGroups`, `layerGroups`, `dataSources`, `layers`,
+and `compositeLayers`. The former `items`, `sections`, `peso`, `nombre`,
+`seccion`, `capas`, `host`, and `layers_joins` names remain input-only aliases
+for backward compatibility.
+
+### Schema 1.x (backward compatibility)
 
 The legacy structure uses `items`: the first item contains the basemaps and
 each following item defines a WMS or WMTS section.
@@ -44,7 +53,35 @@ each following item defines a WMS or WMTS section.
 
 TMS sources may require `{-y}` instead of `{y}`.
 
-### Separate `sections` and `layers` structure
+### Group several layers under one button
+
+Use `layers_joins` to make one menu button control layers from one or more OGC
+services. The first layer identifies the button and every entry in `joins` is
+activated or deactivated with it:
+
+```jsonc
+{
+  "seccion": "imagery",
+  "host": "https://example.org/geoserver/imagery",
+  "layer": "aerial_mosaic",
+  "icon": "src/config/styles/images/legends/grouped-imagery.svg",
+  "joins": [
+    {
+      "seccion": "boundaries",
+      "host": "https://example.org/geoserver/boundaries/wms",
+      "layer": "flight_boundaries"
+    }
+  ]
+}
+```
+
+`icon` accepts a local path or URL and takes precedence over the primary
+layer's service icon or legend for the menu button only. It does not replace
+the OGC legend metadata used by other tools such as printing. When omitted,
+`src/styles/images/layers-group.svg` is used to make the grouping explicit.
+The icon path never depends on the visible title or its special characters.
+
+### Legacy separate `sections` and `layers` structure
 
 Sections and layers can be declared separately. This is recommended when
 several layers share a heading, tab, description, or visual style:
@@ -105,6 +142,13 @@ The boolean `expanded` property displays a section expanded when the
 application starts. It defaults to `false`. If the section contains lazily
 loaded OGC services, setting it to `true` starts loading those services so its
 content can be displayed.
+
+The contextual menu at the right of every section heading needs no additional
+configuration. It can enable or disable all layers, pin the section to the top,
+fit the combined layer bounds, toggle querying, and change group opacity.
+Actions that depend on OGC metadata load that section's capabilities document
+on demand, as expanding the section does; unused section services are not
+requested during startup.
 
 ### Section-specific styles
 
@@ -218,8 +262,9 @@ set explicitly with `source.format`.
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
+  "editable": true,
   "popupFormat": "table",
-  "allowedOptions": ["zoom", "query", "data", "download"],
+  "allowedOptions": ["zoom", "query", "edit", "data", "download"],
   "activeButtonColor": "#287bb5",
   "style": {
     "marker": {
@@ -265,11 +310,14 @@ Main settings:
 - `queryable` allows entity queries; the default is `true`.
 - `queryActive` enables queries at startup when `queryable` is `true`; the
   default is `false`.
+- `editable` sets the initial style and geometry editing state. It defaults to
+  `true`. When set to `false`, **Edit styles** is disabled and Leaflet.Draw
+  skips every feature in the layer until editing is enabled from its submenu.
 - `popupFormat` controls queried content rendering. It accepts `table`, `text`,
   and `html`; when omitted, tables are used except for a sole `html` property.
 - `allowedOptions` limits the layer submenu. Available values are `zoom`,
-  `query`, `data`, `download`, `rename`, and `delete`. If omitted, every
-  applicable option is displayed.
+  `query`, `edit`, `data`, `download`, `rename`, and `delete`. If omitted,
+  every applicable option is displayed.
 - `activeButtonColor` controls the active button background without becoming
   part of the exported geometry style.
 - `style.marker`, `point`, `line`, and `polygon` set styles by geometry
@@ -283,6 +331,19 @@ locations inside `source` remain compatibility fallbacks; when a property is
 also present on the layer, the layer value takes precedence. Add `"query"` to
 `allowedOptions` to expose the
 **Enable/Disable query** command. It is omitted when `queryable` is `false`.
+
+The `"edit"` option adds **Enable/Disable editing** to that same submenu. The
+change applies to every feature in the layer and controls both **Edit styles**
+and geometry selection by the Leaflet.Draw editing tools. It only affects the
+current session and does not rewrite `data.json`:
+
+```jsonc
+{
+  "type": "file",
+  "editable": false,
+  "allowedOptions": ["zoom", "query", "edit", "download"]
+}
+```
 
 #### Per-feature or per-geometry styles
 

@@ -80,6 +80,7 @@ function activateDataConsult() {
 function getPopupForWMS(isActive) {
   const activeLayerNames = new Set();
   const activeLayers = [];
+  const processedWmsLayers = new Set();
 
   // Get names of active layers excluding basemaps
   gestorMenu.getActiveLayersWithoutBasemap().forEach((lyr) => {
@@ -100,18 +101,19 @@ function getPopupForWMS(isActive) {
     });
   });
 
-  // Process each active layer based on its type (WMS or WMTS)
+  // Query only actual WMS members. A standalone WMTS has no compatible layer
+  // for the current GetFeatureInfo implementation and must be skipped.
   activeLayers.forEach((item) => {
-    if (gestorMenu.layerIsWmts(item.nombre)) {
-      // Handle WMTS layers
-      toggleLayerPopup(item, isActive, "lyrJoin");
-    } else if (item.capas[1]) {
-      // Handle double WMS layers
-      toggleLayerPopup(item, isActive, "lyrJoin");
-    } else {
-      // Handle single WMS layers
-      toggleLayerPopup(item, isActive, "singleLyr");
-    }
+    const layers = Array.isArray(item.capas) ? item.capas : [item.capa];
+    layers
+      .filter((layer) => layer?.servicio?.toLowerCase() === "wms")
+      .forEach((layer) => {
+        const layerKey = `${layer.host || ""}::${layer.nombre || ""}`;
+        if (processedWmsLayers.has(layerKey)) return;
+
+        processedWmsLayers.add(layerKey);
+        toggleLayerPopup(layer, isActive);
+      });
   });
 
   // Handle imported WMS layers
@@ -129,29 +131,21 @@ function getPopupForWMS(isActive) {
 }
 
 /**
- * Toggles the popup functionality for a given layer based on its type.
- * @param {Object} item - The layer item containing layer information.
+ * Toggles the popup functionality for a concrete WMS layer.
+ * @param {Object} layer - The concrete WMS layer to configure.
  * @param {boolean} isActive - Indicates whether to enable or disable the popup functionality.
- * @param {string} lyrType - The type of layer (either "lyrJoin" or "singleLyr").
  */
-function toggleLayerPopup(item, isActive, lyrType) {
-  const layerName =
-    lyrType === "lyrJoin" ? item.capas[1].nombre : item.capa.nombre;
+function toggleLayerPopup(layer, isActive) {
+  const layerName = layer.nombre;
 
   if (overlayMaps[layerName]) {
     overlayMaps[layerName].removeFrom(mapa);
     delete overlayMaps[layerName];
   }
 
-  if (lyrType === "lyrJoin") {
-    createWmsLayer(item.capas[1]);
-  } else {
-    createWmsLayer(item);
-  }
+  createWmsLayer(layer);
 
-  const queryOptions = getLayerQueryOptions(
-    lyrType === "lyrJoin" ? item.capas[1] : item.capa,
-  );
+  const queryOptions = getLayerQueryOptions(layer);
   overlayMaps[layerName]._source.options.identify =
     queryOptions.queryable && isActive;
   overlayMaps[layerName].addTo(mapa);
@@ -237,24 +231,11 @@ function createImportWmsLayer(layer) {
 }
 
 function createWmsLayer(objLayer) {
-  let layer, layerSelected, lyrHost;
-
-  if (objLayer.capa) {
-    // Determine if layer is WMTS or single WMS
-    layer = objLayer.capa;
-
-    if (gestorMenu.layerIsWmts(objLayer.nombre)) {
-      layerSelected = objLayer.capas[1]; // WMTS layer
-    } else {
-      layerSelected = objLayer.capa; // Single WMS layer
-    }
-    lyrHost = layerSelected.getHostWMS();
-  } else {
-    // Handle double WMS layers
-    layer = objLayer;
-    layerSelected = objLayer;
-    lyrHost = layerSelected.host;
-  }
+  const layerSelected = objLayer.capa || objLayer;
+  const layer = layerSelected;
+  const lyrHost = layerSelected.getHostWMS
+    ? layerSelected.getHostWMS()
+    : layerSelected.host;
 
   // Extend L.WMS.Source to customize popup behavior
   const MySource = L.WMS.Source.extend({

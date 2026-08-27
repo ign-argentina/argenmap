@@ -31,6 +31,10 @@ function delFileItembyID(id) {
   if (layerIndex >= 0) {
     addedLayers.splice(layerIndex, 1);
   }
+  const menuIndex = configuredFileLayerRegistry.findIndex(
+    (entry) => entry.id === id,
+  );
+  if (menuIndex >= 0) configuredFileLayerRegistry.splice(menuIndex, 1);
 }
 
 function editDomNameofFileLayerbyID(id, name) {
@@ -38,40 +42,126 @@ function editDomNameofFileLayerbyID(id, name) {
   if (layerIndex >= 0) {
     addedLayers[layerIndex].name = name;
   }
+  const menuEntry = configuredFileLayerRegistry.find((entry) => entry.id === id);
+  if (menuEntry) menuEntry.textName = name;
 }
 
 function registerConfiguredFileLayerEntry(entry) {
   if (
     !entry ||
     !entry.id ||
-    (!entry.sectionName && !(entry.sectionId && entry.sectionLabel))
+    (!entry.layerGroupTitle &&
+      !entry.sectionName &&
+      !(entry.layerGroupId || (entry.sectionId && entry.sectionLabel)))
   ) {
     return;
   }
 
-  const sectionId =
+  const layerGroupId =
+    entry.layerGroupId ||
     entry.sectionId ||
     entry.sectionName ||
-    clearSpecialChars(entry.sectionLabel || entry.sectionName || entry.id);
-  const sectionLabel =
-    entry.sectionLabel || entry.sectionName || entry.sectionId || entry.id;
+    clearSpecialChars(
+      entry.layerGroupTitle || entry.sectionLabel || entry.sectionName || entry.id,
+    );
+  const layerGroupTitle =
+    entry.layerGroupTitle ||
+    entry.sectionLabel ||
+    entry.sectionName ||
+    entry.layerGroupId ||
+    entry.sectionId ||
+    entry.id;
   const exists = configuredFileLayerRegistry.some(
-    (item) => item.id === entry.id && item.sectionId === sectionId,
+    (item) => item.id === entry.id && item.layerGroupId === layerGroupId,
   );
 
   if (!exists) {
     configuredFileLayerRegistry.push({
       ...entry,
-      sectionId,
-      sectionLabel,
+      layerGroupId,
+      layerGroupTitle,
+      // Compatibility aliases consumed by layer actions not migrated yet.
+      sectionId: layerGroupId,
+      sectionLabel: layerGroupTitle,
+      groupWeight: Number(entry.groupWeight ?? 0),
+      weight: Number(entry.weight ?? 0),
       fromConfig: entry.fromConfig === true,
       allowedOptions: Array.isArray(entry.allowedOptions)
         ? entry.allowedOptions.map((option) => option.toLowerCase())
         : entry.fromConfig
-          ? ["zoom", "query", "data", "download"]
-          : ["zoom", "query", "data", "download", "rename", "delete"],
+          ? ["zoom", "query", "edit", "data", "download"]
+          : [
+              "zoom",
+              "query",
+              "edit",
+              "data",
+              "download",
+              "rename",
+              "delete",
+            ],
     });
   }
+}
+
+const registerFileLayerMenuEntry = registerConfiguredFileLayerEntry;
+
+function getFileLayerFeatures(id) {
+  const layerNames = new Set(mapa.groupLayers?.[id] || []);
+  return Object.values(mapa.editableLayers || {})
+    .flat()
+    .filter((layer) => layerNames.has(layer.name));
+}
+
+function setFileLayerEditable(id, editable) {
+  const nextEditable = editable !== false;
+  const features = getFileLayerFeatures(id);
+  const editHandler =
+    mapa.drawControl?._toolbars?.edit?._modes?.edit?.handler || null;
+
+  features.forEach((layer) => {
+    const participatesInActiveEdit =
+      editHandler?._enabled && editHandler._featureGroup?.hasLayer(layer);
+    // An already active Leaflet.Draw handler must release the geometry before
+    // it is marked as protected; its custom disable method skips protected
+    // layers intentionally.
+    if (!nextEditable && participatesInActiveEdit) {
+      editHandler._disableLayerEdit({ layer });
+    }
+
+    layer._uneditable = !nextEditable;
+    layer._styleEditable = nextEditable;
+
+    if (nextEditable && participatesInActiveEdit) {
+      editHandler._enableLayerEdit({ layer });
+    }
+  });
+
+  const layerEntry = addedLayers.find((layer) => layer.id === id);
+  if (layerEntry) {
+    layerEntry.editable = nextEditable;
+  }
+
+  const registryEntry = configuredFileLayerRegistry.find(
+    (layer) => layer.id === id,
+  );
+  if (registryEntry) {
+    registryEntry.editable = nextEditable;
+  }
+
+  document.getElementById(`flc-${id}`)?.dispatchEvent(
+    new CustomEvent("argenmap:editabilitychange", {
+      detail: { editable: nextEditable },
+    }),
+  );
+
+  if (!nextEditable) {
+    const openStyleEditor = document.getElementById("editContainer");
+    if (openStyleEditor?.dataset.fileLayerId === id) {
+      openStyleEditor.remove();
+    }
+  }
+
+  return nextEditable;
 }
 
 function normalizeLeafletControlOrder() {
@@ -335,16 +425,18 @@ function showTotalNumberofLayers() {
     }
   });
 
-  if (activeLayers > 0) {
-    document.getElementById("cleanTrash").innerHTML =
+  const cleanTrash = document.getElementById("cleanTrash");
+  if (cleanTrash && activeLayers > 0) {
+    cleanTrash.innerHTML =
       "<div class='glyphicon glyphicon-refresh'></div>" +
         "<span class='total-active-layers-counter'>" +
         activeLayers +
         "</span>";
-  } else {
-    document.getElementById("cleanTrash").innerHTML =
-      "<span class='glyphicon glyphicon-refresh'></span>";
+  } else if (cleanTrash) {
+    cleanTrash.innerHTML = "<span class='glyphicon glyphicon-refresh'></span>";
   }
+
+  gestorMenu.updateLayerMenuControls(activeLayers);
 }
 
 function recoverSections() {
@@ -448,6 +540,7 @@ function loadWmsTplAux(objLayer) {
     delete overlayMaps[layer];
   } else {
     createWmsLayer(objLayer);
+    overlayMaps[layer].setOpacity(objLayer.capa.opacity ?? 1);
     const queryOptions = getLayerQueryOptions(objLayer.capa);
     overlayMaps[layer]._source.options.identify =
       queryOptions.queryable &&
@@ -821,6 +914,9 @@ function adaptToImage(imgDiv) {
    */
   let img = imgDiv.childNodes[0],
     item = imgDiv.parentNode.parentNode;
+  if (img?.classList?.contains("layer-menu-icon")) {
+    return;
+  }
   if (img.naturalHeight > 24 || img.naturalWidth > 24) {
     let resize_img_icon = document.createElement("div");
     resize_img_icon.className = "resize-legend-combobox";
@@ -1018,6 +1114,11 @@ function clickGeometryLayer(layer) {
     }
   }
 
+  const menuEntry = configuredFileLayerRegistry.find(
+    (entry) => entry.id === layer,
+  );
+  if (menuEntry) menuEntry.isActive = targetLayer.isActive;
+
   updateNumberofLayers(targetLayer.section);
   showTotalNumberofLayers();
 }
@@ -1073,8 +1174,10 @@ async function clickWMSLayer(layer, layer_item, fileName) {
       }
 
       if (createdLayer._source?.options) {
-        createdLayer._source.options.identify = consultDataBtnClose === false;
+        createdLayer._source.options.identify =
+          consultDataBtnClose === false || addedLayer?.queryActive === true;
       }
+      createdLayer.setOpacity(addedLayer?.opacity ?? 1);
       createdLayer.addTo(mapa);
       layer.L_layer = createdLayer;
       layer.active = true;
@@ -1615,6 +1718,9 @@ function changeIsActive(id, isActive) {
       if (isActive == false) lyr.isActive = true;
     }
   });
+  const menuEntry = configuredFileLayerRegistry.find((entry) => entry.id === id);
+  const layerEntry = addedLayers.find((entry) => entry.id === id);
+  if (menuEntry && layerEntry) menuEntry.isActive = layerEntry.isActive;
 }
 
 function addCounterForSection(groupname, layerType) {
@@ -1766,7 +1872,10 @@ function getLayerQueryOptions(layer, config = null) {
     layer?.queryable ??
     true;
   const queryActive =
-    layerConfig?.queryActive ?? serviceConfig?.queryActive ?? false;
+    layer?.queryActive ??
+    layerConfig?.queryActive ??
+    serviceConfig?.queryActive ??
+    false;
 
   return {
     queryable: Boolean(queryable),
@@ -1986,7 +2095,6 @@ function createPopupForVector(layer, clickLatlng) {
     popupLatlng,
     {
       className: "file-layer-popup",
-      minWidth: Math.min(288, maxPopupWidth),
       maxWidth: maxPopupWidth,
     },
   ); //Show info
@@ -2104,17 +2212,27 @@ function openLayerQueryPopup(targetMap, content, latlng, options = {}) {
 }
 
 function getLayerQueryPopupOptions(options = {}, targetMap = null) {
-  const edgePadding = [16, 16];
+  const mapSize = targetMap?.getSize?.();
+  const isCompactViewport =
+    mapSize && (mapSize.x <= 600 || mapSize.y <= 500);
+  const classNames = new Set([
+    "layer-query-popup",
+    ...String(options.className || "")
+      .split(/\s+/u)
+      .filter(Boolean),
+  ]);
   const popupOptions = {
     autoPan: true,
-    keepInView: true,
-    autoPanPaddingTopLeft: edgePadding,
-    autoPanPaddingBottomRight: edgePadding,
+    // Pan once when opening, but allow the user to move the map afterwards.
+    keepInView: false,
+    autoPanPaddingTopLeft: [16, isCompactViewport ? 88 : 16],
+    autoPanPaddingBottomRight: [16, 16],
     ...options,
+    className: Array.from(classNames).join(" "),
   };
 
-  if (targetMap?.getSize) {
-    const availableWidth = Math.max(160, targetMap.getSize().x - 80);
+  if (mapSize) {
+    const availableWidth = Math.max(160, mapSize.x - 80);
     popupOptions.maxWidth = Math.min(
       options.maxWidth ?? 300,
       availableWidth,
@@ -2132,6 +2250,59 @@ function keepLayerQueryPopupInView(targetMap, popup) {
     return;
   }
 
+  const popupElement = popup.getElement();
+  const popupContent = popupElement?.querySelector(".leaflet-popup-content");
+  const popupWrapper = popupElement?.querySelector(
+    ".leaflet-popup-content-wrapper",
+  );
+  const language = document.documentElement.lang?.toLowerCase().split("-")[0];
+  const moreContentLabel =
+    language === "es" ? "Mostrar más contenido" : "Show more content";
+  const moreContentButton = document.createElement("button");
+  moreContentButton.type = "button";
+  moreContentButton.className = "layer-query-popup-more";
+  moreContentButton.textContent = "↓";
+  moreContentButton.title = moreContentLabel;
+  moreContentButton.setAttribute("aria-label", moreContentLabel);
+  moreContentButton.hidden = true;
+  popupWrapper?.appendChild(moreContentButton);
+
+  const updateOverflowIndicator = () => {
+    if (!popupContent || !popupElement) {
+      return;
+    }
+
+    const overflowRemaining =
+      popupContent.scrollHeight -
+      popupContent.clientHeight -
+      popupContent.scrollTop;
+    const hasOverflow =
+      popupContent.scrollHeight - popupContent.clientHeight > 4;
+    const hasMoreContent = hasOverflow && overflowRemaining > 4;
+
+    popupElement.classList.toggle("has-overflowing-content", hasOverflow);
+    moreContentButton.hidden = !hasMoreContent;
+  };
+
+  const showMoreContent = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!popupContent) {
+      return;
+    }
+
+    popupContent.scrollTo({
+      top:
+        popupContent.scrollTop +
+        Math.max(80, Math.floor(popupContent.clientHeight * 0.75)),
+      behavior: "smooth",
+    });
+  };
+  moreContentButton.addEventListener("click", showMoreContent);
+  popupContent?.addEventListener("scroll", updateOverflowIndicator, {
+    passive: true,
+  });
+
   let updateFrame = null;
   const updatePosition = () => {
     if (updateFrame !== null) {
@@ -2142,29 +2313,47 @@ function keepLayerQueryPopupInView(targetMap, popup) {
       updateFrame = null;
       if (popup._map === targetMap) {
         popup.update();
+        updateOverflowIndicator();
       }
     });
   };
 
+  const updateContentLimits = () => {
+    if (!popupContent || !targetMap.getSize) {
+      return;
+    }
+
+    const mapSize = targetMap.getSize();
+    const isCompactViewport = mapSize.x <= 600 || mapSize.y <= 500;
+    const maxContentHeight = isCompactViewport
+      ? Math.max(
+          80,
+          Math.min(Math.floor(mapSize.y * 0.5), mapSize.y - 160),
+        )
+      : Math.max(80, mapSize.y - 80);
+
+    popupContent.style.maxHeight = `${maxContentHeight}px`;
+    popupContent.style.overflowY = "auto";
+    updateOverflowIndicator();
+  };
+
+  updateContentLimits();
   updatePosition();
 
-  const popupContent = popup.getElement()?.querySelector(".leaflet-popup-content");
-  if (popupContent && targetMap.getSize) {
-    popupContent.style.maxHeight = `${Math.max(80, targetMap.getSize().y - 80)}px`;
-    popupContent.style.overflowY = "auto";
-  }
-  let resizeObserver = null;
-  if (popupContent && typeof ResizeObserver !== "undefined") {
-    resizeObserver = new ResizeObserver(updatePosition);
-    resizeObserver.observe(popupContent);
-  } else {
-    popupContent?.querySelectorAll("img").forEach((image) => {
-      if (!image.complete) {
-        image.addEventListener("load", updatePosition, { once: true });
-        image.addEventListener("error", updatePosition, { once: true });
-      }
-    });
-  }
+  popupContent?.querySelectorAll("img, iframe, video").forEach((media) => {
+    const isLoadedImage = media.tagName === "IMG" && media.complete;
+    if (!isLoadedImage) {
+      media.addEventListener("load", updatePosition, { once: true });
+      media.addEventListener("error", updatePosition, { once: true });
+      media.addEventListener("loadedmetadata", updatePosition, { once: true });
+    }
+  });
+
+  const updateAfterMapResize = () => {
+    updateContentLimits();
+    updatePosition();
+  };
+  targetMap.on("resize", updateAfterMapResize);
 
   const stopTracking = (event) => {
     if (event.popup !== popup) {
@@ -2173,7 +2362,9 @@ function keepLayerQueryPopupInView(targetMap, popup) {
     if (updateFrame !== null) {
       window.cancelAnimationFrame(updateFrame);
     }
-    resizeObserver?.disconnect();
+    moreContentButton.removeEventListener("click", showMoreContent);
+    popupContent?.removeEventListener("scroll", updateOverflowIndicator);
+    targetMap.off("resize", updateAfterMapResize);
     targetMap.off("popupclose", stopTracking);
   };
   targetMap.on("popupclose", stopTracking);
@@ -2969,41 +3160,71 @@ onDomReady(function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-  var menuContainer = document.querySelector(".menu-container");
-  var buttons = document.querySelectorAll(".menu-section-btn");
+  const menuContainer = document.querySelector(".menu-container");
+  const buttons = document.querySelectorAll(".menu-section-btn");
+
+  const setMenuSectionVisibility = (button, targetSection, isVisible) => {
+    targetSection.style.display = isVisible ? "block" : "none";
+    button.setAttribute("aria-expanded", String(isVisible));
+  };
+
+  const updateOpenMenuState = () => {
+    const hasOpenPanel = Array.from(buttons).some((button) => {
+      const targetSection = document.getElementById(
+        button.getAttribute("data-target"),
+      );
+      return targetSection && getComputedStyle(targetSection).display !== "none";
+    });
+    menuContainer.classList.toggle("menu-panel-open", hasOpenPanel);
+    document.body.classList.toggle("argenmap-menu-panel-open", hasOpenPanel);
+  };
+
+  const closeAllMenuSections = () => {
+    buttons.forEach((button) => {
+      const targetSection = document.getElementById(
+        button.getAttribute("data-target"),
+      );
+      if (targetSection) {
+        setMenuSectionVisibility(button, targetSection, false);
+      }
+    });
+    updateOpenMenuState();
+  };
 
   buttons.forEach(function (button) {
+    const targetId = button.getAttribute("data-target");
+    button.setAttribute("aria-controls", targetId);
+    button.setAttribute("aria-expanded", "false");
     button.addEventListener("click", function (event) {
-      var targetId = button.getAttribute("data-target");
-      var targetSection = document.getElementById(targetId);
+      const targetSection = document.getElementById(targetId);
+      const shouldOpen = getComputedStyle(targetSection).display === "none";
 
-      if (targetSection.style.display === "block") {
-        targetSection.style.display = "none";
-      } else {
-        // Oculta todas las secciones antes de mostrar la deseada
-        buttons.forEach(function (otherButton) {
-          var otherTargetId = otherButton.getAttribute("data-target");
-          var otherTargetSection = document.getElementById(otherTargetId);
-
-          if (otherTargetSection !== targetSection) {
-            otherTargetSection.style.display = "none";
-          }
-        });
-
-        targetSection.style.display = "block";
-      }
+      buttons.forEach(function (otherButton) {
+        const otherTargetSection = document.getElementById(
+          otherButton.getAttribute("data-target"),
+        );
+        setMenuSectionVisibility(
+          otherButton,
+          otherTargetSection,
+          shouldOpen && otherTargetSection === targetSection,
+        );
+      });
+      updateOpenMenuState();
       event.stopPropagation();
     });
   });
 
-  // Agrega un evento de clic al documento para ocultar los contenedores al hacer clic fuera de ellos
   document.addEventListener("click", function (event) {
-    if (!menuContainer.contains(event.target) && event.target.id === "mapa") {
-      buttons.forEach(function (button) {
-        var targetId = button.getAttribute("data-target");
-        var targetSection = document.getElementById(targetId);
-        targetSection.style.display = "none";
-      });
+    const map = document.getElementById("mapa");
+    if (!menuContainer.contains(event.target) && map?.contains(event.target)) {
+      closeAllMenuSections();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && menuContainer.classList.contains("menu-panel-open")) {
+      closeAllMenuSections();
+      document.getElementById("sidebar-btn")?.focus();
     }
   });
 });

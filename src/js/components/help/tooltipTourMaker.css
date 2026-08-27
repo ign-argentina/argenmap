@@ -17,6 +17,16 @@
   border-radius: 6px;
   max-width: 320px;
 }
+@media (max-width: 37.5em) {
+  #help-tour {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    max-height: calc(100dvh - 4.75rem - env(safe-area-inset-bottom, 0px));
+    margin: 0;
+    overscroll-behavior: contain;
+  }
+}
 .initModalBtn {
   display: flex;
   justify-content: space-around;

@@ -210,6 +210,22 @@ const app = {
   },
 
   /**
+   * Registers presentation groups independently from their data sources.
+   * Registry pattern: every source resolves the same LayerGroup instance by id.
+   */
+  addLayerGroups: function () {
+    (app.layerGroups || []).forEach((definition) => {
+      if (!definition?.id || gestorMenu.items[definition.id]) return;
+      const group = LayerGroupFactory.create(
+        definition,
+        gestorMenu.getItemsGroupDOM(),
+      );
+      gestorMenu.addTab(group.getTab());
+      gestorMenu.registerLayerGroup(group);
+    });
+  },
+
+  /**
    * @function createBaseMapGroup
    * @description Crea un nuevo grupo de capas base.
    * @param {Object} item - El objeto de configuración del mapa base.
@@ -391,6 +407,7 @@ const app = {
         null,
       fileName: source?.fileName || source?.name || null,
       allowedOptions: item.allowedOptions || source?.allowedOptions || null,
+      editable: Boolean(item.editable ?? source?.editable ?? true),
       zoomOnActivate: Boolean(
         item.zoomOnActivate ?? source?.zoomOnActivate ?? false,
       ),
@@ -546,9 +563,9 @@ const app = {
 
       // Section identity is resolved independently from layer metadata. In the
       // separated schema `sectionName` comes exclusively from `sections`.
-      const sectionLabel =
+      const layerGroupTitle =
         item.sectionName || item.nombre || item.seccion || "Archivos";
-      const sectionId =
+      const layerGroupId =
         item.seccion || clearSpecialChars(item.sectionName || item.nombre || "Archivos");
       const baseLayerId = layerConfig.id || clearSpecialChars(layerConfig.title || fileLayer.getFileName() || "capa-desde-archivo");
       const existingLayerIds = new Set([
@@ -570,6 +587,9 @@ const app = {
         layer.queryable = layerConfig.queryable;
         layer.activeData = layerConfig.queryActive;
         layer.popupFormat = layerConfig.popupFormat;
+        layer._uneditable = !layerConfig.editable;
+        layer._styleEditable = layerConfig.editable;
+        layer._configuredFileLayerId = layerId;
       });
       addLayerToAllGroups(createdLayers, layerId, shouldBeActiveByDefault);
 
@@ -584,19 +604,22 @@ const app = {
         zoomOnActivate: layerConfig.zoomOnActivate,
         queryable: layerConfig.queryable,
         queryActive: layerConfig.queryActive,
+        editable: layerConfig.editable,
         popupFormat: layerConfig.popupFormat,
         // store the visible label as section
-        section: sectionLabel,
+        section: layerGroupTitle,
       });
 
       if (shouldBeActiveByDefault && layerConfig.zoomOnActivate) {
         mapa.centerLayer(geoJSON);
       }
 
-      registerConfiguredFileLayerEntry({
+      registerFileLayerMenuEntry({
         id: layerId,
-        sectionId,
-        sectionLabel,
+        layerGroupId,
+        layerGroupTitle,
+        groupWeight: item.groupWeight ?? item.weight ?? item.peso ?? 0,
+        weight: item.weight ?? item.peso ?? 0,
         layerType: "file",
         textName: layerConfig.title,
         fileName: fileLayer.getFileName() || layerConfig.fileName || layerConfig.url,
@@ -604,11 +627,12 @@ const app = {
         icon: layerConfig.icon,
         description: layerConfig.description,
         allowedOptions: layerConfig.allowedOptions,
+        editable: layerConfig.editable,
         activeButtonColor: layerConfig.activeButtonColor,
         fromConfig: true,
       });
       menu_ui.rebuildConfiguredFileLayers();
-      updateNumberofLayers(sectionLabel);
+      updateNumberofLayers(layerGroupTitle);
       showTotalNumberofLayers();
     } catch (error) {
       console.error("Error loading configured file layer", error);
@@ -840,79 +864,208 @@ function checkFileType(filePath, extension) {
   // check file extension using regex
 }
 
-function normalizeConfigSectionsAndLayers(data) {
-  if (!data || typeof data !== "object") {
-    return data;
+const CURRENT_CONFIG_SCHEMA_VERSION = "2.0.0";
+
+/**
+ * Anti-corruption layer / Adapter pattern.
+ *
+ * Configuration is canonicalized at the application boundary. The rest of
+ * the migration can therefore use English schema-v2 names while unchanged
+ * legacy collaborators receive a temporary projection of the same model.
+ */
+class ConfigurationAdapter {
+  static adaptLayerGroup(group) {
+    const tab = group.tab && typeof group.tab === "object"
+      ? {
+          ...group.tab,
+          searchable: group.tab.searchable ?? group.tab.searcheable ?? false,
+          listType: group.tab.listType ?? group.tab.list_type ?? "accordion",
+        }
+      : group.tab ?? "";
+    return {
+      id: group.id || group.seccion,
+      title: group.title || group.nombre || group.id || group.seccion,
+      weight: Number(group.weight ?? group.peso ?? 0),
+      tab,
+      description:
+        group.description ?? group.shortDescription ?? group.short_abstract ?? "",
+      shortDescription:
+        group.shortDescription ?? group.short_abstract ?? group.description ?? "",
+      expanded: group.expanded === true,
+      style: group.style ?? group.section_style ?? null,
+      cssClass: group.cssClass ?? group.class ?? "",
+    };
   }
 
-  if (!Array.isArray(data.sections) || !Array.isArray(data.layers)) {
-    return data;
+  static projectBaseMapGroup(group) {
+    const layers = group.layers || group.capas || [];
+    return {
+      type: "basemap",
+      tab: group.tab ?? "",
+      seccion: group.id || group.seccion,
+      nombre: group.title || group.nombre,
+      peso: Number(group.weight ?? group.peso ?? 0),
+      short_abstract: group.shortDescription ?? group.short_abstract ?? "",
+      class: group.cssClass ?? group.class ?? "",
+      capas: layers.map((layer) => ({
+        ...layer,
+        titulo: layer.title ?? layer.titulo,
+        nombre: layer.name ?? layer.nombre,
+        servicio: layer.service ?? layer.servicio,
+        host: layer.url ?? layer.host,
+        peso: Number(layer.weight ?? layer.peso ?? 0),
+        legendImg: layer.thumbnail ?? layer.legendImg,
+      })),
+    };
   }
 
-  const sectionMap = {};
-  app.sectionStyles = {};
-  app.sectionExpanded = {};
-  data.sections.forEach((section) => {
-    if (!section || !section.id) {
-      return;
-    }
-    sectionMap[section.id] = section;
-    app.sectionExpanded[section.id] = section.expanded === true;
-    if (section.section_style) {
-      app.sectionStyles[section.id] = section.section_style;
-    }
-  });
-
-  const baseItems = Array.isArray(data.items)
-    ? data.items.filter((item) => item.type === "basemap")
-    : [];
-
-  const normalizedItems = [...baseItems];
-
-  data.layers.forEach((layer) => {
-    if (!layer || !layer.type) {
-      return;
+  static projectDataSource(source, groups, layers) {
+    const layer = layers.find((candidate) => candidate.sourceId === source.id);
+    const groupId = source.layerGroupId || layer?.layerGroupId;
+    const group = groups.find((candidate) => candidate.id === groupId);
+    if (!group) {
+      console.warn(`Layer group not found for data source '${source.id || source.url}'.`);
+      return null;
     }
 
-    const sectionId = layer.section || layer.seccion || layer.sectionId;
-    if (!sectionId) {
-      console.warn("Layer missing section reference", layer);
-      return;
-    }
-
-    const section = sectionMap[sectionId];
-    if (!section) {
-      console.warn(`Section not found for layer section='${sectionId}'`, layer);
-      return;
-    }
-
-    // Keep both configurations independent. Only the fields required by the
-    // legacy menu API are projected from the section; every other property
-    // continues to belong to the layer/service definition.
-    const sectionName = section.nombre || section.title || sectionId;
-    const item = {
-      ...layer,
-      seccion: sectionId,
-      sectionName,
-      nombre: sectionName,
-      tab: section.tab ?? "",
-      short_abstract:
-        section.short_abstract ?? section.description ?? "",
-      peso: section.peso ?? section.weight ?? null,
-      class: section.class ?? "",
-      section_style: section.section_style ?? null,
+    const common = {
+      ...source,
+      ...(layer || {}),
+      type: source.type,
+      seccion: group.id,
+      sectionName: group.title,
+      nombre: group.title,
+      groupWeight: group.weight,
+      weight: layer?.weight ?? 0,
+      peso: group.weight,
+      tab: group.tab,
+      short_abstract: group.shortDescription,
+      class: group.cssClass,
+      section_style: group.style,
+      host: source.url ?? source.host,
+      servicio: source.service ?? source.type,
+      version: source.serviceVersion ?? source.version,
+      feature_info_format: source.featureInfoFormat ?? source.feature_info_format,
+      allowed_layers: source.allowedLayers ?? source.allowed_layers,
+      customize_layers: source.customizedLayers ?? source.customize_layers,
     };
 
-    delete item.section;
-    delete item.sectionId;
+    if (source.type === "file") {
+      common.source = {
+        url: source.url,
+        format: source.format,
+        fileName: source.fileName,
+      };
+    }
+    return common;
+  }
 
-    normalizedItems.push(item);
+  static projectCompositeLayer(compositeLayer) {
+    const projectMember = (member) => ({
+      seccion: member.layerGroupId ?? member.seccion,
+      host: member.sourceUrl ?? member.host,
+      layer: member.layerName ?? member.layer,
+    });
+    return {
+      ...projectMember(compositeLayer),
+      icon: compositeLayer.icon,
+      joins: (compositeLayer.layers || compositeLayer.joins || []).map(projectMember),
+    };
+  }
+
+  static adaptVersion2(data) {
+    const groups = (data.layerGroups || []).map(this.adaptLayerGroup);
+    const layers = data.layers || [];
+    const { layers: _configuredLayers, ...runtimeData } = data;
+    const baseMapGroups = (data.baseMapGroups || []).map(this.projectBaseMapGroup);
+    const sourceItems = (data.dataSources || [])
+      .map((source) => this.projectDataSource(source, groups, layers))
+      .filter(Boolean);
+
+    return {
+      ...runtimeData,
+      schemaVersion: CURRENT_CONFIG_SCHEMA_VERSION,
+      layerGroups: groups,
+      items: [...baseMapGroups, ...sourceItems],
+      configLayers: layers,
+      layers_joins: (data.compositeLayers || []).map(this.projectCompositeLayer),
+      template_feature_info_exception:
+        data.featureInfoExcludedFields ?? data.template_feature_info_exception,
+    };
+  }
+
+  static adaptLegacy(data) {
+    const legacyGroups = Array.isArray(data.sections)
+      ? data.sections
+      : (data.items || []).filter((item) => item.type !== "basemap");
+    const groups = [
+      ...new Map(
+        legacyGroups
+          .map(this.adaptLayerGroup)
+          .filter((group) => group.id)
+          .map((group) => [group.id, group]),
+      ).values(),
+    ];
+
+    if (!Array.isArray(data.sections) || !Array.isArray(data.layers)) {
+      return { ...data, layerGroups: groups };
+    }
+
+    const normalizedItems = [
+      ...(data.items || []).filter((item) => item.type === "basemap"),
+      ...data.layers
+        .map((source) => {
+          const group = groups.find(
+            (candidate) => candidate.id === (source.section || source.seccion || source.sectionId),
+          );
+          if (!group) return null;
+          return {
+            ...source,
+            seccion: group.id,
+            sectionName: group.title,
+            nombre: group.title,
+            groupWeight: group.weight,
+            weight: source.weight ?? source.peso ?? 0,
+            peso: group.weight,
+            tab: group.tab,
+            short_abstract: group.shortDescription,
+            class: group.cssClass,
+            section_style: group.style,
+          };
+        })
+        .filter(Boolean),
+    ];
+    const { layers: _configuredLayers, ...runtimeData } = data;
+    return {
+      ...runtimeData,
+      layerGroups: groups,
+      items: normalizedItems,
+      configLayers: data.layers,
+    };
+  }
+
+  static adaptData(data) {
+    if (!data || typeof data !== "object") return data;
+    return String(data.schemaVersion || "").startsWith("2.")
+      ? this.adaptVersion2(data)
+      : this.adaptLegacy(data);
+  }
+
+  static adaptPreferences(preferences) {
+    if (!preferences || typeof preferences !== "object") return preferences;
+    return { ...preferences, schemaVersion: preferences.schemaVersion || "1.0.0" };
+  }
+}
+
+function normalizeConfigSectionsAndLayers(data) {
+  const normalized = ConfigurationAdapter.adaptData(data);
+  app.sectionStyles = {};
+  app.sectionExpanded = {};
+  (normalized.layerGroups || []).forEach((group) => {
+    app.sectionStyles[group.id] = group.style;
+    app.sectionExpanded[group.id] = group.expanded;
   });
-
-  data.items = normalizedItems;
-  data.configLayers = data.layers;
-  delete data.layers;
-  return data;
+  return normalized;
 }
 
 /**
@@ -958,7 +1111,7 @@ async function getPreferences(preferencesURL, load = false) {
   if (load) {
     loadTemplate(preferences);
   }
-  return preferences;
+  return ConfigurationAdapter.adaptPreferences(preferences);
   // loadTemplate(preferences);
 }
 
@@ -971,7 +1124,7 @@ async function getData(dataURL, load = false) {
    * process each object with specialized methods
    */
   let data = null;
-  if (typeof dataURL === "object" && dataURL.hasOwnProperty("items")) {
+  if (typeof dataURL === "object" && dataURL !== null) {
     data = dataURL;
   } else {
     data = await getJson(dataURL);
@@ -1064,6 +1217,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     }
 
     app.addBasemaps();
+    app.addLayerGroups();
     app.addLayers();
 
     //if geocoder is active in menu.json

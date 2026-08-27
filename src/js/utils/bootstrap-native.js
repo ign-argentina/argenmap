@@ -119,7 +119,14 @@ onDomReady(() => {
       return;
     }
 
-    const trigger = event.target.closest("[data-toggle]");
+    // Ignore unsupported nested data-toggle values (for example tooltip) and
+    // continue up to the actionable control. Section descriptions use a
+    // tooltip inside a collapse header, so selecting the nearest generic
+    // data-toggle made that part of the header inert.
+    const trigger = event.target.closest(
+      '[data-toggle="modal"], [data-toggle="collapse"], ' +
+        '[data-toggle="tab"], [data-toggle="dropdown"]',
+    );
     if (!trigger) return;
     switch (trigger.getAttribute("data-toggle")) {
       case "modal":

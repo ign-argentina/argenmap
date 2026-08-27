@@ -79,6 +79,7 @@
       "seccion": "limites",
       "host": "https://wms.ign.gob.ar/geoserver/limites",
       "layer": "area_protegida_070115",
+      "icon": "src/styles/images/layers-group.svg",
       "joins": [
         {
           "seccion": "limites",

@@ -44,8 +44,27 @@ class AppDependencyLoader {
     }
   }
 
+  getVersionedUrl(url) {
+    const parsedUrl = new URL(url, document.baseURI);
+    const buildVersion = document.querySelector(
+      'meta[name="argenmap-version"]',
+    )?.content;
+
+    if (
+      !buildVersion ||
+      parsedUrl.origin !== window.location.origin ||
+      parsedUrl.protocol === "data:" ||
+      parsedUrl.protocol === "blob:"
+    ) {
+      return parsedUrl.href;
+    }
+
+    parsedUrl.searchParams.set("v", buildVersion);
+    return parsedUrl.href;
+  }
+
   loadScript(url, options = {}) {
-    const normalizedUrl = new URL(url, document.baseURI).href;
+    const normalizedUrl = this.getVersionedUrl(url);
     if (this.scriptPromises.has(normalizedUrl)) {
       return this.scriptPromises.get(normalizedUrl);
     }
@@ -61,7 +80,7 @@ class AppDependencyLoader {
 
     const promise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = url;
+      script.src = normalizedUrl;
       script.type = options.type || "application/javascript";
       if (options.integrity) {
         script.integrity = options.integrity;
@@ -91,7 +110,7 @@ class AppDependencyLoader {
   }
 
   loadStyle(url, options = {}) {
-    const normalizedUrl = new URL(url, document.baseURI).href;
+    const normalizedUrl = this.getVersionedUrl(url);
     if (this.stylePromises.has(normalizedUrl)) {
       return this.stylePromises.get(normalizedUrl);
     }
@@ -108,7 +127,7 @@ class AppDependencyLoader {
 
       const link = document.createElement("link");
       link.rel = "stylesheet";
-      link.href = url;
+      link.href = normalizedUrl;
       link.dataset.argenmapDependency = "true";
       if (options.custom) {
         link.dataset.argenmapCustomStyle = "true";

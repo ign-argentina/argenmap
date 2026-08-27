@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">Capa ráster desde archivo</title>
+  <path fill="#105c97" d="M5 1h15l7 7v23H5zm2 2v26h18V10h-7V3zm13 .8V8h4.2z"/>
+  <g fill="#105c97">
+    <path opacity=".35" d="M10 14h4v4h-4zm5 0h4v4h-4zm5 0h4v4h-4zM10 19h4v4h-4zm5 0h4v4h-4zm5 0h4v4h-4zM10 24h4v4h-4zm5 0h4v4h-4zm5 0h4v4h-4z"/>
+    <path d="M10 14h4v4h-4zm5 5h4v4h-4zm5 5h4v4h-4z"/>
+  </g>
+</svg>

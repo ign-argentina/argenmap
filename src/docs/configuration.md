@@ -38,47 +38,81 @@ src/config/data.json           → Mapas base, capas, agrupaciones.
 
 ## 2. Configuración de mapas base y capas (`data.json`)
 
-### Estructura básica
+### Esquema 2.0 y nomenclatura
 
-El archivo `data.json` se compone de bloques llamados **items**, el primero agrupa los mapas base y los siguientes las secciones desplegables que agrupan capas.
+Ambos archivos de configuración declaran `"schemaVersion": "2.0.0"`. Cuando
+`data.json` no declara versión, la aplicación lo considera esquema 1.x y un
+adaptador lo convierte al modelo actual antes de crear el menú.
+
+El esquema 2.0 utiliza estos conceptos:
+
+- `layerGroups`: grupos abstractos representados como desplegables del menú.
+- `compositeLayers`: varias capas manejadas como una sola.
+- `layers`: entidades de datos individuales.
+- `dataSources`: archivos o servicios OGC desde los que se obtienen capas.
+- `baseMapGroups`: grupos de mapas base.
 
 > [!NOTE]
 > Llamamos bloque a lo que está entre dos llaves `{ }`
 
 ```jsonc
 {
-  "items": [
+  "schemaVersion": "2.0.0",
+  "baseMapGroups": [
     {
-      "capas": [
+      "id": "base-maps",
+      "title": "Mapas base",
+      "weight": 1,
+      "layers": [
         {
-          // Mapa base.
-        },
-        {
-          // Otros mapas base.
+          "id": "argenmap",
+          "title": "Argenmap",
+          "service": "tms",
+          "url": "https://example.org/{z}/{x}/{y}.png",
+          "weight": 10
         }
       ]
-    },
-    {
-      // Fuente de capas desde WMS o WMTS.
-    },
-    {
-      // Otra fuente de capas desde WMS o WMTS.
     }
   ],
-  "layers_joins": [
+  "layerGroups": [
     {
-      // Fusión de dos capas en un sólo botón del menú (opcional).
+      "id": "events",
+      "title": "Eventos",
+      "description": "Capas relacionadas con eventos",
+      "weight": 90
     }
   ],
-  "template": "", // Obsoleto. Puede ser necesario por compatibiliad.
-  "template_feature_info_exception": [
-    // Lista de nombres de atributos de las capas WMS que serán ignorados en las consultas.
+  "dataSources": [
+    {
+      "id": "events-file",
+      "type": "file",
+      "url": "data/events.geojson",
+      "format": "geojson"
+    }
+  ],
+  "layers": [
+    {
+      "id": "events",
+      "title": "Eventos",
+      "layerGroupId": "events",
+      "sourceId": "events-file",
+      "weight": 10
+    }
   ]
 }
 ```
 
-También se admite una estructura separada con `sections` y `layers`. Es la
-opción recomendada cuando varias capas comparten encabezado, pestaña o estilo:
+Los nombres anteriores (`sections`, `items`, `peso`, `nombre`, `seccion`,
+`capas`, `host`, `servicio` y `layers_joins`) sólo pertenecen al esquema 1.x.
+Siguen siendo aceptados cuando falta `schemaVersion`, pero no deben utilizarse
+en configuraciones nuevas.
+
+### Esquema 1.x (retrocompatibilidad)
+
+Las instalaciones existentes también pueden proporcionar la estructura
+anterior con `items`, o la variante separada con `sections` y `layers`. El
+adaptador la conserva para evitar migraciones obligatorias, pero el esquema no
+debe usarse como base de configuraciones nuevas:
 
 ```jsonc
 {
@@ -140,6 +174,14 @@ El atributo booleano `expanded` permite mostrar una sección desplegada al
 iniciar la aplicación. Su valor predeterminado es `false`. Si la sección
 contiene servicios OGC con carga diferida, configurarla con `true` inicia la
 carga de esos servicios para poder mostrar su contenido.
+
+El menú contextual ubicado a la derecha de cada encabezado no requiere
+configuración adicional. Permite activar o desactivar todas las capas, fijar la
+sección arriba, hacer zoom a su encuadre conjunto, conmutar la consulta y
+cambiar la opacidad del grupo. Las acciones que dependen de metadatos OGC
+cargan el documento de capacidades de esa sección bajo demanda, igual que al
+expandirla; los servicios de secciones que no se utilizan permanecen sin
+solicitar durante el arranque.
 
 #### Estilos de una sección
 
@@ -327,8 +369,9 @@ extensión o indicarse explícitamente en `source.format`.
   "zoomOnActivate": true,
   "queryable": true,
   "queryActive": true,
+  "editable": true,
   "popupFormat": "table",
-  "allowedOptions": ["zoom", "query", "data", "download"],
+  "allowedOptions": ["zoom", "query", "edit", "data", "download"],
   "activeButtonColor": "#287bb5",
   "style": {
     "marker": {
@@ -376,11 +419,15 @@ Parámetros principales:
 - `queryable`: permite consultar sus entidades. Por defecto es `true`.
 - `queryActive`: deja la consulta habilitada al iniciar. Sólo tiene efecto si
   `queryable` es `true`; por defecto es `false`.
+- `editable`: determina el estado inicial de edición de estilos y geometrías.
+  Por defecto es `true`. Con `false`, **Editar estilos** queda deshabilitado y
+  Leaflet.Draw omite todas las geometrías de la capa hasta que se habilite la
+  edición desde su submenú.
 - `popupFormat`: formato del contenido consultado. Admite `table`, `text` y
   `html`; si se omite, utiliza tabla salvo para una única propiedad `html`.
 - `allowedOptions`: limita el submenú. Sus valores disponibles son `zoom`,
-  `query`, `data`, `download`, `rename` y `delete`. Si se omite, se muestran
-  todas las opciones aplicables.
+  `query`, `edit`, `data`, `download`, `rename` y `delete`. Si se omite, se
+  muestran todas las opciones aplicables.
 - `activeButtonColor`: cambia el fondo del botón activo sin formar parte del
   estilo geométrico exportado.
 - `style.marker`, `point`, `line` y `polygon`: definen estilos por tipo
@@ -406,6 +453,20 @@ de una capa de archivo, se debe incluir `"query"` en `allowedOptions`. Si
   "queryable": true,
   "queryActive": false,
   "allowedOptions": ["zoom", "query", "data", "download"]
+}
+```
+
+La opción `"edit"` agrega el comando **Activar/Desactivar edición** al mismo
+submenú. El cambio se aplica conjuntamente a todas las entidades de la capa y
+controla tanto **Editar estilos** como la selección de geometrías desde las
+herramientas de edición de Leaflet.Draw. Es un cambio de la sesión actual y no
+modifica `data.json`:
+
+```jsonc
+{
+  "type": "file",
+  "editable": false,
+  "allowedOptions": ["zoom", "query", "edit", "download"]
 }
 ```
 
@@ -605,6 +666,7 @@ Dentro del bloque "layers_joins", agregar un bloque para unir dos capas.
   "seccion": "conae", // Sección desplegable en donde se incluye este botón.
   "host": "https://geotematico01.conae.gov.ar/geoserver/Localidades/wms", // URL del servicio de la capa que queda de fondo
   "layer": "PatagoniaSur", // Nombre de la capa que queda de fondo.
+  "icon": "src/config/styles/images/legends/patagonia-agrupada.svg", // Opcional. Icono del botón agrupado.
   "joins": [
     {
       "seccion": "conae", // Sección desplegable en donde se incluye este botón.
@@ -616,6 +678,13 @@ Dentro del bloque "layers_joins", agregar un bloque para unir dos capas.
 ```
 
 ➡️ Esto genera un botón único en menú que activa ambas capas simultáneamente.
+
+`icon` admite una ruta local o una URL y tiene prioridad sobre el icono o la
+leyenda informada por el servicio para el botón del menú. No modifica las
+leyendas OGC reutilizadas por otras herramientas, como la impresión. Si se
+omite, se muestra `src/styles/images/layers-group.svg` para identificar que el
+botón controla una agrupación. La ruta se configura explícitamente y no depende
+del título visible ni de sus espacios o caracteres especiales.
 
 ![secciones desplegables en el panel de capas](img/wms.png)
 
