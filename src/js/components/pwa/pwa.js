@@ -32,6 +32,8 @@
   };
   const language = document.documentElement.lang?.toLowerCase().split("-")[0];
   const messages = translations[language] || translations.en;
+  const serviceWorkerFallbackDelay = 15000;
+  const serviceWorkerIdleTimeout = 3000;
   let reloadRequested = false;
   let deferredInstallPrompt = null;
 
@@ -256,13 +258,57 @@
     }
   }
 
+  function runWhenBrowserIsIdle(callback) {
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(callback, {
+        timeout: serviceWorkerIdleTimeout,
+      });
+      return;
+    }
+    window.setTimeout(callback, 0);
+  }
+
+  function scheduleServiceWorkerRegistration() {
+    let registrationScheduled = false;
+    let fallbackTimer = null;
+
+    const registerWhenIdle = () => {
+      if (registrationScheduled) {
+        return;
+      }
+      registrationScheduled = true;
+      if (fallbackTimer !== null) {
+        window.clearTimeout(fallbackTimer);
+      }
+      runWhenBrowserIsIdle(registerServiceWorker);
+    };
+
+    const startFallbackTimer = () => {
+      if (!registrationScheduled) {
+        fallbackTimer = window.setTimeout(
+          registerWhenIdle,
+          serviceWorkerFallbackDelay,
+        );
+      }
+    };
+
+    window.addEventListener(ARGENMAP_EVENTS.MAP_READY, registerWhenIdle, {
+      once: true,
+    });
+    if (document.readyState === "complete") {
+      startFallbackTimer();
+    } else {
+      window.addEventListener("load", startFallbackTimer, { once: true });
+    }
+  }
+
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       if (reloadRequested) {
         window.location.reload();
       }
     });
-    window.addEventListener("load", registerServiceWorker, { once: true });
+    scheduleServiceWorkerRegistration();
   }
   window.addEventListener("online", updateNetworkNotice);
   window.addEventListener("offline", updateNetworkNotice);

@@ -4,6 +4,7 @@ import vm from "node:vm";
 
 const appSource = fs.readFileSync("src/js/app.js", "utf8");
 const entitiesSource = fs.readFileSync("src/js/entities.js", "utf8");
+const pwaSource = fs.readFileSync("src/js/components/pwa/pwa.js", "utf8");
 const adapterStart = appSource.indexOf("const CURRENT_CONFIG_SCHEMA_VERSION");
 const adapterEnd = appSource.indexOf("function normalizeConfigSectionsAndLayers");
 assert.ok(adapterStart >= 0 && adapterEnd > adapterStart, "configuration adapter exists");
@@ -32,6 +33,22 @@ assert.match(
   context.getDefaultFileLayerIcon("GeoTIFF").src,
   /icon_file_raster\.svg$/,
   "raster file types use the raster icon by default",
+);
+
+assert.match(
+  pwaSource,
+  /addEventListener\(ARGENMAP_EVENTS\.MAP_READY, registerWhenIdle/,
+  "service worker registration waits until the map is ready",
+);
+assert.match(
+  pwaSource,
+  /requestIdleCallback\(callback/,
+  "service worker registration yields until the browser is idle",
+);
+assert.match(
+  pwaSource,
+  /serviceWorkerFallbackDelay/,
+  "service worker registration has a fallback when map startup fails",
 );
 
 const legacy = adapter.adaptData({
