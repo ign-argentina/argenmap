@@ -89,6 +89,16 @@ const secondaryScriptsSource = buildSource.match(
 )?.[1];
 assert.ok(initialScriptsSource, "initial build scripts are declared");
 assert.ok(secondaryScriptsSource, "secondary build scripts are declared");
+assert.match(
+  buildSource,
+  /name: "runtime",[\s\S]*name: "entities",[\s\S]*name: "application"/,
+  "the critical JavaScript is split into stable ordered chunks",
+);
+assert.match(
+  buildSource,
+  /javascript: javaScriptChunks/,
+  "the build manifest exposes every critical JavaScript chunk",
+);
 for (const moduleName of ["login", "about", "pwa"]) {
   assert.doesNotMatch(
     initialScriptsSource,

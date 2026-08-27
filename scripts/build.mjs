@@ -33,6 +33,21 @@ const initialScripts = [
   "src/js/components/UI/UserInterface.js",
 ];
 
+const initialScriptChunks = [
+  {
+    name: "runtime",
+    scripts: initialScripts.slice(0, 3),
+  },
+  {
+    name: "entities",
+    scripts: initialScripts.slice(3, 4),
+  },
+  {
+    name: "application",
+    scripts: initialScripts.slice(4),
+  },
+];
+
 const secondaryScripts = [
   "src/js/components/login/login.js",
   "src/js/components/about/about.js",
@@ -121,9 +136,9 @@ async function minifyApplicationAssets() {
   }
 }
 
-async function createInitialJavaScriptBundle() {
+async function createInitialJavaScriptChunk({ name, scripts }) {
   const sources = await Promise.all(
-    initialScripts.map((file) => readFile(fromProject(file), "utf8")),
+    scripts.map((file) => readFile(fromProject(file), "utf8")),
   );
   const result = await transform(sources.join("\n;\n"), {
     loader: "js",
@@ -133,12 +148,16 @@ async function createInitialJavaScriptBundle() {
     legalComments: "inline",
     target: "es2018",
   });
-  const fileName = `argenmap.${shortHash(result.code)}.min.js`;
+  const fileName = `argenmap-${name}.${shortHash(result.code)}.min.js`;
   const relativePath = path.posix.join("assets", "js", fileName);
 
   await mkdir(path.dirname(fromOutput(relativePath)), { recursive: true });
   await writeFile(fromOutput(relativePath), result.code);
   return relativePath;
+}
+
+async function createInitialJavaScriptChunks() {
+  return Promise.all(initialScriptChunks.map(createInitialJavaScriptChunk));
 }
 
 async function createInitialCssBundle() {
@@ -203,7 +222,7 @@ function normalizeReleaseVersion(version) {
   return version.replace(/[^a-z0-9._-]/giu, "-");
 }
 
-async function createProductionHtml(javaScriptBundle, cssBundle, version) {
+async function createProductionHtml(javaScriptChunks, cssBundle, version) {
   let html = await readFile(fromProject("index.html"), "utf8");
 
   html = replaceTag(
@@ -227,7 +246,9 @@ async function createProductionHtml(javaScriptBundle, cssBundle, version) {
   html = replaceTag(
     html,
     '  <script defer src="src/js/utils/constants/constants.js"></script>',
-    `  <script defer src="${javaScriptBundle}"></script>`,
+    javaScriptChunks
+      .map((chunk) => `  <script defer src="${chunk}"></script>`)
+      .join("\n"),
   );
 
   for (const script of initialScripts.slice(3)) {
@@ -493,13 +514,13 @@ self.addEventListener("fetch", (event) => {
 }
 
 async function createProductionServiceWorker(
-  javaScriptBundle,
+  javaScriptChunks,
   cssBundle,
   version,
 ) {
   const criticalCandidates = [
     "index.html",
-    javaScriptBundle,
+    ...javaScriptChunks,
     cssBundle,
     "src/config/data.json",
     "src/config/preferences.json",
@@ -588,8 +609,8 @@ async function build() {
   await ensureRuntimeConfiguration();
   await ensureConfiguredFavicon();
   await minifyApplicationAssets();
-  const [javaScriptBundle, cssBundle] = await Promise.all([
-    createInitialJavaScriptBundle(),
+  const [javaScriptChunks, cssBundle] = await Promise.all([
+    createInitialJavaScriptChunks(),
     createInitialCssBundle(),
   ]);
   const filesForContentVersion = (await listFiles(outputDirectory))
@@ -601,11 +622,11 @@ async function build() {
     configuredReleaseVersion() ||
       `content-${await hashOutputFiles(filesForContentVersion)}`,
   );
-  await createProductionHtml(javaScriptBundle, cssBundle, version);
+  await createProductionHtml(javaScriptChunks, cssBundle, version);
   await removeBundledSources();
   await verifyLocalHtmlAssets();
   const pwa = await createProductionServiceWorker(
-    javaScriptBundle,
+    javaScriptChunks,
     cssBundle,
     version,
   );
@@ -613,7 +634,7 @@ async function build() {
   const manifest = {
     entrypoint: "index.html",
     assets: {
-      javascript: javaScriptBundle,
+      javascript: javaScriptChunks,
       css: cssBundle,
     },
     pwa: {
@@ -633,7 +654,7 @@ async function build() {
 
   const bytes = await directorySize(outputDirectory);
   console.log(`Build de produccion creado en build/ (${(bytes / 1024 / 1024).toFixed(2)} MiB).`);
-  console.log(`JavaScript inicial: ${javaScriptBundle}`);
+  console.log(`JavaScript inicial: ${javaScriptChunks.join(", ")}`);
   console.log(`CSS inicial: ${cssBundle}`);
 }
 

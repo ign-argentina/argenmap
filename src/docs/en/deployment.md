@@ -102,7 +102,9 @@ Do not publish only the bundle or only the service worker: they must come from
 the same build to prevent code, styles and plugins from different releases from
 being mixed.
 
-Publish the **contents of `build/`** as the viewer root. The directory includes
+Publish the **contents of `build/`** as the viewer root. Startup JavaScript is
+split into stable runtime, entities, and application chunks so unchanged chunks
+can be reused between releases. The directory includes
 the Web App Manifest, versioned bundles and generated service worker. Do not edit
 it manually because every build recreates it.
 
