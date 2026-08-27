@@ -3,6 +3,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const appSource = fs.readFileSync("src/js/app.js", "utf8");
+const entitiesSource = fs.readFileSync("src/js/entities.js", "utf8");
 const adapterStart = appSource.indexOf("const CURRENT_CONFIG_SCHEMA_VERSION");
 const adapterEnd = appSource.indexOf("function normalizeConfigSectionsAndLayers");
 assert.ok(adapterStart >= 0 && adapterEnd > adapterStart, "configuration adapter exists");
@@ -35,6 +36,40 @@ assert.equal(version2.items[1].id, "events-layer");
 assert.equal(version2.items[1].source.url, "events.geojson");
 assert.equal(version2.items[1].groupWeight, 90);
 assert.equal(version2.layers, undefined, "configured layers do not overwrite runtime layers");
+
+const setMenuDOMBody = entitiesSource.match(
+  /setMenuDOM\(menuDOM\) \{([\s\S]*?)\n  \}\n\n  getMenuDOM\(\)/,
+)?.[1];
+assert.ok(setMenuDOMBody, "layer-menu target binding exists");
+const bindMenuTarget = new Function(
+  "menuDOM",
+  `this.menuDOM = menuDOM;${setMenuDOMBody}`,
+);
+const sidebar = { id: "sidebar" };
+const basemapMenu = { id: "basemap-selector" };
+const layerGroup = {
+  target: null,
+  isBaseLayer: () => false,
+  setObjDom(target) { this.target = target; },
+};
+const basemapGroup = {
+  target: basemapMenu,
+  isBaseLayer: () => true,
+  setObjDom(target) { this.target = target; },
+};
+bindMenuTarget.call(
+  {
+    items: { layers: layerGroup, basemaps: basemapGroup },
+    getItemsGroupDOM: () => sidebar,
+  },
+  sidebar,
+);
+assert.equal(layerGroup.target, sidebar, "layer groups bind to the sidebar");
+assert.equal(
+  basemapGroup.target,
+  basemapMenu,
+  "basemap groups preserve their dedicated menu target",
+);
 
 for (const path of ["src/config/default/data.json", "src/config/data.json"].filter(
   (candidate) => fs.existsSync(candidate),

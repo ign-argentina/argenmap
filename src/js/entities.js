@@ -3984,7 +3984,11 @@ class LayerMenuManager {
     // the domain registry independent from DOM timing and bind render targets
     // only when the UI becomes available.
     Object.values(this.items).forEach((group) => {
-      group.setObjDom(this.getItemsGroupDOM());
+      // Basemap groups own a dedicated menu target configured by app.addBasemaps.
+      // Rebinding them here would render #collapseBaseMapLayers in the sidebar.
+      if (!group.isBaseLayer()) {
+        group.setObjDom(this.getItemsGroupDOM());
+      }
     });
   }
 
