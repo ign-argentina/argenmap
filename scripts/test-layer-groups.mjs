@@ -6,6 +6,11 @@ const appSource = fs.readFileSync("src/js/app.js", "utf8");
 const entitiesSource = fs.readFileSync("src/js/entities.js", "utf8");
 const pwaSource = fs.readFileSync("src/js/components/pwa/pwa.js", "utf8");
 const buildSource = fs.readFileSync("scripts/build.mjs", "utf8");
+const indexSource = fs.readFileSync("index.html", "utf8");
+const runtimeModuleSource = fs.readFileSync(
+  "src/js/entries/runtime.js",
+  "utf8",
+);
 const dependencyLoaderSource = fs.readFileSync(
   "src/js/utils/dependencies/dependency-loader.js",
   "utf8",
@@ -106,13 +111,43 @@ assert.ok(initialScriptsSource, "initial build scripts are declared");
 assert.ok(secondaryScriptsSource, "secondary build scripts are declared");
 assert.match(
   buildSource,
-  /name: "runtime",[\s\S]*name: "entities",[\s\S]*name: "application"/,
+  /name: "runtime",[\s\S]*name: "foundation",[\s\S]*name: "entities",[\s\S]*name: "application"/,
   "the critical JavaScript is split into stable ordered chunks",
+);
+assert.match(
+  indexSource,
+  /<script type="module" src="src\/js\/entries\/runtime\.js"><\/script>/,
+  "development loads the runtime through an ES module entrypoint",
+);
+assert.match(
+  dependencyLoaderSource,
+  /export class AppDependencyLoader[\s\S]*export function onDomReady[\s\S]*export const appDependencies[\s\S]*export function enableNativeInteractions/,
+  "the runtime dependencies expose an ES module API",
+);
+assert.match(
+  runtimeModuleSource,
+  /import \{[\s\S]*appDependencies[\s\S]*\} from "\.\.\/utils\/dependencies\/dependency-loader\.js";[\s\S]*Object\.assign\(globalThis/,
+  "the ES module entrypoint has an explicit compatibility bridge",
+);
+assert.match(
+  buildSource,
+  /esbuildBuild\(\{[\s\S]*bundle: true,[\s\S]*format: "esm",[\s\S]*treeShaking: true,[\s\S]*minify: true/,
+  "the runtime uses real ES module bundling, tree shaking, and minification",
+);
+assert.doesNotMatch(
+  buildSource,
+  /minifyIdentifiers: false/,
+  "identifier minification is no longer disabled",
 );
 assert.match(
   buildSource,
   /javascript: javaScriptChunks/,
   "the build manifest exposes every critical JavaScript chunk",
+);
+assert.match(
+  buildSource,
+  /javascriptEntries: javaScriptEntries/,
+  "the build manifest identifies module and classic entries",
 );
 assert.match(
   buildSource,
@@ -149,6 +184,11 @@ assert.match(
   appSource,
   /case "login":[\s\S]*loadScript\([\s\S]*login\/login\.js[\s\S]*await login\.load\(\)/,
   "login is loaded only when its profile module is enabled",
+);
+assert.match(
+  appSource,
+  /initializeApplicationWhenRuntimeIsReady[\s\S]*globalThis\.appDependencies[\s\S]*ARGENMAP_EVENTS\.RUNTIME_READY/,
+  "classic application startup waits for the ES module compatibility bridge",
 );
 
 const legacy = adapter.adaptData({

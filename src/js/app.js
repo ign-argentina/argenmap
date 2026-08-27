@@ -1172,7 +1172,20 @@ async function getConfig(preferencesURL, dataURL) {
   }
 }
 
-getConfig("./src/config/preferences.json", "./src/config/data.json");
+function initializeApplicationWhenRuntimeIsReady() {
+  const initialize = () =>
+    getConfig("./src/config/preferences.json", "./src/config/data.json");
+
+  if (globalThis.appDependencies) {
+    initialize();
+    return;
+  }
+  window.addEventListener(ARGENMAP_EVENTS.RUNTIME_READY, initialize, {
+    once: true,
+  });
+}
+
+initializeApplicationWhenRuntimeIsReady();
 
 function whenMapIsReady() {
   if (

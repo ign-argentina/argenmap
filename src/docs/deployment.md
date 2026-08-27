@@ -152,8 +152,13 @@ build para evitar mezclar código, estilos y plugins de distintas versiones.
 
 El comando crea la carpeta `build/`, lista para publicar. Esta versión:
 
-* divide y minifica el JavaScript de arranque en chunks estables de runtime,
+* compila el runtime como un módulo ES real con tree-shaking y minificación de
+  identificadores, y mantiene un puente global explícito para el código que aún
+  no fue migrado;
+* divide el JavaScript de arranque en chunks estables de runtime, base,
   entidades y aplicación, para reutilizar los que no cambiaron entre versiones;
+* minifica también los identificadores internos de los scripts clásicos sin
+  renombrar sus API globales de compatibilidad;
 * combina y minifica el CSS necesario para el arranque;
 * mantiene separados los plugins que se cargan únicamente al utilizarlos;
 * agrega un hash al nombre de los recursos críticos y una versión a todos los

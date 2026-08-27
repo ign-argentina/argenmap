@@ -102,11 +102,15 @@ Do not publish only the bundle or only the service worker: they must come from
 the same build to prevent code, styles and plugins from different releases from
 being mixed.
 
-Publish the **contents of `build/`** as the viewer root. Startup JavaScript is
-split into stable runtime, entities, and application chunks so unchanged chunks
-can be reused between releases. The directory includes
-the Web App Manifest, versioned bundles and generated service worker. Do not edit
-it manually because every build recreates it.
+Publish the **contents of `build/`** as the viewer root. The runtime is compiled
+as a real ES module with tree shaking and identifier minification, with an
+explicit global bridge for code that has not been migrated yet. Startup
+JavaScript is split into stable runtime, foundation, entities, and application
+chunks so unchanged chunks can be reused between releases. Internal identifiers
+in classic scripts are minified without renaming their global compatibility
+APIs. The directory includes the Web App Manifest, versioned bundles and
+generated service worker. Do not edit it manually because every build recreates
+it.
 
 Production must be served over HTTPS; `localhost` is the only exception intended
 for local testing. The source development page does not register a service

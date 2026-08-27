@@ -19,7 +19,7 @@ import {
   gzip,
 } from "node:zlib";
 
-import { transform } from "esbuild";
+import { build as esbuildBuild, transform } from "esbuild";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
@@ -27,9 +27,14 @@ const outputDirectory = path.join(projectDirectory, "build");
 const gzipAsync = promisify(gzip);
 const brotliCompressAsync = promisify(brotliCompress);
 
-const initialScripts = [
+const runtimeModuleEntry = "src/js/entries/runtime.js";
+const runtimeModuleSources = [
+  runtimeModuleEntry,
   "src/js/utils/dependencies/dependency-loader.js",
   "src/js/utils/bootstrap-native.js",
+];
+
+const initialScripts = [
   "src/js/utils/constants/constants.js",
   "src/js/entities.js",
   "src/js/utils/functions/functions.js",
@@ -44,15 +49,23 @@ const initialScripts = [
 const initialScriptChunks = [
   {
     name: "runtime",
-    scripts: initialScripts.slice(0, 3),
+    entryPoint: runtimeModuleEntry,
+    type: "module",
+  },
+  {
+    name: "foundation",
+    scripts: initialScripts.slice(0, 1),
+    type: "classic",
   },
   {
     name: "entities",
-    scripts: initialScripts.slice(3, 4),
+    scripts: initialScripts.slice(1, 2),
+    type: "classic",
   },
   {
     name: "application",
-    scripts: initialScripts.slice(4),
+    scripts: initialScripts.slice(2),
+    type: "classic",
   },
 ];
 
@@ -134,7 +147,9 @@ async function minifyApplicationAssets() {
     const source = await readFile(filePath, "utf8");
     const result = await transform(source, {
       loader: isJavaScript ? "js" : "css",
-      minifyIdentifiers: false,
+      // esbuild preserves top-level names in non-bundled classic scripts, so
+      // globals remain compatible while local identifiers can be shortened.
+      minifyIdentifiers: true,
       minifySyntax: true,
       minifyWhitespace: true,
       legalComments: "inline",
@@ -144,24 +159,52 @@ async function minifyApplicationAssets() {
   }
 }
 
-async function createInitialJavaScriptChunk({ name, scripts }) {
-  const sources = await Promise.all(
-    scripts.map((file) => readFile(fromProject(file), "utf8")),
-  );
-  const result = await transform(sources.join("\n;\n"), {
-    loader: "js",
-    minifyIdentifiers: false,
-    minifySyntax: true,
-    minifyWhitespace: true,
-    legalComments: "inline",
-    target: "es2018",
-  });
-  const fileName = `argenmap-${name}.${shortHash(result.code)}.min.js`;
+async function createInitialJavaScriptChunk({
+  name,
+  scripts,
+  entryPoint,
+  type,
+}) {
+  let code;
+
+  if (type === "module") {
+    const result = await esbuildBuild({
+      entryPoints: [fromProject(entryPoint)],
+      bundle: true,
+      write: false,
+      format: "esm",
+      platform: "browser",
+      target: "es2018",
+      treeShaking: true,
+      minify: true,
+      legalComments: "inline",
+    });
+    const [javaScriptOutput] = result.outputFiles;
+    if (!javaScriptOutput) {
+      throw new Error(`No se pudo generar el modulo ES inicial ${name}.`);
+    }
+    code = javaScriptOutput.text;
+  } else {
+    const sources = await Promise.all(
+      scripts.map((file) => readFile(fromProject(file), "utf8")),
+    );
+    const result = await transform(sources.join("\n;\n"), {
+      loader: "js",
+      minifyIdentifiers: true,
+      minifySyntax: true,
+      minifyWhitespace: true,
+      legalComments: "inline",
+      target: "es2018",
+    });
+    code = result.code;
+  }
+
+  const fileName = `argenmap-${name}.${shortHash(code)}.min.js`;
   const relativePath = path.posix.join("assets", "js", fileName);
 
   await mkdir(path.dirname(fromOutput(relativePath)), { recursive: true });
-  await writeFile(fromOutput(relativePath), result.code);
-  return relativePath;
+  await writeFile(fromOutput(relativePath), code);
+  return { path: relativePath, type };
 }
 
 async function createInitialJavaScriptChunks() {
@@ -261,8 +304,18 @@ function normalizeReleaseVersion(version) {
   return version.replace(/[^a-z0-9._-]/giu, "-");
 }
 
-async function createProductionHtml(javaScriptChunks, cssBundle, version) {
+async function createProductionHtml(javaScriptEntries, cssBundle, version) {
   let html = await readFile(fromProject("index.html"), "utf8");
+  const runtimeModule = javaScriptEntries.find(
+    (entry) => entry.type === "module",
+  );
+  const classicScripts = javaScriptEntries.filter(
+    (entry) => entry.type === "classic",
+  );
+
+  if (!runtimeModule) {
+    throw new Error("No se genero el modulo ES del runtime inicial.");
+  }
 
   html = replaceTag(
     html,
@@ -274,23 +327,20 @@ async function createProductionHtml(javaScriptChunks, cssBundle, version) {
     `  <meta name="argenmap-build" content="production">\n  <meta name="argenmap-version" content="${version}">`,
   );
 
-  html = removeTag(
+  html = replaceTag(
     html,
-    '  <script defer src="src/js/utils/dependencies/dependency-loader.js"></script>\n',
-  );
-  html = removeTag(
-    html,
-    '  <script defer src="src/js/utils/bootstrap-native.js"></script>\n',
+    `  <script type="module" src="${runtimeModuleEntry}"></script>`,
+    `  <script type="module" src="${runtimeModule.path}"></script>`,
   );
   html = replaceTag(
     html,
     '  <script defer src="src/js/utils/constants/constants.js"></script>',
-    javaScriptChunks
-      .map((chunk) => `  <script defer src="${chunk}"></script>`)
+    classicScripts
+      .map((entry) => `  <script defer src="${entry.path}"></script>`)
       .join("\n"),
   );
 
-  for (const script of initialScripts.slice(3)) {
+  for (const script of initialScripts.slice(1)) {
     html = removeTag(html, `  <script defer src="${script}"></script>\n`);
   }
   for (const script of secondaryScripts) {
@@ -357,7 +407,12 @@ async function ensureConfiguredFavicon() {
 }
 
 async function removeBundledSources() {
-  for (const relativePath of [...initialScripts, ...initialStyles]) {
+  const bundledSources = new Set([
+    ...runtimeModuleSources,
+    ...initialScripts,
+    ...initialStyles,
+  ]);
+  for (const relativePath of bundledSources) {
     const filePath = fromOutput(relativePath);
     if (await exists(filePath)) {
       await unlink(filePath);
@@ -652,10 +707,11 @@ async function build() {
   await ensureRuntimeConfiguration();
   await ensureConfiguredFavicon();
   await minifyApplicationAssets();
-  const [javaScriptChunks, cssBundle] = await Promise.all([
+  const [javaScriptEntries, cssBundle] = await Promise.all([
     createInitialJavaScriptChunks(),
     createInitialCssBundle(),
   ]);
+  const javaScriptChunks = javaScriptEntries.map((entry) => entry.path);
   const compressedAssets = await createCompressedAssets([
     ...javaScriptChunks,
     cssBundle,
@@ -669,7 +725,7 @@ async function build() {
     configuredReleaseVersion() ||
       `content-${await hashOutputFiles(filesForContentVersion)}`,
   );
-  await createProductionHtml(javaScriptChunks, cssBundle, version);
+  await createProductionHtml(javaScriptEntries, cssBundle, version);
   await removeBundledSources();
   await verifyLocalHtmlAssets();
   const pwa = await createProductionServiceWorker(
@@ -682,6 +738,7 @@ async function build() {
     entrypoint: "index.html",
     assets: {
       javascript: javaScriptChunks,
+      javascriptEntries: javaScriptEntries,
       css: cssBundle,
       encodings: compressedAssets,
     },
