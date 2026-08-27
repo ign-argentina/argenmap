@@ -15,6 +15,25 @@ vm.runInContext(
 );
 const adapter = context.adapter;
 
+const defaultFileLayerIconSource = entitiesSource.match(
+  /function getDefaultFileLayerIcon\(layerType\) \{[\s\S]*?\n\}/,
+)?.[0];
+assert.ok(defaultFileLayerIconSource, "default file-layer icon resolver exists");
+vm.runInContext(
+  `${defaultFileLayerIconSource}\nglobalThis.getDefaultFileLayerIcon = getDefaultFileLayerIcon;`,
+  context,
+);
+assert.match(
+  context.getDefaultFileLayerIcon("file").src,
+  /icon_file_vector\.svg$/,
+  "file layers use the vector icon by default",
+);
+assert.match(
+  context.getDefaultFileLayerIcon("GeoTIFF").src,
+  /icon_file_raster\.svg$/,
+  "raster file types use the raster icon by default",
+);
+
 const legacy = adapter.adaptData({
   sections: [{ id: "events", nombre: "Eventos", peso: 90 }],
   layers: [{ id: "event-file", type: "file", section: "events", source: { url: "events.geojson" } }],

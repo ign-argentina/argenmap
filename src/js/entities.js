@@ -5137,6 +5137,35 @@ class Tab {
 }
 
 var serviceItems = [];
+
+function getDefaultFileLayerIcon(layerType) {
+  const normalizedType = String(layerType || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  const rasterTypes = new Set([
+    "raster",
+    "rasterfile",
+    "georaster",
+    "geotiff",
+    "tif",
+    "tiff",
+    "image",
+    "imagery",
+    "coverage",
+  ]);
+  const isRaster = rasterTypes.has(normalizedType);
+
+  return {
+    src: isRaster
+      ? "src/js/components/openfiles/icon_file_raster.svg"
+      : "src/js/components/openfiles/icon_file_vector.svg",
+    alt: isRaster
+      ? "Capa ráster desde archivo"
+      : "Capa vectorial desde archivo",
+  };
+}
+
 /******************************************
 Menu_UI
 ******************************************/
@@ -5340,7 +5369,8 @@ class Menu_UI {
     } else if (icon) {
       img_icon.innerHTML = `<img loading="lazy" src="${icon}" alt="${textName}">`;
     } else {
-      img_icon.innerHTML = `<img loading="lazy" src="src/js/components/openfiles/icon_file.svg" alt="Capa">`;
+      const defaultIcon = getDefaultFileLayerIcon(layerType);
+      img_icon.innerHTML = `<img loading="lazy" src="${defaultIcon.src}" alt="${defaultIcon.alt}" title="${defaultIcon.alt}">`;
     }
     img_icon.onclick = function () {
       clickGeometryLayer(id);
