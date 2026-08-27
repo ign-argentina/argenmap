@@ -71,6 +71,16 @@ assert.match(
   "the application requests deferred precaching explicitly",
 );
 assert.match(
+  pwaSource,
+  /observeInstallingWorker\(registration\.installing\);[\s\S]*await registration\.update\(\);[\s\S]*observeInstallingWorker\(registration\.installing\);/,
+  "PWA update detection observes workers before and after an explicit check",
+);
+assert.match(
+  pwaSource,
+  /showWaitingWorkerNotice\(\);[\s\S]*await registration\.update\(\);[\s\S]*showWaitingWorkerNotice\(\);/,
+  "PWA update detection checks waiting workers on both sides of the race",
+);
+assert.match(
   buildSource,
   /cache\.addAll\(CRITICAL_PRECACHE_URLS\)/,
   "service worker installation only precaches the critical shell",

@@ -235,25 +235,47 @@
         },
       );
 
-      if (registration.waiting && navigator.serviceWorker.controller) {
-        showUpdateNotice(registration.waiting);
-      }
-
-      registration.addEventListener("updatefound", () => {
-        const worker = registration.installing;
-        if (!worker) {
+      const observedWorkers = new WeakSet();
+      const observeInstallingWorker = (worker) => {
+        if (!worker || observedWorkers.has(worker)) {
           return;
         }
+        observedWorkers.add(worker);
 
-        worker.addEventListener("statechange", () => {
+        const showNoticeWhenInstalled = () => {
           if (
             worker.state === "installed" &&
             navigator.serviceWorker.controller
           ) {
             showUpdateNotice(worker);
           }
-        });
+        };
+        showNoticeWhenInstalled();
+        worker.addEventListener("statechange", showNoticeWhenInstalled);
+      };
+
+      const showWaitingWorkerNotice = () => {
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          showUpdateNotice(registration.waiting);
+        }
+      };
+
+      registration.addEventListener("updatefound", () => {
+        observeInstallingWorker(registration.installing);
       });
+
+      // register() may resolve after updatefound has already fired. Observe the
+      // current worker as well as future workers so that transition is not lost.
+      observeInstallingWorker(registration.installing);
+      showWaitingWorkerNotice();
+
+      try {
+        await registration.update();
+      } catch (error) {
+        console.warn("Unable to check for an Argenmap update:", error);
+      }
+      observeInstallingWorker(registration.installing);
+      showWaitingWorkerNotice();
       scheduleDeferredPrecache();
     } catch (error) {
       console.warn("Unable to register the Argenmap service worker:", error);
