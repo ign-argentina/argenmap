@@ -178,8 +178,11 @@ deben quedar bajo la misma raíz pública.
 
 La estrategia de caché distingue cada tipo de recurso:
 
-* Los bundles con hash y `index.html` se sirven desde la caché de la versión
-  activa, para no mezclar archivos de dos publicaciones antes de actualizar.
+* El shell crítico (`index.html`, bundles, configuración e imagen de respaldo)
+  se almacena al instalar el service worker. Los recursos auxiliares de la PWA
+  se agregan en una segunda etapa ociosa para no competir con el arranque.
+  Ambos grupos pertenecen a la misma caché versionada y no mezclan archivos de
+  publicaciones distintas.
 * `data.json` y `preferences.json` intentan obtener siempre la versión de red y
   recurren a la copia local si no hay conexión.
 * Los plugins y recursos estáticos locales se actualizan en segundo plano

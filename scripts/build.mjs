@@ -327,14 +327,20 @@ async function verifyLocalHtmlAssets() {
   }
 }
 
-function createServiceWorkerSource(version, precacheFiles) {
+function createServiceWorkerSource(
+  version,
+  criticalPrecacheFiles,
+  deferredPrecacheFiles,
+) {
   return `"use strict";
 
 const VERSION = ${JSON.stringify(version)};
 const CACHE_PREFIX = "argenmap-pwa-";
 const APP_CACHE = \`${"${CACHE_PREFIX}"}app-\${VERSION}\`;
 const RUNTIME_CACHE = \`${"${CACHE_PREFIX}"}runtime-\${VERSION}\`;
-const PRECACHE_URLS = ${JSON.stringify(precacheFiles.map((file) => `./${file}`), null, 2)};
+const CRITICAL_PRECACHE_URLS = ${JSON.stringify(criticalPrecacheFiles.map((file) => `./${file}`), null, 2)};
+const DEFERRED_PRECACHE_URLS = ${JSON.stringify(deferredPrecacheFiles.map((file) => `./${file}`), null, 2)};
+const PRECACHE_URLS = [...CRITICAL_PRECACHE_URLS, ...DEFERRED_PRECACHE_URLS];
 const PRECACHE_URLS_ABSOLUTE = new Set(
   PRECACHE_URLS.map((url) => new URL(url, self.registration.scope).href),
 );
@@ -351,7 +357,7 @@ const TRUSTED_STATIC_CDNS = new Set([
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(APP_CACHE).then((cache) => cache.addAll(PRECACHE_URLS)),
+    caches.open(APP_CACHE).then((cache) => cache.addAll(CRITICAL_PRECACHE_URLS)),
   );
 });
 
@@ -378,6 +384,17 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
+    return;
+  }
+  if (event.data && event.data.type === "CACHE_DEFERRED_ASSETS") {
+    event.waitUntil(
+      caches
+        .open(APP_CACHE)
+        .then((cache) => cache.addAll(DEFERRED_PRECACHE_URLS))
+        .catch((error) =>
+          console.warn("Unable to cache deferred application assets:", error),
+        ),
+    );
   }
 });
 
@@ -480,37 +497,55 @@ async function createProductionServiceWorker(
   cssBundle,
   version,
 ) {
-  const candidates = [
+  const criticalCandidates = [
     "index.html",
-    "manifest.webmanifest",
     javaScriptBundle,
     cssBundle,
     "src/config/data.json",
     "src/config/preferences.json",
+    "src/styles/images/noimage.webp",
+  ];
+  const deferredCandidates = [
+    "manifest.webmanifest",
     "src/js/components/context-menu/context-menu.css",
     "src/js/components/user-message/user-message.css",
     "src/styles/images/favicon.ico",
     "src/styles/images/loading.svg",
-    "src/styles/images/noimage.webp",
     "src/styles/images/pwa/icon-192.png",
     "src/styles/images/pwa/icon-512.png",
     "src/styles/images/pwa/icon-maskable-192.png",
     "src/styles/images/pwa/icon-maskable-512.png",
   ];
-  const precacheFiles = [];
-
-  for (const relativePath of candidates) {
-    if (await exists(fromOutput(relativePath))) {
-      precacheFiles.push(relativePath);
+  const existingCandidates = async (candidates) => {
+    const files = [];
+    for (const relativePath of candidates) {
+      if (await exists(fromOutput(relativePath))) {
+        files.push(relativePath);
+      }
     }
-  }
+    return files;
+  };
+
+  const [criticalPrecacheFiles, deferredPrecacheFiles] = await Promise.all([
+    existingCandidates(criticalCandidates),
+    existingCandidates(deferredCandidates),
+  ]);
 
   await writeFile(
     fromOutput("service-worker.js"),
-    createServiceWorkerSource(version, precacheFiles),
+    createServiceWorkerSource(
+      version,
+      criticalPrecacheFiles,
+      deferredPrecacheFiles,
+    ),
   );
 
-  return { version, precacheFiles };
+  return {
+    version,
+    criticalPrecacheFiles,
+    deferredPrecacheFiles,
+    precacheFiles: [...criticalPrecacheFiles, ...deferredPrecacheFiles],
+  };
 }
 
 async function directorySize(directory) {
@@ -587,6 +622,8 @@ async function build() {
       cacheVersion: pwa.version,
       releaseVersion: version,
       precache: pwa.precacheFiles,
+      criticalPrecache: pwa.criticalPrecacheFiles,
+      deferredPrecache: pwa.deferredPrecacheFiles,
     },
   };
   await writeFile(

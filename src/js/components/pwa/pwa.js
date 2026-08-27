@@ -34,6 +34,7 @@
   const messages = translations[language] || translations.en;
   const serviceWorkerFallbackDelay = 15000;
   const serviceWorkerIdleTimeout = 3000;
+  const deferredPrecacheDelay = 5000;
   let reloadRequested = false;
   let deferredInstallPrompt = null;
 
@@ -253,9 +254,25 @@
           }
         });
       });
+      scheduleDeferredPrecache();
     } catch (error) {
       console.warn("Unable to register the Argenmap service worker:", error);
     }
+  }
+
+  function scheduleDeferredPrecache() {
+    window.setTimeout(() => {
+      runWhenBrowserIsIdle(async () => {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          registration.active?.postMessage({
+            type: "CACHE_DEFERRED_ASSETS",
+          });
+        } catch (error) {
+          console.warn("Unable to schedule deferred application cache:", error);
+        }
+      });
+    }, deferredPrecacheDelay);
   }
 
   function runWhenBrowserIsIdle(callback) {

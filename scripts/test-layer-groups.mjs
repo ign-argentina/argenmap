@@ -60,6 +60,26 @@ assert.match(
   /dataset\.argenmapMapReady === "true"/,
   "a PWA module loaded after map startup registers without the fallback delay",
 );
+assert.match(
+  pwaSource,
+  /deferredPrecacheDelay/,
+  "auxiliary PWA assets are delayed beyond service worker registration",
+);
+assert.match(
+  pwaSource,
+  /type: "CACHE_DEFERRED_ASSETS"/,
+  "the application requests deferred precaching explicitly",
+);
+assert.match(
+  buildSource,
+  /cache\.addAll\(CRITICAL_PRECACHE_URLS\)/,
+  "service worker installation only precaches the critical shell",
+);
+assert.match(
+  buildSource,
+  /event\.data\.type === "CACHE_DEFERRED_ASSETS"/,
+  "the service worker handles deferred precaching separately",
+);
 
 const initialScriptsSource = buildSource.match(
   /const initialScripts = \[([\s\S]*?)\n\];/,
