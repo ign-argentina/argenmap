@@ -16,6 +16,7 @@ Incluye por defecto con el mapa base de la República Argentina y se pueden agre
 - Guía rápida de [instalación][]
 - [Configurar][] capas, mapas base, estilos
 - [Funcionalidades][]
+- [Medir performance][]
 - [Colaborar][] con el desarrollo
 
 [Instituto Geográfico Nacional]: https://www.ign.gob.ar
@@ -24,4 +25,5 @@ Incluye por defecto con el mapa base de la República Argentina y se pueden agre
 [instalación]: src/docs/deployment.md
 [Configurar]: src/docs/configuration.md
 [Funcionalidades]: src/docs/features.md
+[Medir performance]: src/docs/performance.md
 [Colaborar]: src/docs/contributing.md

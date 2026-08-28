@@ -34,6 +34,7 @@
   const messages = translations[language] || translations.en;
   const serviceWorkerFallbackDelay = 15000;
   const serviceWorkerIdleTimeout = 3000;
+  const deferredPrecacheDelay = 5000;
   let reloadRequested = false;
   let deferredInstallPrompt = null;
 
@@ -234,28 +235,66 @@
         },
       );
 
-      if (registration.waiting && navigator.serviceWorker.controller) {
-        showUpdateNotice(registration.waiting);
-      }
-
-      registration.addEventListener("updatefound", () => {
-        const worker = registration.installing;
-        if (!worker) {
+      const observedWorkers = new WeakSet();
+      const observeInstallingWorker = (worker) => {
+        if (!worker || observedWorkers.has(worker)) {
           return;
         }
+        observedWorkers.add(worker);
 
-        worker.addEventListener("statechange", () => {
+        const showNoticeWhenInstalled = () => {
           if (
             worker.state === "installed" &&
             navigator.serviceWorker.controller
           ) {
             showUpdateNotice(worker);
           }
-        });
+        };
+        showNoticeWhenInstalled();
+        worker.addEventListener("statechange", showNoticeWhenInstalled);
+      };
+
+      const showWaitingWorkerNotice = () => {
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          showUpdateNotice(registration.waiting);
+        }
+      };
+
+      registration.addEventListener("updatefound", () => {
+        observeInstallingWorker(registration.installing);
       });
+
+      // register() may resolve after updatefound has already fired. Observe the
+      // current worker as well as future workers so that transition is not lost.
+      observeInstallingWorker(registration.installing);
+      showWaitingWorkerNotice();
+
+      try {
+        await registration.update();
+      } catch (error) {
+        console.warn("Unable to check for an Argenmap update:", error);
+      }
+      observeInstallingWorker(registration.installing);
+      showWaitingWorkerNotice();
+      scheduleDeferredPrecache();
     } catch (error) {
       console.warn("Unable to register the Argenmap service worker:", error);
     }
+  }
+
+  function scheduleDeferredPrecache() {
+    window.setTimeout(() => {
+      runWhenBrowserIsIdle(async () => {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          registration.active?.postMessage({
+            type: "CACHE_DEFERRED_ASSETS",
+          });
+        } catch (error) {
+          console.warn("Unable to schedule deferred application cache:", error);
+        }
+      });
+    }, deferredPrecacheDelay);
   }
 
   function runWhenBrowserIsIdle(callback) {
@@ -292,6 +331,10 @@
       }
     };
 
+    if (document.documentElement.dataset.argenmapMapReady === "true") {
+      registerWhenIdle();
+      return;
+    }
     window.addEventListener(ARGENMAP_EVENTS.MAP_READY, registerWhenIdle, {
       once: true,
     });

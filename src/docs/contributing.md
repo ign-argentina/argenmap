@@ -4,6 +4,32 @@
 Gracias por tu interés en contribuir a Argenmap. Antes de enviar tu contribución, por favor lee estas pautas cuidadosamente.
 
 
+## Comandos del repositorio
+
+
+Instala exactamente las dependencias registradas en `package-lock.json` antes
+de ejecutar los comandos:
+
+```bash
+npm ci
+```
+
+| Comando | Descripción |
+| --- | --- |
+| `npm test` | Ejecuta las pruebas automatizadas y las verificaciones de compatibilidad. |
+| `npm run build` | Genera en `build/` la publicación optimizada, versionada y comprimida. |
+| `npm run build:versioned` | Resuelve la versión según la rama, puede crear un tag semántico en ramas de publicación y luego genera el build. |
+| `npm run measure:performance` | Compara el arranque con caché fría y caliente mediante Chrome/Chromium. Requiere un build previo. |
+
+Consulta la guía de [despliegue](deployment.md) para las variantes de build y la
+guía de [mediciones reproducibles](performance.md) para las opciones, métricas y
+formato JSON. Para ver todas las opciones del medidor:
+
+```bash
+npm run measure:performance -- --help
+```
+
+
 ## Consideraciones generales
 
 

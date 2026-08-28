@@ -12,16 +12,29 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
+import {
+  brotliCompress,
+  constants as zlibConstants,
+  gzip,
+} from "node:zlib";
 
-import { transform } from "esbuild";
+import { build as esbuildBuild, transform } from "esbuild";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectDirectory = path.resolve(scriptDirectory, "..");
 const outputDirectory = path.join(projectDirectory, "build");
+const gzipAsync = promisify(gzip);
+const brotliCompressAsync = promisify(brotliCompress);
 
-const initialScripts = [
+const runtimeModuleEntry = "src/js/entries/runtime.js";
+const runtimeModuleSources = [
+  runtimeModuleEntry,
   "src/js/utils/dependencies/dependency-loader.js",
   "src/js/utils/bootstrap-native.js",
+];
+
+const initialScripts = [
   "src/js/utils/constants/constants.js",
   "src/js/entities.js",
   "src/js/utils/functions/functions.js",
@@ -30,8 +43,34 @@ const initialScripts = [
   "src/js/components/user-message/user-message.js",
   "src/js/app.js",
   "src/js/components/styles/styles.js",
-  "src/js/components/login/login.js",
   "src/js/components/UI/UserInterface.js",
+];
+
+const initialScriptChunks = [
+  {
+    name: "runtime",
+    entryPoint: runtimeModuleEntry,
+    type: "module",
+  },
+  {
+    name: "foundation",
+    scripts: initialScripts.slice(0, 1),
+    type: "classic",
+  },
+  {
+    name: "entities",
+    scripts: initialScripts.slice(1, 2),
+    type: "classic",
+  },
+  {
+    name: "application",
+    scripts: initialScripts.slice(2),
+    type: "classic",
+  },
+];
+
+const secondaryScripts = [
+  "src/js/components/login/login.js",
   "src/js/components/about/about.js",
   "src/js/components/pwa/pwa.js",
 ];
@@ -108,7 +147,9 @@ async function minifyApplicationAssets() {
     const source = await readFile(filePath, "utf8");
     const result = await transform(source, {
       loader: isJavaScript ? "js" : "css",
-      minifyIdentifiers: false,
+      // esbuild preserves top-level names in non-bundled classic scripts, so
+      // globals remain compatible while local identifiers can be shortened.
+      minifyIdentifiers: true,
       minifySyntax: true,
       minifyWhitespace: true,
       legalComments: "inline",
@@ -118,24 +159,56 @@ async function minifyApplicationAssets() {
   }
 }
 
-async function createInitialJavaScriptBundle() {
-  const sources = await Promise.all(
-    initialScripts.map((file) => readFile(fromProject(file), "utf8")),
-  );
-  const result = await transform(sources.join("\n;\n"), {
-    loader: "js",
-    minifyIdentifiers: false,
-    minifySyntax: true,
-    minifyWhitespace: true,
-    legalComments: "inline",
-    target: "es2018",
-  });
-  const fileName = `argenmap.${shortHash(result.code)}.min.js`;
+async function createInitialJavaScriptChunk({
+  name,
+  scripts,
+  entryPoint,
+  type,
+}) {
+  let code;
+
+  if (type === "module") {
+    const result = await esbuildBuild({
+      entryPoints: [fromProject(entryPoint)],
+      bundle: true,
+      write: false,
+      format: "esm",
+      platform: "browser",
+      target: "es2018",
+      treeShaking: true,
+      minify: true,
+      legalComments: "inline",
+    });
+    const [javaScriptOutput] = result.outputFiles;
+    if (!javaScriptOutput) {
+      throw new Error(`No se pudo generar el modulo ES inicial ${name}.`);
+    }
+    code = javaScriptOutput.text;
+  } else {
+    const sources = await Promise.all(
+      scripts.map((file) => readFile(fromProject(file), "utf8")),
+    );
+    const result = await transform(sources.join("\n;\n"), {
+      loader: "js",
+      minifyIdentifiers: true,
+      minifySyntax: true,
+      minifyWhitespace: true,
+      legalComments: "inline",
+      target: "es2018",
+    });
+    code = result.code;
+  }
+
+  const fileName = `argenmap-${name}.${shortHash(code)}.min.js`;
   const relativePath = path.posix.join("assets", "js", fileName);
 
   await mkdir(path.dirname(fromOutput(relativePath)), { recursive: true });
-  await writeFile(fromOutput(relativePath), result.code);
-  return relativePath;
+  await writeFile(fromOutput(relativePath), code);
+  return { path: relativePath, type };
+}
+
+async function createInitialJavaScriptChunks() {
+  return Promise.all(initialScriptChunks.map(createInitialJavaScriptChunk));
 }
 
 async function createInitialCssBundle() {
@@ -154,6 +227,37 @@ async function createInitialCssBundle() {
 
   await writeFile(fromOutput(relativePath), result.code);
   return relativePath;
+}
+
+async function createCompressedAssets(relativePaths) {
+  const entries = await Promise.all(
+    relativePaths.map(async (relativePath) => {
+      const source = await readFile(fromOutput(relativePath));
+      const [gzipContent, brotliContent] = await Promise.all([
+        gzipAsync(source, { level: 9 }),
+        brotliCompressAsync(source, {
+          params: {
+            [zlibConstants.BROTLI_PARAM_QUALITY]: 10,
+          },
+        }),
+      ]);
+      const gzipPath = `${relativePath}.gz`;
+      const brotliPath = `${relativePath}.br`;
+      await Promise.all([
+        writeFile(fromOutput(gzipPath), gzipContent),
+        writeFile(fromOutput(brotliPath), brotliContent),
+      ]);
+      return [
+        relativePath,
+        {
+          gzip: gzipPath,
+          brotli: brotliPath,
+        },
+      ];
+    }),
+  );
+
+  return Object.fromEntries(entries);
 }
 
 function removeTag(html, tag) {
@@ -200,8 +304,18 @@ function normalizeReleaseVersion(version) {
   return version.replace(/[^a-z0-9._-]/giu, "-");
 }
 
-async function createProductionHtml(javaScriptBundle, cssBundle, version) {
+async function createProductionHtml(javaScriptEntries, cssBundle, version) {
   let html = await readFile(fromProject("index.html"), "utf8");
+  const runtimeModule = javaScriptEntries.find(
+    (entry) => entry.type === "module",
+  );
+  const classicScripts = javaScriptEntries.filter(
+    (entry) => entry.type === "classic",
+  );
+
+  if (!runtimeModule) {
+    throw new Error("No se genero el modulo ES del runtime inicial.");
+  }
 
   html = replaceTag(
     html,
@@ -213,21 +327,23 @@ async function createProductionHtml(javaScriptBundle, cssBundle, version) {
     `  <meta name="argenmap-build" content="production">\n  <meta name="argenmap-version" content="${version}">`,
   );
 
-  html = removeTag(
+  html = replaceTag(
     html,
-    '  <script defer src="src/js/utils/dependencies/dependency-loader.js"></script>\n',
-  );
-  html = removeTag(
-    html,
-    '  <script defer src="src/js/utils/bootstrap-native.js"></script>\n',
+    `  <script type="module" src="${runtimeModuleEntry}"></script>`,
+    `  <script type="module" src="${runtimeModule.path}"></script>`,
   );
   html = replaceTag(
     html,
     '  <script defer src="src/js/utils/constants/constants.js"></script>',
-    `  <script defer src="${javaScriptBundle}"></script>`,
+    classicScripts
+      .map((entry) => `  <script defer src="${entry.path}"></script>`)
+      .join("\n"),
   );
 
-  for (const script of initialScripts.slice(3)) {
+  for (const script of initialScripts.slice(1)) {
+    html = removeTag(html, `  <script defer src="${script}"></script>\n`);
+  }
+  for (const script of secondaryScripts) {
     html = removeTag(html, `  <script defer src="${script}"></script>\n`);
   }
 
@@ -291,7 +407,12 @@ async function ensureConfiguredFavicon() {
 }
 
 async function removeBundledSources() {
-  for (const relativePath of [...initialScripts, ...initialStyles]) {
+  const bundledSources = new Set([
+    ...runtimeModuleSources,
+    ...initialScripts,
+    ...initialStyles,
+  ]);
+  for (const relativePath of bundledSources) {
     const filePath = fromOutput(relativePath);
     if (await exists(filePath)) {
       await unlink(filePath);
@@ -321,14 +442,20 @@ async function verifyLocalHtmlAssets() {
   }
 }
 
-function createServiceWorkerSource(version, precacheFiles) {
+function createServiceWorkerSource(
+  version,
+  criticalPrecacheFiles,
+  deferredPrecacheFiles,
+) {
   return `"use strict";
 
 const VERSION = ${JSON.stringify(version)};
 const CACHE_PREFIX = "argenmap-pwa-";
 const APP_CACHE = \`${"${CACHE_PREFIX}"}app-\${VERSION}\`;
 const RUNTIME_CACHE = \`${"${CACHE_PREFIX}"}runtime-\${VERSION}\`;
-const PRECACHE_URLS = ${JSON.stringify(precacheFiles.map((file) => `./${file}`), null, 2)};
+const CRITICAL_PRECACHE_URLS = ${JSON.stringify(criticalPrecacheFiles.map((file) => `./${file}`), null, 2)};
+const DEFERRED_PRECACHE_URLS = ${JSON.stringify(deferredPrecacheFiles.map((file) => `./${file}`), null, 2)};
+const PRECACHE_URLS = [...CRITICAL_PRECACHE_URLS, ...DEFERRED_PRECACHE_URLS];
 const PRECACHE_URLS_ABSOLUTE = new Set(
   PRECACHE_URLS.map((url) => new URL(url, self.registration.scope).href),
 );
@@ -345,7 +472,7 @@ const TRUSTED_STATIC_CDNS = new Set([
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(APP_CACHE).then((cache) => cache.addAll(PRECACHE_URLS)),
+    caches.open(APP_CACHE).then((cache) => cache.addAll(CRITICAL_PRECACHE_URLS)),
   );
 });
 
@@ -372,6 +499,17 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
+    return;
+  }
+  if (event.data && event.data.type === "CACHE_DEFERRED_ASSETS") {
+    event.waitUntil(
+      caches
+        .open(APP_CACHE)
+        .then((cache) => cache.addAll(DEFERRED_PRECACHE_URLS))
+        .catch((error) =>
+          console.warn("Unable to cache deferred application assets:", error),
+        ),
+    );
   }
 });
 
@@ -470,41 +608,59 @@ self.addEventListener("fetch", (event) => {
 }
 
 async function createProductionServiceWorker(
-  javaScriptBundle,
+  javaScriptChunks,
   cssBundle,
   version,
 ) {
-  const candidates = [
+  const criticalCandidates = [
     "index.html",
-    "manifest.webmanifest",
-    javaScriptBundle,
+    ...javaScriptChunks,
     cssBundle,
     "src/config/data.json",
     "src/config/preferences.json",
+    "src/styles/images/noimage.webp",
+  ];
+  const deferredCandidates = [
+    "manifest.webmanifest",
     "src/js/components/context-menu/context-menu.css",
     "src/js/components/user-message/user-message.css",
     "src/styles/images/favicon.ico",
     "src/styles/images/loading.svg",
-    "src/styles/images/noimage.webp",
     "src/styles/images/pwa/icon-192.png",
     "src/styles/images/pwa/icon-512.png",
     "src/styles/images/pwa/icon-maskable-192.png",
     "src/styles/images/pwa/icon-maskable-512.png",
   ];
-  const precacheFiles = [];
-
-  for (const relativePath of candidates) {
-    if (await exists(fromOutput(relativePath))) {
-      precacheFiles.push(relativePath);
+  const existingCandidates = async (candidates) => {
+    const files = [];
+    for (const relativePath of candidates) {
+      if (await exists(fromOutput(relativePath))) {
+        files.push(relativePath);
+      }
     }
-  }
+    return files;
+  };
+
+  const [criticalPrecacheFiles, deferredPrecacheFiles] = await Promise.all([
+    existingCandidates(criticalCandidates),
+    existingCandidates(deferredCandidates),
+  ]);
 
   await writeFile(
     fromOutput("service-worker.js"),
-    createServiceWorkerSource(version, precacheFiles),
+    createServiceWorkerSource(
+      version,
+      criticalPrecacheFiles,
+      deferredPrecacheFiles,
+    ),
   );
 
-  return { version, precacheFiles };
+  return {
+    version,
+    criticalPrecacheFiles,
+    deferredPrecacheFiles,
+    precacheFiles: [...criticalPrecacheFiles, ...deferredPrecacheFiles],
+  };
 }
 
 async function directorySize(directory) {
@@ -543,13 +699,22 @@ async function build() {
     fromProject("manifest.webmanifest"),
     fromOutput("manifest.webmanifest"),
   );
+  await cp(
+    fromProject("deploy/apache/.htaccess"),
+    fromOutput(".htaccess"),
+  );
 
   await ensureRuntimeConfiguration();
   await ensureConfiguredFavicon();
   await minifyApplicationAssets();
-  const [javaScriptBundle, cssBundle] = await Promise.all([
-    createInitialJavaScriptBundle(),
+  const [javaScriptEntries, cssBundle] = await Promise.all([
+    createInitialJavaScriptChunks(),
     createInitialCssBundle(),
+  ]);
+  const javaScriptChunks = javaScriptEntries.map((entry) => entry.path);
+  const compressedAssets = await createCompressedAssets([
+    ...javaScriptChunks,
+    cssBundle,
   ]);
   const filesForContentVersion = (await listFiles(outputDirectory))
     .map((filePath) =>
@@ -560,11 +725,11 @@ async function build() {
     configuredReleaseVersion() ||
       `content-${await hashOutputFiles(filesForContentVersion)}`,
   );
-  await createProductionHtml(javaScriptBundle, cssBundle, version);
+  await createProductionHtml(javaScriptEntries, cssBundle, version);
   await removeBundledSources();
   await verifyLocalHtmlAssets();
   const pwa = await createProductionServiceWorker(
-    javaScriptBundle,
+    javaScriptChunks,
     cssBundle,
     version,
   );
@@ -572,8 +737,10 @@ async function build() {
   const manifest = {
     entrypoint: "index.html",
     assets: {
-      javascript: javaScriptBundle,
+      javascript: javaScriptChunks,
+      javascriptEntries: javaScriptEntries,
       css: cssBundle,
+      encodings: compressedAssets,
     },
     pwa: {
       manifest: "manifest.webmanifest",
@@ -581,6 +748,8 @@ async function build() {
       cacheVersion: pwa.version,
       releaseVersion: version,
       precache: pwa.precacheFiles,
+      criticalPrecache: pwa.criticalPrecacheFiles,
+      deferredPrecache: pwa.deferredPrecacheFiles,
     },
   };
   await writeFile(
@@ -590,7 +759,7 @@ async function build() {
 
   const bytes = await directorySize(outputDirectory);
   console.log(`Build de produccion creado en build/ (${(bytes / 1024 / 1024).toFixed(2)} MiB).`);
-  console.log(`JavaScript inicial: ${javaScriptBundle}`);
+  console.log(`JavaScript inicial: ${javaScriptChunks.join(", ")}`);
   console.log(`CSS inicial: ${cssBundle}`);
 }
 

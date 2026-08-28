@@ -102,18 +102,25 @@ Do not publish only the bundle or only the service worker: they must come from
 the same build to prevent code, styles and plugins from different releases from
 being mixed.
 
-Publish the **contents of `build/`** as the viewer root. The directory includes
-the Web App Manifest, versioned bundles and generated service worker. Do not edit
-it manually because every build recreates it.
+Publish the **contents of `build/`** as the viewer root. The runtime is compiled
+as a real ES module with tree shaking and identifier minification, with an
+explicit global bridge for code that has not been migrated yet. Startup
+JavaScript is split into stable runtime, foundation, entities, and application
+chunks so unchanged chunks can be reused between releases. Internal identifiers
+in classic scripts are minified without renaming their global compatibility
+APIs. The directory includes the Web App Manifest, versioned bundles and
+generated service worker. Do not edit it manually because every build recreates
+it.
 
 Production must be served over HTTPS; `localhost` is the only exception intended
 for local testing. The source development page does not register a service
 worker, so cached production resources cannot interfere with debugging.
 
-The PWA serves `index.html` and its hashed bundles from the active version cache
-so files from two releases are not mixed before an accepted update. Local
-configuration is network-first with an offline fallback, while other static
-resources are cached after use. Remote map tiles, WMS/WMTS requests, `GetCapabilities`,
+The PWA stores its critical shell (`index.html`, bundles, configuration, and
+fallback image) when the service worker installs. Auxiliary PWA assets are added
+in a second idle stage so they do not compete with startup. Both groups use the
+same versioned cache, while local configuration remains network-first with an
+offline fallback. Remote map tiles, WMS/WMTS requests, `GetCapabilities`,
 `GetFeatureInfo`, authentication and geoprocesses remain network-only. Installing
 the PWA therefore does not turn remote maps into offline map packages.
 
@@ -140,6 +147,48 @@ Configure the web server with equivalent cache headers:
 /src/js/**/*.js?v=*                Cache-Control: public, max-age=31536000, immutable
 /src/js/**/*.css?v=*               Cache-Control: public, max-age=31536000, immutable
 ```
+
+The build generates `.br` and `.gz` versions of every startup JavaScript chunk
+and the main CSS file. They are listed under `assets.encodings` in
+`build-manifest.json`, allowing the server to send precompressed content without
+spending CPU on each request.
+
+For **Apache**, the build copies a ready-to-use `.htaccess` to its root. It
+requires Apache 2.4 with `AllowOverride FileInfo`, uses Brotli when `mod_brotli`
+is enabled, and falls back to gzip through `mod_deflate`. It also applies the
+`no-cache` and `immutable` policies above.
+
+For **Nginx**, use
+[`deploy/nginx/argenmap.conf.example`](../../../deploy/nginx/argenmap.conf.example)
+as a template, adjust `server_name` and `root`, then validate before reloading:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+The template enables `gzip_static` for the generated `.gz` files. If the Nginx
+Brotli module is installed, uncomment its four directives to prefer `.br`.
+
+After deployment, test one path listed in `assets.javascript` inside
+`build-manifest.json`:
+
+```bash
+curl -I -H 'Accept-Encoding: br, gzip' https://example/argenmap/assets/js/argenmap-runtime.HASH.min.js
+```
+
+The response should include `Content-Encoding: br` or `gzip`, `Vary:
+Accept-Encoding`, and `Cache-Control: public, max-age=31536000, immutable` for
+the hashed asset.
+
+HTTP/2 and HTTP/3 must be enabled by the TLS server or edge proxy publishing
+Argenmap. They cannot be activated by application code or `.htaccess`; support
+depends on certificates, the Nginx/Apache version and, for HTTP/3, QUIC support.
+Check the negotiated protocol in the real environment with browser tools or
+`curl --http2` / `curl --http3`.
+
+Use the [reproducible performance measurement guide](performance.md) to compare
+cold and warm cache behavior before and after a change.
 
 Deploy all files in `build/` atomically. Every build derives its PWA cache version
 from the full published contents, including configuration and deferred plugins.

@@ -3152,12 +3152,25 @@ function removeLayerFromAllGroups(layer, groupName) {
   }
 }
 
-onDomReady(function () {
-  document.getElementById("menu-toggle")?.addEventListener("click", (event) => {
-    event.preventDefault();
-    document.getElementById("wrapper")?.classList.toggle("menuDisplayed");
+function initializeMenuToggleWhenRuntimeIsReady() {
+  const initialize = () =>
+    onDomReady(function () {
+      document.getElementById("menu-toggle")?.addEventListener("click", (event) => {
+        event.preventDefault();
+        document.getElementById("wrapper")?.classList.toggle("menuDisplayed");
+      });
+    });
+
+  if (typeof globalThis.onDomReady === "function") {
+    initialize();
+    return;
+  }
+  window.addEventListener(ARGENMAP_EVENTS.RUNTIME_READY, initialize, {
+    once: true,
   });
-});
+}
+
+initializeMenuToggleWhenRuntimeIsReady();
 
 document.addEventListener("DOMContentLoaded", function () {
   const menuContainer = document.querySelector(".menu-container");

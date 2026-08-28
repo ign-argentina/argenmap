@@ -57,6 +57,7 @@ const DEFAULT_MARKER_STYLES = {
 const DEFAULT_ZOOM_INFO_ICON_COLOR = "#FFF";
 
 const ARGENMAP_EVENTS = Object.freeze({
+  RUNTIME_READY: "argenmap:runtime-ready",
   MAP_READY: "argenmap:map-ready",
   ACTIVE_LAYER_HANDLER_READY: "argenmap:active-layer-handler-ready",
 });

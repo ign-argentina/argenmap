@@ -152,7 +152,14 @@ build para evitar mezclar código, estilos y plugins de distintas versiones.
 
 El comando crea la carpeta `build/`, lista para publicar. Esta versión:
 
-* combina y minifica el JavaScript y CSS necesarios para el arranque;
+* compila el runtime como un módulo ES real con tree-shaking y minificación de
+  identificadores, y mantiene un puente global explícito para el código que aún
+  no fue migrado;
+* divide el JavaScript de arranque en chunks estables de runtime, base,
+  entidades y aplicación, para reutilizar los que no cambiaron entre versiones;
+* minifica también los identificadores internos de los scripts clásicos sin
+  renombrar sus API globales de compatibilidad;
+* combina y minifica el CSS necesario para el arranque;
 * mantiene separados los plugins que se cargan únicamente al utilizarlos;
 * agrega un hash al nombre de los recursos críticos y una versión a todos los
   recursos locales diferidos para poder cachearlos de forma segura;
@@ -178,8 +185,11 @@ deben quedar bajo la misma raíz pública.
 
 La estrategia de caché distingue cada tipo de recurso:
 
-* Los bundles con hash y `index.html` se sirven desde la caché de la versión
-  activa, para no mezclar archivos de dos publicaciones antes de actualizar.
+* El shell crítico (`index.html`, bundles, configuración e imagen de respaldo)
+  se almacena al instalar el service worker. Los recursos auxiliares de la PWA
+  se agregan en una segunda etapa ociosa para no competir con el arranque.
+  Ambos grupos pertenecen a la misma caché versionada y no mezclan archivos de
+  publicaciones distintas.
 * `data.json` y `preferences.json` intentan obtener siempre la versión de red y
   recurren a la copia local si no hay conexión.
 * Los plugins y recursos estáticos locales se actualizan en segundo plano
@@ -224,6 +234,49 @@ operación y configura encabezados equivalentes a estos:
 /src/js/**/*.js?v=*                Cache-Control: public, max-age=31536000, immutable
 /src/js/**/*.css?v=*               Cache-Control: public, max-age=31536000, immutable
 ```
+
+El build genera versiones `.br` y `.gz` de cada chunk JavaScript y del CSS
+principal, y las declara en `build-manifest.json` dentro de `assets.encodings`.
+Esto permite servir los archivos ya comprimidos sin consumir CPU del servidor.
+
+Para **Apache**, el build copia una `.htaccess` preparada a su raíz. Requiere
+Apache 2.4 con `AllowOverride FileInfo`; utiliza Brotli si está habilitado
+`mod_brotli` y recurre a `mod_deflate` para gzip. También configura los
+encabezados `no-cache` e `immutable` anteriores.
+
+Para **Nginx**, utiliza
+[`deploy/nginx/argenmap.conf.example`](../../deploy/nginx/argenmap.conf.example)
+como plantilla, ajusta `server_name` y `root`, y valida antes de recargar:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+La plantilla habilita `gzip_static` para aprovechar los `.gz`. Si Nginx tiene
+instalado el módulo Brotli, descomenta sus cuatro directivas para priorizar los
+`.br`.
+
+Después de publicar, verifica una ruta listada en `assets.javascript` dentro de
+`build-manifest.json`:
+
+```bash
+curl -I -H 'Accept-Encoding: br, gzip' https://ejemplo/argenmap/assets/js/argenmap-runtime.HASH.min.js
+```
+
+La respuesta debe incluir `Content-Encoding: br` o `gzip`, `Vary:
+Accept-Encoding` y, para el archivo con hash, `Cache-Control: public,
+max-age=31536000, immutable`.
+
+HTTP/2 y HTTP/3 deben habilitarse en el servidor TLS o proxy de borde que
+publica Argenmap. No se activan desde `.htaccess` ni desde el código de la
+aplicación: dependen de los certificados, la versión de Nginx/Apache y, para
+HTTP/3, de soporte QUIC. Verifica el protocolo negociado en el ambiente real con
+las herramientas del navegador o `curl --http2` / `curl --http3`.
+
+Para comparar el efecto de estas opciones y de la caché antes y después de un
+cambio, utiliza la guía de
+[mediciones reproducibles de performance](performance.md).
 
 No cambies manualmente el nombre ni el contenido de `service-worker.js`. Si una
 publicación debe revertirse, vuelve a generar y desplegar el build de la versión

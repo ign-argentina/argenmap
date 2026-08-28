@@ -1,4 +1,4 @@
-class AppDependencyLoader {
+export class AppDependencyLoader {
   constructor(groups = {}) {
     this.groups = groups;
     this.groupPromises = new Map();
@@ -162,7 +162,7 @@ class AppDependencyLoader {
   }
 }
 
-function onDomReady(callback) {
+export function onDomReady(callback) {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", callback, { once: true });
     return;
@@ -170,7 +170,13 @@ function onDomReady(callback) {
   callback();
 }
 
-const appDependencies = new AppDependencyLoader({
+export const appDependencies = new AppDependencyLoader({
+  secondaryStartup: {
+    scripts: [
+      "src/js/components/about/about.js",
+      "src/js/components/pwa/pwa.js",
+    ],
+  },
   analytics: {
     scripts: ["src/js/utils/analytics/analytics.js"],
   },
@@ -331,7 +337,7 @@ const appDependencies = new AppDependencyLoader({
   },
 });
 
-function enableNativeInteractions(
+export function enableNativeInteractions(
   selector,
   { draggable = null, resizable = null } = {},
 ) {

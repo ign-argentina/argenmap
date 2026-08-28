@@ -4,6 +4,20 @@ var selectedBasemap = null;
 let menu_ui = new Menu_UI();
 var geoProcessingManager = null;
 
+function loadSecondaryStartupModules() {
+  const loadModules = () => {
+    appDependencies
+      .load("secondaryStartup")
+      .catch((error) => console.warn("Unable to load secondary modules:", error));
+  };
+
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(loadModules, { timeout: 3000 });
+  } else {
+    window.setTimeout(loadModules, 0);
+  }
+}
+
 const urlInteraction = new URLInteraction();
 const geometry = new Geometry();
 
@@ -102,6 +116,9 @@ const app = {
       for (const module of app.profiles[app.profile].modules) {
         switch (module) {
           case "login":
+            await appDependencies.loadScript(
+              "src/js/components/login/login.js",
+            );
             await login.load();
             break;
           // Intialize here more modules defined in profile (config JSON)
@@ -1155,7 +1172,20 @@ async function getConfig(preferencesURL, dataURL) {
   }
 }
 
-getConfig("./src/config/preferences.json", "./src/config/data.json");
+function initializeApplicationWhenRuntimeIsReady() {
+  const initialize = () =>
+    getConfig("./src/config/preferences.json", "./src/config/data.json");
+
+  if (globalThis.appDependencies) {
+    initialize();
+    return;
+  }
+  window.addEventListener(ARGENMAP_EVENTS.RUNTIME_READY, initialize, {
+    once: true,
+  });
+}
+
+initializeApplicationWhenRuntimeIsReady();
 
 function whenMapIsReady() {
   if (
@@ -1257,6 +1287,7 @@ async function loadTemplate(data, isDefaultTemplate) {
     template = "templates/" + template + "/main.html";
 
     await mapReadyPromise;
+    loadSecondaryStartupModules();
 
     if (urlInteraction.areParamsInUrl) {
       mapa.setView(

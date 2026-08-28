@@ -1,3 +1,8 @@
+import {
+  enableNativeInteractions,
+  onDomReady,
+} from "./dependencies/dependency-loader.js";
+
 function getBootstrapTarget(trigger) {
   const selector = trigger.getAttribute("data-target") || trigger.getAttribute("href");
   if (!selector || selector === "#") return null;

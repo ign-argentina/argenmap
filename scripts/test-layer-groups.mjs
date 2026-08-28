@@ -5,6 +5,28 @@ import vm from "node:vm";
 const appSource = fs.readFileSync("src/js/app.js", "utf8");
 const entitiesSource = fs.readFileSync("src/js/entities.js", "utf8");
 const pwaSource = fs.readFileSync("src/js/components/pwa/pwa.js", "utf8");
+const buildSource = fs.readFileSync("scripts/build.mjs", "utf8");
+const performanceSource = fs.readFileSync(
+  "scripts/measure-performance.mjs",
+  "utf8",
+);
+const packageConfiguration = JSON.parse(
+  fs.readFileSync("package.json", "utf8"),
+);
+const indexSource = fs.readFileSync("index.html", "utf8");
+const runtimeModuleSource = fs.readFileSync(
+  "src/js/entries/runtime.js",
+  "utf8",
+);
+const dependencyLoaderSource = fs.readFileSync(
+  "src/js/utils/dependencies/dependency-loader.js",
+  "utf8",
+);
+const apacheConfig = fs.readFileSync("deploy/apache/.htaccess", "utf8");
+const nginxConfig = fs.readFileSync(
+  "deploy/nginx/argenmap.conf.example",
+  "utf8",
+);
 const adapterStart = appSource.indexOf("const CURRENT_CONFIG_SCHEMA_VERSION");
 const adapterEnd = appSource.indexOf("function normalizeConfigSectionsAndLayers");
 assert.ok(adapterStart >= 0 && adapterEnd > adapterStart, "configuration adapter exists");
@@ -49,6 +71,166 @@ assert.match(
   pwaSource,
   /serviceWorkerFallbackDelay/,
   "service worker registration has a fallback when map startup fails",
+);
+assert.match(
+  pwaSource,
+  /dataset\.argenmapMapReady === "true"/,
+  "a PWA module loaded after map startup registers without the fallback delay",
+);
+assert.match(
+  pwaSource,
+  /deferredPrecacheDelay/,
+  "auxiliary PWA assets are delayed beyond service worker registration",
+);
+assert.match(
+  pwaSource,
+  /type: "CACHE_DEFERRED_ASSETS"/,
+  "the application requests deferred precaching explicitly",
+);
+assert.match(
+  pwaSource,
+  /observeInstallingWorker\(registration\.installing\);[\s\S]*await registration\.update\(\);[\s\S]*observeInstallingWorker\(registration\.installing\);/,
+  "PWA update detection observes workers before and after an explicit check",
+);
+assert.match(
+  pwaSource,
+  /showWaitingWorkerNotice\(\);[\s\S]*await registration\.update\(\);[\s\S]*showWaitingWorkerNotice\(\);/,
+  "PWA update detection checks waiting workers on both sides of the race",
+);
+assert.match(
+  buildSource,
+  /cache\.addAll\(CRITICAL_PRECACHE_URLS\)/,
+  "service worker installation only precaches the critical shell",
+);
+assert.match(
+  buildSource,
+  /event\.data\.type === "CACHE_DEFERRED_ASSETS"/,
+  "the service worker handles deferred precaching separately",
+);
+
+const initialScriptsSource = buildSource.match(
+  /const initialScripts = \[([\s\S]*?)\n\];/,
+)?.[1];
+const secondaryScriptsSource = buildSource.match(
+  /const secondaryScripts = \[([\s\S]*?)\n\];/,
+)?.[1];
+assert.ok(initialScriptsSource, "initial build scripts are declared");
+assert.ok(secondaryScriptsSource, "secondary build scripts are declared");
+assert.match(
+  buildSource,
+  /name: "runtime",[\s\S]*name: "foundation",[\s\S]*name: "entities",[\s\S]*name: "application"/,
+  "the critical JavaScript is split into stable ordered chunks",
+);
+assert.match(
+  indexSource,
+  /<script type="module" src="src\/js\/entries\/runtime\.js"><\/script>/,
+  "development loads the runtime through an ES module entrypoint",
+);
+assert.match(
+  dependencyLoaderSource,
+  /export class AppDependencyLoader[\s\S]*export function onDomReady[\s\S]*export const appDependencies[\s\S]*export function enableNativeInteractions/,
+  "the runtime dependencies expose an ES module API",
+);
+assert.match(
+  runtimeModuleSource,
+  /import \{[\s\S]*appDependencies[\s\S]*\} from "\.\.\/utils\/dependencies\/dependency-loader\.js";[\s\S]*Object\.assign\(globalThis/,
+  "the ES module entrypoint has an explicit compatibility bridge",
+);
+assert.match(
+  buildSource,
+  /esbuildBuild\(\{[\s\S]*bundle: true,[\s\S]*format: "esm",[\s\S]*treeShaking: true,[\s\S]*minify: true/,
+  "the runtime uses real ES module bundling, tree shaking, and minification",
+);
+assert.doesNotMatch(
+  buildSource,
+  /minifyIdentifiers: false/,
+  "identifier minification is no longer disabled",
+);
+assert.match(
+  buildSource,
+  /javascript: javaScriptChunks/,
+  "the build manifest exposes every critical JavaScript chunk",
+);
+assert.match(
+  buildSource,
+  /javascriptEntries: javaScriptEntries/,
+  "the build manifest identifies module and classic entries",
+);
+assert.match(
+  buildSource,
+  /createCompressedAssets\(\[[\s\S]*\.\.\.javaScriptChunks,[\s\S]*cssBundle/,
+  "the build precompresses hashed startup assets",
+);
+for (const [serverName, config] of [
+  ["Apache", apacheConfig],
+  ["Nginx", nginxConfig],
+]) {
+  assert.match(config, /immutable/, `${serverName} caches hashed assets immutably`);
+  assert.match(config, /no-cache/, `${serverName} revalidates mutable entrypoints`);
+}
+assert.match(apacheConfig, /BROTLI_COMPRESS/, "Apache enables Brotli when available");
+assert.match(nginxConfig, /gzip_static on/, "Nginx serves precompressed gzip assets");
+for (const moduleName of ["login", "about", "pwa"]) {
+  assert.doesNotMatch(
+    initialScriptsSource,
+    new RegExp(`/components/${moduleName}/${moduleName}\\.js`),
+    `${moduleName} is excluded from the critical bundle`,
+  );
+  assert.match(
+    secondaryScriptsSource,
+    new RegExp(`/components/${moduleName}/${moduleName}\\.js`),
+    `${moduleName} remains available as a secondary module`,
+  );
+}
+assert.match(
+  dependencyLoaderSource,
+  /secondaryStartup:[\s\S]*about\/about\.js[\s\S]*pwa\/pwa\.js/,
+  "About and PWA are grouped for post-map loading",
+);
+assert.match(
+  appSource,
+  /case "login":[\s\S]*loadScript\([\s\S]*login\/login\.js[\s\S]*await login\.load\(\)/,
+  "login is loaded only when its profile module is enabled",
+);
+assert.match(
+  appSource,
+  /initializeApplicationWhenRuntimeIsReady[\s\S]*globalThis\.appDependencies[\s\S]*ARGENMAP_EVENTS\.RUNTIME_READY/,
+  "classic application startup waits for the ES module compatibility bridge",
+);
+assert.equal(
+  packageConfiguration.scripts["measure:performance"],
+  "node scripts/measure-performance.mjs",
+  "the reproducible performance command is exposed through npm",
+);
+assert.match(
+  performanceSource,
+  /Network\.clearBrowserCache[\s\S]*Storage\.clearDataForOrigin/,
+  "cold runs clear both the HTTP cache and origin storage",
+);
+assert.match(
+  performanceSource,
+  /measureNavigation\(context, "cold"[\s\S]*measureNavigation\(context, "hot"/,
+  "each benchmark run measures cold and warm cache scenarios",
+);
+assert.match(
+  performanceSource,
+  /PerformanceObserver[\s\S]*type: "longtask"/,
+  "long tasks are collected through the browser performance API",
+);
+assert.match(
+  performanceSource,
+  /domContentLoadedEventEnd[\s\S]*mapReadyMs[\s\S]*transferredBytes/,
+  "the report contains DOM ready, map ready, and transferred-byte metrics",
+);
+assert.match(
+  performanceSource,
+  /headers\["Content-Encoding"\] = contentEncoding/,
+  "the local measurement server reproduces compressed delivery",
+);
+assert.match(
+  performanceSource,
+  /max-age=31536000, immutable/,
+  "the local measurement server reproduces immutable caching",
 );
 
 const legacy = adapter.adaptData({
