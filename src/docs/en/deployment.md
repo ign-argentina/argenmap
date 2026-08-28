@@ -181,6 +181,15 @@ The response should include `Content-Encoding: br` or `gzip`, `Vary:
 Accept-Encoding`, and `Cache-Control: public, max-age=31536000, immutable` for
 the hashed asset.
 
+HTTP/2 and HTTP/3 must be enabled by the TLS server or edge proxy publishing
+Argenmap. They cannot be activated by application code or `.htaccess`; support
+depends on certificates, the Nginx/Apache version and, for HTTP/3, QUIC support.
+Check the negotiated protocol in the real environment with browser tools or
+`curl --http2` / `curl --http3`.
+
+Use the [reproducible performance measurement guide](performance.md) to compare
+cold and warm cache behavior before and after a change.
+
 Deploy all files in `build/` atomically. Every build derives its PWA cache version
 from the full published contents, including configuration and deferred plugins.
 

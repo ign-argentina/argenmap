@@ -6,6 +6,13 @@ const appSource = fs.readFileSync("src/js/app.js", "utf8");
 const entitiesSource = fs.readFileSync("src/js/entities.js", "utf8");
 const pwaSource = fs.readFileSync("src/js/components/pwa/pwa.js", "utf8");
 const buildSource = fs.readFileSync("scripts/build.mjs", "utf8");
+const performanceSource = fs.readFileSync(
+  "scripts/measure-performance.mjs",
+  "utf8",
+);
+const packageConfiguration = JSON.parse(
+  fs.readFileSync("package.json", "utf8"),
+);
 const indexSource = fs.readFileSync("index.html", "utf8");
 const runtimeModuleSource = fs.readFileSync(
   "src/js/entries/runtime.js",
@@ -189,6 +196,41 @@ assert.match(
   appSource,
   /initializeApplicationWhenRuntimeIsReady[\s\S]*globalThis\.appDependencies[\s\S]*ARGENMAP_EVENTS\.RUNTIME_READY/,
   "classic application startup waits for the ES module compatibility bridge",
+);
+assert.equal(
+  packageConfiguration.scripts["measure:performance"],
+  "node scripts/measure-performance.mjs",
+  "the reproducible performance command is exposed through npm",
+);
+assert.match(
+  performanceSource,
+  /Network\.clearBrowserCache[\s\S]*Storage\.clearDataForOrigin/,
+  "cold runs clear both the HTTP cache and origin storage",
+);
+assert.match(
+  performanceSource,
+  /measureNavigation\(context, "cold"[\s\S]*measureNavigation\(context, "hot"/,
+  "each benchmark run measures cold and warm cache scenarios",
+);
+assert.match(
+  performanceSource,
+  /PerformanceObserver[\s\S]*type: "longtask"/,
+  "long tasks are collected through the browser performance API",
+);
+assert.match(
+  performanceSource,
+  /domContentLoadedEventEnd[\s\S]*mapReadyMs[\s\S]*transferredBytes/,
+  "the report contains DOM ready, map ready, and transferred-byte metrics",
+);
+assert.match(
+  performanceSource,
+  /headers\["Content-Encoding"\] = contentEncoding/,
+  "the local measurement server reproduces compressed delivery",
+);
+assert.match(
+  performanceSource,
+  /max-age=31536000, immutable/,
+  "the local measurement server reproduces immutable caching",
 );
 
 const legacy = adapter.adaptData({

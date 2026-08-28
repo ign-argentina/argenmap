@@ -13,6 +13,7 @@ The app comes with the Argentina Republic base map by default and more can be ad
 - [Deployment][] quick guide
 - [Configure][] layers, base maps and styles
 - [Features][]
+- [Measure performance][]
 - [Contribute][]
 
 [IGN]: https://www.ign.gob.ar
@@ -21,4 +22,5 @@ The app comes with the Argentina Republic base map by default and more can be ad
 [Deployment]: deployment.md
 [Configure]: configuration.md
 [Features]: features.md
+[Measure performance]: performance.md
 [Contribute]: contributing.md

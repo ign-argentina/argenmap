@@ -268,6 +268,16 @@ La respuesta debe incluir `Content-Encoding: br` o `gzip`, `Vary:
 Accept-Encoding` y, para el archivo con hash, `Cache-Control: public,
 max-age=31536000, immutable`.
 
+HTTP/2 y HTTP/3 deben habilitarse en el servidor TLS o proxy de borde que
+publica Argenmap. No se activan desde `.htaccess` ni desde el código de la
+aplicación: dependen de los certificados, la versión de Nginx/Apache y, para
+HTTP/3, de soporte QUIC. Verifica el protocolo negociado en el ambiente real con
+las herramientas del navegador o `curl --http2` / `curl --http3`.
+
+Para comparar el efecto de estas opciones y de la caché antes y después de un
+cambio, utiliza la guía de
+[mediciones reproducibles de performance](performance.md).
+
 No cambies manualmente el nombre ni el contenido de `service-worker.js`. Si una
 publicación debe revertirse, vuelve a generar y desplegar el build de la versión
 anterior: su contenido producirá otra versión de caché. Para resolver una
