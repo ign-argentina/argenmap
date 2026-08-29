@@ -4,6 +4,10 @@ import vm from "node:vm";
 
 const appSource = fs.readFileSync("src/js/app.js", "utf8");
 const entitiesSource = fs.readFileSync("src/js/entities.js", "utf8");
+const functionsSource = fs.readFileSync(
+  "src/js/utils/functions/functions.js",
+  "utf8",
+);
 const pwaSource = fs.readFileSync("src/js/components/pwa/pwa.js", "utf8");
 const buildSource = fs.readFileSync("scripts/build.mjs", "utf8");
 const performanceSource = fs.readFileSync(
@@ -287,6 +291,31 @@ assert.equal(
   basemapGroup.target,
   basemapMenu,
   "basemap groups preserve their dedicated menu target",
+);
+
+const removeLayersGroupSource = entitiesSource.match(
+  /removeLayersGroup\(groupname\) \{[\s\S]*?\n  \}/,
+)?.[0];
+assert.ok(removeLayersGroupSource, "dynamic layer-group removal exists");
+assert.match(
+  removeLayersGroupSource,
+  /\bel\.remove\(\)/,
+  "removing the last WMS layer removes its group",
+);
+assert.doesNotMatch(
+  removeLayersGroupSource,
+  /parentElement\.remove\(\)/,
+  "removing the last WMS layer preserves the sidebar",
+);
+
+const menuToggleSource = functionsSource.match(
+  /const initializeDomState = \(\) => \{[\s\S]*?\n\};\ndocument\.addEventListener\("DOMContentLoaded", initializeDomState\);/,
+)?.[0];
+assert.ok(menuToggleSource, "main menu toggle initialization exists");
+assert.match(
+  menuToggleSource,
+  /if \(!targetSection\) \{[\s\S]*?return;/,
+  "menu buttons tolerate a missing target section",
 );
 
 for (const path of ["src/config/default/data.json", "src/config/data.json"].filter(

@@ -3172,19 +3172,23 @@ function initializeMenuToggleWhenRuntimeIsReady() {
 
 initializeMenuToggleWhenRuntimeIsReady();
 
-document.addEventListener("DOMContentLoaded", function () {
+const initializeDomState = () => { // TODO: Explode this function into smaller ones
   const menuContainer = document.querySelector(".menu-container");
-  const buttons = document.querySelectorAll(".menu-section-btn");
+  const navBarBtns = document.querySelectorAll(".menu-section-btn");
 
   const setMenuSectionVisibility = (button, targetSection, isVisible) => {
+    if (!targetSection) {
+      button.setAttribute("aria-expanded", "false");
+      return;
+    }
     targetSection.style.display = isVisible ? "block" : "none";
     button.setAttribute("aria-expanded", String(isVisible));
   };
 
   const updateOpenMenuState = () => {
-    const hasOpenPanel = Array.from(buttons).some((button) => {
+    const hasOpenPanel = Array.from(navBarBtns).some((button) => {
       const targetSection = document.getElementById(
-        button.getAttribute("data-target"),
+        button.getAttribute("data-target")
       );
       return targetSection && getComputedStyle(targetSection).display !== "none";
     });
@@ -3193,9 +3197,9 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const closeAllMenuSections = () => {
-    buttons.forEach((button) => {
+    navBarBtns.forEach((button) => {
       const targetSection = document.getElementById(
-        button.getAttribute("data-target"),
+        button.getAttribute("data-target")
       );
       if (targetSection) {
         setMenuSectionVisibility(button, targetSection, false);
@@ -3204,22 +3208,27 @@ document.addEventListener("DOMContentLoaded", function () {
     updateOpenMenuState();
   };
 
-  buttons.forEach(function (button) {
+  navBarBtns.forEach(function (button) {
     const targetId = button.getAttribute("data-target");
     button.setAttribute("aria-controls", targetId);
     button.setAttribute("aria-expanded", "false");
     button.addEventListener("click", function (event) {
       const targetSection = document.getElementById(targetId);
+      if (!targetSection) {
+        button.setAttribute("aria-expanded", "false");
+        updateOpenMenuState();
+        return;
+      }
       const shouldOpen = getComputedStyle(targetSection).display === "none";
 
-      buttons.forEach(function (otherButton) {
+      navBarBtns.forEach(function (otherButton) {
         const otherTargetSection = document.getElementById(
-          otherButton.getAttribute("data-target"),
+          otherButton.getAttribute("data-target")
         );
         setMenuSectionVisibility(
           otherButton,
           otherTargetSection,
-          shouldOpen && otherTargetSection === targetSection,
+          shouldOpen && otherTargetSection === targetSection
         );
       });
       updateOpenMenuState();
@@ -3240,7 +3249,8 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("sidebar-btn")?.focus();
     }
   });
-});
+};
+document.addEventListener("DOMContentLoaded", initializeDomState);
 
 function toggleVisibilityGeoprocessModal() {
   const modal = document.getElementById("mr");

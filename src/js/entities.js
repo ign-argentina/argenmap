@@ -6041,7 +6041,6 @@ class Menu_UI {
   removeLayersGroup(groupname) {
     let el = document.getElementById(`lista-${clearSpecialChars(groupname)}`);
     if (el) {
-      el.parentElement.remove();
       el.remove();
     }
   }
