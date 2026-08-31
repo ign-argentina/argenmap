@@ -196,6 +196,7 @@
         zIndexOffset: 2e3,
         factor: 1,
         maxPoints: 0,
+        touchMouseEventDelay: 700,
       },
       initialize: function (t, e) {
         (L.Browser.touch && (this.options.icon = this.options.touchIcon),
@@ -333,7 +334,18 @@
           this._clearGuides(),
           this._updateTooltip());
       },
+      _isTouchGeneratedMouseEvent: function (t) {
+        var e = t.originalEvent || t,
+          i = e.sourceCapabilities;
+        return (
+          (i && i.firesTouchEvents) ||
+          (this._lastTouchTime &&
+            Date.now() - this._lastTouchTime <
+              this.options.touchMouseEventDelay)
+        );
+      },
       _onMouseDown: function (t) {
+        if (this._isTouchGeneratedMouseEvent(t)) return;
         if (
           !this._clickHandled &&
           !this._touchHandled &&
@@ -352,6 +364,10 @@
         this._mouseDownOrigin = L.point(t, e);
       },
       _onMouseUp: function (t) {
+        if (this._isTouchGeneratedMouseEvent(t)) {
+          this._clickHandled = null;
+          return;
+        }
         var e = t.originalEvent,
           i = e.clientX,
           o = e.clientY;
@@ -376,6 +392,7 @@
         var e,
           i,
           o = t.originalEvent;
+        this._lastTouchTime = Date.now();
         (!o.touches ||
           !o.touches[0] ||
           this._clickHandled ||
@@ -413,10 +430,14 @@
         } else e = 1 / 0;
         return e;
       },
+      _onFinishClick: function (t) {
+        this._isTouchGeneratedMouseEvent(t) || this._finishShape();
+      },
       _updateFinishHandler: function () {
         var t = this._markers.length;
-        (t > 1 && this._markers[t - 1].on("click", this._finishShape, this),
-          t > 2 && this._markers[t - 2].off("click", this._finishShape, this));
+        (t > 1 && this._markers[t - 1].on("click", this._onFinishClick, this),
+          t > 2 &&
+            this._markers[t - 2].off("click", this._onFinishClick, this));
       },
       _createMarker: function (t) {
         var e = new L.Marker(t, {
@@ -587,7 +608,7 @@
         this._markers.length > 1 &&
           this._markers[this._markers.length - 1].off(
             "click",
-            this._finishShape,
+            this._onFinishClick,
             this,
           );
       },

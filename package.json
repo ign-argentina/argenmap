@@ -7,7 +7,7 @@
     "build": "node scripts/build.mjs",
     "build:versioned": "node scripts/versioned-build.mjs",
     "measure:performance": "node scripts/measure-performance.mjs",
-    "test": "node scripts/test-layer-groups.mjs"
+    "test": "node scripts/test-layer-groups.mjs && node scripts/test-touch-drawing.mjs"
   },
   "devDependencies": {
     "esbuild": "0.25.8"
