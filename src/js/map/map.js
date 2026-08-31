@@ -646,6 +646,20 @@ function adaptMeasureToggleForTouch(measureControl) {
   toggle.dataset.touchMeasureReady = "true";
 }
 
+function ensureLeafletDrawTouchHandler(map) {
+  if (!map || !L.Map.TouchExtend) {
+    return;
+  }
+
+  // Leaflet.Draw can be loaded after the map already exists. Its init hook
+  // only reaches maps created afterwards, so install the touch event bridge
+  // explicitly for the current map.
+  if (!map.touchExtend) {
+    map.addHandler("touchExtend", L.Map.TouchExtend);
+  }
+  map.touchExtend.enable();
+}
+
 function createFeatureLoader(groupName, initialize) {
   let featurePromise = null;
 
@@ -1339,6 +1353,8 @@ document.body.addEventListener("pluginLoad", async function (event) {
           configTool.createComponent();
           break;
         case "Draw":
+          ensureLeafletDrawTouchHandler(mapa);
+
           var orgReadbleDistance = L.GeometryUtil.readableArea;
 
           L.GeometryUtil.readableArea = function (area, isMetric, precision) {
