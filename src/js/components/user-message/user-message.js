@@ -1,18 +1,49 @@
 /**
  * Clase para mostrar mensajes de usuario en pantalla de forma accesible y visible.
- * El mensaje se muestra centrado, un poco por debajo del centro, y puede ser temporal o persistente.
+ * El mensaje se muestra como un aviso compacto en la esquina inferior derecha
+ * y puede ser temporal o persistente.
  *
  * @class UserMessage
  */
 class UserMessage {
+  static STACK_ID = "user-message-stack";
+
+  static getStack() {
+    let stack = document.getElementById(UserMessage.STACK_ID);
+    if (!stack) {
+      stack = document.createElement("div");
+      stack.id = UserMessage.STACK_ID;
+      stack.className = "user-message-stack";
+      document.body.appendChild(stack);
+    }
+    return stack;
+  }
+
+  static removeEmptyStack(stack) {
+    if (
+      stack?.id === UserMessage.STACK_ID &&
+      stack.children.length === 0
+    ) {
+      stack.remove();
+    }
+  }
+
+  static remove(id) {
+    const message = document.getElementById(id);
+    const stack = message?.parentNode;
+    message?.remove();
+    UserMessage.removeEmptyStack(stack);
+  }
+
   /**
    * Crea y muestra un mensaje en pantalla.
    * @param {string} message - Texto del mensaje a mostrar.
    * @param {boolean} isTemporary - Si es true, el mensaje se cierra automáticamente tras un tiempo.
    * @param {string} type - Tipo de mensaje (debe existir en MESSAGE_PROPERTIES).
-   * @throws {Error} Si los parámetros son inválidos o falta el contenedor principal.
+   * @param {object} options - Identificador, acción y opciones de cierre del aviso.
+   * @throws {Error} Si los parámetros son inválidos o el documento aún no tiene body.
    */
-  constructor(message, isTemporary, type) {
+  constructor(message, isTemporary = true, type = "information", options = {}) {
     // Validación de parámetros de entrada
     if (!message || typeof message !== "string") {
       throw new Error("El mensaje debe ser un string no vacío.");
@@ -20,70 +51,90 @@ class UserMessage {
     if (!MESSAGE_PROPERTIES[type]) {
       throw new Error("Tipo de mensaje inválido.");
     }
-    const mapa = document.getElementById("mapa");
-    if (!mapa) {
-      throw new Error("No se encontró el contenedor principal (mapa).");
+    if (!document.body) {
+      throw new Error("No se encontró el cuerpo del documento.");
     }
-    // Elimina cualquier mensaje anterior para evitar superposiciones
-    const oldMessages = document.getElementsByClassName("message-container");
-    if (oldMessages.length > 0) {
-      Array.from(oldMessages).forEach((msg) => {
-        msg.remove();
-      });
+    const messageProperties = MESSAGE_PROPERTIES[type];
+    const {
+      id,
+      actionLabel,
+      onAction,
+      dismissible = true,
+      closeLabel = "Cerrar mensaje",
+    } = options;
+
+    if (id) {
+      UserMessage.remove(id);
     }
+    const messageStack = UserMessage.getStack();
+
     // Crear el contenedor principal del mensaje
     const messageContainer = document.createElement("div");
     messageContainer.className = "message-container";
-    messageContainer.setAttribute("role", "alert"); // Accesibilidad: rol de alerta
-    messageContainer.setAttribute("aria-live", "assertive"); // Accesibilidad: lectura inmediata
-    messageContainer.style.background = MESSAGE_PROPERTIES[type].background;
-    // Posicionamiento visual centrado y destacado
-    messageContainer.style.position = "fixed";
-    messageContainer.style.left = "50%";
-    messageContainer.style.top = "60%";
-    messageContainer.style.transform = "translate(-50%, -50%)";
-    messageContainer.style.boxShadow = "0 4px 24px rgba(0,0,0,0.25)";
-    messageContainer.style.padding = "1.5rem 2.5rem";
-    messageContainer.style.zIndex = "10000";
-    messageContainer.style.maxWidth = "90vw";
+    if (id) messageContainer.id = id;
+    messageContainer.dataset.messageType = type;
+    messageContainer.setAttribute(
+      "role",
+      type === "information" ? "status" : "alert",
+    );
+    messageContainer.setAttribute(
+      "aria-live",
+      type === "information" ? "polite" : "assertive",
+    );
+    messageContainer.style.setProperty(
+      "--message-accent",
+      messageProperties.accent,
+    );
+
+    // El icono y el borde comunican el tipo sin cambiar el cuerpo del aviso.
+    const typeIcon = document.createElement("i");
+    typeIcon.className = `fa-solid ${messageProperties.icon} message-type-icon`;
+    typeIcon.setAttribute("aria-hidden", "true");
+    messageContainer.appendChild(typeIcon);
+
     // Crear el texto del mensaje
     const messageText = document.createElement("p");
     messageText.className = "non-selectable-text message-text";
     messageText.textContent = message;
-    messageText.style.color = MESSAGE_PROPERTIES[type].text;
-    messageText.style.fontSize = "1.25em";
-    messageText.style.textShadow = "0 1px 2px #0008";
-    messageText.style.margin = "0 1.5rem 0 0";
     messageContainer.appendChild(messageText);
-    // Crear botón de cierre accesible
-    const closeBtn = document.createElement("div");
-    closeBtn.className = "message-close-btn";
-    closeBtn.setAttribute("tabindex", "0"); // Permite foco con teclado
-    closeBtn.setAttribute("aria-label", "Cerrar mensaje");
-    closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    /**
-     * Elimina el mensaje del DOM.
-     * @param {Event} [e] - Evento opcional para detener propagación.
-     */
-    const removeMessage = (e) => {
-      e && e.stopPropagation();
+
+    if (actionLabel && typeof onAction === "function") {
+      const actionBtn = document.createElement("button");
+      actionBtn.type = "button";
+      actionBtn.className = "message-action-btn";
+      actionBtn.textContent = actionLabel;
+      actionBtn.addEventListener("click", onAction, { once: true });
+      messageContainer.appendChild(actionBtn);
+    }
+
+    this.remove = (event) => {
+      event?.stopPropagation();
+      if (this._timeout) {
+        clearTimeout(this._timeout);
+        this._timeout = null;
+      }
+      const currentStack = messageContainer.parentNode;
       messageContainer.remove();
+      UserMessage.removeEmptyStack(currentStack);
     };
-    closeBtn.onclick = removeMessage;
-    // Permite cerrar con Enter o Espacio
-    closeBtn.onkeydown = (e) => {
-      if (e.key === "Enter" || e.key === " ") removeMessage(e);
-    };
-    messageContainer.appendChild(closeBtn);
-    // Añadir el mensaje al DOM
-    mapa.appendChild(messageContainer);
+
+    if (dismissible) {
+      const closeBtn = document.createElement("button");
+      closeBtn.type = "button";
+      closeBtn.className = "message-close-btn";
+      closeBtn.setAttribute("aria-label", closeLabel);
+      closeBtn.title = closeLabel;
+      closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      closeBtn.onclick = this.remove;
+      messageContainer.appendChild(closeBtn);
+    }
+
+    messageStack.appendChild(messageContainer);
+    this.element = messageContainer;
+
     // Si es temporal, configurar temporizador para eliminarlo automáticamente
     if (isTemporary) {
-      this._timeout = setTimeout(() => {
-        if (messageContainer && messageContainer.parentNode) {
-          messageContainer.remove();
-        }
-      }, MESSAGE_PROPERTIES[type].time || 3500);
+      this._timeout = setTimeout(this.remove, messageProperties.time || 3500);
     }
   }
 }

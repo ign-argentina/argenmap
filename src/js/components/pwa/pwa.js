@@ -60,44 +60,7 @@
   }
 
   function removeNotice(id) {
-    document.getElementById(id)?.remove();
-  }
-
-  function createNotice({ id, message, actionLabel, onAction, persistent }) {
-    removeNotice(id);
-
-    const notice = document.createElement("div");
-    notice.id = id;
-    notice.className = "pwa-notice";
-    notice.setAttribute("role", "status");
-    notice.setAttribute("aria-live", "polite");
-
-    const text = document.createElement("span");
-    text.textContent = message;
-    notice.appendChild(text);
-
-    if (actionLabel && onAction) {
-      const action = document.createElement("button");
-      action.type = "button";
-      action.className = "pwa-notice-action";
-      action.textContent = actionLabel;
-      action.addEventListener("click", onAction, { once: true });
-      notice.appendChild(action);
-    }
-
-    if (!persistent) {
-      const dismiss = document.createElement("button");
-      dismiss.type = "button";
-      dismiss.className = "pwa-notice-dismiss";
-      dismiss.textContent = "×";
-      dismiss.title = messages.dismissAction;
-      dismiss.setAttribute("aria-label", messages.dismissAction);
-      dismiss.addEventListener("click", () => notice.remove(), { once: true });
-      notice.appendChild(dismiss);
-    }
-
-    document.body.appendChild(notice);
-    return notice;
+    UserMessage.remove(id);
   }
 
   function createInstallButton() {
@@ -151,13 +114,17 @@
   }
 
   function showManualInstallInstructions() {
-    createNotice({
-      id: "pwa-install-notice",
-      message: isIosDevice()
+    new UserMessage(
+      isIosDevice()
         ? messages.iosInstallInstructions
         : messages.browserInstallInstructions,
-      persistent: false,
-    });
+      false,
+      "information",
+      {
+        id: "pwa-install-notice",
+        closeLabel: messages.dismissAction,
+      },
+    );
   }
 
   async function requestInstallation() {
@@ -198,15 +165,14 @@
       return;
     }
 
-    createNotice({
+    new UserMessage(messages.updateAvailable, false, "information", {
       id: "pwa-update-notice",
-      message: messages.updateAvailable,
       actionLabel: messages.updateAction,
+      closeLabel: messages.dismissAction,
       onAction: () => {
         reloadRequested = true;
         worker.postMessage({ type: "SKIP_WAITING" });
       },
-      persistent: false,
     });
   }
 
@@ -216,10 +182,9 @@
       return;
     }
 
-    createNotice({
+    new UserMessage(messages.offline, false, "warning", {
       id: "pwa-network-notice",
-      message: messages.offline,
-      persistent: true,
+      dismissible: false,
     });
   }
 

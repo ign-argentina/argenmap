@@ -152,18 +152,18 @@ const PLUGIN_STYLES = {
 
 const MESSAGE_PROPERTIES = {
   information: {
-    background: "rgba(0,141,201, 0.75)",
-    text: "white",
+    accent: "#008dc9",
+    icon: "fa-circle-info",
     time: 2000,
   },
   error: {
-    background: "rgba(255, 0, 0, 0.75)",
-    text: "white",
+    accent: "#ef5350",
+    icon: "fa-circle-xmark",
     time: 10000,
   },
   warning: {
-    text: "#856404",
-    background: "rgba(247,226,58,0.75)",
+    accent: "#f7e23a",
+    icon: "fa-triangle-exclamation",
     time: 5000,
   },
 };
