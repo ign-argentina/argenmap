@@ -573,7 +573,7 @@ function shouldLoadPluginAtStartup(pluginName) {
 
   switch (pluginName) {
     case "screenShoter":
-      return L.Browser.webkit && !window.location.origin.includes("idecom");
+      return !window.location.origin.includes("idecom");
     case "pdfPrinter":
       return !L.Browser.safari;
     case "geoprocessing":
@@ -795,7 +795,7 @@ function createFirstUseMapPluginControls() {
     });
   }
 
-  if (L.Browser.webkit && !window.location.origin.includes("idecom")) {
+  if (!window.location.origin.includes("idecom")) {
     createFirstUseLeafletControl({
       id: "screenShoter",
       pluginName: "screenShoter",
@@ -1043,10 +1043,15 @@ document.body.addEventListener("pluginLoad", async function (event) {
           break;
         case "screenShoter":
           let isIdecom = window.location.origin.includes("idecom");
-          if (L.Browser.webkit && !isIdecom) {
+          if (!isIdecom) {
             let d = new Date();
             let n = d.getTime();
             L.simpleMapScreenshoter({
+              domtoimageOptions: {
+                // Leaflet has already cached the tiles without a CORS request.
+                // Fetch a fresh copy so they can be embedded in the screenshot.
+                cacheBust: true,
+              },
               hideElementsWithSelectors: [
                 ".leaflet-top.leaflet-left",
                 ".leaflet-top.leaflet-right",
