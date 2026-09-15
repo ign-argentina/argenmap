@@ -82,6 +82,26 @@ assert.match(
   /_markers\[t - 1\]\.on\("click", this\._onFinishClick, this\)/,
   "line completion uses the touch-aware click handler",
 );
+assert.match(
+  drawSource,
+  /addEventListener\(\s*"dblclick",\s*this\._boundOnFinishDoubleClick,\s*!0/,
+  "polygon completion observes double clicks before map zoom",
+);
+assert.match(
+  drawSource,
+  /addEventListener\(\s*"touchstart",\s*this\._boundOnFinishTouch,\s*!0/,
+  "polygon completion observes touch starts before map zoom",
+);
+assert.match(
+  drawSource,
+  /finishOnDoubleClickTolerance: 12[\s\S]*?touchFinishOnDoubleClickTolerance: 24[\s\S]*?finishOnDoubleTapDelay: 500/,
+  "polygon completion defines mouse, touch, and double-tap thresholds",
+);
+assert.match(
+  drawSource,
+  /_markers\[t - 1\]\.on\(\s*"dblclick",\s*this\._onFinishDoubleClick/,
+  "the last polygon marker uses the proximity-aware finish handler",
+);
 
 const compatibilityCheckBody = drawSource.match(
   /_isTouchGeneratedMouseEvent: function \(t\) \{([\s\S]*?)\n      \},\n      _onMouseDown/,
@@ -119,5 +139,137 @@ assert.equal(
 lineHandler._lastTouchTime = Date.now() - 701;
 finishClick.call(lineHandler, { originalEvent: {} });
 assert.equal(finishedLines, 1, "a later genuine mouse click can finish the line");
+
+const nearLastVertexBody = drawSource.match(
+  /_isEventNearLastVertex: function \(t\) \{([\s\S]*?)\n      \},\n      _onFinishTouch/,
+)?.[1];
+const finishTouchBody = drawSource.match(
+  /_onFinishTouch: function \(t\) \{([\s\S]*?)\n      \},\n      _onFinishDoubleClick/,
+)?.[1];
+const finishDoubleClickBody = drawSource.match(
+  /_onFinishDoubleClick: function \(t\) \{([\s\S]*?)\n      \},\n      _updateFinishHandler/,
+)?.[1];
+assert.ok(nearLastVertexBody, "the polygon proximity check is testable");
+assert.ok(finishTouchBody, "the native double-tap handler is testable");
+assert.ok(
+  finishDoubleClickBody,
+  "the proximity-aware polygon finish handler is testable",
+);
+
+const point = (x, y) => ({
+  x,
+  y,
+  distanceTo(other) {
+    return Math.hypot(this.x - other.x, this.y - other.y);
+  },
+});
+const polygonContext = vm.createContext({
+  L: {
+    Browser: { touch: false },
+    DomEvent: {
+      stop(event) {
+        event.stopped = true;
+      },
+    },
+  },
+});
+const nearLastVertex = vm.runInContext(
+  `(function (t) {${nearLastVertexBody}\n})`,
+  polygonContext,
+);
+const finishTouch = vm.runInContext(
+  `(function (t) {${finishTouchBody}\n})`,
+  polygonContext,
+);
+const finishDoubleClick = vm.runInContext(
+  `(function (t) {${finishDoubleClickBody}\n})`,
+  polygonContext,
+);
+let finishedPolygons = 0;
+const lastVertex = { x: 100, y: 100 };
+const polygonHandler = {
+  options: {
+    finishOnDoubleClickTolerance: 12,
+    touchFinishOnDoubleClickTolerance: 24,
+    touchMouseEventDelay: 700,
+    finishOnDoubleTapDelay: 500,
+  },
+  _markers: [
+    { getLatLng: () => ({ x: 0, y: 0 }) },
+    { getLatLng: () => ({ x: 50, y: 50 }) },
+    { getLatLng: () => lastVertex },
+  ],
+  _map: {
+    mouseEventToContainerPoint: (event) => point(event.clientX, event.clientY),
+    latLngToContainerPoint: (latlng) => point(latlng.x, latlng.y),
+  },
+  _isEventNearLastVertex: nearLastVertex,
+  _finishShape() {
+    finishedPolygons++;
+  },
+};
+
+const nearMouseEvent = {
+  clientX: 108,
+  clientY: 106,
+  stopImmediatePropagation() {
+    this.immediatePropagationStopped = true;
+  },
+};
+finishDoubleClick.call(polygonHandler, nearMouseEvent);
+assert.equal(finishedPolygons, 1, "a nearby mouse double click closes the polygon");
+assert.equal(nearMouseEvent.stopped, true, "nearby completion prevents map zoom");
+assert.equal(
+  nearMouseEvent.immediatePropagationStopped,
+  true,
+  "nearby completion cannot also reach the marker handler",
+);
+
+const farMouseEvent = { clientX: 113, clientY: 100 };
+finishDoubleClick.call(polygonHandler, farMouseEvent);
+assert.equal(finishedPolygons, 1, "a distant mouse double click stays on the map");
+assert.equal(farMouseEvent.stopped, undefined, "a distant double click is not consumed");
+
+lastVertex.x = 200;
+lastVertex.y = 200;
+const newLastVertexEvent = { clientX: 200, clientY: 200 };
+finishDoubleClick.call(polygonHandler, newLastVertexEvent);
+assert.equal(
+  finishedPolygons,
+  2,
+  "a double click that creates the last vertex also closes the polygon",
+);
+
+const originalTouchEvent = {
+  clientX: 220,
+  clientY: 210,
+  sourceCapabilities: { firesTouchEvents: true },
+};
+const nearTouchEvent = { originalEvent: originalTouchEvent };
+finishDoubleClick.call(polygonHandler, nearTouchEvent);
+assert.equal(finishedPolygons, 3, "the larger touch tolerance closes the polygon");
+assert.equal(originalTouchEvent.stopped, true, "touch completion prevents map zoom");
+
+const firstTouch = {
+  type: "touchstart",
+  touches: [{ clientX: 200, clientY: 200 }],
+};
+const secondTouch = {
+  type: "touchstart",
+  touches: [{ clientX: 208, clientY: 206 }],
+  stopImmediatePropagation() {
+    this.immediatePropagationStopped = true;
+  },
+};
+finishTouch.call(polygonHandler, firstTouch);
+assert.equal(finishedPolygons, 3, "a first tap keeps drawing the polygon");
+finishTouch.call(polygonHandler, secondTouch);
+assert.equal(finishedPolygons, 4, "a native second tap closes the polygon");
+assert.equal(secondTouch.stopped, true, "the second tap prevents map zoom");
+assert.equal(
+  secondTouch.immediatePropagationStopped,
+  true,
+  "the second tap cannot add another vertex",
+);
 
 console.log("Leaflet.Draw touch initialization checks passed.");

@@ -640,18 +640,107 @@
         feet: !0,
         nautic: !1,
         precision: {},
+        finishOnDoubleClickTolerance: 12,
+        touchFinishOnDoubleClickTolerance: 24,
+        finishOnDoubleTapDelay: 500,
       },
       initialize: function (t, e) {
         (L.Draw.Polyline.prototype.initialize.call(this, t, e),
-          (this.type = L.Draw.Polygon.TYPE));
+          (this.type = L.Draw.Polygon.TYPE),
+          (this._boundOnFinishTouch = L.bind(this._onFinishTouch, this)),
+          (this._boundOnFinishDoubleClick = L.bind(
+            this._onFinishDoubleClick,
+            this,
+          )));
+      },
+      addHooks: function () {
+        (L.Draw.Polyline.prototype.addHooks.call(this),
+          this._map &&
+            (this._map._container.addEventListener(
+              "touchstart",
+              this._boundOnFinishTouch,
+              !0,
+            ),
+            this._map._container.addEventListener(
+              "dblclick",
+              this._boundOnFinishDoubleClick,
+              !0,
+            )));
+      },
+      removeHooks: function () {
+        (this._map &&
+          (this._map._container.removeEventListener(
+            "touchstart",
+            this._boundOnFinishTouch,
+            !0,
+          ),
+          this._map._container.removeEventListener(
+            "dblclick",
+            this._boundOnFinishDoubleClick,
+            !0,
+          )),
+          (this._lastFinishTouchAt = null),
+          L.Draw.Polyline.prototype.removeHooks.call(this));
+      },
+      _isEventNearLastVertex: function (t) {
+        if (!this._map || !this._markers || this._markers.length < 3)
+          return !1;
+        var e = t.originalEvent || t,
+          i =
+            (e.touches && e.touches[0]) ||
+            (e.changedTouches && e.changedTouches[0]) ||
+            e,
+          o = e.sourceCapabilities,
+          a =
+            (e.type && 0 === e.type.indexOf("touch")) ||
+            "touch" === e.pointerType ||
+            (o && o.firesTouchEvents) ||
+            (L.Browser.touch && e._simulated),
+          n = a
+            ? this.options.touchFinishOnDoubleClickTolerance
+            : this.options.finishOnDoubleClickTolerance,
+          s = this._map.mouseEventToContainerPoint(i),
+          r = this._map.latLngToContainerPoint(
+            this._markers[this._markers.length - 1].getLatLng(),
+          );
+        return s.distanceTo(r) <= n;
+      },
+      _onFinishTouch: function (t) {
+        if (!t.touches || 1 !== t.touches.length) return;
+        var e = Date.now(),
+          o =
+            this._lastFinishTouchAt &&
+            e - this._lastFinishTouchAt <= this.options.finishOnDoubleTapDelay;
+        ((this._lastFinishTouchAt = e),
+          o &&
+            this._isEventNearLastVertex(t) &&
+            ((this._lastFinishTouchAt = null),
+            L.DomEvent.stop(t),
+            t.stopImmediatePropagation && t.stopImmediatePropagation(),
+            this._finishShape()));
+      },
+      _onFinishDoubleClick: function (t) {
+        var e = t.originalEvent || t;
+        this._isEventNearLastVertex(t) &&
+          (L.DomEvent.stop(e),
+          e.stopImmediatePropagation && e.stopImmediatePropagation(),
+          this._finishShape());
       },
       _updateFinishHandler: function () {
         var t = this._markers.length;
         (1 === t && this._markers[0].on("click", this._finishShape, this),
           t > 2 &&
-            (this._markers[t - 1].on("dblclick", this._finishShape, this),
+            (this._markers[t - 1].on(
+              "dblclick",
+              this._onFinishDoubleClick,
+              this,
+            ),
             t > 3 &&
-              this._markers[t - 2].off("dblclick", this._finishShape, this)));
+              this._markers[t - 2].off(
+                "dblclick",
+                this._onFinishDoubleClick,
+                this,
+              )));
       },
       _getTooltipText: function () {
         var t, e;
@@ -699,7 +788,11 @@
         t > 0 &&
           (this._markers[0].off("click", this._finishShape, this),
           t > 2 &&
-            this._markers[t - 1].off("dblclick", this._finishShape, this));
+            this._markers[t - 1].off(
+              "dblclick",
+              this._onFinishDoubleClick,
+              this,
+            ));
       },
     })),
     (L.SimpleShape = {}),
