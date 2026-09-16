@@ -597,7 +597,9 @@ div.leaflet-top.leaflet-left {
 /* Menu principal */
 .menu-container {
   width: auto;
-  max-width: -webkit-fill-available;
+  max-width: calc(100vw - 1.3rem);
+  max-height: calc(100vh - 60px - 1.3rem);
+  max-height: calc(100dvh - 60px - 1.3rem);
   height: auto;
   margin: 0.65rem;
   position: absolute;
@@ -665,12 +667,20 @@ div.leaflet-top.leaflet-left {
 }
 
 #basemap-selector {
+  box-sizing: border-box;
+  width: min(20rem, calc(100vw - 4.75rem));
+  min-width: 0;
   position: relative;
   margin: 0.5rem;
-  max-height: 80vh;
+  max-height: calc(100vh - 60px - 1.3rem);
+  max-height: calc(100dvh - 60px - 1.3rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   border: 0;
   border-radius: 0.375rem;
-  max-width: 320px;
+  max-width: 20rem;
 }
 .basemap-title {
   color: var(--menu-text-color-hover);
@@ -2253,6 +2263,8 @@ input:checked.switch+label:after {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 0.375rem;
+  min-width: 0;
 }
 
 .base-layer-item-info {
@@ -2260,10 +2272,17 @@ input:checked.switch+label:after {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .base-layer-item-info>div {
   padding-left: 10px;
+  min-width: 0;
+}
+
+.base-layer-item-info .basemap-title {
+  overflow-wrap: anywhere;
 }
 
 .map-tooltip {
@@ -2313,24 +2332,37 @@ input:checked.switch+label:after {
   line-height: 1.75em;
 }
 
-.list-inline {
+#collapseBaseMapLayers {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-left: 0;
   margin-bottom: 0px;
   border-radius: 6px;
 }
 
-.list-inline li {
-  width: 320px;
+#collapseBaseMapLayers > li {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   display: block;
   padding-right: 15px;
   padding-left: 15px;
 }
 
-@media (max-width: 600px) {
-  .list-inline li {
-    width: 100%;
-  }
+/* Keep basemap details inside the scrollable panel instead of widening it. */
+#collapseBaseMapLayers .zoom-info-icon .tooltiptext {
+  top: 50%;
+  right: calc(100% + 0.5rem);
+  left: auto;
+  max-width: calc(20rem - 4.5rem);
+  white-space: normal;
+  transform: translateY(-50%);
 }
+
 .base-layer-item-info img {
+  flex: 0 0 auto;
   width: 50px;
   height: 40px;
 }
@@ -2397,7 +2429,7 @@ input:checked.switch+label:after {
   }
 
   #collapseBaseMapLayers {
-    margin-left: 40px !important;
+    margin: 0 !important;
   }
 
   div .leaflet-control-geo {
@@ -2836,6 +2868,14 @@ input:checked.switch+label:after {
 
   #menu-content > * {
     pointer-events: auto;
+  }
+
+  #basemap-selector {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100vh - 4.75rem - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 4.75rem - env(safe-area-inset-bottom, 0px));
+    margin: 0;
   }
 
   #sidebar {
