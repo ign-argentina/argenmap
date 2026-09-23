@@ -976,7 +976,7 @@ class LayersInfoWMS extends LayersInfo {
     const listType = tab.listType || null;
 
     // Construct the URL for fetching WMS capabilities
-    const serviceParams = `?service=${service}&version=${version}&request=GetCapabilities`;
+    const serviceParams = `?service=${service.toUpperCase()}&version=${version}&request=GetCapabilities`;
     const hostUrl = `${this.getHostOWS()}${serviceParams}`;
 
     return fetch(hostUrl)
