@@ -44,6 +44,9 @@ const initialScripts = [
   "src/js/app.js",
   "src/js/components/styles/styles.js",
   "src/js/components/UI/UserInterface.js",
+  "src/js/components/messaging/config-processor.js",
+  "src/js/components/messaging/live-updater.js",
+  "src/js/components/messaging/message-bridge.js",
 ];
 
 const initialScriptChunks = [
