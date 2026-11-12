@@ -211,6 +211,8 @@
     const data = {};
     if (typeof currentApp.template === "string") {
       data.template = currentApp.template;
+    } else if (typeof currentApp.template_id === "string") {
+      data.template = currentApp.template_id;
     }
     if (Array.isArray(currentApp.items)) {
       data.items = deepClone(currentApp.items);
