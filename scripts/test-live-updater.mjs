@@ -1447,4 +1447,138 @@ console.log("Iniciando bateria de pruebas de TASK-02 para LiveUpdater...\n");
   console.log("  [OK] Escenarios Adicionales: Metadatos WMS sin fetch, mismo host con distintas allowed_layers y rechazo de configuracion invalida");
 }
 
+// =========================================================================
+// ESCENARIO COMBOBOX: LiveUpdater conserva ImpresorGroupWMSSelector y Tab combobox
+// =========================================================================
+{
+  const h = createTestHarness();
+  class TabMock {
+    constructor(tab) {
+      this.id = tab?.id || "";
+      this.content = tab?.content || "";
+      this.listType = tab?.listType || tab?.list_type || "accordion";
+    }
+    getId() {
+      return this.id;
+    }
+    getExtendedId() {
+      return `main-menu-tab-${this.id}`;
+    }
+  }
+  class ImpresorGrupoHTMLMock {
+    imprimir(group) {
+      return `<div id="${group.getId()}"></div>`;
+    }
+  }
+  class ImpresorGroupWMSSelectorMock {
+    imprimir(group) {
+      return `<option value='${group.getId()}'>${group.nombre}</option>`;
+    }
+  }
+  class ItemGroupMock {
+    constructor(tab, nombre, seccion, peso, palabrasClave, description, resumen) {
+      this.tab = tab;
+      this.nombre = nombre;
+      this.seccion = seccion;
+      this.peso = peso;
+      this.palabrasClave = palabrasClave;
+      this.description = description;
+      this.resumen = resumen;
+      this.itemsComposite = {};
+    }
+    getId() {
+      return `lista-${this.seccion}`;
+    }
+    setImpresor(impresor) {
+      this.impresor = impresor;
+    }
+    setObjDom(dom) {
+      this.objDOM = dom;
+    }
+    setItem(item) {
+      this.itemsComposite[item.seccion] = item;
+    }
+    isBaseLayer() {
+      return false;
+    }
+    muestraCantidadCapasVisibles() {}
+    hideAllLayers() {}
+  }
+
+  h.context.Tab = TabMock;
+  h.context.ImpresorGrupoHTML = ImpresorGrupoHTMLMock;
+  h.context.ImpresorGroupWMSSelector = ImpresorGroupWMSSelectorMock;
+  h.context.ItemGroup = ItemGroupMock;
+  h.gestorMenu._tabs = {};
+  h.gestorMenu.addTab = function (tab) {
+    if (tab.getExtendedId() !== "main-menu-tab-") {
+      this._tabs[tab.getId()] = tab;
+    }
+  };
+  h.gestorMenu.getItemsGroupDOM = () => "#menu";
+  h.gestorMenu.addItemGroup = function (group) {
+    this.items[group.seccion] = group;
+  };
+
+  const comboWms = {
+    type: "wmslayer",
+    nombre: "Transporte",
+    seccion: "transporte",
+    host: "https://wms.ign.gob.ar/geoserver/transporte/wms",
+    servicio: "wms",
+    version: "1.3.0",
+    peso: 50,
+    tab: { id: "Datos2", content: "Datos2", list_type: "combobox" },
+  };
+  const resAddCombo = await h.LiveUpdater.applyConfiguration(
+    {
+      data: {
+        items: [h.initialConfig.data.items[0], h.initialConfig.data.items[1], comboWms],
+      },
+    },
+    { partial: true }
+  );
+  assert.equal(resAddCombo.success, true);
+  assert.ok(
+    h.gestorMenu.items.transporte.impresor instanceof ImpresorGroupWMSSelectorMock,
+    "LiveUpdater asigna ImpresorGroupWMSSelector al registrar un servicio WMS en pestaña combobox"
+  );
+  assert.equal(h.gestorMenu._tabs.Datos2?.listType, "combobox");
+
+  const accordionMetaUpdate = {
+    ...comboWms,
+    tab: { id: "Datos2", content: "Datos2", list_type: "accordion" },
+  };
+  const resSwitchToAcc = await h.LiveUpdater.applyConfiguration(
+    {
+      data: {
+        items: [h.initialConfig.data.items[0], h.initialConfig.data.items[1], accordionMetaUpdate],
+      },
+    },
+    { partial: true }
+  );
+  assert.equal(resSwitchToAcc.success, true);
+  assert.ok(
+    h.gestorMenu.items.transporte.impresor instanceof ImpresorGrupoHTMLMock,
+    "LiveUpdater actualiza a ImpresorGrupoHTML al cambiar list_type a accordion"
+  );
+  assert.equal(h.gestorMenu._tabs.Datos2?.listType, "accordion");
+
+  const resSwitchBackToCombo = await h.LiveUpdater.applyConfiguration(
+    {
+      data: {
+        items: [h.initialConfig.data.items[0], h.initialConfig.data.items[1], comboWms],
+      },
+    },
+    { partial: true }
+  );
+  assert.equal(resSwitchBackToCombo.success, true);
+  assert.ok(
+    h.gestorMenu.items.transporte.impresor instanceof ImpresorGroupWMSSelectorMock,
+    "LiveUpdater restaura ImpresorGroupWMSSelector al cambiar list_type de vuelta a combobox"
+  );
+  assert.equal(h.gestorMenu._tabs.Datos2?.listType, "combobox");
+  console.log("  [OK] Escenario Combobox: LiveUpdater conserva ImpresorGroupWMSSelector y Tab combobox");
+}
+
 console.log("\nTodos los escenarios de TASK-02 pasaron exitosamente!");

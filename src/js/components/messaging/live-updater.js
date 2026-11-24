@@ -2340,13 +2340,18 @@
         typeof ImpresorGrupoHTML === "function"
           ? ImpresorGrupoHTML
           : root?.ImpresorGrupoHTML;
+      const ImpresorGroupWMSSelectorClass =
+        typeof ImpresorGroupWMSSelector === "function"
+          ? ImpresorGroupWMSSelector
+          : root?.ImpresorGroupWMSSelector;
       const TabClass = typeof Tab === "function" ? Tab : root?.Tab;
 
       const tab = TabClass
         ? new TabClass(wmsItem.tab)
         : {
             id: wmsItem.tab?.id || "",
-            listType: wmsItem.tab?.listType || "accordion",
+            listType:
+              wmsItem.tab?.listType || wmsItem.tab?.list_type || "accordion",
             getId: function () {
               return this.id;
             },
@@ -2369,7 +2374,9 @@
           abstract || "",
           wmsItem.short_abstract || ""
         );
-        if (ImpresorGrupoHTMLClass) {
+        if (tab.listType === "combobox" && ImpresorGroupWMSSelectorClass) {
+          groupAux.setImpresor(new ImpresorGroupWMSSelectorClass());
+        } else if (ImpresorGrupoHTMLClass) {
           groupAux.setImpresor(new ImpresorGrupoHTMLClass());
         }
         if (typeof currentGestorMenu.getItemsGroupDOM === "function") {
@@ -2379,6 +2386,17 @@
           groupAux.setItem(subItem);
         });
         currentGestorMenu.addItemGroup(groupAux);
+        const registeredGroup = currentGestorMenu.items?.[seccion];
+        if (registeredGroup && registeredGroup !== groupAux) {
+          registeredGroup.tab = tab;
+          if (typeof registeredGroup.setImpresor === "function") {
+            if (tab.listType === "combobox" && ImpresorGroupWMSSelectorClass) {
+              registeredGroup.setImpresor(new ImpresorGroupWMSSelectorClass());
+            } else if (ImpresorGrupoHTMLClass) {
+              registeredGroup.setImpresor(new ImpresorGrupoHTMLClass());
+            }
+          }
+        }
       } else {
         // Registro directo cuando ItemGroup no está disponible en un entorno de prueba mínimo
         if (!currentGestorMenu.items) currentGestorMenu.items = {};
@@ -2598,8 +2616,44 @@
     }
 
     // 3. Aplicar cambios de solo metadatos en el lugar (sin pedir GetCapabilities ni tocar capas activas)
+    const TabClass = typeof Tab === "function" ? Tab : root?.Tab;
+    const ImpresorGrupoHTMLClass =
+      typeof ImpresorGrupoHTML === "function"
+        ? ImpresorGrupoHTML
+        : root?.ImpresorGrupoHTML;
+    const ImpresorGroupWMSSelectorClass =
+      typeof ImpresorGroupWMSSelector === "function"
+        ? ImpresorGroupWMSSelector
+        : root?.ImpresorGroupWMSSelector;
+
     for (const entry of plan.metadataUpdated) {
-      const { next, prevKey, nextKey } = entry;
+      const { prev, next, prevKey, nextKey } = entry;
+      const tabChanged =
+        next.tab !== undefined && !isDeepEqual(prev?.tab || null, next.tab || null);
+      const updatedTab = tabChanged
+        ? TabClass
+          ? new TabClass(next.tab)
+          : {
+              id: next.tab?.id || "",
+              listType:
+                next.tab?.listType || next.tab?.list_type || "accordion",
+              getId: function () {
+                return this.id;
+              },
+              getExtendedId: function () {
+                return `main-menu-tab-${this.id}`;
+              },
+            }
+        : null;
+      if (
+        updatedTab &&
+        currentGestorMenu &&
+        typeof currentGestorMenu.addTab === "function" &&
+        TabClass
+      ) {
+        currentGestorMenu.addTab(updatedTab);
+      }
+
       const sectionGroup = currentGestorMenu?.items?.[next.seccion];
       if (sectionGroup) {
         sectionGroup.nombre = next.nombre;
@@ -2609,6 +2663,16 @@
         sectionGroup.resumen = next.short_abstract ?? sectionGroup.resumen;
         sectionGroup.shortDescription =
           next.short_abstract ?? sectionGroup.shortDescription;
+        if (updatedTab) {
+          sectionGroup.tab = updatedTab;
+          if (typeof sectionGroup.setImpresor === "function") {
+            if (updatedTab.listType === "combobox" && ImpresorGroupWMSSelectorClass) {
+              sectionGroup.setImpresor(new ImpresorGroupWMSSelectorClass());
+            } else if (ImpresorGrupoHTMLClass) {
+              sectionGroup.setImpresor(new ImpresorGrupoHTMLClass());
+            }
+          }
+        }
         if (next.section_style) {
           sectionGroup.sectionStyle = deepClone(next.section_style);
         }
@@ -2633,6 +2697,14 @@
           info.weight = next.peso;
           info.short_abstract = next.short_abstract;
           info._wmsServiceKey = nextKey;
+          if (updatedTab) {
+            info.tab = updatedTab;
+            if (updatedTab.listType === "combobox" && ImpresorGroupWMSSelectorClass) {
+              info.itemGroupPrinter = new ImpresorGroupWMSSelectorClass();
+            } else if (ImpresorGrupoHTMLClass) {
+              info.itemGroupPrinter = new ImpresorGrupoHTMLClass();
+            }
+          }
         }
       }
       _wmsRegistry.delete(prevKey);

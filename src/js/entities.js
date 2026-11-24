@@ -935,7 +935,11 @@ class LayersInfoWMS extends LayersInfo {
   }
 
   get_without_print(_gestorMenu) {
-    this._parseRequest_without_print(_gestorMenu);
+    if (this._executed == false) {
+      this._executed = true;
+      this._loadPromise = this._parseRequest_without_print(_gestorMenu);
+    }
+    return this._loadPromise || Promise.resolve();
   }
 
   generateGroups(_gestorMenu) {
@@ -1600,7 +1604,7 @@ class LayersInfoWMS extends LayersInfo {
       const response = await fetch(
         thisObj.getHostOWS() +
         "?service=" +
-        thisObj.service +
+        thisObj.service.toUpperCase() +
         "&version=" +
         thisObj.version +
         "&request=GetCapabilities",
@@ -1786,10 +1790,20 @@ class LayersInfoWMS extends LayersInfo {
           }
         }
 
-        nuevo_impresor.addLayers_combobox(groupAux);
+        nuevo_impresor.addLayers_combobox(
+          _gestorMenu.items[thisObj.section] || groupAux,
+        );
         tempMenu.innerHTML = "";
         return;
     } catch (error) {
+      thisObj._executed = false;
+      if (_gestorMenu.getLazyInitialization() == true) {
+        _gestorMenu.removeLazyInitLayerInfoCounter(
+          ItemGroupPrefix + thisObj.section,
+        );
+      }
+      const newComboList = document.getElementById("NEW-wms-combo-list");
+      if (newComboList) newComboList.innerHTML = "";
       console.error("Unable to load legacy service capabilities:", error);
     }
   }
@@ -1859,6 +1873,15 @@ class LayersInfoWMTS extends LayersInfoWMS {
       this._loadPromise = this._parseRequest(_gestorMenu);
     }
     return this._loadPromise || Promise.resolve();
+  }
+
+  get_without_print(_gestorMenu) {
+    return this.get(_gestorMenu).then(() => {
+      const group = _gestorMenu.items[this.section];
+      if (group) {
+        new Menu_UI().addLayers_combobox(group);
+      }
+    });
   }
 
   generateGroups(_gestorMenu) {
@@ -2447,12 +2470,17 @@ class LayerGroup extends ItemGroup {
 
 /** Factory pattern: centralizes construction of every menu layer group. */
 class LayerGroupFactory {
-  static create(definition, target = null) {
+  static create(definition, target = null, renderer = null) {
     const tab = definition.tab instanceof Tab
       ? definition.tab
       : new Tab(definition.tab || "");
     const group = new LayerGroup({ ...definition, tab });
-    group.setImpresor(new LayerGroupRenderer());
+    const groupRenderer =
+      renderer ||
+      (tab.listType === "combobox"
+        ? new ImpresorGroupWMSSelector()
+        : new LayerGroupRenderer());
+    group.setImpresor(groupRenderer);
     if (target) group.setObjDom(target);
     return group;
   }
@@ -4145,10 +4173,23 @@ class LayerMenuManager {
   /** Registry pattern: one model instance exists for each layer-group id. */
   ensureLayerGroup(definition, renderer = null) {
     const existing = this.items[definition.id];
-    if (existing) return existing;
+    if (existing) {
+      if (renderer) {
+        existing.setImpresor(renderer);
+      } else if (
+        existing.getTab?.()?.listType === "combobox" &&
+        !(existing.impresor instanceof ImpresorGroupWMSSelector)
+      ) {
+        existing.setImpresor(new ImpresorGroupWMSSelector());
+      }
+      return existing;
+    }
 
-    const group = LayerGroupFactory.create(definition, this.getItemsGroupDOM());
-    if (renderer) group.setImpresor(renderer);
+    const group = LayerGroupFactory.create(
+      definition,
+      this.getItemsGroupDOM(),
+      renderer,
+    );
     this.addTab(group.getTab());
     this.addItemGroup(group);
     return group;
@@ -4184,6 +4225,14 @@ class LayerMenuManager {
       itemAux = this.items[itemGroup.seccion];
       if (configuredSectionStyle) {
         itemAux.sectionStyle = configuredSectionStyle;
+      }
+      if (itemGroup.impresor instanceof ImpresorGroupWMSSelector) {
+        itemAux.setImpresor(itemGroup.impresor);
+      } else if (
+        itemAux.getTab?.()?.listType === "combobox" &&
+        !(itemAux.impresor instanceof ImpresorGroupWMSSelector)
+      ) {
+        itemAux.setImpresor(new ImpresorGroupWMSSelector());
       }
       this._existsIndexes[itemGroup.seccion] =
         Object.keys(itemAux.itemsComposite).length + 1; //Si ya existe el itemGroup pero se agregan datos de otras fuentes, esto evita que se repitan los ID
@@ -4744,6 +4793,13 @@ class LayerMenuManager {
     } else {
       this.getMenuDOM().innerHTML = this._printSearcher();
 
+      const tabsList = Object.values(this._tabs);
+      const singleComboboxTab =
+        tabsList.length === 1 && tabsList[0].listType === "combobox"
+          ? tabsList[0]
+          : null;
+      const comboboxOptions = [];
+
       var itemsAux = new Array();
       var itemsIterator = this._itemsGetter.get(this);
       for (var key in itemsIterator) {
@@ -4760,10 +4816,27 @@ class LayerMenuManager {
           itemComposite.getObjDom().innerHTML = "";
         }
 
-        itemsAuxToFolders.push(itemComposite);
+        if (
+          singleComboboxTab &&
+          itemComposite.getTab?.().getExtendedId() ===
+            singleComboboxTab.getExtendedId()
+        ) {
+          comboboxOptions.push(itemComposite.imprimir());
+        } else {
+          itemsAuxToFolders.push(itemComposite);
+        }
       }
       //Generate logical folders
       this.generateFolders(itemsAuxToFolders);
+
+      if (singleComboboxTab) {
+        appendRenderedContent(
+          this.getMenuDOM(),
+          singleComboboxTab.getInitialPrint() +
+            comboboxOptions.join("") +
+            singleComboboxTab.getEndPrint(),
+        );
+      }
     }
 
     // File and OGC menu items now share the groups rendered above. This UI
@@ -4870,15 +4943,19 @@ class LayerMenuManager {
   printOnlySection(sectionId) {
     this.processLayersJoin();
     var itemGroup = this.items[sectionId];
+    if (!itemGroup) return;
     if (itemGroup.tab.listType == "combobox") {
       //Si es combobox
       itemGroup.imprimir();
-      document.getElementById("wms-combo-list").innerHTML = itemGroup.itemsStr;
+      const comboList = document.getElementById("wms-combo-list");
+      if (comboList) comboList.innerHTML = itemGroup.itemsStr;
     } else {
       //Si no es es combobox
       itemGroup.imprimir();
-      document.querySelector(`#${CSS.escape(sectionId)} > div`).innerHTML =
-        itemGroup.itemsStr;
+      const sectionBody = document.querySelector(
+        `#${CSS.escape(sectionId)} > div`,
+      );
+      if (sectionBody) sectionBody.innerHTML = itemGroup.itemsStr;
     }
     bindZoomLayer();
     bindLayerOptions();
@@ -4997,13 +5074,22 @@ class LayerMenuManager {
 
   showWMSLayerCombobox(itemSeccion) {
     let nuevo_impresor = new Menu_UI();
+    let tempMenu = document.getElementById("temp-menu");
+    if (tempMenu) tempMenu.remove();
+
+    if (!itemSeccion) {
+      const newComboList = document.getElementById("NEW-wms-combo-list");
+      if (newComboList) newComboList.innerHTML = "";
+      const comboList = document.getElementById("wms-combo-list");
+      if (comboList) comboList.innerHTML = "";
+      return;
+    }
+
     nuevo_impresor.addLoadingAnimation("NEW-wms-combo-list");
     //Realiza el GET de las capas
 
-    let tempMenu = document.getElementById("temp-menu");
-    tempMenu ? tempMenu.remove() : 0;
-
     var itemSeccionAux = itemSeccion.replace(ItemGroupPrefix, "");
+    let triggeredFetch = false;
     for (var key in this.layersInfo) {
       if (
         this.layersInfo[key].section == itemSeccionAux &&
@@ -5012,7 +5098,20 @@ class LayerMenuManager {
         this.addLazyInitLayerInfoCounter(itemSeccion);
         //nueva opcion crea un objeto para cada btn
         this.layersInfo[key].get_without_print(this);
-        //this.layersInfo[key].get(this)
+        triggeredFetch = true;
+      }
+    }
+
+    if (!triggeredFetch) {
+      const existingGroup = this.items[itemSeccionAux];
+      if (existingGroup) {
+        existingGroup.imprimir();
+        const comboList = document.getElementById("wms-combo-list");
+        if (comboList) comboList.innerHTML = existingGroup.itemsStr;
+        nuevo_impresor.addLayers_combobox(existingGroup);
+      } else {
+        const newComboList = document.getElementById("NEW-wms-combo-list");
+        if (newComboList) newComboList.innerHTML = "";
       }
     }
     // bindLayerOptionsIdera();
@@ -5701,6 +5800,7 @@ class Menu_UI {
 
   addLoadingAnimation(id_dom) {
     let contenedor = document.getElementById(id_dom);
+    if (!contenedor) return;
     contenedor.innerHTML = "";
     contenedor.innerHTML =
       '<div class="loading"><img src="src/styles/images/loading.svg"></div>';
@@ -5708,14 +5808,20 @@ class Menu_UI {
 
   async addLayers_combobox(items) {
     let contenedor = document.getElementById("NEW-wms-combo-list");
+    if (!contenedor || !items) return;
     let list = document.createElement("div");
     list.classList = "panel-body";
     let layers = items.itemsComposite;
     for (const property in layers) {
-      let id_dom = "child-" + layers[property].seccion;
-      let title = layers[property].capa.titulo;
-      let url_img = layers[property].capa.legendURL;
-      let descripcion = layers[property].capa.descripcion;
+      const layer = layers[property];
+      let id_dom = "child-" + layer.seccion;
+      let title = layer.capa.titulo;
+      let url_img =
+        layer.capa.legendURL ||
+        (typeof layer.capa.getLegendURL === "function"
+          ? layer.capa.getLegendURL()
+          : "");
+      let descripcion = layer.capa.descripcion || layer.descripcion || "";
       let li_layer = this.add_btn_Layer_combobox(
         id_dom,
         title,
@@ -5723,6 +5829,13 @@ class Menu_UI {
         descripcion,
         false,
       );
+      if (
+        layer.visible ||
+        (typeof gestorMenu !== "undefined" &&
+          gestorMenu?.layerIsActive?.(layer.nombre))
+      ) {
+        li_layer.className = "capa list-group-item active";
+      }
       list.append(li_layer);
     }
     contenedor.innerHTML = "";
